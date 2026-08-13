@@ -18,31 +18,27 @@ progressively from project-scoped `.agents/skills`.
 
 ```mermaid
 flowchart TD
-    request[User request] --> router{Compact AGENTS.md router}
+    request[User request] --> router[AI Workflow Router]
 
-    router -->|Explicitly named| named[Installed skill]
-    router -->|Clear, bounded, low-risk| direct[Direct handling]
-    router -->|Sustained learning| teach[Upstream teach]
-    router -->|Huge, foggy, multi-session| wayfinder[Upstream wayfinder]
-    router -->|Primary-source investigation| research[Upstream research]
-    router -->|Bounded consequential choice| discovery[Local discovery]
-    router -->|Unexplained failure| debugging[Local debugging]
-    router -->|Settled delivery| specification{Durable specification useful?}
-    router -->|Standalone review requested| standaloneReview[Upstream code-review]
+    router --> planning[Planning]
+    router --> investigation[Investigation]
+    router --> delivery[Implementation]
 
-    specification -->|Yes| toSpec[Upstream to-spec]
-    specification -->|No| tickets{Dependency-ordered tickets useful?}
-    toSpec --> tickets
-    tickets -->|Yes| toTickets[Upstream to-tickets]
-    tickets -->|No| adapter[Local implementation adapter]
-    toTickets --> adapter
+    planning --> planningSkills["Wayfinder / Discovery"]
+    investigation --> investigationSkills["Research / Debugging"]
+    delivery --> preparation["Optional spec / tickets"]
+    preparation --> implement[Implement]
+    implement --> quality["TDD / Code Review"]
 
-    adapter --> implement[Upstream implement]
-    implement -->|When appropriate| tdd[Upstream tdd]
-    implement -->|Otherwise| closingReview[Closing code-review]
-    tdd --> closingReview
-    closingReview --> verification[Local acceptance and integration verification]
+    planningSkills --> outcome["Project artifacts + state"]
+    investigationSkills --> outcome
+    quality --> verification[Acceptance verification]
+    verification --> outcome
 ```
+
+This overview emphasizes the multi-stage engineering routes. Explicitly named
+skills, Teach, standalone Code Review, and clear low-risk work leave the router
+directly; the complete selection rules remain in [Workflow routing](routing.md).
 
 The root router contains capability names and composition constraints, not the
 provider prompt bodies. `ai-workflow/providers.json` maps capabilities to the
