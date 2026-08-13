@@ -1,6 +1,6 @@
 {
   "checksums": {
-    "ai-workflow/README.md": "e2281247020dda2312a8468a659fb630abc7b7784e027edc178aeb10309eedb4",
+    "ai-workflow/README.md": "4b2b44ea81d16b4d629ce1cc2b3632414067b69742b9c90aa889412be4c2a6b0",
     "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
     "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
     "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
@@ -9,7 +9,8 @@
     "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
     "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
     "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
-    "root/AGENTS.md.template": "7d790284c3afd461264ece680130c0cfafa611368d6d65d7f4ee8a878b4ebb4d",
+    "root/AGENTS.md.template": "3148bfd3339a64e9d7c9389d77d7f65cec6d1fe168f2807eee3c234e0af7bbf2",
+    "root/CLAUDE.md.template": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
     "skills/workflow-debugging/SKILL.md": "2f1da11ed00687ad5ffb044ea8cb1ac22fe16be0ad5286ae5c9df9913badc1b4",
     "skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
     "skills/workflow-discovery/SKILL.md": "00824be828587ebe66956db3aa48611d0e21703ce39346b77cdbc90129a59f7b",
@@ -60,6 +61,10 @@
       "target": "AGENTS.md"
     },
     {
+      "source": "root/CLAUDE.md.template",
+      "target": "CLAUDE.md"
+    },
+    {
       "source": "skills/workflow-debugging/SKILL.md",
       "target": ".agents/skills/workflow-debugging/SKILL.md"
     },
@@ -88,7 +93,7 @@
       "target": ".agents/skills/workflow-verification/SKILL.md"
     }
   ],
-  "framework_version": "0.4.1",
+  "framework_version": "0.4.2",
   "project_seeds": [
     {
       "source": "ai-workflow/templates/project-profile.md",

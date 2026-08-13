@@ -105,6 +105,8 @@ def payload_files() -> List[str]:
 def target_for(source: str) -> str:
     if source == "root/AGENTS.md.template":
         return "AGENTS.md"
+    if source == "root/CLAUDE.md.template":
+        return "CLAUDE.md"
     match = re.fullmatch(r"skills/([^/]+)/(.*)", source)
     if match:
         return f".agents/skills/{match.group(1)}/{match.group(2)}"
@@ -170,6 +172,7 @@ def check_structure() -> None:
         PACKAGE_ROOT / "scripts" / "bootstrap.py",
         PACKAGE_ROOT / "scripts" / "verify_package.py",
         PAYLOAD_ROOT / "root" / "AGENTS.md.template",
+        PAYLOAD_ROOT / "root" / "CLAUDE.md.template",
         PAYLOAD_ROOT / "VERSION",
         MANIFEST_PATH,
         PAYLOAD_ROOT / "ai-workflow" / "README.md",
@@ -236,10 +239,13 @@ def check_inert_payload() -> None:
     allowed_payload_entries = {"VERSION", "ai-workflow", "distribution", "root", "skills"}
     require({path.name for path in PAYLOAD_ROOT.iterdir()} == allowed_payload_entries, "payload top-level entries drifted")
     require(not (PAYLOAD_ROOT / "AGENTS.md").exists(), "payload must not contain an active root AGENTS.md")
+    require(not (PAYLOAD_ROOT / "CLAUDE.md").exists(), "payload must not contain an active root CLAUDE.md")
     require(not (PAYLOAD_ROOT / ".agents").exists(), "payload must not contain an active .agents tree")
     require(not (PAYLOAD_ROOT / ".github").exists(), "payload must not contain an active .github customization tree")
     nested_agents = [path for path in PAYLOAD_ROOT.rglob("AGENTS.md")]
     require(not nested_agents, "payload contains an active AGENTS.md instead of an inert template")
+    nested_claude = [path for path in PAYLOAD_ROOT.rglob("CLAUDE.md")]
+    require(not nested_claude, "payload contains an active CLAUDE.md instead of an inert template")
     symlinks = [path.relative_to(PACKAGE_ROOT).as_posix() for path in PACKAGE_ROOT.rglob("*") if path.is_symlink()]
     require(not symlinks, "package must not contain symlinks: " + ", ".join(symlinks))
 

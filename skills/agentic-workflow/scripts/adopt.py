@@ -21,6 +21,8 @@ SOURCE_ROOT = PACKAGE_ROOT / "payload"
 SOURCE_MANIFEST = SOURCE_ROOT / "distribution" / "manifest.json"
 INSTALL_MANIFEST_PATH = PurePosixPath("ai-workflow/install-manifest.json")
 POLICY_PATH = PurePosixPath("AGENTS.md")
+CLAUDE_POLICY_PATH = PurePosixPath("CLAUDE.md")
+COMPOSITE_POLICY_PATHS = {POLICY_PATH, CLAUDE_POLICY_PATH}
 LEGACY_POLICY_PATH = PurePosixPath(".github/copilot-instructions.md")
 MANAGED_BEGIN = b"<!-- ai-workflow:managed-begin -->\n"
 MANAGED_END = b"<!-- ai-workflow:managed-end -->\n"
@@ -244,10 +246,11 @@ def load_installed(root: Path) -> MutableMapping[str, object]:
                 raise AdoptionError(f"invalid {field} for {path_key}")
         if details["origin"] in {"created", "preexisting-identical"} and details["sha256"] != details["source_sha256"]:
             raise AdoptionError(f"non-composite checksums disagree for {path_key}")
-        if details["origin"] == "composite" and path_key != POLICY_PATH:
+        if details["origin"] == "composite" and path_key not in COMPOSITE_POLICY_PATHS:
             legacy_allowed = path_key == LEGACY_POLICY_PATH and parse_version(version) < (0, 2, 0)
             if not legacy_allowed:
-                raise AdoptionError(f"only {POLICY_PATH} may be a composite framework file")
+                allowed = ", ".join(str(path) for path in sorted(COMPOSITE_POLICY_PATHS))
+                raise AdoptionError(f"only shared instruction files may be composite: {allowed}")
     if not isinstance(raw.get("source_revision"), str) or not isinstance(raw.get("installed_at"), str):
         raise AdoptionError("installation manifest revision and timestamp must be strings")
     project_owned = raw.get("project_owned")
@@ -329,9 +332,9 @@ def plan_new_owned(
         return f"create framework file {relative}", source_data, entry(source_data, source_data, "created")
     if current == source_data:
         return f"adopt identical framework file {relative} but preserve it on removal", None, entry(current, source_data, "preexisting-identical")
-    if relative == POLICY_PATH:
+    if relative in COMPOSITE_POLICY_PATHS:
         combined = compose_policy(source_data, current)
-        return f"merge framework policy with existing project instructions in {relative}", combined, entry(combined, source_data, "composite")
+        return f"merge framework guidance with existing project instructions in {relative}", combined, entry(combined, source_data, "composite")
     raise AdoptionError(
         f"install would overwrite existing framework path {relative}; rename the colliding project skill or reconcile it explicitly"
     )

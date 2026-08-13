@@ -91,6 +91,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("installed and verified", result.stdout)
         self.assertTrue((target / "AGENTS.md").is_file())
+        self.assertEqual((target / "CLAUDE.md").read_text(encoding="utf-8"), "@AGENTS.md\n")
         self.assertTrue((target / ".agents/skills/workflow-teach/SKILL.md").is_file())
         self.assertTrue((target / "ai-workflow/project-profile.md").is_file())
         self.assertTrue((target / "ai-workflow/state/active.md").is_file())
@@ -223,6 +224,59 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual((target / "AGENTS.md").read_bytes(), original)
         self.assertEqual(profile.read_text(encoding="utf-8"), "project-owned customization\n")
         self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
+
+    def test_existing_claude_policy_is_preserved_through_install_update_and_remove(self) -> None:
+        target = git_repository(self.base / "target")
+        original = b"# Claude-specific policy\n\nKeep this exact content.\n"
+        (target / "CLAUDE.md").write_bytes(original)
+
+        installed = adopt(ADOPT, "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        composite = (target / "CLAUDE.md").read_bytes()
+        self.assertIn(b"@AGENTS.md\n", composite)
+        self.assertIn(original, composite)
+
+        updated = adopt(ADOPT, "update", target)
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertEqual((target / "CLAUDE.md").read_bytes(), composite)
+
+        removed = adopt(ADOPT, "remove", target)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertEqual((target / "CLAUDE.md").read_bytes(), original)
+
+    def test_update_adds_claude_import_to_an_older_installation(self) -> None:
+        old_package = self.base / "pre-claude-package"
+        shutil.copytree(PACKAGE, old_package)
+        (old_package / "VERSION").write_text("0.4.1\n", encoding="utf-8")
+        refreshed = run(sys.executable, old_package / "scripts/verify_package.py", "--refresh-manifest")
+        self.assertEqual(refreshed.returncode, 0, refreshed.stderr)
+
+        claude_source = "root/CLAUDE.md.template"
+        (old_package / "payload" / claude_source).unlink()
+        manifest_path = old_package / "payload/distribution/manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["framework_owned"] = [
+            item for item in manifest["framework_owned"] if item["source"] != claude_source
+        ]
+        del manifest["checksums"][claude_source]
+        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+        target = git_repository(self.base / "target")
+        original = b"# Existing Claude policy\n"
+        (target / "CLAUDE.md").write_bytes(original)
+        installed = adopt(old_package / "scripts/adopt.py", "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        self.assertEqual((target / "CLAUDE.md").read_bytes(), original)
+
+        updated = adopt(ADOPT, "update", target)
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        composite = (target / "CLAUDE.md").read_bytes()
+        self.assertIn(b"@AGENTS.md\n", composite)
+        self.assertIn(original, composite)
+
+        removed = adopt(ADOPT, "remove", target)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertEqual((target / "CLAUDE.md").read_bytes(), original)
 
     def test_conflict_fails_before_writes(self) -> None:
         target = git_repository(self.base / "target")

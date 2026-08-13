@@ -2,8 +2,9 @@
 
 This directory holds project-specific context and durable state for the
 repository's AI engineering workflow. Shared always-on policy is the compact
-root `AGENTS.md`; detailed workflows load from `.agents/skills/` only when
-relevant or when explicitly invoked with
+root `AGENTS.md`, imported for Claude Code by root `CLAUDE.md`; detailed
+workflows load from `.agents/skills/` only when relevant or when explicitly
+invoked with
 `/workflow-discovery`, `/workflow-teach`, `/workflow-decomposition`,
 `/workflow-implementation`, `/workflow-debugging`, `/workflow-verification`, or
 `/workflow-review`.
@@ -22,9 +23,9 @@ inspect, update, or remove an installation. Lifecycle operations apply by
 default; `--dry-run` prints a nonmutating plan. Locally changed framework files
 cause an update conflict.
 Removal preserves changed and pre-install files plus all project-owned content,
-restores project instructions from a clean composite `AGENTS.md`, and removes
-the installation manifest. Removal requires the exact installed version's
-source.
+restores project instructions from clean composite `AGENTS.md` and `CLAUDE.md`
+files, and removes the installation manifest. Removal requires the exact
+installed version's source.
 
 The host agent owns normal engineering, editing, commands, native subagents,
 approvals, and verification. No external agent runtime is installed or required.

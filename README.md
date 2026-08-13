@@ -1,11 +1,11 @@
 # Agentic Workflow
 
 Agentic Workflow is a lightweight, repository-native engineering process for
-Codex, GitHub Copilot Chat, and compatible agent tooling. It routes simple work
-directly while giving consequential decisions, debugging, implementation,
-verification, and review durable structure. Runtime behavior is Markdown and
-JSON in the repository—no daemon, service, container, package registry, or
-external agent runtime is required.
+Codex, GitHub Copilot Chat, Claude Code, and compatible agent tooling. It routes
+simple work directly while giving consequential decisions, debugging,
+implementation, verification, and review durable structure. Runtime behavior is
+Markdown and JSON in the repository—no daemon, service, container, package
+registry, or external agent runtime is required.
 
 ## Install
 
@@ -80,6 +80,7 @@ installation or runtime prerequisite.
 ```text
 target-project/
 ├── AGENTS.md
+├── CLAUDE.md
 ├── .agents/
 │   └── skills/
 │       ├── workflow-debugging/SKILL.md
@@ -97,10 +98,11 @@ target-project/
 │   └── templates/
 ```
 
-`AGENTS.md`, workflow skills, contracts, templates, and runtime guidance under
-`ai-workflow/` are framework-owned. The project profile and active/state record
-locations are project-owned seeds: installation creates them only when absent,
-and updates or removal never overwrite or delete them.
+`AGENTS.md`, the `CLAUDE.md` compatibility import, workflow skills, contracts,
+templates, and runtime guidance under `ai-workflow/` are framework-owned. The
+project profile and active/state record locations are project-owned seeds:
+installation creates them only when absent, and updates or removal never
+overwrite or delete them.
 
 The framework installs nothing into the target's generic `docs/` namespace.
 Project decisions, specifications, runbooks, and other project documentation
@@ -134,12 +136,12 @@ use `py -3` in place of `python3` in these commands.
 
 Update resolves the current `main` revision, replaces only clean
 framework-owned content, preserves project-owned files and the project portion
-of a composite `AGENTS.md`, removes explicitly allowlisted retired framework
-files only when unchanged, including framework documentation installed by
-versions through 0.4.0, and verifies the result. It is a persistent project
-change; `remove` or version control provides reversal. A locally modified
-retired file is preserved and reclassified as project-owned for safety; review
-and remove that file separately if it is obsolete.
+of composite `AGENTS.md` and `CLAUDE.md` files, removes explicitly allowlisted
+retired framework files only when unchanged, including framework documentation
+installed by versions through 0.4.0, and verifies the result. It is a persistent
+project change; `remove` or version control provides reversal. A locally
+modified retired file is preserved and reclassified as project-owned for
+safety; review and remove that file separately if it is obsolete.
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
@@ -168,8 +170,9 @@ in the output.
 
 Remove downloads the exact recorded source revision and persistently deletes
 only unchanged files created by that version. It restores the original bytes of
-a clean pre-existing `AGENTS.md`, preserves pre-existing identical or locally
-modified framework paths, and keeps all project-owned profile and state files.
+clean pre-existing `AGENTS.md` and `CLAUDE.md` files, preserves pre-existing
+identical or locally modified framework paths, and keeps all project-owned
+profile and state files.
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" remove
@@ -181,8 +184,9 @@ only after human review.
 
 ## Safety and ownership
 
-- An existing differing `AGENTS.md` is preserved byte-for-byte as the project
-  section beneath explicit managed markers. Removal restores it exactly.
+- Existing differing `AGENTS.md` and `CLAUDE.md` files are preserved
+  byte-for-byte as project sections beneath explicit managed markers. Removal
+  restores them exactly.
 - A different existing framework target, such as a same-named workflow skill,
   blocks the whole operation before any file is written.
 - Repeating a clean installation is idempotent and reports that it is already
@@ -206,9 +210,9 @@ explicitly allowlists them and the installed bytes are unchanged.
 The bootstrap skill is the source/distribution boundary. Repository-level
 `docs/` contains maintainer-only architecture, verification, and development
 decisions and is not part of the payload. The payload itself is inert:
-it deliberately does not contain a literal `AGENTS.md`, `.agents` tree, or
-`.github` customization tree that an editor could interpret while browsing this
-repository.
+it deliberately does not contain a literal `AGENTS.md`, `CLAUDE.md`, `.agents`
+tree, or `.github` customization tree that an editor could interpret while
+browsing this repository.
 
 ```text
 docs/                         # source-repository maintainer documentation only
@@ -223,13 +227,15 @@ skills/agentic-workflow/
 │   ├── VERSION             # generated/verified from package VERSION
 │   ├── distribution/manifest.json
 │   ├── root/AGENTS.md.template
+│   ├── root/CLAUDE.md.template
 │   ├── skills/workflow-*/SKILL.md
 │   └── ai-workflow/
 └── tests/
 ```
 
 The manifest explicitly maps inert source paths to installed targets, for
-example `payload/root/AGENTS.md.template → AGENTS.md` and
+example `payload/root/AGENTS.md.template → AGENTS.md`,
+`payload/root/CLAUDE.md.template → CLAUDE.md`, and
 `payload/skills/workflow-teach/SKILL.md →
 .agents/skills/workflow-teach/SKILL.md`. Installed repositories need none of the
 bootstrap package for runtime use.
@@ -292,8 +298,9 @@ a `.git` directory, and prior `git init` are not required. Git is recommended
 for additional recovery and change history. Runtime use needs compatible agent
 tooling that discovers root `AGENTS.md` and project skills under
 `.agents/skills`; current GitHub Copilot documentation lists both conventions.
-Routing is instruction-driven rather than a deterministic policy engine, and
-customized managed blocks are deliberately not auto-merged.
+Claude Code receives the same shared policy through the installed root
+`CLAUDE.md` import. Routing is instruction-driven rather than a deterministic
+policy engine, and customized managed blocks are deliberately not auto-merged.
 
 The first-stage command retrieves mutable `main` over TLS before the bootstrap
 resolves an immutable commit and validates the package. Published releases can

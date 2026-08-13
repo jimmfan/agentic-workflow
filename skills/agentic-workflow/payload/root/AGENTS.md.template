@@ -1,8 +1,7 @@
 # AI engineering workflow policy
 
-Codex is the default engineering runtime. This repository owns workflow policy,
-not the host agent loop, sandbox, approvals, or tools. Optional integrations must
-never become a required hop for normal work.
+Use the active agent's native runtime, tools, sandbox, and approvals. Normal work
+must not depend on another agent runtime or optional integration.
 
 Use the minimum justified process. For an explicit resume request, validate
 `ai-workflow/state/active.md` first and continue its exact `Resume target` with
