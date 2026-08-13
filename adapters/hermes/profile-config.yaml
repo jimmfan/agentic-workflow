@@ -1,0 +1,47 @@
+# Dedicated profile overlay for AI Engineering Workflow Hermes v0.20.0.
+# This is a complete minimal config: Hermes supplies defaults for omitted keys.
+model:
+  openai_runtime: auto
+
+# Cross-provider failover is deliberately disabled. The adapter supplies the
+# audited provider explicitly and treats its failure as a failed delegation.
+fallback_providers: []
+fallback_model: null
+
+approvals:
+  mode: manual
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  nudge_interval: 10
+  write_approval: false
+  memory_char_limit: 2200
+  user_char_limit: 1375
+  provider: ""
+
+skills:
+  external_dirs: []
+  creation_nudge_interval: 10
+  template_vars: true
+  inline_shell: false
+  guard_agent_created: true
+  write_approval: true
+
+curator:
+  enabled: true
+  interval_hours: 168
+  min_idle_hours: 2
+  stale_after_days: 30
+  archive_after_days: 90
+  consolidate: false
+  prune_builtins: false
+  backup:
+    enabled: true
+    keep: 5
+
+sessions:
+  write_json_snapshots: false
+
+display:
+  memory_notifications: verbose

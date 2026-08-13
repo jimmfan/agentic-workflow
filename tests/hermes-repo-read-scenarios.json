@@ -1,0 +1,20 @@
+[
+  {
+    "id": "RR-1",
+    "status": "implemented-and-tested",
+    "scenario": "Pinned Hermes v0.20.0 repo-read is rejected before invocation.",
+    "expected": "The adapter returns exit status 4 and state unavailable without starting Hermes or touching Codex configuration."
+  },
+  {
+    "id": "RR-2",
+    "status": "source-and-protocol-tested",
+    "scenario": "The documented slash migration cannot be treated as isolated read-only configuration.",
+    "expected": "Audit shows migration ignores CODEX_HOME and derives <process HOME>/.codex, emits :workspace, omits a per-thread permission profile, and can create a duplicate default_permissions key. With ordinary HOME this can touch normal Codex configuration; with isolated HOME the migration and runtime target different private Codex directories."
+  },
+  {
+    "id": "RR-3",
+    "status": "future-enablement-gate",
+    "scenario": "A future repo-read implementation attempts shell and apply_patch writes.",
+    "expected": "Both writes fail without an approval path the adapter can accept, the effective profile attests :read-only with network disabled, normal Codex config is byte-identical, and repository status is unchanged."
+  }
+]

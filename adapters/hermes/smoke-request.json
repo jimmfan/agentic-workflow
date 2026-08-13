@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task_id": "hermes-smoke-001",
+  "objective": "Find the current official OpenAI Codex documentation for repository AGENTS.md discovery and summarize the precedence in at most five conclusions.",
+  "delegation_reason": "This harmless external lookup verifies the optional research adapter, its OpenAI/Codex provider, structured return contract, and repository mutation guard.",
+  "scope": [
+    "Official OpenAI Codex documentation only",
+    "Repository AGENTS.md discovery and precedence"
+  ],
+  "project_context": [
+    "Codex is the parent workflow owner",
+    "Hermes is an optional evidence-gathering child"
+  ],
+  "known_facts": [],
+  "constraints": [
+    "Return concise evidence-backed findings",
+    "Preserve uncertainty instead of guessing"
+  ],
+  "prohibited_actions": [
+    "Do not inspect or modify the local repository",
+    "Do not invoke Codex or another agent",
+    "Do not perform external writes"
+  ],
+  "repository_modification_allowed": false,
+  "network_reads_authorized": true,
+  "external_writes_authorized": false,
+  "expected_output": [
+    "Conclusions",
+    "Primary-source evidence and URLs",
+    "Unresolved uncertainty",
+    "Confirmation that prohibited actions were not performed"
+  ],
+  "state_references": [],
+  "evidence_requirements": [
+    "Prefer current official OpenAI documentation",
+    "Associate material claims with supporting URLs"
+  ]
+}

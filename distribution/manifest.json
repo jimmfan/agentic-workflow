@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "framework_version": "0.3.0",
+  "framework_owned": [
+    "AGENTS.md",
+    ".agents/skills/hermes-delegation/SKILL.md",
+    ".agents/skills/workflow-debugging/SKILL.md",
+    ".agents/skills/workflow-decomposition/SKILL.md",
+    ".agents/skills/workflow-discovery/SKILL.md",
+    ".agents/skills/workflow-implementation/SKILL.md",
+    ".agents/skills/workflow-review/SKILL.md",
+    ".agents/skills/workflow-teach/SKILL.md",
+    ".agents/skills/workflow-verification/SKILL.md",
+    "adapters/hermes/profile-config.yaml",
+    "adapters/hermes/request.schema.json",
+    "adapters/hermes/result.schema.json",
+    "adapters/hermes/smoke-request.json",
+    "ai-workflow/README.md",
+    "ai-workflow/VERSION",
+    "ai-workflow/contracts/project-profile.md",
+    "ai-workflow/state/README.md",
+    "ai-workflow/templates/active-state.md",
+    "ai-workflow/templates/decision-record.md",
+    "ai-workflow/templates/learning-record.md",
+    "ai-workflow/templates/project-profile.md",
+    "ai-workflow/templates/ticket-record.md",
+    "ai-workflow/templates/work-item.md",
+    "docs/integrations/hermes.md",
+    "scripts/hermes_adapter.py"
+  ],
+  "project_seeds": [
+    {
+      "source": "ai-workflow/templates/project-profile.md",
+      "target": "ai-workflow/project-profile.md"
+    },
+    {
+      "source": "ai-workflow/templates/active-state.md",
+      "target": "ai-workflow/state/active.md"
+    }
+  ]
+}

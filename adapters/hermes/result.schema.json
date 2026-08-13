@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/ai-engineering-workflow/hermes-result.schema.json",
+  "title": "Bounded Hermes delegation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "status",
+    "conclusions",
+    "evidence",
+    "sources",
+    "assumptions",
+    "tools_used",
+    "repository_files_inspected",
+    "unresolved_uncertainty",
+    "recommendations",
+    "actions_performed",
+    "prohibited_actions_not_performed",
+    "parent_verification_required"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "task_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$" },
+    "status": { "enum": ["success", "incomplete", "failed"] },
+    "conclusions": { "type": "array", "maxItems": 30, "items": { "type": "string", "minLength": 1, "maxLength": 2000 } },
+    "evidence": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim", "support", "source_urls"],
+        "properties": {
+          "claim": { "type": "string", "minLength": 1, "maxLength": 1000 },
+          "support": { "type": "string", "minLength": 1, "maxLength": 2000 },
+          "source_urls": { "type": "array", "maxItems": 10, "items": { "type": "string", "format": "uri", "maxLength": 2000 } }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "url", "publisher", "accessed"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "url": { "type": "string", "format": "uri", "maxLength": 2000 },
+          "publisher": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "accessed": { "type": "string", "format": "date" }
+        }
+      }
+    },
+    "assumptions": { "type": "array", "maxItems": 30, "items": { "type": "string", "minLength": 1, "maxLength": 1000 } },
+    "tools_used": { "type": "array", "maxItems": 20, "items": { "type": "string", "minLength": 1, "maxLength": 500 } },
+    "repository_files_inspected": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 1000 } },
+    "unresolved_uncertainty": { "type": "array", "maxItems": 30, "items": { "type": "string", "minLength": 1, "maxLength": 1000 } },
+    "recommendations": { "type": "array", "maxItems": 30, "items": { "type": "string", "minLength": 1, "maxLength": 1000 } },
+    "actions_performed": { "type": "array", "maxItems": 30, "items": { "type": "string", "minLength": 1, "maxLength": 1000 } },
+    "prohibited_actions_not_performed": { "const": true },
+    "parent_verification_required": { "type": "array", "maxItems": 30, "items": { "type": "string", "minLength": 1, "maxLength": 1000 } }
+  }
+}
