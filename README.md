@@ -14,23 +14,48 @@ version, manifest, mappings, and checksums, safely adopts the payload, and
 verifies the installed files. A successful run ends with
 `✓ Agentic workflow <version> installed and verified.`
 
-Run this single command in the **macOS host Terminal from the root of the target
-Git repository**. If the repository exists only inside a VS Code Dev Container,
-run it instead in that container's VS Code terminal from the repository root;
-the command persistently changes that repository and needs Python 3.9+, Git, and
-network access to GitHub.
+Run one of these commands from the **ordinary project directory you want to use
+as the project root**. The current directory is the target unless an explicit
+target is supplied. The command persistently adds the framework files and needs
+Python 3.9+ plus HTTPS access to GitHub; it does not need Git or a `.git`
+directory.
+
+On macOS or Linux, run this in the host Terminal. If the project exists only
+inside a VS Code Dev Container, run it instead in that container's VS Code
+terminal:
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
 ```
 
-That's it. Open the repository in Codex or VS Code with GitHub Copilot Chat and
-work normally.
+On native Windows, run this equivalent command in PowerShell from the target
+project directory:
+
+```powershell
+py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
+```
+
+To install into a different existing directory, append `install` and the target
+path. For example, from a macOS or Linux host Terminal:
+
+```bash
+python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" install /path/to/project
+```
+
+On Windows PowerShell, the equivalent explicit-target form is:
+
+```powershell
+py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" install "C:\path\to\project"
+```
+
+That's it. Open the project in Codex or VS Code with GitHub Copilot Chat and work
+normally. Git is recommended for additional history and recovery, but is not an
+installation or runtime prerequisite.
 
 ## What gets installed
 
 ```text
-target-repository/
+target-project/
 ├── AGENTS.md
 ├── .agents/
 │   └── skills/
@@ -61,8 +86,9 @@ A dry-run performs package validation and target preflight but makes no files.
 It is optional; a deliberate normal install already authorizes the safe,
 transactional operation.
 
-Run this in the same **host or container terminal and target Git root**. It is
-read-only apart from automatically removed temporary download files:
+Run this in the same **host or container terminal and target project root**. It
+is read-only apart from automatically removed temporary download files. On
+Windows PowerShell, use `py -3` in place of `python3`:
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" --dry-run
@@ -71,17 +97,18 @@ python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://ra
 ## Lifecycle
 
 All lifecycle commands run in the **terminal environment that owns the target
-checkout, from that Git repository's root**. They download and validate the
-needed package revision automatically; no local clone of this distribution
-repository is needed.
+project, from that explicitly selected project root**. They download and
+validate the needed package revision automatically; no local clone, Git
+repository, or local Git executable is needed. On native Windows PowerShell,
+use `py -3` in place of `python3` in these commands.
 
 ### Update
 
 Update resolves the current `main` revision, replaces only clean
 framework-owned content, preserves project-owned files and the project portion
 of a composite `AGENTS.md`, removes explicitly allowlisted retired framework
-files only when unchanged, and verifies the result. It is a persistent
-repository change; version control or `remove` provides reversal.
+files only when unchanged, and verifies the result. It is a persistent project
+change; `remove` or version control provides reversal.
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
@@ -135,8 +162,8 @@ only after human review.
   are validated against absolute paths, traversal, symlinks, and non-directory
   parents.
 - Writes are atomic and ordinary Python-visible failures roll back all changes
-  in the operation. A machine crash or failing storage still requires version
-  control recovery.
+  in the operation. A machine crash or failing storage can still require backup
+  or version-control recovery.
 
 The installation manifest is ownership evidence, not a license to delete
 arbitrary paths. Removal authenticates its ownership set against the exact
@@ -189,8 +216,10 @@ python3 skills/agentic-workflow/scripts/verify_package.py --refresh-manifest
 ```
 
 Then run the complete read-only verification suite from the same location. It
-creates temporary Git repositories and archives under the system temporary
-directory and removes them automatically:
+creates ordinary non-Git project directories, one temporary Git repository,
+and local archives under the system temporary directory, then removes them
+automatically. Git is needed only for the contributor test that proves existing
+Git repositories remain supported; the installer itself does not invoke Git:
 
 ```bash
 python3 skills/agentic-workflow/scripts/verify_package.py --tests
@@ -203,12 +232,14 @@ static files cannot prove a running extension loaded them.
 
 ## Requirements and limitations
 
-Installation needs Python 3.9+, Git, HTTPS access to GitHub, and a target Git
-repository. Runtime use needs compatible agent tooling that discovers root
-`AGENTS.md` and project skills under `.agents/skills`; current GitHub Copilot
-documentation lists both conventions. Routing is instruction-driven rather than
-a deterministic policy engine, and customized managed blocks are deliberately
-not auto-merged.
+Installation is supported on macOS, Linux, and native Windows and needs Python
+3.9+, HTTPS access to GitHub, and an existing ordinary project directory. Git,
+a `.git` directory, and prior `git init` are not required. Git is recommended
+for additional recovery and change history. Runtime use needs compatible agent
+tooling that discovers root `AGENTS.md` and project skills under
+`.agents/skills`; current GitHub Copilot documentation lists both conventions.
+Routing is instruction-driven rather than a deterministic policy engine, and
+customized managed blocks are deliberately not auto-merged.
 
 The first-stage command retrieves mutable `main` over TLS before the bootstrap
 resolves an immutable commit and validates the package. Published releases can

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -10,7 +12,8 @@ import sys
 import tarfile
 import tempfile
 import unittest
-from typing import Optional
+from unittest import mock
+from typing import Mapping, Optional
 
 
 PACKAGE = Path(__file__).resolve().parent.parent
@@ -20,10 +23,34 @@ VERIFY = PACKAGE / "scripts" / "verify_package.py"
 REVISION = "1" * 40
 
 
-def run(*args: object, cwd: Optional[Path] = None) -> subprocess.CompletedProcess:
+def load_script(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"cannot load test module from {path}")
+    module = importlib.util.module_from_spec(spec)
+    previous = sys.dont_write_bytecode
+    try:
+        sys.dont_write_bytecode = True
+        spec.loader.exec_module(module)
+    finally:
+        sys.dont_write_bytecode = previous
+    return module
+
+
+ADOPTER = load_script("agentic_workflow_adopt", ADOPT)
+BOOTSTRAPPER = load_script("agentic_workflow_bootstrap", BOOTSTRAP)
+VERIFIER = load_script("agentic_workflow_verify", VERIFY)
+
+
+def run(
+    *args: object,
+    cwd: Optional[Path] = None,
+    env: Optional[Mapping[str, str]] = None,
+) -> subprocess.CompletedProcess:
     return subprocess.run(
         [str(arg) for arg in args],
         cwd=cwd,
+        env=env,
         capture_output=True,
         text=True,
     )
@@ -61,6 +88,88 @@ class LifecycleTests(unittest.TestCase):
         status = adopt(ADOPT, "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
         self.assertIn("Installation is clean", status.stdout)
+
+    def test_non_git_install_update_status_and_remove(self) -> None:
+        target = self.base / "ordinary-project"
+        target.mkdir()
+        self.assertFalse((target / ".git").exists())
+
+        installed = adopt(ADOPT, "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        status = adopt(ADOPT, "status", target)
+        self.assertEqual(status.returncode, 0, status.stderr)
+        updated = adopt(ADOPT, "update", target)
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        removed = adopt(ADOPT, "remove", target)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
+        self.assertTrue((target / "ai-workflow/project-profile.md").is_file())
+
+    def test_default_target_is_current_directory(self) -> None:
+        target = self.base / "current-project"
+        target.mkdir()
+        result = run(
+            sys.executable,
+            ADOPT,
+            "install",
+            "--source-revision",
+            REVISION,
+            cwd=target,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((target / "ai-workflow/install-manifest.json").is_file())
+
+    def test_explicit_target_is_used_from_another_directory(self) -> None:
+        working = self.base / "working"
+        target = self.base / "explicit-project"
+        working.mkdir()
+        target.mkdir()
+        result = run(
+            sys.executable,
+            ADOPT,
+            "install",
+            target,
+            "--source-revision",
+            REVISION,
+            cwd=working,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((target / "ai-workflow/install-manifest.json").is_file())
+        self.assertFalse((working / "ai-workflow").exists())
+
+    def test_install_does_not_need_git_executable(self) -> None:
+        target = self.base / "no-git-project"
+        target.mkdir()
+        environment = os.environ.copy()
+        environment["PATH"] = str(self.base / "no-executables")
+        result = run(
+            sys.executable,
+            ADOPT,
+            "install",
+            target,
+            "--source-revision",
+            REVISION,
+            env=environment,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((target / "ai-workflow/install-manifest.json").is_file())
+
+    def test_filesystem_root_is_rejected(self) -> None:
+        root = Path(Path.cwd().anchor)
+        result = adopt(ADOPT, "install", root)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("refusing to operate on a filesystem root", result.stderr)
+        with self.assertRaisesRegex(BOOTSTRAPPER.BootstrapError, "filesystem root"):
+            BOOTSTRAPPER.main(
+                [
+                    "install",
+                    str(root),
+                    "--archive-url",
+                    (self.base / "unused.tar.gz").as_uri(),
+                    "--ref",
+                    REVISION,
+                ]
+            )
 
     def test_dry_run_is_optional_and_nonmutating(self) -> None:
         target = git_repository(self.base / "target")
@@ -190,12 +299,15 @@ class LifecycleTests(unittest.TestCase):
         archive = self.base / "package.tar.gz"
         with tarfile.open(archive, "w:gz") as opened:
             opened.add(PACKAGE, arcname="source/skills/agentic-workflow")
-        target = git_repository(self.base / "target")
+        target = self.base / "target"
+        target.mkdir()
         loader = (
             "from urllib.request import urlopen; "
             f"exec(compile(urlopen({BOOTSTRAP.as_uri()!r}, timeout=30).read(), "
             "'agentic-workflow-bootstrap.py', 'exec'))"
         )
+        environment = os.environ.copy()
+        environment["PATH"] = str(self.base / "no-executables")
         result = run(
             sys.executable,
             "-c",
@@ -206,11 +318,123 @@ class LifecycleTests(unittest.TestCase):
             archive.as_uri(),
             "--ref",
             REVISION,
+            env=environment,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("installed and verified", result.stdout)
         installed = json.loads((target / "ai-workflow/install-manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(installed["source_revision"], REVISION)
+
+    def test_bootstrap_defaults_to_current_project_directory(self) -> None:
+        archive = self.base / "package.tar.gz"
+        with tarfile.open(archive, "w:gz") as opened:
+            opened.add(PACKAGE, arcname="source/skills/agentic-workflow")
+        target = self.base / "current-bootstrap-project"
+        target.mkdir()
+        loader = (
+            "from urllib.request import urlopen; "
+            f"exec(compile(urlopen({BOOTSTRAP.as_uri()!r}, timeout=30).read(), "
+            "'agentic-workflow-bootstrap.py', 'exec'))"
+        )
+        result = run(
+            sys.executable,
+            "-c",
+            loader,
+            "install",
+            "--archive-url",
+            archive.as_uri(),
+            "--ref",
+            REVISION,
+            cwd=target,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((target / "ai-workflow/install-manifest.json").is_file())
+
+    def test_windows_ordinary_modes_are_canonicalized(self) -> None:
+        source = self.base / "downloaded.md"
+        source.write_text("ordinary payload\n", encoding="utf-8")
+        with mock.patch.object(ADOPTER.stat, "S_IMODE", return_value=0o666):
+            mode = ADOPTER.reviewed_source_mode(
+                source, "simulated Windows source", posix_modes_meaningful=False
+            )
+        self.assertEqual(mode, 0o644)
+        with mock.patch.object(VERIFIER.stat, "S_IMODE", return_value=0o666):
+            mode = VERIFIER.reviewed_filesystem_mode(
+                source,
+                expected=0o644,
+                posix_modes_meaningful=False,
+            )
+        self.assertEqual(mode, 0o644)
+
+    def test_windows_mode_validation_is_bounded(self) -> None:
+        source = self.base / "downloaded.md"
+        source.write_text("ordinary payload\n", encoding="utf-8")
+        with mock.patch.object(ADOPTER.stat, "S_IMODE", return_value=0o600):
+            with self.assertRaisesRegex(ADOPTER.AdoptionError, "ordinary Windows file mode"):
+                ADOPTER.reviewed_source_mode(
+                    source, "simulated Windows source", posix_modes_meaningful=False
+                )
+
+    def test_posix_modes_remain_strict_and_preserve_executable_intent(self) -> None:
+        source = self.base / "source"
+        source.write_text("payload\n", encoding="utf-8")
+        with mock.patch.object(ADOPTER.stat, "S_IMODE", return_value=0o644):
+            self.assertEqual(
+                ADOPTER.reviewed_source_mode(source, "POSIX data", posix_modes_meaningful=True),
+                0o644,
+            )
+        with mock.patch.object(ADOPTER.stat, "S_IMODE", return_value=0o755):
+            self.assertEqual(
+                ADOPTER.reviewed_source_mode(
+                    source,
+                    "POSIX script",
+                    expected_mode=0o755,
+                    posix_modes_meaningful=True,
+                ),
+                0o755,
+            )
+        with mock.patch.object(ADOPTER.stat, "S_IMODE", return_value=0o755):
+            with self.assertRaisesRegex(ADOPTER.AdoptionError, "mode must be 0644"):
+                ADOPTER.reviewed_source_mode(
+                    source, "POSIX data", posix_modes_meaningful=True
+                )
+        with mock.patch.object(ADOPTER.stat, "S_IMODE", return_value=0o4755):
+            with self.assertRaisesRegex(ADOPTER.AdoptionError, "mode must be 0644"):
+                ADOPTER.reviewed_source_mode(source, "privileged POSIX source", posix_modes_meaningful=True)
+        with mock.patch.object(VERIFIER.stat, "S_IMODE", return_value=0o4755):
+            with self.assertRaisesRegex(VERIFIER.VerificationError, "mode must be 0644"):
+                VERIFIER.reviewed_filesystem_mode(
+                    source,
+                    expected=0o644,
+                    posix_modes_meaningful=True,
+                )
+
+    def test_archive_rejects_privileged_file_mode_before_extraction(self) -> None:
+        archive = io.BytesIO()
+        data = b"payload\n"
+        with tarfile.open(fileobj=archive, mode="w:gz") as opened:
+            member = tarfile.TarInfo("source/skills/agentic-workflow/payload/file.md")
+            member.mode = 0o4644
+            member.size = len(data)
+            opened.addfile(member, io.BytesIO(data))
+        (self.base / "extracted").mkdir()
+        with self.assertRaisesRegex(BOOTSTRAPPER.BootstrapError, "archive package file mode"):
+            BOOTSTRAPPER.extract_package(archive.getvalue(), self.base / "extracted")
+
+    def test_archive_accepts_git_mode_variant_and_canonicalizes_it(self) -> None:
+        archive = io.BytesIO()
+        data = b"payload\n"
+        with tarfile.open(fileobj=archive, mode="w:gz") as opened:
+            member = tarfile.TarInfo("source/skills/agentic-workflow/payload/file.md")
+            member.mode = 0o664
+            member.size = len(data)
+            opened.addfile(member, io.BytesIO(data))
+        destination = self.base / "git-archive"
+        destination.mkdir()
+        package = BOOTSTRAPPER.extract_package(archive.getvalue(), destination)
+        extracted = package / "payload/file.md"
+        self.assertEqual(extracted.read_bytes(), data)
+        self.assertEqual(ADOPTER.reviewed_source_mode(extracted, "extracted Git archive file"), 0o644)
 
 
 if __name__ == "__main__":

@@ -6,11 +6,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
+import stat
 import subprocess
 import sys
-from typing import Dict, Iterable, List, Mapping, Sequence
+from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
@@ -39,6 +41,8 @@ RETIRED = (
     "docs/integrations/hermes.md",
     "scripts/hermes_adapter.py",
 )
+EXECUTABLE_PACKAGE_PATHS = frozenset()
+WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
 
 
 class VerificationError(RuntimeError):
@@ -52,6 +56,27 @@ def require(condition: bool, message: str) -> None:
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def reviewed_filesystem_mode(
+    path: Path,
+    *,
+    expected: int,
+    posix_modes_meaningful: Optional[bool] = None,
+) -> int:
+    mode = stat.S_IMODE(path.stat().st_mode)
+    if posix_modes_meaningful is None:
+        posix_modes_meaningful = os.name != "nt"
+    if posix_modes_meaningful:
+        require(mode == expected, f"package entry mode must be {expected:04o}, found {mode:04o}: {path}")
+        return mode
+    allowed = WINDOWS_ORDINARY_MODES
+    require(
+        mode in allowed,
+        "package entry mode must be an ordinary Windows mode "
+        f"({', '.join(f'{item:04o}' for item in sorted(allowed))}), found {mode:04o}: {path}",
+    )
+    return expected
 
 
 def safe_relative(raw: str) -> PurePosixPath:
@@ -152,6 +177,19 @@ def check_structure() -> None:
         fields = parse_frontmatter(path)
         require(fields.get("name") == name, f"skill name does not match directory: {name}")
         require(bool(fields.get("description")), f"skill lacks description: {name}")
+
+
+def check_filesystem_entries() -> None:
+    for path in PACKAGE_ROOT.rglob("*"):
+        relative = path.relative_to(PACKAGE_ROOT).as_posix()
+        require(not path.is_symlink(), f"package must not contain symlinks: {relative}")
+        if path.is_dir():
+            reviewed_filesystem_mode(path, expected=0o755)
+        elif path.is_file():
+            expected = 0o755 if relative in EXECUTABLE_PACKAGE_PATHS else 0o644
+            reviewed_filesystem_mode(path, expected=expected)
+        else:
+            raise VerificationError(f"package contains a special filesystem entry: {relative}")
 
 
 def check_manifest() -> None:
@@ -266,6 +304,7 @@ def main(argv: Iterable[str] = ()) -> int:
         refresh_manifest()
     checks = (
         check_structure,
+        check_filesystem_entries,
         check_manifest,
         check_inert_payload,
         check_workflow_contract,

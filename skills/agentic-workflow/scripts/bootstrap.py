@@ -8,6 +8,7 @@ import io
 import json
 from pathlib import Path, PurePosixPath
 import re
+import stat
 import subprocess
 import sys
 import tarfile
@@ -23,6 +24,11 @@ PACKAGE_MARKER = ("skills", "agentic-workflow")
 MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
 MAX_MEMBERS = 500
+EXECUTABLE_PACKAGE_PATHS = frozenset()
+ARCHIVE_MODE_VARIANTS = {
+    0o644: {0o644, 0o664},
+    0o755: {0o755, 0o775},
+}
 
 
 class BootstrapError(RuntimeError):
@@ -89,9 +95,29 @@ def package_relative(name: str) -> Optional[PurePosixPath]:
     return None
 
 
+def ensure_directory(path: Path, package: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
+    current = path
+    while current != package.parent:
+        current.chmod(0o755)
+        current = current.parent
+
+
+def reviewed_archive_mode(member: tarfile.TarInfo, relative: PurePosixPath) -> int:
+    mode = stat.S_IMODE(member.mode)
+    expected = 0o755 if member.isdir() or relative.as_posix() in EXECUTABLE_PACKAGE_PATHS else 0o644
+    allowed = ARCHIVE_MODE_VARIANTS[expected]
+    if mode not in allowed:
+        kind = "directory" if member.isdir() else "file"
+        raise BootstrapError(
+            f"archive package {kind} mode must represent {expected:04o}, found {mode:04o}: {member.name}"
+        )
+    return expected
+
+
 def extract_package(archive: bytes, destination: Path) -> Path:
     package = destination / "agentic-workflow"
-    package.mkdir()
+    ensure_directory(package, package)
     seen = set()
     total = 0
     try:
@@ -110,12 +136,13 @@ def extract_package(archive: bytes, destination: Path) -> Path:
                 raise BootstrapError(f"archive contains an unsafe package path: {member.name}")
             if member.issym() or member.islnk() or not (member.isdir() or member.isfile()):
                 raise BootstrapError(f"archive contains an unsupported package entry: {member.name}")
+            mode = reviewed_archive_mode(member, relative)
             target = package.joinpath(*relative.parts)
             if target in seen:
                 raise BootstrapError(f"archive contains duplicate package path: {relative}")
             seen.add(target)
             if member.isdir():
-                target.mkdir(parents=True, exist_ok=True)
+                ensure_directory(target, package)
                 continue
             if member.size > MAX_MEMBER_BYTES or total + member.size > MAX_ARCHIVE_BYTES:
                 raise BootstrapError(f"archive package content is too large: {relative}")
@@ -126,9 +153,9 @@ def extract_package(archive: bytes, destination: Path) -> Path:
             if len(data) != member.size:
                 raise BootstrapError(f"archive member size changed while reading: {relative}")
             total += len(data)
-            target.parent.mkdir(parents=True, exist_ok=True)
+            ensure_directory(target.parent, package)
             target.write_bytes(data)
-            target.chmod(0o755 if member.mode & 0o111 else 0o644)
+            target.chmod(mode)
     if not seen:
         raise BootstrapError("archive does not contain skills/agentic-workflow")
     return package
@@ -159,6 +186,10 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     target = args.target.expanduser().resolve()
+    if not target.is_dir():
+        raise BootstrapError(f"target project directory does not exist: {target}")
+    if target == Path(target.anchor):
+        raise BootstrapError("refusing to operate on a filesystem root")
     revision, archive_url = select_source(args.action, target, args.ref, args.archive_url)
     archive = request_bytes(archive_url)
     with tempfile.TemporaryDirectory(prefix="agentic-workflow-") as temporary:

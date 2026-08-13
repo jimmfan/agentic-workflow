@@ -1,13 +1,13 @@
 ---
 name: agentic-workflow
-description: Install, update, inspect, or safely remove the repository-native Agentic Workflow payload. Use when adopting the framework into a Git repository or maintaining an existing installation.
+description: Install, update, inspect, or safely remove the project-native Agentic Workflow payload. Use when adopting the framework into a project directory or maintaining an existing installation.
 license: MIT
 ---
 
 # Agentic Workflow bootstrap
 
 This skill is the distribution boundary. Its `payload/` directory is the
-repository-native workflow installed into a target, while `scripts/adopt.py`
+project-native workflow installed into a target, while `scripts/adopt.py`
 owns safe filesystem changes and `scripts/verify_package.py` validates the
 package before any adoption operation.
 
@@ -19,10 +19,10 @@ preview, apply, or status command for normal installation.
 Lifecycle commands, run from this skill directory or with absolute paths, are:
 
 ```bash
-python3 scripts/adopt.py install /path/to/repository
-python3 scripts/adopt.py update /path/to/repository
-python3 scripts/adopt.py status /path/to/repository
-python3 scripts/adopt.py remove /path/to/repository
+python3 scripts/adopt.py install /path/to/project
+python3 scripts/adopt.py update /path/to/project
+python3 scripts/adopt.py status /path/to/project
+python3 scripts/adopt.py remove /path/to/project
 ```
 
 Before adoption, validate the distributable package:

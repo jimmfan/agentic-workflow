@@ -4,7 +4,7 @@
 files, skill metadata, inert payload placement, explicit source-to-target
 mappings, version equality, exact checksums, forbidden runtime components, and
 package-local links. With `--tests`, it also runs lifecycle integration tests in
-temporary Git repositories.
+ordinary temporary project directories and a temporary Git repository.
 
 The integration suite covers:
 
@@ -17,7 +17,10 @@ The integration suite covers:
 - safe removal;
 - manifest/version/checksum drift;
 - path-independent package copies; and
-- the downloadable bootstrap path using a local archive fixture.
+- the downloadable bootstrap path using a local archive fixture;
+- install, update, status, and remove without Git metadata or a Git executable;
+  and
+- strict POSIX modes plus ordinary native Windows mode normalization.
 
 Static checks cannot prove that a running editor discovered instructions. For
 GitHub Copilot, open the installed repository as the workspace root and inspect

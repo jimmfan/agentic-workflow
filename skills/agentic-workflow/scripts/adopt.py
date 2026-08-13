@@ -11,7 +11,6 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 import stat
-import subprocess
 import sys
 import tempfile
 from typing import Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Tuple
@@ -35,6 +34,8 @@ DEFAULT_PROJECT_OWNED = (
     "ai-workflow/state/archive/",
 )
 REVIEWED_SOURCE_MODES = {0o644, 0o755}
+WINDOWS_ORDINARY_SOURCE_MODES = {0o444, 0o555, 0o666, 0o777}
+EXECUTABLE_PAYLOAD_PATHS = frozenset()
 DEFAULT_CREATED_MODE = 0o644
 OwnedMapping = Tuple[PurePosixPath, PurePosixPath]
 
@@ -53,10 +54,10 @@ def sha256_file(path: Path) -> str:
 
 def safe_relative(raw: str) -> PurePosixPath:
     if not isinstance(raw, str):
-        raise AdoptionError(f"repository-relative path must be a string: {raw!r}")
+        raise AdoptionError(f"project-relative path must be a string: {raw!r}")
     path = PurePosixPath(raw)
     if not raw or path.is_absolute() or ".." in path.parts or "." in path.parts or "\\" in raw:
-        raise AdoptionError(f"unsafe repository-relative path in manifest: {raw!r}")
+        raise AdoptionError(f"unsafe project-relative path in manifest: {raw!r}")
     return path
 
 
@@ -69,7 +70,7 @@ def target_path(root: Path, relative: PurePosixPath) -> Path:
     try:
         current.parent.resolve().relative_to(root)
     except ValueError as exc:
-        raise AdoptionError(f"target escapes repository root: {relative}") from exc
+        raise AdoptionError(f"target escapes project root: {relative}") from exc
     return current
 
 
@@ -78,13 +79,35 @@ def require_plain_file(path: Path, label: str) -> None:
         raise AdoptionError(f"{label} must be a regular non-symlink file: {path}")
 
 
-def reviewed_source_mode(path: Path, label: str) -> int:
+def reviewed_source_mode(
+    path: Path,
+    label: str,
+    *,
+    expected_mode: int = DEFAULT_CREATED_MODE,
+    posix_modes_meaningful: Optional[bool] = None,
+) -> int:
     require_plain_file(path, label)
+    if expected_mode not in REVIEWED_SOURCE_MODES:
+        raise AdoptionError(f"internal expected source mode is invalid: {expected_mode!r}")
     mode = stat.S_IMODE(path.stat().st_mode)
-    if mode not in REVIEWED_SOURCE_MODES:
-        allowed = ", ".join(f"{item:04o}" for item in sorted(REVIEWED_SOURCE_MODES))
-        raise AdoptionError(f"{label} mode must be one of {allowed}, found {mode:04o}: {path}")
-    return mode
+    if posix_modes_meaningful is None:
+        posix_modes_meaningful = os.name != "nt"
+    if posix_modes_meaningful:
+        if mode != expected_mode:
+            raise AdoptionError(
+                f"{label} mode must be {expected_mode:04o}, found {mode:04o}: {path}"
+            )
+        return mode
+    if mode not in WINDOWS_ORDINARY_SOURCE_MODES:
+        allowed = ", ".join(f"{item:04o}" for item in sorted(WINDOWS_ORDINARY_SOURCE_MODES))
+        raise AdoptionError(
+            f"{label} mode must be an ordinary Windows file mode ({allowed}), found {mode:04o}: {path}"
+        )
+    return expected_mode
+
+
+def expected_source_mode(relative: PurePosixPath) -> int:
+    return 0o755 if relative.as_posix() in EXECUTABLE_PAYLOAD_PATHS else DEFAULT_CREATED_MODE
 
 
 def load_json(path: Path, label: str) -> MutableMapping[str, object]:
@@ -177,12 +200,20 @@ def load_source_manifest() -> Tuple[
         raise AdoptionError("source manifest checksums do not exactly cover owned files and seed sources")
     for source_relative, target_relative in owned:
         path = SOURCE_ROOT.joinpath(*source_relative.parts)
-        reviewed_source_mode(path, f"framework source {source_relative} for {target_relative}")
+        reviewed_source_mode(
+            path,
+            f"framework source {source_relative} for {target_relative}",
+            expected_mode=expected_source_mode(source_relative),
+        )
         if checksums_raw.get(source_relative.as_posix()) != sha256_file(path):
             raise AdoptionError(f"payload checksum mismatch for {source_relative}")
     for source_relative, _ in seeds:
         path = SOURCE_ROOT.joinpath(*source_relative.parts)
-        reviewed_source_mode(path, f"seed source {source_relative}")
+        reviewed_source_mode(
+            path,
+            f"seed source {source_relative}",
+            expected_mode=expected_source_mode(source_relative),
+        )
         if checksums_raw.get(source_relative.as_posix()) != sha256_file(path):
             raise AdoptionError(f"payload checksum mismatch for seed {source_relative}")
     return version, owned, seeds, retired
@@ -489,13 +520,17 @@ def source_target_modes(
 ) -> Dict[str, int]:
     modes = {
         target_relative.as_posix(): reviewed_source_mode(
-            SOURCE_ROOT.joinpath(*source_relative.parts), f"framework source {source_relative}"
+            SOURCE_ROOT.joinpath(*source_relative.parts),
+            f"framework source {source_relative}",
+            expected_mode=expected_source_mode(source_relative),
         )
         for source_relative, target_relative in owned
     }
     for source_relative, target_relative in seeds:
         modes[target_relative.as_posix()] = reviewed_source_mode(
-            SOURCE_ROOT.joinpath(*source_relative.parts), f"seed source {source_relative}"
+            SOURCE_ROOT.joinpath(*source_relative.parts),
+            f"seed source {source_relative}",
+            expected_mode=expected_source_mode(source_relative),
         )
     modes[INSTALL_MANIFEST_PATH.as_posix()] = DEFAULT_CREATED_MODE
     return modes
@@ -706,25 +741,16 @@ def print_plan(action: str, root: Path, actions: Sequence[str]) -> None:
     print("No files changed. Re-run without --dry-run to apply this operation.")
 
 
-def require_git_root(root: Path) -> None:
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(root), "rev-parse", "--show-toplevel"],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-    except (FileNotFoundError, subprocess.SubprocessError) as exc:
-        raise AdoptionError(f"target must be the root of a Git repository: {root}") from exc
-    if Path(result.stdout.strip()).resolve() != root:
-        raise AdoptionError(f"target must be the Git repository root, not a subdirectory: {root}")
-
-
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("install", "update", "status", "remove"))
-    parser.add_argument("target", nargs="?", default=Path.cwd(), type=Path, help="consuming repository root (default: current directory)")
+    parser.add_argument(
+        "target",
+        nargs="?",
+        default=Path.cwd(),
+        type=Path,
+        help="project root (default: current directory)",
+    )
     parser.add_argument("--dry-run", action="store_true", help="show a safe plan without changing files")
     parser.add_argument(
         "--source-revision",
@@ -740,10 +766,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         raise AdoptionError("--dry-run is not valid for status")
     root = args.target.expanduser().resolve()
     if not root.is_dir():
-        raise AdoptionError(f"target repository directory does not exist: {root}")
+        raise AdoptionError(f"target project directory does not exist: {root}")
     if root == Path(root.anchor):
         raise AdoptionError("refusing to operate on a filesystem root")
-    require_git_root(root)
     if args.action == "install":
         command_install(root, args.dry_run, args.source_revision)
     elif args.action == "update":
