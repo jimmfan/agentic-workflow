@@ -16,20 +16,32 @@ progressively from project-scoped `.agents/skills`.
 
 ## Runtime path
 
-```text
-request
-  -> compact AGENTS.md router
-      -> explicitly named installed skill
-      -> direct handling for clear, bounded, low-risk work
-      -> teach for explicit sustained learning in a dedicated workspace
-      -> wayfinder for huge, foggy, multi-session planning
-      -> research for primary-source investigation with a durable report
-      -> local discovery for a bounded consequential choice
-      -> local debugging for an unexplained failure and diagnosis boundary
-      -> to-spec -> to-tickets (only if useful) -> local implementation adapter
-             -> upstream implement -> tdd as appropriate -> code-review
-             -> local acceptance/integration verification
-      -> direct code-review only when separately requested or useful
+```mermaid
+flowchart TD
+    request[User request] --> router{Compact AGENTS.md router}
+
+    router -->|Explicitly named| named[Installed skill]
+    router -->|Clear, bounded, low-risk| direct[Direct handling]
+    router -->|Sustained learning| teach[Upstream teach]
+    router -->|Huge, foggy, multi-session| wayfinder[Upstream wayfinder]
+    router -->|Primary-source investigation| research[Upstream research]
+    router -->|Bounded consequential choice| discovery[Local discovery]
+    router -->|Unexplained failure| debugging[Local debugging]
+    router -->|Settled delivery| specification{Durable specification useful?}
+    router -->|Standalone review requested| standaloneReview[Upstream code-review]
+
+    specification -->|Yes| toSpec[Upstream to-spec]
+    specification -->|No| tickets{Dependency-ordered tickets useful?}
+    toSpec --> tickets
+    tickets -->|Yes| toTickets[Upstream to-tickets]
+    tickets -->|No| adapter[Local implementation adapter]
+    toTickets --> adapter
+
+    adapter --> implement[Upstream implement]
+    implement -->|When appropriate| tdd[Upstream tdd]
+    implement -->|Otherwise| closingReview[Closing code-review]
+    tdd --> closingReview
+    closingReview --> verification[Local acceptance and integration verification]
 ```
 
 The root router contains capability names and composition constraints, not the
