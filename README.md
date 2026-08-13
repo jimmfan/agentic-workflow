@@ -35,6 +35,29 @@ project directory:
 py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
 ```
 
+### Already installed?
+
+Do not delete `ai-workflow/`, `.agents/`, or
+`ai-workflow/install-manifest.json`. The installation spans multiple locations,
+and the manifest is what lets lifecycle operations distinguish framework-owned
+files from project-owned files.
+
+If installation reports `an installation already exists but is different`, run
+the same bootstrap command with `update` instead. In native Windows PowerShell,
+press **Up Arrow** to recall the command that produced the error, append
+` update`, and press Enter. If the recalled command already ends in `install`,
+replace `install` with `update`. This avoids copying the long command again.
+
+Update persistently replaces only checksum-clean framework content, preserves
+project-owned files, and verifies the result. Success ends with
+`✓ Agentic workflow updated to <version> and verified.` To check afterward,
+recall the command again and replace `update` with `status`; a clean installation
+ends with `✓ Installation is clean.`
+
+There is intentionally no force-overwrite flag. If update names a locally
+changed framework file, back up and reconcile that exact file rather than
+deleting an entire shared directory.
+
 To install into a different existing directory, append `install` and the target
 path. For example, from a macOS or Linux host Terminal:
 
