@@ -1,23 +1,19 @@
 {
   "checksums": {
-    "ai-workflow/README.md": "4b2b44ea81d16b4d629ce1cc2b3632414067b69742b9c90aa889412be4c2a6b0",
+    "ai-workflow/README.md": "b298d84a132a5d016267bf01d6ee6dbc07e38fab0af8c1893e3be4a8f506da85",
     "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
-    "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
-    "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
+    "ai-workflow/providers.json": "88f6ac49e2d51ede4ce95e51891edae9e9c9e1f92ffbe914e8b5c96d0b4e1493",
+    "ai-workflow/state/README.md": "8c8836e401527b366fae994dd978eeef11a83c6793307df4e6b0ededdc314c1b",
+    "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
     "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-    "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
     "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
-    "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
-    "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
-    "root/AGENTS.md.template": "3148bfd3339a64e9d7c9389d77d7f65cec6d1fe168f2807eee3c234e0af7bbf2",
+    "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+    "root/AGENTS.md.template": "1f9569ce9faad5073d25d263f155684954b4553935393c708819069b2ae236fc",
     "root/CLAUDE.md.template": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-    "skills/workflow-debugging/SKILL.md": "2f1da11ed00687ad5ffb044ea8cb1ac22fe16be0ad5286ae5c9df9913badc1b4",
-    "skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
-    "skills/workflow-discovery/SKILL.md": "00824be828587ebe66956db3aa48611d0e21703ce39346b77cdbc90129a59f7b",
-    "skills/workflow-implementation/SKILL.md": "1a4bc65cd916a1bc5e5e0fc993d3e8b79be34f7c6ba7a7504c5c90e0961a6e69",
-    "skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
-    "skills/workflow-teach/SKILL.md": "1fad0eccad3ea737fc03ffa3eaef54e313497e2ab7ef1f45042aed31f099526b",
-    "skills/workflow-verification/SKILL.md": "7805d786f5221bc8ad7892271b84620eae8acba6a4be2510d5f10953e38c8f92"
+    "skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
+    "skills/workflow-discovery/SKILL.md": "17c37402dc0a1f1f43b709fb3a427abf0ca3f20ecadb6a22dc3bd7af52bc10d3",
+    "skills/workflow-implementation/SKILL.md": "21486186eb0359726fb7643054c4c6131d6520a9fce9ea093a5ccfdd093f9d68",
+    "skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
   },
   "framework_owned": [
     {
@@ -27,6 +23,10 @@
     {
       "source": "ai-workflow/contracts/project-profile.md",
       "target": "ai-workflow/contracts/project-profile.md"
+    },
+    {
+      "source": "ai-workflow/providers.json",
+      "target": "ai-workflow/providers.json"
     },
     {
       "source": "ai-workflow/state/README.md",
@@ -41,16 +41,8 @@
       "target": "ai-workflow/templates/decision-record.md"
     },
     {
-      "source": "ai-workflow/templates/learning-record.md",
-      "target": "ai-workflow/templates/learning-record.md"
-    },
-    {
       "source": "ai-workflow/templates/project-profile.md",
       "target": "ai-workflow/templates/project-profile.md"
-    },
-    {
-      "source": "ai-workflow/templates/ticket-record.md",
-      "target": "ai-workflow/templates/ticket-record.md"
     },
     {
       "source": "ai-workflow/templates/work-item.md",
@@ -69,10 +61,6 @@
       "target": ".agents/skills/workflow-debugging/SKILL.md"
     },
     {
-      "source": "skills/workflow-decomposition/SKILL.md",
-      "target": ".agents/skills/workflow-decomposition/SKILL.md"
-    },
-    {
       "source": "skills/workflow-discovery/SKILL.md",
       "target": ".agents/skills/workflow-discovery/SKILL.md"
     },
@@ -81,19 +69,11 @@
       "target": ".agents/skills/workflow-implementation/SKILL.md"
     },
     {
-      "source": "skills/workflow-review/SKILL.md",
-      "target": ".agents/skills/workflow-review/SKILL.md"
-    },
-    {
-      "source": "skills/workflow-teach/SKILL.md",
-      "target": ".agents/skills/workflow-teach/SKILL.md"
-    },
-    {
       "source": "skills/workflow-verification/SKILL.md",
       "target": ".agents/skills/workflow-verification/SKILL.md"
     }
   ],
-  "framework_version": "0.4.2",
+  "framework_version": "0.5.0",
   "project_seeds": [
     {
       "source": "ai-workflow/templates/project-profile.md",
@@ -105,7 +85,12 @@
     }
   ],
   "retired_framework_owned": [
+    ".agents/skills/workflow-decomposition/SKILL.md",
+    ".agents/skills/workflow-review/SKILL.md",
+    ".agents/skills/workflow-teach/SKILL.md",
     ".agents/skills/hermes-delegation/SKILL.md",
+    "ai-workflow/templates/learning-record.md",
+    "ai-workflow/templates/ticket-record.md",
     "adapters/hermes/profile-config.yaml",
     "adapters/hermes/request.schema.json",
     "adapters/hermes/result.schema.json",

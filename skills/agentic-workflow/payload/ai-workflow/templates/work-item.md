@@ -6,11 +6,8 @@
 - Last reviewed: YYYY-MM-DD
 - Review after: none
 - Related decisions: none
-- Specification: none
-- Decomposition mode: none | local-tickets | native-tickets
-- Ticket set: none
-- Current ticket: none
-- Current frontier: none
+- Provider artifact: none | native map/spec/ticket identifier or link
+- Current provider target: none
 
 ## Intended outcome
 
@@ -24,8 +21,8 @@ State expected behavior and observable acceptance criteria.
 ## Plan or investigation
 
 List the implementation sequence, or evidence, layers, hypotheses, and tests.
-For decomposed implementation, link ticket identifiers and the current frontier;
-do not copy ticket bodies into this record.
+For provider-driven implementation, link the canonical native artifact and exact
+return target; do not copy map, specification, ticket, or review bodies here.
 
 ## Risks and reversal
 

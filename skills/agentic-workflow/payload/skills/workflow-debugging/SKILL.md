@@ -70,9 +70,11 @@ test seam exists, use the strongest honest validation path and record the gap.
 Apply the smallest causal fix, remove all tagged instrumentation and throwaway
 artifacts, then invoke Verification on the original symptom or proxy plus
 proportionate regressions. A vanished symptom without causal evidence is a
-mitigation, not a proven root cause. Meaningful fixes receive proportional Review.
+mitigation, not a proven root cause. Use upstream `code-review` only when its
+fixed-point Standards/Spec contract adds distinct value; do not duplicate a
+review already performed by an upstream `implement` run.
 
 Debugging is complete when cause or bounded uncertainty is supported by the
 recorded signal, temporary diagnostics are cleaned up, and the next action is
 explicit. An authorized fix additionally requires current Verification evidence
-and any required Review disposition.
+and disposition of any separately justified review findings.

@@ -163,11 +163,11 @@ def extract_package(archive: bytes, destination: Path) -> Path:
 
 def run_package(package: Path, action: str, target: Path, dry_run: bool, revision: str) -> int:
     verifier = package / "scripts" / "verify_package.py"
-    adopter = package / "scripts" / "adopt.py"
+    lifecycle = package / "scripts" / "lifecycle.py"
     verification = subprocess.run([sys.executable, str(verifier)], text=True)
     if verification.returncode != 0:
         raise BootstrapError("downloaded package failed integrity verification")
-    command = [sys.executable, str(adopter), action, str(target), "--source-revision", revision]
+    command = [sys.executable, str(lifecycle), action, str(target), "--source-revision", revision]
     if dry_run:
         command.append("--dry-run")
     return subprocess.run(command).returncode

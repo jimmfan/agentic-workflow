@@ -28,7 +28,8 @@ MANAGED_BEGIN = b"<!-- ai-workflow:managed-begin -->\n"
 MANAGED_END = b"<!-- ai-workflow:managed-end -->\n"
 PROJECT_BEGIN = b"\n<!-- ai-workflow:project-instructions -->\n"
 ENTRY_FIELDS = {"sha256", "source_sha256", "origin"}
-ORIGINS = {"created", "preexisting-identical", "composite"}
+ORIGINS = {"created", "preexisting-identical", "composite", "composite-created"}
+COMPOSITE_ORIGINS = {"composite", "composite-created"}
 DEFAULT_PROJECT_OWNED = (
     "ai-workflow/project-profile.md",
     "ai-workflow/state/active.md",
@@ -246,7 +247,7 @@ def load_installed(root: Path) -> MutableMapping[str, object]:
                 raise AdoptionError(f"invalid {field} for {path_key}")
         if details["origin"] in {"created", "preexisting-identical"} and details["sha256"] != details["source_sha256"]:
             raise AdoptionError(f"non-composite checksums disagree for {path_key}")
-        if details["origin"] == "composite" and path_key not in COMPOSITE_POLICY_PATHS:
+        if details["origin"] in COMPOSITE_ORIGINS and path_key not in COMPOSITE_POLICY_PATHS:
             legacy_allowed = path_key == LEGACY_POLICY_PATH and parse_version(version) < (0, 2, 0)
             if not legacy_allowed:
                 allowed = ", ".join(str(path) for path in sorted(COMPOSITE_POLICY_PATHS))
@@ -329,6 +330,13 @@ def plan_new_owned(
     destination = target_path(root, relative)
     current = existing_regular(destination, f"existing target {relative}")
     if current is None:
+        if relative == POLICY_PATH:
+            combined = compose_policy(source_data, b"")
+            return (
+                f"create framework policy with editable project section in {relative}",
+                combined,
+                entry(combined, source_data, "composite-created"),
+            )
         return f"create framework file {relative}", source_data, entry(source_data, source_data, "created")
     if current == source_data:
         return f"adopt identical framework file {relative} but preserve it on removal", None, entry(current, source_data, "preexisting-identical")
@@ -396,16 +404,32 @@ def plan_existing_owned(
     if current is None:
         if origin == "preexisting-identical":
             raise AdoptionError(f"preexisting framework file was removed; refusing to recreate it as framework-owned: {relative}")
+        if origin in COMPOSITE_ORIGINS or (relative == POLICY_PATH and origin == "created"):
+            restored = compose_policy(source_data, b"")
+            return (
+                f"restore missing composite policy {relative}",
+                restored,
+                entry(restored, source_data, "composite-created"),
+            )
         return f"restore missing framework file {relative}", source_data, entry(source_data, source_data, "created")
-    if origin == "composite":
+    if origin in COMPOSITE_ORIGINS:
         managed, project = parse_composite_policy(current)
         if sha256_bytes(managed) != old["source_sha256"]:
             raise AdoptionError(f"managed policy block was locally changed: {relative}")
         updated = compose_policy(source_data, project)
         if updated == current:
-            return f"keep current composite policy {relative}", None, entry(current, source_data, "composite")
-        return f"update managed policy block and preserve project instructions in {relative}", updated, entry(updated, source_data, "composite")
+            return f"keep current composite policy {relative}", None, entry(current, source_data, origin)
+        return f"update managed policy block and preserve project instructions in {relative}", updated, entry(updated, source_data, origin)
     current_digest = sha256_bytes(current)
+    if relative == POLICY_PATH and origin == "created":
+        if current_digest != old["sha256"]:
+            raise AdoptionError(f"locally changed framework file: {relative}")
+        migrated = compose_policy(source_data, b"")
+        return (
+            f"migrate framework-created policy to an editable composite in {relative}",
+            migrated,
+            entry(migrated, source_data, "composite-created"),
+        )
     if current == source_data:
         return f"keep current framework file {relative}", None, entry(current, source_data, origin)
     if current_digest != old["sha256"]:
@@ -660,7 +684,7 @@ def command_status(root: Path, verbose: bool = True) -> bool:
         current = existing_regular(path, f"installed framework target {key}")
         if current is None:
             state = "missing"
-        elif details["origin"] == "composite":
+        elif details["origin"] in COMPOSITE_ORIGINS:
             try:
                 managed, _ = parse_composite_policy(current)
             except AdoptionError:
@@ -711,15 +735,19 @@ def command_remove(root: Path, dry_run: bool) -> None:
             actions.append(f"already absent {relative}")
         elif details["origin"] == "preexisting-identical":
             actions.append(f"preserve file that predated installation {relative}")
-        elif details["origin"] == "composite":
+        elif details["origin"] in COMPOSITE_ORIGINS:
             try:
                 managed, project = parse_composite_policy(current)
             except AdoptionError:
                 actions.append(f"preserve locally changed composite policy {relative}")
             else:
                 if sha256_bytes(managed) == details["source_sha256"]:
-                    actions.append(f"remove managed block and restore project instructions in {relative}")
-                    writes.append((key, project))
+                    if details["origin"] == "composite-created" and not project:
+                        actions.append(f"remove empty framework-created policy {relative}")
+                        removals.append(key)
+                    else:
+                        actions.append(f"remove managed block and restore project instructions in {relative}")
+                        writes.append((key, project))
                 else:
                     actions.append(f"preserve locally changed composite policy {relative}")
         elif sha256_bytes(current) == details["sha256"]:

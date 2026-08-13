@@ -1,73 +1,52 @@
 ---
 name: workflow-discovery
-description: Map consequential project uncertainty and resolve decisions before implementation. Use when viable alternatives or hidden assumptions would materially change architecture, security, cost, dependencies, or externally visible behavior, including resuming a decision interrupted for teaching.
+description: Resolve one bounded consequential project decision before implementation. Use when viable alternatives materially affect architecture, security, cost, dependencies, or visible behavior; use upstream Wayfinder instead for huge multi-session fog.
 ---
 
-# Discovery workflow
+# Bounded decision discovery
 
-Map uncertainty only as far as needed to make the pending work safe and clear.
-Discovery owns decisions, not substantial product implementation.
+Discovery owns a decision small enough to settle without a Wayfinder map. It
+does not own huge-effort planning, teaching methodology, or implementation.
 
 ## Start or resume
 
-1. Read `ai-workflow/project-profile.md` if present.
-2. Validate or create the decision record under
-   `ai-workflow/state/README.md`. Resume an active decision only at its exact
-   `Resume target`; preserve and report invalid, stale, or conflicting state.
+1. Read the project profile only for relevant facts and commands.
+2. Validate or create a `DEC-NNNN` record under the state contract. Resume only
+   at its exact pending question; preserve and report invalid or conflicting
+   state.
+3. If the effort is too foggy or large for one session, hand off to the pinned
+   upstream `wayfinder` provider. Its map remains canonical.
 
-## Resolve the gap
+## Resolve the decision
 
-1. State the decision question and why it blocks or materially changes the work.
-2. Inspect only the relevant repository paths and current evidence needed to
-   discover project facts; reuse verified profile facts and accepted decisions.
-3. Separate verified facts, constraints, assumptions, preferences, unknowns,
-   and out-of-scope matters.
-4. Identify dependencies and research questions. Use primary sources for facts
-   that can change or materially affect risk.
-   Use the host's normal research tools under its existing authorization and
-   verification controls. Delegated findings remain evidence to verify, not a
-   decision, and repository work stays with the parent or a host-native subagent.
-5. Compare only viable alternatives. Explain benefits, costs, risks,
-   reversibility, and what evidence would change the choice.
-6. Expose hidden assumptions. Do not ask the user questions that repository
-   evidence can answer safely.
-7. Mark a consequential decision accepted only when the user accepts it or an
-   explicit project policy delegates that authority. Otherwise, when autonomous
-   progress is authorized, record only a provisional reversible choice with a
-   review trigger and surface it in the final review.
-8. Record rationale, consequences, and follow-up work without duplicating long
-   research notes.
+1. State the precise question and why it blocks or materially changes the work.
+2. Separate verified facts, constraints, assumptions, preferences, unknowns,
+   and out-of-scope matters. Inspect repository evidence before asking the user
+   for facts the workspace can answer.
+3. Use primary sources for consequential or time-sensitive external facts. Use
+   upstream `research` when a cited durable research artifact and isolated
+   background work add value; otherwise keep the lookup proportional.
+4. Compare only viable alternatives by benefits, costs, risks, reversibility,
+   and evidence that would change the choice.
+5. Mark a consequential decision accepted only when the user accepts it or a
+   named project policy delegates that authority. Autonomous progress may record
+   only a reversible provisional choice with a review trigger.
 
-Do not reopen an accepted decision unless new evidence conflicts with its
-assumptions or the user requests reconsideration. Mark the old record
-`superseded` and link the replacement rather than rewriting history.
+If the user explicitly wants sustained learning before deciding, preserve this
+decision's unanswered question and exact return target, then invoke upstream
+`teach` in a dedicated learning workspace. A simple conceptual question should
+receive a direct explanation without starting a course workspace. Restore the
+Discovery pointer before resuming the decision; never let teaching decide it.
 
-## Optional upstream Wayfinder
+## Provider identity boundary
 
-Use an installed upstream `/wayfinder` only when the user explicitly invokes it
-for its foggy multi-session use case. Its native map remains canonical; never
-mirror it into framework state, and apply the normal authorization boundary to
-any repository or external-tracker mutation. If it is unavailable, say so and
-offer this local workflow.
+When Discovery hands off to Wayfinder, preserve its issue IDs, URLs, linked
+titles, and `wayfinder:*` labels unchanged. Do not allocate `DEC`, `TKT`, `UNK`,
+or another framework alias for Wayfinder-owned state. A framework return pointer
+stores the native reference and exact return target only; Jira and GitHub issue
+identifiers remain external tracker identities.
 
-## Hand off to Teach
-
-When the user explicitly says they cannot decide safely because they do not
-understand a concept:
-
-1. Keep the decision record active with the unanswered question.
-2. Set `ai-workflow/state/active.md` to `active workflow: teach`,
-   `interrupted workflow: discovery`, and a precise resume target such as
-   `DEC-0003 / compare identity options`.
-3. Invoke `workflow-teach`. Do not choose for the user during teaching.
-4. When the user demonstrates sufficient understanding or says they are ready,
-   record the outcome, restore Discovery as active, and resume the exact pending
-   question. UI handoff buttons may assist but are never the durable pointer.
-
-## Finish
-
-Summarize the decision, status, rationale, consequences, rejected alternatives,
-and remaining uncertainty. Hand resolved scope and explicit acceptance criteria
-to Implementation, which owns the canonical specification transition when one
-is justified. Apply archival and optional IDP rules from
-`ai-workflow/state/README.md`.
+Finish with the decision status, rationale, consequences, rejected alternatives,
+remaining uncertainty, and the appropriate provider or direct implementation
+handoff. Do not reopen an accepted decision without conflicting new evidence or
+an explicit request; supersede it visibly instead of rewriting history.

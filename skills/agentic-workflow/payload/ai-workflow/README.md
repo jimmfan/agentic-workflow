@@ -1,51 +1,92 @@
-# Installed AI engineering workflow
+# Installed AI workflow orchestration
 
-This directory holds project-specific context and durable state for the
-repository's AI engineering workflow. Shared always-on policy is the compact
-root `AGENTS.md`, imported for Claude Code by root `CLAUDE.md`; detailed
-workflows load from `.agents/skills/` only when relevant or when explicitly
-invoked with
-`/workflow-discovery`, `/workflow-teach`, `/workflow-decomposition`,
-`/workflow-implementation`, `/workflow-debugging`, `/workflow-verification`, or
-`/workflow-review`.
+ai-workflow is the routing and integration layer. Mature planning, learning,
+research, specification, ticketing, implementation, TDD, and Code Review
+methods come from curated upstream skills installed under `.agents/skills/`.
+Their tested source, version, revision, subtree identities, complete file lists,
+and capability mapping are declared in `providers.json`.
+
+The root `AGENTS.md` is the small always-on router. Detailed skill bodies load
+only when selected. Framework-owned local skills remain for bounded Discovery,
+diagnosis with authorization controls, implementation integration, and
+acceptance/integration Verification:
+
+```text
+request -> router
+        -> direct
+        -> upstream wayfinder | teach | research
+        -> local discovery | debugging
+        -> upstream to-spec -> to-tickets -> implement
+        -> local verification
+```
+
+`implement` already composes `tdd` and `code-review`; the router does not invoke
+them again mechanically. A direct `code-review` remains available when the user
+requests its fixed-point Standards/Spec contract outside an implement run.
+
+## Provider lifecycle
+
+The public ai-workflow bootstrap is the only required adoption path. Internally
+it delegates upstream installation to GitHub CLI `gh skill`, pins every skill to
+the tested tag, then validates injected source/ref/tree-SHA metadata and complete
+adjacent resources. `provider-state.json` records only ai-workflow lifecycle
+ownership and file checksums; it is not a second package manager.
+
+Pinned providers do not float during normal updates. A maintainer upgrades the
+declaration to a reviewed stable tag and subtree identities, runs live provider
+compatibility checks plus the hermetic suite, refreshes the distribution
+manifest, and releases ai-workflow. Target projects receive that new baseline
+only through an intentional ai-workflow update. Missing or incompatible
+dependencies fail with a diagnostic; the router never falls back to a retired
+local fork.
+
+GitHub CLI 2.90.0 or newer is required for install and update. Runtime use and
+status verification read ordinary repository files and do not contact upstream.
+Project-scoped `.agents/skills` is shared by Codex and GitHub Copilot. Removal
+deletes only checksum-clean skills that ai-workflow installed and preserves
+pre-existing compatible or locally changed skill directories.
+
+## Setup lifecycle
+
+`setup-matt-pocock-skills` is installed but never run automatically during
+adoption or every prompt. Before the first tracker-dependent workflow, the
+router checks for `docs/agents/issue-tracker.md` and `docs/agents/domain.md`.
+When absent, it invokes setup visibly because setup is prompt-driven and writes
+user-owned tracker/domain configuration plus a root `## Agent skills` block.
+Rerun it only to switch or reset that configuration; ordinary edits go directly
+to `docs/agents/*.md`.
+
+Teach also has a lifecycle boundary: invoke it only for explicit sustained
+learning intent and use a dedicated learning workspace for its `MISSION.md`,
+lessons, references, and learning records. A normal knowledge question stays a
+direct explanation and does not write course artifacts into the engineering
+project.
+
+## Framework-owned continuity and safety
 
 `project-profile.md` and `state/active.md` are project-owned. Complete the
-profile before relying on project checks, including the canonical locations for
-durable specifications and implementation tickets. State records link to
-canonical specification and native-ticket bodies rather than copying them.
-Framework updates never overwrite those files. Contracts, templates, skills,
-the state contract, and this file are framework-owned; the generated
-`install-manifest.json` records their installed
-checksums, pre-install provenance, and source revision status.
+profile before relying on project checks. Durable framework records link to
+canonical provider artifacts rather than copying their content or renaming their
+identifiers. Provider instructions do not grant extra authority: commits,
+external tracker changes, setup writes, and other mutations remain governed by
+the user's request, host sandbox, and project command contract.
 
-Use the public bootstrap command documented by the framework repository to
-inspect, update, or remove an installation. Lifecycle operations apply by
-default; `--dry-run` prints a nonmutating plan. Locally changed framework files
-cause an update conflict.
-Removal preserves changed and pre-install files plus all project-owned content,
-restores project instructions from clean composite `AGENTS.md` and `CLAUDE.md`
-files, and removes the installation manifest. Removal requires the exact
-installed version's source.
+Root `AGENTS.md` contains a managed router block followed by a project-owned
+instruction section. Add repository commands and conventions only below the
+`ai-workflow:project-instructions` marker. Updates validate the managed block and
+preserve that project section.
 
-The host agent owns normal engineering, editing, commands, native subagents,
-approvals, and verification. No external agent runtime is installed or required.
-Promoting any lesson into shared policy, skills, profiles, decisions, or state is
-a separate reviewable change.
+Each final response ends with one effective route line, for example
+`[route: router → implement → verification]`. It lists only stages or upstream
+skills that materially affected the response; availability alone does not count
+and reporting the route never causes another skill load or state write.
 
-The local Discovery and Teach skills are complete without third-party skills.
-Separately installed upstream Wayfinder or Teach may be used only by explicit
-user invocation under their native state and mutation contracts; if unavailable,
-offer the local workflow. `IDP-NNNN` is an optional supplemental record for
-meaningful recurring platform friction, not another routing stage.
+## Wayfinder identity boundary
 
-Use Decomposition only after a canonical specification is approved and only
-when dependency ordering or independent delivery spans multiple coherent
-implementation sessions. Implementation may use test-first slices when a stable
-observable seam and independently known behavior make them informative; other
-work uses the strongest configured feedback loop. Verification owns executable
-evidence, and proportional Review independently checks meaningful work for
-specification fit, correctness, security, validation gaps, and unintended scope.
-
-Do not put credentials or sensitive output in this directory. If a workflow
-needs local transient material, use `.ai-workflow-local/` and add it to the
-project's `.gitignore`.
+Wayfinder owns its map and decision-ticket semantics. Preserve its tracker issue
+ID or URL, linked issue title, `wayfinder:map`, `wayfinder:research`,
+`wayfinder:prototype`, `wayfinder:grilling`, `wayfinder:task`, `Destination`,
+`Decisions so far`, `Not yet specified`, and `Out of scope` terms unchanged.
+Never translate those to `DEC`, `TKT`, `UNK`, or another framework prefix. A
+Wayfinder ticket such as `T14`, a Jira issue such as `ARC-384`, and a GitHub issue
+such as `#384` retain distinct native identities.

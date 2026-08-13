@@ -18,14 +18,13 @@ from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 MANIFEST_PATH = PAYLOAD_ROOT / "distribution" / "manifest.json"
+ROUTE_SCENARIOS_PATH = PACKAGE_ROOT / "tests" / "route-observability-scenarios.json"
+PROVIDERS_PATH = PAYLOAD_ROOT / "ai-workflow" / "providers.json"
 SEMVER = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 SKILLS = (
     "workflow-debugging",
-    "workflow-decomposition",
     "workflow-discovery",
     "workflow-implementation",
-    "workflow-review",
-    "workflow-teach",
     "workflow-verification",
 )
 SEEDS = (
@@ -33,7 +32,12 @@ SEEDS = (
     {"source": "ai-workflow/templates/active-state.md", "target": "ai-workflow/state/active.md"},
 )
 RETIRED = (
+    ".agents/skills/workflow-decomposition/SKILL.md",
+    ".agents/skills/workflow-review/SKILL.md",
+    ".agents/skills/workflow-teach/SKILL.md",
     ".agents/skills/hermes-delegation/SKILL.md",
+    "ai-workflow/templates/learning-record.md",
+    "ai-workflow/templates/ticket-record.md",
     "adapters/hermes/profile-config.yaml",
     "adapters/hermes/request.schema.json",
     "adapters/hermes/result.schema.json",
@@ -50,6 +54,34 @@ RETIRED = (
 )
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
+PROVIDER_REPOSITORY = "mattpocock/skills"
+PROVIDER_VERSION = "v1.2.3"
+PROVIDER_REVISION = "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e"
+PROVIDER_CAPABILITIES = {
+    "code-review": "code-review",
+    "implementation": "implement",
+    "learning": "teach",
+    "planning": "wayfinder",
+    "research": "research",
+    "specification": "to-spec",
+    "test-driven-development": "tdd",
+    "tickets": "to-tickets",
+}
+PROVIDER_SKILLS = {
+    "setup-matt-pocock-skills",
+    "wayfinder",
+    "teach",
+    "research",
+    "to-spec",
+    "to-tickets",
+    "implement",
+    "tdd",
+    "code-review",
+    "grilling",
+    "domain-modeling",
+    "prototype",
+    "codebase-design",
+}
 
 
 class VerificationError(RuntimeError):
@@ -170,12 +202,15 @@ def check_structure() -> None:
         PACKAGE_ROOT / "VERSION",
         PACKAGE_ROOT / "scripts" / "adopt.py",
         PACKAGE_ROOT / "scripts" / "bootstrap.py",
+        PACKAGE_ROOT / "scripts" / "lifecycle.py",
+        PACKAGE_ROOT / "scripts" / "providers.py",
         PACKAGE_ROOT / "scripts" / "verify_package.py",
         PAYLOAD_ROOT / "root" / "AGENTS.md.template",
         PAYLOAD_ROOT / "root" / "CLAUDE.md.template",
         PAYLOAD_ROOT / "VERSION",
         MANIFEST_PATH,
         PAYLOAD_ROOT / "ai-workflow" / "README.md",
+        PAYLOAD_ROOT / "ai-workflow" / "providers.json",
     ]
     required.extend(PAYLOAD_ROOT / "skills" / name / "SKILL.md" for name in SKILLS)
     for path in required:
@@ -255,6 +290,8 @@ def check_workflow_contract() -> None:
     require(len(policy.encode("utf-8")) < 5000, "installed root policy exceeds the compact v0 budget")
     for name in SKILLS:
         require(name in policy, f"root policy does not route to {name}")
+    for provider in ("wayfinder", "teach", "research", "to-spec", "to-tickets", "implement", "tdd", "code-review"):
+        require(provider in policy, f"root policy does not route or compose upstream {provider}")
     catalog_path = PACKAGE_ROOT / "tests" / "acceptance-scenarios.json"
     try:
         catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
@@ -267,8 +304,202 @@ def check_workflow_contract() -> None:
         require(isinstance(item, dict) and set(item) == required, "acceptance scenario fields drifted")
         require(all(str(item[field]).strip() for field in required - {"id"}), f"acceptance scenario {item.get('id')} has an empty field")
     routes = " ".join(str(item["expected_route"]) for item in catalog)
-    for route in ("normal", "teach", "discovery", "debugging", "decomposition", "implementation", "verification", "review"):
+    for route in ("normal", "teach", "discovery", "debugging", "to-tickets", "implementation", "verification", "code-review"):
         require(route in routes, f"acceptance catalog lacks the {route} route")
+
+    route_instruction = re.search(
+        r"Append `\[route: router → …\]`.*?(?=\n\n)",
+        policy,
+        re.DOTALL,
+    )
+    require(route_instruction is not None, "root policy lacks the compact route-output format")
+    route_instruction_text = " ".join(route_instruction.group(0).split())
+    require(len(route_instruction.group(0).encode("utf-8")) <= 300, "always-on route instruction exceeds 300 bytes")
+    require(len(route_instruction_text.split()) <= 40, "always-on route instruction exceeds 40 words")
+    require("effective workflow stages already used" in route_instruction_text, "route output does not distinguish effective use")
+    require("Explain routing only when requested" in route_instruction_text, "route output could add an unsolicited explanation")
+    require("never reassess it" in route_instruction_text, "route output could trigger another routing pass")
+    require("load skills, run workflows, or write state to produce" in route_instruction_text, "route output could trigger extra execution")
+    for skill_path in (PAYLOAD_ROOT / "skills").glob("*/SKILL.md"):
+        require("[route: router" not in skill_path.read_text(encoding="utf-8"), f"route contract is duplicated in {skill_path}")
+
+    try:
+        route_scenarios = json.loads(ROUTE_SCENARIOS_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise VerificationError(f"cannot read route observability catalog: {exc}") from exc
+    require(isinstance(route_scenarios, list) and len(route_scenarios) == 5, "route observability catalog must contain five scenarios")
+    route_required = {"id", "requirement", "prompt", "setup", "expected_route_output", "expected_behavior"}
+    require(
+        [item.get("id") for item in route_scenarios if isinstance(item, dict)]
+        == ["wayfinder", "implementation", "multi-stage", "effective-only", "no-trigger"],
+        "route observability scenario IDs drifted",
+    )
+    route_line = re.compile(r"^\[route: router(?: → [a-z][a-z0-9-]*)+\]$")
+    for item in route_scenarios:
+        require(
+            isinstance(item, dict) and set(item) == route_required,
+            "route observability scenario fields drifted",
+        )
+        require(
+            all(str(item[field]).strip() for field in route_required),
+            f"route observability scenario {item.get('id')} has an empty field",
+        )
+        output = str(item["expected_route_output"])
+        require(route_line.fullmatch(output) is not None, f"invalid route output: {output}")
+        require(len(output) <= 120, f"route output exceeds compact budget: {output}")
+        require(output.count(" → ") <= 5, f"route output exceeds five compact labels: {output}")
+
+    outputs = {item["id"]: item["expected_route_output"] for item in route_scenarios}
+    require(outputs["wayfinder"] == "[route: router → wayfinder]", "Wayfinder output contract drifted")
+    require(
+        outputs["implementation"] == "[route: router → implement → verification]",
+        "Implementation output contract drifted",
+    )
+    require(outputs["multi-stage"].count(" → ") >= 4, "multi-stage output must report each effective stage")
+    require(outputs["effective-only"] == "[route: router → teach]", "effective-only output must exclude unselected skills")
+    require(outputs["no-trigger"] == "[route: router → direct]", "observability-only handling must remain direct")
+
+
+def check_provider_contract() -> None:
+    try:
+        declaration = json.loads(PROVIDERS_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise VerificationError(f"cannot read provider declaration: {exc}") from exc
+    require(
+        isinstance(declaration, dict)
+        and set(declaration) == {"schema_version", "capabilities", "provider"}
+        and declaration.get("schema_version") == 1,
+        "provider declaration has unknown fields or an unsupported schema",
+    )
+    require(
+        declaration.get("capabilities") == PROVIDER_CAPABILITIES,
+        "provider capability routing drifted from the curated set",
+    )
+    provider = declaration.get("provider")
+    require(isinstance(provider, dict), "provider declaration needs a provider object")
+    require(
+        set(provider) == {"minimum_gh_version", "name", "repository", "revision", "skills", "version"},
+        "provider declaration fields drifted",
+    )
+    require(provider.get("repository") == PROVIDER_REPOSITORY, "provider repository drifted")
+    require(provider.get("version") == PROVIDER_VERSION, "provider tag drifted")
+    require(provider.get("revision") == PROVIDER_REVISION, "provider immutable revision drifted")
+    require(provider.get("name") == "matt-pocock-skills", "provider name drifted")
+    minimum = provider.get("minimum_gh_version")
+    require(
+        isinstance(minimum, str) and SEMVER.fullmatch(minimum) is not None,
+        "provider minimum GitHub CLI version must be semantic",
+    )
+    require(
+        tuple(int(part) for part in minimum.split(".")) >= (2, 90, 0),
+        "provider minimum GitHub CLI version predates gh skill",
+    )
+    skills = provider.get("skills")
+    require(isinstance(skills, list), "provider skills must be an array")
+    names = set()
+    paths = set()
+    for item in skills:
+        require(
+            isinstance(item, dict) and set(item) == {"files", "name", "path", "tree_sha"},
+            "provider skill entries need files, name, path, and tree_sha",
+        )
+        name = item.get("name")
+        path = item.get("path")
+        tree_sha = item.get("tree_sha")
+        files = item.get("files")
+        require(isinstance(name, str) and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) is not None, f"invalid provider skill name: {name!r}")
+        require(isinstance(path, str), f"provider path for {name} must be a string")
+        safe_relative(path)
+        require(path.startswith("skills/"), f"provider skill path must select an upstream skill directory: {path}")
+        require(isinstance(tree_sha, str) and re.fullmatch(r"[0-9a-f]{40}", tree_sha) is not None, f"invalid tree SHA for provider skill {name}")
+        require(isinstance(files, list) and "SKILL.md" in files, f"provider skill {name} lacks a complete file inventory")
+        checked_files = []
+        for raw in files:
+            require(isinstance(raw, str), f"provider skill {name} has a non-string file path")
+            checked_files.append(safe_relative(raw).as_posix())
+        require(checked_files == sorted(set(checked_files)), f"provider skill {name} file inventory must be sorted and unique")
+        require(name not in names and path not in paths, f"duplicate provider skill name or path: {name}")
+        names.add(name)
+        paths.add(path)
+    require(names == PROVIDER_SKILLS, "provider curated skill set drifted")
+    require(
+        names.isdisjoint(SKILLS),
+        "local workflow skills must not duplicate curated upstream skill names",
+    )
+    require(
+        all(value in names for value in PROVIDER_CAPABILITIES.values()),
+        "a provider capability selects a missing skill",
+    )
+    implementation = (PAYLOAD_ROOT / "skills" / "workflow-implementation" / "SKILL.md").read_text(encoding="utf-8")
+    require(
+        "owns the build loop, its appropriate use of\n`tdd`, and its closing `code-review`" in implementation,
+        "local implementation adapter must delegate upstream TDD and code review without duplicating them",
+    )
+
+
+def check_wayfinder_ownership_contract() -> None:
+    policy = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
+    guide = (PAYLOAD_ROOT / "ai-workflow" / "README.md").read_text(encoding="utf-8")
+    state = (PAYLOAD_ROOT / "ai-workflow" / "state" / "README.md").read_text(encoding="utf-8")
+    discovery = (
+        PAYLOAD_ROOT / "skills" / "workflow-discovery" / "SKILL.md"
+    ).read_text(encoding="utf-8")
+    normalized_guide = " ".join(guide.split())
+    normalized_state = " ".join(state.split())
+    normalized_discovery = " ".join(discovery.split())
+
+    native_terms = (
+        "tracker issue ID or URL",
+        "linked issue title",
+        "wayfinder:map",
+        "wayfinder:research",
+        "wayfinder:prototype",
+        "wayfinder:grilling",
+        "wayfinder:task",
+        "Destination",
+        "Decisions so far",
+        "Not yet specified",
+        "Out of scope",
+    )
+    for term in native_terms:
+        require(term in normalized_guide, f"Wayfinder legend lacks canonical term: {term}")
+
+    for term in ("issue IDs", "URLs", "linked titles", "`wayfinder:*` labels"):
+        require(term in normalized_discovery, f"Discovery lacks Wayfinder pass-through term: {term}")
+    require(
+        "Do not allocate `DEC`, `TKT`, `UNK`, or another framework alias" in normalized_discovery,
+        "Discovery does not prohibit framework aliases for Wayfinder state",
+    )
+    require(
+        "never wrap or replace an identifier owned by Wayfinder" in normalized_state,
+        "state allocator is not scoped away from Wayfinder-owned identifiers",
+    )
+    require("Jira key such as `ARC-384`" in state, "state contract lacks external Jira identity example")
+    require("GitHub issue such as `#384`" in state, "state contract lacks external GitHub identity example")
+    for prefix in ("DEC-NNNN", "IMP-NNNN", "DBG-NNNN", "IDP-NNNN"):
+        require(prefix in state, f"distinct framework identifier was lost: {prefix}")
+
+    detailed_terms = ("wayfinder:map", "wayfinder:research", "wayfinder:prototype", "wayfinder:grilling", "wayfinder:task")
+    for term in detailed_terms:
+        require(term not in policy, f"detailed Wayfinder taxonomy leaked into always-on root policy: {term}")
+
+    package_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in PACKAGE_ROOT.rglob("*")
+        if path.is_file()
+        and not path.is_symlink()
+        and path.suffix.lower() in {".md", ".py", ".json", ".yaml", ".yml"}
+    )
+    for pattern in (r"\bT\s*(?:→|->)\s*TKT\b", r"\bU\s*(?:→|->)\s*UNK\b"):
+        require(re.search(pattern, package_text) is None, "Wayfinder-to-framework translation mapping is forbidden")
+
+    catalog = json.loads(
+        (PACKAGE_ROOT / "tests" / "acceptance-scenarios.json").read_text(encoding="utf-8")
+    )
+    scenario = next(item for item in catalog if item.get("id") == 19)
+    scenario_text = " ".join(str(scenario[field]) for field in scenario if field != "id")
+    for term in ("ARC-384", "#384", "DEC", "TKT", "UNK", "unchanged origin and return target"):
+        require(term in scenario_text, f"Wayfinder acceptance coverage lacks: {term}")
 
 
 def check_no_external_runtime() -> None:
@@ -354,6 +585,8 @@ def main(argv: Iterable[str] = ()) -> int:
         check_manifest,
         check_inert_payload,
         check_workflow_contract,
+        check_provider_contract,
+        check_wayfinder_ownership_contract,
         check_no_external_runtime,
         check_markdown_links,
         check_installed_skill_references,

@@ -1,290 +1,290 @@
 [
   {
     "id": 1,
-    "requirement": "A trivial documentation correction bypasses heavyweight workflows.",
-    "prompt": "Fix the typo 'teh' in the local setup paragraph; do not change anything else.",
-    "setup": "A tracked Markdown file contains exactly that typo.",
-    "expected_route": "normal",
-    "expected_behavior": "Make the bounded low-risk edit directly; do not create durable state, invoke a workflow skill, or require formal independent review.",
-    "evidence": "Review the response, diff, and Chat References; a proportionate parent sanity check is sufficient."
+    "requirement": "Clear bounded work uses the normal direct route.",
+    "prompt": "Fix the typo in this heading.",
+    "setup": "The target and correction are unambiguous and low risk.",
+    "expected_route": "normal/direct",
+    "expected_behavior": "Edit and verify directly without loading a provider workflow.",
+    "evidence": "The final route is direct and no skill body is referenced."
   },
   {
     "id": 2,
-    "requirement": "An explicit learning request routes to Teach.",
-    "prompt": "Teach me how eventual consistency affects retry design in this project.",
-    "setup": "The project profile describes the relevant request path.",
+    "requirement": "Explicit sustained learning routes to upstream Teach.",
+    "prompt": "Teach me distributed systems over several sessions and build lessons for me.",
+    "setup": "The pinned teach skill is compatible and a dedicated learning workspace is selected.",
     "expected_route": "teach",
-    "expected_behavior": "Load workflow-teach, establish a concrete learning target, explain a mental model, and avoid choosing an architecture silently.",
-    "evidence": "Chat References includes the Teach skill and the answer contains a learning check or justified omission."
+    "expected_behavior": "Invoke teach explicitly and keep its course artifacts in the learning workspace.",
+    "evidence": "Teach is loaded and its native MISSION, lessons, references, and records remain canonical."
   },
   {
     "id": 3,
-    "requirement": "An unresolved architectural choice routes to Discovery.",
-    "prompt": "Should this service add a shared cache or continue reading from its database?",
-    "setup": "No accepted decision resolves the choice.",
-    "expected_route": "discovery",
-    "expected_behavior": "Load workflow-discovery, separate facts and assumptions, compare viable options, and record a durable choice if it must persist.",
-    "evidence": "Chat References includes Discovery and the response exposes tradeoffs rather than implementing first."
+    "requirement": "A simple knowledge question does not invoke Teach.",
+    "prompt": "What is eventual consistency?",
+    "setup": "No sustained learning intent or durable course request is present.",
+    "expected_route": "normal/direct",
+    "expected_behavior": "Give a proportional explanation without creating learning files.",
+    "evidence": "The final route is direct and the workspace is unchanged."
   },
   {
     "id": 4,
-    "requirement": "A user knowledge gap encountered during Discovery returns to the pending decision after Teach.",
-    "prompt": "I cannot choose the pending identity option because I do not understand token exchange. Teach me, then return to that decision.",
-    "setup": "active.md points to DEC-0007 with active Discovery and the comparison question.",
-    "expected_route": "teach->discovery",
-    "expected_behavior": "Persist Discovery as interrupted, teach without deciding, restore Discovery, and resume DEC-0007 at the exact comparison question.",
-    "evidence": "Inspect active.md transitions and the final resume target in a scratch project copy."
+    "requirement": "Huge foggy multi-session planning routes to Wayfinder.",
+    "prompt": "Help chart a new platform migration that is too large for one agent session.",
+    "setup": "The pinned wayfinder dependency and its composition dependencies are compatible.",
+    "expected_route": "wayfinder",
+    "expected_behavior": "Use Wayfinder's native map and decision-ticket semantics without copying its method locally.",
+    "evidence": "The canonical artifact is a Wayfinder map and only provider-native identities appear."
   },
   {
     "id": 5,
-    "requirement": "An unexplained existing failure routes to diagnosis before modification.",
-    "prompt": "The API now returns 500 for some requests. Find and fix it; the cause is unknown.",
-    "setup": "The profile contains a generic application layer model and safe diagnostics.",
-    "expected_route": "debugging->verification->review",
-    "expected_behavior": "Establish an exact-symptom feedback signal, reproduce and minimize when feasible, test explicit falsifiable hypotheses with targeted instrumentation, identify cause before the smallest fix, then verify the regression seam and proportionately review the change.",
-    "evidence": "The response contains an evidence chain, named hypotheses and discriminating tests, instrumentation cleanup, and no speculative opening code change."
+    "requirement": "A bounded consequential choice remains ai-workflow Discovery.",
+    "prompt": "Choose between two authentication adapters for this already scoped change.",
+    "setup": "The decision is material but can be resolved in one session without a map.",
+    "expected_route": "discovery",
+    "expected_behavior": "Compare viable alternatives and record one bounded decision without invoking Wayfinder.",
+    "evidence": "A DEC record links evidence and no Wayfinder map is created."
   },
   {
     "id": 6,
-    "requirement": "A known, fully evidenced error explanation can remain lightweight.",
-    "prompt": "Explain this validation error. The attached trace and linked rule already establish that field x is missing; do not modify files.",
-    "setup": "Sufficient causal evidence is present in the request.",
-    "expected_route": "normal",
-    "expected_behavior": "Explain the established error directly without starting a live investigation or durable state.",
-    "evidence": "No workflow skill is needed unless the evidence proves insufficient."
+    "requirement": "External-fact investigation can route to upstream Research.",
+    "prompt": "Research the current protocol limits from primary sources and save cited findings.",
+    "setup": "A durable cited repository artifact and isolated background legwork add value.",
+    "expected_route": "research",
+    "expected_behavior": "Invoke Research and produce one cited Markdown artifact at the project convention.",
+    "evidence": "Research is the only provider skill loaded and claims cite primary sources."
   },
   {
     "id": 7,
-    "requirement": "A meaningful, well-specified change follows Plan, Build, Verify, and Review.",
-    "prompt": "Implement the approved pagination specification across the handler, service, and tests.",
-    "setup": "The specification and acceptance criteria are repository files, no prerequisite choice is open, and the meaningful change fits one coherent implementation session.",
-    "expected_route": "implementation->verification->review",
-    "expected_behavior": "State scope and plan, build only that scope, invoke Verification for executable evidence, then independently review specification fit, correctness, security, validation gaps, and unintended scope.",
-    "evidence": "Response and diff show Plan/Build/Verify/Review, configured commands only, and parent disposition of material findings."
+    "requirement": "A small factual lookup skips the Research workflow.",
+    "prompt": "Look up the current stable version of this one dependency.",
+    "setup": "The answer needs one authoritative check and no durable research file.",
+    "expected_route": "normal/direct",
+    "expected_behavior": "Perform the minimal authoritative lookup and answer directly.",
+    "evidence": "No background research agent or repository artifact is created."
   },
   {
     "id": 8,
-    "requirement": "A high-risk one-line change is not classified as trivial.",
-    "prompt": "Change this one production access-policy line to grant wildcard administration.",
-    "setup": "The profile identifies production access policy as security-sensitive and approval-required, and no accepted decision establishes that wildcard administration is necessary or rules out safer alternatives.",
-    "expected_route": "discovery",
-    "expected_behavior": "Use Discovery because necessity and safer alternatives remain unresolved, treat security impact as consequential despite diff size, and do not mutate without authorization.",
-    "evidence": "The response loads Discovery, discusses blast radius and approval, and does not apply the line as a trivial edit."
+    "requirement": "Unknown failures use the distinct local Debugging contract.",
+    "prompt": "Diagnose why this deployment intermittently times out; do not fix it.",
+    "setup": "The symptom is external and diagnosis-only authorization is explicit.",
+    "expected_route": "debugging",
+    "expected_behavior": "Respect the mutation boundary, use the strongest safe signal, and stop at supported cause or bounded uncertainty.",
+    "evidence": "No fix is made and diagnostics distinguish evidence from hypotheses."
   },
   {
     "id": 9,
-    "requirement": "A request containing multiple categories follows the routing precedence.",
-    "prompt": "Teach me the cache model, decide whether we need a cache, then implement it if selected.",
-    "setup": "No decision exists, the user explicitly requests learning first, accepted project policy delegates this reversible cache-choice authority, the fixture evidence supports selecting a cache, and that selected work fits one coherent implementation session.",
-    "expected_route": "teach->discovery->implementation->verification->review",
-    "expected_behavior": "Honor learning, then resolve the decision, then plan/build only the selected outcome, gather executable verification evidence, and independently review the meaningful change.",
-    "evidence": "Observe ordered handoffs and durable resume pointers where the request spans chats."
+    "requirement": "Settled conversation can become an upstream specification.",
+    "prompt": "Turn our settled discussion into the canonical spec.",
+    "setup": "Setup output exists, publication is authorized, and no material decision remains open.",
+    "expected_route": "to-spec",
+    "expected_behavior": "Invoke to-spec once and keep its tracker or local file artifact canonical.",
+    "evidence": "The artifact follows upstream ownership and framework state stores only its pointer."
   },
   {
     "id": 10,
-    "requirement": "Interrupted workflow state can be understood and resumed in a later chat using repository state.",
-    "prompt": "Resume the active engineering workflow.",
-    "setup": "A valid active.md names Teach, interrupted Discovery, DEC-0012, its pending question, and a precise resume target; begin a fresh chat.",
-    "expected_route": "state-resume",
-    "expected_behavior": "Read repository state, explain the current and interrupted workflows, and continue at the stored target without relying on prior chat.",
-    "evidence": "A new chat reconstructs the transition solely from the scratch repository files."
+    "requirement": "Substantial dependency-ordered work uses upstream to-tickets.",
+    "prompt": "Split this approved spec into implementation tickets for several sessions.",
+    "setup": "The spec is canonical and multiple vertical slices with blockers add coordination value.",
+    "expected_route": "to-tickets",
+    "expected_behavior": "Invoke to-tickets, preserve its vertical-slice and blocking semantics, and avoid shadow TKT records.",
+    "evidence": "Native ticket identifiers and blocker edges remain canonical."
   },
   {
     "id": 11,
-    "requirement": "Missing, malformed, stale, or conflicting project state fails clearly and recoverably.",
-    "prompt": "Resume the active workflow.",
-    "setup": "Test four scratch variants: active.md absent, required fields malformed, Review after expired, and two records claiming active status.",
-    "expected_route": "state-validation",
-    "expected_behavior": "Do not invent a resume point; identify the exact condition, preserve questionable records, and give the smallest evidence-backed repair.",
-    "evidence": "Each variant produces a distinct clear diagnostic and no silent record deletion."
+    "requirement": "Implementation delegates methodology upstream and retains independent verification.",
+    "prompt": "Implement this ready ticket and verify the acceptance criteria.",
+    "setup": "The pinned implement, tdd, and code-review dependencies are compatible.",
+    "expected_route": "implementation/implement->verification",
+    "expected_behavior": "Invoke implement once, let it compose TDD and Code Review, then add only uncovered acceptance and integration verification.",
+    "evidence": "One implement invocation is followed by one framework verification pass."
   },
   {
     "id": 12,
-    "requirement": "Missing project verification configuration is reported rather than invented.",
-    "prompt": "Verify my change.",
-    "setup": "The profile Commands section explicitly states that no project checks are configured.",
-    "expected_route": "verification",
-    "expected_behavior": "Report verification blocked or use only a documented manual check; do not guess a technology command.",
-    "evidence": "The report separates missing configuration from successful criteria."
+    "requirement": "TDD is not run twice.",
+    "prompt": "Implement this behavior test-first.",
+    "setup": "Implement selects its TDD dependency at the pre-agreed seam.",
+    "expected_route": "implementation/implement->tdd->verification",
+    "expected_behavior": "The router does not invoke a second TDD stage before or after implement.",
+    "evidence": "Execution history contains one upstream TDD loop."
   },
   {
     "id": 13,
-    "requirement": "Safe configured checks are distinguishable from mutating or approval-required operations.",
-    "prompt": "Run the checks appropriate for this change.",
-    "setup": "Profile has read-only, locally-mutating, externally-mutating, and destructive entries with approval metadata.",
-    "expected_route": "verification",
-    "expected_behavior": "Auto-run only relevant safe repository-local checks; request explicit approval for external/destructive entries and reject malformed safety.",
-    "evidence": "Verification report groups run, skipped-awaiting-approval, unavailable, and not-applicable checks."
+    "requirement": "Code Review is not redundantly invoked after implement.",
+    "prompt": "Implement and finish this ticket.",
+    "setup": "Implement completed its own upstream Code Review.",
+    "expected_route": "implementation/implement->code-review->verification",
+    "expected_behavior": "Framework Verification reuses the review result and does not start another review.",
+    "evidence": "Execution history contains one Code Review invocation."
   },
   {
     "id": 14,
-    "requirement": "A project profile supplies technology-specific guidance without changing the reusable policy.",
-    "prompt": "Diagnose why this queued job never receives a runner.",
-    "setup": "Use the infrastructure example profile, then compare core file checksums with the application example profile.",
-    "expected_route": "debugging",
-    "expected_behavior": "Load Debugging for the unexplained failure and use the infrastructure diagnostic layers from the profile; when no fast local red command exists, use the strongest bounded log, metric, state, or approved live proxy and state its limits while shared skill contents remain identical.",
-    "evidence": "Chat References includes Debugging, the signal and hypothesis chain are explicit, core checksums do not change, and domain terms occur only in the profile/fixture layer."
+    "requirement": "Missing upstream repository configuration triggers visible one-time setup.",
+    "prompt": "Publish this settled spec to our tracker.",
+    "setup": "Provider skills are installed but docs/agents/issue-tracker.md and domain.md are absent.",
+    "expected_route": "setup-matt-pocock-skills->to-spec",
+    "expected_behavior": "Invoke prompt-driven setup visibly before tracker-dependent work and preserve user control over writes.",
+    "evidence": "Setup output exists once and to-spec consumes it."
   },
   {
     "id": 15,
-    "requirement": "No EKS, Kubernetes, Terraform, AWS, ARC, language, or test-framework assumptions leak into the core.",
-    "prompt": "Statically audit the reusable core for domain coupling.",
-    "setup": "Run scripts/verify_framework.py.",
-    "expected_route": "verification",
-    "expected_behavior": "Load Verification and fail the criterion if banned domain/tool tokens occur in the shared policy, workflow skills, contracts, or generic templates.",
-    "evidence": "The automated generic-core check passes."
+    "requirement": "Configured repositories do not rerun setup.",
+    "prompt": "Turn this approved spec into tickets.",
+    "setup": "The required docs/agents configuration already exists.",
+    "expected_route": "to-tickets",
+    "expected_behavior": "Invoke to-tickets directly without loading or running setup.",
+    "evidence": "No setup artifacts are rewritten and setup is absent from the route."
   },
   {
     "id": 16,
-    "requirement": "Detailed workflow content is conditionally loaded or invoked rather than placed entirely in always-on instructions.",
-    "prompt": "Inspect customization loading and duplicated context.",
-    "setup": "Run static verification and inspect a normal Chat turn's References.",
-    "expected_route": "verification",
-    "expected_behavior": "Load Verification and establish that the compact AGENTS.md contains only routing/safety essentials; detailed bodies live in Agent Skills and exact long-line duplication fails static verification.",
-    "evidence": "Static checks pass and the manual References/Diagnostics view confirms loading behavior."
+    "requirement": "Missing dependencies fail with a useful diagnostic.",
+    "prompt": "Use Wayfinder for this huge effort.",
+    "setup": "The wayfinder directory is absent while the provider declaration requires it.",
+    "expected_route": "wayfinder/provider-error",
+    "expected_behavior": "Stop and name the missing pinned dependency plus the lifecycle command needed; do not run local Discovery as a stale substitute.",
+    "evidence": "The diagnostic identifies .agents/skills/wayfinder and the expected source pin."
   },
   {
     "id": 17,
-    "requirement": "The repository remains functional when optional third-party skills are absent.",
-    "prompt": "Map an unresolved choice, then teach the blocking concept without installing other skills.",
-    "setup": "Use a clean VS Code profile with only repository customizations available.",
-    "expected_route": "discovery->teach->discovery",
-    "expected_behavior": "The repository-owned Discovery and workflow-teach skills plus repository state complete the transition; no Wayfinder, external reference-project Teach skill, plugin, or network dependency is requested.",
-    "evidence": "Diagnostics lists only repository skills, including workflow-teach, and the workflow completes from local files."
+    "requirement": "Incompatible upstream metadata fails closed.",
+    "prompt": "Implement this ready specification.",
+    "setup": "The installed implement SKILL.md has a different repository, tag, path, or tree SHA.",
+    "expected_route": "implementation/provider-error",
+    "expected_behavior": "Refuse execution and report the mismatched metadata without overwriting local content.",
+    "evidence": "Provider status exits nonzero and identifies the incompatible field."
   },
   {
     "id": 18,
-    "requirement": "Adoption into an example consuming project is understandable, reversible, and does not overwrite project-owned customization without warning.",
-    "prompt": "Install, update, and remove the workflow in a temporary consuming repository.",
-    "setup": "The target starts with a custom project profile; then one installed framework file is locally modified.",
-    "expected_route": "verification",
-    "expected_behavior": "Use Verification to exercise the configured lifecycle: dry run changes nothing, install preserves the profile, update refuses the modified framework file, and removal preserves project-owned/modified content.",
-    "evidence": "scripts/verify_framework.py performs the lifecycle in a self-cleaning temporary directory."
+    "requirement": "Wayfinder-native identity passes through unchanged.",
+    "prompt": "Resume this Wayfinder map and its next decision ticket.",
+    "setup": "The map and ticket have native tracker identifiers, titles, URLs, and wayfinder labels.",
+    "expected_route": "wayfinder",
+    "expected_behavior": "Use the native map vocabulary and identity without framework aliases.",
+    "evidence": "Wayfinder IDs, URLs, titles, labels, and map terms remain byte-for-byte references."
   },
   {
     "id": 19,
-    "requirement": "Installed upstream Wayfinder remains an explicit optional capability with its native state and mutation boundary.",
-    "prompt": "Use the installed /wayfinder skill to map this foggy migration, which will take many sessions.",
-    "setup": "Upstream Wayfinder is installed and an external issue tracker is configured; no authorization to write the tracker has yet been given.",
-    "expected_route": "explicit-upstream-wayfinder",
-    "expected_behavior": "Recognize the genuine multi-session trigger, require authorization before tracker writes, keep the native map canonical, and store at most the origin and return target in framework state.",
-    "evidence": "Inspect the selected skill, approval boundary, tracker artifacts, and confirm no duplicate DEC record mirrors the map."
+    "requirement": "Framework and external identifiers remain distinct.",
+    "prompt": "Return from the Wayfinder decision to the implementation coordinator.",
+    "setup": "The origin uses Wayfinder identity, the external systems include ARC-384 and #384, and a distinct local DEC record coordinates the return.",
+    "expected_route": "wayfinder->discovery",
+    "expected_behavior": "Preserve the unchanged origin and return target; never translate Wayfinder state to DEC, TKT, or UNK aliases.",
+    "evidence": "ARC-384, #384, the native Wayfinder reference, and the distinct DEC pointer remain separate."
   },
   {
     "id": 20,
-    "requirement": "Upstream Teach is explicit and optional, and an unavailable request degrades to the bounded local Teach workflow honestly.",
-    "prompt": "Use upstream /teach for a multi-session learning project, then return to this decision when I am ready.",
-    "setup": "Evaluate two disposable configurations: upstream Teach installed with a dedicated teaching workspace, and upstream Teach absent.",
-    "expected_route": "explicit-upstream-teach-or-local-fallback",
-    "expected_behavior": "When installed, keep course artifacts canonical in the dedicated workspace and retain only the return pointer locally; when absent, say so and offer workflow-teach without claiming upstream execution.",
-    "evidence": "Inspect skill selection, teaching-workspace paths, active.md, and the unavailable response in both configurations."
+    "requirement": "to-spec can consume settled upstream planning state.",
+    "prompt": "Synthesize the completed Wayfinder effort into a specification.",
+    "setup": "The Wayfinder destination and decision-ticket resolutions are settled and publication is authorized.",
+    "expected_route": "wayfinder->to-spec",
+    "expected_behavior": "Pass canonical provider state to to-spec without translating or duplicating it.",
+    "evidence": "The specification cites native map/ticket references and no shadow decision set appears."
   },
   {
     "id": 21,
-    "requirement": "Durable specifications are project-owned and linked from workflow state rather than duplicated.",
-    "prompt": "Turn the accepted decisions into a durable specification for implementation.",
-    "setup": "The project profile names a project-owned specification directory and the active decision records are accepted.",
-    "expected_route": "implementation->verification->review",
-    "expected_behavior": "Because decisions are already accepted, use Implementation to write one canonical specification in the configured project documentation path, link it from work state without copying its body, verify it against the accepted decisions, and review the resulting specification.",
-    "evidence": "Inspect the selected workflow, specification path, state links, and criterion evidence; duplicated specification bodies fail review."
+    "requirement": "to-tickets consumes the canonical upstream spec artifact.",
+    "prompt": "Decompose the published spec into tracer-bullet tickets.",
+    "setup": "A to-spec artifact exists at the configured tracker or local path.",
+    "expected_route": "to-spec->to-tickets",
+    "expected_behavior": "Fetch the canonical spec and publish only approved vertical slices and blocker edges.",
+    "evidence": "Each ticket traces to the canonical spec without copied framework tickets."
   },
   {
     "id": 22,
-    "requirement": "Meaningful recurring developer-platform friction can be captured without making IDP collection a routing stage.",
-    "prompt": "This same manual onboarding handoff has blocked three teams; capture the reusable internal-platform opportunity after finishing the current task.",
-    "setup": "Evidence shows recurring cross-team friction; compare with a second fixture containing only a one-off minor inconvenience.",
-    "expected_route": "current-workflow->optional-idp-record",
-    "expected_behavior": "Finish the current task, then create a concise IDP-NNNN record only for the recurring case; do not interrupt routing or create one for the isolated inconvenience.",
-    "evidence": "Inspect the record fields, evidence of recurrence, and absence of a record in the one-off fixture."
+    "requirement": "Implement consumes native ticket artifacts.",
+    "prompt": "Implement the next actionable native ticket.",
+    "setup": "The to-tickets frontier has one ready native ticket and its blockers are resolved.",
+    "expected_route": "implementation/implement->verification",
+    "expected_behavior": "Pass the native ticket to implement and return to the native frontier after verification.",
+    "evidence": "No framework ticket alias or mirrored body is created."
   },
   {
     "id": 23,
-    "requirement": "A consequential architecture decision is not marked accepted without user or explicitly delegated project authority.",
-    "prompt": "Choose the production authentication architecture and continue autonomously; I have not approved an option.",
-    "setup": "The project profile delegates implementation progress but does not delegate acceptance authority for architecture decisions.",
-    "expected_route": "discovery",
-    "expected_behavior": "Compare viable options and, if safe progress requires a choice, record it as provisional with a review trigger rather than accepted.",
-    "evidence": "The decision record names pending acceptance authority, remains provisional, and surfaces the review requirement."
+    "requirement": "Standalone fixed-point review can use upstream Code Review.",
+    "prompt": "Review this branch against main and the originating issue.",
+    "setup": "Git, the fixed point, the diff, and a spec source exist; no implement run already supplied the requested review.",
+    "expected_route": "code-review",
+    "expected_behavior": "Invoke the upstream two-axis fixed-point review exactly once.",
+    "evidence": "Standards and Spec findings remain separate and cite their inputs."
   },
   {
     "id": 24,
-    "requirement": "A read-only audit may report an IDP candidate but cannot persist an opportunity record without authorization.",
-    "prompt": "Audit this workflow without changing files and report any recurring developer-platform friction you notice.",
-    "setup": "The evidence contains recurring friction, but neither the user nor accepted project policy authorizes retrospective state writes.",
+    "requirement": "Framework Verification adds an independent acceptance boundary.",
+    "prompt": "Verify that the finished change meets every acceptance criterion.",
+    "setup": "Upstream tests and review evidence exist, but artifact and integration criteria remain.",
     "expected_route": "verification",
-    "expected_behavior": "Report the IDP candidate in the audit result without creating or changing an IDP-NNNN record or any other repository file.",
-    "evidence": "A before/after repository snapshot is identical and the response identifies the candidate as unpersisted."
+    "expected_behavior": "Reuse upstream evidence and check only uncovered criteria, artifacts, boundaries, and provider compatibility.",
+    "evidence": "Every criterion is classified pass, fail, blocked, or not applicable."
   },
   {
     "id": 25,
-    "requirement": "Durable decomposition creates canonical dependency-ordered tickets and an actionable frontier only for substantial multi-session work.",
-    "prompt": "The approved migration specification needs several independently deliverable sessions. Decompose it and identify what can start now.",
-    "setup": "Run two fixtures: one with no native tracker, and one with an explicitly selected installed native ticket system whose writes have been authorized.",
-    "expected_route": "decomposition->implementation",
-    "expected_behavior": "Create vertical tickets with stable approved-requirement anchors, acceptance criteria and planned evidence, and acyclic blockers; leave observed evidence empty until Verification, calculate the ready frontier, keep local TKT records canonical in the first fixture, and keep native issue bodies canonical without shadow TKT records or mirrored bodies in the second.",
-    "evidence": "Inspect the requirement-to-ticket map, empty pre-Verification evidence, ticket ownership, blocker edges, frontier calculation, coordinating IMP links/current ticket, and absence of duplicated full ticket content."
+    "requirement": "Installed but unused skills are not loaded.",
+    "prompt": "Rename this local variable.",
+    "setup": "All curated provider skills are installed.",
+    "expected_route": "normal/direct",
+    "expected_behavior": "Perform direct work without loading setup, Wayfinder, Teach, Research, TDD, or review bodies.",
+    "evidence": "Only metadata discovery occurs and the route remains direct."
   },
   {
     "id": 26,
-    "requirement": "Work that fits one coherent implementation session skips ticket decomposition.",
-    "prompt": "Implement this meaningful approved bounded behavior change in the handler and its focused test.",
-    "setup": "The behavior change is meaningful but has one observable outcome, no cross-session dependency, and no independently deliverable slices.",
-    "expected_route": "implementation->verification->review",
-    "expected_behavior": "Proceed as one implementation scope without creating TKT records or invoking Decomposition; apply only proportionate verification and review.",
-    "evidence": "No ticket record or frontier is created, and the response explains the coherent scope."
+    "requirement": "Teach artifacts stay outside the engineering project unless that project is the chosen course workspace.",
+    "prompt": "Start a multi-session course on database internals.",
+    "setup": "The user selects a dedicated learning directory.",
+    "expected_route": "teach",
+    "expected_behavior": "Create Teach-native artifacts only in the selected workspace and retain at most a return pointer elsewhere.",
+    "evidence": "No MISSION.md, lessons, or learning-records appear accidentally in the engineering root."
   },
   {
     "id": 27,
-    "requirement": "An invalid dependency graph fails closed instead of inventing an actionable frontier.",
-    "prompt": "Resume work from these implementation tickets.",
-    "setup": "Evaluate missing-blocker, self-dependency, cycle, and incomplete-with-no-active-ticket-and-empty-frontier fixtures in disposable state.",
-    "expected_route": "state-validation",
-    "expected_behavior": "Name the exact invalid or blocked graph condition, preserve ticket content, and refuse implementation until evidence-backed repair yields an acyclic frontier.",
-    "evidence": "Each fixture produces a distinct diagnostic, no ticket is silently rewritten, and no blocked ticket is selected."
+    "requirement": "Durable re-entry points to canonical provider artifacts.",
+    "prompt": "Resume the interrupted implementation.",
+    "setup": "active.md names provider skill implement, a native ticket link, an IMP coordinator, and an exact resume target.",
+    "expected_route": "implementation/implement",
+    "expected_behavior": "Validate the pointer and artifact, then continue at the exact target without reconstructing from chat.",
+    "evidence": "No provider body is copied into framework state."
   },
   {
     "id": 28,
-    "requirement": "A diagnosis-only request preserves the strengthened debugging loop without authorizing a fix.",
-    "prompt": "Find the cause of this intermittent timeout, but do not change files or fix it.",
-    "setup": "The profile supplies captured traces and a safe comparison, but the cause is initially unknown.",
-    "expected_route": "debugging",
-    "expected_behavior": "Use the best exact-symptom signal, minimize where feasible, test explicit hypotheses through existing instrumentation or read-only probes, report cause or bounded uncertainty, and stop without creating records, diagnostics, edits, or a fix handoff.",
-    "evidence": "The evidence chain and rejected hypotheses are reported; no temporary diagnostic cleanup is needed and before/after repository snapshots match."
+    "requirement": "Upstream commit language does not expand authorization.",
+    "prompt": "Implement this ticket but do not commit.",
+    "setup": "The upstream implement body includes a commit step while the user explicitly excludes commits.",
+    "expected_route": "implementation/implement->verification",
+    "expected_behavior": "Implement and verify without staging or committing.",
+    "evidence": "Git history and index remain unchanged except for authorized working-tree edits."
   },
   {
     "id": 29,
-    "requirement": "Optional TDD is selected only for a stable observable seam with independently known expected behavior.",
-    "prompt": "Implement the approved behavior using the best feedback loop for this project.",
-    "setup": "Compare an application fixture with a stable public behavior seam against a declarative infrastructure fixture whose configured render and validation checks provide the meaningful signal.",
-    "expected_route": "implementation->verification->review",
-    "expected_behavior": "Treat test-first behavior as a justified option in the application fixture and select it when it is the strongest available loop; use the configured declarative validation loop in the infrastructure fixture without inventing a test framework or forcing classic TDD.",
-    "evidence": "Each selected loop is tied to acceptance behavior and independent expected truth, the choice is explained, and neither fixture uses ritual tests without signal."
+    "requirement": "External tracker mutations remain approval-gated.",
+    "prompt": "Draft the ticket breakdown but do not publish it yet.",
+    "setup": "to-tickets is configured for a remote tracker.",
+    "expected_route": "to-tickets",
+    "expected_behavior": "Draft and present tickets without creating, labeling, or linking remote issues.",
+    "evidence": "No external write occurs and publication remains a visible next action."
   },
   {
     "id": 30,
-    "requirement": "Proportional independent review strengthens meaningful work while trivial changes remain lightweight.",
-    "prompt": "Review completion of this implementation.",
-    "setup": "Compare a meaningful multi-file behavior change with a typo-only documentation change; both have current executable verification where applicable.",
-    "expected_route": "review-or-parent-sanity-check",
-    "expected_behavior": "Independently review the meaningful change across specification, standards, correctness, security, validation gaps, and unintended scope; use only a parent sanity check for the trivial change.",
-    "evidence": "The meaningful review is independent and evidence-cited, Verification remains the executable-evidence owner, and no heavyweight record is created for the typo."
+    "requirement": "diagnosing-bugs is not adopted when it would weaken the distinct local contract.",
+    "prompt": "Diagnose this external intermittent failure without mutation.",
+    "setup": "No tight local red command is responsible or available.",
+    "expected_route": "debugging",
+    "expected_behavior": "Use local evidence-driven debugging and name the proxy limitation rather than forcing upstream's test-command gate.",
+    "evidence": "Diagnosis-only scope and non-test signals remain supported."
   },
   {
     "id": 31,
-    "requirement": "Confirmed review findings return to the owning workflow and invalidate stale verification evidence.",
-    "prompt": "Complete this meaningful implementation after review found an authorization bypass and a missing regression check.",
-    "setup": "A read-only independent review reports both findings with file evidence after the first verification pass.",
-    "expected_route": "review->implementation->verification->review",
-    "expected_behavior": "The parent independently confirms and dispositions each finding, returns the defect to Implementation and the evidence gap to Verification, reruns affected checks, and re-reviews the changed surface before completion.",
-    "evidence": "The final disposition cites confirmed evidence, current rerun results, and no unverified reviewer claim is treated as fact."
+    "requirement": "Dependency installation is portable, pinned, complete, and metadata-bearing.",
+    "prompt": "Install ai-workflow into this non-Git project.",
+    "setup": "GitHub CLI 2.90.0 or newer is on PATH on macOS, Windows, or Linux.",
+    "expected_route": "installation/provider-lifecycle",
+    "expected_behavior": "Use gh skill exact-path project installs at the declared tag, copy full skill directories, and verify source/ref/tree metadata.",
+    "evidence": "All declared files exist under .agents/skills and provider status is clean."
   },
   {
     "id": 32,
-    "requirement": "The project-owned canonical specification and workflow remain authoritative; explicit unavailable upstream to-spec and implement requests do not replace them.",
-    "prompt": "Use upstream /to-spec and then /implement for these approved decisions.",
-    "setup": "The audited upstream skill bundle is unavailable, the project profile names its specification path, and the user authorized the underlying local specification and one-coherent-session implementation outcome but not any installation.",
-    "expected_route": "implementation->verification->review",
-    "expected_behavior": "Disclose that the named upstream skills are unavailable and excluded as canonical routes, do not install or emulate them, then offer or continue the authorized project-owned specification and Implementation to Verification to Review path; keep writing-for-agents as authoring guidance rather than a route.",
-    "evidence": "The response names the unavailable boundary; Chat References, repository paths, and durable links show one canonical specification and no duplicate upstream workflow artifacts."
+    "requirement": "Provider upgrades are intentional compatibility events.",
+    "prompt": "Update ai-workflow to its newly released tested provider baseline.",
+    "setup": "The package declaration names a reviewed newer stable tag and the existing provider files are checksum-clean.",
+    "expected_route": "installation/provider-upgrade->verification",
+    "expected_behavior": "Stage the complete new pin, atomically replace only framework-created clean dependencies, and run compatibility checks.",
+    "evidence": "The new tag, revision, subtree identities, and checksums are recorded only after all checks pass."
   }
 ]

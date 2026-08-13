@@ -1,0 +1,42 @@
+[
+  {
+    "id": "wayfinder",
+    "requirement": "An explicitly invoked upstream Wayfinder reports Wayfinder.",
+    "prompt": "Use /wayfinder to map this foggy multi-session project.",
+    "setup": "Upstream Wayfinder is installed and explicitly invoked.",
+    "expected_route_output": "[route: router → wayfinder]",
+    "expected_behavior": "Use the upstream Wayfinder workflow and report it without adding local Discovery unless that workflow is materially used too."
+  },
+  {
+    "id": "implementation",
+    "requirement": "A straightforward meaningful implementation reports Implementation and Verification.",
+    "prompt": "Implement the approved bounded change and verify it.",
+    "setup": "The change is implementation-ready and proportional Review would add no material confidence.",
+    "expected_route_output": "[route: router → implement → verification]",
+    "expected_behavior": "Build through Implementation, gather executable evidence through Verification, and report only those effective stages."
+  },
+  {
+    "id": "multi-stage",
+    "requirement": "A multi-stage workflow reports every stage materially used in execution order.",
+    "prompt": "Resolve the remaining design choice, implement the accepted result, verify it, and review the meaningful change.",
+    "setup": "One consequential choice remains unresolved and the resulting change warrants independent Review.",
+    "expected_route_output": "[route: router → discovery → to-spec → implement → verification]",
+    "expected_behavior": "Report each actual handoff once and preserve execution order."
+  },
+  {
+    "id": "effective-only",
+    "requirement": "Available, discovered, and loaded-but-unused skills are omitted.",
+    "prompt": "Teach me the retry model; do not make or implement the pending design decision.",
+    "setup": "All local workflows and curated upstream skills are discoverable, but only upstream Teach materially affects the response.",
+    "expected_route_output": "[route: router → teach]",
+    "expected_behavior": "Do not report Discovery, Implementation, Verification, Review, or optional upstream skills merely because they are available or referenced."
+  },
+  {
+    "id": "no-trigger",
+    "requirement": "Observability does not trigger workflow skill execution.",
+    "prompt": "Answer this clear, bounded, low-risk question directly.",
+    "setup": "No workflow skill is needed to answer the request.",
+    "expected_route_output": "[route: router → direct]",
+    "expected_behavior": "Report direct handling from the existing router decision without reclassifying the request, explaining routing, loading or invoking a skill, running a workflow, or writing state for observability."
+  }
+]

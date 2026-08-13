@@ -1,312 +1,412 @@
 # Agentic Workflow
 
-Agentic Workflow is a lightweight, repository-native engineering process for
-Codex, GitHub Copilot Chat, Claude Code, and compatible agent tooling. It routes
-simple work directly while giving consequential decisions, debugging,
-implementation, verification, and review durable structure. Runtime behavior is
-Markdown and JSON in the repository—no daemon, service, container, package
-registry, or external agent runtime is required.
+Agentic Workflow is a lightweight orchestration framework for Codex, GitHub
+Copilot, Claude Code, and compatible agent hosts. It keeps a small repository
+router and a few project-specific safety/integration skills, while delegating
+mature planning, learning, research, specification, ticketing, implementation,
+TDD, and Code Review methods to a curated, tested release of
+[`mattpocock/skills`](https://github.com/mattpocock/skills/releases/tag/v1.2.3).
 
-## Install
+The point of this design is to avoid maintaining weaker local copies of mature
+workflows. A successful installation gives the target project one coherent
+route from intent to the appropriate pinned skill, preserves provider-native
+artifacts and identifiers, and adds independent project acceptance verification
+without loading every workflow body into every prompt.
 
-The installer downloads an immutable revision of this package, validates its
-version, manifest, mappings, and checksums, safely adopts the payload, and
-verifies the installed files. A successful run ends with
-`✓ Agentic workflow <version> installed and verified.`
+## Curated provider baseline
 
-Run one of these commands from the **ordinary project directory you want to use
-as the project root**. The current directory is the target unless an explicit
-target is supplied. The command persistently adds the framework files and needs
-Python 3.9+ plus HTTPS access to GitHub; it does not need Git or a `.git`
-directory.
+Version 0.5.0 is tested against upstream tag `v1.2.3`, commit
+`6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`. The declaration in
+`ai-workflow/providers.json` pins the exact tag, subtree SHA, upstream path, and
+complete file inventory for each selected skill.
 
-On macOS or Linux, run this in the host Terminal. If the project exists only
-inside a VS Code Dev Container, run it instead in that container's VS Code
-terminal:
+| Capability | Selected skill |
+|---|---|
+| Initial provider configuration | `setup-matt-pocock-skills` |
+| Huge, foggy multi-session planning | `wayfinder` |
+| Sustained learning workspace | `teach` |
+| Primary-source repository research | `research` |
+| Durable specification | `to-spec` |
+| Dependency-ordered work | `to-tickets` |
+| Implementation | `implement` |
+| Implementation subflows | `tdd`, `code-review` |
+| Direct composition dependencies | `grilling`, `domain-modeling`, `prototype`, `codebase-design` |
+
+The four composition dependencies are installed even though the root router
+does not select them directly. This prevents a selected upstream workflow from
+discovering a missing dependency halfway through a task. `diagnosing-bugs` is
+not selected: the local debugging workflow uniquely preserves diagnosis-only
+authorization, external-signal handling, and durable resume state.
+
+## Prerequisites
+
+Installation needs Python 3.9+, HTTPS access to GitHub, and GitHub CLI 2.90.0
+or newer with the public-preview `gh skill` command. The installer requires an
+authenticated GitHub.com CLI session before writing a fresh dependency set;
+this avoids unauthenticated API rate limits and makes dependency preflight
+reliable. Runtime work and local provider verification use ordinary repository
+files and do not contact upstream.
+
+Install and authenticate `gh` in the **same environment that owns the target
+project**. For a normal macOS checkout, that is the macOS host Terminal. For a
+project that exists only inside a VS Code Dev Container, use the VS Code
+terminal inside that container and install `gh` there. For native Windows, use
+PowerShell. Installing `gh` is a persistent machine or container change; login
+stores a credential in the platform credential store when one is available.
+
+### macOS
+
+In the **macOS host Terminal**, this persistently installs GitHub CLI with
+Homebrew. If it is already installed but older than 2.90.0, use the upgrade
+command instead. GitHub lists Homebrew as its supported macOS package path.
+
+```bash
+brew install gh
+```
+
+```bash
+brew update && brew upgrade gh
+```
+
+### Windows
+
+In **native Windows PowerShell**, this persistently installs GitHub CLI with
+WinGet. Use the second command to update an older installation. GitHub lists
+WinGet as its supported Windows package path.
+
+```powershell
+winget install --id GitHub.cli --exact
+```
+
+```powershell
+winget upgrade --id GitHub.cli --exact
+```
+
+### Debian, Ubuntu, or a Debian-based Dev Container
+
+In the **Linux host terminal or VS Code Dev Container terminal that owns the
+project**, this official procedure persistently adds GitHub's signed APT source
+and installs `gh`:
+
+```bash
+(type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
+  && sudo mkdir -p -m 755 /etc/apt/keyrings \
+  && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+  && cat "$out" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null \
+  && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  && sudo mkdir -p -m 755 /etc/apt/sources.list.d \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null \
+  && sudo apt update \
+  && sudo apt install gh -y
+```
+
+For Fedora, RHEL, SUSE, and other Linux variants, use the matching complete
+procedure in GitHub's [official Linux installation guide](https://github.com/cli/cli/blob/trunk/docs/install_linux.md).
+
+### Verify and authenticate
+
+In that **same host, container, or Windows terminal**, these read-only checks
+confirm the required version and `gh skill` interface. Then login opens a web
+authentication flow and persistently stores the GitHub credential. The final
+command is the success check: it should identify the active GitHub.com account
+and exit successfully.
+
+```bash
+gh --version
+gh skill install --help
+gh auth login --hostname github.com --web
+gh auth status --hostname github.com
+```
+
+In PowerShell the commands are identical. Headless automation may provide
+`GH_TOKEN` for the current process instead of storing a login. See the official
+[`gh auth login`](https://cli.github.com/manual/gh_auth_login),
+[`gh auth status`](https://cli.github.com/manual/gh_auth_status), and
+[`gh skill install`](https://cli.github.com/manual/gh_skill_install) contracts.
+The skill installer injects source metadata, supports exact `--pin` values, and
+shares project-scoped `.agents/skills` between Codex and GitHub Copilot.
+
+To reverse prerequisite setup, first remove the stored login with
+`gh auth logout --hostname github.com`. Then use `brew uninstall gh` on macOS,
+`winget uninstall --id GitHub.cli --exact` in Windows PowerShell, or
+`sudo apt remove gh -y` on Debian/Ubuntu. The APT removal leaves GitHub's package
+source configured for future reinstall. To remove that configuration too, run
+the following destructive command only in the same Debian/Ubuntu host or
+container; it persistently deletes exactly GitHub CLI's source and keyring, then
+refreshes APT metadata:
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/github-cli.list /etc/apt/keyrings/githubcli-archive-keyring.gpg
+sudo apt update
+```
+
+Removing `gh` does not remove skills already copied into projects.
+
+## Install the framework
+
+The bootstrap downloads an immutable revision of this package, validates its
+version, manifest, mappings, provider declaration, and checksums, preflights
+both the local payload and upstream dependencies, then performs one coordinated
+installation. If upstream installation fails after the payload write, it rolls
+back newly created provider directories, framework files, and unchanged seed
+files that did not predate the operation.
+
+Run the command from the **ordinary project directory that should become the
+project root**. The change is persistent: it adds the files shown below. Git and
+a `.git` directory are recommended for recovery but are not installation or
+runtime prerequisites.
+
+On macOS or Linux, use the **host Terminal**, or the **VS Code terminal inside
+the Dev Container** when the project exists only there:
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
 ```
 
-On native Windows, run this equivalent command in PowerShell from the target
-project directory:
+On native Windows, run this from the target project in **PowerShell**:
 
 ```powershell
 py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
 ```
 
-### Already installed?
+Success ends with both provider verification and
+`✓ Agentic Workflow payload and curated upstream providers are ready.` Open a
+fresh Codex task or Copilot chat from that project root so the host discovers
+the new root policy and skills.
 
-Do not delete `ai-workflow/`, `.agents/`, or
-`ai-workflow/install-manifest.json`. The installation spans multiple locations,
-and the manifest is what lets lifecycle operations distinguish framework-owned
-files from project-owned files.
-
-If installation reports `an installation already exists but is different`, run
-the same bootstrap command with `update` instead. In native Windows PowerShell,
-press **Up Arrow** to recall the command that produced the error, append
-` update`, and press Enter. If the recalled command already ends in `install`,
-replace `install` with `update`. This avoids copying the long command again.
-
-Update persistently replaces only checksum-clean framework content, preserves
-project-owned files, and verifies the result. Success ends with
-`✓ Agentic workflow updated to <version> and verified.` To check afterward,
-recall the command again and replace `update` with `status`; a clean installation
-ends with `✓ Installation is clean.`
-
-There is intentionally no force-overwrite flag. If update names a locally
-changed framework file, back up and reconcile that exact file rather than
-deleting an entire shared directory.
-
-To install into a different existing directory, append `install` and the target
-path. For example, from a macOS or Linux host Terminal:
+To target another existing directory, append `install` and the path. For
+example, from a macOS/Linux host terminal:
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" install /path/to/project
 ```
 
-On Windows PowerShell, the equivalent explicit-target form is:
+From native Windows PowerShell:
 
 ```powershell
 py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" install "C:\path\to\project"
 ```
 
-That's it. Open the project in Codex or VS Code with GitHub Copilot Chat and work
-normally. Git is recommended for additional history and recovery, but is not an
-installation or runtime prerequisite.
+### Optional dry-run
 
-## What gets installed
-
-```text
-target-project/
-├── AGENTS.md
-├── CLAUDE.md
-├── .agents/
-│   └── skills/
-│       ├── workflow-debugging/SKILL.md
-│       ├── workflow-decomposition/SKILL.md
-│       ├── workflow-discovery/SKILL.md
-│       ├── workflow-implementation/SKILL.md
-│       ├── workflow-review/SKILL.md
-│       ├── workflow-teach/SKILL.md
-│       └── workflow-verification/SKILL.md
-├── ai-workflow/
-│   ├── install-manifest.json
-│   ├── project-profile.md
-│   ├── contracts/
-│   ├── state/
-│   └── templates/
-```
-
-`AGENTS.md`, the `CLAUDE.md` compatibility import, workflow skills, contracts,
-templates, and runtime guidance under `ai-workflow/` are framework-owned. The
-project profile and active/state record locations are project-owned seeds:
-installation creates them only when absent, and updates or removal never
-overwrite or delete them.
-
-The framework installs nothing into the target's generic `docs/` namespace.
-Project decisions, specifications, runbooks, and other project documentation
-belong to the target project. Framework architecture, release verification, and
-development ADRs remain only in this source repository's `docs/` tree, where
-target-project agents cannot mistake them for project history.
-
-## Optional dry-run
-
-A dry-run performs package validation and target preflight but makes no files.
-It is optional; a deliberate normal install already authorizes the safe,
-transactional operation.
-
-Run this in the same **host or container terminal and target project root**. It
-is read-only apart from automatically removed temporary download files. On
-Windows PowerShell, use `py -3` in place of `python3`:
+A dry-run validates the package, target ownership, `gh` version/interface,
+authentication, existing compatible skills, and planned writes without making
+persistent target changes. Run it in the same terminal and target project root;
+on Windows substitute `py -3` for `python3`:
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" --dry-run
 ```
 
+## What gets installed
+
+```text
+target-project/
+├── AGENTS.md                         # managed router + project section
+├── CLAUDE.md                        # shared-policy import
+├── .agents/skills/
+│   ├── workflow-debugging/            # local authorization-safe diagnosis
+│   ├── workflow-discovery/            # local bounded decision work
+│   ├── workflow-implementation/       # provider integration adapter
+│   ├── workflow-verification/         # acceptance/integration evidence
+│   ├── setup-matt-pocock-skills/      # pinned upstream directories
+│   ├── wayfinder/ · teach/ · research/
+│   ├── to-spec/ · to-tickets/ · implement/
+│   ├── tdd/ · code-review/
+│   └── grilling/ · domain-modeling/ · prototype/ · codebase-design/
+└── ai-workflow/
+    ├── providers.json                  # tested capability declaration
+    ├── provider-state.json             # provider ownership/checksums
+    ├── install-manifest.json           # local payload ownership/checksums
+    ├── project-profile.md              # project-owned seed
+    ├── contracts/
+    ├── state/
+    └── templates/
+```
+
+`gh skill` copies each complete selected directory, including adjacent Markdown
+resources and `agents/openai.yaml`; the installer rejects a missing, extra, or
+metadata-incompatible file. It does not copy only `SKILL.md`.
+
+The provider skills are project scoped, which is the common `.agents/skills`
+location documented by GitHub CLI for Codex and GitHub Copilot. Detailed skill
+bodies load on demand. The root router is under 5 KB and contains capability
+names and integration boundaries, not copied provider prompt bodies.
+
+## First runtime setup
+
+Installation deliberately does not run `setup-matt-pocock-skills`: setup is a
+prompt-driven, project-specific operation that may write
+`docs/agents/issue-tracker.md`, `docs/agents/domain.md`, optional triage-label
+configuration, and a root `## Agent skills` block. Before the first
+tracker-dependent upstream workflow, the router invokes setup visibly if the
+tracker or domain file is missing. It should not run on every prompt or ordinary
+framework update.
+
+Teach is also bounded deliberately. An explicit sustained learning request uses
+`teach` in a dedicated learning workspace, where its `MISSION.md`, glossary,
+resources, lessons, and learning records belong. A normal knowledge question is
+answered directly and does not seed course artifacts into the engineering
+project.
+
+Responses governed by the router end with one compact effective-path line such
+as `[route: router → implement → verification]`. The marker lists only
+workflows that materially affected that response; skill availability does not
+count, and producing the marker never triggers another workflow.
+
 ## Lifecycle
 
-All lifecycle commands run in the **terminal environment that owns the target
-project, from that explicitly selected project root**. They download and
-validate the needed package revision automatically; no local clone, Git
-repository, or local Git executable is needed. On native Windows PowerShell,
-use `py -3` in place of `python3` in these commands.
+All commands below run in the **terminal environment that owns the target
+project, from that project root**. They download and validate the appropriate
+framework package automatically. On native Windows PowerShell, substitute
+`py -3` for `python3`.
 
 ### Update
 
-Update resolves the current `main` revision, replaces only clean
-framework-owned content, preserves project-owned files and the project portion
-of composite `AGENTS.md` and `CLAUDE.md` files, removes explicitly allowlisted
-retired framework files only when unchanged, including framework documentation
-installed by versions through 0.4.0, and verifies the result. It is a persistent
-project change; `remove` or version control provides reversal. A locally
-modified retired file is preserved and reclassified as project-owned for
-safety; review and remove that file separately if it is obsolete.
+Update preflights both lifecycle components, replaces only checksum-clean
+framework-owned content, preserves project sections and seeds, and changes a
+provider pin only when the reviewed framework declaration changes. Pinned
+skills never float merely because upstream publishes a release; GitHub CLI also
+documents that ordinary `gh skill update` skips pinned skills. The framework
+stages a declared provider upgrade separately and never uses `--unpin` or
+`--force` against project skills.
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
 ```
 
-Success prints `✓ Agentic workflow updated to <version> and verified.` A locally
-modified framework file or downgrade fails before writes; reconcile that file
-explicitly and rerun rather than forcing ownership.
+Success ends with `✓ Agentic Workflow payload and curated upstream providers
+are updated and verified.` Upgrade from 0.4.x also retires unchanged local
+`workflow-teach`, `workflow-decomposition`, and `workflow-review` copies and
+their obsolete learning/ticket templates. A locally modified retired file is
+preserved as project-owned for manual reconciliation.
+
+If update reports a changed framework-created provider, inspect the named
+directory and either preserve the intentional customization under a new
+project-owned skill name or restore the recorded bytes before retrying. A
+pre-existing compatible provider is never silently claimed or replaced; if a
+new framework pin requires it to change, reinstall that dependency explicitly
+at the declared version and rerun update.
 
 ### Status
 
-Status downloads the exact immutable source revision recorded at installation
-and compares every managed file with its recorded checksum. It makes no
-persistent target change.
+Status is read-only for the target. The public bootstrap downloads the exact
+framework package recorded at installation, then verifies both manifests,
+managed blocks, provider metadata, complete directory inventories, and every
+recorded checksum. It does not query or update the upstream skill repository.
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" status
 ```
 
-Success exits 0 and prints `✓ Installation is clean.` Missing or changed managed
-content exits 1; malformed state or an unavailable exact source revision exits
-2. The most useful next diagnostic is the first `missing:` or `modified:` path
-in the output.
+Clean payload and provider checks both exit 0. Missing or modified managed
+content exits 1; malformed state, a mismatched source package, or an unsafe path
+exits 2. The first named `modified`, `missing`, or `missing-or-incompatible`
+path is the most useful next diagnostic.
 
 ### Remove
 
-Remove downloads the exact recorded source revision and persistently deletes
-only unchanged files created by that version. It restores the original bytes of
-clean pre-existing `AGENTS.md` and `CLAUDE.md` files, preserves pre-existing
-identical or locally modified framework paths, and keeps all project-owned
-profile and state files.
+Remove uses the exact recorded framework package. It deletes only unchanged
+local files and upstream skill directories created by this framework, restores
+clean pre-existing root policies, and preserves pre-existing compatible or
+locally changed skills plus all project-owned state. Provider state must match
+the exact declaration before any provider directory can be removed.
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" remove
 ```
 
 Reinstall the recorded version or restore from version control to reverse a
-removal. Project-owned files intentionally remain and may be deleted separately
-only after human review.
+removal. Project-owned profile, state, setup documents, specifications, tickets,
+learning workspaces, and modified/pre-existing skills intentionally remain and
+must be reviewed separately before deletion.
 
 ## Safety and ownership
 
-- Existing differing `AGENTS.md` and `CLAUDE.md` files are preserved
-  byte-for-byte as project sections beneath explicit managed markers. Removal
-  restores them exactly.
-- A different existing framework target, such as a same-named workflow skill,
-  blocks the whole operation before any file is written.
-- Repeating a clean installation is idempotent and reports that it is already
-  installed and verified.
-- Updates refuse locally modified managed content instead of merging or
-  overwriting it.
-- Every source and installed managed file has a SHA-256 checksum. Target paths
-  are validated against absolute paths, traversal, symlinks, and non-directory
-  parents.
-- Writes are atomic and ordinary Python-visible failures roll back all changes
-  in the operation. A machine crash or failing storage can still require backup
-  or version-control recovery.
+- Root `AGENTS.md` is composite: the framework owns only its marked policy
+  block, while the project owns the section below the project marker.
+- `provider-state.json` distinguishes `created` from
+  `preexisting-compatible`; removal never claims the latter.
+- A same-named incompatible skill blocks the whole operation before writes.
+- Installation is idempotent when both payload and provider baseline are clean.
+- Updates refuse local changes rather than merging or overwriting them.
+- Source paths, target paths, symlinks, special files, exact file inventories,
+  injected GitHub metadata, subtree SHAs, and SHA-256 checksums are validated.
+- Normal filesystem failures roll back component transactions. Coordinated
+  operations preflight both components; if an unexpected second-component
+  failure survives preflight, rerun `status` to identify the exact partial
+  boundary before retrying or restoring from version control.
 
-The installation manifest is ownership evidence, not a license to delete
-arbitrary paths. Removal authenticates its ownership set against the exact
-source package; updates remove retired paths only when the current package
-explicitly allowlists them and the installed bytes are unchanged.
+The manifests are ownership evidence, never authority to delete arbitrary
+paths. Provider removal binds target-controlled state back to the exact curated
+declaration before resolving any directory.
 
 ## Distribution architecture
 
-The bootstrap skill is the source/distribution boundary. Repository-level
-`docs/` contains maintainer-only architecture, verification, and development
-decisions and is not part of the payload. The payload itself is inert:
-it deliberately does not contain a literal `AGENTS.md`, `CLAUDE.md`, `.agents`
-tree, or `.github` customization tree that an editor could interpret while
-browsing this repository.
+The package is inert while stored in this repository: it contains templates and
+explicit source-to-target mappings rather than live nested `AGENTS.md` or
+`.agents` customization paths.
 
 ```text
-docs/                         # source-repository maintainer documentation only
+docs/                         # maintainer architecture, routing, ADRs
 skills/agentic-workflow/
 ├── SKILL.md
-├── VERSION                 # single version source of truth
+├── VERSION
 ├── scripts/
-│   ├── bootstrap.py        # resolve/download/verify/dispatch
-│   ├── adopt.py            # safe target lifecycle
-│   └── verify_package.py   # release and package integrity gate
+│   ├── bootstrap.py             # immutable download and dispatch
+│   ├── lifecycle.py             # coordinated one-command lifecycle
+│   ├── adopt.py                 # local payload transaction
+│   ├── providers.py             # pinned gh skill transaction
+│   └── verify_package.py        # release/package gate
 ├── payload/
-│   ├── VERSION             # generated/verified from package VERSION
 │   ├── distribution/manifest.json
 │   ├── root/AGENTS.md.template
-│   ├── root/CLAUDE.md.template
 │   ├── skills/workflow-*/SKILL.md
-│   └── ai-workflow/
+│   └── ai-workflow/providers.json
 └── tests/
 ```
 
-The manifest explicitly maps inert source paths to installed targets, for
-example `payload/root/AGENTS.md.template → AGENTS.md`,
-`payload/root/CLAUDE.md.template → CLAUDE.md`, and
-`payload/skills/workflow-teach/SKILL.md →
-.agents/skills/workflow-teach/SKILL.md`. Installed repositories need none of the
-bootstrap package for runtime use.
+Installed repositories need none of the bootstrap package at runtime. Framework
+maintainer docs remain in this source repository and are never installed into a
+target's generic `docs/` namespace.
 
-### Documentation payload audit
+## Develop and verify
 
-Every file formerly installed under target-level `docs/` is now classified as
-framework maintainer/development documentation and excluded from the payload:
-
-| Former installed path | Classification and disposition |
-|---|---|
-| `docs/architecture.md` | Framework architecture and distribution ownership; retained only in this repository. Runtime ownership rules already live in `AGENTS.md` and `ai-workflow/`. |
-| `docs/routing.md` | Framework routing design; retained only in this repository. The installed root policy and workflow skills are the runtime authority. |
-| `docs/verification.md` | Package release and lifecycle-test guidance; retained only in this repository. |
-| `docs/decisions/0002-use-checksummed-copy-adoption.md` | Framework-development ADR; retained only in this repository. |
-| `docs/decisions/0003-use-internal-reference-inspired-workflows.md` | Framework-development ADR; retained only in this repository. |
-| `docs/decisions/0005-add-decomposition-and-independent-review.md` | Framework-development ADR; retained only in this repository. |
-| `docs/decisions/0006-use-inert-bootstrap-payload.md` | Framework-development ADR; retained only in this repository. |
-
-No file in that former namespace is required by an installed skill. Runtime
-references point only to installed paths under `ai-workflow/`; package
-verification rejects future framework-owned mappings into target-level `docs/`
-and rejects unresolved concrete `ai-workflow/*.md` or `docs/*.md` references in
-installed skills.
-
-Package `VERSION` is authoritative. Maintainers change that one file and run the
-refresh command; the verifier derives payload `VERSION`, manifest version, file
-mappings, and checksums, then rejects any later drift.
-
-## Develop and verify the package
-
-The refresh command persistently rewrites only generated payload version and
-manifest metadata. Run it in the **macOS host Terminal from this distribution
-repository root** after an intentional version or payload change:
+After an intentional payload or version change, run this persistent metadata
+refresh in the **macOS host Terminal from this repository root**. It rewrites
+only generated payload version and distribution-manifest data:
 
 ```bash
 python3 skills/agentic-workflow/scripts/verify_package.py --refresh-manifest
 ```
 
-Then run the complete read-only verification suite from the same location. It
-creates ordinary non-Git project directories, one temporary Git repository,
-and local archives under the system temporary directory, then removes them
-automatically. Git is needed only for the contributor test that proves existing
-Git repositories remain supported; the installer itself does not invoke Git:
+Then run the full verification suite from the **same repository root**. The
+tests create and automatically remove temporary ordinary projects, a temporary
+Git repository, and local archive/provider fixtures; they do not alter the
+target projects on your machine:
 
 ```bash
 python3 skills/agentic-workflow/scripts/verify_package.py --tests
 ```
 
 Success ends with `OK: distributable package is internally consistent.` If it
-fails, use the named invariant or first failing lifecycle test as the next
-diagnostic. Interactive editor discovery remains a separate manual check because
-static files cannot prove a running extension loaded them.
+fails, the first named invariant or lifecycle test is the next diagnostic.
+Interactive host discovery remains a separate read-only smoke test because
+static files cannot prove that a running editor mounted its skill catalog.
 
 ## Requirements and limitations
 
-Installation is supported on macOS, Linux, and native Windows and needs Python
-3.9+, HTTPS access to GitHub, and an existing ordinary project directory. Git,
-a `.git` directory, and prior `git init` are not required. Git is recommended
-for additional recovery and change history. Runtime use needs compatible agent
-tooling that discovers root `AGENTS.md` and project skills under
-`.agents/skills`; current GitHub Copilot documentation lists both conventions.
-Claude Code receives the same shared policy through the installed root
-`CLAUDE.md` import. Routing is instruction-driven rather than a deterministic
-policy engine, and customized managed blocks are deliberately not auto-merged.
+The supported target environments are macOS, Linux, and native Windows with
+Python 3.9+ and filesystem semantics visible to Python. Fresh provider install
+also needs GitHub CLI 2.90.0+, HTTPS access, and GitHub.com authentication. Git
+is recommended but not required by the installer.
 
-The first-stage command retrieves mutable `main` over TLS before the bootstrap
-resolves an immutable commit and validates the package. Published releases can
-replace `main` with a tag for a reproducible first stage. This repository does
-not publish or sign releases as part of the v0 refactor.
+Routing is instruction-driven, not host telemetry. The compact route line is an
+instruction-enforced declaration. Provider instructions cannot enlarge the
+user's authorization: commits, publishing, external tracker mutation, setup
+writes, and course-workspace writes still require the request and host approval
+boundary to allow them.
 
-The framework is general-purpose and includes no third-party agent runtime,
-adapter, daemon, telemetry, credential store, or mandatory infrastructure
-integration. It is available under the [MIT License](LICENSE).
+The first-stage public command retrieves mutable `main` over TLS before the
+bootstrap resolves an immutable commit. A published tag may replace `main` for
+a reproducible first stage. The project is available under the [MIT License](LICENSE).

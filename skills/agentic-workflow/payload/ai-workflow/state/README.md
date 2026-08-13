@@ -15,21 +15,31 @@ result from delegated work, never a raw transcript or private memory.
 
 ## Locations and identifiers
 
-- `active.md`: one small active/interrupted workflow pointer.
+- `active.md`: one small active/interrupted workflow and provider pointer.
 - `records/<ID>-<slug>.md`: active durable records.
 - `archive/<year>/<ID>-<slug>.md`: completed, rejected, or superseded history.
 
-Use stable, never-reused identifiers: `DEC-NNNN` for decisions, `IMP-NNNN` for
-implementation coordination, `TKT-NNNN` for local implementation tickets,
-`DBG-NNNN` for debugging, `LRN-NNNN` for learning, and `IDP-NNNN` for optional
-internal-developer-platform opportunities. Allocate one greater than the highest
+Use stable, never-reused identifiers: `DEC-NNNN` for bounded local decisions,
+`IMP-NNNN` for implementation orchestration, `DBG-NNNN` for debugging, and
+`IDP-NNNN` for optional internal-developer-platform opportunities. Allocate one
+greater than the highest
 matching ID in both records and archive. Renaming a slug does not change its ID.
+These prefixes apply only to framework-owned state; they never wrap or replace
+an identifier owned by Wayfinder or another native tracker.
+
+Wayfinder-owned maps and decision tickets remain outside this allocator. Store a
+needed origin or return pointer exactly as Wayfinder supplies it, including the
+tracker issue ID or URL, and do not create a parallel `DEC`, `TKT`, `UNK`, `LRN`,
+or other alias. A Jira key such as `ARC-384` and a GitHub issue such as `#384` stay
+tracker identifiers; the framework does not rewrite them to resemble its local
+records. See `../README.md` for the concise Wayfinder legend.
 
 Decision statuses are `proposed`, `provisional`, `accepted`, `rejected`, and
-`superseded`. Implementation, debugging, and learning records use `active`,
-`interrupted`, `blocked`, `completed`, and `superseded`. Tickets use `draft`,
-`ready`, `active`, `blocked`, `completed`, and `superseded`. `blocked` requires a
-named blocker and recovery condition. Only decisions may use `provisional`;
+`superseded`. Implementation and debugging records use `active`, `interrupted`,
+`blocked`, `completed`, and `superseded`. Provider-owned maps, course workspaces,
+specifications, tickets, and reviews keep their native status and identity;
+framework state stores only pointers and exact return targets. `blocked` requires
+a named blocker and recovery condition. Only decisions may use `provisional`;
 every provisional decision must state a review trigger. An IDP opportunity is
 supplemental, never an active workflow, and uses `proposed`, `accepted`,
 `rejected`, `completed`, or `superseded`.
@@ -44,34 +54,19 @@ link to the canonical specification and record only status or evidence that is
 not already there. Do not copy a specification into state or invent a global
 framework-owned specs directory.
 
-## Durable decomposition and actionable frontier
+## Provider artifacts and orchestration pointers
 
-Decompose only an approved canonical specification whose implementation needs
-multiple dependency-ordered, parallel, or independently deliverable sessions.
-Work that fits one coherent implementation session remains one `IMP` record or
-no durable record. An `IMP` coordinator links the specification, canonical
-ticket set, and current frontier; it never copies complete ticket bodies.
+Upstream providers own their maps, course workspaces, research files,
+specifications, tickets, TDD loop, and Code Review output. Keep those artifacts
+canonical. A durable `IMP` record or `active.md` may store the provider skill,
+native identifier or repository-relative link, current target, and exact return
+point; it must not copy a provider body or allocate a parallel framework alias.
 
-Use local `TKT` records from `../templates/ticket-record.md` when no accepted
-native tracker owns the tickets. When an installed native ticket system is used,
-its issue bodies are canonical: the coordinating `IMP` and active index contain
-only native identifiers or links, current ticket, frontier, and concise
-disposition. Do not create shadow `TKT` records or mirror native issue content.
-
-Every ticket has stable blocker references. Reject self-dependencies, missing
-blockers, and cycles. The actionable frontier is every incomplete,
-non-superseded `ready` ticket whose blockers are all `completed` and which has no
-separately named active blocker. Recompute it after Verification and any required
-Review. An incomplete ticket set with no frontier is invalid or blocked and must
-name the exact condition before work resumes unless one valid ticket is already
-`active`. Ticket readiness never grants
+Use `to-tickets` only when dependency-ordered or independently deliverable
+sessions add value. Its tracker or local-markdown ticket identity and frontier
+semantics pass through unchanged. Work that fits one coherent implementation
+session skips ticket decomposition. A ticket's status or text never grants
 permission to run a command, access an external system, or mutate state.
-`ready` means its definition is approved and implementation-ready, not that it
-is currently actionable; dependency edges gate the frontier. Reserve `blocked`
-for an exceptional named condition beyond declared ticket dependencies.
-Implementation moves a selected frontier ticket to `active`; an interrupted
-task resumes that active ticket through `active.md` rather than putting it back
-on the ready frontier.
 
 ## Optional IDP opportunities
 
@@ -129,11 +124,11 @@ interrupted workflow cannot equal the active workflow. Update the index only at
 workflow transitions, not after every message.
 
 Allowed values for `Active workflow` and `Interrupted workflow` are
-`discovery`, `teach`, `decomposition`, `implementation`, `debugging`,
-`verification`, `review`, and `none`. The router maps each non-`none` value to
-the matching `workflow-*` skill. A resume request with an active value continues
-at `Resume target` after validation; it does not reconstruct the task from chat
-recollection.
+`discovery`, `implementation`, `debugging`, `verification`, `provider`, and
+`none`. `Provider skill` names the selected upstream skill when the value is
+`provider`; `Provider artifact` stores its canonical pointer. A resume request
+continues at `Resume target` after validating both the framework record and
+provider artifact; it does not reconstruct the task from chat recollection.
 
 ## Invalid, stale, or conflicting state
 

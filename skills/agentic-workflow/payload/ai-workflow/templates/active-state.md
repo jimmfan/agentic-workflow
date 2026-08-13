@@ -3,6 +3,8 @@
 - State version: 1
 - Active workflow: none
 - Active record: none
+- Provider skill: none
+- Provider artifact: none
 - Interrupted workflow: none
 - Interrupted record: none
 - Pending question: none
@@ -10,4 +12,3 @@
 - Last reviewed: YYYY-MM-DD
 - Review after: none
 - Notes: none
-

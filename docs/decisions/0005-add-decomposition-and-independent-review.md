@@ -1,7 +1,8 @@
 # ADR-0005: Add durable decomposition and independent review
 
-- Status: accepted
+- Status: superseded by ADR-0007
 - Date: 2026-08-12
+- Superseded: 2026-08-13
 
 ## Context
 
@@ -23,6 +24,10 @@ Add `workflow-decomposition` and project-owned `TKT-NNNN` records for approved
 multi-session work. A separately installed, explicitly invoked native ticket
 workflow may own its tracker artifacts; framework state then keeps only links
 and the return target. Never mirror complete ticket bodies.
+These `TKT` records are post-specification implementation slices, not aliases
+for Wayfinder's planning-time decision tickets. Wayfinder maps and tickets keep
+their configured tracker identities unchanged and never enter the `TKT`
+allocator.
 
 Add `workflow-review` as a proportional completion gate after Verification for
 meaningful changes. Review may use independent read-only passes, but the parent
@@ -55,3 +60,15 @@ project explicitly configures it and the user authorizes the exact action.
   portable authorization and verification contracts.
 - Replace Implementation or Debugging: rejected because the audited upstream
   alternatives omit important general-purpose safety and scope boundaries.
+
+## Supersession note
+
+The earlier audit was tied to commit
+`84fdeffd12f2ee307994d1eb6feb48173b6e0502` and treated upstream methods as
+separately installed optional references. ADR-0007 adopts a tested pinned
+provider baseline instead. Upstream `to-tickets` now owns dependency-ordered
+ticket decomposition and native ticket identities; upstream `implement` owns
+TDD and its closing Code Review. The local decomposition/review skills and
+`TKT` template are retired. Local Debugging, authorization controls,
+Implementation integration, and acceptance/integration Verification remain
+because their responsibilities are still distinct.
