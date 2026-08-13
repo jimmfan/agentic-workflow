@@ -8,9 +8,9 @@ description: Build the user's project-grounded understanding for an informed dec
 Teach enough for the user's stated outcome, then return control. Do not silently
 make the architecture decision or implement the interrupted work.
 
-When resuming from `active.md`, require `Active workflow: teach`, validate the
-record pointers, and continue at the stored `Resume target` before introducing a
-new learning target.
+When resuming from `ai-workflow/state/active.md`, require
+`Active workflow: teach`, validate the record pointers, and continue at the
+stored `Resume target` before introducing a new learning target.
 
 ## Establish the learning target
 
@@ -41,9 +41,10 @@ must resume later.
 ## Optional upstream Teach
 
 Use an installed upstream `/teach` only when the user explicitly invokes it for
-its audited multi-session learning-workspace use case. Apply the ownership and
-workspace boundary in `docs/reference-research.md`; never mirror its course
-artifacts. If it is unavailable, say so and offer this bounded local workflow.
+its multi-session learning-workspace use case. Keep its course artifacts
+canonical in its dedicated workspace; never mirror them into framework state or
+silently write them into the engineering project. If it is unavailable, say so
+and offer this bounded local workflow.
 
 ## Return control
 
@@ -52,7 +53,7 @@ tradeoff accurately enough for the pending action, or explicitly says they are
 ready while remaining uncertainty is visible. If Discovery was interrupted:
 
 1. Update the learning record if used.
-2. Restore `active workflow: discovery` in `active.md`.
+2. Restore `active workflow: discovery` in `ai-workflow/state/active.md`.
 3. Clear the interrupted-workflow field only after copying the exact resume
    target into the active Discovery state.
 4. Resume the pending decision without silently deciding it.

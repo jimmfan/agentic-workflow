@@ -8,9 +8,9 @@ description: Diagnose an existing unexplained failure through an evidence-driven
 Find the cause before choosing the fix. The first plausible theory is a
 hypothesis, not a diagnosis.
 
-When resuming from `active.md`, require `Active workflow: debugging`, validate
-its evidence record, and continue with the stored hypothesis or diagnostic at
-`Resume target`.
+When resuming from `ai-workflow/state/active.md`, require
+`Active workflow: debugging`, validate its evidence record, and continue with
+the stored hypothesis or diagnostic at `Resume target`.
 
 ## Establish the investigation
 

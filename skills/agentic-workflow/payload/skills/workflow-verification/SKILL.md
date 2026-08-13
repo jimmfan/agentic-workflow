@@ -7,9 +7,9 @@ description: Verify implemented behavior or a causal fix against explicit accept
 
 Verification gathers evidence; it never converts missing evidence into success.
 
-When resuming from `active.md`, require `Active workflow: verification`, validate
-the referenced acceptance criteria and work record, and continue at the exact
-stored check.
+When resuming from `ai-workflow/state/active.md`, require
+`Active workflow: verification`, validate the referenced acceptance criteria and
+work record, and continue at the exact stored check.
 
 ## Select checks
 

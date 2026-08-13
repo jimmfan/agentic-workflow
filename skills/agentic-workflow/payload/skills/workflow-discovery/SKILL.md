@@ -45,9 +45,10 @@ assumptions or the user requests reconsideration. Mark the old record
 ## Optional upstream Wayfinder
 
 Use an installed upstream `/wayfinder` only when the user explicitly invokes it
-for its audited foggy multi-session use case. Apply the native-artifact and
-mutation boundary in `docs/reference-research.md`; never mirror its map. If it is
-unavailable, say so and offer this local workflow.
+for its foggy multi-session use case. Its native map remains canonical; never
+mirror it into framework state, and apply the normal authorization boundary to
+any repository or external-tracker mutation. If it is unavailable, say so and
+offer this local workflow.
 
 ## Hand off to Teach
 

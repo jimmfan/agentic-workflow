@@ -72,13 +72,18 @@ target-project/
 │   ├── contracts/
 │   ├── state/
 │   └── templates/
-└── docs/
 ```
 
-`AGENTS.md`, workflow skills, contracts, templates, and installed documentation
-are framework-owned. The project profile and active/state record locations are
-project-owned seeds: installation creates them only when absent, and updates or
-removal never overwrite or delete them.
+`AGENTS.md`, workflow skills, contracts, templates, and runtime guidance under
+`ai-workflow/` are framework-owned. The project profile and active/state record
+locations are project-owned seeds: installation creates them only when absent,
+and updates or removal never overwrite or delete them.
+
+The framework installs nothing into the target's generic `docs/` namespace.
+Project decisions, specifications, runbooks, and other project documentation
+belong to the target project. Framework architecture, release verification, and
+development ADRs remain only in this source repository's `docs/` tree, where
+target-project agents cannot mistake them for project history.
 
 ## Optional dry-run
 
@@ -107,8 +112,11 @@ use `py -3` in place of `python3` in these commands.
 Update resolves the current `main` revision, replaces only clean
 framework-owned content, preserves project-owned files and the project portion
 of a composite `AGENTS.md`, removes explicitly allowlisted retired framework
-files only when unchanged, and verifies the result. It is a persistent project
-change; `remove` or version control provides reversal.
+files only when unchanged, including framework documentation installed by
+versions through 0.4.0, and verifies the result. It is a persistent project
+change; `remove` or version control provides reversal. A locally modified
+retired file is preserved and reclassified as project-owned for safety; review
+and remove that file separately if it is obsolete.
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow-instructions/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
@@ -172,12 +180,15 @@ explicitly allowlists them and the installed bytes are unchanged.
 
 ## Distribution architecture
 
-The bootstrap skill is the source/distribution boundary. Its payload is inert:
+The bootstrap skill is the source/distribution boundary. Repository-level
+`docs/` contains maintainer-only architecture, verification, and development
+decisions and is not part of the payload. The payload itself is inert:
 it deliberately does not contain a literal `AGENTS.md`, `.agents` tree, or
 `.github` customization tree that an editor could interpret while browsing this
 repository.
 
 ```text
+docs/                         # source-repository maintainer documentation only
 skills/agentic-workflow/
 ├── SKILL.md
 ├── VERSION                 # single version source of truth
@@ -190,8 +201,7 @@ skills/agentic-workflow/
 │   ├── distribution/manifest.json
 │   ├── root/AGENTS.md.template
 │   ├── skills/workflow-*/SKILL.md
-│   ├── ai-workflow/
-│   └── docs/
+│   └── ai-workflow/
 └── tests/
 ```
 
@@ -200,6 +210,27 @@ example `payload/root/AGENTS.md.template → AGENTS.md` and
 `payload/skills/workflow-teach/SKILL.md →
 .agents/skills/workflow-teach/SKILL.md`. Installed repositories need none of the
 bootstrap package for runtime use.
+
+### Documentation payload audit
+
+Every file formerly installed under target-level `docs/` is now classified as
+framework maintainer/development documentation and excluded from the payload:
+
+| Former installed path | Classification and disposition |
+|---|---|
+| `docs/architecture.md` | Framework architecture and distribution ownership; retained only in this repository. Runtime ownership rules already live in `AGENTS.md` and `ai-workflow/`. |
+| `docs/routing.md` | Framework routing design; retained only in this repository. The installed root policy and workflow skills are the runtime authority. |
+| `docs/verification.md` | Package release and lifecycle-test guidance; retained only in this repository. |
+| `docs/decisions/0002-use-checksummed-copy-adoption.md` | Framework-development ADR; retained only in this repository. |
+| `docs/decisions/0003-use-internal-reference-inspired-workflows.md` | Framework-development ADR; retained only in this repository. |
+| `docs/decisions/0005-add-decomposition-and-independent-review.md` | Framework-development ADR; retained only in this repository. |
+| `docs/decisions/0006-use-inert-bootstrap-payload.md` | Framework-development ADR; retained only in this repository. |
+
+No file in that former namespace is required by an installed skill. Runtime
+references point only to installed paths under `ai-workflow/`; package
+verification rejects future framework-owned mappings into target-level `docs/`
+and rejects unresolved concrete `ai-workflow/*.md` or `docs/*.md` references in
+installed skills.
 
 Package `VERSION` is authoritative. Maintainers change that one file and run the
 refresh command; the verifier derives payload `VERSION`, manifest version, file

@@ -13,7 +13,7 @@ profile before relying on project checks, including the canonical locations for
 durable specifications and implementation tickets. State records link to
 canonical specification and native-ticket bodies rather than copying them.
 Framework updates never overwrite those files. Contracts, templates, skills,
-this file, and installed documentation are framework-owned; the generated
+the state contract, and this file are framework-owned; the generated
 `install-manifest.json` records their installed
 checksums, pre-install provenance, and source revision status.
 

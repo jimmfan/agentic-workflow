@@ -21,6 +21,15 @@ ADOPT = PACKAGE / "scripts" / "adopt.py"
 BOOTSTRAP = PACKAGE / "scripts" / "bootstrap.py"
 VERIFY = PACKAGE / "scripts" / "verify_package.py"
 REVISION = "1" * 40
+FORMER_FRAMEWORK_DOCS = (
+    "docs/architecture.md",
+    "docs/decisions/0002-use-checksummed-copy-adoption.md",
+    "docs/decisions/0003-use-internal-reference-inspired-workflows.md",
+    "docs/decisions/0005-add-decomposition-and-independent-review.md",
+    "docs/decisions/0006-use-inert-bootstrap-payload.md",
+    "docs/routing.md",
+    "docs/verification.md",
+)
 
 
 def load_script(name: str, path: Path):
@@ -85,6 +94,9 @@ class LifecycleTests(unittest.TestCase):
         self.assertTrue((target / ".agents/skills/workflow-teach/SKILL.md").is_file())
         self.assertTrue((target / "ai-workflow/project-profile.md").is_file())
         self.assertTrue((target / "ai-workflow/state/active.md").is_file())
+        self.assertFalse((target / "docs").exists())
+        for relative in FORMER_FRAMEWORK_DOCS:
+            self.assertFalse((target / relative).exists())
         status = adopt(ADOPT, "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
         self.assertIn("Installation is clean", status.stdout)
@@ -104,6 +116,24 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(removed.returncode, 0, removed.stderr)
         self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
         self.assertTrue((target / "ai-workflow/project-profile.md").is_file())
+
+    def test_target_project_docs_are_never_supplied_or_removed(self) -> None:
+        target = self.base / "documented-project"
+        project_decision = target / "docs/decisions/0001-project-architecture.md"
+        project_decision.parent.mkdir(parents=True)
+        project_decision.write_text("# Project-owned decision\n", encoding="utf-8")
+
+        installed = adopt(ADOPT, "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        self.assertEqual(project_decision.read_text(encoding="utf-8"), "# Project-owned decision\n")
+        for relative in FORMER_FRAMEWORK_DOCS:
+            self.assertFalse((target / relative).exists())
+
+        updated = adopt(ADOPT, "update", target)
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        removed = adopt(ADOPT, "remove", target)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertEqual(project_decision.read_text(encoding="utf-8"), "# Project-owned decision\n")
 
     def test_default_target_is_current_directory(self) -> None:
         target = self.base / "current-project"
@@ -269,6 +299,38 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(updated.returncode, 0, updated.stderr)
         self.assertEqual(profile.read_text(encoding="utf-8"), "custom project profile\n")
         self.assertFalse((target / retired_source).exists())
+
+    def test_update_removes_all_unchanged_framework_docs_from_legacy_install(self) -> None:
+        old_package = self.base / "legacy-docs-package"
+        shutil.copytree(PACKAGE, old_package)
+        (old_package / "VERSION").write_text("0.4.0\n", encoding="utf-8")
+        refreshed = run(sys.executable, old_package / "scripts/verify_package.py", "--refresh-manifest")
+        self.assertEqual(refreshed.returncode, 0, refreshed.stderr)
+
+        manifest_path = old_package / "payload/distribution/manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        for relative in FORMER_FRAMEWORK_DOCS:
+            destination = old_package / "payload" / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(f"# Legacy framework documentation\n\n{relative}\n", encoding="utf-8")
+            manifest["retired_framework_owned"].remove(relative)
+            manifest["framework_owned"].append({"source": relative, "target": relative})
+            manifest["checksums"][relative] = hashlib.sha256(destination.read_bytes()).hexdigest()
+        manifest["framework_owned"].sort(key=lambda item: item["source"])
+        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+        target = self.base / "legacy-target"
+        target.mkdir()
+        old_install = adopt(old_package / "scripts/adopt.py", "install", target)
+        self.assertEqual(old_install.returncode, 0, old_install.stderr)
+        for relative in FORMER_FRAMEWORK_DOCS:
+            self.assertTrue((target / relative).is_file())
+
+        updated = adopt(ADOPT, "update", target)
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertFalse((target / "docs").exists())
+        for relative in FORMER_FRAMEWORK_DOCS:
+            self.assertFalse((target / relative).exists())
 
     def test_package_version_and_checksum_drift_are_detected(self) -> None:
         copied = self.base / "package"

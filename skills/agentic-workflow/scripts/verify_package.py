@@ -38,7 +38,14 @@ RETIRED = (
     "adapters/hermes/request.schema.json",
     "adapters/hermes/result.schema.json",
     "adapters/hermes/smoke-request.json",
+    "docs/architecture.md",
+    "docs/decisions/0002-use-checksummed-copy-adoption.md",
+    "docs/decisions/0003-use-internal-reference-inspired-workflows.md",
+    "docs/decisions/0005-add-decomposition-and-independent-review.md",
+    "docs/decisions/0006-use-inert-bootstrap-payload.md",
     "docs/integrations/hermes.md",
+    "docs/routing.md",
+    "docs/verification.md",
     "scripts/hermes_adapter.py",
 )
 EXECUTABLE_PACKAGE_PATHS = frozenset()
@@ -206,14 +213,27 @@ def check_manifest() -> None:
         source = safe_relative(item["source"])
         target = safe_relative(item["target"])
         require((PAYLOAD_ROOT / source).is_file(), f"manifest-owned source is missing: {source}")
+        require(
+            not target.parts or target.parts[0] != "docs",
+            f"framework-owned content must not install into the generic docs namespace: {target}",
+        )
         targets.append(target)
     require(len(targets) == len(set(targets)), "framework_owned target paths must be unique")
+    seeds = actual["project_seeds"]  # type: ignore[index]
+    require(isinstance(seeds, list), "project_seeds must be an array")
+    for item in seeds:
+        require(isinstance(item, dict) and set(item) == {"source", "target"}, "project_seeds entries need source and target")
+        target = safe_relative(item["target"])
+        require(
+            not target.parts or target.parts[0] != "docs",
+            f"framework project seeds must not install into the generic docs namespace: {target}",
+        )
 
 
 def check_inert_payload() -> None:
     allowed_package_entries = {"SKILL.md", "VERSION", "examples", "payload", "scripts", "tests"}
     require({path.name for path in PACKAGE_ROOT.iterdir()} <= allowed_package_entries, "package root contains an unexpected entry")
-    allowed_payload_entries = {"VERSION", "ai-workflow", "distribution", "docs", "root", "skills"}
+    allowed_payload_entries = {"VERSION", "ai-workflow", "distribution", "root", "skills"}
     require({path.name for path in PAYLOAD_ROOT.iterdir()} == allowed_payload_entries, "payload top-level entries drifted")
     require(not (PAYLOAD_ROOT / "AGENTS.md").exists(), "payload must not contain an active root AGENTS.md")
     require(not (PAYLOAD_ROOT / ".agents").exists(), "payload must not contain an active .agents tree")
@@ -283,6 +303,26 @@ def check_markdown_links() -> None:
     require(not failures, "broken package Markdown links: " + "; ".join(failures))
 
 
+def check_installed_skill_references() -> None:
+    manifest = load_manifest()
+    mappings = manifest["framework_owned"]
+    seeds = manifest["project_seeds"]
+    available = {
+        item["target"]
+        for item in [*mappings, *seeds]  # type: ignore[misc]
+        if isinstance(item, dict) and isinstance(item.get("target"), str)
+    }
+    pattern = re.compile(r"`((?:ai-workflow|docs)/[^`\n]*\.md)`")
+    failures = []
+    for path in (PAYLOAD_ROOT / "skills").rglob("SKILL.md"):
+        for reference in pattern.findall(path.read_text(encoding="utf-8")):
+            if "<" in reference or ">" in reference:
+                continue
+            if reference not in available:
+                failures.append(f"{path.relative_to(PAYLOAD_ROOT)} -> {reference}")
+    require(not failures, "unresolved installed skill references: " + "; ".join(failures))
+
+
 def run_tests() -> None:
     result = subprocess.run(
         [sys.executable, "-m", "unittest", "discover", "-s", str(PACKAGE_ROOT / "tests"), "-p", "test_*.py", "-v"],
@@ -310,6 +350,7 @@ def main(argv: Iterable[str] = ()) -> int:
         check_workflow_contract,
         check_no_external_runtime,
         check_markdown_links,
+        check_installed_skill_references,
     )
     for check in checks:
         check()

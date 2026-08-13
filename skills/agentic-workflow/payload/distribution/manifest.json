@@ -1,6 +1,6 @@
 {
   "checksums": {
-    "ai-workflow/README.md": "fe3141b7da0fcf7e2e8463225626c33864ae9c81520f030b12081c882eee48b4",
+    "ai-workflow/README.md": "e2281247020dda2312a8468a659fb630abc7b7784e027edc178aeb10309eedb4",
     "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
     "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
     "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
@@ -9,21 +9,14 @@
     "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
     "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
     "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
-    "docs/architecture.md": "f270213274a5d06895e29be1bbbc56ae60a81682ab4b5dd6630fceed3086ca35",
-    "docs/decisions/0002-use-checksummed-copy-adoption.md": "449ede8a9d69923692cdc748c12445ee7b8c60b0e2e19647f753f013bf0b7654",
-    "docs/decisions/0003-use-internal-reference-inspired-workflows.md": "28547a05a4a14ac80f8d22f8fcaa3a0d7caaec39bb11fb5d6187c163121b4d9c",
-    "docs/decisions/0005-add-decomposition-and-independent-review.md": "5ba8663885a75048a4045dc271c62718794d7cf87edd372dae9569088f593100",
-    "docs/decisions/0006-use-inert-bootstrap-payload.md": "048e613eb9d9dac557e1fef40cdc58dd6f33da55cf93e4d4342cff4cb994a66b",
-    "docs/routing.md": "c0bd57e5d57f17ea3d6b50f2d4c2d4dfe2ce4fbc22a4c235668689e2e02083fa",
-    "docs/verification.md": "a41390980a9c4b144f4c68b53eb6c4558fccca87dec4f42b331caa2179b78ebb",
     "root/AGENTS.md.template": "7d790284c3afd461264ece680130c0cfafa611368d6d65d7f4ee8a878b4ebb4d",
-    "skills/workflow-debugging/SKILL.md": "66a0861e8f8f4604788bccb482931deef3482462a05ae86703f97a3810b93581",
+    "skills/workflow-debugging/SKILL.md": "2f1da11ed00687ad5ffb044ea8cb1ac22fe16be0ad5286ae5c9df9913badc1b4",
     "skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
-    "skills/workflow-discovery/SKILL.md": "74fad45d85082b1cc1b43ed2a2d8331dbb427b412eff2b168de734aead4b3e32",
-    "skills/workflow-implementation/SKILL.md": "67127802975688d42f402f4a3b301949fb5320eee42678dd68d6dee2698e07eb",
+    "skills/workflow-discovery/SKILL.md": "00824be828587ebe66956db3aa48611d0e21703ce39346b77cdbc90129a59f7b",
+    "skills/workflow-implementation/SKILL.md": "1a4bc65cd916a1bc5e5e0fc993d3e8b79be34f7c6ba7a7504c5c90e0961a6e69",
     "skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
-    "skills/workflow-teach/SKILL.md": "4110da2bc0031133a0bbc246ba9936e1d39e5ebe77dc74a726d3dba999c15fe5",
-    "skills/workflow-verification/SKILL.md": "9b4faa5dca66c90270a2e8bdea6ab8aefe91979e713957faf431b634b6b45a0a"
+    "skills/workflow-teach/SKILL.md": "1fad0eccad3ea737fc03ffa3eaef54e313497e2ab7ef1f45042aed31f099526b",
+    "skills/workflow-verification/SKILL.md": "7805d786f5221bc8ad7892271b84620eae8acba6a4be2510d5f10953e38c8f92"
   },
   "framework_owned": [
     {
@@ -63,34 +56,6 @@
       "target": "ai-workflow/templates/work-item.md"
     },
     {
-      "source": "docs/architecture.md",
-      "target": "docs/architecture.md"
-    },
-    {
-      "source": "docs/decisions/0002-use-checksummed-copy-adoption.md",
-      "target": "docs/decisions/0002-use-checksummed-copy-adoption.md"
-    },
-    {
-      "source": "docs/decisions/0003-use-internal-reference-inspired-workflows.md",
-      "target": "docs/decisions/0003-use-internal-reference-inspired-workflows.md"
-    },
-    {
-      "source": "docs/decisions/0005-add-decomposition-and-independent-review.md",
-      "target": "docs/decisions/0005-add-decomposition-and-independent-review.md"
-    },
-    {
-      "source": "docs/decisions/0006-use-inert-bootstrap-payload.md",
-      "target": "docs/decisions/0006-use-inert-bootstrap-payload.md"
-    },
-    {
-      "source": "docs/routing.md",
-      "target": "docs/routing.md"
-    },
-    {
-      "source": "docs/verification.md",
-      "target": "docs/verification.md"
-    },
-    {
       "source": "root/AGENTS.md.template",
       "target": "AGENTS.md"
     },
@@ -123,7 +88,7 @@
       "target": ".agents/skills/workflow-verification/SKILL.md"
     }
   ],
-  "framework_version": "0.4.0",
+  "framework_version": "0.4.1",
   "project_seeds": [
     {
       "source": "ai-workflow/templates/project-profile.md",
@@ -140,7 +105,14 @@
     "adapters/hermes/request.schema.json",
     "adapters/hermes/result.schema.json",
     "adapters/hermes/smoke-request.json",
+    "docs/architecture.md",
+    "docs/decisions/0002-use-checksummed-copy-adoption.md",
+    "docs/decisions/0003-use-internal-reference-inspired-workflows.md",
+    "docs/decisions/0005-add-decomposition-and-independent-review.md",
+    "docs/decisions/0006-use-inert-bootstrap-payload.md",
     "docs/integrations/hermes.md",
+    "docs/routing.md",
+    "docs/verification.md",
     "scripts/hermes_adapter.py"
   ],
   "schema_version": 2

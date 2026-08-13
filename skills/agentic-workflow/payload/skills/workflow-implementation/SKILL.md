@@ -5,8 +5,9 @@ description: Build one approved implementation-ready scope. Use for meaningful w
 
 # Implementation workflow
 
-When resuming from `active.md`, require `Active workflow: implementation`,
-validate its `IMP` or `TKT` record, and continue at the stored `Resume target`.
+When resuming from `ai-workflow/state/active.md`, require
+`Active workflow: implementation`, validate its `IMP` or `TKT` record, and
+continue at the stored `Resume target`.
 
 ## Preconditions
 
