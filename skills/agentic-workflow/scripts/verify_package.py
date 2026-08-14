@@ -20,6 +20,7 @@ PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 MANIFEST_PATH = PAYLOAD_ROOT / "distribution" / "manifest.json"
 ROUTE_SCENARIOS_PATH = PACKAGE_ROOT / "tests" / "route-observability-scenarios.json"
+DECISION_SCENARIOS_PATH = PACKAGE_ROOT / "tests" / "decision-contract-scenarios.json"
 PROVIDERS_PATH = PAYLOAD_ROOT / "ai-workflow" / "providers.json"
 OBSERVABILITY_ANALYZER = PAYLOAD_ROOT / "ai-workflow" / "observability" / "analyze.py"
 OBSERVABILITY_GUIDE = PAYLOAD_ROOT / "ai-workflow" / "observability" / "README.md"
@@ -55,11 +56,198 @@ RETIRED = (
     "docs/verification.md",
     "scripts/hermes_adapter.py",
 )
+ACCEPTED_PREDECESSORS = (
+    {
+        "framework_version": "0.4.0",
+        "source_revisions": [
+            "090cf0129ccd8b43c0d3c00eaefdf79506b01403"
+        ],
+        "install_manifest_schemas": [
+            1
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "fe3141b7da0fcf7e2e8463225626c33864ae9c81520f030b12081c882eee48b4",
+            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
+            "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
+            "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
+            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
+            "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
+            "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
+            "docs/architecture.md": "f270213274a5d06895e29be1bbbc56ae60a81682ab4b5dd6630fceed3086ca35",
+            "docs/decisions/0002-use-checksummed-copy-adoption.md": "449ede8a9d69923692cdc748c12445ee7b8c60b0e2e19647f753f013bf0b7654",
+            "docs/decisions/0003-use-internal-reference-inspired-workflows.md": "28547a05a4a14ac80f8d22f8fcaa3a0d7caaec39bb11fb5d6187c163121b4d9c",
+            "docs/decisions/0005-add-decomposition-and-independent-review.md": "5ba8663885a75048a4045dc271c62718794d7cf87edd372dae9569088f593100",
+            "docs/decisions/0006-use-inert-bootstrap-payload.md": "048e613eb9d9dac557e1fef40cdc58dd6f33da55cf93e4d4342cff4cb994a66b",
+            "docs/routing.md": "c0bd57e5d57f17ea3d6b50f2d4c2d4dfe2ce4fbc22a4c235668689e2e02083fa",
+            "docs/verification.md": "ba9898b4bcab7168a07a9c6d3c1ef69009c191614928463d8807568f6601966b",
+            "AGENTS.md": "7d790284c3afd461264ece680130c0cfafa611368d6d65d7f4ee8a878b4ebb4d",
+            ".agents/skills/workflow-debugging/SKILL.md": "66a0861e8f8f4604788bccb482931deef3482462a05ae86703f97a3810b93581",
+            ".agents/skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
+            ".agents/skills/workflow-discovery/SKILL.md": "74fad45d85082b1cc1b43ed2a2d8331dbb427b412eff2b168de734aead4b3e32",
+            ".agents/skills/workflow-implementation/SKILL.md": "67127802975688d42f402f4a3b301949fb5320eee42678dd68d6dee2698e07eb",
+            ".agents/skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
+            ".agents/skills/workflow-teach/SKILL.md": "4110da2bc0031133a0bbc246ba9936e1d39e5ebe77dc74a726d3dba999c15fe5",
+            ".agents/skills/workflow-verification/SKILL.md": "9b4faa5dca66c90270a2e8bdea6ab8aefe91979e713957faf431b634b6b45a0a"
+        }
+    },
+    {
+        "framework_version": "0.4.0",
+        "source_revisions": [
+            "06f1b9de30ad7671c494fa2007cac20a8a7e4042"
+        ],
+        "install_manifest_schemas": [
+            1
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "fe3141b7da0fcf7e2e8463225626c33864ae9c81520f030b12081c882eee48b4",
+            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
+            "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
+            "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
+            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
+            "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
+            "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
+            "docs/architecture.md": "f270213274a5d06895e29be1bbbc56ae60a81682ab4b5dd6630fceed3086ca35",
+            "docs/decisions/0002-use-checksummed-copy-adoption.md": "449ede8a9d69923692cdc748c12445ee7b8c60b0e2e19647f753f013bf0b7654",
+            "docs/decisions/0003-use-internal-reference-inspired-workflows.md": "28547a05a4a14ac80f8d22f8fcaa3a0d7caaec39bb11fb5d6187c163121b4d9c",
+            "docs/decisions/0005-add-decomposition-and-independent-review.md": "5ba8663885a75048a4045dc271c62718794d7cf87edd372dae9569088f593100",
+            "docs/decisions/0006-use-inert-bootstrap-payload.md": "048e613eb9d9dac557e1fef40cdc58dd6f33da55cf93e4d4342cff4cb994a66b",
+            "docs/routing.md": "c0bd57e5d57f17ea3d6b50f2d4c2d4dfe2ce4fbc22a4c235668689e2e02083fa",
+            "docs/verification.md": "a41390980a9c4b144f4c68b53eb6c4558fccca87dec4f42b331caa2179b78ebb",
+            "AGENTS.md": "7d790284c3afd461264ece680130c0cfafa611368d6d65d7f4ee8a878b4ebb4d",
+            ".agents/skills/workflow-debugging/SKILL.md": "66a0861e8f8f4604788bccb482931deef3482462a05ae86703f97a3810b93581",
+            ".agents/skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
+            ".agents/skills/workflow-discovery/SKILL.md": "74fad45d85082b1cc1b43ed2a2d8331dbb427b412eff2b168de734aead4b3e32",
+            ".agents/skills/workflow-implementation/SKILL.md": "67127802975688d42f402f4a3b301949fb5320eee42678dd68d6dee2698e07eb",
+            ".agents/skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
+            ".agents/skills/workflow-teach/SKILL.md": "4110da2bc0031133a0bbc246ba9936e1d39e5ebe77dc74a726d3dba999c15fe5",
+            ".agents/skills/workflow-verification/SKILL.md": "9b4faa5dca66c90270a2e8bdea6ab8aefe91979e713957faf431b634b6b45a0a"
+        }
+    },
+    {
+        "framework_version": "0.4.1",
+        "source_revisions": [
+            "0266709afdf6261ea38a099272ee44fce257e2e3",
+            "fd1ee437f508515aba939b9e0dc667cf25d03beb"
+        ],
+        "install_manifest_schemas": [
+            1
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "e2281247020dda2312a8468a659fb630abc7b7784e027edc178aeb10309eedb4",
+            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
+            "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
+            "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
+            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
+            "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
+            "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
+            "AGENTS.md": "7d790284c3afd461264ece680130c0cfafa611368d6d65d7f4ee8a878b4ebb4d",
+            ".agents/skills/workflow-debugging/SKILL.md": "2f1da11ed00687ad5ffb044ea8cb1ac22fe16be0ad5286ae5c9df9913badc1b4",
+            ".agents/skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
+            ".agents/skills/workflow-discovery/SKILL.md": "00824be828587ebe66956db3aa48611d0e21703ce39346b77cdbc90129a59f7b",
+            ".agents/skills/workflow-implementation/SKILL.md": "1a4bc65cd916a1bc5e5e0fc993d3e8b79be34f7c6ba7a7504c5c90e0961a6e69",
+            ".agents/skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
+            ".agents/skills/workflow-teach/SKILL.md": "1fad0eccad3ea737fc03ffa3eaef54e313497e2ab7ef1f45042aed31f099526b",
+            ".agents/skills/workflow-verification/SKILL.md": "7805d786f5221bc8ad7892271b84620eae8acba6a4be2510d5f10953e38c8f92"
+        }
+    },
+    {
+        "framework_version": "0.4.2",
+        "source_revisions": [
+            "1939603560c224bad2bda18b34268e636df740d4",
+            "340bf21e7d751ff334951cfbb875c031b9b6340a"
+        ],
+        "install_manifest_schemas": [
+            1
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "4b2b44ea81d16b4d629ce1cc2b3632414067b69742b9c90aa889412be4c2a6b0",
+            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
+            "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
+            "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
+            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
+            "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
+            "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
+            "AGENTS.md": "3148bfd3339a64e9d7c9389d77d7f65cec6d1fe168f2807eee3c234e0af7bbf2",
+            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            ".agents/skills/workflow-debugging/SKILL.md": "2f1da11ed00687ad5ffb044ea8cb1ac22fe16be0ad5286ae5c9df9913badc1b4",
+            ".agents/skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
+            ".agents/skills/workflow-discovery/SKILL.md": "00824be828587ebe66956db3aa48611d0e21703ce39346b77cdbc90129a59f7b",
+            ".agents/skills/workflow-implementation/SKILL.md": "1a4bc65cd916a1bc5e5e0fc993d3e8b79be34f7c6ba7a7504c5c90e0961a6e69",
+            ".agents/skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
+            ".agents/skills/workflow-teach/SKILL.md": "1fad0eccad3ea737fc03ffa3eaef54e313497e2ab7ef1f45042aed31f099526b",
+            ".agents/skills/workflow-verification/SKILL.md": "7805d786f5221bc8ad7892271b84620eae8acba6a4be2510d5f10953e38c8f92"
+        }
+    },
+    {
+        "framework_version": "0.5.0",
+        "source_revisions": [
+            "5ab98b20751bd742258006af9a24bcd41cf9d2e4",
+            "b38aa77086ae8c8b5e5533bcd078d213983822cf",
+            "ece4efa7d801d75f14ce54fbe8ba3f7da703b858"
+        ],
+        "install_manifest_schemas": [
+            1
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "b298d84a132a5d016267bf01d6ee6dbc07e38fab0af8c1893e3be4a8f506da85",
+            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
+            "ai-workflow/providers.json": "88f6ac49e2d51ede4ce95e51891edae9e9c9e1f92ffbe914e8b5c96d0b4e1493",
+            "ai-workflow/state/README.md": "8c8836e401527b366fae994dd978eeef11a83c6793307df4e6b0ededdc314c1b",
+            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
+            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+            "AGENTS.md": "1f9569ce9faad5073d25d263f155684954b4553935393c708819069b2ae236fc",
+            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
+            ".agents/skills/workflow-discovery/SKILL.md": "17c37402dc0a1f1f43b709fb3a427abf0ca3f20ecadb6a22dc3bd7af52bc10d3",
+            ".agents/skills/workflow-implementation/SKILL.md": "21486186eb0359726fb7643054c4c6131d6520a9fce9ea093a5ccfdd093f9d68",
+            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
+        }
+    },
+    {
+        "framework_version": "0.6.0",
+        "source_revisions": [
+            "f1fda30e5d9e7740bf6ddcc32ab0c3df1262a037"
+        ],
+        "install_manifest_schemas": [
+            1
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "73ebfe85a0383d9f381235c4a3ce617136436c1b4bad2f12d2c48dea81806124",
+            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
+            "ai-workflow/observability/README.md": "b4a97a538adb0a2fd8b536010c77a1d9b4b587d0b645c291f640da945c5fa4b0",
+            "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
+            "ai-workflow/providers.json": "840ed9deab447cf9cf52280e578127af93a558b3c3456b6fcf803efb51c8e142",
+            "ai-workflow/state/README.md": "8c8836e401527b366fae994dd978eeef11a83c6793307df4e6b0ededdc314c1b",
+            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
+            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+            "AGENTS.md": "1f9569ce9faad5073d25d263f155684954b4553935393c708819069b2ae236fc",
+            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
+            ".agents/skills/workflow-discovery/SKILL.md": "17c37402dc0a1f1f43b709fb3a427abf0ca3f20ecadb6a22dc3bd7af52bc10d3",
+            ".agents/skills/workflow-implementation/SKILL.md": "21486186eb0359726fb7643054c4c6131d6520a9fce9ea093a5ccfdd093f9d68",
+            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
+        }
+    },
+)
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
 PROVIDER_REPOSITORY = "mattpocock/skills"
 PROVIDER_VERSION = "v1.2.3"
 PROVIDER_REVISION = "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e"
+# Separately reviewed trust anchor; --refresh-manifest must never derive this value.
+AUDITED_PROVIDER_IDENTITY_SHA256 = "a755f8e63ba6c16628140615dd16e3a1f7a6b7445f057e645204eb9a9aa10735"
 MINIMUM_PYTHON = (3, 11)
 PROVIDER_CAPABILITIES = {
     "code-review": "code-review",
@@ -70,6 +258,66 @@ PROVIDER_CAPABILITIES = {
     "specification": "to-spec",
     "test-driven-development": "tdd",
     "tickets": "to-tickets",
+}
+PROVIDER_HOSTS = {
+    "claude-code": {
+        "availability": "unavailable",
+        "discovery": ".claude/skills",
+        "explicit_prefix": "/",
+        "invocation_source": "SKILL.md:disable-model-invocation",
+    },
+    "codex": {
+        "availability": "available",
+        "discovery": ".agents/skills",
+        "explicit_prefix": "$",
+        "invocation_source": "agents/openai.yaml:policy.allow_implicit_invocation",
+    },
+    "github-copilot": {
+        "availability": "available",
+        "discovery": ".agents/skills",
+        "explicit_prefix": "/",
+        "invocation_source": "SKILL.md:disable-model-invocation",
+    },
+}
+PROVIDER_CONFIGURATION = {
+    "domain": {
+        "path": "docs/agents/domain.md",
+        "provisioned_by": "setup-matt-pocock-skills",
+    },
+    "issue-tracker": {
+        "path": "docs/agents/issue-tracker.md",
+        "provisioned_by": "setup-matt-pocock-skills",
+    },
+    "triage-labels": {
+        "enabled_by": "triage",
+        "path": "docs/agents/triage-labels.md",
+        "provisioned_by": "setup-matt-pocock-skills",
+    },
+}
+USER_ONLY_PROVIDER_SKILLS = {
+    "setup-matt-pocock-skills",
+    "wayfinder",
+    "teach",
+    "to-spec",
+    "to-tickets",
+    "implement",
+    "triage",
+}
+PROVIDER_REQUIREMENTS = {
+    "setup-matt-pocock-skills": [],
+    "wayfinder": ["domain", "issue-tracker"],
+    "teach": [],
+    "research": [],
+    "to-spec": ["domain", "issue-tracker", "triage-labels"],
+    "to-tickets": ["domain", "issue-tracker", "triage-labels"],
+    "implement": ["issue-tracker"],
+    "tdd": [],
+    "code-review": ["issue-tracker"],
+    "grilling": [],
+    "domain-modeling": [],
+    "prototype": [],
+    "codebase-design": [],
+    "triage": ["domain", "issue-tracker", "triage-labels"],
 }
 PROVIDER_SKILLS = {
     "setup-matt-pocock-skills",
@@ -85,6 +333,7 @@ PROVIDER_SKILLS = {
     "domain-modeling",
     "prototype",
     "codebase-design",
+    "triage",
 }
 
 
@@ -161,18 +410,28 @@ def version() -> str:
     return package_version
 
 
+def accepted_predecessors() -> List[Mapping[str, object]]:
+    current = tuple(map(int, version().split(".")))
+    return [
+        dict(item)
+        for item in ACCEPTED_PREDECESSORS
+        if tuple(map(int, str(item["framework_version"]).split("."))) < current
+    ]
+
+
 def generated_manifest() -> Mapping[str, object]:
     sources = payload_files()
     owned = [{"source": source, "target": target_for(source)} for source in sources]
     checksum_paths = set(sources)
     checksum_paths.update(seed["source"] for seed in SEEDS)
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "framework_version": version(),
         "framework_owned": owned,
         "project_seeds": list(SEEDS),
         "checksums": {relative: sha256(PAYLOAD_ROOT / relative) for relative in sorted(checksum_paths)},
         "retired_framework_owned": list(RETIRED),
+        "accepted_predecessors": accepted_predecessors(),
     }
 
 
@@ -223,6 +482,7 @@ def check_structure() -> None:
         PAYLOAD_ROOT / "ai-workflow" / "providers.json",
         OBSERVABILITY_ANALYZER,
         OBSERVABILITY_GUIDE,
+        DECISION_SCENARIOS_PATH,
     ]
     required.extend(PAYLOAD_ROOT / "skills" / name / "SKILL.md" for name in SKILLS)
     for path in required:
@@ -272,6 +532,67 @@ def check_python_runtime_contract() -> None:
         )
 
 
+def check_prerequisite_documentation_contract() -> None:
+    declaration = json.loads(PROVIDERS_PATH.read_text(encoding="utf-8"))
+    provider = declaration.get("provider")
+    require(isinstance(provider, dict), "provider declaration needs a provider object")
+    gh_minimum = provider.get("minimum_gh_version")
+    require(
+        isinstance(gh_minimum, str) and SEMVER.fullmatch(gh_minimum) is not None,
+        "provider minimum GitHub CLI version must be semantic",
+    )
+    python_minimum = f"{MINIMUM_PYTHON[0]}.{MINIMUM_PYTHON[1]}"
+    current_contracts = [
+        PACKAGE_ROOT / "SKILL.md",
+        PAYLOAD_ROOT / "ai-workflow" / "README.md",
+    ]
+    repository_root = PACKAGE_ROOT.parent.parent
+    source_layout_package = repository_root / "skills" / "agentic-workflow"
+    in_source_checkout = (
+        source_layout_package.exists()
+        and source_layout_package.resolve() == PACKAGE_ROOT.resolve()
+    )
+    if in_source_checkout:
+        current_contracts.extend(
+            (repository_root / "README.md", repository_root / "docs" / "verification.md")
+        )
+    python_pattern = re.compile(r"Python\s+3\.(\d+)(?:\+|\s+or newer)", re.IGNORECASE)
+    gh_pattern = re.compile(r"GitHub CLI\s+(\d+\.\d+\.\d+)(?:\+|\s+or newer)", re.IGNORECASE)
+    for path in current_contracts:
+        text = path.read_text(encoding="utf-8")
+        python_versions = {f"3.{match}" for match in python_pattern.findall(text)}
+        require(
+            not python_versions or python_versions == {python_minimum},
+            f"documented Python minimum drifted in {path.relative_to(repository_root)}: "
+            + ", ".join(sorted(python_versions)),
+        )
+        gh_versions = set(gh_pattern.findall(text))
+        require(
+            not gh_versions or gh_versions == {gh_minimum},
+            f"documented GitHub CLI minimum drifted in {path.relative_to(repository_root)}: "
+            + ", ".join(sorted(gh_versions)),
+        )
+    package_skill = (PACKAGE_ROOT / "SKILL.md").read_text(encoding="utf-8")
+    installed_readme = (PAYLOAD_ROOT / "ai-workflow" / "README.md").read_text(encoding="utf-8")
+    require(
+        f"Python {python_minimum}" in package_skill
+        and f"GitHub CLI {gh_minimum}" in package_skill,
+        "package skill must state the enforced Python and GitHub CLI minimums",
+    )
+    require(
+        f"Python {python_minimum}" in installed_readme
+        and f"GitHub CLI {gh_minimum}" in installed_readme,
+        "installed README must state the enforced Python and GitHub CLI minimums",
+    )
+    if in_source_checkout:
+        root_readme = (repository_root / "README.md").read_text(encoding="utf-8")
+        require(
+            f"Python {python_minimum}+" in root_readme
+            and f"GitHub CLI {gh_minimum}" in root_readme,
+            "root README must state the enforced Python and GitHub CLI minimums",
+        )
+
+
 def check_filesystem_entries() -> None:
     for path in PACKAGE_ROOT.rglob("*"):
         relative = path.relative_to(PACKAGE_ROOT).as_posix()
@@ -305,6 +626,60 @@ def check_manifest() -> None:
         )
         targets.append(target)
     require(len(targets) == len(set(targets)), "framework_owned target paths must be unique")
+    allowed_predecessor_targets = set(targets) | {safe_relative(item) for item in RETIRED}
+    predecessor_keys = {
+        "framework_version",
+        "source_revisions",
+        "install_manifest_schemas",
+        "framework_files",
+    }
+    for predecessor in accepted_predecessors():
+        require(
+            isinstance(predecessor, dict) and set(predecessor) == predecessor_keys,
+            "accepted predecessor fields drifted",
+        )
+        predecessor_version = predecessor["framework_version"]
+        require(
+            isinstance(predecessor_version, str)
+            and SEMVER.fullmatch(predecessor_version) is not None
+            and tuple(map(int, predecessor_version.split(".")))
+            < tuple(map(int, version().split("."))),
+            f"invalid accepted predecessor version: {predecessor_version!r}",
+        )
+        revisions = predecessor["source_revisions"]
+        require(
+            isinstance(revisions, list)
+            and revisions
+            and len(revisions) == len(set(revisions))
+            and all(
+                isinstance(item, str) and re.fullmatch(r"[0-9a-f]{40}", item) is not None
+                for item in revisions
+            ),
+            f"invalid accepted predecessor source revisions: {predecessor_version}",
+        )
+        schemas = predecessor["install_manifest_schemas"]
+        require(
+            isinstance(schemas, list)
+            and schemas
+            and len(schemas) == len(set(schemas))
+            and all(type(item) is int and item > 0 for item in schemas),
+            f"invalid accepted predecessor install manifest schemas: {predecessor_version}",
+        )
+        identities = predecessor["framework_files"]
+        require(
+            isinstance(identities, dict) and identities,
+            f"accepted predecessor {predecessor_version} must have a nonempty file inventory",
+        )
+        for raw_target, digest in identities.items():
+            target = safe_relative(raw_target)
+            require(
+                target in allowed_predecessor_targets,
+                f"accepted predecessor target is neither current nor retired: {target}",
+            )
+            require(
+                isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest) is not None,
+                f"invalid accepted predecessor source checksum: {predecessor_version} {target}",
+            )
     seeds = actual["project_seeds"]  # type: ignore[index]
     require(isinstance(seeds, list), "project_seeds must be an array")
     for item in seeds:
@@ -335,9 +710,17 @@ def check_inert_payload() -> None:
 
 def check_workflow_contract() -> None:
     policy = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
+    normalized_policy = " ".join(policy.split())
     require(len(policy.encode("utf-8")) < 5000, "installed root policy exceeds the compact v0 budget")
     for name in SKILLS:
         require(name in policy, f"root policy does not route to {name}")
+    require(
+        "`workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and "
+        "`workflow-verification` shorten to `discovery`, `debugging`, `implement`, and "
+        "`verification` in markers."
+        in normalized_policy,
+        "root policy does not define stable compact labels for every local workflow",
+    )
     for provider in ("wayfinder", "teach", "research", "to-spec", "to-tickets", "implement", "tdd", "code-review"):
         require(provider in policy, f"root policy does not route or compose upstream {provider}")
     catalog_path = PACKAGE_ROOT / "tests" / "acceptance-scenarios.json"
@@ -345,8 +728,12 @@ def check_workflow_contract() -> None:
         catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise VerificationError(f"cannot read acceptance catalog: {exc}") from exc
-    require(isinstance(catalog, list) and len(catalog) == 32, "acceptance catalog must contain 32 core scenarios")
-    require([item.get("id") for item in catalog if isinstance(item, dict)] == list(range(1, 33)), "acceptance scenario IDs must be sequential")
+    require(isinstance(catalog, list) and catalog, "acceptance catalog must contain core scenarios")
+    ids = [item.get("id") for item in catalog if isinstance(item, dict)]
+    require(
+        ids == list(range(1, len(catalog) + 1)),
+        "acceptance scenario IDs must be sequential",
+    )
     required = {"id", "requirement", "prompt", "setup", "expected_route", "expected_behavior", "evidence"}
     for item in catalog:
         require(isinstance(item, dict) and set(item) == required, "acceptance scenario fields drifted")
@@ -364,7 +751,7 @@ def check_workflow_contract() -> None:
     route_instruction_text = " ".join(route_instruction.group(0).split())
     require(len(route_instruction.group(0).encode("utf-8")) <= 300, "always-on route instruction exceeds 300 bytes")
     require(len(route_instruction_text.split()) <= 40, "always-on route instruction exceeds 40 words")
-    require("effective workflow stages already used" in route_instruction_text, "route output does not distinguish effective use")
+    require("router-visible execution" in route_instruction_text, "route output does not distinguish router-visible execution")
     require("Explain routing only when requested" in route_instruction_text, "route output could add an unsolicited explanation")
     require("never reassess it" in route_instruction_text, "route output could trigger another routing pass")
     require("load skills, run workflows, or write state to produce" in route_instruction_text, "route output could trigger extra execution")
@@ -375,12 +762,28 @@ def check_workflow_contract() -> None:
         route_scenarios = json.loads(ROUTE_SCENARIOS_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise VerificationError(f"cannot read route observability catalog: {exc}") from exc
-    require(isinstance(route_scenarios, list) and len(route_scenarios) == 5, "route observability catalog must contain five scenarios")
+    require(isinstance(route_scenarios, list) and route_scenarios, "route observability catalog must contain scenarios")
     route_required = {"id", "requirement", "prompt", "setup", "expected_route_output", "expected_behavior"}
+    required_route_ids = {
+        "direct",
+        "wayfinder-handoff",
+        "wayfinder-research-handoff",
+        "standalone-research",
+        "standalone-tdd",
+        "debugging",
+        "user-only-handoff",
+        "setup-handoff",
+        "profile-readiness",
+        "profile-progressive-update",
+        "read-only",
+        "limited-host-unavailable",
+        "provider-integrity-error",
+        "active-state-conflict",
+    }
     require(
-        [item.get("id") for item in route_scenarios if isinstance(item, dict)]
-        == ["wayfinder", "implementation", "multi-stage", "effective-only", "no-trigger"],
-        "route observability scenario IDs drifted",
+        required_route_ids
+        <= {item.get("id") for item in route_scenarios if isinstance(item, dict)},
+        "route observability scenarios lack required semantic host coverage",
     )
     route_line = re.compile(r"^\[route: router(?: → [a-z][a-z0-9-]*)+\]$")
     for item in route_scenarios:
@@ -398,14 +801,253 @@ def check_workflow_contract() -> None:
         require(output.count(" → ") <= 5, f"route output exceeds five compact labels: {output}")
 
     outputs = {item["id"]: item["expected_route_output"] for item in route_scenarios}
-    require(outputs["wayfinder"] == "[route: router → wayfinder]", "Wayfinder output contract drifted")
     require(
-        outputs["implementation"] == "[route: router → implement → verification]",
-        "Implementation output contract drifted",
+        outputs["wayfinder-handoff"] == "[route: router → wayfinder-handoff]",
+        "Wayfinder handoff output must not imply execution",
     )
-    require(outputs["multi-stage"].count(" → ") >= 4, "multi-stage output must report each effective stage")
-    require(outputs["effective-only"] == "[route: router → teach]", "effective-only output must exclude unselected skills")
-    require(outputs["no-trigger"] == "[route: router → direct]", "observability-only handling must remain direct")
+    require(
+        outputs["wayfinder-research-handoff"] == "[route: router → wayfinder-handoff]",
+        "a composed capability must not disguise a blocked dominant workflow as executed",
+    )
+    require(
+        outputs["standalone-research"] == "[route: router → research]",
+        "standalone implicitly invocable Research output drifted",
+    )
+    require(
+        outputs["standalone-tdd"] == "[route: router → tdd → verification]",
+        "standalone TDD must retain independent Verification",
+    )
+    require(
+        outputs["limited-host-unavailable"] == "[route: router → research-unavailable]",
+        "unavailable-host output must not imply provider execution",
+    )
+    require(
+        outputs["provider-integrity-error"] == "[route: router → wayfinder-blocked]",
+        "provider-integrity failure output must not imply execution",
+    )
+    require(
+        outputs["active-state-conflict"] == "[route: router → discovery-blocked]",
+        "active-state conflict output must not imply execution",
+    )
+    require(outputs["direct"] == "[route: router → direct]", "direct output contract drifted")
+
+    try:
+        decision_scenarios = json.loads(DECISION_SCENARIOS_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise VerificationError(f"cannot read decision contract catalog: {exc}") from exc
+    decision_required = {
+        "id",
+        "category",
+        "prompt",
+        "setup",
+        "dominant_activity",
+        "capabilities",
+        "provider_invocations",
+        "host",
+        "route_result",
+        "executed",
+        "repository_state_effect",
+        "external_scope",
+        "expected_behavior",
+    }
+    categories_required = {
+        "direct-with-missing-setup",
+        "wayfinder-handoff",
+        "workflow-plus-capability",
+        "standalone-research",
+        "standalone-debugging",
+        "standalone-teach-handoff",
+        "setup-required-handoff",
+        "read-only-discovery",
+        "scoped-external-read",
+        "external-mutation-denied",
+        "active-state-conflict",
+        "canonical-artifact-ownership",
+        "limited-host-local-unavailable",
+    }
+    require(isinstance(decision_scenarios, list), "decision contract catalog must be an array")
+    categories = set()
+    for item in decision_scenarios:
+        require(
+            isinstance(item, dict) and set(item) == decision_required,
+            "decision contract scenario fields drifted",
+        )
+        categories.add(item["category"])
+        require(
+            isinstance(item["id"], str)
+            and item["id"]
+            and isinstance(item["dominant_activity"], str)
+            and item["dominant_activity"],
+            "decision scenario identifiers and dominant activities must be non-empty strings",
+        )
+        require(
+            isinstance(item["capabilities"], list)
+            and all(isinstance(value, str) and value for value in item["capabilities"]),
+            f"decision scenario {item['id']} capabilities must be an array of names",
+        )
+        provider_invocations = item["provider_invocations"]
+        require(
+            isinstance(provider_invocations, list),
+            f"decision scenario {item['id']} provider_invocations must be an array",
+        )
+        provider_names = []
+        for invocation in provider_invocations:
+            require(
+                isinstance(invocation, dict)
+                and set(invocation) == {"executed", "invocation", "name", "policy"},
+                f"decision scenario {item['id']} has invalid provider invocation fields",
+            )
+            require(
+                isinstance(invocation["name"], str)
+                and invocation["name"]
+                and invocation["policy"] in {"implicit", "unavailable", "user-only"}
+                and invocation["invocation"]
+                in {"explicit", "implicit", "unavailable", "user-only-handoff"}
+                and isinstance(invocation["executed"], bool),
+                f"decision scenario {item['id']} has an invalid provider invocation",
+            )
+            provider_names.append(invocation["name"])
+            if invocation["invocation"] in {"explicit", "implicit"}:
+                require(
+                    invocation["executed"],
+                    f"executed provider invocation must be recorded as executed: {item['id']}",
+                )
+            else:
+                require(
+                    not invocation["executed"],
+                    f"unexecuted provider result cannot claim execution: {item['id']}",
+                )
+        require(
+            len(provider_names) == len(set(provider_names)),
+            f"decision scenario {item['id']} repeats a provider invocation",
+        )
+        require(isinstance(item["executed"], bool), f"decision scenario {item['id']} executed must be boolean")
+        require(
+            item["host"] in set(PROVIDER_HOSTS) | {"host-neutral"},
+            f"decision scenario {item['id']} has an unknown host",
+        )
+        require(
+            item["route_result"]
+            in {"blocked", "direct", "executed", "local", "unavailable", "user-only-handoff"},
+            f"decision scenario {item['id']} has an invalid route result",
+        )
+        require(
+            item["repository_state_effect"]
+            in {"none", "authorized-write", "provider-native-artifact", "read-only"},
+            f"decision scenario {item['id']} has an invalid repository state effect",
+        )
+        require(
+            item["external_scope"] in {"none", "named-read", "unauthorized-mutation"},
+            f"decision scenario {item['id']} has an invalid external scope",
+        )
+        if item["route_result"] == "user-only-handoff":
+            require(not item["executed"], f"user-only handoff cannot claim execution: {item['id']}")
+            require(
+                item["repository_state_effect"] == "none",
+                f"route selection handoff cannot write state: {item['id']}",
+            )
+        if item["category"] in {"read-only-discovery", "active-state-conflict"}:
+            require(
+                item["repository_state_effect"] == "none",
+                f"negative state scenario must preserve repository state: {item['id']}",
+            )
+        if item["external_scope"] == "unauthorized-mutation":
+            require(
+                item["executed"]
+                and item["route_result"] == "direct"
+                and item["repository_state_effect"] == "read-only",
+                f"denied external mutation must preserve the authorized read-only route: {item['id']}",
+            )
+        if item["route_result"] == "executed":
+            require(item["executed"], f"executed route result must execute: {item['id']}")
+        if item["route_result"] in {"blocked", "unavailable"}:
+            require(not item["executed"], f"blocked or unavailable workflow cannot execute: {item['id']}")
+            require(
+                item["repository_state_effect"] == "none",
+                f"blocked or unavailable workflow cannot write state: {item['id']}",
+            )
+        if any(invocation["executed"] for invocation in provider_invocations):
+            require(item["executed"], f"executed provider requires an executed route: {item['id']}")
+    require(
+        categories_required <= categories,
+        "decision contract catalog lacks required semantic categories: "
+        + ", ".join(sorted(categories_required - categories)),
+    )
+    provider_contract = json.loads(PROVIDERS_PATH.read_text(encoding="utf-8"))
+    declared_skills = {
+        item["name"]: item
+        for item in provider_contract.get("provider", {}).get("skills", [])
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    }
+    for item in decision_scenarios:
+        for invocation in item["provider_invocations"]:
+            selected = invocation["name"]
+            policy = invocation["policy"]
+            actual_invocation = invocation["invocation"]
+            require(selected in declared_skills, f"decision scenario selects unknown provider: {selected}")
+            if item["host"] == "host-neutral":
+                declared_modes = {
+                    declared_skills[selected].get("invocation", {}).get(host)
+                    for host, contract in PROVIDER_HOSTS.items()
+                    if contract["availability"] == "available"
+                }
+                require(
+                    len(declared_modes) == 1
+                    and policy == next(iter(declared_modes)),
+                    f"host-neutral decision scenario {item['id']} evades or disagrees with primary-host invocation policy",
+                )
+            else:
+                declared_invocation = declared_skills[selected].get("invocation", {}).get(item["host"])
+                require(
+                    policy == declared_invocation,
+                    f"decision scenario {item['id']} disagrees with declared {item['host']} invocation policy",
+                )
+            if policy == "user-only":
+                allowed_results = {"explicit", "user-only-handoff"}
+            elif policy == "implicit":
+                allowed_results = {"explicit", "implicit"}
+            else:
+                allowed_results = {"unavailable"}
+            require(
+                actual_invocation in allowed_results,
+                f"decision scenario {item['id']} has an invalid invocation for its declared policy",
+            )
+    composed = next(
+        item for item in decision_scenarios if item["category"] == "workflow-plus-capability"
+    )
+    require(
+        composed["provider_invocations"]
+        == [
+            {
+                "name": "wayfinder",
+                "policy": "user-only",
+                "invocation": "explicit",
+                "executed": True,
+            },
+            {
+                "name": "research",
+                "policy": "implicit",
+                "invocation": "implicit",
+                "executed": True,
+            },
+        ],
+        "workflow-plus-capability scenario must validate each provider invocation",
+    )
+    standalone_research = next(
+        item for item in decision_scenarios if item["category"] == "standalone-research"
+    )
+    require(
+        standalone_research["provider_invocations"]
+        == [
+            {
+                "name": "research",
+                "policy": "implicit",
+                "invocation": "explicit",
+                "executed": True,
+            }
+        ],
+        "implicit-capable provider must permit an explicit named invocation",
+    )
 
 
 def check_provider_contract() -> None:
@@ -415,13 +1057,19 @@ def check_provider_contract() -> None:
         raise VerificationError(f"cannot read provider declaration: {exc}") from exc
     require(
         isinstance(declaration, dict)
-        and set(declaration) == {"schema_version", "capabilities", "provider"}
-        and declaration.get("schema_version") == 1,
+        and set(declaration)
+        == {"schema_version", "capabilities", "configuration", "hosts", "provider"}
+        and declaration.get("schema_version") == 2,
         "provider declaration has unknown fields or an unsupported schema",
     )
     require(
         declaration.get("capabilities") == PROVIDER_CAPABILITIES,
         "provider capability routing drifted from the curated set",
+    )
+    require(declaration.get("hosts") == PROVIDER_HOSTS, "provider host capability declaration drifted")
+    require(
+        declaration.get("configuration") == PROVIDER_CONFIGURATION,
+        "provider configuration dependency declaration drifted",
     )
     provider = declaration.get("provider")
     require(isinstance(provider, dict), "provider declaration needs a provider object")
@@ -444,17 +1092,55 @@ def check_provider_contract() -> None:
     )
     skills = provider.get("skills")
     require(isinstance(skills, list), "provider skills must be an array")
+    audited_identity = {
+        "repository": provider.get("repository"),
+        "revision": provider.get("revision"),
+        "version": provider.get("version"),
+        "skills": [
+            {
+                key: item.get(key)
+                for key in ("name", "path", "tree_sha", "files", "source_sha256")
+            }
+            for item in skills
+            if isinstance(item, dict)
+        ],
+    }
+    audited_digest = hashlib.sha256(
+        json.dumps(
+            audited_identity,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    require(
+        audited_digest == AUDITED_PROVIDER_IDENTITY_SHA256,
+        "provider declaration differs from the separately reviewed pinned identity lock",
+    )
     names = set()
     paths = set()
     for item in skills:
         require(
-            isinstance(item, dict) and set(item) == {"files", "name", "path", "tree_sha"},
-            "provider skill entries need files, name, path, and tree_sha",
+            isinstance(item, dict)
+            and set(item)
+            == {
+                "files",
+                "invocation",
+                "name",
+                "path",
+                "requires_configuration",
+                "source_sha256",
+                "tree_sha",
+            },
+            "provider skill entries need files, invocation, name, path, requirements, "
+            "source_sha256, and tree_sha",
         )
         name = item.get("name")
         path = item.get("path")
         tree_sha = item.get("tree_sha")
         files = item.get("files")
+        source_sha256 = item.get("source_sha256")
+        invocation = item.get("invocation")
+        requirements = item.get("requires_configuration")
         require(isinstance(name, str) and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) is not None, f"invalid provider skill name: {name!r}")
         require(isinstance(path, str), f"provider path for {name} must be a string")
         safe_relative(path)
@@ -466,6 +1152,40 @@ def check_provider_contract() -> None:
             require(isinstance(raw, str), f"provider skill {name} has a non-string file path")
             checked_files.append(safe_relative(raw).as_posix())
         require(checked_files == sorted(set(checked_files)), f"provider skill {name} file inventory must be sorted and unique")
+        require(
+            isinstance(source_sha256, dict) and set(source_sha256) == set(checked_files),
+            f"provider skill {name} source SHA-256 map must cover its exact file inventory",
+        )
+        require(
+            all(
+                isinstance(relative, str)
+                and isinstance(digest, str)
+                and re.fullmatch(r"[0-9a-f]{64}", digest) is not None
+                for relative, digest in source_sha256.items()
+            ),
+            f"provider skill {name} has an invalid source SHA-256",
+        )
+        require(
+            isinstance(invocation, dict) and set(invocation) == set(PROVIDER_HOSTS),
+            f"provider skill {name} invocation must cover every declared host",
+        )
+        expected_invocation = "user-only" if name in USER_ONLY_PROVIDER_SKILLS else "implicit"
+        require(
+            invocation.get("codex") == expected_invocation
+            and invocation.get("github-copilot") == expected_invocation
+            and invocation.get("claude-code") == "unavailable",
+            f"provider skill {name} invocation semantics drifted",
+        )
+        require(
+            isinstance(requirements, list)
+            and requirements == sorted(set(requirements))
+            and all(value in PROVIDER_CONFIGURATION for value in requirements),
+            f"provider skill {name} has invalid configuration requirements",
+        )
+        require(
+            requirements == PROVIDER_REQUIREMENTS.get(name),
+            f"provider skill {name} configuration requirements drifted",
+        )
         require(name not in names and path not in paths, f"duplicate provider skill name or path: {name}")
         names.add(name)
         paths.add(path)
@@ -477,6 +1197,25 @@ def check_provider_contract() -> None:
     require(
         all(value in names for value in PROVIDER_CAPABILITIES.values()),
         "a provider capability selects a missing skill",
+    )
+    require("triage" not in PROVIDER_CAPABILITIES.values(), "triage is a dependency, not a root-routed capability")
+    by_name = {str(item["name"]): item for item in skills}
+    for consumer in ("to-spec", "to-tickets"):
+        require(
+            "triage-labels" in by_name[consumer]["requires_configuration"],
+            f"{consumer} can be installed without its triage-label vocabulary",
+        )
+    triage_config = PROVIDER_CONFIGURATION["triage-labels"]
+    require(
+        triage_config.get("enabled_by") == "triage"
+        and triage_config.get("provisioned_by") == "setup-matt-pocock-skills"
+        and "triage" in names,
+        "triage-label configuration dependency graph is incomplete",
+    )
+    setup = by_name["setup-matt-pocock-skills"]
+    require(
+        "triage-labels.md" in setup["files"],
+        "setup provider inventory lacks the triage-label template",
     )
     implementation = (PAYLOAD_ROOT / "skills" / "workflow-implementation" / "SKILL.md").read_text(encoding="utf-8")
     require(
@@ -702,6 +1441,7 @@ def main(argv: Iterable[str] = ()) -> int:
     checks = (
         check_structure,
         check_python_runtime_contract,
+        check_prerequisite_documentation_contract,
         check_filesystem_entries,
         check_manifest,
         check_inert_payload,

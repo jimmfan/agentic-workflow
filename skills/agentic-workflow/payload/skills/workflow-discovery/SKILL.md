@@ -11,11 +11,20 @@ does not own huge-effort planning, teaching methodology, or implementation.
 ## Start or resume
 
 1. Read the project profile only for relevant facts and commands.
-2. Validate or create a `DEC-NNNN` record under the state contract. Resume only
-   at its exact pending question; preserve and report invalid or conflicting
-   state.
-3. If the effort is too foggy or large for one session, hand off to the pinned
-   upstream `wayfinder` provider. Its map remains canonical.
+2. Establish the mutation boundary before touching workflow state. A read-only
+   request, or any request without authorized repository writes, stays ephemeral:
+   inspect evidence and return the analysis without creating a `DEC`, changing
+   `active.md`, or persisting another artifact. A provisional choice is not
+   authorization to write.
+3. Only when the task requires durable decision state and repository writes are
+   authorized, validate or create a `DEC-NNNN` record under the state contract.
+   Resume only at its exact pending question; preserve and report invalid or
+   conflicting state. Never overwrite another active durable workflow.
+4. If the effort is too foggy or large for one session, select the pinned
+   upstream `wayfinder` provider and apply its declared host invocation policy.
+   A user-only selection produces an exact Codex `$wayfinder` or GitHub Copilot
+   `/wayfinder` handoff, not a provider artifact or state write. Its map becomes
+   canonical only after the provider actually runs.
 
 ## Resolve the decision
 
@@ -25,28 +34,35 @@ does not own huge-effort planning, teaching methodology, or implementation.
    for facts the workspace can answer.
 3. Use primary sources for consequential or time-sensitive external facts. Use
    upstream `research` when a cited durable research artifact and isolated
-   background work add value; otherwise keep the lookup proportional.
+   background work add value; otherwise keep the lookup proportional. Research
+   is a capability inside the current Discovery workflow here, not a durable
+   workflow transition.
 4. Compare only viable alternatives by benefits, costs, risks, reversibility,
    and evidence that would change the choice.
 5. Mark a consequential decision accepted only when the user accepts it or a
    named project policy delegates that authority. Autonomous progress may record
    only a reversible provisional choice with a review trigger.
 
-If the user explicitly wants sustained learning before deciding, preserve this
-decision's unanswered question and exact return target, then invoke upstream
-`teach` in a dedicated learning workspace. A simple conceptual question should
-receive a direct explanation without starting a course workspace. Restore the
-Discovery pointer before resuming the decision; never let teaching decide it.
+If the user explicitly wants sustained learning before deciding, select upstream
+`teach` in a dedicated learning workspace and apply its invocation policy. Only
+an already-authorized durable Discovery record may preserve the unanswered
+question and exact return target; selecting or handing off to Teach does not
+create or update one. A simple conceptual question should receive a direct
+explanation without starting a course workspace. Restore an existing Discovery
+pointer before resuming the decision; never let teaching decide it.
 
 ## Provider identity boundary
 
-When Discovery hands off to Wayfinder, preserve its issue IDs, URLs, linked
-titles, and `wayfinder:*` labels unchanged. Do not allocate `DEC`, `TKT`, `UNK`,
-or another framework alias for Wayfinder-owned state. A framework return pointer
-stores the native reference and exact return target only; Jira and GitHub issue
-identifiers remain external tracker identities.
+After Wayfinder actually runs, preserve its issue IDs, URLs, linked titles, and
+`wayfinder:*` labels unchanged. Do not allocate `DEC`, `TKT`, `UNK`, or another
+framework alias for Wayfinder-owned state. A framework return pointer stores the
+native reference and exact return target only when durable state is required and
+writes are authorized; Jira and GitHub issue identifiers remain external tracker
+identities.
 
 Finish with the decision status, rationale, consequences, rejected alternatives,
 remaining uncertainty, and the appropriate provider or direct implementation
-handoff. Do not reopen an accepted decision without conflicting new evidence or
-an explicit request; supersede it visibly instead of rewriting history.
+handoff. For ephemeral Discovery, report the conclusion as analysis rather than
+claiming a durable `DEC` exists. Do not reopen an accepted durable decision
+without conflicting new evidence or an explicit request; supersede it visibly
+instead of rewriting history.

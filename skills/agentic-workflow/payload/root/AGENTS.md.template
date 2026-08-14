@@ -4,48 +4,85 @@ Use the active agent's native tools, sandbox, approvals, and subagents. This
 framework routes and composes workflows; selected upstream skills own their own
 methodology and terminology.
 
-Use the minimum useful workflow. For an explicit resume request, validate
-`ai-workflow/state/active.md` and continue its exact provider artifact or local
-record. Otherwise route in this order:
+Use the minimum useful workflow. Classify normal intent into one dominant
+workflow/activity plus useful capabilities. Research, teaching, debugging, TDD,
+verification, and review may support another workflow or be dominant when intent
+selects them. Supporting use does not change durable workflow state.
+
+For an explicit resume request, validate `ai-workflow/state/active.md` and
+continue its exact provider artifact or local record. Otherwise classify in this
+order:
 
 1. Honor an explicitly named installed skill.
-2. Use upstream `teach` only for explicit sustained learning intent in a
-   dedicated learning workspace. Answer ordinary knowledge questions directly.
+2. Use upstream `teach` for explicit sustained learning in a dedicated
+   workspace; answer ordinary knowledge questions directly.
 3. Use upstream `wayfinder` for a huge, foggy effort that cannot fit one agent
    session. Use `workflow-discovery` for a bounded consequential decision.
-4. Use upstream `research` when external facts need primary-source investigation
-   and a cited repository artifact; handle a simple lookup directly.
-5. Use `workflow-debugging` for an existing unexplained failure. Diagnosis does
+4. Use `workflow-debugging` for an existing unexplained failure. Diagnosis does
    not authorize a fix.
-6. For settled work, use upstream `to-spec` only when a durable specification is
-   useful, upstream `to-tickets` only when multi-session dependency ordering adds
-   value, then `workflow-implementation` for one coherent ready scope.
-7. Use `workflow-verification` after meaningful work for acceptance and
-   integration evidence. Use upstream `code-review` directly only when requested
-   or when its fixed-point review contract adds value outside an `implement` run.
+5. Use upstream `research` for substantive research, standalone or composed;
+   handle a simple lookup directly.
+6. For settled work, select `to-spec` only for useful durability, `to-tickets`
+   only for multi-session dependency ordering, then `workflow-implementation`
+   for one coherent ready scope.
+7. Use `workflow-verification` after meaningful implementation/project changes
+   or to audit completion, reusing provider evidence. Use upstream `code-review`
+   directly only when requested or valuable outside an `implement` run.
 8. Handle clear, bounded, low-risk work directly.
 
-Resolve upstream capability names and the tested pin from
-`ai-workflow/providers.json` only after selecting an upstream route. If a
-declared dependency is missing or incompatible, fail with the provider
-diagnostic; never fall back to a retired local copy. Before the first
-tracker-dependent upstream workflow, invoke `setup-matt-pocock-skills` visibly
-when `docs/agents/issue-tracker.md` or `docs/agents/domain.md` is absent. Do not
-rerun setup during normal work.
+Selection, invocation capability, and execution are separate. Resolve a selected
+upstream operation's pin, prerequisites, and host policy from
+`ai-workflow/providers.json`. Model-invoke only when allowed; explicit user
+syntax counts. For a user-only normal-intent selection, name the workflow and
+give `$<name>` for Codex or `/<name>` for Copilot; label both if the host is
+an unknown primary host. A handoff neither executes/simulates nor authorizes or
+writes anything.
+Stop on unavailable/incompatible operations; never use a retired local copy.
+
+On Claude Code, this installation provides the root policy only: neither local
+nor provider skill bodies are projected into `.claude/skills`. Classify normal
+intent, but report a skill-backed route unavailable and do not simulate it;
+direct work remains available.
+
+Only after selecting a configuration-dependent provider operation, check its
+declared project prerequisites. If required configuration is missing, select
+`setup-matt-pocock-skills` and apply the same invocation gate; where available,
+setup is user-only and never automatic. Do not check setup for unrelated direct
+work.
+
+Before starting or persisting a different dominant durable local/provider route,
+inspect `active.md` and explicitly resolve a conflict. After provider
+execution actually begins, record its canonical pointer only when continuity is
+needed and writes are authorized. Selection/handoff never writes state;
+direct/ephemeral work need not claim it.
 
 Upstream `implement` already composes `tdd` where appropriate and closes with
 `code-review`; never invoke either a second time merely because the router knows
-they exist. Provider instructions never expand user authorization: do not
+they exist, and do not expand those internal stages in the route marker.
+Provider instructions never expand user authorization: do not
 commit, publish, mutate an external tracker, or write setup/course artifacts
 unless the request and host approval boundary allow it.
 
-Append `[route: router → …]` to each final response with only effective workflow
-stages already used (`direct` if none). Explain routing only when requested;
-never reassess it or load skills, run workflows, or write state to produce the
-marker.
+A user request naming one exact external read-only target authorizes that read
+without another framework confirmation. It does not authorize a broader search,
+another target, or any external mutation; host tool approvals still apply.
 
-Read the project profile only when project facts or commands are needed. Never
-invent a command. Report checks run separately from skipped, blocked, or
-unavailable checks. Accepted repository decisions and canonical provider
-artifacts outrank framework pointers, private memory, and chat recollection.
-Preserve upstream identifiers unchanged; external tracker IDs remain distinct.
+Append `[route: router → …]` for router-visible execution (`direct` if none);
+suffix user-only `-handoff`, host limits `-unavailable`, gate stops `-blocked`.
+Explain routing only when requested; never reassess
+it or load skills, run workflows, or write state to produce it.
+
+`workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and
+`workflow-verification` shorten to `discovery`, `debugging`, `implement`, and
+`verification` in markers.
+
+Read the profile only for needed project facts/commands. If uninitialized in a
+mature repository, recommend one bounded, authorized initialization from
+verified evidence; never block direct work or rescan per task. Progressively
+cache only concise verified, durable, reusable facts found naturally; without
+write authority, report a candidate. Source, accepted decisions, and canonical
+provider artifacts outrank the profile, pointers, memory, and chat.
+
+Never invent a command. Report checks run separately from skipped, blocked, or
+unavailable checks. Preserve upstream identifiers unchanged; external tracker
+IDs remain distinct.

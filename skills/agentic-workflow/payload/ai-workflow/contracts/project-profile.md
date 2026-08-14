@@ -1,14 +1,62 @@
 # Project profile contract
 
-`ai-workflow/project-profile.md` is project-owned context. It specializes the
-generic workflow policy without changing core skills. Keep it factual, concise, and free
-of secret values. The profile is not a shell script; an agent may run a command
-only after applying the safety gate below.
+`ai-workflow/project-profile.md` is a project-owned, curated cache of verified
+context that is likely to help future work. It specializes the generic workflow
+policy without changing core skills. It is not a chat log, task journal,
+speculative architecture document, README copy, source-of-truth replacement, or
+place for secret values. The profile is not a shell script; an agent may run a
+command only after applying the safety gate below.
+
+## Initialization and maintenance
+
+The first nonblank line below the title must be exactly one of:
+
+```text
+Initialization: uninitialized
+Initialization: initialized
+```
+
+The installed seed is deterministically uninitialized: it uses the first value
+and represents every unknown section as `None`. Missing project setup does not
+prevent unrelated direct work and is not framework corruption.
+
+For a mature existing repository, initialize the profile once from verified
+repository evidence. Keep the investigation bounded to useful canonical files
+and relevant live checks; do not scan the entire repository merely to populate
+the profile. Change the marker to `initialized` only when the recorded facts
+have been checked. A new or intentionally sparse repository may remain
+uninitialized until reusable context exists.
+
+After initialization, update the profile progressively when normal work
+naturally establishes information that is all three of:
+
+1. verified;
+2. durable rather than task-specific; and
+3. likely to be useful in future work.
+
+Do not add temporary workflow state, conversational notes, speculative claims,
+ephemeral implementation detail, secrets, copied documentation, or facts better
+represented by a canonical file and a short pointer. Do not perform a
+repository-wide rescan on each task. If repository writes are not authorized,
+report the candidate fact without editing the profile.
+
+Knowledge precedence is:
+
+1. live and source evidence for current behavior;
+2. accepted ADRs and domain documentation for domain decisions;
+3. provider-native artifacts for outputs owned by a provider workflow; and
+4. this concise cache and its pointers.
+
+When the profile conflicts with a higher-precedence source, verify and report
+the conflict before relying on the profile, then update it only when writes are
+authorized. The workflow that creates a durable artifact owns its canonical
+artifact; the profile may point to that artifact but does not require or create
+a duplicate.
 
 ## Required headings
 
-Every profile must contain these level-two headings, using `None` when a section
-has no content:
+Every profile must contain these level-two headings in this order, using `None`
+when a section has no verified content:
 
 1. `Purpose and success`
 2. `Technology and architecture`
@@ -21,21 +69,23 @@ has no content:
 9. `Decision considerations`
 10. `Profile maintenance`
 
-Under `Important paths`, name the project's canonical location for durable
-specifications when one exists, or state that none has been established. Specs
-remain project-owned; workflow records link to them rather than copying them.
-Also name the local implementation-ticket destination or the accepted native
-tracker, or state that neither is established. Native issue bodies remain
-canonical and are not mirrored into workflow state.
+Under `Important paths`, record concise pointers to useful paths and canonical
+artifacts. A specification may be canonical in a tracker, at an intentional
+project documentation path, or in another provider-native location according to
+the workflow that created it. Record the accepted native tracker or local
+implementation-ticket destination when established. Do not impose one framework
+path or mirror issue/specification bodies into workflow state.
 
 Under `Delivery workflow`, state when proportional independent review is
 required and who may accept a review limitation. Projects may make review
 stricter but must not let review replace executable Verification evidence.
 
-The maintenance section identifies the owner, last review date, facts that make
-the profile stale, and the action to take when reality conflicts with it. Source
-code and live evidence remain authoritative for system behavior; this profile is
-authoritative only for declared project policy until corrected.
+Once initialized, the maintenance section identifies the owner, last review
+date, facts that make the profile stale, and the action to take when reality
+conflicts with it. While uninitialized, its value is `None`.
+
+Under `Commands`, `None` means that no project check has been configured yet.
+Report verification as blocked rather than inventing a command.
 
 ## Command entry
 
@@ -79,13 +129,17 @@ Scope records where the action observes or changes state:
 `externally-mutating` and `destructive` always require explicit human approval,
 even if the entry incorrectly says otherwise. A destructive entry also needs an
 exact target and recovery or reversal plan. Unknown or missing safety values do
-not run. Any entry marked `Approval required: yes` waits for explicit approval,
-including a read-only inspection. Every `external`-scope action also waits for
-explicit approval, even when read-only. Safe checks may run automatically only
-when relevant, not marked approval-required, and local in scope.
+not run. A current user request that explicitly names a specific external
+read-only target and scope (for example, one issue in one repository) authorizes
+that exact inspection without a redundant second approval, including when the
+entry says `Approval required: yes`. It does not authorize reading unrelated
+targets, expanding to another repository, or making any external change. Other
+external reads wait for explicit approval. Safe local checks may run
+automatically only when relevant and not marked approval-required.
 Creating, editing, closing, or otherwise mutating a native ticket is an external
-action and follows the same explicit-approval rule unless a narrower accepted
-project policy already grants that exact authority.
+action and always requires explicit mutation authority unless a narrower
+accepted project policy already grants that exact authority. Authorization for
+an external read never supplies that mutation authority.
 Commands are executable repository content, not inherently trusted, and must be
 reviewed like code; never interpolate untrusted request text into a command.
 

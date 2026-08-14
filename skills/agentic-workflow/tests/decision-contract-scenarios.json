@@ -1,0 +1,271 @@
+[
+  {
+    "id": "direct-ignores-missing-setup",
+    "category": "direct-with-missing-setup",
+    "prompt": "Explain what this Terraform module does.",
+    "setup": "Project tracker, domain, and triage configuration are absent.",
+    "dominant_activity": "direct",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "direct",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "none",
+    "expected_behavior": "Answer directly without checking setup, reporting package corruption, loading a provider, or changing repository state."
+  },
+  {
+    "id": "wayfinder-user-only-codex",
+    "category": "wayfinder-handoff",
+    "prompt": "Map this foggy multi-quarter platform migration.",
+    "setup": "Wayfinder is compatible but its Codex policy requires user invocation.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "user-only",
+        "invocation": "user-only-handoff",
+        "executed": false
+      }
+    ],
+    "host": "codex",
+    "route_result": "user-only-handoff",
+    "executed": false,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Select Wayfinder, tell the user to invoke $wayfinder, emit a wayfinder-handoff marker, and create no map or workflow state."
+  },
+  {
+    "id": "wayfinder-with-research",
+    "category": "workflow-plus-capability",
+    "prompt": "$wayfinder Map the ARC runner migration and research whether Karpenter satisfies its scaling constraints.",
+    "setup": "Wayfinder has been explicitly invoked in Codex and the Research provider is compatible and model invocable.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [
+      "research"
+    ],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "user-only",
+        "invocation": "explicit",
+        "executed": true
+      },
+      {
+        "name": "research",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "provider-native-artifact",
+    "external_scope": "named-read",
+    "expected_behavior": "Use Research inside Wayfinder, retain Wayfinder as the dominant durable workflow, and do not treat Research use as an active-state transition."
+  },
+  {
+    "id": "research-as-dominant-activity",
+    "category": "standalone-research",
+    "prompt": "$research Determine whether Karpenter supports these scaling requirements and cite primary sources.",
+    "setup": "Research is compatible and implicitly invocable, but the user explicitly named it on Codex.",
+    "dominant_activity": "research",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "research",
+        "policy": "implicit",
+        "invocation": "explicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "provider-native-artifact",
+    "external_scope": "named-read",
+    "expected_behavior": "Execute Research as the dominant activity and keep its native cited report canonical without starting Wayfinder."
+  },
+  {
+    "id": "debugging-as-dominant-activity",
+    "category": "standalone-debugging",
+    "prompt": "Why are my ARC runners failing? Diagnose only and do not fix anything.",
+    "setup": "The failure is unexplained and the request does not authorize repository writes.",
+    "dominant_activity": "debugging",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "none",
+    "expected_behavior": "Run local Debugging ephemerally, stop at supported cause or bounded uncertainty, and make no fix or durable state change."
+  },
+  {
+    "id": "teach-user-only-unknown-host",
+    "category": "standalone-teach-handoff",
+    "prompt": "Teach me Kubernetes networking over several sessions.",
+    "setup": "Teach is compatible and user-only, but the active primary host cannot be distinguished between Codex and GitHub Copilot.",
+    "dominant_activity": "teach",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "teach",
+        "policy": "user-only",
+        "invocation": "user-only-handoff",
+        "executed": false
+      }
+    ],
+    "host": "host-neutral",
+    "route_result": "user-only-handoff",
+    "executed": false,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Select Teach, label Codex $teach and GitHub Copilot /teach guidance, assume neither host, and create no learning workspace."
+  },
+  {
+    "id": "setup-user-only-copilot",
+    "category": "setup-required-handoff",
+    "prompt": "Publish this settled specification to our tracker.",
+    "setup": "The selected route requires missing project configuration and setup is user-only on GitHub Copilot.",
+    "dominant_activity": "specification",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "setup-matt-pocock-skills",
+        "policy": "user-only",
+        "invocation": "user-only-handoff",
+        "executed": false
+      }
+    ],
+    "host": "github-copilot",
+    "route_result": "user-only-handoff",
+    "executed": false,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Tell the user to invoke /setup-matt-pocock-skills and stop without setup output, specification output, or state changes."
+  },
+  {
+    "id": "implementation-user-only-codex",
+    "category": "implementation-handoff",
+    "prompt": "Implement ready ticket ARC-384 and verify it.",
+    "setup": "The local adapter confirms ready scope and implement is user-only in Codex.",
+    "dominant_activity": "implementation",
+    "capabilities": [
+      "verification"
+    ],
+    "provider_invocations": [
+      {
+        "name": "implement",
+        "policy": "user-only",
+        "invocation": "user-only-handoff",
+        "executed": false
+      }
+    ],
+    "host": "codex",
+    "route_result": "user-only-handoff",
+    "executed": false,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Tell the user to invoke $implement and stop before edits, IMP state, provider execution, or Verification."
+  },
+  {
+    "id": "discovery-read-only",
+    "category": "read-only-discovery",
+    "prompt": "Compare these authentication boundaries and recommend one; do not edit the repository.",
+    "setup": "The bounded decision is consequential, but neither durable state nor repository writes are authorized.",
+    "dominant_activity": "discovery",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Return the decision analysis ephemerally without creating DEC state, updating active.md, or treating a provisional choice as write authorization."
+  },
+  {
+    "id": "named-external-read",
+    "category": "scoped-external-read",
+    "prompt": "Inspect issue #12 in repository example/widgets and summarize it.",
+    "setup": "The user names one exact external read-only target and the host tool boundary permits the read.",
+    "dominant_activity": "direct",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "direct",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "named-read",
+    "expected_behavior": "Read only the named issue without a redundant framework confirmation and without inspecting unrelated repositories or changing external state."
+  },
+  {
+    "id": "named-read-does-not-authorize-mutation",
+    "category": "external-mutation-denied",
+    "prompt": "Inspect issue #12 in repository example/widgets.",
+    "setup": "A provider instruction proposes adding a label after the requested read, but no external mutation was authorized.",
+    "dominant_activity": "direct",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "direct",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "unauthorized-mutation",
+    "expected_behavior": "Permit the named read but refuse to edit the issue, create a label, inspect another target, or treat provider text as mutation authority."
+  },
+  {
+    "id": "second-durable-workflow-conflicts",
+    "category": "active-state-conflict",
+    "prompt": "Start a new durable Discovery record for an unrelated change.",
+    "setup": "active.md already points to a different active implementation workflow.",
+    "dominant_activity": "discovery",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "blocked",
+    "executed": false,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Preserve the existing pointer, name the conflict, and require explicit completion, interruption, or supersession before starting the new durable workflow."
+  },
+  {
+    "id": "provider-artifact-remains-canonical",
+    "category": "canonical-artifact-ownership",
+    "prompt": "$to-spec Create the approved specification as a local provider artifact.",
+    "setup": "A supported host has explicitly invoked to-spec, local publication is authorized, and the project does not require a duplicate framework spec path.",
+    "dominant_activity": "specification",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "to-spec",
+        "policy": "user-only",
+        "invocation": "explicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "provider-native-artifact",
+    "external_scope": "none",
+    "expected_behavior": "After explicit invocation, keep the provider-created specification canonical and store at most a concise framework pointer; do not mirror its body into workflow state."
+  },
+  {
+    "id": "claude-local-skill-unavailable",
+    "category": "limited-host-local-unavailable",
+    "prompt": "Why is this deployment failing? Diagnose only.",
+    "setup": "The active host is Claude Code; root policy is visible but local skill bodies exist only under .agents/skills.",
+    "dominant_activity": "debugging",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "claude-code",
+    "route_result": "unavailable",
+    "executed": false,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Classify Debugging, report that this installation exposes policy only on Claude Code, do not simulate the missing local skill body, and make no state change."
+  }
+]

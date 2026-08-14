@@ -1,53 +1,43 @@
 # Project profile
 
+Initialization: uninitialized
+
 ## Purpose and success
 
-Describe the project, its users, and observable success.
+None
 
 ## Technology and architecture
 
-List verified technologies, important components, and their relationships.
+None
 
 ## Important paths
 
-Map the few directories an agent usually needs. Name the project-owned durable
-specification location and local ticket destination or accepted native tracker,
-or state that each has not been established.
+None
 
 ## Terminology
 
-Define project-specific terms. Use `None` when there are none.
+None
 
 ## Constraints and policy
 
-Record security, organizational, compatibility, approval, and scope constraints.
+None
 
 ## Delivery workflow
 
-Describe how a change normally moves from development through release. State any
-plan-approval policy, when proportional independent review is required, and who
-may accept a review limitation. Review does not replace executable Verification.
+None
 
 ## Commands
 
-Copy a complete entry from `ai-workflow/contracts/project-profile.md` for each
-real command or manual check. If none are configured, write:
-
-`No project checks are configured. Report verification as blocked; do not invent commands.`
+None
 
 ## Debugging model
 
-Describe the project's request/data/control path and useful evidence at each
-layer. Use `None` until verified.
+None
 
 ## Decision considerations
 
-List domain-specific tradeoffs and policies. Use `None` until verified.
+None
 
 ## Profile maintenance
 
-- Owner: Project maintainers
-- Last reviewed: YYYY-MM-DD
-- Becomes stale when: Architecture, toolchain, delivery, or policy changes.
-- Conflict behavior: Verify against source and live evidence, report the conflict,
-  and update this profile before relying on the disputed field.
+None

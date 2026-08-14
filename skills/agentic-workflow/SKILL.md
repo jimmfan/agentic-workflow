@@ -16,15 +16,32 @@ The purpose of the coordinated path is to prevent a project from receiving only
 half of the framework. Install and dry-run preflight both local ownership and
 provider compatibility before writes. A successful install leaves the compact
 router, four local integration/safety skills, all complete pinned provider
-directories, and both clean ownership records in the target.
+directories, and both clean ownership records in the target. Installation
+success is distinct from project readiness: an uninitialized profile or missing
+tracker/domain/triage configuration is a warning, not package corruption.
 
-Before a fresh provider install, GitHub CLI 2.97.0 or newer must expose
+Before a fresh provider install or provider-baseline upgrade, GitHub CLI 2.97.0
+or newer must expose
 `gh skill`, and `gh auth status --hostname github.com` must succeed. Install and
 authenticate `gh` in the same host, Dev Container, or Windows environment that
 owns the target project. Do not install `gh`, start login, or mutate a target
-unless the user has authorized the adoption task. Existing exact-compatible
-provider directories can be adopted without a network call; incompatible
-same-named skills always fail closed.
+unless the user has authorized the adoption task. Initial adoption stages the
+exact pin even when provider directories already exist, so mutable metadata is
+never accepted as content identity. After that baseline is authenticated and
+recorded, inner status checks need no provider network call; the public bootstrap
+still needs HTTPS to fetch the recorded package. Incompatible same-named skills
+always fail closed. The package declaration owns each upstream file's canonical
+SHA-256. Verification normalizes only the exact, fully validated GitHub-injected
+provenance block in `SKILL.md`; mutable state hashes are installation-cleanliness
+evidence, not content authority.
+
+The provider declaration separates capability routing from invocation policy.
+Codex and GitHub Copilot discover the installed `.agents/skills` tree; a
+user-only selection results in an exact `$skill-name` or `/skill-name` handoff,
+not simulated execution or state writes. Claude Code can read the installed root
+policy but cannot natively discover either the local or provider skill tree, so
+only policy/direct handling is available and every skill-backed route is
+reported unavailable there. Never remove or bypass upstream user-only metadata.
 
 All bootstrap and lifecycle entry points require Python 3.11 or newer and fail
 before network or target filesystem work on an older interpreter. The public
@@ -33,9 +50,10 @@ and reversal guidance; do not bypass the runtime check.
 
 For a deliberate install request, run the lifecycle once with `install`; it
 performs preflight, applies both components, rolls back a failed fresh install,
-and verifies the result. Use `--dry-run` only when the user requests a preview.
-Do not require a separate preview, apply, or status command for normal
-installation.
+and verifies integrity. It may also report readiness guidance for one-time
+profile or provider setup initialization; it does not execute that interactive
+setup. Use `--dry-run` only when the user requests a preview. Do not require a
+separate preview, apply, or status command for normal installation.
 
 Run these commands from this skill directory, or use absolute script and target
 paths. They make persistent target changes except `status` and commands with
@@ -47,6 +65,46 @@ python3 scripts/lifecycle.py update /path/to/project
 python3 scripts/lifecycle.py status /path/to/project
 python3 scripts/lifecycle.py remove /path/to/project
 ```
+
+`status` reports framework integrity, provider integrity, project readiness, and
+setup host capability separately. Missing optional readiness items keep the clean
+status exit code; managed-file or provider-integrity failures do not. A selected
+configuration-dependent workflow checks its declared requirements and, when
+missing, directs the user to the user-only setup skill on a supported host or
+reports the provider unavailable on an unsupported host. Unrelated direct work
+does not require setup.
+
+Cross-version payload updates trust only an exact predecessor identity embedded
+in the new immutable package: version, source revision, installation-manifest
+schema, complete managed-path set, and every source SHA-256 must match before
+mutation planning. Never add a predecessor merely to make a fixture or unknown
+installation pass. Payload install/update post-checks run before transaction
+commit and restore prior bytes and modes on failure. Rollback removes only
+transaction-created parent directories; successful removal leaves unowned empty
+parents in place.
+
+On a provider declaration change, `update` must reject unknown old-state skill
+names, stage the complete new pin, authenticate every existing declared
+directory, downgrade retained directories to `preexisting-compatible`, and add
+only missing declared skills. It must never replace or remove an existing
+provider directory during that transition. This supports a same-pin dependency
+addition; changed canonical bytes at a future pin fail closed until the owner
+explicitly reconciles the directory or completes remove-then-install.
+
+`remove` is bounded to exact declaration names. Delete only a directory whose
+complete inventory is package-authentic, whose installed checksums still match
+its record, and whose origin is `created`; preserve incompatible, modified,
+extra-file, undeclared, and `preexisting-compatible` directories. Origin history
+is repository-local evidence, not tamper-evident. Coordinated forgery can
+reclassify an exact unmodified canonical directory, but cannot authorize
+deletion of modified, extra-file, or undeclared content.
+
+Payload origin and composite restoration fields have the same repository-local
+trust limit. Coordinated forgery can reclassify exact canonical managed bytes or
+substitute an exact current/audited historical policy identity, but cannot
+authorize invented source identities or deletion of modified, extra,
+undeclared, or unique project content. Eliminating that limitation would require
+no-delete semantics or a trust anchor outside the target repository.
 
 Before packaging or adoption, run the read-only verifier from this skill
 directory:

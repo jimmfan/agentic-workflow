@@ -10,12 +10,12 @@
   },
   {
     "id": 2,
-    "requirement": "Explicit sustained learning routes to upstream Teach.",
+    "requirement": "Explicit sustained learning intent selects upstream Teach without bypassing user-only invocation.",
     "prompt": "Teach me distributed systems over several sessions and build lessons for me.",
-    "setup": "The pinned teach skill is compatible and a dedicated learning workspace is selected.",
-    "expected_route": "teach",
-    "expected_behavior": "Invoke teach explicitly and keep its course artifacts in the learning workspace.",
-    "evidence": "Teach is loaded and its native MISSION, lessons, references, and records remain canonical."
+    "setup": "The active host is Codex, the pinned teach skill is compatible, and its policy requires user invocation.",
+    "expected_route": "teach-handoff",
+    "expected_behavior": "Tell the user that Teach is appropriate and to invoke $teach; do not create a learning workspace yet.",
+    "evidence": "Teach is not loaded, no course artifact or workflow state is created, and the handoff does not claim execution."
   },
   {
     "id": 3,
@@ -30,19 +30,19 @@
     "id": 4,
     "requirement": "Huge foggy multi-session planning routes to Wayfinder.",
     "prompt": "Help chart a new platform migration that is too large for one agent session.",
-    "setup": "The pinned wayfinder dependency and its composition dependencies are compatible.",
-    "expected_route": "wayfinder",
-    "expected_behavior": "Use Wayfinder's native map and decision-ticket semantics without copying its method locally.",
-    "evidence": "The canonical artifact is a Wayfinder map and only provider-native identities appear."
+    "setup": "The active host is GitHub Copilot; Wayfinder and its dependencies are compatible, but Wayfinder requires user invocation.",
+    "expected_route": "wayfinder-handoff",
+    "expected_behavior": "Classify the request as Wayfinder and tell the user to invoke /wayfinder without simulating its method.",
+    "evidence": "No map, decision ticket, authorization change, or workflow-state write exists before user invocation."
   },
   {
     "id": 5,
-    "requirement": "A bounded consequential choice remains ai-workflow Discovery.",
+    "requirement": "A read-only bounded consequential choice remains ephemeral ai-workflow Discovery.",
     "prompt": "Choose between two authentication adapters for this already scoped change.",
-    "setup": "The decision is material but can be resolved in one session without a map.",
+    "setup": "The decision is material but can be resolved in one session; the user requested analysis rather than repository changes.",
     "expected_route": "discovery",
-    "expected_behavior": "Compare viable alternatives and record one bounded decision without invoking Wayfinder.",
-    "evidence": "A DEC record links evidence and no Wayfinder map is created."
+    "expected_behavior": "Compare viable alternatives ephemerally without invoking Wayfinder or persisting a DEC record.",
+    "evidence": "The analysis is returned in chat and the repository, DEC allocator, and active index remain unchanged."
   },
   {
     "id": 6,
@@ -73,66 +73,66 @@
   },
   {
     "id": 9,
-    "requirement": "Settled conversation can become an upstream specification.",
+    "requirement": "Settled conversation can select an upstream specification workflow without bypassing invocation policy.",
     "prompt": "Turn our settled discussion into the canonical spec.",
-    "setup": "Setup output exists, publication is authorized, and no material decision remains open.",
-    "expected_route": "to-spec",
-    "expected_behavior": "Invoke to-spec once and keep its tracker or local file artifact canonical.",
-    "evidence": "The artifact follows upstream ownership and framework state stores only its pointer."
+    "setup": "The active host is Codex, setup output exists, publication is authorized, no material decision remains open, and to-spec is user-only.",
+    "expected_route": "to-spec-handoff",
+    "expected_behavior": "Tell the user to invoke $to-spec and stop before publication or local artifact creation.",
+    "evidence": "No specification or workflow state exists until to-spec is actually invoked."
   },
   {
     "id": 10,
-    "requirement": "Substantial dependency-ordered work uses upstream to-tickets.",
+    "requirement": "Substantial dependency-ordered work selects upstream to-tickets without bypassing invocation policy.",
     "prompt": "Split this approved spec into implementation tickets for several sessions.",
-    "setup": "The spec is canonical and multiple vertical slices with blockers add coordination value.",
-    "expected_route": "to-tickets",
-    "expected_behavior": "Invoke to-tickets, preserve its vertical-slice and blocking semantics, and avoid shadow TKT records.",
-    "evidence": "Native ticket identifiers and blocker edges remain canonical."
+    "setup": "The active host is GitHub Copilot, the spec is canonical, multiple slices add value, and to-tickets is user-only.",
+    "expected_route": "to-tickets-handoff",
+    "expected_behavior": "Tell the user to invoke /to-tickets and stop without creating native or shadow tickets.",
+    "evidence": "No ticket, framework alias, external mutation, or workflow-state write exists before invocation."
   },
   {
     "id": 11,
-    "requirement": "Implementation delegates methodology upstream and retains independent verification.",
+    "requirement": "Implementation delegates to a user-only upstream workflow without claiming it or Verification ran.",
     "prompt": "Implement this ready ticket and verify the acceptance criteria.",
-    "setup": "The pinned implement, tdd, and code-review dependencies are compatible.",
-    "expected_route": "implementation/implement->verification",
-    "expected_behavior": "Invoke implement once, let it compose TDD and Code Review, then add only uncovered acceptance and integration verification.",
-    "evidence": "One implement invocation is followed by one framework verification pass."
+    "setup": "The active host is Codex; implement, TDD, and Code Review are compatible, but implement requires user invocation.",
+    "expected_route": "implementation/implement-handoff",
+    "expected_behavior": "Validate the ready boundary, tell the user to invoke $implement, and stop before code or state changes.",
+    "evidence": "No provider execution, IMP record, implementation edit, or Verification claim occurs before invocation."
   },
   {
     "id": 12,
     "requirement": "TDD is not run twice.",
-    "prompt": "Implement this behavior test-first.",
-    "setup": "Implement selects its TDD dependency at the pre-agreed seam.",
-    "expected_route": "implementation/implement->tdd->verification",
-    "expected_behavior": "The router does not invoke a second TDD stage before or after implement.",
+    "prompt": "$implement Implement this behavior test-first.",
+    "setup": "Codex has explicitly invoked implement, which selects its TDD dependency at the pre-agreed seam.",
+    "expected_route": "implementation/implement->verification",
+    "expected_behavior": "The router does not re-expand provider-owned TDD in the marker or invoke a second TDD stage before or after implement.",
     "evidence": "Execution history contains one upstream TDD loop."
   },
   {
     "id": 13,
     "requirement": "Code Review is not redundantly invoked after implement.",
-    "prompt": "Implement and finish this ticket.",
-    "setup": "Implement completed its own upstream Code Review.",
-    "expected_route": "implementation/implement->code-review->verification",
-    "expected_behavior": "Framework Verification reuses the review result and does not start another review.",
+    "prompt": "$implement Implement and finish this ticket.",
+    "setup": "Codex has explicitly invoked implement, which completed its own upstream Code Review.",
+    "expected_route": "implementation/implement->verification",
+    "expected_behavior": "The marker leaves provider-owned Code Review under implement; framework Verification reuses the review result and does not start another review.",
     "evidence": "Execution history contains one Code Review invocation."
   },
   {
     "id": 14,
-    "requirement": "Missing upstream repository configuration triggers visible one-time setup.",
+    "requirement": "Missing upstream repository configuration selects a visible user-only setup handoff.",
     "prompt": "Publish this settled spec to our tracker.",
-    "setup": "Provider skills are installed but docs/agents/issue-tracker.md and domain.md are absent.",
-    "expected_route": "setup-matt-pocock-skills->to-spec",
-    "expected_behavior": "Invoke prompt-driven setup visibly before tracker-dependent work and preserve user control over writes.",
-    "evidence": "Setup output exists once and to-spec consumes it."
+    "setup": "The active host is GitHub Copilot; provider skills are installed, required configuration is absent, and setup is user-only.",
+    "expected_route": "setup-matt-pocock-skills-handoff",
+    "expected_behavior": "Tell the user to invoke /setup-matt-pocock-skills and stop before setup or to-spec executes.",
+    "evidence": "No configuration, specification, authorization change, or workflow-state write exists before invocation."
   },
   {
     "id": 15,
     "requirement": "Configured repositories do not rerun setup.",
     "prompt": "Turn this approved spec into tickets.",
-    "setup": "The required docs/agents configuration already exists.",
-    "expected_route": "to-tickets",
-    "expected_behavior": "Invoke to-tickets directly without loading or running setup.",
-    "evidence": "No setup artifacts are rewritten and setup is absent from the route."
+    "setup": "The active host is Codex, required configuration exists, and to-tickets is user-only.",
+    "expected_route": "to-tickets-handoff",
+    "expected_behavior": "Tell the user to invoke $to-tickets without loading, running, or handing off to setup.",
+    "evidence": "Setup artifacts remain unchanged and only the to-tickets handoff is reported."
   },
   {
     "id": 16,
@@ -155,8 +155,8 @@
   {
     "id": 18,
     "requirement": "Wayfinder-native identity passes through unchanged.",
-    "prompt": "Resume this Wayfinder map and its next decision ticket.",
-    "setup": "The map and ticket have native tracker identifiers, titles, URLs, and wayfinder labels.",
+    "prompt": "$wayfinder Resume this Wayfinder map and its next decision ticket.",
+    "setup": "Codex has explicitly invoked Wayfinder; the map and ticket have native tracker identifiers, titles, URLs, and wayfinder labels.",
     "expected_route": "wayfinder",
     "expected_behavior": "Use the native map vocabulary and identity without framework aliases.",
     "evidence": "Wayfinder IDs, URLs, titles, labels, and map terms remain byte-for-byte references."
@@ -164,8 +164,8 @@
   {
     "id": 19,
     "requirement": "Framework and external identifiers remain distinct.",
-    "prompt": "Return from the Wayfinder decision to the implementation coordinator.",
-    "setup": "The origin uses Wayfinder identity, the external systems include ARC-384 and #384, and a distinct local DEC record coordinates the return.",
+    "prompt": "$wayfinder Return from the Wayfinder decision to the implementation coordinator.",
+    "setup": "Codex has explicitly invoked Wayfinder; the origin uses Wayfinder identity, the external systems include ARC-384 and #384, and an authorized distinct local DEC record coordinates the return.",
     "expected_route": "wayfinder->discovery",
     "expected_behavior": "Preserve the unchanged origin and return target; never translate Wayfinder state to DEC, TKT, or UNK aliases.",
     "evidence": "ARC-384, #384, the native Wayfinder reference, and the distinct DEC pointer remain separate."
@@ -173,8 +173,8 @@
   {
     "id": 20,
     "requirement": "to-spec can consume settled upstream planning state.",
-    "prompt": "Synthesize the completed Wayfinder effort into a specification.",
-    "setup": "The Wayfinder destination and decision-ticket resolutions are settled and publication is authorized.",
+    "prompt": "$to-spec Synthesize the completed Wayfinder effort into a specification.",
+    "setup": "Codex has explicitly invoked to-spec; the Wayfinder destination and decision-ticket resolutions are settled and publication is authorized.",
     "expected_route": "wayfinder->to-spec",
     "expected_behavior": "Pass canonical provider state to to-spec without translating or duplicating it.",
     "evidence": "The specification cites native map/ticket references and no shadow decision set appears."
@@ -182,8 +182,8 @@
   {
     "id": 21,
     "requirement": "to-tickets consumes the canonical upstream spec artifact.",
-    "prompt": "Decompose the published spec into tracer-bullet tickets.",
-    "setup": "A to-spec artifact exists at the configured tracker or local path.",
+    "prompt": "$to-tickets Decompose the published spec into tracer-bullet tickets.",
+    "setup": "Codex has explicitly invoked to-tickets and a to-spec artifact exists at the configured tracker or local path.",
     "expected_route": "to-spec->to-tickets",
     "expected_behavior": "Fetch the canonical spec and publish only approved vertical slices and blocker edges.",
     "evidence": "Each ticket traces to the canonical spec without copied framework tickets."
@@ -191,8 +191,8 @@
   {
     "id": 22,
     "requirement": "Implement consumes native ticket artifacts.",
-    "prompt": "Implement the next actionable native ticket.",
-    "setup": "The to-tickets frontier has one ready native ticket and its blockers are resolved.",
+    "prompt": "$implement Implement the next actionable native ticket.",
+    "setup": "Codex has explicitly invoked implement; the to-tickets frontier has one ready native ticket and its blockers are resolved.",
     "expected_route": "implementation/implement->verification",
     "expected_behavior": "Pass the native ticket to implement and return to the native frontier after verification.",
     "evidence": "No framework ticket alias or mirrored body is created."
@@ -227,8 +227,8 @@
   {
     "id": 26,
     "requirement": "Teach artifacts stay outside the engineering project unless that project is the chosen course workspace.",
-    "prompt": "Start a multi-session course on database internals.",
-    "setup": "The user selects a dedicated learning directory.",
+    "prompt": "$teach Start a multi-session course on database internals.",
+    "setup": "Codex has explicitly invoked Teach and the user selects a dedicated learning directory.",
     "expected_route": "teach",
     "expected_behavior": "Create Teach-native artifacts only in the selected workspace and retain at most a return pointer elsewhere.",
     "evidence": "No MISSION.md, lessons, or learning-records appear accidentally in the engineering root."
@@ -236,8 +236,8 @@
   {
     "id": 27,
     "requirement": "Durable re-entry points to canonical provider artifacts.",
-    "prompt": "Resume the interrupted implementation.",
-    "setup": "active.md names provider skill implement, a native ticket link, an IMP coordinator, and an exact resume target.",
+    "prompt": "$implement Resume the interrupted implementation.",
+    "setup": "Codex has explicitly invoked implement; active.md names provider skill implement, a native ticket link, an IMP coordinator, and an exact resume target.",
     "expected_route": "implementation/implement",
     "expected_behavior": "Validate the pointer and artifact, then continue at the exact target without reconstructing from chat.",
     "evidence": "No provider body is copied into framework state."
@@ -245,8 +245,8 @@
   {
     "id": 28,
     "requirement": "Upstream commit language does not expand authorization.",
-    "prompt": "Implement this ticket but do not commit.",
-    "setup": "The upstream implement body includes a commit step while the user explicitly excludes commits.",
+    "prompt": "$implement Implement this ticket but do not commit.",
+    "setup": "Codex has explicitly invoked implement; the upstream body includes a commit step while the user explicitly excludes commits.",
     "expected_route": "implementation/implement->verification",
     "expected_behavior": "Implement and verify without staging or committing.",
     "evidence": "Git history and index remain unchanged except for authorized working-tree edits."
@@ -254,8 +254,8 @@
   {
     "id": 29,
     "requirement": "External tracker mutations remain approval-gated.",
-    "prompt": "Draft the ticket breakdown but do not publish it yet.",
-    "setup": "to-tickets is configured for a remote tracker.",
+    "prompt": "$to-tickets Draft the ticket breakdown but do not publish it yet.",
+    "setup": "Codex has explicitly invoked to-tickets and it is configured for a remote tracker.",
     "expected_route": "to-tickets",
     "expected_behavior": "Draft and present tickets without creating, labeling, or linking remote issues.",
     "evidence": "No external write occurs and publication remains a visible next action."
@@ -280,11 +280,29 @@
   },
   {
     "id": 32,
-    "requirement": "Provider upgrades are intentional compatibility events.",
-    "prompt": "Update ai-workflow to its newly released tested provider baseline.",
-    "setup": "The package declaration names a reviewed newer stable tag and the existing provider files are checksum-clean.",
-    "expected_route": "installation/provider-upgrade->verification",
-    "expected_behavior": "Stage the complete new pin, atomically replace only framework-created clean dependencies, and run compatibility checks.",
-    "evidence": "The new tag, revision, subtree identities, and checksums are recorded only after all checks pass."
+    "requirement": "Provider declaration changes preserve existing directories and add only missing authenticated dependencies.",
+    "prompt": "Update ai-workflow to the dependency-expanded release at the same tested provider pin.",
+    "setup": "Existing declared provider directories match the new package-owned source identities and one newly declared dependency is absent.",
+    "expected_route": "installation/provider-update->verification",
+    "expected_behavior": "Stage the complete pin, authenticate and preserve every existing directory, record retained directories as pre-existing-compatible, add only the missing dependency, and run compatibility checks.",
+    "evidence": "Existing directory bytes remain unchanged and only the missing dependency plus the new ownership baseline are written after all checks pass."
+  },
+  {
+    "id": 33,
+    "requirement": "A directly requested standalone TDD loop can execute without forcing the full implementation workflow.",
+    "prompt": "Use TDD to add this already bounded behavior.",
+    "setup": "The active host is Codex; the change is scoped and the pinned TDD skill is implicitly invocable.",
+    "expected_route": "tdd->verification",
+    "expected_behavior": "Run the upstream TDD loop once as the dominant activity, then run one independent acceptance/integration Verification pass without starting implement or adding a second TDD or review pass.",
+    "evidence": "The route names TDD then Verification, red-green-refactor and acceptance evidence are present, and implement was not invoked."
+  },
+  {
+    "id": 34,
+    "requirement": "A provider pin transition with changed canonical bytes fails closed without replacing existing directories.",
+    "prompt": "Update ai-workflow to a reviewed provider pin whose skill bodies changed.",
+    "setup": "The existing provider baseline is clean, but at least one retained directory does not match the new package-owned source identity.",
+    "expected_route": "installation/provider-upgrade-blocked",
+    "expected_behavior": "Stop before GitHub staging or target mutation, name the incompatible existing directory, and require explicit owner reconciliation or removal of the old clean baseline before installing the new one.",
+    "evidence": "Provider files and ownership state remain byte-identical after the rejected transition."
   }
 ]

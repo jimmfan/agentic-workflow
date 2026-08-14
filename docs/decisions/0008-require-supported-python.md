@@ -45,6 +45,12 @@ when the check fails. Tests exercise the rejection path. User documentation
 must distinguish interpreter installation from framework installation and
 explain how to verify which interpreter a host or container selects.
 
+Treat executable constants and `providers.json` as the machine-readable sources
+for the Python and GitHub CLI floors. The release verifier checks the canonical
+maintainer and installed documentation against those values. A negative test
+must prove that changing a documented prerequisite without changing its source
+of truth fails the gate.
+
 ## Consequences
 
 - Python 3.9 and 3.10 users must select a supported interpreter before running

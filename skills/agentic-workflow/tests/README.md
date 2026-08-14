@@ -19,13 +19,41 @@ suite covers payload install/update/status/remove, provider pin and metadata
 validation, adjacent resources, pre-existing/modified ownership, missing CLI
 and auth preflight, post-preflight rollback, state-path injection, retired local
 workflow migration, non-Git targets, path-independent packages, archive safety,
-and POSIX/Windows mode semantics.
+and POSIX/Windows mode semantics. It also proves transactional payload
+post-check rollback, manifest-derived seed cleanup, retention of pre-existing
+empty parent directories, and exact package-owned predecessor authentication.
+Negative cases cover changed/omitted current records, forged retired paths,
+unauthenticated restoration bytes, and provider identity drift that generated
+manifest refresh cannot bless. Lifecycle coverage also proves that fresh root
+policies expose byte-preserved project regions, legacy framework-created
+`CLAUDE.md` files and exact pre-existing imports migrate without losing setup
+edits or removal identity, recorded framework revisions fail closed and bind
+status/removal to the exact loaded package, pre-existing provider bodies are
+authenticated against an independently staged pin, normalized content is bound
+to package-owned source hashes, forged state checksums cannot hide body or
+extra-file changes, declaration updates reject unknown old names and never
+replace an existing directory, provider removal rolls back a failed quarantine
+transaction before commit and reports/retains a cleanup failure after commit,
+and project readiness warnings remain separate from
+payload/provider integrity. Profile fixtures cover
+the canonical uninitialized seed and non-destructive recognition of the legacy
+uninitialized seed; existing project-owned profiles are never rewritten.
 
-`route-observability-scenarios.json` contains five interactive contract cases
-for Wayfinder, Implementation, multi-stage routing, effective-use filtering,
-and the no-extra-execution guarantee. Static verification checks their exact
-line format and centralized policy wiring; replay them in a consuming host to
-test instruction compliance end to end.
+Synthetic historical-package fixtures receive explicit fixture-only
+accepted-predecessor records in their copied new package. They exercise the
+planner without expanding production trust. Hermetic bootstrap packages also
+receive a fixture-only provider identity lock matching their deterministic
+source bodies; production `--refresh-manifest` never rewrites the reviewed
+provider lock.
+
+`route-observability-scenarios.json` covers direct handling, dominant workflows,
+workflow-plus-capability composition, user-only handoffs, setup/profile
+readiness, read-only behavior, and the no-extra-execution guarantee.
+`decision-contract-scenarios.json` records the corresponding semantic decision
+categories independently of scenario numbering. Static verification checks
+their invocation, authorization, state-effect, line-format, and centralized
+policy contracts; replay the route cases in a consuming host to test instruction
+compliance end to end.
 
 Acceptance scenario 19 and the Wayfinder ownership checks cover native
 identifier/label pass-through, absence of framework aliases, external tracker

@@ -1,17 +1,22 @@
 # Durable workflow state contract
 
-Repository files, not agent or chat memory, preserve workflow continuity. The single
-`active.md` index identifies current work; detailed records use templates from
-`../templates/`. Actual code and live evidence remain authoritative for system
-behavior. Repository records are authoritative for workflow status and recorded
-decisions when chat disagrees.
+Repository files, not agent or chat memory, preserve workflow continuity. The
+single `active.md` index identifies the repository's one dominant durable
+workflow; detailed records use templates from `../templates/`. Supporting
+capabilities may run inside that workflow without replacing it or causing an
+index transition. Actual code and live evidence remain authoritative for current
+system behavior. Accepted repository decisions remain canonical for their domain
+until explicitly superseded, and repository records remain authoritative for
+workflow status when chat disagrees.
 
-When sources disagree, apply this precedence unless a narrower accepted project
-rule says otherwise: accepted repository decision/state, active workflow
-artifact, agent memory, then chat recollection. Agent memory can be a
-convenience signal but cannot silently supersede an accepted decision, resume
-target, project profile, or verification record. Persist only a concise accepted
-result from delegated work, never a raw transcript or private memory.
+When sources disagree, first verify current behavior against live/source
+evidence. Accepted ADRs and domain documentation are canonical for project
+decisions; provider-native artifacts are canonical for provider-owned output;
+framework records own local decisions, workflow status, and pointers. The
+project profile is only a concise cache/pointer layer. Agent memory and chat
+recollection are convenience signals and cannot silently supersede any of those
+sources. Persist only a concise accepted result from delegated work, never a raw
+transcript or private memory.
 
 ## Locations and identifiers
 
@@ -44,15 +49,16 @@ every provisional decision must state a review trigger. An IDP opportunity is
 supplemental, never an active workflow, and uses `proposed`, `accepted`,
 `rejected`, `completed`, or `superseded`.
 
-## Durable specifications
+## Canonical durable artifacts
 
-Specifications are project-owned engineering documents, not workflow-state
-records. Put them in the consuming project's normal documentation location named
-under the profile's `Important paths`; if no location is established, agree one
-before creating a durable spec. Decision, implementation, and debugging records
-link to the canonical specification and record only status or evidence that is
-not already there. Do not copy a specification into state or invent a global
-framework-owned specs directory.
+The workflow that creates a durable artifact owns its canonical artifact. A
+tracker issue published by `to-spec`, a local specification intentionally
+authored under a project's documentation convention, an authorized `DEC` created
+by local Discovery, and a Wayfinder map may each be canonical in their native
+location. Decision, implementation, and debugging records link to other
+canonical artifacts and record only orchestration status or evidence that is not
+already there. Do not copy a specification into state, require a duplicate local
+file for a provider artifact, or invent a global framework-owned specs directory.
 
 ## Provider artifacts and orchestration pointers
 
@@ -117,18 +123,35 @@ promoted.
 
 ## Active index rules
 
-`active.md` follows `../templates/active-state.md`. Use `none` when idle. It must
-name at most one active workflow, at most one interrupted workflow, existing
-record paths, a precise pending question, and an actionable resume target. The
-interrupted workflow cannot equal the active workflow. Update the index only at
-workflow transitions, not after every message.
+`active.md` follows `../templates/active-state.md`. Use `none` when idle. The
+repository supports one durable active framework workflow and, at most, one
+interrupted workflow. The index names the dominant workflow, existing record
+paths, a precise pending question, and an actionable resume target. The
+interrupted workflow cannot equal the active workflow. Supporting Research,
+Teach, TDD, Debugging, Verification, or Review capability use does not replace
+the dominant workflow or require an index transition. Update the index only at
+actual durable workflow transitions, not after every message.
 
 Allowed values for `Active workflow` and `Interrupted workflow` are
 `discovery`, `implementation`, `debugging`, `verification`, `provider`, and
-`none`. `Provider skill` names the selected upstream skill when the value is
-`provider`; `Provider artifact` stores its canonical pointer. A resume request
-continues at `Resume target` after validating both the framework record and
-provider artifact; it does not reconstruct the task from chat recollection.
+`none`. When an upstream provider actually participates in a durable indexed
+workflow, continuity is needed, and repository writes are authorized,
+`Provider skill` names it and `Provider artifact` stores its canonical pointer.
+This applies when `Active workflow` is `provider` and when a local dominant
+workflow such as `implementation` composes that provider; the local
+`Active record` remains the orchestration owner in the latter case. Ephemeral
+provider use, including a standalone activity that needs no framework
+continuity, need not create index state. A selected-but-unexecuted route or
+user-only handoff does not change the index. A resume request continues at
+`Resume target` after validating both the framework record and provider artifact;
+it does not reconstruct the task from chat recollection.
+
+Before starting or persisting a different durable workflow, inspect the index.
+If it would conflict with the active workflow, stop and name both scopes. Require
+explicit resolution—complete, interrupt, or supersede the existing workflow—
+before changing the pointer. Never silently overwrite unrelated active state.
+An ephemeral direct or read-only task may proceed without claiming durable state
+when it does not alter or interfere with the active workflow.
 
 ## Invalid, stale, or conflicting state
 
@@ -149,11 +172,12 @@ the missing state and do not infer one from chat. Recreate an idle index from th
 template only when repository evidence or the user confirms that no workflow was
 active; otherwise repair it from explicitly confirmed facts.
 
-To reduce collisions across concurrent chats, inspect records and archives
-immediately before writing, reserve the selected ID by creating its record before
-delegating work, and retry with the next number if the path already exists. A
-collision never overwrites a record. Prefer one parent workflow owner; concurrent
-sessions coordinate through the active index.
+To reduce collisions across concurrent chats, inspect the active index, records,
+and archives immediately before an authorized write. Reserve an ID only after
+durable state is required and repository writes are authorized; retry with the
+next number if the path already exists. A collision never overwrites a record.
+Use one parent workflow owner; concurrent sessions coordinate through the active
+index rather than a lock service, scheduler, database, or parallel state tree.
 
 ## Archival and compaction
 

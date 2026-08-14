@@ -20,6 +20,7 @@ from urllib.request import Request, urlopen
 
 REPOSITORY = "jimmfan/agentic-workflow-instructions"
 DEFAULT_REF = "main"
+LOCAL_SOURCE_REVISION = "unreleased-local-package"
 PACKAGE_MARKER = ("skills", "agentic-workflow")
 MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
@@ -69,7 +70,14 @@ def resolve_revision(ref: str) -> str:
 
 
 def installed_revision(target: Path) -> Optional[str]:
-    manifest = target / "ai-workflow" / "install-manifest.json"
+    if target.is_symlink():
+        raise BootstrapError(f"refusing to follow target symlink while reading source revision: {target}")
+    current = target
+    for part in ("ai-workflow", "install-manifest.json"):
+        current = current / part
+        if current.is_symlink():
+            raise BootstrapError(f"refusing to follow target symlink while reading source revision: {current}")
+    manifest = current
     try:
         value = json.loads(manifest.read_text(encoding="utf-8"))
     except FileNotFoundError:
@@ -77,16 +85,25 @@ def installed_revision(target: Path) -> Optional[str]:
     except (OSError, json.JSONDecodeError) as exc:
         raise BootstrapError(f"cannot read installed source revision from {manifest}: {exc}") from exc
     revision = value.get("source_revision") if isinstance(value, dict) else None
-    return revision if isinstance(revision, str) and re.fullmatch(r"[0-9a-f]{40}", revision) else None
+    if not isinstance(revision, str) or (
+        re.fullmatch(r"[0-9a-f]{40}", revision) is None and revision != LOCAL_SOURCE_REVISION
+    ):
+        raise BootstrapError(f"installed source_revision is missing or invalid in {manifest}")
+    return revision
 
 
 def select_source(action: str, target: Path, ref: str, archive_url: Optional[str]) -> Tuple[str, str]:
     if archive_url:
-        revision = ref if re.fullmatch(r"[0-9a-f]{40}", ref) else "unreleased-local-package"
+        revision = ref if re.fullmatch(r"[0-9a-f]{40}", ref) else LOCAL_SOURCE_REVISION
         return revision, archive_url
     if action in {"status", "remove"}:
         revision = installed_revision(target)
         if revision is not None:
+            if revision == LOCAL_SOURCE_REVISION:
+                raise BootstrapError(
+                    "the installation records an unreleased local package; run that local package's "
+                    "lifecycle script or pass --archive-url for the exact package"
+                )
             return revision, f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"
     revision = resolve_revision(ref)
     return revision, f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"

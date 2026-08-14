@@ -37,6 +37,12 @@ Selected direct composition dependencies:
 - `codebase-design` and TDD's adjacent `tests.md`/`mocking.md` resources support
   the implementation/test composition.
 
+Selected configuration dependency:
+
+- `triage` enables setup to provision the shared triage-label vocabulary used
+  by `to-spec` and `to-tickets`. It is installed at the same immutable pin, but
+  is not exposed as a root-routed framework capability.
+
 Rejected as a framework replacement:
 
 - `diagnosing-bugs` is useful but does not preserve the local workflow's
@@ -45,9 +51,10 @@ Rejected as a framework replacement:
   explicitly installed by a project; the framework does not silently substitute
   it.
 
-The full selected provider directories occupy approximately 113 KB at this
+The full selected provider directories occupy approximately 132 KB at this
 release. That on-disk cost does not imply an equivalent prompt cost: agent hosts
-discover skill metadata first and load full instructions on selection. The
+discover skill metadata first and load full instructions only on actual
+invocation, not on a user-only route selection. The
 root router remains under 5 KB and avoids copied method bodies. The expected
 initial-context increase is the host's skill catalog metadata, roughly low
 single-digit kilobytes, while detailed provider instructions remain on demand.
@@ -55,41 +62,51 @@ single-digit kilobytes, while detailed provider instructions remain on demand.
 ## Setup lifecycle findings
 
 The setup skill is prompt-driven. It writes project-owned
-`docs/agents/issue-tracker.md`, `docs/agents/domain.md`, optional
-`docs/agents/triage-labels.md`, and may add a root `## Agent skills` block. It
-therefore must not run invisibly during framework installation or on every
-prompt. The adopted lifecycle is a visible first-use check before a
-tracker-dependent workflow, followed by direct project configuration edits
-unless the user intentionally switches/resets setup.
+`docs/agents/issue-tracker.md`, `docs/agents/domain.md`, and may add a root
+`## Agent skills` block. At `v1.2.3`, it writes
+`docs/agents/triage-labels.md` only when the `triage` skill is installed. The
+declaration therefore models issue-tracker and domain configuration as
+provisioned by setup, and triage labels as both provisioned by setup and enabled
+by triage. Setup must not run invisibly during framework installation or on
+every prompt. On Codex or GitHub Copilot, selection produces a visible user-only
+host handoff; on a host where the provider is unavailable, it reports that
+limitation instead.
 
-At `v1.2.3`, Wayfinder, to-spec, to-tickets, and code-review explicitly check
-the tracker configuration or direct the agent to setup when it is absent.
-Wayfinder can default to local Markdown, but the shared first-use setup rule
-avoids inconsistent tracker/domain assumptions across a later composed route.
+At `v1.2.3`, Wayfinder requires domain and tracker configuration; code-review
+requires the tracker; and to-spec and to-tickets require domain, tracker, and
+the triage-label vocabulary. The framework declares `implement`'s effective
+tracker prerequisite as well because the pinned workflow always closes with
+code-review; this prevents configuration discovery after implementation has
+already started. Requirements are declared per selected operation, including
+that one direct composition dependency, so routing can distinguish selection
+from readiness without duplicating provider methods.
 
 Teach similarly owns a persistent workspace. It is appropriate for explicit
 sustained learning intent, not ordinary explanations. A dedicated learning
 workspace prevents its course artifacts from polluting an engineering target.
 
-## Codex and Copilot invocation findings
+## Host discovery and invocation findings
 
-Both hosts discover project skills from `.agents/skills`. Codex uses
-progressive disclosure: skill metadata is available for selection, while the
-complete `SKILL.md` and adjacent resources are read when the skill is invoked;
-users can explicitly name a skill with `$skill-name`. Upstream
-`agents/openai.yaml` sets `allow_implicit_invocation: false` for Wayfinder,
-Teach, to-spec, to-tickets, and implement, so the ai-workflow router must invoke
-those selected capabilities explicitly instead of assuming the host will choose
-them automatically. Research, TDD, and Code Review retain their upstream
-implicit policy and are constrained by router composition rules.
+Codex and GitHub Copilot discover project skills from `.agents/skills`. Codex
+uses `$skill-name` for explicit invocation and reads
+`agents/openai.yaml:policy.allow_implicit_invocation`; GitHub Copilot uses
+`/skill-name` and reads `SKILL.md:disable-model-invocation`. For the selected
+pin, setup, Wayfinder, Teach, to-spec, to-tickets, implement, and triage are
+user-only on both supported hosts. Research, TDD, Code Review, grilling,
+domain-modeling, prototype, and codebase-design remain implicitly invocable.
+The provider manager verifies both metadata sources after installation and
+fails closed when either source disagrees with the declaration.
 
-GitHub Copilot likewise loads a selected skill's instructions and supports
-explicit `/SKILL-NAME` invocation. Its skill frontmatter can disable automatic
-model invocation with `disable-model-invocation`; ai-workflow does not patch
-upstream frontmatter to add host-specific policy. The root router supplies the
-shared selection contract instead. See the official
-[Codex skills guide](https://learn.chatgpt.com/docs/build-skills) and
-[GitHub Copilot CLI skill guide](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills).
+Claude Code discovers project skills from `.claude/skills`, not the installed
+`.agents/skills` location. The root `CLAUDE.md` import makes framework policy
+available to Claude Code but does not project either the four local workflow
+skills or the provider directories into its native discovery path. Every
+skill-backed route is therefore unavailable on Claude Code for this release;
+only policy classification and direct handling remain available. See the official
+[Codex skills guide](https://learn.chatgpt.com/docs/build-skills),
+[GitHub Copilot CLI reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference),
+[VS Code agent skills guide](https://code.visualstudio.com/docs/agent-customization/agent-skills),
+and [Claude Code skills guide](https://code.claude.com/docs/en/skills).
 
 ## GitHub CLI provider-manager findings
 
@@ -116,22 +133,47 @@ its published SHA-256 checksum. In disposable non-Git directories:
 An unauthenticated multi-skill attempt later reached GitHub's public API rate
 limit. The manager therefore requires
 [`gh auth status`](https://cli.github.com/manual/gh_auth_status) to succeed before
-writing a missing provider set. Interactive login follows the official
-[`gh auth login`](https://cli.github.com/manual/gh_auth_login) web flow;
+initial adoption or a provider-baseline change. Interactive login follows the
+official [`gh auth login`](https://cli.github.com/manual/gh_auth_login) web flow;
 automation may use `GH_TOKEN`.
 
 ## Compatibility and update contract
 
 The provider declaration records repository, stable tag, immutable commit,
 minimum GitHub CLI version, capability mapping, skill paths, subtree SHAs, and
-complete file inventories. Installation additionally records file checksums and
-whether each directory was framework-created or pre-existing-compatible.
+complete file inventories plus canonical source SHA-256 identities for every
+file. Installed `SKILL.md` verification removes only the exact validated GitHub
+provenance block; adjacent files remain byte-exact. Installation separately
+records installed-file checksums and whether each directory was
+framework-created or pre-existing-compatible. Fresh adoption first installs the
+exact pin into a temporary directory and requires a byte-for-byte match before
+treating a pre-existing directory as compatible; injected source metadata and
+mutable state hashes are not content identity.
+
+The verifier independently freezes that complete repository/tag/revision,
+path/tree/inventory/source-hash projection in a static audited digest. It is not
+generated by `--refresh-manifest`. A provider change must recompute and review
+the digest only after live primary-source inspection; a mismatch is a provider
+identity review failure, not ordinary generated-manifest drift.
 
 Normal framework update does not float provider versions. A future provider
 upgrade requires review of a new stable tag, regenerated path/tree/file
-identities, live exact-path installation checks, hermetic lifecycle tests,
-manifest refresh, and a framework release. Same-named incompatible or locally
-changed skills fail closed. Removal preserves pre-existing and changed skills.
+identities, an explicitly reviewed identity-lock update, live exact-path
+installation checks, hermetic lifecycle tests, manifest refresh, and a framework
+release. On any declaration change, target
+update rejects unknown names in old state, stages the new baseline, preserves
+every existing directory, records retained exact matches conservatively as
+pre-existing-compatible, and adds only missing declared skills. This supports
+the same-pin `triage` dependency migration; a changed-byte future pin fails
+closed for explicit owner reconciliation or remove-then-install. Removal is
+bounded to exact declaration names and preserves pre-existing, incompatible,
+modified, extra-file, and undeclared skills.
+
+The repository-local `origin` record is historical ownership evidence, not a
+tamper-evident trust anchor. Coordinated forgery can reclassify an exact,
+unmodified canonical provider directory, but package-owned source identity and
+inventory prevent mutable state from authorizing deletion of modified,
+extra-file, or undeclared content.
 
 ## Recommendation
 

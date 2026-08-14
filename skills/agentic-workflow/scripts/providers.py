@@ -22,8 +22,31 @@ STATE_RELATIVE = PurePosixPath("ai-workflow/provider-state.json")
 SKILLS_RELATIVE = PurePosixPath(".agents/skills")
 VERSION = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 SHA = re.compile(r"[0-9a-f]{40}")
+SHA256 = re.compile(r"[0-9a-f]{64}")
 SKILL_NAME = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 MINIMUM_PYTHON = (3, 11)
+REMOVAL_QUARANTINE_PREFIX = ".ai-workflow-provider-remove-"
+INVOCATION_MODES = {"implicit", "unavailable", "user-only"}
+HOSTS = {
+    "claude-code": {
+        "availability": "unavailable",
+        "discovery": ".claude/skills",
+        "explicit_prefix": "/",
+        "invocation_source": "SKILL.md:disable-model-invocation",
+    },
+    "codex": {
+        "availability": "available",
+        "discovery": ".agents/skills",
+        "explicit_prefix": "$",
+        "invocation_source": "agents/openai.yaml:policy.allow_implicit_invocation",
+    },
+    "github-copilot": {
+        "availability": "available",
+        "discovery": ".agents/skills",
+        "explicit_prefix": "/",
+        "invocation_source": "SKILL.md:disable-model-invocation",
+    },
+}
 
 
 class ProviderError(RuntimeError):
@@ -83,12 +106,43 @@ def load_json(path: Path, label: str) -> MutableMapping[str, object]:
 
 def load_declaration() -> Tuple[Mapping[str, object], List[Mapping[str, object]]]:
     raw = load_json(DECLARATION_PATH, "provider declaration")
-    if set(raw) != {"schema_version", "capabilities", "provider"} or raw.get("schema_version") != 1:
+    if set(raw) != {"schema_version", "capabilities", "configuration", "hosts", "provider"} or raw.get(
+        "schema_version"
+    ) != 2:
         raise ProviderError("provider declaration has unknown fields or an unsupported schema")
     capabilities = raw.get("capabilities")
+    configuration = raw.get("configuration")
+    hosts = raw.get("hosts")
     provider = raw.get("provider")
     if not isinstance(capabilities, dict) or not capabilities:
         raise ProviderError("provider declaration needs a non-empty capabilities object")
+    if hosts != HOSTS:
+        raise ProviderError("provider declaration has incompatible host discovery or invocation metadata")
+    if not isinstance(configuration, dict) or not configuration:
+        raise ProviderError("provider declaration needs a non-empty configuration object")
+    configuration_paths = set()
+    configuration_references = []
+    for name, item in configuration.items():
+        if not isinstance(name, str) or SKILL_NAME.fullmatch(name) is None:
+            raise ProviderError(f"invalid provider configuration name: {name!r}")
+        if not isinstance(item, dict) or set(item) not in (
+            {"path", "provisioned_by"},
+            {"enabled_by", "path", "provisioned_by"},
+        ):
+            raise ProviderError(f"provider configuration {name} has invalid fields")
+        path = safe_relative(item.get("path"), f"path for provider configuration {name}").as_posix()
+        if path in configuration_paths:
+            raise ProviderError(f"duplicate provider configuration path: {path}")
+        configuration_paths.add(path)
+        provisioned_by = item.get("provisioned_by")
+        if not isinstance(provisioned_by, str) or SKILL_NAME.fullmatch(provisioned_by) is None:
+            raise ProviderError(f"provider configuration {name} has invalid provisioned_by")
+        enabled_by = item.get("enabled_by")
+        if enabled_by is not None and (
+            not isinstance(enabled_by, str) or SKILL_NAME.fullmatch(enabled_by) is None
+        ):
+            raise ProviderError(f"provider configuration {name} has invalid enabled_by")
+        configuration_references.append((name, provisioned_by, enabled_by))
     if not isinstance(provider, dict) or set(provider) != {
         "minimum_gh_version",
         "name",
@@ -115,8 +169,19 @@ def load_declaration() -> Tuple[Mapping[str, object], List[Mapping[str, object]]
     names = set()
     paths = set()
     for item in skills:
-        if not isinstance(item, dict) or set(item) != {"files", "name", "path", "tree_sha"}:
-            raise ProviderError("each provider skill needs files, name, path, and tree_sha")
+        if not isinstance(item, dict) or set(item) != {
+            "files",
+            "invocation",
+            "name",
+            "path",
+            "requires_configuration",
+            "source_sha256",
+            "tree_sha",
+        }:
+            raise ProviderError(
+                "each provider skill needs files, invocation, name, path, requirements, "
+                "source_sha256, and tree_sha"
+            )
         name = item.get("name")
         if not isinstance(name, str) or SKILL_NAME.fullmatch(name) is None:
             raise ProviderError(f"invalid provider skill name: {name!r}")
@@ -130,11 +195,56 @@ def load_declaration() -> Tuple[Mapping[str, object], List[Mapping[str, object]]
         checked_files = [safe_relative(value, f"file in provider skill {name}").as_posix() for value in files]
         if checked_files != sorted(set(checked_files)):
             raise ProviderError(f"provider skill {name} files must be unique and sorted")
+        source_sha256 = item.get("source_sha256")
+        if not isinstance(source_sha256, dict) or set(source_sha256) != set(checked_files):
+            raise ProviderError(
+                f"provider skill {name} source_sha256 must cover its exact file inventory"
+            )
+        if any(
+            not isinstance(relative, str)
+            or not isinstance(digest, str)
+            or SHA256.fullmatch(digest) is None
+            for relative, digest in source_sha256.items()
+        ):
+            raise ProviderError(f"provider skill {name} has an invalid source SHA-256")
+        invocation = item.get("invocation")
+        if not isinstance(invocation, dict) or set(invocation) != set(HOSTS):
+            raise ProviderError(f"provider skill {name} invocation must cover every declared host")
+        for host, mode in invocation.items():
+            if mode not in INVOCATION_MODES:
+                raise ProviderError(f"provider skill {name} has invalid {host} invocation mode: {mode!r}")
+            availability = HOSTS[host]["availability"]
+            if availability == "unavailable" and mode != "unavailable":
+                raise ProviderError(f"provider skill {name} must be unavailable on {host}")
+            if availability == "available" and mode == "unavailable":
+                raise ProviderError(f"provider skill {name} cannot be unavailable on {host}")
+            source_path = str(HOSTS[host]["invocation_source"]).split(":", 1)[0]
+            if availability == "available" and source_path not in checked_files:
+                raise ProviderError(f"provider skill {name} lacks {host} invocation metadata at {source_path}")
+        requirements = item.get("requires_configuration")
+        if not isinstance(requirements, list) or any(not isinstance(value, str) for value in requirements):
+            raise ProviderError(f"provider skill {name} requires_configuration must be an array of names")
+        if requirements != sorted(set(requirements)):
+            raise ProviderError(f"provider skill {name} configuration requirements must be unique and sorted")
+        unknown_requirements = sorted(set(requirements) - set(configuration))
+        if unknown_requirements:
+            raise ProviderError(
+                f"provider skill {name} requires unknown configuration: {', '.join(unknown_requirements)}"
+            )
         if name in names or path in paths:
             raise ProviderError(f"duplicate provider skill name or path: {name}")
         names.add(name)
         paths.add(path)
         checked.append(item)
+    for configuration_name, provisioned_by, enabled_by in configuration_references:
+        if provisioned_by not in names:
+            raise ProviderError(
+                f"provider configuration {configuration_name} is provisioned by unknown skill {provisioned_by}"
+            )
+        if enabled_by is not None and enabled_by not in names:
+            raise ProviderError(
+                f"provider configuration {configuration_name} is enabled by unknown skill {enabled_by}"
+            )
     for capability, skill_name in capabilities.items():
         if not isinstance(capability, str) or not capability or skill_name not in names:
             raise ProviderError(f"capability {capability!r} selects an unknown provider skill")
@@ -143,7 +253,7 @@ def load_declaration() -> Tuple[Mapping[str, object], List[Mapping[str, object]]
 
 def frontmatter(path: Path) -> Tuple[Mapping[str, str], Mapping[str, str]]:
     try:
-        text = path.read_text(encoding="utf-8")
+        text = path.read_bytes().decode("utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         raise ProviderError(f"cannot read installed skill metadata at {path}: {exc}") from exc
     if not text.startswith("---\n") or "\n---\n" not in text[4:]:
@@ -160,27 +270,201 @@ def frontmatter(path: Path) -> Tuple[Mapping[str, str], Mapping[str, str]]:
                 top[key.strip()] = value.strip().strip("\"'")
         elif in_metadata and ":" in line:
             key, value = line.split(":", 1)
-            metadata[key.strip()] = value.strip().strip("\"'")
+            metadata[key.strip()] = value.strip()
     return top, metadata
+
+
+def normalized_skill_source(
+    path: Path,
+    expected_metadata: Mapping[str, str],
+) -> bytes:
+    """Remove only the GitHub CLI metadata block from a provider SKILL.md.
+
+    The pinned upstream source has no ``metadata`` field. GitHub CLI injects one
+    when it installs a skill, so source identity is the exact upstream bytes
+    after removing that one authenticated block. All other frontmatter ordering,
+    quoting, whitespace, line endings, and body bytes remain significant.
+    """
+    try:
+        text = path.read_bytes().decode("utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        raise ProviderError(f"cannot read installed skill source at {path}: {exc}") from exc
+    lines = text.splitlines(keepends=True)
+    if not lines or lines[0] != "---\n":
+        raise ProviderError(f"installed skill lacks valid frontmatter: {path}")
+    try:
+        closing = lines.index("---\n", 1)
+    except ValueError as exc:
+        raise ProviderError(f"installed skill lacks valid frontmatter: {path}") from exc
+
+    starts = [
+        index
+        for index, line in enumerate(lines[1:closing], start=1)
+        if re.fullmatch(r"metadata:[ ]*(?:\n)?", line) is not None
+    ]
+    if len(starts) != 1:
+        raise ProviderError(
+            f"installed skill must contain exactly one GitHub metadata block: {path}"
+        )
+    start = starts[0]
+    end = start + 1
+    parsed: Dict[str, str] = {}
+    while end < closing and lines[end].startswith((" ", "\t")):
+        line = lines[end]
+        indentation = line[: len(line) - len(line.lstrip())]
+        if "\t" in indentation or ":" not in line:
+            raise ProviderError(f"installed skill has malformed GitHub metadata: {path}")
+        key, value = line.split(":", 1)
+        key = key.strip()
+        if not key or key in parsed:
+            raise ProviderError(f"installed skill has malformed GitHub metadata: {path}")
+        parsed[key] = value.strip()
+        end += 1
+    if parsed != dict(expected_metadata):
+        raise ProviderError(
+            f"installed skill has incompatible or unexpected GitHub metadata: {path}"
+        )
+    return "".join(lines[:start] + lines[end:]).encode("utf-8")
+
+
+def verify_source_content(
+    directory: Path,
+    skill: Mapping[str, object],
+    expected_metadata: Mapping[str, str],
+) -> None:
+    name = str(skill["name"])
+    declared = skill.get("source_sha256")
+    if not isinstance(declared, Mapping):
+        raise ProviderError(f"provider skill {name} has invalid source SHA-256 declarations")
+    for relative in skill["files"]:  # type: ignore[union-attr]
+        relative_text = str(relative)
+        path = directory / relative_text
+        if relative_text == "SKILL.md":
+            content = normalized_skill_source(path, expected_metadata)
+            actual = hashlib.sha256(content).hexdigest()
+        else:
+            actual = sha256(path)
+        expected = declared.get(relative_text)
+        if actual != expected:
+            raise ProviderError(
+                f"provider skill {name} source content is incompatible at {relative_text}: "
+                f"expected SHA-256 {expected}, found {actual}"
+            )
+
+
+def metadata_boolean(value: Optional[str], label: str, *, default: bool) -> bool:
+    if value is None:
+        return default
+    normalized = value.strip().lower()
+    if normalized not in {"false", "true"}:
+        raise ProviderError(f"{label} must be true or false, found {value!r}")
+    return normalized == "true"
+
+
+def openai_allows_implicit_invocation(path: Path) -> bool:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        raise ProviderError(f"cannot read installed Codex invocation metadata at {path}: {exc}") from exc
+    parent = re.compile(r"^policy:\s*(?:#.*)?$")
+    field = re.compile(r"^\s+allow_implicit_invocation:\s*(true|false)\s*(?:#.*)?$", re.IGNORECASE)
+    malformed_field = re.compile(r"^\s+allow_implicit_invocation\s*:")
+    values: List[str] = []
+    in_policy = False
+    for line in text.splitlines():
+        indentation = line[: len(line) - len(line.lstrip())]
+        if "\t" in indentation:
+            raise ProviderError(f"installed Codex invocation metadata uses unsupported tab indentation: {path}")
+        if line and not indentation:
+            in_policy = parent.fullmatch(line) is not None
+            continue
+        if not in_policy or not line.strip() or line.lstrip().startswith("#"):
+            continue
+        match = field.fullmatch(line)
+        if match is not None:
+            values.append(match.group(1))
+        elif malformed_field.match(line) is not None:
+            raise ProviderError(
+                f"policy.allow_implicit_invocation must be true or false in installed metadata: {path}"
+            )
+    if len(values) > 1:
+        raise ProviderError(f"installed Codex invocation metadata repeats policy.allow_implicit_invocation: {path}")
+    return metadata_boolean(
+        values[0] if values else None,
+        "policy.allow_implicit_invocation",
+        default=True,
+    )
+
+
+def verify_invocation_metadata(
+    directory: Path,
+    skill: Mapping[str, object],
+    frontmatter_values: Mapping[str, str],
+) -> None:
+    name = str(skill["name"])
+    declared = skill["invocation"]
+    if not isinstance(declared, Mapping):
+        raise ProviderError(f"provider skill {name} has invalid invocation declaration")
+    for host, host_contract in HOSTS.items():
+        expected = declared.get(host)
+        if host_contract["availability"] == "unavailable":
+            actual = "unavailable"
+        elif host == "codex":
+            actual = (
+                "implicit"
+                if openai_allows_implicit_invocation(directory / "agents/openai.yaml")
+                else "user-only"
+            )
+        elif host == "github-copilot":
+            disabled = metadata_boolean(
+                frontmatter_values.get("disable-model-invocation"),
+                "disable-model-invocation",
+                default=False,
+            )
+            actual = "user-only" if disabled else "implicit"
+        else:  # The declaration is validated against HOSTS before installed skills are inspected.
+            raise ProviderError(f"unsupported provider host: {host}")
+        if actual != expected:
+            raise ProviderError(
+                f"provider skill {name} has incompatible {host} invocation: "
+                f"expected {expected!r}, found {actual!r} from {host_contract['invocation_source']}"
+            )
 
 
 def skill_directory(root: Path, name: str) -> Path:
     return target_path(root, SKILLS_RELATIVE / name)
 
 
-def directory_files(directory: Path) -> List[str]:
+def directory_inventory(directory: Path) -> Tuple[List[str], List[str]]:
     if directory.is_symlink() or not directory.is_dir():
         raise ProviderError(f"provider skill must be a regular directory: {directory}")
     files = []
+    directories = []
     for path in directory.rglob("*"):
         if path.is_symlink():
             raise ProviderError(f"provider skill contains a symlink: {path}")
         if path.is_dir():
+            directories.append(path.relative_to(directory).as_posix())
             continue
         if not path.is_file():
             raise ProviderError(f"provider skill contains a special entry: {path}")
         files.append(path.relative_to(directory).as_posix())
-    return sorted(files)
+    return sorted(files), sorted(directories)
+
+
+def directory_files(directory: Path) -> List[str]:
+    files, _directories = directory_inventory(directory)
+    return files
+
+
+def implied_directories(files: Iterable[str]) -> List[str]:
+    directories = set()
+    for relative in files:
+        parent = PurePosixPath(relative).parent
+        while parent.parts:
+            directories.add(parent.as_posix())
+            parent = parent.parent
+    return sorted(directories)
 
 
 def verify_skill(
@@ -190,13 +474,24 @@ def verify_skill(
 ) -> Mapping[str, str]:
     name = str(skill["name"])
     directory = skill_directory(root, name)
-    actual_files = directory_files(directory)
+    actual_files, actual_directories = directory_inventory(directory)
     expected_files = list(skill["files"])  # type: ignore[arg-type]
-    if actual_files != expected_files:
+    expected_directories = implied_directories(expected_files)
+    if actual_files != expected_files or actual_directories != expected_directories:
         missing = sorted(set(expected_files) - set(actual_files))
         extra = sorted(set(actual_files) - set(expected_files))
+        missing_directories = sorted(set(expected_directories) - set(actual_directories))
+        extra_directories = sorted(set(actual_directories) - set(expected_directories))
         detail = (f"; missing: {', '.join(missing)}" if missing else "") + (
             f"; unexpected: {', '.join(extra)}" if extra else ""
+        ) + (
+            f"; missing directories: {', '.join(missing_directories)}"
+            if missing_directories
+            else ""
+        ) + (
+            f"; unexpected directories: {', '.join(extra_directories)}"
+            if extra_directories
+            else ""
         )
         raise ProviderError(f"provider skill {name} directory contents are incompatible{detail}")
     top, metadata = frontmatter(directory / "SKILL.md")
@@ -209,12 +504,12 @@ def verify_skill(
     }
     if top.get("name") != name:
         raise ProviderError(f"provider skill name does not match its directory: {name}")
-    for key, expected in expected_metadata.items():
-        if metadata.get(key) != expected:
-            raise ProviderError(
-                f"provider skill {name} has incompatible {key}: "
-                f"expected {expected!r}, found {metadata.get(key)!r}"
-            )
+    if metadata != expected_metadata:
+        raise ProviderError(
+            f"provider skill {name} has incompatible or unexpected GitHub metadata"
+        )
+    verify_invocation_metadata(directory, skill, top)
+    verify_source_content(directory, skill, expected_metadata)
     return {relative: sha256(directory / relative) for relative in actual_files}
 
 
@@ -226,9 +521,10 @@ def find_gh(provider: Mapping[str, object]) -> Path:
             f"GitHub CLI {minimum_text} or newer with `gh skill` is required; install or update gh, "
             "verify with `gh --version` and `gh skill --help`, then rerun this command"
         )
-    result = subprocess.run([command, "--version"], capture_output=True, text=True)
+    executable = Path(command).resolve()
+    result = subprocess.run([str(executable), "--version"], capture_output=True, text=True)
     if result.returncode != 0:
-        raise ProviderError(f"cannot run GitHub CLI at {command}: {result.stderr.strip()}")
+        raise ProviderError(f"cannot run GitHub CLI at {executable}: {result.stderr.strip()}")
     match = re.search(r"gh version ([0-9]+\.[0-9]+\.[0-9]+)", result.stdout)
     if match is None:
         raise ProviderError(f"cannot determine GitHub CLI version from: {result.stdout.strip()!r}")
@@ -237,11 +533,15 @@ def find_gh(provider: Mapping[str, object]) -> Path:
         raise ProviderError(
             f"GitHub CLI {provider['minimum_gh_version']} or newer is required; found {match.group(1)} at {command}"
         )
-    help_result = subprocess.run([command, "skill", "install", "--help"], capture_output=True, text=True)
+    help_result = subprocess.run(
+        [str(executable), "skill", "install", "--help"], capture_output=True, text=True
+    )
     if help_result.returncode != 0 or "--pin" not in help_result.stdout or "--scope" not in help_result.stdout:
-        raise ProviderError(f"GitHub CLI at {command} does not provide the required gh skill install interface")
+        raise ProviderError(
+            f"GitHub CLI at {executable} does not provide the required gh skill install interface"
+        )
     auth_result = subprocess.run(
-        [command, "auth", "status", "--hostname", "github.com"],
+        [str(executable), "auth", "status", "--hostname", "github.com"],
         capture_output=True,
         text=True,
     )
@@ -251,7 +551,7 @@ def find_gh(provider: Mapping[str, object]) -> Path:
             "run `gh auth login --hostname github.com --web`, verify with "
             "`gh auth status --hostname github.com`, then rerun this command (automation may set GH_TOKEN)"
         )
-    return Path(command)
+    return executable
 
 
 def run_gh_install(
@@ -363,30 +663,161 @@ def load_state(root: Path) -> MutableMapping[str, object]:
     return state
 
 
+def existing_parent_directories(root: Path, paths: Sequence[Path]) -> set[Path]:
+    existing = {root}
+    for path in paths:
+        current = path.parent
+        while current != root:
+            if current.exists() or current.is_symlink():
+                existing.add(current)
+            current = current.parent
+    return existing
+
+
+def remove_created_empty_parents(
+    path: Path,
+    root: Path,
+    preexisting_directories: set[Path],
+) -> None:
+    current = path.parent
+    while current != root and current != root.parent:
+        if current in preexisting_directories:
+            return
+        try:
+            current.rmdir()
+        except OSError:
+            return
+        current = current.parent
+
+
 def remove_tree(directory: Path, root: Path) -> None:
     if directory.is_symlink() or not directory.is_dir():
         raise ProviderError(f"refusing to remove non-directory provider path: {directory}")
     directory.resolve().relative_to(root.resolve())
     shutil.rmtree(directory)
-    current = directory.parent
-    while current != root and current != root.parent:
-        try:
-            current.rmdir()
-        except OSError:
-            break
-        current = current.parent
 
+
+def verify_quarantined_removal(moved: Sequence[Tuple[Path, Path]]) -> None:
+    """Confirm every removal target moved wholly into its reversible quarantine."""
+    for original, quarantined in moved:
+        if original.exists() or original.is_symlink():
+            raise ProviderError(f"provider removal target remained active after quarantine: {original}")
+        if not quarantined.exists() and not quarantined.is_symlink():
+            raise ProviderError(f"provider removal quarantine is missing staged target: {quarantined}")
+
+
+def rename_quarantined_path(source: Path, destination: Path) -> None:
+    source.replace(destination)
+
+
+def quarantine_provider_removal(root: Path, removals: Sequence[Path], state_path: Path) -> None:
+    """Remove provider paths through same-filesystem renames with transactional rollback."""
+    retained = sorted(root.glob(f"{REMOVAL_QUARANTINE_PREFIX}*"))
+    if retained:
+        raise ProviderError(
+            "a retained provider-removal quarantine blocks another removal; inspect and remove "
+            + ", ".join(str(path) for path in retained)
+        )
+    transaction = Path(tempfile.mkdtemp(prefix=REMOVAL_QUARANTINE_PREFIX, dir=root))
+    quarantine = transaction / "skills"
+    quarantine.mkdir()
+    planned = [(directory, quarantine / directory.name) for directory in removals]
+    planned.append((state_path, transaction / state_path.name))
+    moved: List[Tuple[Path, Path]] = []
+    try:
+        transaction_device = transaction.stat().st_dev
+        for original, _quarantined in planned:
+            if original.stat().st_dev != transaction_device:
+                raise ProviderError(
+                    f"provider removal target is not on the project quarantine filesystem: {original}"
+                )
+        for original, quarantined in planned:
+            rename_quarantined_path(original, quarantined)
+            moved.append((original, quarantined))
+        verify_quarantined_removal(moved)
+    except BaseException as error:
+        rollback_errors = []
+        for original, quarantined in reversed(moved):
+            try:
+                if original.exists() or original.is_symlink():
+                    raise ProviderError(f"rollback target already exists: {original}")
+                if not quarantined.exists() and not quarantined.is_symlink():
+                    raise ProviderError(f"rollback source is missing: {quarantined}")
+                rename_quarantined_path(quarantined, original)
+            except BaseException as rollback_error:
+                rollback_errors.append(f"{original}: {rollback_error}")
+        if not rollback_errors:
+            try:
+                shutil.rmtree(transaction)
+            except BaseException as cleanup_error:
+                rollback_errors.append(f"quarantine cleanup: {cleanup_error}")
+        if rollback_errors:
+            raise ProviderError(
+                f"provider removal failed and rollback also failed; quarantine retained at "
+                f"{transaction}: {error}; "
+                + "; ".join(rollback_errors)
+            ) from error
+        raise
+
+    try:
+        shutil.rmtree(transaction)
+    except OSError as error:
+        print(
+            "WARNING: provider removal committed, but quarantine cleanup failed; "
+            f"inspect and remove {transaction} before a future provider removal: {error}",
+            file=sys.stderr,
+        )
 
 def checksums_match(root: Path, name: str, record: Mapping[str, object]) -> bool:
     directory = skill_directory(root, name)
     try:
-        actual_files = directory_files(directory)
+        actual_files, actual_directories = directory_inventory(directory)
     except ProviderError:
         return False
     expected = record["files"]
-    if not isinstance(expected, dict) or actual_files != sorted(expected):
+    if (
+        not isinstance(expected, dict)
+        or actual_files != sorted(expected)
+        or actual_directories != implied_directories(actual_files)
+    ):
         return False
     return all(sha256(directory / relative) == expected[relative] for relative in actual_files)
+
+
+def verify_authenticated_match(actual: Path, staged: Path, name: str) -> None:
+    """Require an existing provider directory to byte-match authenticated staging."""
+    actual_files, actual_directories = directory_inventory(actual)
+    staged_files, staged_directories = directory_inventory(staged)
+    if actual_files != staged_files or actual_directories != staged_directories:
+        missing = sorted(set(staged_files) - set(actual_files))
+        extra = sorted(set(actual_files) - set(staged_files))
+        missing_directories = sorted(set(staged_directories) - set(actual_directories))
+        extra_directories = sorted(set(actual_directories) - set(staged_directories))
+        detail = (f"; missing: {', '.join(missing)}" if missing else "") + (
+            f"; unexpected: {', '.join(extra)}" if extra else ""
+        ) + (
+            f"; missing directories: {', '.join(missing_directories)}"
+            if missing_directories
+            else ""
+        ) + (
+            f"; unexpected directories: {', '.join(extra_directories)}"
+            if extra_directories
+            else ""
+        )
+        raise ProviderError(
+            f"pre-existing provider skill {name} does not match authenticated pinned staging{detail}"
+        )
+    for relative in staged_files:
+        if actual.joinpath(relative).read_bytes() != staged.joinpath(relative).read_bytes():
+            raise ProviderError(
+                f"pre-existing provider skill {name} does not byte-match authenticated pinned staging: "
+                f"{relative}"
+            )
+
+
+def cleanup_provider_staging(transaction: Path) -> None:
+    """Remove authenticated staging before committing target ownership state."""
+    shutil.rmtree(transaction)
 
 
 def command_install(root: Path, dry_run: bool) -> None:
@@ -407,42 +838,86 @@ def command_install(root: Path, dry_run: bool) -> None:
             origins[name] = "preexisting-compatible"
         else:
             origins[name] = "created"
-    gh = find_gh(provider) if "created" in origins.values() else None
-    if dry_run:
-        print(f"PROVIDERS INSTALL DRY RUN for {root}")
-        if gh is not None:
-            print(f"  - use GitHub CLI at {gh}")
+    new_destinations = [
+        skill_directory(root, str(skill["name"]))
+        for skill in skills
+        if origins[str(skill["name"])] == "created"
+    ]
+    rollback_paths = new_destinations + [state_path]
+    preexisting_directories = existing_parent_directories(root, rollback_paths)
+    gh = find_gh(provider)
+    with tempfile.TemporaryDirectory(prefix=".ai-workflow-providers-", dir=root) as temporary:
+        transaction = Path(temporary)
+        staged = transaction / ".agents" / "skills"
+        staged.mkdir(parents=True)
         for skill in skills:
-            print(f"  - {origins[str(skill['name'])]}: {skill['name']}@{provider['version']}")
-        print("No provider files changed.")
-        return
-
-    attempted: List[Path] = []
-    records: Dict[str, Mapping[str, object]] = {}
-    try:
+            run_gh_install(gh, root, provider, skill, directory=staged)
+            verify_skill(transaction, provider, skill)
         for skill in skills:
             name = str(skill["name"])
-            if origins[name] == "created":
-                if gh is None:
-                    raise ProviderError("internal provider install is missing GitHub CLI")
-                attempted.append(skill_directory(root, name))
-                run_gh_install(gh, root, provider, skill)
-            files = verify_skill(root, provider, skill)
-            records[name] = {
-                "files": files,
-                "origin": origins[name],
-                "path": skill["path"],
-                "tree_sha": skill["tree_sha"],
-            }
-        atomic_json(state_path, state_value(provider, records))
-    except BaseException:
-        for directory in reversed(attempted):
-            if directory.exists() and not directory.is_symlink():
-                remove_tree(directory, root)
-        state_path.unlink(missing_ok=True)
-        raise
-    if not command_status(root, verbose=False):
-        raise ProviderError("post-install provider verification failed")
+            if origins[name] == "preexisting-compatible":
+                verify_authenticated_match(
+                    skill_directory(root, name),
+                    staged / name,
+                    name,
+                )
+
+        if dry_run:
+            print(f"PROVIDERS INSTALL DRY RUN for {root}")
+            print(f"  - authenticated and staged {len(skills)} pinned skills with {gh}")
+            for skill in skills:
+                print(f"  - {origins[str(skill['name'])]}: {skill['name']}@{provider['version']}")
+            print("No provider files changed.")
+            return
+
+        moved_new: List[Path] = []
+        records: Dict[str, Mapping[str, object]] = {}
+        try:
+            for skill in skills:
+                name = str(skill["name"])
+                destination = skill_directory(root, name)
+                if origins[name] == "created":
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    (staged / name).replace(destination)
+                    moved_new.append(destination)
+                files = verify_skill(root, provider, skill)
+                records[name] = {
+                    "files": files,
+                    "origin": origins[name],
+                    "path": skill["path"],
+                    "tree_sha": skill["tree_sha"],
+                }
+            cleanup_provider_staging(transaction)
+            atomic_json(state_path, state_value(provider, records))
+            if not command_status(root, verbose=False):
+                raise ProviderError("post-install provider verification failed")
+        except BaseException as error:
+            rollback_errors = []
+            try:
+                state_path.unlink(missing_ok=True)
+            except BaseException as rollback_error:
+                rollback_errors.append(f"provider state: {rollback_error}")
+            for directory in reversed(moved_new):
+                try:
+                    if directory.exists() and not directory.is_symlink():
+                        remove_tree(directory, root)
+                except BaseException as rollback_error:
+                    rollback_errors.append(f"{directory}: {rollback_error}")
+            for path in reversed(rollback_paths):
+                try:
+                    remove_created_empty_parents(
+                        path,
+                        root,
+                        preexisting_directories,
+                    )
+                except BaseException as rollback_error:
+                    rollback_errors.append(f"{path.parent}: {rollback_error}")
+            if rollback_errors:
+                raise ProviderError(
+                    f"provider install failed and rollback also failed: {error}; "
+                    + "; ".join(rollback_errors)
+                ) from error
+            raise
     print(f"✓ Curated upstream skills from {provider['repository']}@{provider['version']} are installed and verified.")
 
 
@@ -512,53 +987,91 @@ def command_update(root: Path, dry_run: bool) -> None:
         print(f"✓ Upstream provider baseline remains {provider['repository']}@{provider['version']}.")
         return
 
-    gh = find_gh(provider)
     old_records = state["skills"]
     if not isinstance(old_records, dict):
         raise ProviderError("provider state skills must be an object")
+    old_provider = state.get("provider")
+    new_by_name = {str(item["name"]): item for item in skills}
+    if not isinstance(old_provider, dict) or (
+        old_provider.get("name") != provider["name"]
+        or old_provider.get("repository") != provider["repository"]
+    ):
+        raise ProviderError(
+            "installed provider belongs to a different provider source; "
+            "update with its exact framework package before changing providers"
+        )
+    unknown_old_names = sorted(set(old_records) - set(new_by_name))
+    if unknown_old_names:
+        raise ProviderError(
+            "provider state contains names outside this package declaration; refusing update: "
+            + ", ".join(unknown_old_names)
+        )
     for name, record in old_records.items():
         if not isinstance(record, dict):
             raise ProviderError(f"invalid old provider record for {name}")
-        if record.get("origin") == "created" and not checksums_match(root, name, record):
-            raise ProviderError(f"locally changed provider skill blocks upgrade: .agents/skills/{name}")
-        if record.get("origin") == "preexisting-compatible" and name in {str(item["name"]) for item in skills}:
+        try:
+            verify_skill(root, provider, new_by_name[name])
+        except ProviderError as error:
             raise ProviderError(
-                f"pre-existing provider skill {name} is not framework-owned; reinstall it at {provider['version']} explicitly, then rerun update"
-            )
-    if dry_run:
-        print(f"PROVIDERS UPDATE DRY RUN for {root}")
-        print(f"  - stage {len(skills)} pinned skills with {gh}")
-        print(f"  - replace only checksum-clean framework-created provider directories")
-        print(f"  - record compatible baseline {provider['repository']}@{provider['version']}")
-        print("No provider files changed.")
-        return
-
+                f"existing provider skill {name} is not compatible with the new declaration; "
+                "update never replaces an existing provider directory, so reconcile it explicitly "
+                f"before retrying: {error}"
+            ) from error
+    for skill in skills:
+        name = str(skill["name"])
+        if name in old_records:
+            continue
+        destination = skill_directory(root, name)
+        if destination.exists() or destination.is_symlink():
+            try:
+                verify_skill(root, provider, skill)
+            except ProviderError as error:
+                raise ProviderError(
+                    f"new provider dependency {name} collides with an incompatible pre-existing skill: {error}"
+                ) from error
+    new_destinations = [
+        skill_directory(root, str(skill["name"]))
+        for skill in skills
+        if not skill_directory(root, str(skill["name"])).exists()
+        and not skill_directory(root, str(skill["name"])).is_symlink()
+    ]
+    preexisting_directories = existing_parent_directories(root, new_destinations)
+    gh = find_gh(provider)
     with tempfile.TemporaryDirectory(prefix=".ai-workflow-providers-", dir=root) as temporary:
         transaction = Path(temporary)
         staged = transaction / ".agents" / "skills"
-        backups = transaction / "backups"
         staged.mkdir(parents=True)
-        backups.mkdir()
         for skill in skills:
             run_gh_install(gh, root, provider, skill, directory=staged)
             verify_skill(transaction, provider, skill)
 
+        for skill in skills:
+            name = str(skill["name"])
+            destination = skill_directory(root, name)
+            if destination.exists() or destination.is_symlink():
+                verify_authenticated_match(
+                    destination,
+                    staged / name,
+                    name,
+                )
+
+        if dry_run:
+            print(f"PROVIDERS UPDATE DRY RUN for {root}")
+            print(f"  - authenticated and staged {len(skills)} pinned skills with {gh}")
+            print("  - preserve every existing authenticated provider directory")
+            print("  - add only missing declared provider directories")
+            print(f"  - record compatible baseline {provider['repository']}@{provider['version']}")
+            print("No provider files changed.")
+            return
+
         new_records: Dict[str, Mapping[str, object]] = {}
         moved_new: List[Path] = []
-        backed_up: List[Tuple[Path, Path]] = []
+        state_replaced = False
         try:
-            for name, record in old_records.items():
-                if not isinstance(record, dict) or record.get("origin") != "created":
-                    continue
-                destination = skill_directory(root, name)
-                backup = backups / name
-                destination.replace(backup)
-                backed_up.append((destination, backup))
             for skill in skills:
                 name = str(skill["name"])
                 destination = skill_directory(root, name)
                 if destination.exists() or destination.is_symlink():
-                    verify_skill(root, provider, skill)
                     origin = "preexisting-compatible"
                     files = verify_skill(root, provider, skill)
                 else:
@@ -573,17 +1086,39 @@ def command_update(root: Path, dry_run: bool) -> None:
                     "path": skill["path"],
                     "tree_sha": skill["tree_sha"],
                 }
+            cleanup_provider_staging(transaction)
             atomic_json(state_path, state_value(provider, new_records))
-        except BaseException:
+            state_replaced = True
+            if not command_status(root, verbose=False):
+                raise ProviderError("post-update provider verification failed")
+        except BaseException as error:
+            rollback_errors = []
             for destination in reversed(moved_new):
-                if destination.exists() and not destination.is_symlink():
-                    remove_tree(destination, root)
-            for destination, backup in reversed(backed_up):
-                if not destination.exists() and backup.exists():
-                    backup.replace(destination)
+                try:
+                    if destination.exists() and not destination.is_symlink():
+                        remove_tree(destination, root)
+                except BaseException as rollback_error:
+                    rollback_errors.append(f"{destination}: {rollback_error}")
+            if state_replaced:
+                try:
+                    atomic_json(state_path, state)
+                except BaseException as rollback_error:
+                    rollback_errors.append(f"provider state: {rollback_error}")
+            for path in reversed(new_destinations):
+                try:
+                    remove_created_empty_parents(
+                        path,
+                        root,
+                        preexisting_directories,
+                    )
+                except BaseException as rollback_error:
+                    rollback_errors.append(f"{path.parent}: {rollback_error}")
+            if rollback_errors:
+                raise ProviderError(
+                    f"provider update failed and rollback also failed: {error}; "
+                    + "; ".join(rollback_errors)
+                ) from error
             raise
-    if not command_status(root, verbose=False):
-        raise ProviderError("post-update provider verification failed")
     print(f"✓ Curated upstream skills updated intentionally to {provider['repository']}@{provider['version']}.")
 
 
@@ -600,12 +1135,19 @@ def command_remove(root: Path, dry_run: bool) -> None:
         raise ProviderError("provider state skills must be an object")
     actions = []
     removals = []
+    by_name = {str(skill["name"]): skill for skill in skills}
     for name, record in sorted(records.items()):
         if not isinstance(record, dict):
             raise ProviderError(f"invalid provider record for {name}")
         if record.get("origin") == "preexisting-compatible":
             actions.append(f"preserve pre-existing compatible provider skill {name}")
-        elif checksums_match(root, name, record):
+            continue
+        try:
+            verify_skill(root, provider, by_name[name])
+        except ProviderError:
+            actions.append(f"preserve incompatible or locally changed provider skill {name}")
+            continue
+        if checksums_match(root, name, record):
             actions.append(f"remove unchanged framework-installed provider skill {name}")
             removals.append(skill_directory(root, name))
         else:
@@ -617,9 +1159,7 @@ def command_remove(root: Path, dry_run: bool) -> None:
             print(f"  - {action}")
         print("No provider files changed.")
         return
-    for directory in removals:
-        remove_tree(directory, root)
-    state_path.unlink()
+    quarantine_provider_removal(root, removals, state_path)
     print("✓ Upstream provider lifecycle state removed; pre-existing or changed skills were preserved.")
 
 
