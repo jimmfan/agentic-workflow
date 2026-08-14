@@ -1,14 +1,14 @@
 # Agentic Workflow
 
 Agentic Workflow is a small intent router over host tools and replaceable skills.
-Use host-native sandboxing and approvals. Code checks observable invariants where
-hooks run; this policy remains the semantic fallback when hooks do not run.
+Use host-native sandboxing and approvals. This policy and the progressively
+loaded routing contract are the runtime; there is no separate controller.
 
 ## Universal invariants
 
 - Every request MUST be evaluated through the Agentic Workflow router. `direct`
   is a first-class route.
-- Routing, skills, state, specifications, tickets, providers, and hooks MUST NOT
+- Routing, skills, state, specifications, tickets, and providers MUST NOT
   expand the authority granted by the user's request.
 - Execution and completion claims MUST be truthful: do not report an operation,
   command, check, review, or workflow as executed or passed when it was not.
@@ -39,10 +39,6 @@ hooks run; this policy remains the semantic fallback when hooks do not run.
   direct, read `.ai-workflow/routing.md` before substantive execution.
 - After selection, read only the selected skill and the needed provider metadata;
   do not load unrelated skills merely because they are installed.
-- When lifecycle hooks report enforcement active, use their supplied checkpoint
-  on every prompt before substantive tools and their action declaration before
-  opaque tools; `direct` remains valid and declarations never expand authority.
-  Load `.ai-workflow/runtime/README.md` only for conditional transitions.
 - Before durable workflow mutation, read `.ai-workflow/contracts/durable-state.md`. Before
   profile mutation, read `.ai-workflow/contracts/project-profile.md`.
 - Project-profile maintenance is opportunistic: prefer a small update only when

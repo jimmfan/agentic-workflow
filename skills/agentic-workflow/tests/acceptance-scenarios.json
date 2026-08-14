@@ -1,389 +1,52 @@
 [
   {
-    "id": 1,
-    "requirement": "Clear bounded work uses the normal direct route.",
-    "prompt": "Fix the typo in this heading.",
-    "setup": "The target and correction are unambiguous and low risk.",
-    "expected_route": "normal/direct",
-    "expected_behavior": "Edit and verify directly without loading a provider workflow.",
-    "evidence": "The final route is direct and no skill body is referenced."
+    "id": "repair-missing-current-framework-file",
+    "operation": "update",
+    "expected": "A deleted current file under .ai-workflow is restored from the current package."
   },
   {
-    "id": 2,
-    "requirement": "Explicit sustained learning intent selects upstream Teach without bypassing user-only invocation.",
-    "prompt": "Teach me distributed systems over several sessions and build lessons for me.",
-    "setup": "The active host is Codex, the pinned teach skill is compatible, and its policy requires user invocation.",
-    "expected_route": "teach-handoff",
-    "expected_behavior": "Tell the user that Teach is appropriate and to invoke $teach; do not create a learning workspace yet.",
-    "evidence": "Teach is not loaded, no course artifact or workflow state is created, and the handoff does not claim execution."
+    "id": "replace-drifted-current-framework-file",
+    "operation": "update",
+    "expected": "A modified current file under .ai-workflow is replaced without forensic checksum checks."
   },
   {
-    "id": 3,
-    "requirement": "A simple knowledge question does not invoke Teach.",
-    "prompt": "What is eventual consistency?",
-    "setup": "No sustained learning intent or durable course request is present.",
-    "expected_route": "normal/direct",
-    "expected_behavior": "Give a proportional explanation without creating learning files.",
-    "evidence": "The final route is direct and the workspace is unchanged."
+    "id": "ignore-absent-historical-file",
+    "operation": "update",
+    "expected": "An obsolete path from local install state that is already absent is ignored."
   },
   {
-    "id": 4,
-    "requirement": "Huge foggy multi-session planning routes to Wayfinder.",
-    "prompt": "Help chart a new platform migration that is too large for one agent session.",
-    "setup": "The active host is GitHub Copilot; Wayfinder and its dependencies are compatible, but Wayfinder requires user invocation.",
-    "expected_route": "wayfinder-handoff",
-    "expected_behavior": "Classify the request as Wayfinder and tell the user to invoke /wayfinder without simulating its method.",
-    "evidence": "No map, decision ticket, authorization change, or workflow-state write exists before user invocation."
+    "id": "do-not-recreate-old-state-readme",
+    "operation": "update",
+    "expected": "The development-era .ai-workflow/state/README.md path is neither required nor recreated."
   },
   {
-    "id": 5,
-    "requirement": "A read-only bounded consequential choice remains ephemeral ai-workflow Discovery.",
-    "prompt": "Choose between two authentication adapters for this already scoped change.",
-    "setup": "The decision is material but can be resolved in one session; the user requested analysis rather than repository changes.",
-    "expected_route": "discovery",
-    "expected_behavior": "Compare viable alternatives ephemerally without invoking Wayfinder or persisting a DEC record.",
-    "evidence": "The analysis is returned in chat and the repository, DEC allocator, and active index remain unchanged."
+    "id": "preserve-arbitrary-durable-state",
+    "operation": "install-update-remove-reinstall",
+    "expected": "Every project-owned entry under .ai-workflow-state survives byte-for-byte."
   },
   {
-    "id": 6,
-    "requirement": "External-fact investigation can route to upstream Research.",
-    "prompt": "Research the current protocol limits from primary sources and save cited findings.",
-    "setup": "A durable cited repository artifact and isolated background legwork add value.",
-    "expected_route": "research",
-    "expected_behavior": "Invoke Research and produce one cited Markdown artifact at the project convention.",
-    "evidence": "Research is the only provider skill loaded and claims cite primary sources."
+    "id": "preserve-composite-project-region",
+    "operation": "install-update-remove",
+    "expected": "Managed AGENTS.md and CLAUDE.md regions change while project bytes remain unchanged."
   },
   {
-    "id": 7,
-    "requirement": "A small factual lookup skips the Research workflow.",
-    "prompt": "Look up the current stable version of this one dependency.",
-    "setup": "The answer needs one authoritative check and no durable research file.",
-    "expected_route": "normal/direct",
-    "expected_behavior": "Perform the minimal authoritative lookup and answer directly.",
-    "evidence": "No background research agent or repository artifact is created."
+    "id": "reject-unknown-external-collision",
+    "operation": "install",
+    "expected": "Unknown content at a required external integration path is preserved and blocks the write."
   },
   {
-    "id": 8,
-    "requirement": "Unknown failures use the distinct local Debugging contract.",
-    "prompt": "Diagnose why this deployment intermittently times out; do not fix it.",
-    "setup": "The symptom is external and diagnosis-only authorization is explicit.",
-    "expected_route": "debugging",
-    "expected_behavior": "Respect the mutation boundary, use the strongest safe signal, and stop at supported cause or bounded uncertainty.",
-    "evidence": "No fix is made and diagnostics distinguish evidence from hypotheses."
+    "id": "isolate-provider-failure",
+    "operation": "install",
+    "expected": "A missing GitHub CLI or provider failure warns while core installation succeeds."
   },
   {
-    "id": 9,
-    "requirement": "Settled conversation can select an upstream specification workflow without bypassing invocation policy.",
-    "prompt": "Turn our settled discussion into the canonical spec.",
-    "setup": "The active host is Codex, setup output exists, publication is authorized, no material decision remains open, and to-spec is user-only.",
-    "expected_route": "to-spec-handoff",
-    "expected_behavior": "Tell the user to invoke $to-spec and stop before publication or local artifact creation.",
-    "evidence": "No specification or workflow state exists until to-spec is actually invoked."
+    "id": "support-cp1252-console",
+    "operation": "status",
+    "expected": "Unrepresentable path characters are escaped and do not crash the CLI."
   },
   {
-    "id": 10,
-    "requirement": "Substantial dependency-ordered work selects upstream to-tickets without bypassing invocation policy.",
-    "prompt": "Split this approved spec into implementation tickets for several sessions.",
-    "setup": "The active host is GitHub Copilot, the spec is canonical, multiple slices add value, and to-tickets is user-only.",
-    "expected_route": "to-tickets-handoff",
-    "expected_behavior": "Tell the user to invoke /to-tickets and stop without creating native or shadow tickets.",
-    "evidence": "No ticket, framework alias, external mutation, or workflow-state write exists before invocation."
-  },
-  {
-    "id": 11,
-    "requirement": "Implementation delegates to a user-only upstream workflow without claiming it or Verification ran.",
-    "prompt": "Implement this ready ticket and verify the acceptance criteria.",
-    "setup": "The active host is Codex; implement, TDD, and Code Review are compatible, but implement requires user invocation.",
-    "expected_route": "implementation/implement-handoff",
-    "expected_behavior": "Validate the ready boundary, tell the user to invoke $implement, and stop before code or state changes.",
-    "evidence": "No provider execution, IMP record, implementation edit, or Verification claim occurs before invocation."
-  },
-  {
-    "id": 12,
-    "requirement": "TDD is not run twice.",
-    "prompt": "$implement Implement this behavior test-first.",
-    "setup": "Codex has explicitly invoked implement, which selects its TDD dependency at the pre-agreed seam.",
-    "expected_route": "implementation/implement->verification",
-    "expected_behavior": "The router does not re-expand provider-owned TDD in the marker or invoke a second TDD stage before or after implement.",
-    "evidence": "Execution history contains one upstream TDD loop."
-  },
-  {
-    "id": 13,
-    "requirement": "Code Review is not redundantly invoked after implement.",
-    "prompt": "$implement Implement and finish this ticket.",
-    "setup": "Codex has explicitly invoked implement, which completed its own upstream Code Review.",
-    "expected_route": "implementation/implement->verification",
-    "expected_behavior": "The marker leaves provider-owned Code Review under implement; framework Verification reuses the review result and does not start another review.",
-    "evidence": "Execution history contains one Code Review invocation."
-  },
-  {
-    "id": 14,
-    "requirement": "Missing upstream repository configuration selects a visible user-only setup handoff.",
-    "prompt": "Publish this settled spec to our tracker.",
-    "setup": "The active host is GitHub Copilot; provider skills are installed, required configuration is absent, and setup is user-only.",
-    "expected_route": "setup-matt-pocock-skills-handoff",
-    "expected_behavior": "Tell the user to invoke /setup-matt-pocock-skills and stop before setup or to-spec executes.",
-    "evidence": "No configuration, specification, authorization change, or workflow-state write exists before invocation."
-  },
-  {
-    "id": 15,
-    "requirement": "Configured repositories do not rerun setup.",
-    "prompt": "Turn this approved spec into tickets.",
-    "setup": "The active host is Codex, required configuration exists, and to-tickets is user-only.",
-    "expected_route": "to-tickets-handoff",
-    "expected_behavior": "Tell the user to invoke $to-tickets without loading, running, or handing off to setup.",
-    "evidence": "Setup artifacts remain unchanged and only the to-tickets handoff is reported."
-  },
-  {
-    "id": 16,
-    "requirement": "Missing dependencies fail with a useful diagnostic.",
-    "prompt": "Use Wayfinder for this huge effort.",
-    "setup": "The wayfinder directory is absent while the provider declaration requires it.",
-    "expected_route": "wayfinder/provider-error",
-    "expected_behavior": "Stop and name the missing pinned dependency plus the lifecycle command needed; do not run local Discovery as a stale substitute.",
-    "evidence": "The diagnostic identifies .agents/skills/wayfinder and the expected source pin."
-  },
-  {
-    "id": 17,
-    "requirement": "Incompatible upstream metadata fails closed.",
-    "prompt": "Implement this ready specification.",
-    "setup": "The installed implement SKILL.md has a different repository, tag, path, or tree SHA.",
-    "expected_route": "implementation/provider-error",
-    "expected_behavior": "Refuse execution and report the mismatched metadata without overwriting local content.",
-    "evidence": "Provider status exits nonzero and identifies the incompatible field."
-  },
-  {
-    "id": 18,
-    "requirement": "Wayfinder-native identity passes through unchanged.",
-    "prompt": "$wayfinder Resume this Wayfinder map and its next decision ticket.",
-    "setup": "Codex has explicitly invoked Wayfinder; the map and ticket have native tracker identifiers, titles, URLs, and wayfinder labels.",
-    "expected_route": "wayfinder",
-    "expected_behavior": "Use the native map vocabulary and identity without framework aliases.",
-    "evidence": "Wayfinder IDs, URLs, titles, labels, and map terms remain byte-for-byte references."
-  },
-  {
-    "id": 19,
-    "requirement": "Framework and external identifiers remain distinct.",
-    "prompt": "$wayfinder Return from the Wayfinder decision to the implementation coordinator.",
-    "setup": "Codex has explicitly invoked Wayfinder; the origin uses Wayfinder identity, the external systems include ARC-384 and #384, and an authorized distinct local DEC record coordinates the return.",
-    "expected_route": "wayfinder->discovery",
-    "expected_behavior": "Preserve the unchanged origin and return target; never translate Wayfinder state to DEC, TKT, or UNK aliases.",
-    "evidence": "ARC-384, #384, the native Wayfinder reference, and the distinct DEC pointer remain separate."
-  },
-  {
-    "id": 20,
-    "requirement": "to-spec can consume settled upstream planning state.",
-    "prompt": "$to-spec Synthesize the completed Wayfinder effort into a specification.",
-    "setup": "Codex has explicitly invoked to-spec; the Wayfinder destination and decision-ticket resolutions are settled and publication is authorized.",
-    "expected_route": "wayfinder->to-spec",
-    "expected_behavior": "Pass canonical provider state to to-spec without translating or duplicating it.",
-    "evidence": "The specification cites native map/ticket references and no shadow decision set appears."
-  },
-  {
-    "id": 21,
-    "requirement": "to-tickets consumes the canonical upstream spec artifact.",
-    "prompt": "$to-tickets Decompose the published spec into tracer-bullet tickets.",
-    "setup": "Codex has explicitly invoked to-tickets and a to-spec artifact exists at the configured tracker or local path.",
-    "expected_route": "to-spec->to-tickets",
-    "expected_behavior": "Fetch the canonical spec and publish only approved vertical slices and blocker edges.",
-    "evidence": "Each ticket traces to the canonical spec without copied framework tickets."
-  },
-  {
-    "id": 22,
-    "requirement": "Implement consumes native ticket artifacts.",
-    "prompt": "$implement Implement the next actionable native ticket.",
-    "setup": "Codex has explicitly invoked implement; the to-tickets frontier has one ready native ticket and its blockers are resolved.",
-    "expected_route": "implementation/implement->verification",
-    "expected_behavior": "Pass the native ticket to implement and return to the native frontier after verification.",
-    "evidence": "No framework ticket alias or mirrored body is created."
-  },
-  {
-    "id": 23,
-    "requirement": "Standalone fixed-point review can use upstream Code Review.",
-    "prompt": "Review this branch against main and the originating issue.",
-    "setup": "Git, the fixed point, the diff, and a spec source exist; no implement run already supplied the requested review.",
-    "expected_route": "code-review",
-    "expected_behavior": "Invoke the upstream two-axis fixed-point review exactly once.",
-    "evidence": "Standards and Spec findings remain separate and cite their inputs."
-  },
-  {
-    "id": 24,
-    "requirement": "Framework Verification adds an independent acceptance boundary.",
-    "prompt": "Verify that the finished change meets every acceptance criterion.",
-    "setup": "Upstream tests and review evidence exist, but artifact and integration criteria remain.",
-    "expected_route": "verification",
-    "expected_behavior": "Reuse upstream evidence and check only uncovered criteria, artifacts, boundaries, and provider compatibility.",
-    "evidence": "Every criterion is classified pass, fail, blocked, or not applicable."
-  },
-  {
-    "id": 25,
-    "requirement": "Installed but unused skills are not loaded.",
-    "prompt": "Rename this local variable.",
-    "setup": "All curated provider skills are installed.",
-    "expected_route": "normal/direct",
-    "expected_behavior": "Perform direct work without loading setup, Wayfinder, Teach, Research, TDD, or review bodies.",
-    "evidence": "Only metadata discovery occurs and the route remains direct."
-  },
-  {
-    "id": 26,
-    "requirement": "Teach artifacts stay outside the engineering project unless that project is the chosen course workspace.",
-    "prompt": "$teach Start a multi-session course on database internals.",
-    "setup": "Codex has explicitly invoked Teach and the user selects a dedicated learning directory.",
-    "expected_route": "teach",
-    "expected_behavior": "Create Teach-native artifacts only in the selected workspace and retain at most a return pointer elsewhere.",
-    "evidence": "No MISSION.md, lessons, or learning-records appear accidentally in the engineering root."
-  },
-  {
-    "id": 27,
-    "requirement": "Durable re-entry points to canonical provider artifacts.",
-    "prompt": "$implement Resume the interrupted implementation.",
-    "setup": "Codex has explicitly invoked implement; active.md names provider skill implement, a native ticket link, an IMP coordinator, and an exact resume target.",
-    "expected_route": "implementation/implement",
-    "expected_behavior": "Validate the pointer and artifact, then continue at the exact target without reconstructing from chat.",
-    "evidence": "No provider body is copied into framework state."
-  },
-  {
-    "id": 28,
-    "requirement": "Upstream commit language does not expand authorization.",
-    "prompt": "$implement Implement this ticket but do not commit.",
-    "setup": "Codex has explicitly invoked implement; the upstream body includes a commit step while the user explicitly excludes commits.",
-    "expected_route": "implementation/implement->verification",
-    "expected_behavior": "Implement and verify without staging or committing.",
-    "evidence": "Git history and index remain unchanged except for authorized working-tree edits."
-  },
-  {
-    "id": 29,
-    "requirement": "External tracker mutations remain approval-gated.",
-    "prompt": "$to-tickets Draft the ticket breakdown but do not publish it yet.",
-    "setup": "Codex has explicitly invoked to-tickets and it is configured for a remote tracker.",
-    "expected_route": "to-tickets",
-    "expected_behavior": "Draft and present tickets without creating, labeling, or linking remote issues.",
-    "evidence": "No external write occurs and publication remains a visible next action."
-  },
-  {
-    "id": 30,
-    "requirement": "diagnosing-bugs is not adopted when it would weaken the distinct local contract.",
-    "prompt": "Diagnose this external intermittent failure without mutation.",
-    "setup": "No tight local red command is responsible or available.",
-    "expected_route": "debugging",
-    "expected_behavior": "Use local evidence-driven debugging and name the proxy limitation rather than forcing upstream's test-command gate.",
-    "evidence": "Diagnosis-only scope and non-test signals remain supported."
-  },
-  {
-    "id": 31,
-    "requirement": "Dependency installation is portable, pinned, complete, and metadata-bearing.",
-    "prompt": "Install ai-workflow into this non-Git project.",
-    "setup": "GitHub CLI 2.97.0 or newer is on PATH on macOS, Windows, or Linux.",
-    "expected_route": "installation/provider-lifecycle",
-    "expected_behavior": "Use gh skill exact-path project installs at the declared tag, copy full skill directories, and verify source/ref/tree metadata.",
-    "evidence": "All declared files exist under .agents/skills and provider status is clean."
-  },
-  {
-    "id": 32,
-    "requirement": "Provider declaration changes preserve existing directories and add only missing authenticated dependencies.",
-    "prompt": "Update ai-workflow to the dependency-expanded release at the same tested provider pin.",
-    "setup": "Existing declared provider directories are unchanged from their recorded installed hashes and one newly declared dependency is absent.",
-    "expected_route": "installation/provider-update->verification",
-    "expected_behavior": "Stage the complete pin, authenticate and preserve every existing directory, record retained directories as pre-existing-compatible, add only the missing dependency, and run compatibility checks.",
-    "evidence": "Existing directory bytes remain unchanged and only the missing dependency plus the new ownership baseline are written after all checks pass."
-  },
-  {
-    "id": 33,
-    "requirement": "A directly requested standalone TDD loop can execute without forcing the full implementation workflow.",
-    "prompt": "Use TDD to add this already bounded behavior.",
-    "setup": "The active host is Codex; the change is scoped and the pinned TDD skill is implicitly invocable.",
-    "expected_route": "tdd->verification",
-    "expected_behavior": "Run the upstream TDD loop once as the dominant activity, then run one independent acceptance/integration Verification pass without starting implement or adding a second TDD or review pass.",
-    "evidence": "The route names TDD then Verification, red-green-refactor and acceptance evidence are present, and implement was not invoked."
-  },
-  {
-    "id": 34,
-    "requirement": "A provider pin transition replaces an unchanged framework-owned directory.",
-    "prompt": "Update ai-workflow to a reviewed provider pin whose skill bodies changed.",
-    "setup": "The existing provider baseline is framework-owned and still matches the hashes recorded when it was installed; the new declaration uses a reviewed explicit pin.",
-    "expected_route": "installation/provider-update->verification",
-    "expected_behavior": "Validate every provider transition and the complete new pin before mutation, replace the clean managed directory transactionally, and record hashes of the newly installed bytes.",
-    "evidence": "The provider state records the new explicit version/revision and installed-file hashes, and rollback tests prove that a later failure restores the predecessor exactly."
-  },
-  {
-    "id": 35,
-    "requirement": "The active VS Code adapter requires a route checkpoint before substantive tool execution.",
-    "prompt": "Change the bounded implementation.",
-    "setup": "GitHub Copilot in VS Code loaded the installed Preview hook and the agent attempts a terminal or write tool before declaring the route.",
-    "expected_route": "router-blocked",
-    "expected_behavior": "PreToolUse denies the substantive call and instructs the agent to record the model-selected route and authority checkpoint.",
-    "evidence": "The denied tool has no side effect; a native read remains available for routing evidence."
-  },
-  {
-    "id": 36,
-    "requirement": "Diagnosis mode deterministically denies repository writes visible to the host.",
-    "prompt": "Diagnose the failure but do not fix it.",
-    "setup": "The controller recorded route debugging, mode diagnosis, and repository-write denied.",
-    "expected_route": "debugging-blocked",
-    "expected_behavior": "PreToolUse denies a native file edit and denies any declared opaque repository-write action.",
-    "evidence": "The target file remains byte-identical and the denial names the diagnosis boundary."
-  },
-  {
-    "id": 37,
-    "requirement": "A user-only provider cannot be reported executed without exact current-prompt invocation.",
-    "prompt": "Plan this foggy effort.",
-    "setup": "VS Code selected user-only Wayfinder but the prompt does not contain /wayfinder.",
-    "expected_route": "wayfinder-handoff",
-    "expected_behavior": "The controller rejects the started transition and therefore also rejects outcome executed; handoff is a valid non-execution terminal outcome.",
-    "evidence": "Provider state contains handoff, not executed, and no provider artifact or durable pointer is created."
-  },
-  {
-    "id": 38,
-    "requirement": "A durable active-state edit requires explicit conflict resolution bound to fresh bytes.",
-    "prompt": "Start Discovery while Implementation is active.",
-    "setup": "active.md names implementation and the route intends durable discovery.",
-    "expected_route": "discovery-blocked",
-    "expected_behavior": "The controller rejects resolution same, accepts only complete/interruption/supersession, and invalidates a grant if active.md changes before the write.",
-    "evidence": "No stale grant can authorize the native active.md edit."
-  },
-  {
-    "id": 39,
-    "requirement": "Required verification must reference an observed successful tool before completion.",
-    "prompt": "Implement and verify the change.",
-    "setup": "The controller observed a repository write and the checkpoint marks verification required.",
-    "expected_route": "implementation->verification",
-    "expected_behavior": "Stop continues once until passed satisfying evidence is recorded from a successful PostToolUse event or an authorized limitation exists.",
-    "evidence": "Completion succeeds after linked evidence; a second unresolved Stop terminates instead of looping."
-  },
-  {
-    "id": 40,
-    "requirement": "Instruction-driven behavior remains functional when hooks are unavailable.",
-    "prompt": "Explain this function in a workspace where hooks are organization-disabled.",
-    "setup": "The installed policy and skills are readable but VS Code does not execute workspace hooks.",
-    "expected_route": "normal/direct",
-    "expected_behavior": "The root policy routes the bounded explanation directly and lifecycle status reports installed/static host integration separately from live host verification.",
-    "evidence": "The response is useful and truthful without controller state or repository mutation."
-  },
-  {
-    "id": 41,
-    "requirement": "Lifecycle owns the active reference adapter transactionally.",
-    "prompt": "Install, inspect, update, and remove Agentic Workflow.",
-    "setup": "A disposable target has no conflicting .github/hooks/agentic-workflow.json path.",
-    "expected_route": "installation->verification",
-    "expected_behavior": "Install creates the unique hook and controller, status verifies them, update replaces only checksum-clean owned bytes, and remove preserves modified or pre-existing content.",
-    "evidence": "Ownership manifests and lifecycle tests cover the hook/controller targets and rollback."
-  },
-  {
-    "id": 42,
-    "requirement": "VS Code, Copilot CLI, and Copilot cloud hook guarantees remain distinct.",
-    "prompt": "Report host enforcement capability.",
-    "setup": "The package capability matrix is installed.",
-    "expected_route": "normal/direct",
-    "expected_behavior": "Status identifies VS Code as the Preview reference adapter and CLI/cloud as separate instruction-only runtimes in this release.",
-    "evidence": "No PascalCase VS Code configuration is represented as validated CLI or cloud enforcement."
-  },
-  {
-    "id": 43,
-    "requirement": "The compact hooks-off kernel progressively loads enough policy for a non-direct route.",
-    "prompt": "Research whether Karpenter supports these scaling constraints and cite primary sources.",
-    "setup": "GitHub Copilot in VS Code has hooks disabled, while AGENTS.md, .ai-workflow/routing.md, providers.json, and the Research skill are installed and readable.",
-    "expected_route": "normal/research",
-    "expected_behavior": "The root recognizes that the request is not confidently direct, loads the detailed routing contract, resolves the compatible implicit provider, preserves authorization and canonical boundaries, and reports only work that actually executes.",
-    "evidence": "The route remains usable without controller state and ends truthfully as Research rather than direct, unavailable, or a simulated handoff."
+    "id": "release-metadata-is-ci-only",
+    "operation": "verify-and-install",
+    "expected": "Stale generated checksums fail the verifier while runtime reconciliation uses actual package bytes."
   }
 ]

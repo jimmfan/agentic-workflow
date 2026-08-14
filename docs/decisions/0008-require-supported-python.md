@@ -22,34 +22,26 @@ The other versioned prerequisites have different roles:
   but GitHub CLI 2.97.0 fixes four security vulnerabilities and its release
   advisory directs users to update. The framework's live compatibility research
   was already performed with 2.97.0.
-- `mattpocock/skills` v1.2.3 is an intentionally immutable, checksummed provider
-  baseline. It was the latest stable provider release when reviewed and must
-  not float independently of compatibility review and manifest regeneration.
-- VS Code, Copilot, and analyzer schema versions in observability research are
-  recorded test snapshots or data-format versions, not runtime prerequisites.
+- `mattpocock/skills` v1.2.3 is an intentionally pinned optional provider
+  baseline. It must not float independently of compatibility review.
+- Host and provider schema versions are not Python dependency claims.
 
 ## Decision
 
-Require Python 3.11 or newer for every executable framework entry point and the
-optional observability analyzer. Treat 3.11 as a minimum compatibility promise,
+Require Python 3.11 or newer for every executable framework entry point. Treat
+3.11 as a minimum compatibility promise,
 not an exact pin; development and use may run on newer supported Python 3
 releases.
 
-Require GitHub CLI 2.97.0 or newer for provider installation and update. Keep
-the existing `gh skill` interface probe in addition to the numeric version
-check because that command group remains in public preview.
+Treat a GitHub CLI that exposes the declared `gh skill install` interface as an
+optional provider prerequisite. Its absence never blocks the core.
 
-Every entry point must perform the version check before parsing arguments,
-network access, or target filesystem work and must report the detected version
-when the check fails. Tests exercise the rejection path. User documentation
-must distinguish interpreter installation from framework installation and
-explain how to verify which interpreter a host or container selects.
-
-Treat executable constants and `providers.json` as the machine-readable sources
-for the Python and GitHub CLI floors. The release verifier checks the canonical
-maintainer and installed documentation against those values. A negative test
-must prove that changing a documented prerequisite without changing its source
-of truth fails the gate.
+Every entry point must perform the Python version check before network or target
+filesystem work and return an actionable ASCII error. User documentation must
+distinguish interpreter installation from framework installation and explain
+how to verify which interpreter a host or container selects. Provider tooling is
+feature-detected by the best-effort install attempt rather than maintained as a
+second numeric compatibility gate.
 
 ## Consequences
 

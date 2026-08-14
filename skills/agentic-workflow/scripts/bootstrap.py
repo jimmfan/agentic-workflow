@@ -27,6 +27,11 @@ MAX_MEMBER_BYTES = 5 * 1024 * 1024
 MAX_MEMBERS = 500
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 MINIMUM_PYTHON = (3, 11)
+RUNTIME_PACKAGE_REQUIREMENTS = (
+    (PurePosixPath("scripts/lifecycle.py"), "lifecycle entrypoint"),
+    (PurePosixPath("scripts/adopt.py"), "framework reconciliation entrypoint"),
+    (PurePosixPath("payload/distribution/manifest.json"), "lifecycle mapping metadata"),
+)
 ARCHIVE_MODE_VARIANTS = {
     0o644: {0o644, 0o664},
     0o755: {0o755, 0o775},
@@ -132,10 +137,18 @@ def extract_package(archive: bytes, destination: Path) -> Path:
         if len(members) > MAX_MEMBERS:
             raise BootstrapError(f"archive contains more than {MAX_MEMBERS} entries")
         for member in members:
+            archive_path = PurePosixPath(member.name)
             relative = package_relative(member.name)
             if relative is None:
                 continue
-            if relative.is_absolute() or ".." in relative.parts or "." in relative.parts:
+            if (
+                archive_path.is_absolute()
+                or ".." in archive_path.parts
+                or "." in archive_path.parts
+                or relative.is_absolute()
+                or ".." in relative.parts
+                or "." in relative.parts
+            ):
                 raise BootstrapError(f"archive contains an unsafe package path: {member.name}")
             if member.issym() or member.islnk() or not (member.isdir() or member.isfile()):
                 raise BootstrapError(f"archive contains an unsupported package entry: {member.name}")
@@ -164,12 +177,30 @@ def extract_package(archive: bytes, destination: Path) -> Path:
     return package
 
 
+def validate_runtime_package(package: Path) -> None:
+    """Check only the package files required to start lifecycle reconciliation."""
+    for relative, label in RUNTIME_PACKAGE_REQUIREMENTS:
+        path = package.joinpath(*relative.parts)
+        if not path.exists() and not path.is_symlink():
+            raise BootstrapError(
+                f"required {label} missing from downloaded package: {relative}"
+            )
+        if path.is_symlink() or not path.is_file():
+            raise BootstrapError(
+                f"required {label} is not a regular file in downloaded package: {relative}"
+            )
+        try:
+            with path.open("rb") as handle:
+                handle.read(1)
+        except OSError as exc:
+            raise BootstrapError(
+                f"required {label} cannot be read from downloaded package: {relative}: {exc}"
+            ) from exc
+
+
 def run_package(package: Path, action: str, target: Path, dry_run: bool, revision: str) -> int:
-    verifier = package / "scripts" / "verify_package.py"
+    validate_runtime_package(package)
     lifecycle = package / "scripts" / "lifecycle.py"
-    verification = subprocess.run([sys.executable, str(verifier)], text=True)
-    if verification.returncode != 0:
-        raise BootstrapError("downloaded package failed integrity verification")
     command = [sys.executable, str(lifecycle), action, str(target), "--source-revision", revision]
     if dry_run:
         command.append("--dry-run")
@@ -190,9 +221,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     require_supported_python()
     configure_console()
     args = parse_args(argv or sys.argv[1:])
-    target = args.target.expanduser().resolve()
-    if not target.is_dir():
-        raise BootstrapError(f"target project directory does not exist: {target}")
+    target = args.target.expanduser().absolute()
+    if target.is_symlink() or not target.is_dir():
+        raise BootstrapError(f"target must be an existing regular non-symlink directory: {target}")
     if target == Path(target.anchor):
         raise BootstrapError("refusing to operate on a filesystem root")
     revision, archive_url = select_source(args.action, target, args.ref, args.archive_url)

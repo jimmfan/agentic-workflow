@@ -1,6 +1,6 @@
 # ADR-0002: Use checksummed copy adoption
 
-- Status: accepted
+- Status: superseded by ADR-0010
 - Date: 2026-08-11
 
 ## Context

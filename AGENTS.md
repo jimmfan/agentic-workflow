@@ -1,5 +1,20 @@
 # AGENTS.md
 
+## Pre-1.0 engineering priority
+
+This project is pre-1.0 and should optimize for rapid iteration and learning.
+
+Only engineer deeply around two things:
+
+1. Do not destroy project-owned/user-owned data.
+2. Make the core routing behavior work reliably.
+
+Everything else should default to being simple, replaceable, optional, best-effort, or CI-only.
+
+Prefer deleting or simplifying machinery over extending it. Do not add package-manager-grade integrity, migration, compatibility, observability, ownership, or lifecycle systems unless they are necessary to protect user data or make the core router reliable.
+
+When choosing between robustness for hypothetical future users and simplicity for current development, prefer simplicity unless there is a concrete current failure or data-loss risk.
+
 ## Scope
 
 This file guides agents modifying the **Agentic Workflow source repository**.

@@ -1,32 +1,43 @@
 # Workflow routing
 
-The authoritative consuming-project routing contract is
-[`payload/ai-workflow/routing.md`](../skills/agentic-workflow/payload/ai-workflow/routing.md).
-Lifecycle adoption installs it at `.ai-workflow/routing.md`, and the compact root
-policy loads it only for a named skill, resume, uncertain route, or route that is
-not confidently direct.
+The installed router solves one problem: choose the minimum useful way to handle
+the request without expanding the user's authority. Clear, bounded, low-risk
+work is `direct`; availability of a workflow or provider is never a reason to
+invoke it.
 
-This source-level document records why that placement matters. Agentic Workflow
-routes normal intent without requiring users to memorize skill syntax. The root
-policy retains only universal authorization, truthfulness, preservation, and
-evidence invariants plus these defaults:
+The compact always-loaded rules live in
+`payload/root/AGENTS.md.template`. Detailed selection, composition, invocation,
+fallback, evidence, and route-marker rules live in
+`payload/ai-workflow/routing.md` and load only for a named skill, resume,
+uncertain route, or route not confidently direct.
 
-- direct is a first-class route for clear, bounded, low-risk work;
-- select one dominant workflow or activity;
-- add zero or more capabilities only when they materially help;
-- availability alone never justifies invocation; and
-- load detailed provider, workflow, state, runtime, and host policy only after
-  the selected route makes it relevant.
+Keep these decisions separate:
 
-The installed routing contract owns the detailed classification ladder,
-provider invocation and setup gates, host compatibility fallback, composition,
-canonical-artifact boundaries, authorization examples, evidence semantics, and
-route-marker labels. Selected skills own their methodology. The state and
-profile contracts own their respective persistence rules. The runtime controller
-owns only observable lifecycle consistency; it does not select routes.
+1. select one dominant workflow or activity;
+2. add only capabilities that materially help it;
+3. determine whether the active host may invoke each optional provider; and
+4. execute only actions authorized by the user.
 
-GitHub Copilot in VS Code remains the reference host, but its Preview hooks are
-not an adoption prerequisite. The compact root invariants plus the progressively
-loaded routing contract form the advisory fallback when hooks are unavailable.
-See [Lifecycle enforcement and hard-rule audit](enforcement.md) for the division
-between programmatic invariants, model judgment, and soft guidance.
+Unavailable or user-only providers normally fall back to truthful host-native
+work. Use an exact `$skill-name` or `/skill-name` handoff only when the user
+explicitly requires that provider or a real configuration boundary prevents
+host-native progress. Never simulate provider execution.
+
+The dominant workflow owns any durable continuity under `.ai-workflow-state/`.
+Provider-native maps, tickets, specifications, research, reviews, and learning
+artifacts remain canonical; the framework does not mirror them. Diagnosis,
+review, explanation, and audit requests stay read-only unless the user separately
+authorizes mutation.
+
+After meaningful implementation or a causal fix, gather acceptance evidence not
+already supplied by the selected provider. Do not repeat provider-owned TDD or
+Code Review merely to add a framework stage.
+
+When route visibility materially helps debugging, emit at most one truthful
+instruction-level marker such as:
+
+```text
+[route: router -> implement -> verification]
+```
+
+The marker is optional metadata, not telemetry or proof that work ran.

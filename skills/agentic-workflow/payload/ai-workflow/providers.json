@@ -45,7 +45,6 @@
     }
   },
   "provider": {
-    "minimum_gh_version": "2.97.0",
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
     "skills": [

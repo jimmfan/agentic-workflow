@@ -1,6 +1,6 @@
 # ADR 0009: Use a host-neutral lifecycle controller with VS Code as reference
 
-- Status: Accepted
+- Status: superseded by ADR-0010
 - Date: 2026-08-14
 
 ## Context
@@ -41,7 +41,7 @@ and removal.
 The primary host gains deterministic denial for high-value observable failures
 without becoming a hard dependency on a Preview API. Codex and Claude can add
 stronger optional enforcement without changing the common semantic contract.
-Status must report capability separately from integrity.
+Status must report host capability separately from framework reconciliation.
 
 The result is not a security boundary. Opaque action declarations can be false,
 host coverage can be incomplete, and PostToolUse cannot establish semantic test

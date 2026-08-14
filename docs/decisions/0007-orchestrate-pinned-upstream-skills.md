@@ -1,6 +1,6 @@
 # ADR-0007: Orchestrate pinned upstream skills
 
-- Status: accepted
+- Status: partially superseded by ADR-0010
 - Date: 2026-08-13
 
 ## Context

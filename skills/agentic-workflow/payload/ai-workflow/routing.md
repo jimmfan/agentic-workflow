@@ -4,7 +4,7 @@ This is the progressively loaded routing policy for an installed Agentic
 Workflow project. Read it for a named skill, resume, uncertain route, or any
 route not confidently direct. The root `AGENTS.md` invariants remain binding.
 
-Choose the minimum process justified by intent, uncertainty, impact,
+Choose the minimum useful process justified by intent, uncertainty, impact,
 reversibility, and expected duration. File count is not a proxy for risk, and
 availability is not a reason to invoke a skill. Normal user intent is enough to
 route and work; exact skill syntax is required only to claim execution of a
@@ -67,12 +67,10 @@ possible. Offer the user-only `setup-matt-pocock-skills` handoff only when the
 user asks to enable that provider behavior; never run it automatically. Do not
 check setup for unrelated direct work.
 
-GitHub Copilot in VS Code is the reference host, but its hooks are optional and
-Preview. Codex and Claude hook adapters are opt-in; Claude currently has no
-`.claude/skills` projection, so skill-backed routes are unavailable while direct
-work remains available. Copilot CLI and cloud are distinct runtimes. Detailed
-capabilities and controller behavior live in `runtime/capabilities.json` and
-`runtime/README.md`.
+Codex and GitHub Copilot discover project skills under `.agents/skills`.
+Claude currently has no `.claude/skills` projection, so skill-backed routes are
+unavailable there while direct host-native work remains available. This is an
+instruction contract, not a background runtime or enforcement controller.
 
 ## Composition and workflow ownership
 
