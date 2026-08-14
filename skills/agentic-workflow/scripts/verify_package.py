@@ -249,6 +249,8 @@ PROVIDER_REVISION = "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e"
 # Separately reviewed trust anchor; --refresh-manifest must never derive this value.
 AUDITED_PROVIDER_IDENTITY_SHA256 = "a755f8e63ba6c16628140615dd16e3a1f7a6b7445f057e645204eb9a9aa10735"
 MINIMUM_PYTHON = (3, 11)
+CANONICAL_FRAMEWORK_REPOSITORY = "jimmfan/agentic-workflow"
+LEGACY_FRAMEWORK_REPOSITORY = "jimmfan/agentic-workflow-instructions"
 PROVIDER_CAPABILITIES = {
     "code-review": "code-review",
     "implementation": "implement",
@@ -494,6 +496,39 @@ def check_structure() -> None:
         fields = parse_frontmatter(path)
         require(fields.get("name") == name, f"skill name does not match directory: {name}")
         require(bool(fields.get("description")), f"skill lacks description: {name}")
+
+
+def check_repository_identity_contract() -> None:
+    bootstrap = PACKAGE_ROOT / "scripts" / "bootstrap.py"
+    tree = ast.parse(bootstrap.read_text(encoding="utf-8"), filename=str(bootstrap))
+    assignments = {
+        target.id: ast.literal_eval(node.value)
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name) and target.id == "REPOSITORY"
+    }
+    require(
+        assignments.get("REPOSITORY") == CANONICAL_FRAMEWORK_REPOSITORY,
+        "bootstrap repository identity drifted from jimmfan/agentic-workflow",
+    )
+
+    repository_root = PACKAGE_ROOT.parent.parent
+    source_layout_package = repository_root / "skills" / "agentic-workflow"
+    if source_layout_package.exists() and source_layout_package.resolve() == PACKAGE_ROOT.resolve():
+        root_readme = (repository_root / "README.md").read_text(encoding="utf-8")
+        require(
+            LEGACY_FRAMEWORK_REPOSITORY not in root_readme,
+            "root README still references the legacy GitHub repository slug",
+        )
+        canonical_bootstrap = (
+            "https://raw.githubusercontent.com/"
+            f"{CANONICAL_FRAMEWORK_REPOSITORY}/main/skills/agentic-workflow/scripts/bootstrap.py"
+        )
+        require(
+            canonical_bootstrap in root_readme,
+            "root README lacks the canonical public bootstrap URL",
+        )
 
 
 def check_python_runtime_contract() -> None:
@@ -1440,6 +1475,7 @@ def main(argv: Iterable[str] = ()) -> int:
         refresh_manifest()
     checks = (
         check_structure,
+        check_repository_identity_contract,
         check_python_runtime_contract,
         check_prerequisite_documentation_contract,
         check_filesystem_entries,

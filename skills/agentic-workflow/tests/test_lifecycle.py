@@ -2252,6 +2252,30 @@ class LifecycleTests(unittest.TestCase):
         ):
             BOOTSTRAPPER.select_source("remove", target, "main", None)
 
+    def test_repository_rename_preserves_installed_revision_lookup(self) -> None:
+        target = self.base / "pre-rename-revision"
+        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path.parent.mkdir(parents=True)
+        pre_rename_revision = "f1fda30e5d9e7740bf6ddcc32ab0c3df1262a037"
+        manifest_path.write_text(
+            json.dumps({"source_revision": pre_rename_revision}) + "\n",
+            encoding="utf-8",
+        )
+
+        revision, archive_url = BOOTSTRAPPER.select_source(
+            "status",
+            target,
+            "main",
+            None,
+        )
+
+        self.assertEqual(revision, pre_rename_revision)
+        self.assertEqual(
+            archive_url,
+            "https://codeload.github.com/jimmfan/agentic-workflow/tar.gz/"
+            + pre_rename_revision,
+        )
+
     def test_bootstrap_rejects_symlinked_revision_manifest_components(self) -> None:
         target = self.base / "bootstrap-symlink-target"
         target.mkdir()

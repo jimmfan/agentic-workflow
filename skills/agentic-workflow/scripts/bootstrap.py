@@ -18,7 +18,7 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 
-REPOSITORY = "jimmfan/agentic-workflow-instructions"
+REPOSITORY = "jimmfan/agentic-workflow"
 DEFAULT_REF = "main"
 LOCAL_SOURCE_REVISION = "unreleased-local-package"
 PACKAGE_MARKER = ("skills", "agentic-workflow")
