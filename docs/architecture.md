@@ -148,13 +148,15 @@ reconstructed files remain updateable but are conservatively preserved on
 removal. This is the one intentional recovery exception to ordinary created-file
 removal.
 
-The four known development-era durable paths are
-`.ai-workflow/project-profile.md`, `.ai-workflow/state/active.md`,
-`.ai-workflow/state/records`, and `.ai-workflow/state/archive`. Install and
-update move those exact paths into `.ai-workflow-state/` only when the canonical
-directory is absent or empty. The move preserves bytes and uses no repository
-search. A populated destination, unsafe path, or type conflict fails before
-mutation; removal preserves any old paths that have not been migrated.
+The only current project-state location is `.ai-workflow-state/`. As a bounded
+compatibility import for development-era installations, lifecycle code still
+recognizes `.ai-workflow/project-profile.md` plus the legacy
+`.ai-workflow/state/{active.md,records,archive}` paths and moves them into
+`.ai-workflow-state/` only when the canonical directory is absent or empty.
+Those source paths are never current destinations. The move preserves bytes and
+uses no repository search. A populated destination, unsafe path, or type
+conflict fails before mutation; removal preserves any old paths that have not
+been migrated.
 
 The installed root policy is intentionally only an orchestration kernel and
 hooks-off semantic fallback. Detailed classification, invocation, composition,

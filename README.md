@@ -151,10 +151,9 @@ target-project/
 │   ├── provider-state.json   # only when optional providers are installed
 │   ├── providers.json        # tested capability mapping
 │   ├── routing.md            # progressively loaded detailed router contract
-│   ├── contracts/
+│   ├── contracts/             # durable-state and project-profile contracts
 │   ├── observability/        # optional, inert export analyzer
 │   ├── runtime/              # shared controller, host matrix, opt-in adapters
-│   ├── state/                # durable-state contract, not project state
 │   └── templates/
 └── .ai-workflow-state/       # empty canonical project-owned state directory after install
     ├── project-profile.md    # created only when useful context is persisted
@@ -173,12 +172,13 @@ system temporary directory, outside the repository.
 making Git a framework prerequisite.
 
 A recognized pre-0.8 framework directory may still migrate from `ai-workflow/`
-to `.ai-workflow/`. Install and update also migrate the four known
-development-era durable paths—`.ai-workflow/project-profile.md` and
-`.ai-workflow/state/{active.md,records,archive}`—only when
-`.ai-workflow-state/` is absent or empty. Moves preserve bytes and never scan for
-similarly named files. A populated destination, symlink, or type conflict stops
-before mutation rather than guessing or merging.
+to `.ai-workflow/`. For compatibility with development-era installations only,
+install and update import `.ai-workflow/project-profile.md` and the three legacy
+paths `.ai-workflow/state/{active.md,records,archive}` into
+`.ai-workflow-state/` when the canonical directory is absent or empty. These are
+never current state locations. Moves preserve bytes and never scan for similarly
+named files. A populated destination, symlink, or type conflict stops before
+mutation rather than guessing or merging.
 
 ## Use it
 

@@ -96,9 +96,9 @@ durable state stores only orchestration status, concise pointers, and exact retu
 needed; it does not mirror provider bodies or allocate shadow identifiers.
 
 For durable workflow mechanics, conflicts, pointers, re-entry, and record
-allocation, follow `state/README.md`. Never silently replace an unrelated active
-workflow. Ephemeral direct work and supporting capabilities do not acquire
-durable state merely because they ran.
+allocation, follow `contracts/durable-state.md`. Never silently replace an
+unrelated active workflow. Ephemeral direct work and supporting capabilities do
+not acquire durable state merely because they ran.
 
 ## Authorization and evidence
 

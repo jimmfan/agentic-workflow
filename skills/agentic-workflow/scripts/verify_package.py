@@ -33,6 +33,7 @@ SKILLS = (
 )
 DISTRIBUTION_MANIFEST_SCHEMA = 5
 RETIRED = (
+    ".ai-workflow/state/README.md",
     ".agents/skills/workflow-decomposition/SKILL.md",
     ".agents/skills/workflow-review/SKILL.md",
     ".agents/skills/workflow-teach/SKILL.md",
@@ -292,6 +293,7 @@ def check_structure() -> None:
         PAYLOAD_ROOT / "VERSION",
         MANIFEST_PATH,
         PAYLOAD_ROOT / "ai-workflow" / "README.md",
+        PAYLOAD_ROOT / "ai-workflow" / "contracts" / "durable-state.md",
         PAYLOAD_ROOT / "ai-workflow" / "routing.md",
         PAYLOAD_ROOT / "ai-workflow" / "providers.json",
         PAYLOAD_ROOT / "ai-workflow" / "runtime" / "controller.py",
@@ -515,6 +517,14 @@ def check_manifest() -> None:
         "framework-owned files must not be installed into durable project state",
     )
     require(
+        all(
+            target.as_posix() != ".ai-workflow/state"
+            and not target.as_posix().startswith(".ai-workflow/state/")
+            for target in targets
+        ),
+        "current framework files must not recreate the obsolete .ai-workflow/state directory",
+    )
+    require(
         "project_seeds" not in actual,
         "distribution manifest must not declare lifecycle-created project state",
     )
@@ -529,6 +539,10 @@ def check_inert_payload() -> None:
     require(not (PAYLOAD_ROOT / "CLAUDE.md").exists(), "payload must not contain an active root CLAUDE.md")
     require(not (PAYLOAD_ROOT / ".agents").exists(), "payload must not contain an active .agents tree")
     require(not (PAYLOAD_ROOT / ".github").exists(), "payload must not contain an active .github customization tree")
+    require(
+        not (PAYLOAD_ROOT / "ai-workflow" / "state").exists(),
+        "payload must not retain the obsolete ai-workflow/state directory",
+    )
     nested_agents = [path for path in PAYLOAD_ROOT.rglob("AGENTS.md")]
     require(not nested_agents, "payload contains an active AGENTS.md instead of an inert template")
     nested_claude = [path for path in PAYLOAD_ROOT.rglob("CLAUDE.md")]
@@ -706,7 +720,7 @@ def check_workflow_contract() -> None:
     for pointer in (
         ".ai-workflow/routing.md",
         ".ai-workflow/runtime/README.md",
-        ".ai-workflow/state/README.md",
+        ".ai-workflow/contracts/durable-state.md",
         ".ai-workflow/contracts/project-profile.md",
     ):
         require(pointer in policy, f"root policy lacks progressive-loading pointer: {pointer}")
@@ -1171,12 +1185,14 @@ def check_provider_contract() -> None:
 def check_wayfinder_ownership_contract() -> None:
     policy = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
     guide = (PAYLOAD_ROOT / "ai-workflow" / "README.md").read_text(encoding="utf-8")
-    state = (PAYLOAD_ROOT / "ai-workflow" / "state" / "README.md").read_text(encoding="utf-8")
+    durable_state_contract = (
+        PAYLOAD_ROOT / "ai-workflow" / "contracts" / "durable-state.md"
+    ).read_text(encoding="utf-8")
     discovery = (
         PAYLOAD_ROOT / "skills" / "workflow-discovery" / "SKILL.md"
     ).read_text(encoding="utf-8")
     normalized_guide = " ".join(guide.split())
-    normalized_state = " ".join(state.split())
+    normalized_state = " ".join(durable_state_contract.split())
     normalized_discovery = " ".join(discovery.split())
 
     native_terms = (
@@ -1205,10 +1221,19 @@ def check_wayfinder_ownership_contract() -> None:
         "never wrap or replace an identifier owned by Wayfinder" in normalized_state,
         "state allocator is not scoped away from Wayfinder-owned identifiers",
     )
-    require("Jira key such as `ARC-384`" in state, "state contract lacks external Jira identity example")
-    require("GitHub issue such as `#384`" in state, "state contract lacks external GitHub identity example")
+    require(
+        "Jira key such as `ARC-384`" in durable_state_contract,
+        "state contract lacks external Jira identity example",
+    )
+    require(
+        "GitHub issue such as `#384`" in durable_state_contract,
+        "state contract lacks external GitHub identity example",
+    )
     for prefix in ("DEC-NNNN", "IMP-NNNN", "DBG-NNNN", "IDP-NNNN"):
-        require(prefix in state, f"distinct framework identifier was lost: {prefix}")
+        require(
+            prefix in durable_state_contract,
+            f"distinct framework identifier was lost: {prefix}",
+        )
 
     detailed_terms = ("wayfinder:map", "wayfinder:research", "wayfinder:prototype", "wayfinder:grilling", "wayfinder:task")
     for term in detailed_terms:

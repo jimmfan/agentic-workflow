@@ -72,7 +72,9 @@ The integration suite covers:
   obsolete learning/ticket templates only when unchanged;
 - reconstructable `.ai-workflow/` installation content across fresh install,
   status, update, removal, and reinstall; durable `.ai-workflow-state/`
-  byte-preservation; validated update-only migration from `ai-workflow/`;
+  byte-preservation; the durable-state contract under `.ai-workflow/contracts/`;
+  retirement and empty-directory cleanup of the obsolete
+  `.ai-workflow/state/README.md`; validated update-only migration from `ai-workflow/`;
   dual-directory conflict rejection; and repository-local isolation;
 - empty canonical state-directory creation on clean install and repeated update;
   no seeded profile or active file; permissive missing/present/empty/unreadable/

@@ -52,6 +52,8 @@ COMPOSITE_ORIGINS = {
     "composite-created",
     "composite-preexisting-identical",
 }
+# Compatibility-only import sources from development-era installations. Current
+# lifecycle operations never create project state at any of these paths.
 LEGACY_DURABLE_MAPPINGS = (
     (
         PurePosixPath(".ai-workflow/project-profile.md"),
@@ -1136,6 +1138,7 @@ def command_install(root: Path, dry_run: bool, revision: str) -> None:
                 f"{rollback_error}"
             ) from error
         raise
+    prune_empty_framework_directories(root)
     if moved:
         print("OK: Known durable project state migrated to .ai-workflow-state/.")
     print(f"OK: Agentic workflow {version} installed and verified.")
@@ -1171,6 +1174,7 @@ def command_update(root: Path, dry_run: bool, revision: str) -> None:
                 f"{rollback_error}"
             ) from error
         raise
+    prune_empty_framework_directories(root)
     if moved:
         print("OK: Known durable project state migrated to .ai-workflow-state/.")
     print(f"OK: Agentic workflow updated to {version} and verified.")

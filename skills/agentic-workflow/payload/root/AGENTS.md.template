@@ -43,7 +43,7 @@ hooks run; this policy remains the semantic fallback when hooks do not run.
   on every prompt before substantive tools and their action declaration before
   opaque tools; `direct` remains valid and declarations never expand authority.
   Load `.ai-workflow/runtime/README.md` only for conditional transitions.
-- Before durable workflow mutation, read `.ai-workflow/state/README.md`. Before
+- Before durable workflow mutation, read `.ai-workflow/contracts/durable-state.md`. Before
   profile mutation, read `.ai-workflow/contracts/project-profile.md`.
 - Project-profile maintenance is opportunistic: prefer a small update only when
   verified durable knowledge emerges naturally and writes are authorized.

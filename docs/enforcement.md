@@ -132,7 +132,7 @@ Conditional detail has one installed owner:
   semantics, and route-marker labels;
 - `.ai-workflow/runtime/README.md` and `capabilities.json`: controller protocol,
   host lifecycle surfaces, deterministic guarantees, and degradation;
-- `.ai-workflow/state/README.md`: durable conflicts, identifiers, pointers,
+- `.ai-workflow/contracts/durable-state.md`: durable conflicts, identifiers, pointers,
   re-entry, and transitions;
 - `.ai-workflow/contracts/project-profile.md`: optional lazy profile creation,
   precedence, commands, safety metadata, and maintenance; and

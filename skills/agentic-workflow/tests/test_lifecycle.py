@@ -364,6 +364,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(project, b"")
         self.assertTrue((target / ".agents/skills/workflow-discovery/SKILL.md").is_file())
         self.assertTrue((target / ".ai-workflow/routing.md").is_file())
+        self.assertTrue((target / ".ai-workflow/contracts/durable-state.md").is_file())
         self.assertTrue((target / ".ai-workflow/runtime/controller.py").is_file())
         self.assertTrue((target / ".github/hooks/agentic-workflow.json").is_file())
         self.assertFalse((target / ".agents/skills/workflow-teach").exists())
@@ -371,7 +372,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertTrue((target / ".ai-workflow-state").is_dir())
         self.assertEqual(list((target / ".ai-workflow-state").iterdir()), [])
         self.assertFalse((target / ".ai-workflow/project-profile.md").exists())
-        self.assertFalse((target / ".ai-workflow/state/active.md").exists())
+        self.assertFalse((target / ".ai-workflow/state").exists())
         self.assertFalse((target / "ai-workflow").exists())
         self.assertFalse((target / "docs").exists())
         for relative in FORMER_FRAMEWORK_DOCS:
@@ -393,6 +394,38 @@ class LifecycleTests(unittest.TestCase):
         status = adopt(ADOPT, "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
         self.assertIn("Installation is clean", status.stdout)
+
+    def test_update_relocates_contract_and_removes_obsolete_state_directory(self) -> None:
+        target = git_repository(self.base / "obsolete-state-contract")
+        installed = adopt(ADOPT, "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+
+        manifest_path = target / ".ai-workflow/install-manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        current_key = ".ai-workflow/contracts/durable-state.md"
+        obsolete_key = ".ai-workflow/state/README.md"
+        current_contract = target / current_key
+        obsolete_contract = target / obsolete_key
+        details = manifest["framework_files"].pop(current_key)
+        contract_bytes = current_contract.read_bytes()
+        current_contract.unlink()
+        obsolete_contract.parent.mkdir()
+        obsolete_contract.write_bytes(contract_bytes)
+        manifest["framework_files"][obsolete_key] = details
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
+        updated = adopt(ADOPT, "update", target)
+
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertTrue(current_contract.is_file())
+        self.assertEqual(current_contract.read_bytes(), contract_bytes)
+        self.assertFalse((target / ".ai-workflow/state").exists())
+        updated_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        self.assertIn(current_key, updated_manifest["framework_files"])
+        self.assertNotIn(obsolete_key, updated_manifest["framework_files"])
 
     def test_cp1252_console_keeps_completed_update_successful(self) -> None:
         target = self.base / "project-漢"
@@ -750,10 +783,12 @@ Use the repository's documented checks.
             b"archive bytes\r\n",
         )
         self.assertTrue((fresh / ".ai-workflow/install-manifest.json").is_file())
+        self.assertFalse((fresh / ".ai-workflow/state").exists())
 
         installed = git_repository(self.base / "legacy-durable-update")
         self.assertEqual(adopt(ADOPT, "install", installed).returncode, 0)
         old_active = installed / ".ai-workflow/state/active.md"
+        old_active.parent.mkdir()
         old_active.write_bytes(legacy_active_bytes)
         manifest = installed / ".ai-workflow/install-manifest.json"
 
@@ -766,6 +801,7 @@ Use the repository's documented checks.
             legacy_active_bytes,
         )
         self.assertTrue(manifest.is_file())
+        self.assertFalse((installed / ".ai-workflow/state").exists())
 
         removed = adopt(ADOPT, "remove", installed)
         self.assertEqual(removed.returncode, 0, removed.stderr)
