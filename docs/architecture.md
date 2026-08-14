@@ -261,6 +261,11 @@ the package verifier. `lifecycle.py` coordinates preflight and mutation.
 provider transaction through GitHub CLI. Installed repositories do not need the
 source checkout or bootstrap package at runtime.
 
+Every packaged Python entry point uses ASCII terminal presentation and configures
+standard output and standard error to backslash-escape only text that the active
+console encoding cannot represent. This keeps default Windows code pages safe
+without changing lifecycle results or requiring a terminal encoding change.
+
 The schema-5 distribution manifest authenticates the current payload mappings,
 checksums, and retired framework paths. It does not carry a catalog of historical
 release identities. A cross-version update validates the installed ownership

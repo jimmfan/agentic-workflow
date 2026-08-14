@@ -83,7 +83,9 @@ The integration suite covers:
   target `docs/` preservation;
 - installation without Git metadata or a Git executable;
 - path-independent package copies and a local archive bootstrap fixture; and
-- strict POSIX modes plus bounded native Windows mode normalization.
+- strict POSIX modes plus bounded native Windows mode normalization; and
+- install, update, status, verification, bootstrap, provider status, and error
+  output under a strict `cp1252` console simulation, including non-encodable paths.
 
 Three semantic scenario files cover route observability, end-to-end acceptance,
 and decision contracts. The verifier requires categories rather than a fixed

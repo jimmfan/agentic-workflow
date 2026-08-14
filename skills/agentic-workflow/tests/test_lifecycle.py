@@ -71,6 +71,12 @@ def run(
     )
 
 
+def restricted_console_environment() -> dict[str, str]:
+    environment = os.environ.copy()
+    environment["PYTHONIOENCODING"] = "cp1252:strict"
+    return environment
+
+
 def git_repository(root: Path) -> Path:
     root.mkdir(parents=True)
     result = run("git", "init", "-q", str(root))
@@ -387,6 +393,73 @@ class LifecycleTests(unittest.TestCase):
         status = adopt(ADOPT, "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
         self.assertIn("Installation is clean", status.stdout)
+
+    def test_cp1252_console_keeps_completed_update_successful(self) -> None:
+        target = self.base / "project-漢"
+        target.mkdir()
+        environment = restricted_console_environment()
+        updated_revision = "2" * 40
+
+        installed = run(
+            sys.executable,
+            ADOPT,
+            "install",
+            target,
+            "--source-revision",
+            REVISION,
+            env=environment,
+        )
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        self.assertIn("OK: Agentic workflow", installed.stdout)
+
+        updated = run(
+            sys.executable,
+            ADOPT,
+            "update",
+            target,
+            "--source-revision",
+            updated_revision,
+            env=environment,
+        )
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertIn("OK: Agentic workflow updated", updated.stdout)
+        self.assertNotIn("UnicodeEncodeError", updated.stderr)
+        installed_manifest = json.loads(
+            (target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(installed_manifest["source_revision"], updated_revision)
+
+        status = run(
+            sys.executable,
+            ADOPT,
+            "status",
+            target,
+            "--source-revision",
+            updated_revision,
+            env=environment,
+        )
+        self.assertEqual(status.returncode, 0, status.stderr)
+        self.assertIn(r"project-\u6f22", status.stdout)
+        self.assertIn("OK: Installation is clean.", status.stdout)
+
+    def test_cp1252_console_covers_verification_provider_status_and_errors(self) -> None:
+        environment = restricted_console_environment()
+        verified = run(sys.executable, VERIFY, env=environment)
+        self.assertEqual(verified.returncode, 0, verified.stderr)
+        self.assertIn("OK: distributable package is internally consistent.", verified.stdout)
+
+        target = self.base / "provider-漢"
+        target.mkdir()
+        provider_status = run(sys.executable, PROVIDERS, "status", target, env=environment)
+        self.assertEqual(provider_status.returncode, 0, provider_status.stderr)
+        self.assertIn(r"provider-\u6f22", provider_status.stdout)
+
+        missing = self.base / "missing-漢"
+        failed = run(sys.executable, BOOTSTRAP, "status", missing, env=environment)
+        self.assertEqual(failed.returncode, 2)
+        self.assertIn("ERROR: target project directory does not exist", failed.stderr)
+        self.assertIn(r"missing-\u6f22", failed.stderr)
+        self.assertNotIn("UnicodeEncodeError", failed.stderr)
 
     def test_fresh_install_places_small_kernel_and_progressive_route_contract(self) -> None:
         target = git_repository(self.base / "salient-route-contract")
@@ -2015,9 +2088,9 @@ Use the repository's documented checks.
         )
 
     def test_coordinated_install_succeeds_without_optional_provider_cli(self) -> None:
-        target = self.base / "missing-gh-target"
+        target = self.base / "missing-gh-漢"
         target.mkdir()
-        environment = os.environ.copy()
+        environment = restricted_console_environment()
         environment["PATH"] = str(self.base / "no-executables")
 
         result = run(
@@ -2036,9 +2109,9 @@ Use the repository's documented checks.
         self.assertEqual(
             result.stdout.splitlines(),
             [
-                "✓ Agentic Workflow installed successfully.",
-                "✓ Framework integrity verified.",
-                "✓ Ready for normal agent work.",
+                "OK: Agentic Workflow installed successfully.",
+                "OK: Framework integrity verified.",
+                "OK: Ready for normal agent work.",
                 "Project state: .ai-workflow-state/ (empty until needed)",
             ],
         )
@@ -2049,6 +2122,32 @@ Use the repository's documented checks.
         self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
         self.assertTrue((target / ".ai-workflow-state").is_dir())
         self.assertEqual(list((target / ".ai-workflow-state").iterdir()), [])
+
+        updated = run(
+            sys.executable,
+            LIFECYCLE,
+            "update",
+            target,
+            "--source-revision",
+            REVISION,
+            env=environment,
+        )
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertIn("OK: Agentic Workflow updated successfully.", updated.stdout)
+        self.assertNotIn("UnicodeEncodeError", updated.stderr)
+
+        status = run(
+            sys.executable,
+            LIFECYCLE,
+            "status",
+            target,
+            "--source-revision",
+            REVISION,
+            env=environment,
+        )
+        self.assertEqual(status.returncode, 0, status.stderr)
+        self.assertNotIn("UnicodeEncodeError", status.stderr)
+        self.assertIn("No action required.", status.stdout)
 
     def test_coordinated_reinstall_enables_provider_state_reconstruction(self) -> None:
         target = (self.base / "coordinated-reinstall").resolve()
@@ -3564,7 +3663,7 @@ Use the repository's documented checks.
         archive = self.base / "package.tar.gz"
         with tarfile.open(archive, "w:gz") as opened:
             opened.add(packaged, arcname="source/skills/agentic-workflow")
-        target = self.base / "target"
+        target = self.base / "bootstrap-漢"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
         for skill in skills:
@@ -3575,7 +3674,7 @@ Use the repository's documented checks.
             f"exec(compile(urlopen({BOOTSTRAP.as_uri()!r}, timeout=30).read(), "
             "'agentic-workflow-bootstrap.py', 'exec'))"
         )
-        environment = os.environ.copy()
+        environment = restricted_console_environment()
         environment["PATH"] = str(self.base / "no-executables")
         result = run(
             sys.executable,
@@ -3592,6 +3691,7 @@ Use the repository's documented checks.
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Agentic Workflow installed successfully", result.stdout)
         self.assertIn("Framework integrity verified", result.stdout)
+        self.assertNotIn("UnicodeEncodeError", result.stderr)
         installed = json.loads((target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(installed["source_revision"], REVISION)
         self.assertTrue((target / ".ai-workflow/provider-state.json").is_file())

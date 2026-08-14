@@ -53,6 +53,17 @@ class ProviderError(RuntimeError):
     """A provider declaration, dependency, or lifecycle invariant failed."""
 
 
+def configure_console() -> None:
+    """Keep terminal output writable when the active encoding is restrictive."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(errors="backslashreplace")
+            except (AttributeError, OSError, ValueError):
+                pass
+
+
 def require_supported_python() -> None:
     if sys.version_info < MINIMUM_PYTHON:
         found = ".".join(str(part) for part in sys.version_info[:3])
@@ -726,7 +737,7 @@ def command_install(
         if command_status(root, verbose=False):
             if commit_callback is not None:
                 commit_callback()
-            print(f"✓ Upstream provider {provider['repository']}@{provider['version']} is already compatible.")
+            print(f"OK: Upstream provider {provider['repository']}@{provider['version']} is already compatible.")
             return
         raise ProviderError("provider state already exists but dependencies differ; run status or update")
 
@@ -784,7 +795,7 @@ def command_install(
             state_path.unlink(missing_ok=True)
             raise
         print(
-            "✓ Provider ownership state reconstructed from compatible skills; "
+            "OK: Provider ownership state reconstructed from compatible skills; "
             "the skills will be preserved on removal."
         )
         return
@@ -856,7 +867,7 @@ def command_install(
                     + "; ".join(rollback_errors)
                 ) from error
             raise
-    print(f"✓ Curated upstream skills from {provider['repository']}@{provider['version']} are installed and verified.")
+    print(f"OK: Curated upstream skills from {provider['repository']}@{provider['version']} are installed and verified.")
 
 
 def state_matches_declaration(
@@ -934,7 +945,7 @@ def command_status(root: Path, verbose: bool = True) -> bool:
             print(f"not-installed: .agents/skills/{name}")
     if verbose:
         if clean and same_release:
-            print("✓ Optional upstream providers are clean.")
+            print("OK: Optional upstream providers are clean.")
         elif clean:
             print("Optional upstream providers are locally clean; an update is available.")
         else:
@@ -1025,7 +1036,7 @@ def command_update(
     if all(action == "retain" for action in actions.values()) and state.get("schema_version") == 2:
         if commit_callback is not None:
             commit_callback()
-        print(f"✓ Optional upstream provider baseline remains {provider['repository']}@{provider['version']}.")
+        print(f"OK: Optional upstream provider baseline remains {provider['repository']}@{provider['version']}.")
         return
 
     retained_transactions = sorted(root.glob(f"{UPDATE_QUARANTINE_PREFIX}*"))
@@ -1203,13 +1214,13 @@ def command_update(
                         file=sys.stderr,
                     )
 
-    print(f"✓ Optional upstream providers updated to {provider['repository']}@{provider['version']}.")
+    print(f"OK: Optional upstream providers updated to {provider['repository']}@{provider['version']}.")
 
 
 def command_remove(root: Path, dry_run: bool) -> None:
     state_path = target_path(root, STATE_RELATIVE)
     if not state_path.exists() and not state_path.is_symlink():
-        print("✓ No optional provider ownership state is installed; no provider files changed.")
+        print("OK: No optional provider ownership state is installed; no provider files changed.")
         return
     state = load_state(root)
     records = state["skills"]
@@ -1238,7 +1249,7 @@ def command_remove(root: Path, dry_run: bool) -> None:
         print("No provider files changed.")
         return
     quarantine_provider_removal(root, removals, state_path)
-    print("✓ Upstream provider lifecycle state removed; pre-existing or changed skills were preserved.")
+    print("OK: Upstream provider lifecycle state removed; pre-existing or changed skills were preserved.")
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
@@ -1252,6 +1263,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     require_supported_python()
+    configure_console()
     args = parse_args(argv or sys.argv[1:])
     if args.action == "status" and args.dry_run:
         raise ProviderError("--dry-run is not valid for status")

@@ -101,6 +101,17 @@ class ControllerError(RuntimeError):
     """A declared transition or hook input violates the controller contract."""
 
 
+def configure_console() -> None:
+    """Keep terminal output writable when the active encoding is restrictive."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(errors="backslashreplace")
+            except (AttributeError, OSError, ValueError):
+                pass
+
+
 def require_supported_python() -> None:
     if sys.version_info < MINIMUM_PYTHON:
         found = ".".join(str(part) for part in sys.version_info[:3])
@@ -935,6 +946,7 @@ def parse_cli(argv: Sequence[str]) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     require_supported_python()
+    configure_console()
     values = list(argv or sys.argv[1:])
     if values and values[0] == "hook":
         parser = argparse.ArgumentParser(add_help=False)

@@ -89,6 +89,17 @@ class AdoptionError(RuntimeError):
     """A recoverable validation or safety failure."""
 
 
+def configure_console() -> None:
+    """Keep terminal output writable when the active encoding is restrictive."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(errors="backslashreplace")
+            except (AttributeError, OSError, ValueError):
+                pass
+
+
 def require_supported_python() -> None:
     if sys.version_info < MINIMUM_PYTHON:
         found = ".".join(str(part) for part in sys.version_info[:3])
@@ -1094,8 +1105,8 @@ def command_install(root: Path, dry_run: bool, revision: str) -> None:
                 return
             _created, moved = prepare_durable_state(root, durable_migrations)
             if moved:
-                print("✓ Known durable project state migrated to .ai-workflow-state/.")
-            print(f"✓ Agentic workflow {version} is already installed and verified.")
+                print("OK: Known durable project state migrated to .ai-workflow-state/.")
+            print(f"OK: Agentic workflow {version} is already installed and verified.")
             return
         raise AdoptionError("an installation already exists but is different; run update or status")
     actions, writes, entries, version, owned = plan_install(root)
@@ -1126,8 +1137,8 @@ def command_install(root: Path, dry_run: bool, revision: str) -> None:
             ) from error
         raise
     if moved:
-        print("✓ Known durable project state migrated to .ai-workflow-state/.")
-    print(f"✓ Agentic workflow {version} installed and verified.")
+        print("OK: Known durable project state migrated to .ai-workflow-state/.")
+    print(f"OK: Agentic workflow {version} installed and verified.")
 
 
 def command_update(root: Path, dry_run: bool, revision: str) -> None:
@@ -1161,8 +1172,8 @@ def command_update(root: Path, dry_run: bool, revision: str) -> None:
             ) from error
         raise
     if moved:
-        print("✓ Known durable project state migrated to .ai-workflow-state/.")
-    print(f"✓ Agentic workflow updated to {version} and verified.")
+        print("OK: Known durable project state migrated to .ai-workflow-state/.")
+    print(f"OK: Agentic workflow updated to {version} and verified.")
 
 
 def command_status(
@@ -1204,7 +1215,7 @@ def command_status(
             print(f"{state}: {key}")
     clean = all(state == "clean" for state in states)
     if verbose:
-        print("✓ Installation is clean." if clean else "Installation differs from its recorded framework files.")
+        print("OK: Installation is clean." if clean else "Installation differs from its recorded framework files.")
     return clean
 
 
@@ -1282,7 +1293,7 @@ def command_remove(
     apply_transaction(root, writes, removals)
     prune_empty_framework_directories(root)
     print(
-        "✓ Agentic workflow removed; durable project state under "
+        "OK: Agentic workflow removed; durable project state under "
         f"{DURABLE_STATE_DIRECTORY} was preserved."
     )
     if legacy_durable:
@@ -1320,6 +1331,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     require_supported_python()
+    configure_console()
     args = parse_args(argv or sys.argv[1:])
     if args.action == "status" and args.dry_run:
         raise AdoptionError("--dry-run is not valid for status")

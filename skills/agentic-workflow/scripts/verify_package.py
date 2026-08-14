@@ -152,6 +152,17 @@ class VerificationError(RuntimeError):
     """A package invariant failed."""
 
 
+def configure_console() -> None:
+    """Keep terminal output writable when the active encoding is restrictive."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(errors="backslashreplace")
+            except (AttributeError, OSError, ValueError):
+                pass
+
+
 def require_supported_python() -> None:
     if sys.version_info < MINIMUM_PYTHON:
         found = ".".join(str(part) for part in sys.version_info[:3])
@@ -364,6 +375,7 @@ def check_python_runtime_contract() -> None:
             None,
         )
         first_statement = main.body[0] if main is not None and main.body else None
+        second_statement = main.body[1] if main is not None and len(main.body) > 1 else None
         require(
             isinstance(first_statement, ast.Expr)
             and isinstance(first_statement.value, ast.Call)
@@ -371,6 +383,37 @@ def check_python_runtime_contract() -> None:
             and first_statement.value.func.id == "require_supported_python",
             f"entry point must check Python before other work: {path}",
         )
+        require(
+            isinstance(second_statement, ast.Expr)
+            and isinstance(second_statement.value, ast.Call)
+            and isinstance(second_statement.value.func, ast.Name)
+            and second_statement.value.func.id == "configure_console",
+            f"entry point must configure encoding-safe console output before other work: {path}",
+        )
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            is_print = isinstance(node.func, ast.Name) and node.func.id == "print"
+            is_stream_write = (
+                isinstance(node.func, ast.Attribute)
+                and node.func.attr == "write"
+                and isinstance(node.func.value, ast.Attribute)
+                and isinstance(node.func.value.value, ast.Name)
+                and node.func.value.value.id == "sys"
+                and node.func.value.attr in {"stdout", "stderr"}
+            )
+            if not (is_print or is_stream_write):
+                continue
+            literal_text = "".join(
+                child.value
+                for argument in node.args
+                for child in ast.walk(argument)
+                if isinstance(child, ast.Constant) and isinstance(child.value, str)
+            )
+            require(
+                literal_text.isascii(),
+                f"entry point terminal output literals must use portable ASCII: {path}",
+            )
 
 
 def check_prerequisite_documentation_contract() -> None:
@@ -1335,6 +1378,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 def main(argv: Iterable[str] = ()) -> int:
     require_supported_python()
+    configure_console()
     args = parse_args(list(argv))
     if args.refresh_manifest:
         refresh_manifest()

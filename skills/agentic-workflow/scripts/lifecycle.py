@@ -54,6 +54,17 @@ class LifecycleError(RuntimeError):
     """A coordinated lifecycle operation failed."""
 
 
+def configure_console() -> None:
+    """Keep terminal output writable when the active encoding is restrictive."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(errors="backslashreplace")
+            except (AttributeError, OSError, ValueError):
+                pass
+
+
 def require_supported_python() -> None:
     if sys.version_info < MINIMUM_PYTHON:
         found = ".".join(str(part) for part in sys.version_info[:3])
@@ -624,9 +635,9 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
             f"  Detail: {concise_error(error)}",
             file=sys.stderr,
         )
-    print("✓ Agentic Workflow installed successfully.")
-    print("✓ Framework integrity verified.")
-    print("✓ Ready for normal agent work.")
+    print("OK: Agentic Workflow installed successfully.")
+    print("OK: Framework integrity verified.")
+    print("OK: Ready for normal agent work.")
     print(installed_project_state_message(root, bool(legacy_durable)))
 
 
@@ -674,9 +685,9 @@ def update(root: Path, dry_run: bool, revision: str) -> None:
         print("Optional providers are not installed; update will not create provider state.")
     if dry_run:
         return
-    print("✓ Agentic Workflow updated successfully.")
-    print("✓ Framework integrity verified.")
-    print("✓ Ready for normal agent work.")
+    print("OK: Agentic Workflow updated successfully.")
+    print("OK: Framework integrity verified.")
+    print("OK: Ready for normal agent work.")
     print(installed_project_state_message(root, bool(legacy_durable)))
 
 
@@ -693,7 +704,7 @@ def remove(root: Path, dry_run: bool, revision: str) -> None:
     if dry_run:
         return
     run_checked(ADOPTER, "remove", root, False, revision, quiet=True)
-    print("✓ Agentic Workflow framework was removed; unchanged managed providers were removed when safe.")
+    print("OK: Agentic Workflow framework was removed; unchanged managed providers were removed when safe.")
     durable = root / DURABLE_STATE_DIRECTORY
     if durable.is_dir() and not durable.is_symlink():
         print(f"Project state preserved: {DURABLE_STATE_DIRECTORY}/")
@@ -712,6 +723,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     require_supported_python()
+    configure_console()
     args = parse_args(argv or sys.argv[1:])
     if args.action == "status" and args.dry_run:
         raise LifecycleError("--dry-run is not valid for status")

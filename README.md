@@ -117,11 +117,15 @@ py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.
 A successful installation ends with:
 
 ```text
-✓ Agentic Workflow installed successfully.
-✓ Framework integrity verified.
-✓ Ready for normal agent work.
+OK: Agentic Workflow installed successfully.
+OK: Framework integrity verified.
+OK: Ready for normal agent work.
 Project state: .ai-workflow-state/ (empty until needed)
 ```
+
+Lifecycle status prefixes are portable ASCII. Dynamic text such as project paths
+is preserved on UTF-8 terminals and escaped when a legacy console encoding cannot
+represent it, so native Windows users do not need to change their code page.
 
 Optional provider failures may add one neutral note but do not change framework
 success or host-native readiness. Full optional configuration and static host
