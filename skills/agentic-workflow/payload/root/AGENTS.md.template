@@ -13,7 +13,9 @@ hooks run; this policy remains the semantic fallback when hooks do not run.
 - Execution and completion claims MUST be truthful: do not report an operation,
   command, check, review, or workflow as executed or passed when it was not.
 - Selection, invocation capability, authorization, and execution are distinct.
-  Unavailable or user-only operations MUST NOT be simulated or silently replaced.
+  Provider execution MUST NOT be simulated; when a preferred provider cannot run,
+  continue with truthful host-native capability unless the user required that
+  provider or authorization/safety blocks the work.
 - Unrelated user work, canonical identifiers/artifacts, and relevant active
   durable state MUST be preserved; live source and accepted canonical artifacts
   outrank profiles, memory, and chat.
@@ -48,6 +50,6 @@ hooks run; this policy remains the semantic fallback when hooks do not run.
 
 ## Route visibility
 
-For v0.x visibility, end with one truthful
-`[route: router → <executed path>]` marker. Follow `.ai-workflow/routing.md` for
-labels, and do no extra work merely to produce the marker.
+When route diagnostics are useful, a response may include a truthful
+`[route: router → <executed path>]` marker. Its absence is not an error. Follow
+`.ai-workflow/routing.md` for labels, and do no extra work merely to produce it.

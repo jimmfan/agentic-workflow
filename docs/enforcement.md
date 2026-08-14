@@ -22,10 +22,10 @@ The shared controller recognizes these host-neutral transitions:
    and verification requirement exist before substantive tool use.
 2. `action`: the model classifies the next opaque operation without the
    controller parsing arbitrary shell or MCP semantics.
-3. `provider`: a selected provider must enter `started` before substantive
-   execution and then end as executed, handoff, unavailable, or blocked;
-   `started` is rejected when installation, prerequisites, or host policy make
-   execution impossible, and `executed` requires the validated transition.
+3. `provider`: an actual provider execution must enter `started` before it can
+   end as `executed`; `started` is rejected when installation, prerequisites, or
+   host policy make execution impossible. A selected optional provider does not
+   block host-native tools or completion when no provider execution is claimed.
 4. `durable`: the current `active.md` digest and any conflicting dominant
    workflow are validated before the native write.
 5. `evidence` or `limitation`: required verification has an observed successful
@@ -87,7 +87,7 @@ source `AGENTS.md`; they are not installed into consuming projects.
 | Choose the minimum useful route; direct work stays direct | Model contract | Root router | Routing docs and local skill entry criteria |
 | Honor explicitly named skills and compose only useful capabilities | Model contract | Root router/provider skill discovery | Routing docs, provider declaration |
 | Keep selection, invocation, authorization, and execution distinct | Programmatic transition plus model contract | Provider start/outcome gate validates installation, prerequisites, declared host policy, and explicit user-only invocation | Root policy, provider schema, provider verifier |
-| Fail clearly on missing/incompatible providers; never use retired copies | Programmatic invariant | Provider lifecycle and controller provider transition | Root policy and architecture docs |
+| Report missing/incompatible providers truthfully; use host-native fallback unless explicitly required | Programmatic execution-claim invariant plus model fallback contract | Provider lifecycle and controller provider transition | Root policy and architecture docs |
 | Run setup only after a selected workflow needs missing configuration | Model contract with programmatic provider/prerequisite schema | Router plus provider declaration | Root policy, package skill, readiness output |
 | Provider instructions never expand user authority | Programmatic authorization consistency for native/declared actions; model contract for semantics | Controller authorization checkpoint and host sandbox | Root policy and every local workflow |
 | Diagnosis/review/read-only does not authorize a repository write | Programmatic invariant for native writes and declared opaque actions | Controller PreToolUse gate | Debugging skill, root policy, acceptance scenarios |
@@ -99,10 +99,10 @@ source `AGENTS.md`; they are not installed into consuming projects.
 | Do not claim required verification without evidence or an accepted limitation | Programmatic transition plus model sufficiency judgment | Evidence-to-observed-tool link and Stop gate | Verification skill and acceptance scenarios |
 | Never invent project commands; separate passed, failed, skipped, blocked, unavailable | Model contract | Verification workflow | Profile contract and root policy |
 | Keep the project profile soft, evidence-backed, and non-blocking | Filesystem-safety and readability classification only | Lifecycle readiness/profile classifier | Root policy and profile contract/template |
-| Emit exactly one truthful route marker | Model contract | Root final-response contract | Route scenarios and package verifier; VS Code Stop has no documented final-message field |
+| Keep any emitted route marker truthful and informational | Optional observability contract | Root route-visibility guidance | Route scenarios and package verifier; VS Code Stop has no documented final-message field |
 | Install/update/remove only authenticated, owned, clean paths | Programmatic invariant | `adopt.py`, `providers.py`, distribution and target manifests | Package skill, architecture, lifecycle tests |
 | Preserve uncommitted/user-owned content and fail closed on conflicts | Programmatic invariant | Transaction preflight, rollback, ownership hashes | Source/installed policy and lifecycle tests |
-| Keep provider pin/provenance/inventory exact | Programmatic invariant | Provider verifier and static audited identity lock | Provider declaration/research docs |
+| Pin provider version and validate required provenance while protecting local edits | Programmatic invariant | Provider verifier and local ownership hashes | Provider declaration/research docs |
 | Require supported Python and portable filesystem behavior | Programmatic invariant | Every executable entry point and package verifier | README, package skill, ADR 0008 |
 | Keep observability optional, read-only, metadata-first, and content-free | Programmatic boundary plus model contract | Leaf analyzer/package checks | Observability docs and source policy |
 | Keep upstream `implement` ownership of TDD/review; avoid repeated stages | Model contract | Root router/implementation adapter | Routing and architecture docs |
@@ -134,7 +134,7 @@ Conditional detail has one installed owner:
   host lifecycle surfaces, deterministic guarantees, and degradation;
 - `.ai-workflow/state/README.md`: durable conflicts, identifiers, pointers,
   re-entry, and transitions;
-- `.ai-workflow/contracts/project-profile.md`: optional profile initialization,
+- `.ai-workflow/contracts/project-profile.md`: optional lazy profile creation,
   precedence, commands, safety metadata, and maintenance; and
 - selected workflow/provider skills: specialized methodology, including
   Implementation-owned TDD/Code Review composition and Verification procedure.

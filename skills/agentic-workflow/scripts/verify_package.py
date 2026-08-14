@@ -31,12 +31,7 @@ SKILLS = (
     "workflow-implementation",
     "workflow-verification",
 )
-SEEDS = (
-    {
-        "source": "ai-workflow/templates/project-profile.md",
-        "target": ".ai-workflow-state/project-profile.md",
-    },
-)
+DISTRIBUTION_MANIFEST_SCHEMA = 5
 RETIRED = (
     ".agents/skills/workflow-decomposition/SKILL.md",
     ".agents/skills/workflow-review/SKILL.md",
@@ -58,408 +53,10 @@ RETIRED = (
     "docs/verification.md",
     "scripts/hermes_adapter.py",
 )
-ACCEPTED_PREDECESSORS = (
-    {
-        "framework_version": "0.4.0",
-        "source_revisions": [
-            "090cf0129ccd8b43c0d3c00eaefdf79506b01403"
-        ],
-        "install_manifest_schemas": [
-            1
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "fe3141b7da0fcf7e2e8463225626c33864ae9c81520f030b12081c882eee48b4",
-            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
-            "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
-            "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
-            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
-            "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
-            "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
-            "docs/architecture.md": "f270213274a5d06895e29be1bbbc56ae60a81682ab4b5dd6630fceed3086ca35",
-            "docs/decisions/0002-use-checksummed-copy-adoption.md": "449ede8a9d69923692cdc748c12445ee7b8c60b0e2e19647f753f013bf0b7654",
-            "docs/decisions/0003-use-internal-reference-inspired-workflows.md": "28547a05a4a14ac80f8d22f8fcaa3a0d7caaec39bb11fb5d6187c163121b4d9c",
-            "docs/decisions/0005-add-decomposition-and-independent-review.md": "5ba8663885a75048a4045dc271c62718794d7cf87edd372dae9569088f593100",
-            "docs/decisions/0006-use-inert-bootstrap-payload.md": "048e613eb9d9dac557e1fef40cdc58dd6f33da55cf93e4d4342cff4cb994a66b",
-            "docs/routing.md": "c0bd57e5d57f17ea3d6b50f2d4c2d4dfe2ce4fbc22a4c235668689e2e02083fa",
-            "docs/verification.md": "ba9898b4bcab7168a07a9c6d3c1ef69009c191614928463d8807568f6601966b",
-            "AGENTS.md": "7d790284c3afd461264ece680130c0cfafa611368d6d65d7f4ee8a878b4ebb4d",
-            ".agents/skills/workflow-debugging/SKILL.md": "66a0861e8f8f4604788bccb482931deef3482462a05ae86703f97a3810b93581",
-            ".agents/skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
-            ".agents/skills/workflow-discovery/SKILL.md": "74fad45d85082b1cc1b43ed2a2d8331dbb427b412eff2b168de734aead4b3e32",
-            ".agents/skills/workflow-implementation/SKILL.md": "67127802975688d42f402f4a3b301949fb5320eee42678dd68d6dee2698e07eb",
-            ".agents/skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
-            ".agents/skills/workflow-teach/SKILL.md": "4110da2bc0031133a0bbc246ba9936e1d39e5ebe77dc74a726d3dba999c15fe5",
-            ".agents/skills/workflow-verification/SKILL.md": "9b4faa5dca66c90270a2e8bdea6ab8aefe91979e713957faf431b634b6b45a0a"
-        }
-    },
-    {
-        "framework_version": "0.4.0",
-        "source_revisions": [
-            "06f1b9de30ad7671c494fa2007cac20a8a7e4042"
-        ],
-        "install_manifest_schemas": [
-            1
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "fe3141b7da0fcf7e2e8463225626c33864ae9c81520f030b12081c882eee48b4",
-            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
-            "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
-            "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
-            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
-            "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
-            "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
-            "docs/architecture.md": "f270213274a5d06895e29be1bbbc56ae60a81682ab4b5dd6630fceed3086ca35",
-            "docs/decisions/0002-use-checksummed-copy-adoption.md": "449ede8a9d69923692cdc748c12445ee7b8c60b0e2e19647f753f013bf0b7654",
-            "docs/decisions/0003-use-internal-reference-inspired-workflows.md": "28547a05a4a14ac80f8d22f8fcaa3a0d7caaec39bb11fb5d6187c163121b4d9c",
-            "docs/decisions/0005-add-decomposition-and-independent-review.md": "5ba8663885a75048a4045dc271c62718794d7cf87edd372dae9569088f593100",
-            "docs/decisions/0006-use-inert-bootstrap-payload.md": "048e613eb9d9dac557e1fef40cdc58dd6f33da55cf93e4d4342cff4cb994a66b",
-            "docs/routing.md": "c0bd57e5d57f17ea3d6b50f2d4c2d4dfe2ce4fbc22a4c235668689e2e02083fa",
-            "docs/verification.md": "a41390980a9c4b144f4c68b53eb6c4558fccca87dec4f42b331caa2179b78ebb",
-            "AGENTS.md": "7d790284c3afd461264ece680130c0cfafa611368d6d65d7f4ee8a878b4ebb4d",
-            ".agents/skills/workflow-debugging/SKILL.md": "66a0861e8f8f4604788bccb482931deef3482462a05ae86703f97a3810b93581",
-            ".agents/skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
-            ".agents/skills/workflow-discovery/SKILL.md": "74fad45d85082b1cc1b43ed2a2d8331dbb427b412eff2b168de734aead4b3e32",
-            ".agents/skills/workflow-implementation/SKILL.md": "67127802975688d42f402f4a3b301949fb5320eee42678dd68d6dee2698e07eb",
-            ".agents/skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
-            ".agents/skills/workflow-teach/SKILL.md": "4110da2bc0031133a0bbc246ba9936e1d39e5ebe77dc74a726d3dba999c15fe5",
-            ".agents/skills/workflow-verification/SKILL.md": "9b4faa5dca66c90270a2e8bdea6ab8aefe91979e713957faf431b634b6b45a0a"
-        }
-    },
-    {
-        "framework_version": "0.4.1",
-        "source_revisions": [
-            "0266709afdf6261ea38a099272ee44fce257e2e3",
-            "fd1ee437f508515aba939b9e0dc667cf25d03beb"
-        ],
-        "install_manifest_schemas": [
-            1
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "e2281247020dda2312a8468a659fb630abc7b7784e027edc178aeb10309eedb4",
-            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
-            "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
-            "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
-            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
-            "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
-            "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
-            "AGENTS.md": "7d790284c3afd461264ece680130c0cfafa611368d6d65d7f4ee8a878b4ebb4d",
-            ".agents/skills/workflow-debugging/SKILL.md": "2f1da11ed00687ad5ffb044ea8cb1ac22fe16be0ad5286ae5c9df9913badc1b4",
-            ".agents/skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
-            ".agents/skills/workflow-discovery/SKILL.md": "00824be828587ebe66956db3aa48611d0e21703ce39346b77cdbc90129a59f7b",
-            ".agents/skills/workflow-implementation/SKILL.md": "1a4bc65cd916a1bc5e5e0fc993d3e8b79be34f7c6ba7a7504c5c90e0961a6e69",
-            ".agents/skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
-            ".agents/skills/workflow-teach/SKILL.md": "1fad0eccad3ea737fc03ffa3eaef54e313497e2ab7ef1f45042aed31f099526b",
-            ".agents/skills/workflow-verification/SKILL.md": "7805d786f5221bc8ad7892271b84620eae8acba6a4be2510d5f10953e38c8f92"
-        }
-    },
-    {
-        "framework_version": "0.4.2",
-        "source_revisions": [
-            "1939603560c224bad2bda18b34268e636df740d4",
-            "340bf21e7d751ff334951cfbb875c031b9b6340a"
-        ],
-        "install_manifest_schemas": [
-            1
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "4b2b44ea81d16b4d629ce1cc2b3632414067b69742b9c90aa889412be4c2a6b0",
-            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
-            "ai-workflow/state/README.md": "3c623c1caa6e3bc9a54b8a02882924cc3df6c468b3ed018193d46123dd4dda51",
-            "ai-workflow/templates/active-state.md": "4eb678da0b3233352a35e9d007640659490c5fd3fe607a75e984b61bf13a2b28",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/learning-record.md": "9c42bd56ab326401030d3865700c3614ec7e6947b7e808633e0b65c2d74a1f0b",
-            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
-            "ai-workflow/templates/ticket-record.md": "6ce9fc46bc12a206ec8b5ea52e88f71b21921a9b1d8d57dec3546e595565ec3f",
-            "ai-workflow/templates/work-item.md": "813e3c32954a3cdb0e176501e83c0afd54f05dc7b5cff8908362d99ab4538e11",
-            "AGENTS.md": "3148bfd3339a64e9d7c9389d77d7f65cec6d1fe168f2807eee3c234e0af7bbf2",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "2f1da11ed00687ad5ffb044ea8cb1ac22fe16be0ad5286ae5c9df9913badc1b4",
-            ".agents/skills/workflow-decomposition/SKILL.md": "31beecd41b09a1880df9ac8669b1846aa87cb9523145df12ca01fab3c5994ce0",
-            ".agents/skills/workflow-discovery/SKILL.md": "00824be828587ebe66956db3aa48611d0e21703ce39346b77cdbc90129a59f7b",
-            ".agents/skills/workflow-implementation/SKILL.md": "1a4bc65cd916a1bc5e5e0fc993d3e8b79be34f7c6ba7a7504c5c90e0961a6e69",
-            ".agents/skills/workflow-review/SKILL.md": "3aa8e5cd2bb5a67a38959768c5e51a5de2d9c5a1895fc3225dff5991347570fd",
-            ".agents/skills/workflow-teach/SKILL.md": "1fad0eccad3ea737fc03ffa3eaef54e313497e2ab7ef1f45042aed31f099526b",
-            ".agents/skills/workflow-verification/SKILL.md": "7805d786f5221bc8ad7892271b84620eae8acba6a4be2510d5f10953e38c8f92"
-        }
-    },
-    {
-        "framework_version": "0.5.0",
-        "source_revisions": [
-            "5ab98b20751bd742258006af9a24bcd41cf9d2e4",
-            "b38aa77086ae8c8b5e5533bcd078d213983822cf",
-            "ece4efa7d801d75f14ce54fbe8ba3f7da703b858"
-        ],
-        "install_manifest_schemas": [
-            1
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "b298d84a132a5d016267bf01d6ee6dbc07e38fab0af8c1893e3be4a8f506da85",
-            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
-            "ai-workflow/providers.json": "88f6ac49e2d51ede4ce95e51891edae9e9c9e1f92ffbe914e8b5c96d0b4e1493",
-            "ai-workflow/state/README.md": "8c8836e401527b366fae994dd978eeef11a83c6793307df4e6b0ededdc314c1b",
-            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
-            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            "AGENTS.md": "1f9569ce9faad5073d25d263f155684954b4553935393c708819069b2ae236fc",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
-            ".agents/skills/workflow-discovery/SKILL.md": "17c37402dc0a1f1f43b709fb3a427abf0ca3f20ecadb6a22dc3bd7af52bc10d3",
-            ".agents/skills/workflow-implementation/SKILL.md": "21486186eb0359726fb7643054c4c6131d6520a9fce9ea093a5ccfdd093f9d68",
-            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
-        }
-    },
-    {
-        "framework_version": "0.6.0",
-        "source_revisions": [
-            "f1fda30e5d9e7740bf6ddcc32ab0c3df1262a037"
-        ],
-        "install_manifest_schemas": [
-            1
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "73ebfe85a0383d9f381235c4a3ce617136436c1b4bad2f12d2c48dea81806124",
-            "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
-            "ai-workflow/observability/README.md": "b4a97a538adb0a2fd8b536010c77a1d9b4b587d0b645c291f640da945c5fa4b0",
-            "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
-            "ai-workflow/providers.json": "840ed9deab447cf9cf52280e578127af93a558b3c3456b6fcf803efb51c8e142",
-            "ai-workflow/state/README.md": "8c8836e401527b366fae994dd978eeef11a83c6793307df4e6b0ededdc314c1b",
-            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/project-profile.md": "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a",
-            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            "AGENTS.md": "1f9569ce9faad5073d25d263f155684954b4553935393c708819069b2ae236fc",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
-            ".agents/skills/workflow-discovery/SKILL.md": "17c37402dc0a1f1f43b709fb3a427abf0ca3f20ecadb6a22dc3bd7af52bc10d3",
-            ".agents/skills/workflow-implementation/SKILL.md": "21486186eb0359726fb7643054c4c6131d6520a9fce9ea093a5ccfdd093f9d68",
-            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
-        }
-    },
-    {
-        "framework_version": "0.7.0",
-        "source_revisions": [
-            "0c808f8124fae03f22da0b6864c3ae266f7a791c"
-        ],
-        "install_manifest_schemas": [
-            2
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "d57bae19d11e8cc875053959a05599776b6600957a29a777a9a0352d8eaa5714",
-            "ai-workflow/contracts/project-profile.md": "40aec342a9826cb9f9a248958394514b991d47339565bac13366b50d9bb9ab7f",
-            "ai-workflow/observability/README.md": "42d845e0b16a43533503febb74ab05103adb0361fc8f820e9e71f5ff628da991",
-            "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
-            "ai-workflow/providers.json": "025cfbb446d3c6a79bebf47b81c668a7b3719f9d9d9b32c2eb753938c6c0dc42",
-            "ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
-            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
-            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            "AGENTS.md": "e0768ce25456cefe4e17854c7e577fcdc8d2b053278cd5c9f517e19a8dfcb77c",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
-            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
-            ".agents/skills/workflow-implementation/SKILL.md": "ad4896aec01f8fca62ce2c162c6848a16d1784c17d67bffefc5d131d16278c6d",
-            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
-        }
-    },
-    {
-        "framework_version": "0.7.1",
-        "source_revisions": [
-            "5c3e7461bac7339e0da879ec3e60ac883544fdc0",
-            "a553b8884b3bc25909a7e6b104eeed086f961a91"
-        ],
-        "install_manifest_schemas": [
-            2
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "04e187a5ed32cdadd42277dc40e510b8361f7d1441a0f42aa970ead4d900eb8c",
-            "ai-workflow/contracts/project-profile.md": "40aec342a9826cb9f9a248958394514b991d47339565bac13366b50d9bb9ab7f",
-            "ai-workflow/observability/README.md": "1dad5693d97c49410e80ee053553e9cb4bb5360e5bdff42aae7ec242ce0d5658",
-            "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
-            "ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
-            "ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
-            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
-            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            "AGENTS.md": "e0768ce25456cefe4e17854c7e577fcdc8d2b053278cd5c9f517e19a8dfcb77c",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
-            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
-            ".agents/skills/workflow-implementation/SKILL.md": "ad4896aec01f8fca62ce2c162c6848a16d1784c17d67bffefc5d131d16278c6d",
-            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
-        }
-    },
-    {
-        "framework_version": "0.7.2",
-        "source_revisions": [
-            "2ee25dc08706921d996b03aca9295293a7c94808"
-        ],
-        "install_manifest_schemas": [
-            2
-        ],
-        "framework_files": {
-            "ai-workflow/README.md": "04e187a5ed32cdadd42277dc40e510b8361f7d1441a0f42aa970ead4d900eb8c",
-            "ai-workflow/contracts/project-profile.md": "40aec342a9826cb9f9a248958394514b991d47339565bac13366b50d9bb9ab7f",
-            "ai-workflow/observability/README.md": "1dad5693d97c49410e80ee053553e9cb4bb5360e5bdff42aae7ec242ce0d5658",
-            "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
-            "ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
-            "ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
-            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            "ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
-            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            "AGENTS.md": "1e765ce61eabbd4636f534ef52a21e6d686a857b3121eeff317e85b8fb5e7b5e",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
-            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
-            ".agents/skills/workflow-implementation/SKILL.md": "ad4896aec01f8fca62ce2c162c6848a16d1784c17d67bffefc5d131d16278c6d",
-            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
-        }
-    },
-    {
-        "framework_version": "0.8.0",
-        "source_revisions": [
-            "e109bbc7d8cf3c0049b0a52ceab529a61f345e4c"
-        ],
-        "install_manifest_schemas": [
-            2
-        ],
-        "framework_files": {
-            ".ai-workflow/README.md": "1d0d3cc1fda538bc2a4eb7a9dcba9b83c1c6bd3dcc4a6f6c72d7fade513b7dc5",
-            ".ai-workflow/contracts/project-profile.md": "f55766b08d7ce6cff8705a0e2dce753339ecdcce6fcc1344f24abde9882d536b",
-            ".ai-workflow/observability/README.md": "1f0e121e0352a367937423eb235f31f82161c9666734a97d0f7df7b085e58dad",
-            ".ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
-            ".ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
-            ".ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
-            ".ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
-            ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            "AGENTS.md": "79519d5a2b9f92afb5937f40a4608a3db809545ba8e09ce2764a05efad98b5c5",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "7ad372931577d2683fbd0feed26989a54be613d576d62480906973cfab64aedb",
-            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
-            ".agents/skills/workflow-implementation/SKILL.md": "8567e3fe64479f7b2fcb89fa13e54428ea74c624cd6eaf880ff18e73605d682a",
-            ".agents/skills/workflow-verification/SKILL.md": "80725f9ec9929d9261b0f56e8864d9fcbe04c4c08f1d7ef7eb37a4ff0060720c"
-        }
-    },
-    {
-        "framework_version": "0.9.0",
-        "source_revisions": [
-            "0719332f547eb0b18bc6f23df73fd37313408017"
-        ],
-        "install_manifest_schemas": [
-            2
-        ],
-        "framework_files": {
-            ".ai-workflow/README.md": "48ef02a0528e4b244b27cd75ebd3e7cf5812874f6f51de1e1fb142f1155e0001",
-            ".ai-workflow/contracts/project-profile.md": "f55766b08d7ce6cff8705a0e2dce753339ecdcce6fcc1344f24abde9882d536b",
-            ".ai-workflow/observability/README.md": "1f0e121e0352a367937423eb235f31f82161c9666734a97d0f7df7b085e58dad",
-            ".ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
-            ".ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
-            ".ai-workflow/runtime/README.md": "997e8a49a30f1b5a2e79c1237a81744eebe8801e6c26cc1e52f6cc54fbe7ef88",
-            ".ai-workflow/runtime/adapters/claude-settings.example.json": "645c236d997523c511ec106c7d2dbb1cf0d748ec4229a64c238252fcf234d959",
-            ".ai-workflow/runtime/adapters/codex-hooks.example.json": "0afbb9b290f07da3ce4f0ac790b77d5b42a7f7bbdd2611dddcd555332a07214f",
-            ".ai-workflow/runtime/capabilities.json": "f80b9b2c0298bd0edc0d374c4a69164f5d84f6404345f000bd14703ef60cfec8",
-            ".ai-workflow/runtime/controller.py": "bc27b38670b678d832753e5b89160c1e6dbb19d4e9a19e621edb8247075256a3",
-            ".ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
-            ".ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
-            ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            ".github/hooks/agentic-workflow.json": "09538ba4c76565132e778d7f6c116a17b990dcbcf50828af2297129ee151d46c",
-            "AGENTS.md": "7142f67427f55d0a688aad1a2a32011408005b8ad59eec6404e1214361b8d537",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "7ad372931577d2683fbd0feed26989a54be613d576d62480906973cfab64aedb",
-            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
-            ".agents/skills/workflow-implementation/SKILL.md": "8567e3fe64479f7b2fcb89fa13e54428ea74c624cd6eaf880ff18e73605d682a",
-            ".agents/skills/workflow-verification/SKILL.md": "80725f9ec9929d9261b0f56e8864d9fcbe04c4c08f1d7ef7eb37a4ff0060720c"
-        }
-    },
-    {
-        "framework_version": "0.9.0",
-        "source_revisions": [
-            "62f08dd16fe588b48f591398f66a2f585149f14b"
-        ],
-        "install_manifest_schemas": [
-            2
-        ],
-        "framework_files": {
-            ".ai-workflow/README.md": "c0c9a62929eb842a52502d73cf7f1a20820b25b75179cefd12e7bf086fe1de04",
-            ".ai-workflow/contracts/project-profile.md": "f55766b08d7ce6cff8705a0e2dce753339ecdcce6fcc1344f24abde9882d536b",
-            ".ai-workflow/observability/README.md": "1f0e121e0352a367937423eb235f31f82161c9666734a97d0f7df7b085e58dad",
-            ".ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
-            ".ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
-            ".ai-workflow/routing.md": "cc73facf4c1bbf7bd1d01df28219d9de1c52929030b1d694431e6aec379b8f79",
-            ".ai-workflow/runtime/README.md": "c2ffa0738dae0daec995fe708c6037b92a36ce7049b748ed8195bf1699313888",
-            ".ai-workflow/runtime/adapters/claude-settings.example.json": "645c236d997523c511ec106c7d2dbb1cf0d748ec4229a64c238252fcf234d959",
-            ".ai-workflow/runtime/adapters/codex-hooks.example.json": "0afbb9b290f07da3ce4f0ac790b77d5b42a7f7bbdd2611dddcd555332a07214f",
-            ".ai-workflow/runtime/capabilities.json": "43430c08a506d91597545cfc89291a829483c31197f1f24acd07880153c519b1",
-            ".ai-workflow/runtime/controller.py": "601530b80b7df4b354d193f4989b2f94c8181d888d7edd72c0a0c170f4e65795",
-            ".ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
-            ".ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
-            ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            ".github/hooks/agentic-workflow.json": "09538ba4c76565132e778d7f6c116a17b990dcbcf50828af2297129ee151d46c",
-            "AGENTS.md": "5c0e010b2627996ba922d3e108d3d37a2e5ee56ea2da0448b6f7cea6dfe09618",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "7ad372931577d2683fbd0feed26989a54be613d576d62480906973cfab64aedb",
-            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
-            ".agents/skills/workflow-implementation/SKILL.md": "8567e3fe64479f7b2fcb89fa13e54428ea74c624cd6eaf880ff18e73605d682a",
-            ".agents/skills/workflow-verification/SKILL.md": "80725f9ec9929d9261b0f56e8864d9fcbe04c4c08f1d7ef7eb37a4ff0060720c"
-        }
-    },
-    {
-        "framework_version": "0.9.1",
-        "source_revisions": [
-            "97570ac2c1d366bb4fc05e9f0110630f94c4c4a2"
-        ],
-        "install_manifest_schemas": [
-            2
-        ],
-        "framework_files": {
-            ".ai-workflow/README.md": "c0c9a62929eb842a52502d73cf7f1a20820b25b75179cefd12e7bf086fe1de04",
-            ".ai-workflow/contracts/project-profile.md": "f55766b08d7ce6cff8705a0e2dce753339ecdcce6fcc1344f24abde9882d536b",
-            ".ai-workflow/observability/README.md": "1f0e121e0352a367937423eb235f31f82161c9666734a97d0f7df7b085e58dad",
-            ".ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
-            ".ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
-            ".ai-workflow/routing.md": "cc73facf4c1bbf7bd1d01df28219d9de1c52929030b1d694431e6aec379b8f79",
-            ".ai-workflow/runtime/README.md": "c2ffa0738dae0daec995fe708c6037b92a36ce7049b748ed8195bf1699313888",
-            ".ai-workflow/runtime/adapters/claude-settings.example.json": "645c236d997523c511ec106c7d2dbb1cf0d748ec4229a64c238252fcf234d959",
-            ".ai-workflow/runtime/adapters/codex-hooks.example.json": "0afbb9b290f07da3ce4f0ac790b77d5b42a7f7bbdd2611dddcd555332a07214f",
-            ".ai-workflow/runtime/capabilities.json": "43430c08a506d91597545cfc89291a829483c31197f1f24acd07880153c519b1",
-            ".ai-workflow/runtime/controller.py": "601530b80b7df4b354d193f4989b2f94c8181d888d7edd72c0a0c170f4e65795",
-            ".ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
-            ".ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-            ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-            ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
-            ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-            ".github/hooks/agentic-workflow.json": "09538ba4c76565132e778d7f6c116a17b990dcbcf50828af2297129ee151d46c",
-            "AGENTS.md": "5c0e010b2627996ba922d3e108d3d37a2e5ee56ea2da0448b6f7cea6dfe09618",
-            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-            ".agents/skills/workflow-debugging/SKILL.md": "7ad372931577d2683fbd0feed26989a54be613d576d62480906973cfab64aedb",
-            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
-            ".agents/skills/workflow-implementation/SKILL.md": "8567e3fe64479f7b2fcb89fa13e54428ea74c624cd6eaf880ff18e73605d682a",
-            ".agents/skills/workflow-verification/SKILL.md": "80725f9ec9929d9261b0f56e8864d9fcbe04c4c08f1d7ef7eb37a4ff0060720c"
-        }
-    },
-)
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
 PROVIDER_REPOSITORY = "mattpocock/skills"
 PROVIDER_VERSION = "v1.2.3"
-PROVIDER_REVISION = "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e"
-# Separately reviewed trust anchor; --refresh-manifest must never derive this value.
-AUDITED_PROVIDER_IDENTITY_SHA256 = "9e75a59dafcc9febda407768efa76e48887ecf8c1600e4bb517acb29fb4e3d8f"
 MINIMUM_PYTHON = (3, 11)
 CANONICAL_FRAMEWORK_REPOSITORY = "jimmfan/agentic-workflow"
 LEGACY_FRAMEWORK_REPOSITORY = "jimmfan/agentic-workflow-instructions"
@@ -622,40 +219,21 @@ def target_for(source: str) -> str:
     return source
 
 
-def canonical_state_relative(path: PurePosixPath) -> PurePosixPath:
-    if path.parts and path.parts[0] == "ai-workflow":
-        return PurePosixPath(".ai-workflow", *path.parts[1:])
-    return path
-
-
 def version() -> str:
     package_version = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
     require(SEMVER.fullmatch(package_version) is not None, f"invalid package VERSION: {package_version!r}")
     return package_version
 
 
-def accepted_predecessors() -> List[Mapping[str, object]]:
-    current = tuple(map(int, version().split(".")))
-    return [
-        dict(item)
-        for item in ACCEPTED_PREDECESSORS
-        if tuple(map(int, str(item["framework_version"]).split("."))) < current
-    ]
-
-
 def generated_manifest() -> Mapping[str, object]:
     sources = payload_files()
     owned = [{"source": source, "target": target_for(source)} for source in sources]
-    checksum_paths = set(sources)
-    checksum_paths.update(seed["source"] for seed in SEEDS)
     return {
-        "schema_version": 3,
+        "schema_version": DISTRIBUTION_MANIFEST_SCHEMA,
         "framework_version": version(),
         "framework_owned": owned,
-        "project_seeds": list(SEEDS),
-        "checksums": {relative: sha256(PAYLOAD_ROOT / relative) for relative in sorted(checksum_paths)},
+        "checksums": {relative: sha256(PAYLOAD_ROOT / relative) for relative in sources},
         "retired_framework_owned": list(RETIRED),
-        "accepted_predecessors": accepted_predecessors(),
     }
 
 
@@ -893,75 +471,9 @@ def check_manifest() -> None:
         all(not target.parts or target.parts[0] != ".ai-workflow-state" for target in targets),
         "framework-owned files must not be installed into durable project state",
     )
-    allowed_predecessor_targets = set(targets) | {safe_relative(item) for item in RETIRED}
-    predecessor_keys = {
-        "framework_version",
-        "source_revisions",
-        "install_manifest_schemas",
-        "framework_files",
-    }
-    for predecessor in accepted_predecessors():
-        require(
-            isinstance(predecessor, dict) and set(predecessor) == predecessor_keys,
-            "accepted predecessor fields drifted",
-        )
-        predecessor_version = predecessor["framework_version"]
-        require(
-            isinstance(predecessor_version, str)
-            and SEMVER.fullmatch(predecessor_version) is not None
-            and tuple(map(int, predecessor_version.split(".")))
-            < tuple(map(int, version().split("."))),
-            f"invalid accepted predecessor version: {predecessor_version!r}",
-        )
-        revisions = predecessor["source_revisions"]
-        require(
-            isinstance(revisions, list)
-            and revisions
-            and len(revisions) == len(set(revisions))
-            and all(
-                isinstance(item, str) and re.fullmatch(r"[0-9a-f]{40}", item) is not None
-                for item in revisions
-            ),
-            f"invalid accepted predecessor source revisions: {predecessor_version}",
-        )
-        schemas = predecessor["install_manifest_schemas"]
-        require(
-            isinstance(schemas, list)
-            and schemas
-            and len(schemas) == len(set(schemas))
-            and all(type(item) is int and item > 0 for item in schemas),
-            f"invalid accepted predecessor install manifest schemas: {predecessor_version}",
-        )
-        identities = predecessor["framework_files"]
-        require(
-            isinstance(identities, dict) and identities,
-            f"accepted predecessor {predecessor_version} must have a nonempty file inventory",
-        )
-        for raw_target, digest in identities.items():
-            target = safe_relative(raw_target)
-            require(
-                target in allowed_predecessor_targets
-                or canonical_state_relative(target) in allowed_predecessor_targets,
-                f"accepted predecessor target is neither current nor retired: {target}",
-            )
-            require(
-                isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest) is not None,
-                f"invalid accepted predecessor source checksum: {predecessor_version} {target}",
-            )
-    seeds = actual["project_seeds"]  # type: ignore[index]
-    require(isinstance(seeds, list), "project_seeds must be an array")
-    seed_targets = []
-    for item in seeds:
-        require(isinstance(item, dict) and set(item) == {"source", "target"}, "project_seeds entries need source and target")
-        target = safe_relative(item["target"])
-        require(
-            not target.parts or target.parts[0] != "docs",
-            f"framework project seeds must not install into the generic docs namespace: {target}",
-        )
-        seed_targets.append(target)
     require(
-        seed_targets == [PurePosixPath(".ai-workflow-state/project-profile.md")],
-        "the only lifecycle seed must be the optional durable project profile",
+        "project_seeds" not in actual,
+        "distribution manifest must not declare lifecycle-created project state",
     )
 
 
@@ -1135,7 +647,8 @@ def check_workflow_contract() -> None:
         "`direct` is a first-class route.",
         "MUST NOT expand the authority granted by the user's request",
         "Execution and completion claims MUST be truthful",
-        "Unavailable or user-only operations MUST NOT be simulated or silently replaced",
+        "Provider execution MUST NOT be simulated",
+        "continue with truthful host-native capability",
         "durable state MUST be preserved",
         "Material completion claims MUST reflect actual evidence",
     ):
@@ -1160,16 +673,17 @@ def check_workflow_contract() -> None:
     final_contract_text = " ".join(final_contract.split())
     require(len(final_contract.encode("utf-8")) <= 400, "route visibility contract exceeds 400 bytes")
     require(
-        policy.rstrip().endswith("do no extra work merely to produce the marker."),
+        policy.rstrip().endswith("do no extra work merely to produce it."),
         "route visibility is not the last root-policy section",
     )
     require(
         re.findall(r"`(\[route: router → [^`\n]+\])`", final_contract)
         == ["[route: router → <executed path>]"],
-        "root route visibility must contain only the generic compact marker",
+        "root route visibility must contain only the generic optional marker",
     )
     for term in (
-        "one truthful",
+        "may include a truthful",
+        "absence is not an error",
         ".ai-workflow/routing.md",
         "no extra work merely to produce",
     ):
@@ -1182,7 +696,14 @@ def check_workflow_contract() -> None:
     except (OSError, json.JSONDecodeError) as exc:
         raise VerificationError(f"cannot read route observability catalog: {exc}") from exc
     require(isinstance(route_scenarios, list) and route_scenarios, "route observability catalog must contain scenarios")
-    route_required = {"id", "requirement", "prompt", "setup", "expected_route_output", "expected_behavior"}
+    route_required = {
+        "id",
+        "requirement",
+        "prompt",
+        "setup",
+        "optional_route_diagnostic",
+        "expected_behavior",
+    }
     required_route_ids = {
         "direct",
         "wayfinder-handoff",
@@ -1214,19 +735,22 @@ def check_workflow_contract() -> None:
             all(str(item[field]).strip() for field in route_required),
             f"route observability scenario {item.get('id')} has an empty field",
         )
-        output = str(item["expected_route_output"])
-        require(route_line.fullmatch(output) is not None, f"invalid route output: {output}")
-        require(len(output) <= 120, f"route output exceeds compact budget: {output}")
-        require(output.count(" → ") <= 5, f"route output exceeds five compact labels: {output}")
+        output = item["optional_route_diagnostic"]
+        if output is not None:
+            require(isinstance(output, str) and output.strip(), "route diagnostic must be text or null")
+            require(route_line.fullmatch(output) is not None, f"invalid route output: {output}")
+            require(len(output) <= 120, f"route output exceeds compact budget: {output}")
+            require(output.count(" → ") <= 5, f"route output exceeds five compact labels: {output}")
 
-    outputs = {item["id"]: item["expected_route_output"] for item in route_scenarios}
+    outputs = {item["id"]: item["optional_route_diagnostic"] for item in route_scenarios}
     require(
-        outputs["wayfinder-handoff"] == "[route: router → wayfinder-handoff]",
-        "Wayfinder handoff output must not imply execution",
+        outputs["wayfinder-handoff"] == "[route: router → host-native-planning]",
+        "normal planning intent must permit host-native fallback",
     )
     require(
-        outputs["wayfinder-research-handoff"] == "[route: router → wayfinder-handoff]",
-        "a composed capability must not disguise a blocked dominant workflow as executed",
+        outputs["wayfinder-research-handoff"]
+        == "[route: router → host-native-planning → research]",
+        "provider fallback must preserve an available supporting capability",
     )
     require(
         outputs["standalone-research"] == "[route: router → research]",
@@ -1237,8 +761,8 @@ def check_workflow_contract() -> None:
         "standalone TDD must retain independent Verification",
     )
     require(
-        outputs["limited-host-unavailable"] == "[route: router → research-unavailable]",
-        "unavailable-host output must not imply provider execution",
+        outputs["limited-host-unavailable"] == "[route: router → host-native-research]",
+        "unavailable-host diagnostics must show host-native fallback",
     )
     require(
         outputs["provider-integrity-error"] == "[route: router → wayfinder-blocked]",
@@ -1248,7 +772,7 @@ def check_workflow_contract() -> None:
         outputs["active-state-conflict"] == "[route: router → discovery-blocked]",
         "active-state conflict output must not imply execution",
     )
-    require(outputs["direct"] == "[route: router → direct]", "direct output contract drifted")
+    require(outputs["direct"] is None, "direct work must allow omitted route diagnostics")
 
     try:
         decision_scenarios = json.loads(DECISION_SCENARIOS_PATH.read_text(encoding="utf-8"))
@@ -1277,6 +801,7 @@ def check_workflow_contract() -> None:
         "standalone-debugging",
         "standalone-teach-handoff",
         "setup-required-handoff",
+        "implementation-handoff",
         "read-only-discovery",
         "scoped-external-read",
         "external-mutation-denied",
@@ -1321,7 +846,7 @@ def check_workflow_contract() -> None:
                 and invocation["name"]
                 and invocation["policy"] in {"implicit", "unavailable", "user-only"}
                 and invocation["invocation"]
-                in {"explicit", "implicit", "unavailable", "user-only-handoff"}
+                in {"explicit", "implicit", "not-invoked", "unavailable", "user-only-handoff"}
                 and isinstance(invocation["executed"], bool),
                 f"decision scenario {item['id']} has an invalid provider invocation",
             )
@@ -1347,12 +872,20 @@ def check_workflow_contract() -> None:
         )
         require(
             item["route_result"]
-            in {"blocked", "direct", "executed", "local", "unavailable", "user-only-handoff"},
+            in {
+                "blocked",
+                "direct",
+                "executed",
+                "host-native-fallback",
+                "local",
+                "unavailable",
+                "user-only-handoff",
+            },
             f"decision scenario {item['id']} has an invalid route result",
         )
         require(
             item["repository_state_effect"]
-            in {"none", "authorized-write", "provider-native-artifact", "read-only"},
+            in {"none", "authorized-write", "provider-native-artifact", "read-only", "repository-write"},
             f"decision scenario {item['id']} has an invalid repository state effect",
         )
         require(
@@ -1364,6 +897,12 @@ def check_workflow_contract() -> None:
             require(
                 item["repository_state_effect"] == "none",
                 f"route selection handoff cannot write state: {item['id']}",
+            )
+        if item["route_result"] == "host-native-fallback":
+            require(item["executed"], f"host-native fallback must continue work: {item['id']}")
+            require(
+                all(not invocation["executed"] for invocation in provider_invocations),
+                f"host-native fallback cannot claim provider execution: {item['id']}",
             )
         if item["category"] in {"read-only-discovery", "active-state-conflict"}:
             require(
@@ -1422,7 +961,7 @@ def check_workflow_contract() -> None:
                     f"decision scenario {item['id']} disagrees with declared {item['host']} invocation policy",
                 )
             if policy == "user-only":
-                allowed_results = {"explicit", "user-only-handoff"}
+                allowed_results = {"explicit", "not-invoked", "user-only-handoff"}
             elif policy == "implicit":
                 allowed_results = {"explicit", "implicit"}
             else:
@@ -1478,7 +1017,7 @@ def check_provider_contract() -> None:
         isinstance(declaration, dict)
         and set(declaration)
         == {"schema_version", "capabilities", "configuration", "hosts", "provider"}
-        and declaration.get("schema_version") == 3,
+        and declaration.get("schema_version") == 4,
         "provider declaration has unknown fields or an unsupported schema",
     )
     require(
@@ -1493,12 +1032,11 @@ def check_provider_contract() -> None:
     provider = declaration.get("provider")
     require(isinstance(provider, dict), "provider declaration needs a provider object")
     require(
-        set(provider) == {"minimum_gh_version", "name", "repository", "revision", "skills", "version"},
+        set(provider) == {"minimum_gh_version", "name", "repository", "skills", "version"},
         "provider declaration fields drifted",
     )
     require(provider.get("repository") == PROVIDER_REPOSITORY, "provider repository drifted")
     require(provider.get("version") == PROVIDER_VERSION, "provider tag drifted")
-    require(provider.get("revision") == PROVIDER_REVISION, "provider immutable revision drifted")
     require(provider.get("name") == "matt-pocock-skills", "provider name drifted")
     minimum = provider.get("minimum_gh_version")
     require(
@@ -1511,30 +1049,6 @@ def check_provider_contract() -> None:
     )
     skills = provider.get("skills")
     require(isinstance(skills, list), "provider skills must be an array")
-    audited_identity = {
-        "repository": provider.get("repository"),
-        "revision": provider.get("revision"),
-        "version": provider.get("version"),
-        "skills": [
-            {
-                key: item.get(key)
-                for key in ("name", "path", "tree_sha", "files")
-            }
-            for item in skills
-            if isinstance(item, dict)
-        ],
-    }
-    audited_digest = hashlib.sha256(
-        json.dumps(
-            audited_identity,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
-    ).hexdigest()
-    require(
-        audited_digest == AUDITED_PROVIDER_IDENTITY_SHA256,
-        "provider declaration differs from the separately reviewed pinned identity lock",
-    )
     names = set()
     paths = set()
     for item in skills:
@@ -1542,32 +1056,21 @@ def check_provider_contract() -> None:
             isinstance(item, dict)
             and set(item)
             == {
-                "files",
                 "invocation",
                 "name",
                 "path",
                 "requires_configuration",
-                "tree_sha",
             },
-            "provider skill entries need files, invocation, name, path, requirements, and tree_sha",
+            "provider skill entries need invocation, name, path, and requirements",
         )
         name = item.get("name")
         path = item.get("path")
-        tree_sha = item.get("tree_sha")
-        files = item.get("files")
         invocation = item.get("invocation")
         requirements = item.get("requires_configuration")
         require(isinstance(name, str) and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) is not None, f"invalid provider skill name: {name!r}")
         require(isinstance(path, str), f"provider path for {name} must be a string")
         safe_relative(path)
         require(path.startswith("skills/"), f"provider skill path must select an upstream skill directory: {path}")
-        require(isinstance(tree_sha, str) and re.fullmatch(r"[0-9a-f]{40}", tree_sha) is not None, f"invalid tree SHA for provider skill {name}")
-        require(isinstance(files, list) and "SKILL.md" in files, f"provider skill {name} lacks a complete file inventory")
-        checked_files = []
-        for raw in files:
-            require(isinstance(raw, str), f"provider skill {name} has a non-string file path")
-            checked_files.append(safe_relative(raw).as_posix())
-        require(checked_files == sorted(set(checked_files)), f"provider skill {name} file inventory must be sorted and unique")
         require(
             isinstance(invocation, dict) and set(invocation) == set(PROVIDER_HOSTS),
             f"provider skill {name} invocation must cover every declared host",
@@ -1614,11 +1117,6 @@ def check_provider_contract() -> None:
         and triage_config.get("provisioned_by") == "setup-matt-pocock-skills"
         and "triage" in names,
         "triage-label configuration dependency graph is incomplete",
-    )
-    setup = by_name["setup-matt-pocock-skills"]
-    require(
-        "triage-labels.md" in setup["files"],
-        "setup provider inventory lacks the triage-label template",
     )
     implementation = (PAYLOAD_ROOT / "skills" / "workflow-implementation" / "SKILL.md").read_text(encoding="utf-8")
     require(
@@ -1801,10 +1299,9 @@ def check_markdown_links() -> None:
 def check_installed_skill_references() -> None:
     manifest = load_manifest()
     mappings = manifest["framework_owned"]
-    seeds = manifest["project_seeds"]
     available = {
         item["target"]
-        for item in [*mappings, *seeds]  # type: ignore[misc]
+        for item in mappings  # type: ignore[union-attr]
         if isinstance(item, dict) and isinstance(item.get("target"), str)
     }
     pattern = re.compile(r"`((?:ai-workflow|docs)/[^`\n]*\.md)`")

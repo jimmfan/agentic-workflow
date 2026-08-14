@@ -126,7 +126,9 @@ def project_root(payload: Mapping[str, object]) -> Path:
     if not resolved.is_dir():
         raise ControllerError(f"hook working directory is not a directory: {resolved}")
     for candidate in (resolved, *resolved.parents):
-        if plain_project_file(candidate, PROVIDER_PATH):
+        if plain_project_file(candidate, PROVIDER_PATH) or plain_project_file(
+            candidate, Path(".ai-workflow/runtime/controller.py")
+        ):
             return candidate
     return resolved
 
@@ -443,7 +445,10 @@ def apply_management(
         if args.mode in {"diagnosis", "review", "read-only"} and args.repository_write != "denied":
             raise ControllerError(f"{args.mode} mode cannot authorize repository writes")
         route_labels = args.route.split(" → ")
-        skills, _hosts, _configuration = load_provider_contract(root)
+        try:
+            skills, _hosts, _configuration = load_provider_contract(root)
+        except ControllerError:
+            skills = {}
         derived = [
             name
             for name in skills
@@ -454,7 +459,14 @@ def apply_management(
             )
         ]
         provider_names = list(dict.fromkeys([*derived, *args.provider]))
-        unknown = [name for name in provider_names if name not in skills]
+        invalid = [
+            name
+            for name in provider_names
+            if re.fullmatch(r"[a-z0-9][a-z0-9-]*", name) is None
+        ]
+        if invalid:
+            raise ControllerError("route selected invalid provider name(s): " + ", ".join(invalid))
+        unknown = [name for name in provider_names if skills and name not in skills]
         if unknown:
             raise ControllerError("route selected undeclared provider skill(s): " + ", ".join(unknown))
         state["route"] = args.route
@@ -481,14 +493,19 @@ def apply_management(
         selected = state.get("selected_providers")
         if not isinstance(selected, list) or args.name not in selected:
             raise ControllerError(f"provider {args.name!r} was not selected at the route checkpoint")
-        skills, hosts, configuration = load_provider_contract(root)
-        skill = skills.get(args.name)
-        host_contract = hosts.get(HOST_ALIASES.get(host, host)) if isinstance(hosts, dict) else None
-        invocation = skill.get("invocation") if isinstance(skill, dict) else None
-        host_key = HOST_ALIASES.get(host, host)
-        policy = invocation.get(host_key) if isinstance(invocation, dict) else None
-        available = isinstance(host_contract, dict) and host_contract.get("availability") == "available"
         if args.outcome == "started":
+            skills, hosts, configuration = load_provider_contract(root)
+            skill = skills.get(args.name)
+            if not isinstance(skill, dict):
+                raise ControllerError(f"provider {args.name!r} is not declared")
+            host_key = HOST_ALIASES.get(host, host)
+            host_contract = hosts.get(host_key) if isinstance(hosts, dict) else None
+            invocation = skill.get("invocation")
+            policy = invocation.get(host_key) if isinstance(invocation, dict) else None
+            available = (
+                isinstance(host_contract, dict)
+                and host_contract.get("availability") == "available"
+            )
             if not available or policy == "unavailable":
                 raise ControllerError(f"provider {args.name!r} is unavailable on {host}")
             if not plain_project_file(
@@ -727,21 +744,6 @@ def handle_pre_tool(
     if reason:
         return pre_tool_output(reason, host), True
 
-    selected = state.get("selected_providers")
-    outcomes = state.get("provider_outcomes")
-    unresolved = [
-        name
-        for name in selected
-        if not isinstance(outcomes, dict)
-        or outcomes.get(name) not in {"started", "executed", "handoff", "unavailable", "blocked"}
-    ] if isinstance(selected, list) else []
-    if unresolved and effective_kind != "neutral":
-        return pre_tool_output(
-            "Record a validated started or non-execution outcome for selected provider(s): "
-            + ", ".join(unresolved),
-            host,
-        ), True
-
     targets = input_text(tool_input)
     if effective_kind == "repository-write":
         if any(path in targets for path in PROTECTED_PATHS):
@@ -822,17 +824,6 @@ def stop_failures(state: Mapping[str, object]) -> list[str]:
     failures = []
     if state.get("substantive_execution") and not state.get("route"):
         failures.append("the route checkpoint is missing")
-    selected = state.get("selected_providers")
-    outcomes = state.get("provider_outcomes")
-    if isinstance(selected, list):
-        missing = [
-            name
-            for name in selected
-            if not isinstance(outcomes, dict)
-            or outcomes.get(name) not in {"executed", "handoff", "unavailable", "blocked"}
-        ]
-        if missing:
-            failures.append("selected provider outcomes are unrecorded: " + ", ".join(missing))
     verification = state.get("verification")
     requirement = verification.get("requirement") if isinstance(verification, dict) else "unspecified"
     evidence = verification.get("evidence") if isinstance(verification, dict) else []

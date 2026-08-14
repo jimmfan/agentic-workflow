@@ -31,8 +31,6 @@ ARCHIVE_MODE_VARIANTS = {
     0o644: {0o644, 0o664},
     0o755: {0o755, 0o775},
 }
-CANONICAL_STATE_DIRECTORY = ".ai-workflow"
-LEGACY_STATE_DIRECTORY = "ai-workflow"
 
 
 class BootstrapError(RuntimeError):
@@ -71,55 +69,10 @@ def resolve_revision(ref: str) -> str:
     return revision
 
 
-def installed_revision(target: Path) -> Optional[str]:
-    if target.is_symlink():
-        raise BootstrapError(f"refusing to follow target symlink while reading source revision: {target}")
-    canonical = target / CANONICAL_STATE_DIRECTORY
-    legacy = target / LEGACY_STATE_DIRECTORY
-    canonical_manifest = canonical / "install-manifest.json"
-    legacy_manifest = legacy / "install-manifest.json"
-    canonical_present = (
-        canonical.exists() or canonical.is_symlink() or canonical_manifest.is_symlink()
-    )
-    legacy_present = legacy.exists() or legacy.is_symlink() or legacy_manifest.is_symlink()
-    if canonical_present and legacy_present:
-        raise BootstrapError(
-            "conflicting Agentic Workflow state directories exist: ai-workflow/ and .ai-workflow/"
-        )
-    state_directory = CANONICAL_STATE_DIRECTORY if canonical_present else LEGACY_STATE_DIRECTORY
-    current = target
-    for part in (state_directory, "install-manifest.json"):
-        current = current / part
-        if current.is_symlink():
-            raise BootstrapError(f"refusing to follow target symlink while reading source revision: {current}")
-    manifest = current
-    try:
-        value = json.loads(manifest.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        return None
-    except (OSError, json.JSONDecodeError) as exc:
-        raise BootstrapError(f"cannot read installed source revision from {manifest}: {exc}") from exc
-    revision = value.get("source_revision") if isinstance(value, dict) else None
-    if not isinstance(revision, str) or (
-        re.fullmatch(r"[0-9a-f]{40}", revision) is None and revision != LOCAL_SOURCE_REVISION
-    ):
-        raise BootstrapError(f"installed source_revision is missing or invalid in {manifest}")
-    return revision
-
-
 def select_source(action: str, target: Path, ref: str, archive_url: Optional[str]) -> Tuple[str, str]:
     if archive_url:
         revision = ref if re.fullmatch(r"[0-9a-f]{40}", ref) else LOCAL_SOURCE_REVISION
         return revision, archive_url
-    if action in {"status", "remove"}:
-        revision = installed_revision(target)
-        if revision is not None:
-            if revision == LOCAL_SOURCE_REVISION:
-                raise BootstrapError(
-                    "the installation records an unreleased local package; run that local package's "
-                    "lifecycle script or pass --archive-url for the exact package"
-                )
-            return revision, f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"
     revision = resolve_revision(ref)
     return revision, f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"
 

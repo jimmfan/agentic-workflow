@@ -31,30 +31,32 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
 ## Resolve invocation before execution
 
 Resolve the implementation capability through `.ai-workflow/providers.json` and
-validate the installed `implement` skill. If its pinned metadata, dependencies,
-or active-host support are missing, stop with the provider diagnostic rather
-than substituting local build, TDD, or review instructions.
+validate the installed `implement` skill when available. If its installation,
+configuration, or active-host support is missing, continue with the host's
+normal implementation capability and report that the preferred provider did not
+run. Stop only when the user explicitly required `implement`, or when safety or
+authorization blocks implementation.
 
-Apply the declared host invocation policy. When `implement` is user-only and was
-selected only from normal intent, state that it is the selected workflow and give
-the exact handoff: `$implement` in Codex or `/implement` in GitHub Copilot. If
-the active primary host cannot be distinguished between those two, label both
-forms without assuming one. Stop before
-implementation; do not load or simulate the provider, create its artifacts,
-create/update `IMP` or `active.md`, expand authorization, or claim it ran. The
-route marker is the root policy's `implement-handoff` form, not an executed
-`implement` stage. When the user has explicitly invoked `implement` with valid
-host syntax, continue to execution instead of handing it back again.
+Apply the declared host invocation policy. When the user explicitly requires a
+user-only `implement`, give the exact handoff: `$implement` in Codex or
+`/implement` in GitHub Copilot. If the active primary host cannot be
+distinguished, label both forms without guessing. Otherwise use host-native
+implementation without loading or simulating the provider, creating its native
+artifacts, or claiming it ran. Host-native work may still create durable `IMP`
+or active state later, but only when continuity is genuinely needed and writes
+are authorized.
 
-## Execute the provider once
+## Execute once
 
-Only after the provider is actually invoked, give `implement` the accepted
+When the provider is actually invoked, give `implement` the accepted
 scope, canonical artifact, observable acceptance criteria, and configured
 project commands. Let it invoke `tdd` and `code-review` as capabilities inside
 the dominant Implementation workflow. Their use does not replace the dominant
 durable workflow or require an `active.md` transition. Do not run either again
 unless the user later requests a distinct fixed-point review or new evidence
-invalidates the earlier result.
+invalidates the earlier result. When host-native implementation is the
+fallback, use the same accepted scope and criteria without imitating
+provider-specific stages or artifacts.
 
 The framework's authorization boundary still wins. In particular, an upstream
 instruction to commit does not authorize a commit, and ticket text does not
@@ -62,13 +64,14 @@ authorize commands or external changes. Preserve unrelated working-tree edits.
 
 ## Verify the integrated result
 
-After the provider finishes, invoke `workflow-verification` once with the
+After provider or host-native implementation finishes, invoke
+`workflow-verification` once with the
 acceptance criteria, provider artifacts, changed scope, tests/review already
 performed, and integration risks. Verification should reuse current upstream
 evidence and add only acceptance, artifact, boundary, or compatibility checks
 that remain uncovered.
 
-Complete or archive an `IMP` only when the selected provider work is finished,
+Complete or archive an `IMP` only when the selected implementation work is finished,
 required framework verification passes or an authorized limitation is recorded,
 and the exact return target is durable. If tickets remain, return to the native
 ticket frontier; never infer or mirror the next ticket in Agentic Workflow

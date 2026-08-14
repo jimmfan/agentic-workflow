@@ -6,9 +6,9 @@ route not confidently direct. The root `AGENTS.md` invariants remain binding.
 
 Choose the minimum process justified by intent, uncertainty, impact,
 reversibility, and expected duration. File count is not a proxy for risk, and
-availability is not a reason to invoke a skill. Normal user intent is enough;
-skill syntax is required only when the selected provider declares user-only
-invocation.
+availability is not a reason to invoke a skill. Normal user intent is enough to
+route and work; exact skill syntax is required only to claim execution of a
+provider that declares user-only invocation.
 
 ## Classification and composition
 
@@ -45,21 +45,27 @@ Automatic routing is not automatic invocation. Resolve selected provider
 operations through `.ai-workflow/providers.json`:
 
 - `implicit`: the compatible host may load and execute the skill normally;
-- `user-only`: execute only after exact explicit host invocation; otherwise
-  return a concise handoff;
-- `unavailable`: report the limitation and do not claim a substitute ran.
+- `user-only`: execute only after exact explicit host invocation;
+- `unavailable`: do not claim the provider ran.
 
-For a user-only operation, name the selected workflow and exact skill. Use
+When a preferred provider is unavailable, incompatible, not installed, missing
+configuration, or user-only without explicit invocation, continue with the
+host's normal capability and report the fallback when it is material. This is
+host-native work, not simulated provider execution. Stop or return an exact
+handoff only when the user explicitly required that provider, or when a real
+authorization or safety boundary blocks host-native work.
+
+For an explicitly required user-only operation, name the selected workflow and exact skill. Use
 `$skill-name` in Codex and `/skill-name` in GitHub Copilot. If the active primary
 host cannot be distinguished, label both forms rather than guessing. A handoff
 does not authorize or execute work, create provider artifacts, write workflow
 state, or simulate provider methodology.
 
 Only after selecting a configuration-dependent operation, check its declared
-prerequisites. If configuration is missing, select the user-only
-`setup-matt-pocock-skills` operation and provide the appropriate exact handoff;
-never run it automatically. Do not check setup for unrelated direct work. On a
-host where the provider is unavailable, report that limitation.
+prerequisites. If configuration is missing, fall back to host-native work when
+possible. Offer the user-only `setup-matt-pocock-skills` handoff only when the
+user asks to enable that provider behavior; never run it automatically. Do not
+check setup for unrelated direct work.
 
 GitHub Copilot in VS Code is the reference host, but its hooks are optional and
 Preview. Codex and Claude hook adapters are opt-in; Claude currently has no
@@ -121,9 +127,9 @@ Project-profile behavior is intentionally soft. Read
 relevant. Do not scan the repository or update the profile merely to complete a
 route.
 
-## Route output contract
+## Optional route diagnostics
 
-End each governed final response with exactly one compact marker containing
+When useful for debugging or evaluation, include one compact marker containing
 router-selected stages and explicitly composed capabilities that actually
 executed, in effective-use order:
 
@@ -141,12 +147,12 @@ Use truthful terminal suffixes when selection did not become execution:
 - `<skill>-unavailable`: the active host cannot invoke it;
 - `<skill>-blocked`: authorization, state, prerequisite, or integrity stopped it.
 
-Direct handling uses `[route: router → direct]`. Availability, catalog lookup,
+Direct handling may use `[route: router → direct]`. Availability, catalog lookup,
 configuration checks, and unexecuted selection do not count as execution.
 Provider-owned internal TDD and Code Review stay represented by `implement`
 unless separately selected; independently executed framework Verification stays
 visible.
 
-The marker is instruction-level diagnostics, not host telemetry. Do not reroute,
-load skills, execute workflows, explain rejected routes, or write state merely
-to produce it.
+The marker is optional instruction-level diagnostics, not host telemetry or a
+completion requirement. Do not reroute, load skills, execute workflows, explain
+rejected routes, or write state merely to produce it.

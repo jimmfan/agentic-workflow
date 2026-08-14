@@ -17,7 +17,8 @@ automatic proof and not work to repeat without a gap.
    a project command.
 3. Select the smallest additional checks that cover unresolved acceptance
    behavior, integration boundaries, expected artifacts, workflow completion,
-   and the provider pin/metadata contract.
+   and, only when provider lifecycle behavior is in scope, the provider
+   installation contract.
 4. Reuse current upstream test or review evidence when it directly covers a
    criterion. Do not rerun TDD, invoke Code Review again, or execute a full suite
    merely to create a framework-branded duplicate.
@@ -46,11 +47,13 @@ Confirm as applicable that:
   remain distinct;
 - setup, TDD, and Code Review were not invoked redundantly;
 - unused installed skills were not loaded merely because they exist; and
-- installed provider source, pin, subtree metadata, and adjacent resources match
-  `.ai-workflow/providers.json`.
+- any provider claimed as executed was actually available and invoked; provider
+  installation details are otherwise not a completion prerequisite for
+  host-native work.
 
 Completion requires every required acceptance criterion to pass or an explicit
-authorized limitation. A failed provider compatibility contract is a diagnostic,
-not permission to use a retired local fallback. Return implementation defects to
+authorized limitation. A failed optional provider check is a diagnostic, not a
+reason to reject otherwise valid host-native evidence or to claim the provider
+ran. Return implementation defects to
 `workflow-implementation`, decision defects to `workflow-discovery`, and an
 unexplained symptom to `workflow-debugging` with the most useful next check.

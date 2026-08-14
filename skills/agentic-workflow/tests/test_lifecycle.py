@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import base64
 from contextlib import redirect_stderr, redirect_stdout
 import hashlib
 import importlib.util
@@ -84,40 +83,21 @@ def adopt(script: Path, action: str, target: Path, *extra: str) -> subprocess.Co
     return run(sys.executable, script, action, target, "--source-revision", REVISION, *extra)
 
 
-def package_root_accepting_installed_fixture(
+def copied_package_fixture(
     base: Path,
     target: Path,
     label: str,
     *,
     manifest_relative: Path = Path(".ai-workflow/install-manifest.json"),
 ) -> Path:
-    """Create a new-package fixture whose immutable manifest reviews this synthetic install."""
+    """Copy the package used to exercise an update from a separate source tree."""
     copied = base / label
     shutil.copytree(PACKAGE, copied)
-    installed = json.loads(
-        (target / manifest_relative).read_text(encoding="utf-8")
-    )
-    predecessor = {
-        "framework_version": installed["framework_version"],
-        "source_revisions": [installed["source_revision"]],
-        "install_manifest_schemas": [installed["schema_version"]],
-        "framework_files": {
-            path: details["source_sha256"]
-            for path, details in installed["framework_files"].items()
-        },
-    }
-    manifest_path = copied / "payload/distribution/manifest.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    manifest["accepted_predecessors"].append(predecessor)
-    manifest_path.write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
     return copied
 
 
-def package_accepting_installed_fixture(base: Path, target: Path, label: str) -> Path:
-    return package_root_accepting_installed_fixture(base, target, label) / "scripts/adopt.py"
+def copied_adopter_fixture(base: Path, target: Path, label: str) -> Path:
+    return copied_package_fixture(base, target, label) / "scripts/adopt.py"
 
 
 def relocate_fixture_to_legacy_layout(target: Path) -> None:
@@ -145,6 +125,39 @@ def relocate_fixture_to_legacy_layout(target: Path) -> None:
     )
 
 
+PROVIDER_FIXTURE_FILES = {
+    "setup-matt-pocock-skills": (
+        "SKILL.md",
+        "agents/openai.yaml",
+        "domain.md",
+        "issue-tracker-github.md",
+        "issue-tracker-gitlab.md",
+        "issue-tracker-local.md",
+        "triage-labels.md",
+    ),
+    "teach": (
+        "GLOSSARY-FORMAT.md",
+        "LEARNING-RECORD-FORMAT.md",
+        "MISSION-FORMAT.md",
+        "RESOURCES-FORMAT.md",
+        "SKILL.md",
+        "agents/openai.yaml",
+    ),
+    "tdd": ("SKILL.md", "agents/openai.yaml", "mocking.md", "tests.md"),
+    "domain-modeling": ("ADR-FORMAT.md", "CONTEXT-FORMAT.md", "SKILL.md", "agents/openai.yaml"),
+    "prototype": ("LOGIC.md", "SKILL.md", "UI.md", "agents/openai.yaml"),
+    "codebase-design": ("DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md", "agents/openai.yaml"),
+    "triage": ("AGENT-BRIEF.md", "OUT-OF-SCOPE.md", "SKILL.md", "agents/openai.yaml"),
+}
+
+
+def provider_fixture_paths(skill: Mapping[str, object]) -> tuple[str, ...]:
+    return PROVIDER_FIXTURE_FILES.get(
+        str(skill["name"]),
+        ("SKILL.md", "agents/openai.yaml"),
+    )
+
+
 def fixture_provider_source_files(skill: Mapping[str, object]) -> Mapping[str, bytes]:
     """Return deterministic upstream-like bytes before GitHub metadata injection."""
     name = str(skill["name"])
@@ -158,7 +171,7 @@ def fixture_provider_source_files(skill: Mapping[str, object]) -> Mapping[str, b
     )
     allow_implicit_invocation = "true" if invocation["codex"] == "implicit" else "false"
     files: dict[str, bytes] = {}
-    for relative_value in skill["files"]:
+    for relative_value in provider_fixture_paths(skill):
         relative = str(relative_value)
         if relative == "SKILL.md":
             content = (
@@ -192,46 +205,8 @@ def fixture_provider_declaration() -> tuple[Mapping[str, object], list[Mapping[s
 
 
 def fixture_package(source: Path, destination: Path) -> Path:
-    """Copy a package whose declaration and reviewed lock describe fixture bytes."""
+    """Copy and refresh a package fixture."""
     shutil.copytree(source, destination)
-    declaration_path = destination / "payload/ai-workflow/providers.json"
-    declaration = json.loads(declaration_path.read_text(encoding="utf-8"))
-    declaration_path.write_text(
-        json.dumps(declaration, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    provider = declaration["provider"]
-    fixture_identity = {
-        "repository": provider["repository"],
-        "revision": provider["revision"],
-        "version": provider["version"],
-        "skills": [
-            {
-                key: skill.get(key)
-                for key in ("name", "path", "tree_sha", "files")
-            }
-            for skill in provider["skills"]
-        ],
-    }
-    fixture_digest = hashlib.sha256(
-        json.dumps(
-            fixture_identity,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
-    ).hexdigest()
-    verifier_path = destination / "scripts/verify_package.py"
-    verifier_lines = verifier_path.read_text(encoding="utf-8").splitlines(keepends=True)
-    lock_prefix = "AUDITED_PROVIDER_IDENTITY_SHA256 = "
-    replacements = 0
-    for index, line in enumerate(verifier_lines):
-        if line.startswith(lock_prefix):
-            # Fixture-only trust anchor: production refresh never rewrites this lock.
-            verifier_lines[index] = f'{lock_prefix}"{fixture_digest}"\n'
-            replacements += 1
-    if replacements != 1:
-        raise AssertionError("fixture package could not replace the provider identity lock")
-    verifier_path.write_text("".join(verifier_lines), encoding="utf-8")
     refreshed = run(sys.executable, destination / "scripts/verify_package.py", "--refresh-manifest")
     if refreshed.returncode != 0:
         raise AssertionError(refreshed.stderr or refreshed.stdout)
@@ -254,7 +229,6 @@ def write_provider_skill(
         f"    github-pinned: {provider['version']}\n"
         f"    github-ref: refs/tags/{provider['version']}\n"
         f"    github-repo: https://github.com/{provider['repository']}\n"
-        f"    github-tree-sha: {skill['tree_sha']}\n"
     )
     for relative, source in fixture_provider_source_files(skill).items():
         path = destination / relative
@@ -296,75 +270,15 @@ def write_provider_state(
         records[name] = {
             "files": {
                 str(relative): PROVIDER_MANAGER.sha256(directory / str(relative))
-                for relative in skill["files"]
+                for relative in provider_fixture_paths(skill)
             },
             "origin": origin,
             "path": skill["path"],
-            "tree_sha": skill["tree_sha"],
         }
     state_path = root / ".ai-workflow/provider-state.json"
     state_path.parent.mkdir(parents=True, exist_ok=True)
     state_path.write_text(
         json.dumps(PROVIDER_MANAGER.state_value(provider, records), indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-
-
-def provider_declaration_document(provider: Mapping[str, object]) -> Mapping[str, object]:
-    declaration = json.loads(
-        (PACKAGE / "payload/ai-workflow/providers.json").read_text(encoding="utf-8")
-    )
-    declaration["provider"] = json.loads(json.dumps(provider))
-    return declaration
-
-
-def write_authenticated_provider_predecessor(
-    root: Path,
-    declaration: Mapping[str, object],
-    manifest_path: Path,
-    *,
-    framework_version: str = "0.6.9",
-    source_revision: str = "2" * 40,
-) -> None:
-    """Write fixture-only payload evidence that authenticates an old provider declaration."""
-    declaration_path = root / ".ai-workflow/providers.json"
-    declaration_path.parent.mkdir(parents=True, exist_ok=True)
-    declaration_bytes = (
-        json.dumps(declaration, indent=2, sort_keys=True) + "\n"
-    ).encode("utf-8")
-    declaration_path.write_bytes(declaration_bytes)
-    digest = hashlib.sha256(declaration_bytes).hexdigest()
-    install_manifest = {
-        "framework_files": {
-            ".ai-workflow/providers.json": {
-                "origin": "created",
-                "sha256": digest,
-                "source_sha256": digest,
-            }
-        },
-        "framework_version": framework_version,
-        "installed_at": "2026-08-14T00:00:00+00:00",
-        "project_owned": [],
-        "schema_version": 2,
-        "source_revision": source_revision,
-    }
-    (root / ".ai-workflow/install-manifest.json").write_text(
-        json.dumps(install_manifest, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    source_manifest = {
-        "accepted_predecessors": [
-            {
-                "framework_files": {".ai-workflow/providers.json": digest},
-                "framework_version": framework_version,
-                "install_manifest_schemas": [2],
-                "source_revisions": [source_revision],
-            }
-        ],
-        "schema_version": 3,
-    }
-    manifest_path.write_text(
-        json.dumps(source_manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
 
@@ -381,12 +295,7 @@ def provider_upgrade_fixture(
     upgraded = json.loads(json.dumps(provider))
     if change_identity:
         upgraded["version"] = "v1.2.4"
-        upgraded["revision"] = "3" * 40
     upgraded_skills = upgraded["skills"]
-    for skill in upgraded_skills:
-        if skill["name"] not in changed_names:
-            continue
-        skill["tree_sha"] = "4" * 40
     return upgraded, upgraded_skills
 
 
@@ -440,7 +349,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertIn("installed and verified", result.stdout)
         self.assertTrue((target / "AGENTS.md").is_file())
         self.assertIn(
-            "[route: router → <executed path>]",
+            "a response may include a truthful\n`[route: router → <executed path>]`",
             (target / "AGENTS.md").read_text(encoding="utf-8"),
         )
         claude = (target / "CLAUDE.md").read_bytes()
@@ -452,8 +361,8 @@ class LifecycleTests(unittest.TestCase):
         self.assertTrue((target / ".ai-workflow/runtime/controller.py").is_file())
         self.assertTrue((target / ".github/hooks/agentic-workflow.json").is_file())
         self.assertFalse((target / ".agents/skills/workflow-teach").exists())
-        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "uninitialized")
-        self.assertFalse((target / ".ai-workflow-state/active.md").exists())
+        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "missing")
+        self.assertFalse((target / ".ai-workflow-state").exists())
         self.assertFalse((target / ".ai-workflow/project-profile.md").exists())
         self.assertFalse((target / ".ai-workflow/state/active.md").exists())
         self.assertFalse((target / "ai-workflow").exists())
@@ -501,9 +410,8 @@ class LifecycleTests(unittest.TestCase):
         self.assertIn("checkpoint\n  on every prompt before substantive tools", policy)
         self.assertIn("declarations never expand authority", policy)
         self.assertEqual(policy.count("## Route visibility"), 1)
-        self.assertTrue(
-            policy.rstrip().endswith("do no extra work merely to produce the marker.")
-        )
+        self.assertIn("Its absence is not an error", policy)
+        self.assertIn("do no extra work merely to produce it", policy)
         self.assertEqual(policy.count("`[route: router → <executed path>]`"), 1)
         self.assertLess(len(policy.encode("utf-8")), 3200)
         routing = (target / ".ai-workflow/routing.md").read_text(encoding="utf-8")
@@ -556,7 +464,7 @@ class LifecycleTests(unittest.TestCase):
         )
 
         self.assertEqual(rejected.returncode, 2)
-        self.assertIn("not a recognizable package-authenticated legacy installation", rejected.stderr)
+        self.assertIn("not a recognizable managed legacy installation", rejected.stderr)
         self.assertEqual(legacy_note.read_text(encoding="utf-8"), "project-owned notes\n")
         self.assertFalse((unrelated / ".ai-workflow").exists())
 
@@ -604,30 +512,63 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(second_status.returncode, 0, second_status.stderr)
         self.assertTrue(second_manifest.is_file())
 
-    def test_non_git_install_update_status_and_remove(self) -> None:
+    def test_non_git_install_repeated_update_status_and_remove_remain_state_free(self) -> None:
         target = self.base / "ordinary-project"
         target.mkdir()
         self.assertFalse((target / ".git").exists())
 
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
+        self.assertFalse((target / ".ai-workflow-state").exists())
         status = adopt(ADOPT, "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
         updated = adopt(ADOPT, "update", target)
         self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertFalse((target / ".ai-workflow-state").exists())
+        updated_again = adopt(ADOPT, "update", target)
+        self.assertEqual(updated_again.returncode, 0, updated_again.stderr)
+        self.assertFalse((target / ".ai-workflow-state").exists())
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
         self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
-        self.assertTrue((target / ".ai-workflow-state/project-profile.md").is_file())
+        self.assertFalse((target / ".ai-workflow-state").exists())
 
-    def test_current_project_profile_template_is_uninitialized(self) -> None:
+    def test_nonempty_project_profile_template_is_present_when_explicitly_persisted(self) -> None:
         target = self.base / "profile-seed"
         profile = target / ".ai-workflow-state/project-profile.md"
         profile.parent.mkdir(parents=True)
         source = PACKAGE / "payload/ai-workflow/templates/project-profile.md"
         profile.write_bytes(source.read_bytes())
 
-        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "uninitialized")
+        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "present")
+
+    def test_authorized_workflow_can_create_profile_lazily_from_installed_template(self) -> None:
+        target = git_repository(self.base / "lazy-profile")
+        installed = adopt(ADOPT, "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        self.assertFalse((target / ".ai-workflow-state").exists())
+
+        template = (target / ".ai-workflow/templates/project-profile.md").read_text(
+            encoding="utf-8"
+        )
+        useful_profile = template.replace(
+            "Initialization: uninitialized",
+            "Initialization: initialized",
+            1,
+        ).replace(
+            "None",
+            "Agentic Workflow lifecycle package with Python verification commands.",
+            1,
+        )
+        profile = target / ".ai-workflow-state/project-profile.md"
+        profile.parent.mkdir(parents=True)
+        profile.write_text(useful_profile, encoding="utf-8")
+
+        expected = profile.read_bytes()
+        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "present")
+        updated = adopt(ADOPT, "update", target)
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertEqual(profile.read_bytes(), expected)
 
     def test_missing_project_profile_is_missing(self) -> None:
         target = self.base / "missing-profile"
@@ -803,6 +744,7 @@ Use the repository's documented checks.
 
         profile = target / ".ai-workflow-state/project-profile.md"
         active = target / ".ai-workflow-state/active.md"
+        profile.parent.mkdir(parents=True)
         profile_bytes = b"# Project context\n\nCanonical docs live under docs/.\n"
         active_bytes = b"# Active workflow\n\n- Active workflow: debugging\n"
         profile.write_bytes(profile_bytes)
@@ -852,13 +794,9 @@ Use the repository's documented checks.
         self.assertTrue(provider_skill.is_file())
         self.assertFalse((target / ".ai-workflow").exists())
 
-    def test_status_reports_readiness_warnings_separately_from_integrity(self) -> None:
+    def test_status_treats_missing_durable_state_as_healthy_and_normal(self) -> None:
         target = self.base / "readiness-project"
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
-        profile.write_bytes(
-            (PACKAGE / "payload/ai-workflow/templates/project-profile.md").read_bytes()
-        )
         capabilities = target / ".ai-workflow/runtime/capabilities.json"
         capabilities.parent.mkdir(parents=True)
         capabilities.write_bytes(
@@ -884,12 +822,15 @@ Use the repository's documented checks.
         self.assertEqual(result, 0)
         rendered = output.getvalue()
         self.assertIn("Framework integrity: healthy", rendered)
-        self.assertIn("Provider integrity: healthy", rendered)
+        self.assertIn("Optional provider capability: healthy", rendered)
         self.assertIn("Host enforcement (capability, not installation integrity):", rendered)
         self.assertIn("GitHub Copilot in VS Code: partial/Preview", rendered)
         self.assertIn("GitHub Copilot CLI/cloud: shared file unvalidated", rendered)
-        self.assertIn("Project readiness (warnings do not affect integrity status):", rendered)
-        self.assertIn("project profile: uninitialized", rendered)
+        self.assertIn(
+            "Project readiness (optional durable state; missing profile and active state are normal):",
+            rendered,
+        )
+        self.assertIn("project profile: missing", rendered)
         self.assertIn("active workflow: none", rendered)
         self.assertIn("issue tracker config: missing", rendered)
         self.assertIn("domain config: missing", rendered)
@@ -903,19 +844,19 @@ Use the repository's documented checks.
             rendered,
         )
         self.assertIn("Claude Code setup workflow: unavailable", rendered)
-        self.assertIn(
-            "initialize the profile once from verified repository evidence",
-            rendered,
-        )
+        self.assertNotIn("initializ", rendered.lower())
 
-        profile.write_text(
-            profile.read_text(encoding="utf-8").replace(
-                "Initialization: uninitialized",
-                "Initialization: initialized",
-                1,
-            ),
-            encoding="utf-8",
-        )
+        compact_output = io.StringIO()
+        with redirect_stdout(compact_output):
+            LIFECYCLE_MANAGER.print_readiness(target, detailed=False)
+        compact = compact_output.getvalue()
+        self.assertIn("absence is normal", compact)
+        self.assertIn("project profile=missing", compact)
+        self.assertIn("active workflow=none", compact)
+        self.assertNotIn("initializ", compact.lower())
+
+        profile.parent.mkdir(parents=True)
+        profile.write_text("# Project context\n\nVerified durable context.\n", encoding="utf-8")
         configuration, _host_invocation = LIFECYCLE_MANAGER.load_provider_status_contract()
         for _label, relative in configuration:
             path = target / relative
@@ -947,10 +888,7 @@ Use the repository's documented checks.
         provider, skills = PROVIDER_MANAGER.load_declaration()
         self.assertEqual(install.call_count, len(skills))
         self.assertEqual(provider["version"], "v1.2.3")
-        self.assertEqual(
-            provider["revision"],
-            "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
-        )
+        self.assertNotIn("revision", provider)
         self.assertTrue(PROVIDER_MANAGER.command_status(target, verbose=False))
         state_path = target / ".ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -963,7 +901,7 @@ Use the repository's documented checks.
                 for path in directory.rglob("*")
                 if path.is_file()
             )
-            self.assertEqual(actual, skill["files"])
+            self.assertEqual(actual, sorted(provider_fixture_paths(skill)))
 
         with mock.patch.object(PROVIDER_MANAGER, "find_gh") as unused:
             PROVIDER_MANAGER.command_install(target, dry_run=False)
@@ -1082,8 +1020,8 @@ Use the repository's documented checks.
         self.assertEqual(changed_path.read_bytes(), altered)
         self.assertTrue(changed_path.parent.is_dir())
 
-    def test_forged_provider_state_extra_file_inventory_cannot_authorize_deletion(self) -> None:
-        target = self.base / "provider-forged-extra-file"
+    def test_unrecorded_provider_file_is_detected_and_preserved(self) -> None:
+        target = self.base / "provider-extra-file"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
             PROVIDER_MANAGER,
@@ -1097,14 +1035,6 @@ Use the repository's documented checks.
         extra = target / ".agents/skills" / changed_name / "PROJECT-NOTES.md"
         extra.write_text("project-owned evidence\n", encoding="utf-8")
         state_path = target / ".ai-workflow/provider-state.json"
-        state = json.loads(state_path.read_text(encoding="utf-8"))
-        state["skills"][changed_name]["files"]["PROJECT-NOTES.md"] = PROVIDER_MANAGER.sha256(
-            extra
-        )
-        state_path.write_text(
-            json.dumps(state, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
 
         self.assertFalse(PROVIDER_MANAGER.command_status(target, verbose=False))
         PROVIDER_MANAGER.command_remove(target, dry_run=False)
@@ -1301,7 +1231,7 @@ Use the repository's documented checks.
         self.assertEqual(skill_path.read_text(encoding="utf-8"), original)
         self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
 
-    def test_provider_rejects_unexpected_injected_metadata(self) -> None:
+    def test_provider_ignores_unrelated_injected_metadata(self) -> None:
         target = self.base / "provider-unexpected-metadata"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
@@ -1310,18 +1240,14 @@ Use the repository's documented checks.
         skill_path = directory / "SKILL.md"
         skill_path.write_text(
             skill_path.read_text(encoding="utf-8").replace(
-                "    github-tree-sha:",
-                "    unexpected-provider-field: value\n    github-tree-sha:",
+                "metadata:\n",
+                "metadata:\n    unrelated-provider-field: value\n",
                 1,
             ),
             encoding="utf-8",
         )
 
-        with self.assertRaisesRegex(
-            PROVIDER_MANAGER.ProviderError,
-            "incompatible or unexpected GitHub metadata",
-        ):
-            PROVIDER_MANAGER.verify_skill(target, provider, skill)
+        PROVIDER_MANAGER.verify_skill(target, provider, skill)
 
     def test_provider_accepts_equivalent_quoted_provenance_value(self) -> None:
         target = self.base / "provider-quoted-metadata"
@@ -1433,7 +1359,7 @@ Use the repository's documented checks.
         self.assertEqual(state["skills"]["code-review"]["origin"], "created")
         self.assertTrue(PROVIDER_MANAGER.command_status(target, verbose=False))
 
-    def test_clean_predecessor_provider_migrates_to_declared_revision(self) -> None:
+    def test_clean_recorded_provider_updates_to_preferred_version(self) -> None:
         target = self.base / "provider-upgrade"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
@@ -1443,15 +1369,9 @@ Use the repository's documented checks.
         ):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
 
-        old_provider, skills = PROVIDER_MANAGER.load_declaration()
-        predecessor_manifest = self.base / "provider-upgrade-predecessors.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
+        installed_provider, _skills = PROVIDER_MANAGER.load_declaration()
         upgraded_provider, upgraded_skills = provider_upgrade_fixture(
-            old_provider,
+            installed_provider,
             {"code-review"},
         )
 
@@ -1465,10 +1385,6 @@ Use the repository's documented checks.
             PROVIDER_MANAGER,
             "load_declaration",
             return_value=(upgraded_provider, upgraded_skills),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
         ), mock.patch.object(
             PROVIDER_MANAGER,
             "find_gh",
@@ -1491,7 +1407,7 @@ Use the repository's documented checks.
 
         state = json.loads(state_path.read_text(encoding="utf-8"))
         self.assertEqual(state["provider"]["version"], "v1.2.4")
-        self.assertEqual(state["provider"]["revision"], "3" * 40)
+        self.assertNotIn("revision", state["provider"])
         self.assertTrue(
             (target / ".agents/skills/code-review/SKILL.md").read_bytes().endswith(
                 UPGRADED_PROVIDER_SUFFIX
@@ -1500,7 +1416,7 @@ Use the repository's documented checks.
         self.assertTrue(all(record["origin"] == "created" for record in state["skills"].values()))
         self.assertFalse(list(target.glob(f"{PROVIDER_MANAGER.UPDATE_QUARANTINE_PREFIX}*")))
 
-    def test_locally_modified_predecessor_provider_refuses_migration(self) -> None:
+    def test_locally_modified_recorded_provider_refuses_update(self) -> None:
         target = self.base / "provider-upgrade-modified"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
@@ -1509,14 +1425,8 @@ Use the repository's documented checks.
             side_effect=fake_provider_install,
         ):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
-        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
-        predecessor_manifest = self.base / "modified-predecessor.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
-        upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
+        installed_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(installed_provider, {"code-review"})
         changed = target / ".agents/skills/code-review/SKILL.md"
         changed.write_bytes(changed.read_bytes() + b"local project change\n")
         before = {path: path.read_bytes() for path in target.rglob("*") if path.is_file()}
@@ -1525,16 +1435,12 @@ Use the repository's documented checks.
             PROVIDER_MANAGER,
             "load_declaration",
             return_value=(upgraded_provider, upgraded_skills),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
         ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaises(PROVIDER_MANAGER.ProviderError) as raised:
                 PROVIDER_MANAGER.command_update(target, dry_run=False)
 
         diagnostic = str(raised.exception)
-        self.assertIn("code-review was installed by Agentic Workflow", diagnostic)
+        self.assertIn("code-review has local modifications", diagnostic)
         self.assertIn("Refusing to overwrite", diagnostic)
         self.assertIn(".agents/skills/code-review/SKILL.md", diagnostic)
         self.assertNotIn("SHA-256", diagnostic)
@@ -1544,19 +1450,13 @@ Use the repository's documented checks.
             before,
         )
 
-    def test_preexisting_provider_refuses_predecessor_replacement(self) -> None:
+    def test_preexisting_provider_refuses_replacement(self) -> None:
         target = self.base / "provider-upgrade-preexisting"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
         for skill in skills:
             write_provider_skill(target, provider, skill)
         write_provider_state(target, provider, skills, origin="preexisting-compatible")
-        predecessor_manifest = self.base / "preexisting-predecessor.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(provider),
-            predecessor_manifest,
-        )
         upgraded_provider, upgraded_skills = provider_upgrade_fixture(provider, {"code-review"})
         before = (target / ".agents/skills/code-review/SKILL.md").read_bytes()
 
@@ -1564,14 +1464,10 @@ Use the repository's documented checks.
             PROVIDER_MANAGER,
             "load_declaration",
             return_value=(upgraded_provider, upgraded_skills),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
         ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "cannot be proven framework-managed.*pre-existing-compatible",
+                "predates framework ownership; refusing to replace",
             ):
                 PROVIDER_MANAGER.command_update(target, dry_run=False)
 
@@ -1581,7 +1477,7 @@ Use the repository's documented checks.
             before,
         )
 
-    def test_deleted_predecessor_provider_directory_is_installed_from_new_baseline(self) -> None:
+    def test_deleted_recorded_provider_directory_is_installed_from_new_baseline(self) -> None:
         target = self.base / "provider-upgrade-deleted"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
@@ -1590,24 +1486,14 @@ Use the repository's documented checks.
             side_effect=fake_provider_install,
         ):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
-        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
-        predecessor_manifest = self.base / "deleted-predecessor.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
+        installed_provider, _skills = PROVIDER_MANAGER.load_declaration()
         shutil.rmtree(target / ".agents/skills/code-review")
-        upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(installed_provider, {"code-review"})
 
         with mock.patch.object(
             PROVIDER_MANAGER,
             "load_declaration",
             return_value=(upgraded_provider, upgraded_skills),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
         ), mock.patch.object(
             PROVIDER_MANAGER,
             "find_gh",
@@ -1636,18 +1522,12 @@ Use the repository's documented checks.
             side_effect=fake_provider_install,
         ):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
-        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
-        predecessor_manifest = self.base / "multiple-predecessor.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
+        installed_provider, _skills = PROVIDER_MANAGER.load_declaration()
         for name in ("code-review", "implement"):
             path = target / ".agents/skills" / name / "SKILL.md"
             path.write_bytes(path.read_bytes() + f"local {name} change\n".encode("utf-8"))
         upgraded_provider, upgraded_skills = provider_upgrade_fixture(
-            old_provider,
+            installed_provider,
             {"code-review", "implement"},
         )
 
@@ -1655,20 +1535,16 @@ Use the repository's documented checks.
             PROVIDER_MANAGER,
             "load_declaration",
             return_value=(upgraded_provider, upgraded_skills),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
         ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaises(PROVIDER_MANAGER.ProviderError) as raised:
                 PROVIDER_MANAGER.command_update(target, dry_run=False)
 
         diagnostic = str(raised.exception)
-        self.assertIn("code-review was installed by Agentic Workflow", diagnostic)
-        self.assertIn("implement was installed by Agentic Workflow", diagnostic)
+        self.assertIn("code-review has local modifications", diagnostic)
+        self.assertIn("implement has local modifications", diagnostic)
         find_gh.assert_not_called()
 
-    def test_malformed_predecessor_provider_state_fails_closed(self) -> None:
+    def test_malformed_provider_state_blocks_provider_update(self) -> None:
         target = self.base / "provider-upgrade-malformed-state"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
@@ -1677,14 +1553,8 @@ Use the repository's documented checks.
             side_effect=fake_provider_install,
         ):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
-        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
-        predecessor_manifest = self.base / "malformed-state-predecessor.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
-        upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
+        installed_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(installed_provider, {"code-review"})
         state_path = target / ".ai-workflow/provider-state.json"
         state_path.write_text("not json\n", encoding="utf-8")
         provider_before = {
@@ -1697,10 +1567,6 @@ Use the repository's documented checks.
             PROVIDER_MANAGER,
             "load_declaration",
             return_value=(upgraded_provider, upgraded_skills),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
         ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
@@ -1728,15 +1594,9 @@ Use the repository's documented checks.
             side_effect=fake_provider_install,
         ):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
-        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
-        predecessor_manifest = self.base / "one-skill-predecessor.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
+        installed_provider, _skills = PROVIDER_MANAGER.load_declaration()
         upgraded_provider, upgraded_skills = provider_upgrade_fixture(
-            old_provider,
+            installed_provider,
             {"code-review"},
             change_identity=False,
         )
@@ -1747,10 +1607,6 @@ Use the repository's documented checks.
             PROVIDER_MANAGER,
             "load_declaration",
             return_value=(upgraded_provider, upgraded_skills),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
         ), mock.patch.object(
             PROVIDER_MANAGER,
             "find_gh",
@@ -1766,7 +1622,7 @@ Use the repository's documented checks.
         state = json.loads((target / ".ai-workflow/provider-state.json").read_text(encoding="utf-8"))
         self.assertEqual(state["skills"]["wayfinder"]["origin"], "created")
 
-    def test_provider_migration_callback_failure_restores_predecessor_exactly(self) -> None:
+    def test_provider_update_callback_failure_restores_previous_state_exactly(self) -> None:
         target = self.base / "provider-upgrade-callback-rollback"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
@@ -1775,14 +1631,8 @@ Use the repository's documented checks.
             side_effect=fake_provider_install,
         ):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
-        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
-        predecessor_manifest = self.base / "callback-predecessor.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
-        upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
+        installed_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(installed_provider, {"code-review"})
         before = {
             path.relative_to(target).as_posix(): path.read_bytes()
             for path in target.rglob("*")
@@ -1793,10 +1643,6 @@ Use the repository's documented checks.
             PROVIDER_MANAGER,
             "load_declaration",
             return_value=(upgraded_provider, upgraded_skills),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
         ), mock.patch.object(
             PROVIDER_MANAGER,
             "find_gh",
@@ -1833,14 +1679,6 @@ Use the repository's documented checks.
         for skill in old_skills:
             write_provider_skill(target, provider, skill)
         write_provider_state(target, provider, old_skills, origin="created")
-        old_provider = json.loads(json.dumps(provider))
-        old_provider["skills"] = json.loads(json.dumps(old_skills))
-        predecessor_manifest = self.base / "dependency-set-predecessors.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
         triage = target / ".agents/skills/triage"
         state_path = target / ".ai-workflow/provider-state.json"
         retained_bytes = {
@@ -1851,10 +1689,6 @@ Use the repository's documented checks.
         }
 
         with mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
-        ), mock.patch.object(
             PROVIDER_MANAGER,
             "find_gh",
             return_value=Path("gh"),
@@ -1909,16 +1743,6 @@ Use the repository's documented checks.
         state_path = target / ".ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         del state["skills"]["triage"]
-        old_provider = json.loads(json.dumps(provider))
-        old_provider["skills"] = [
-            json.loads(json.dumps(skill)) for skill in skills if skill["name"] != "triage"
-        ]
-        predecessor_manifest = self.base / "dependency-auth-predecessors.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
         altered_name = str(skills[0]["name"])
         altered_path = target / ".agents/skills" / altered_name / "SKILL.md"
         altered = altered_path.read_text(encoding="utf-8") + "canonized local alteration\n"
@@ -1930,10 +1754,6 @@ Use the repository's documented checks.
         state_before = state_path.read_bytes()
 
         with mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
-        ), mock.patch.object(
             PROVIDER_MANAGER,
             "find_gh",
             return_value=Path("gh"),
@@ -1969,26 +1789,12 @@ Use the repository's documented checks.
             json.dumps(state, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
-        old_provider = json.loads(json.dumps(provider))
-        old_provider["skills"] = [
-            json.loads(json.dumps(skill)) for skill in skills if skill["name"] != "triage"
-        ]
-        predecessor_manifest = self.base / "dependency-collision-predecessors.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(old_provider),
-            predecessor_manifest,
-        )
         (target / ".agents/skills/triage/OUT-OF-SCOPE.md").unlink()
 
-        with mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
-        ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "already exists and is not known to be managed",
+                "already exists without Agentic Workflow ownership",
             ):
                 PROVIDER_MANAGER.command_update(target, dry_run=True)
         find_gh.assert_not_called()
@@ -2018,7 +1824,7 @@ Use the repository's documented checks.
         self.assertEqual(marker.read_text(encoding="utf-8"), "project owned\n")
         self.assertTrue(state_path.is_file())
 
-    def test_provider_update_rejects_unknown_old_state_name_before_gh(self) -> None:
+    def test_provider_update_preserves_unknown_recorded_skill_without_gh(self) -> None:
         target = self.base / "provider-state-extra-name"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
@@ -2038,31 +1844,14 @@ Use the repository's documented checks.
             "files": {"keep.txt": PROVIDER_MANAGER.sha256(marker)},
             "origin": "created",
             "path": "skills/project-owned",
-            "tree_sha": "3" * 40,
         }
         state_path.write_text(
             json.dumps(state, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
         state_before = state_path.read_bytes()
-        provider, _skills = PROVIDER_MANAGER.load_declaration()
-        predecessor_manifest = self.base / "extra-state-predecessors.json"
-        write_authenticated_provider_predecessor(
-            target,
-            provider_declaration_document(provider),
-            predecessor_manifest,
-        )
-
-        with mock.patch.object(
-            PROVIDER_MANAGER,
-            "SOURCE_MANIFEST_PATH",
-            predecessor_manifest,
-        ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
-            with self.assertRaisesRegex(
-                PROVIDER_MANAGER.ProviderError,
-                "provider state skill set does not match the authenticated predecessor declaration",
-            ):
-                PROVIDER_MANAGER.command_update(target, dry_run=False)
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
+            PROVIDER_MANAGER.command_update(target, dry_run=False)
 
         find_gh.assert_not_called()
         self.assertEqual(marker.read_text(encoding="utf-8"), "project-owned content\n")
@@ -2174,7 +1963,7 @@ Use the repository's documented checks.
             all(skill["invocation"]["claude-code"] == "unavailable" for skill in skills)
         )
 
-    def test_coordinated_install_preflights_provider_before_payload_writes(self) -> None:
+    def test_coordinated_install_succeeds_without_optional_provider_cli(self) -> None:
         target = self.base / "missing-gh-target"
         target.mkdir()
         environment = os.environ.copy()
@@ -2190,15 +1979,14 @@ Use the repository's documented checks.
             env=environment,
         )
 
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("GitHub CLI 2.97.0 or newer", result.stderr)
-        self.assertFalse((target / "AGENTS.md").exists())
-        self.assertFalse((target / "CLAUDE.md").exists())
-        self.assertFalse((target / ".agents").exists())
-        self.assertFalse(
-            (target / ".ai-workflow").exists(),
-            sorted(path.relative_to(target).as_posix() for path in target.rglob("*")),
-        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("optional providers were not installed", result.stderr)
+        self.assertTrue((target / "AGENTS.md").is_file())
+        self.assertTrue((target / "CLAUDE.md").is_file())
+        self.assertTrue((target / ".agents/skills/workflow-discovery/SKILL.md").is_file())
+        self.assertTrue((target / ".ai-workflow/install-manifest.json").is_file())
+        self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
+        self.assertFalse((target / ".ai-workflow-state").exists())
 
     def test_coordinated_reinstall_enables_provider_state_reconstruction(self) -> None:
         target = (self.base / "coordinated-reinstall").resolve()
@@ -2243,50 +2031,32 @@ Use the repository's documented checks.
             ],
         )
 
-    def test_coordinated_update_commits_payload_inside_provider_rollback_window(self) -> None:
+    def test_coordinated_update_commits_payload_before_optional_provider_update(self) -> None:
         target = self.base / "coordinated-update"
         target.mkdir()
         (target / ".ai-workflow").mkdir()
-        events = []
+        (target / ".ai-workflow/provider-state.json").touch()
+        calls = []
 
-        class FakeProviderManager:
-            class ProviderError(RuntimeError):
-                pass
-
-            @staticmethod
-            def command_update(root, dry_run, *, commit_callback=None):
-                self.assertEqual(root, target)
-                self.assertFalse(dry_run)
-                self.assertIsNotNone(commit_callback)
-                events.append("provider-transaction-open")
-                commit_callback()
-                events.append("provider-transaction-commit")
-
-        def checked(script, action, root, dry_run, revision, *, quiet=False):
-            self.assertEqual(script, LIFECYCLE_MANAGER.ADOPTER)
+        def checked(script, action, root, dry_run, revision, *, quiet=False, extra=()):
             self.assertEqual(action, "update")
             self.assertEqual(root, target)
             self.assertEqual(revision, REVISION)
-            events.append("payload-preflight" if dry_run else "payload-commit")
+            calls.append((script, dry_run, quiet))
 
         with mock.patch.object(
             LIFECYCLE_MANAGER,
             "run_checked",
             side_effect=checked,
-        ), mock.patch.object(
-            LIFECYCLE_MANAGER,
-            "load_provider_manager",
-            return_value=FakeProviderManager,
         ):
             LIFECYCLE_MANAGER.update(target, dry_run=False, revision=REVISION)
 
         self.assertEqual(
-            events,
+            calls,
             [
-                "payload-preflight",
-                "provider-transaction-open",
-                "payload-commit",
-                "provider-transaction-commit",
+                (LIFECYCLE_MANAGER.ADOPTER, True, True),
+                (LIFECYCLE_MANAGER.ADOPTER, False, False),
+                (LIFECYCLE_MANAGER.PROVIDERS, False, False),
             ],
         )
 
@@ -2332,7 +2102,8 @@ Use the repository's documented checks.
         self.assertEqual(installed.returncode, 0, installed.stderr)
 
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.write_bytes(profile.read_bytes() + b"\nProject-owned profile note.\n")
+        profile.parent.mkdir(parents=True)
+        profile.write_bytes(b"# Project context\n\nProject-owned profile note.\n")
         record = target / ".ai-workflow-state/records/DBG-0001-preserved.md"
         record.parent.mkdir(parents=True)
         record.write_text("preserved framework continuity\n", encoding="utf-8")
@@ -2345,7 +2116,7 @@ Use the repository's documented checks.
         self.assertTrue(retired.is_file())
         relocate_fixture_to_legacy_layout(target)
 
-        trusted_package = package_root_accepting_installed_fixture(
+        trusted_package = copied_package_fixture(
             self.base,
             target,
             "legacy-aware-package",
@@ -2442,38 +2213,9 @@ Use the repository's documented checks.
         self.assertEqual(legacy_note.read_text(encoding="utf-8"), "preserved\n")
         self.assertFalse((target / ".ai-workflow").exists())
 
-    def test_coordinated_rollback_derives_seed_targets_from_manifest(self) -> None:
-        manifest = json.loads(
-            LIFECYCLE_MANAGER.DISTRIBUTION_MANIFEST.read_text(encoding="utf-8")
-        )
-        manifest["project_seeds"].append(
-            {
-                "source": "ai-workflow/templates/future-seed.md",
-                "target": ".ai-workflow/future-seed.md",
-            }
-        )
-        manifest_path = self.base / "future-distribution-manifest.json"
-        manifest_path.write_text(
-            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-
-        with mock.patch.object(
-            LIFECYCLE_MANAGER,
-            "DISTRIBUTION_MANIFEST",
-            manifest_path,
-        ):
-            cleanup_targets, seed_targets = LIFECYCLE_MANAGER.payload_targets()
-
-        future = Path(".ai-workflow/future-seed.md")
-        self.assertIn(future, cleanup_targets)
-        self.assertIn(future, seed_targets)
-
-    def test_coordinated_install_rolls_back_new_payload_and_seeds_on_provider_failure(self) -> None:
+    def test_coordinated_install_keeps_framework_when_optional_provider_fails(self) -> None:
         target = self.base / "provider-runtime-failure"
         target.mkdir()
-        preexisting_seed_parent = target / ".ai-workflow-state"
-        preexisting_seed_parent.mkdir(parents=True)
         original_run_checked = LIFECYCLE_MANAGER.run_checked
 
         def controlled_run_checked(
@@ -2498,17 +2240,13 @@ Use the repository's documented checks.
             "run_checked",
             side_effect=controlled_run_checked,
         ):
-            with self.assertRaisesRegex(
-                LIFECYCLE_MANAGER.LifecycleError,
-                "simulated provider network failure",
-            ):
-                LIFECYCLE_MANAGER.install(target, dry_run=False, revision=REVISION)
+            LIFECYCLE_MANAGER.install(target, dry_run=False, revision=REVISION)
 
-        self.assertFalse((target / "AGENTS.md").exists())
-        self.assertFalse((target / "CLAUDE.md").exists())
-        self.assertFalse((target / ".agents").exists())
-        self.assertTrue(preexisting_seed_parent.is_dir())
-        self.assertEqual(list(preexisting_seed_parent.iterdir()), [])
+        self.assertTrue((target / "AGENTS.md").is_file())
+        self.assertTrue((target / "CLAUDE.md").is_file())
+        self.assertTrue((target / ".agents/skills/workflow-discovery/SKILL.md").is_file())
+        self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
+        self.assertFalse((target / ".ai-workflow-state").exists())
 
     def test_target_project_docs_are_never_supplied_or_removed(self) -> None:
         target = self.base / "documented-project"
@@ -2682,7 +2420,7 @@ Use the repository's documented checks.
 
         project = b"# Project instructions\n\nKeep this project-owned guidance.\n"
         policy_path.write_bytes(ADOPTER.compose_policy(old_managed, project))
-        trusted_adopt = package_accepting_installed_fixture(
+        trusted_adopt = copied_adopter_fixture(
             self.base,
             target,
             "current-route-contract-package",
@@ -2770,7 +2508,7 @@ Use the repository's documented checks.
         status = adopt(old_package / "scripts/adopt.py", "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
 
-        trusted_adopt = package_accepting_installed_fixture(
+        trusted_adopt = copied_adopter_fixture(
             self.base,
             target,
             "newer-policy-package",
@@ -2901,15 +2639,6 @@ Use the repository's documented checks.
             manifest["framework_files"]["CLAUDE.md"]["origin"],
             "composite-preexisting-identical",
         )
-        manifest["schema_version"] = 1
-        manifest["project_owned"] = []
-        manifest["framework_files"]["CLAUDE.md"].pop("preexisting_base64")
-        manifest["framework_files"]["CLAUDE.md"].pop("preexisting_sha256")
-        manifest_path.write_text(
-            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-
         setup_content = b"\n## Agent skills\n\nExact pre-existing policy setup content.\n"
         policy.write_bytes(ADOPTER.compose_policy(managed, setup_content))
         self.assertEqual(adopt(ADOPT, "status", target).returncode, 0)
@@ -3062,6 +2791,7 @@ Use the repository's documented checks.
         composite = (target / "AGENTS.md").read_bytes()
         self.assertIn(original, composite)
         profile = target / ".ai-workflow-state/project-profile.md"
+        profile.parent.mkdir(parents=True)
         profile.write_text("project-owned customization\n", encoding="utf-8")
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
@@ -3112,7 +2842,7 @@ Use the repository's documented checks.
         self.assertEqual(installed.returncode, 0, installed.stderr)
         self.assertEqual((target / "CLAUDE.md").read_bytes(), original)
 
-        trusted_adopt = package_accepting_installed_fixture(
+        trusted_adopt = copied_adopter_fixture(
             self.base,
             target,
             "post-claude-package",
@@ -3247,68 +2977,31 @@ Use the repository's documented checks.
         self.assertIn("already installed and verified", second.stdout)
         self.assertEqual((target / ".ai-workflow/install-manifest.json").read_bytes(), manifest)
 
-    def test_accepted_predecessor_requires_immutable_git_revision(self) -> None:
+    def test_distribution_manifest_omits_historical_predecessor_catalog(self) -> None:
         manifest = json.loads(ADOPTER.SOURCE_MANIFEST.read_text(encoding="utf-8"))
-        manifest["accepted_predecessors"][0]["source_revisions"] = [
-            ADOPTER.LOCAL_SOURCE_REVISION
-        ]
-        manifest_path = self.base / "sentinel-predecessor-manifest.json"
-        manifest_path.write_text(
-            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
+
+        self.assertEqual(manifest["schema_version"], 5)
+        self.assertNotIn("accepted_predecessors", manifest)
+        source_version, owned, retired = ADOPTER.load_source_manifest()
+        self.assertEqual(source_version, (PACKAGE / "VERSION").read_text(encoding="utf-8").strip())
+        self.assertTrue(owned)
+        self.assertTrue(retired)
+
+    def test_installed_ownership_record_is_the_update_baseline(self) -> None:
+        target = git_repository(self.base / "recorded-update-baseline")
+        installed = adopt(ADOPT, "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        before = json.loads(
+            (target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8")
         )
 
-        with mock.patch.object(ADOPTER, "SOURCE_MANIFEST", manifest_path):
-            with self.assertRaisesRegex(
-                ADOPTER.AdoptionError,
-                "accepted predecessor source_revisions are malformed",
-            ):
-                ADOPTER.load_source_manifest()
+        updated = adopt(ADOPT, "update", target)
 
-    def test_recent_release_baselines_are_authenticated_predecessors(self) -> None:
-        source_version, owned, _seeds, _retired, accepted = ADOPTER.load_source_manifest()
-        current_sources = {
-            target: ADOPTER.sha256_file(ADOPTER.SOURCE_ROOT.joinpath(*source.parts))
-            for source, target in owned
-        }
-        expected_revisions = {
-            "0.9.0": {
-                "0719332f547eb0b18bc6f23df73fd37313408017",
-                "62f08dd16fe588b48f591398f66a2f585149f14b",
-            },
-            "0.9.1": {
-                "97570ac2c1d366bb4fc05e9f0110630f94c4c4a2",
-            },
-        }
-        for expected_version, revisions_for_version in expected_revisions.items():
-            releases = [item for item in accepted if item[0] == expected_version]
-            self.assertEqual(
-                {
-                    revision
-                    for _, revisions, _, _ in releases
-                    for revision in revisions
-                },
-                revisions_for_version,
-            )
-
-            for version, revisions, schemas, identities in releases:
-                for revision in revisions:
-                    installed = {
-                        "framework_version": version,
-                        "source_revision": revision,
-                        "schema_version": next(iter(schemas)),
-                        "framework_files": {
-                            path.as_posix(): {"source_sha256": digest}
-                            for path, digest in identities.items()
-                        },
-                    }
-                    trusted = ADOPTER.trusted_installed_sources(
-                        installed,
-                        source_version,
-                        current_sources,
-                        accepted,
-                    )
-                    self.assertEqual(trusted, identities)
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        after = json.loads(
+            (target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(after["framework_files"], before["framework_files"])
 
     def test_tamper_is_reported_and_blocks_update(self) -> None:
         target = git_repository(self.base / "target")
@@ -3320,35 +3013,8 @@ Use the repository's documented checks.
         self.assertEqual(update.returncode, 2)
         self.assertIn("locally changed framework file", update.stderr)
 
-    def test_forged_current_source_identity_cannot_authorize_overwrite(self) -> None:
-        target = git_repository(self.base / "forged-current-source")
-        installed = adopt(ADOPT, "install", target)
-        self.assertEqual(installed.returncode, 0, installed.stderr)
-        relative = ".agents/skills/workflow-discovery/SKILL.md"
-        path = target / relative
-        forged = b"project-authored bytes\n"
-        path.write_bytes(forged)
-        manifest_path = target / ".ai-workflow/install-manifest.json"
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        digest = hashlib.sha256(forged).hexdigest()
-        manifest["framework_files"][relative].update(
-            {"sha256": digest, "source_sha256": digest, "origin": "created"}
-        )
-        manifest_path.write_text(
-            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-        forged_manifest = manifest_path.read_bytes()
-
-        updated = adopt(ADOPT, "update", target)
-
-        self.assertEqual(updated.returncode, 2)
-        self.assertIn("package-authenticated baseline", updated.stderr)
-        self.assertEqual(path.read_bytes(), forged)
-        self.assertEqual(manifest_path.read_bytes(), forged_manifest)
-
-    def test_omitted_predecessor_record_blocks_dry_run_and_update_without_mutation(self) -> None:
-        target = git_repository(self.base / "omitted-predecessor-record")
+    def test_missing_ownership_record_blocks_update_without_mutation(self) -> None:
+        target = git_repository(self.base / "missing-ownership-record")
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
         manifest_path = target / ".ai-workflow/install-manifest.json"
@@ -3366,201 +3032,61 @@ Use the repository's documented checks.
             with self.subTest(extra=extra):
                 updated = adopt(ADOPT, "update", target, *extra)
                 self.assertEqual(updated.returncode, 2)
-                self.assertIn("package-authenticated baseline", updated.stderr)
+                self.assertIn("reserved ai-workflow composite marker", updated.stderr)
                 self.assertEqual(policy.read_bytes(), original_policy)
                 self.assertEqual(manifest_path.read_bytes(), forged_manifest)
 
-    def test_forged_retired_record_cannot_authorize_deletion(self) -> None:
-        target = git_repository(self.base / "forged-retired-record")
+    def test_unrecorded_project_file_is_preserved_by_update_and_remove(self) -> None:
+        target = git_repository(self.base / "unrecorded-project-file")
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        relative = "docs/routing.md"
-        retired = target / relative
-        retired.parent.mkdir(parents=True)
-        retired.write_bytes(b"project routing\n")
-        digest = hashlib.sha256(retired.read_bytes()).hexdigest()
-        manifest_path = target / ".ai-workflow/install-manifest.json"
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        manifest["framework_files"][relative] = {
-            "origin": "created",
-            "sha256": digest,
-            "source_sha256": digest,
-        }
-        manifest_path.write_text(
-            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-        forged_manifest = manifest_path.read_bytes()
-
+        project_file = target / "docs/routing.md"
+        project_file.parent.mkdir(parents=True)
+        project_file.write_bytes(b"project routing\n")
         updated = adopt(ADOPT, "update", target)
+        removed = adopt(ADOPT, "remove", target)
 
-        self.assertEqual(updated.returncode, 2)
-        self.assertIn("package-authenticated baseline", updated.stderr)
-        self.assertEqual(retired.read_bytes(), b"project routing\n")
-        self.assertEqual(manifest_path.read_bytes(), forged_manifest)
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertEqual(project_file.read_bytes(), b"project routing\n")
 
-    def test_forged_policy_restoration_cannot_authorize_overwrite(self) -> None:
-        target = git_repository(self.base / "forged-policy-restoration")
-        source = (PACKAGE / "payload/root/AGENTS.md.template").read_bytes()
-        policy = target / "AGENTS.md"
-        policy.write_bytes(source)
-        installed = adopt(ADOPT, "install", target)
-        self.assertEqual(installed.returncode, 0, installed.stderr)
-        manifest_path = target / ".ai-workflow/install-manifest.json"
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        forged = b"attacker-selected restoration\n"
-        record = manifest["framework_files"]["AGENTS.md"]
-        record["preexisting_base64"] = base64.b64encode(forged).decode("ascii")
-        record["preexisting_sha256"] = hashlib.sha256(forged).hexdigest()
-        manifest_path.write_text(
-            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-        forged_manifest = manifest_path.read_bytes()
-        composite = policy.read_bytes()
-
-        for action in ("status", "update", "remove"):
-            with self.subTest(action=action):
-                result = adopt(ADOPT, action, target)
-                self.assertEqual(result.returncode, 2)
-                self.assertIn("restoration identity is not package-authenticated", result.stderr)
-                self.assertEqual(policy.read_bytes(), composite)
-                self.assertEqual(manifest_path.read_bytes(), forged_manifest)
-
-    def test_installation_manifest_cannot_hide_file_tampering(self) -> None:
-        target = git_repository(self.base / "target")
-        self.assertEqual(adopt(ADOPT, "install", target).returncode, 0)
-        relative = ".agents/skills/workflow-discovery/SKILL.md"
-        skill = target / relative
-        skill.write_text(skill.read_text(encoding="utf-8") + "\nlocal change\n", encoding="utf-8")
-        digest = hashlib.sha256(skill.read_bytes()).hexdigest()
-        manifest_path = target / ".ai-workflow/install-manifest.json"
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        manifest["framework_files"][relative]["sha256"] = digest
-        manifest["framework_files"][relative]["source_sha256"] = digest
-        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        status = adopt(ADOPT, "status", target)
-        self.assertEqual(status.returncode, 2)
-        self.assertIn("source checksum was changed", status.stderr)
-
-    def test_malformed_recorded_revision_cannot_fall_back_to_main(self) -> None:
-        target = self.base / "malformed-revision"
+    def test_bootstrap_source_selection_does_not_parse_installed_revision(self) -> None:
+        target = self.base / "source-selection"
         manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest_path.parent.mkdir(parents=True)
-        for malformed in (None, "", "main", "1" * 39, "A" * 40):
-            with self.subTest(malformed=malformed):
-                manifest_path.write_text(
-                    json.dumps({"source_revision": malformed}) + "\n",
-                    encoding="utf-8",
-                )
-                with mock.patch.object(BOOTSTRAPPER, "resolve_revision") as fallback:
-                    with self.assertRaisesRegex(
-                        BOOTSTRAPPER.BootstrapError,
-                        "installed source_revision is missing or invalid",
-                    ):
-                        BOOTSTRAPPER.select_source("status", target, "main", None)
-                fallback.assert_not_called()
-
         manifest_path.write_text("not-json\n", encoding="utf-8")
-        with self.assertRaisesRegex(BOOTSTRAPPER.BootstrapError, "cannot read installed source revision"):
-            BOOTSTRAPPER.select_source("status", target, "main", None)
+        resolved = "f1fda30e5d9e7740bf6ddcc32ab0c3df1262a037"
+        with mock.patch.object(BOOTSTRAPPER, "resolve_revision", return_value=resolved):
+            revision, archive_url = BOOTSTRAPPER.select_source("status", target, "main", None)
 
-        manifest_path.write_text(
-            json.dumps({"source_revision": BOOTSTRAPPER.LOCAL_SOURCE_REVISION}) + "\n",
-            encoding="utf-8",
-        )
-        with self.assertRaisesRegex(
-            BOOTSTRAPPER.BootstrapError,
-            "records an unreleased local package",
-        ):
-            BOOTSTRAPPER.select_source("remove", target, "main", None)
-
-    def test_repository_rename_preserves_installed_revision_lookup(self) -> None:
-        target = self.base / "pre-rename-revision"
-        manifest_path = target / ".ai-workflow/install-manifest.json"
-        manifest_path.parent.mkdir(parents=True)
-        pre_rename_revision = "f1fda30e5d9e7740bf6ddcc32ab0c3df1262a037"
-        manifest_path.write_text(
-            json.dumps({"source_revision": pre_rename_revision}) + "\n",
-            encoding="utf-8",
-        )
-
-        revision, archive_url = BOOTSTRAPPER.select_source(
-            "status",
-            target,
-            "main",
-            None,
-        )
-
-        self.assertEqual(revision, pre_rename_revision)
+        self.assertEqual(revision, resolved)
         self.assertEqual(
             archive_url,
             "https://codeload.github.com/jimmfan/agentic-workflow/tar.gz/"
-            + pre_rename_revision,
+            + resolved,
         )
 
-    def test_bootstrap_rejects_symlinked_revision_manifest_components(self) -> None:
+    def test_bootstrap_source_selection_does_not_follow_install_manifest_symlink(self) -> None:
         target = self.base / "bootstrap-symlink-target"
         target.mkdir()
-        target = target.resolve()
-        for linked_path in (
-            target / ".ai-workflow",
-            target / ".ai-workflow/install-manifest.json",
-        ):
-            with self.subTest(linked_path=linked_path), mock.patch.object(
-                BOOTSTRAPPER.Path,
-                "is_symlink",
-                autospec=True,
-                side_effect=lambda candidate, linked=linked_path: candidate == linked,
-            ), mock.patch.object(BOOTSTRAPPER, "resolve_revision") as resolver, mock.patch.object(
-                BOOTSTRAPPER,
-                "request_bytes",
-            ) as download:
-                with self.assertRaisesRegex(
-                    BOOTSTRAPPER.BootstrapError,
-                    "refusing to follow target symlink",
-                ):
-                    BOOTSTRAPPER.main(["status", str(target)])
-                resolver.assert_not_called()
-                download.assert_not_called()
+        linked = target / ".ai-workflow"
+        linked.symlink_to(self.base / "outside")
+        resolved = "2" * 40
 
-    def test_status_and_remove_bind_to_the_installed_source_revision(self) -> None:
-        target = git_repository(self.base / "revision-binding")
+        with mock.patch.object(BOOTSTRAPPER, "resolve_revision", return_value=resolved):
+            revision, _archive_url = BOOTSTRAPPER.select_source("remove", target, "main", None)
+
+        self.assertEqual(revision, resolved)
+        self.assertTrue(linked.is_symlink())
+
+    def test_status_and_remove_use_local_ownership_record_across_source_revisions(self) -> None:
+        target = git_repository(self.base / "revision-independent-lifecycle")
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
         manifest_path = target / ".ai-workflow/install-manifest.json"
-        manifest_before = manifest_path.read_bytes()
         different_revision = "2" * 40
 
-        for action in ("status", "remove"):
-            with self.subTest(action=action):
-                result = run(
-                    sys.executable,
-                    ADOPT,
-                    action,
-                    target,
-                    "--source-revision",
-                    different_revision,
-                )
-                self.assertEqual(result.returncode, 2)
-                self.assertIn("does not match installed", result.stderr)
-                self.assertEqual(manifest_path.read_bytes(), manifest_before)
-
-        valid_status = adopt(ADOPT, "status", target)
-        self.assertEqual(valid_status.returncode, 0, valid_status.stderr)
-
-        updated = run(
-            sys.executable,
-            ADOPT,
-            "update",
-            target,
-            "--source-revision",
-            different_revision,
-        )
-        self.assertEqual(updated.returncode, 0, updated.stderr)
-        rebound = json.loads(manifest_path.read_text(encoding="utf-8"))
-        self.assertEqual(rebound["source_revision"], different_revision)
-        rebound_status = run(
+        status = run(
             sys.executable,
             ADOPT,
             "status",
@@ -3568,21 +3094,18 @@ Use the repository's documented checks.
             "--source-revision",
             different_revision,
         )
-        self.assertEqual(rebound_status.returncode, 0, rebound_status.stderr)
-        for action in ("status", "remove"):
-            with self.subTest(stale_action=action):
-                stale_package = adopt(ADOPT, action, target)
-                self.assertEqual(stale_package.returncode, 2)
-                self.assertIn("does not match installed", stale_package.stderr)
-                self.assertTrue(manifest_path.exists())
+        removed = run(
+            sys.executable,
+            ADOPT,
+            "remove",
+            target,
+            "--source-revision",
+            different_revision,
+        )
 
-        malformed = json.loads(manifest_path.read_text(encoding="utf-8"))
-        malformed["source_revision"] = "main"
-        manifest_path.write_text(json.dumps(malformed, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        rejected = adopt(ADOPT, "remove", target)
-        self.assertEqual(rejected.returncode, 2)
-        self.assertIn("source_revision must be", rejected.stderr)
-        self.assertTrue(manifest_path.exists())
+        self.assertEqual(status.returncode, 0, status.stderr)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertFalse(manifest_path.exists())
 
     def test_unreleased_local_package_revision_supports_direct_lifecycle(self) -> None:
         target = git_repository(self.base / "local-revision")
@@ -3618,8 +3141,9 @@ Use the repository's documented checks.
         old_install = adopt(old_package / "scripts/adopt.py", "install", target)
         self.assertEqual(old_install.returncode, 0, old_install.stderr)
         profile = target / ".ai-workflow-state/project-profile.md"
+        profile.parent.mkdir(parents=True)
         profile.write_text("custom project profile\n", encoding="utf-8")
-        trusted_adopt = package_accepting_installed_fixture(
+        trusted_adopt = copied_adopter_fixture(
             self.base,
             target,
             "retirement-new-package",
@@ -3655,7 +3179,7 @@ Use the repository's documented checks.
         for relative in FORMER_FRAMEWORK_DOCS:
             self.assertTrue((target / relative).is_file())
 
-        trusted_adopt = package_accepting_installed_fixture(
+        trusted_adopt = copied_adopter_fixture(
             self.base,
             target,
             "legacy-docs-new-package",
@@ -3702,7 +3226,7 @@ Use the repository's documented checks.
         for _source, target_path in legacy_mappings:
             self.assertTrue((target / target_path).is_file())
 
-        trusted_adopt = package_accepting_installed_fixture(
+        trusted_adopt = copied_adopter_fixture(
             self.base,
             target,
             "pre-provider-new-package",
@@ -3743,7 +3267,7 @@ Use the repository's documented checks.
             "--refresh-manifest",
         )
         self.assertEqual(refreshed.returncode, 1)
-        self.assertIn("reviewed pinned identity lock", refreshed.stderr)
+        self.assertIn("provider skill entries need invocation, name, path, and requirements", refreshed.stderr)
 
     def test_documented_prerequisite_version_drift_is_detected(self) -> None:
         copied_root = self.base / "prerequisite-contract"
@@ -3801,12 +3325,10 @@ Use the repository's documented checks.
         route_instruction = policy[start:]
         compact_instruction = " ".join(route_instruction.split())
         self.assertLessEqual(len(route_instruction.encode("utf-8")), 400)
-        self.assertTrue(
-            policy.rstrip().endswith("do no extra work merely to produce the marker.")
-        )
-        self.assertIn("one truthful", compact_instruction)
+        self.assertIn("may include a truthful", compact_instruction)
+        self.assertIn("Its absence is not an error", compact_instruction)
         self.assertIn(".ai-workflow/routing.md", compact_instruction)
-        self.assertIn("no extra work merely to produce", compact_instruction)
+        self.assertIn("no extra work merely to produce it", compact_instruction)
         self.assertNotIn("-handoff", policy)
         self.assertIn("<skill>-handoff", routing)
         self.assertIn("router-selected stages", routing)
@@ -3817,15 +3339,15 @@ Use the repository's documented checks.
         route_scenarios = json.loads(
             (PACKAGE / "tests/route-observability-scenarios.json").read_text(encoding="utf-8")
         )
-        outputs = {item["id"]: item["expected_route_output"] for item in route_scenarios}
-        self.assertEqual(outputs["direct"], "[route: router → direct]")
+        outputs = {item["id"]: item["optional_route_diagnostic"] for item in route_scenarios}
+        self.assertIsNone(outputs["direct"])
         self.assertEqual(
             outputs["wayfinder-handoff"],
-            "[route: router → wayfinder-handoff]",
+            "[route: router → host-native-planning]",
         )
         self.assertEqual(
             outputs["wayfinder-research-handoff"],
-            "[route: router → wayfinder-handoff]",
+            "[route: router → host-native-planning → research]",
         )
         self.assertEqual(
             outputs["wayfinder-research"],
@@ -3847,7 +3369,7 @@ Use the repository's documented checks.
         )
         self.assertEqual(
             outputs["limited-host-unavailable"],
-            "[route: router → research-unavailable]",
+            "[route: router → host-native-research]",
         )
         self.assertEqual(
             outputs["provider-integrity-error"],
@@ -3857,7 +3379,7 @@ Use the repository's documented checks.
             outputs["active-state-conflict"],
             "[route: router → discovery-blocked]",
         )
-        self.assertEqual(outputs["no-trigger"], "[route: router → direct]")
+        self.assertIsNone(outputs["no-trigger"])
 
         decisions = json.loads(
             (PACKAGE / "tests/decision-contract-scenarios.json").read_text(encoding="utf-8")
@@ -3919,12 +3441,20 @@ Use the repository's documented checks.
         for category in (
             "wayfinder-handoff",
             "standalone-teach-handoff",
-            "setup-required-handoff",
             "implementation-handoff",
         ):
-            self.assertEqual(by_category[category]["route_result"], "user-only-handoff")
-            self.assertFalse(by_category[category]["executed"])
-            self.assertEqual(by_category[category]["repository_state_effect"], "none")
+            self.assertEqual(by_category[category]["route_result"], "host-native-fallback")
+            self.assertTrue(by_category[category]["executed"])
+            self.assertEqual(
+                by_category[category]["provider_invocations"][0]["invocation"],
+                "not-invoked",
+            )
+            self.assertFalse(by_category[category]["provider_invocations"][0]["executed"])
+        self.assertEqual(
+            by_category["setup-required-handoff"]["route_result"],
+            "user-only-handoff",
+        )
+        self.assertFalse(by_category["setup-required-handoff"]["executed"])
         self.assertEqual(
             by_category["canonical-artifact-ownership"]["provider_invocations"][0]["invocation"],
             "explicit",
@@ -3941,9 +3471,9 @@ Use the repository's documented checks.
         )
         self.assertEqual(
             by_category["limited-host-local-unavailable"]["route_result"],
-            "unavailable",
+            "host-native-fallback",
         )
-        self.assertFalse(by_category["limited-host-local-unavailable"]["executed"])
+        self.assertTrue(by_category["limited-host-local-unavailable"]["executed"])
 
     def test_wayfinder_state_uses_native_identity_without_root_context_growth(self) -> None:
         VERIFIER.check_wayfinder_ownership_contract()

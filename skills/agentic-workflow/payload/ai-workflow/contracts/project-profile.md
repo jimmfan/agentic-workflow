@@ -7,41 +7,42 @@ architecture document, README copy, source-of-truth replacement, or place for
 secret values. The profile is not a shell script; an agent may run a recorded
 command only after applying the safety gate below.
 
-Lifecycle operations seed the current template only when the profile is absent.
-They preserve every existing profile byte-for-byte during install, update, and
-removal. A newer template never requires an existing profile to migrate.
+Lifecycle operations never create the profile or its parent directory. They
+preserve every existing profile byte-for-byte during install, update, removal,
+and reinstall. An authorized workflow may use the framework template as a
+starting point only when it has useful verified durable context to record; it
+must populate that context before creating the project-owned file. A newer
+template never requires an existing profile to migrate.
 
-## Presence and initialization
+## Presence
 
 Readiness classification is deliberately permissive:
 
 - `missing`: the file does not exist;
-- `uninitialized`: a readable profile contains the advisory
-  `Initialization: uninitialized` marker;
-- `present`: any other readable, non-empty UTF-8 regular file;
+- `present`: any readable, non-empty UTF-8 regular file;
 - `empty`: the file contains only whitespace;
 - `unreadable`: its bytes cannot be read or decoded as UTF-8; and
 - `unsafe`: the path traverses a symlink, has a non-directory parent, or is not
   a regular file.
 
 These states do not validate semantic quality. In particular, `present` means
-only that advisory context exists. Heading names, order, and counts are not a
-schema, and an initialization marker is not required in an existing populated
-profile.
+only that advisory context exists. Heading names, order, marker values, and
+counts are not a lifecycle schema.
 
-The installed template uses `Initialization: uninitialized` and `None` for
-unknown sections. The marker is an advisory signal, not a format version. Missing,
-empty, or uninitialized project context does not prevent unrelated direct work
-and is not framework corruption.
+The framework template may use `Initialization: uninitialized` and `None` for
+unknown sections as authoring prompts. The marker is template text, not a
+readiness state or format version, and the template's presence under
+`.ai-workflow/templates/` does not imply that a project profile is required.
+Missing or empty project context does not prevent unrelated work and is not
+framework corruption.
 
-For a mature existing repository, initialize the profile once from verified
-repository evidence. Keep the investigation bounded to useful canonical files
-and relevant live checks; do not scan the entire repository merely to populate
-the profile. Remove or change the uninitialized marker after recording checked
-facts. A new or intentionally sparse repository may remain uninitialized until
-reusable context exists.
+Create a profile only when normal authorized work establishes verified reusable
+project context. Keep any supporting investigation bounded to useful canonical
+files and relevant live checks; do not scan the entire repository merely to
+populate the profile. A new or intentionally sparse repository normally has no
+profile until reusable context exists.
 
-After initialization, update the profile progressively when normal work
+After creation, update the profile progressively when normal work
 naturally establishes information that is all three of:
 
 1. verified;
@@ -99,7 +100,7 @@ format differences.
 
 When present, the maintenance section can identify the owner, last review date,
 facts that make the profile stale, and the action to take when reality conflicts
-with it. While uninitialized, its value may remain `None`.
+with it.
 
 Under `Commands`, `None` means that no project check has been configured yet.
 Report verification as blocked rather than inventing a command.

@@ -4,151 +4,151 @@
     "requirement": "A clear bounded request remains direct even when optional project setup is missing.",
     "prompt": "Explain what this Terraform module does.",
     "setup": "Provider skills are installed, but project tracker configuration is absent.",
-    "expected_route_output": "[route: router → direct]",
-    "expected_behavior": "Answer directly without checking setup, loading a provider workflow, or writing repository state."
+    "expected_behavior": "Answer directly without checking setup, loading a provider workflow, or writing repository state.",
+    "optional_route_diagnostic": null
   },
   {
     "id": "wayfinder-handoff",
-    "requirement": "Normal intent can select a Codex user-only workflow without pretending it executed.",
+    "requirement": "Normal intent falls back to host-native planning when a user-only provider was not explicitly invoked.",
     "prompt": "Map this foggy multi-quarter platform migration.",
     "setup": "The active host is Codex and the declared Wayfinder policy requires user invocation.",
-    "expected_route_output": "[route: router → wayfinder-handoff]",
-    "expected_behavior": "Classify Wayfinder, tell the user to invoke $wayfinder, and create no provider artifact or workflow state."
+    "expected_behavior": "Plan with normal host capability, report that Wayfinder did not run when material, and create no provider artifact or durable state unless continuity later requires it.",
+    "optional_route_diagnostic": "[route: router → host-native-planning]"
   },
   {
     "id": "wayfinder-handoff-copilot",
-    "requirement": "Normal intent can select a GitHub Copilot user-only workflow without pretending it executed.",
+    "requirement": "GitHub Copilot can use host-native planning when a user-only provider was not explicitly invoked.",
     "prompt": "Map this foggy multi-quarter platform migration.",
     "setup": "The active host is GitHub Copilot and the declared Wayfinder policy requires user invocation.",
-    "expected_route_output": "[route: router → wayfinder-handoff]",
-    "expected_behavior": "Classify Wayfinder, tell the user to invoke /wayfinder, and create no provider artifact or workflow state."
+    "expected_behavior": "Plan with normal host capability without claiming /wayfinder ran or creating provider-native artifacts.",
+    "optional_route_diagnostic": "[route: router → host-native-planning]"
   },
   {
     "id": "wayfinder-research-handoff",
-    "requirement": "A planned supporting capability does not disguise an unexecuted user-only dominant workflow.",
+    "requirement": "A user-only dominant provider does not block available host-native planning and research.",
     "prompt": "Map the ARC runner migration and research whether Karpenter meets the scaling constraints.",
     "setup": "The active host is Codex; Wayfinder is user-only and Research would be useful after Wayfinder begins.",
-    "expected_route_output": "[route: router → wayfinder-handoff]",
-    "expected_behavior": "Tell the user to invoke $wayfinder, identify Research as a likely internal capability, and run neither workflow before invocation."
+    "expected_behavior": "Use host-native planning and the available Research capability, report that Wayfinder did not run, and create no Wayfinder artifact or automatic durable state.",
+    "optional_route_diagnostic": "[route: router → host-native-planning → research]"
   },
   {
     "id": "wayfinder-research",
     "requirement": "A supporting capability can execute inside a dominant workflow without becoming a state transition.",
     "prompt": "$wayfinder Map the ARC runner migration and research whether Karpenter meets the scaling constraints.",
     "setup": "Codex has explicitly invoked Wayfinder; Research is compatible and model invocable.",
-    "expected_route_output": "[route: router → wayfinder → research]",
-    "expected_behavior": "Keep Wayfinder dominant, use Research for the external evidence, and retain the Wayfinder map as canonical durable state."
+    "expected_behavior": "Keep Wayfinder dominant, use Research for the external evidence, and retain the Wayfinder map as canonical durable state.",
+    "optional_route_diagnostic": "[route: router → wayfinder → research]"
   },
   {
     "id": "standalone-research",
     "requirement": "Research may be the dominant activity when it directly matches intent.",
     "prompt": "Research whether Karpenter supports these scaling constraints and cite primary sources.",
     "setup": "Research is compatible and model invocable on the active host.",
-    "expected_route_output": "[route: router → research]",
-    "expected_behavior": "Execute Research as the dominant activity rather than requiring Wayfinder or treating it as supporting-only."
+    "expected_behavior": "Execute Research as the dominant activity rather than requiring Wayfinder or treating it as supporting-only.",
+    "optional_route_diagnostic": "[route: router → research]"
   },
   {
     "id": "debugging",
     "requirement": "An unexplained failure can make local Debugging the dominant activity.",
     "prompt": "Why are these ARC runners failing? Diagnose only; do not fix anything.",
     "setup": "The request is read-only and no durable investigation state is required.",
-    "expected_route_output": "[route: router → debugging]",
-    "expected_behavior": "Diagnose ephemerally and preserve the no-fix, no-state-write boundary."
+    "expected_behavior": "Diagnose ephemerally and preserve the no-fix, no-state-write boundary.",
+    "optional_route_diagnostic": "[route: router → debugging]"
   },
   {
     "id": "user-only-handoff",
-    "requirement": "An unknown primary host receives both exact user-invocation forms without a guessed host.",
+    "requirement": "Normal learning intent can proceed host-natively without forcing a user-only provider handoff.",
     "prompt": "Teach me Kubernetes networking over several sessions.",
     "setup": "Teach is user-only and the active primary host cannot be distinguished between Codex and GitHub Copilot.",
-    "expected_route_output": "[route: router → teach-handoff]",
-    "expected_behavior": "Select Teach and label both Codex $teach and GitHub Copilot /teach guidance without creating a learning workspace."
+    "expected_behavior": "Teach with normal host capability and do not claim the Teach provider or its workspace ran.",
+    "optional_route_diagnostic": "[route: router → host-native-learning]"
   },
   {
     "id": "implement-handoff",
-    "requirement": "The local adapter hands a user-only implementation workflow back to the user before execution.",
+    "requirement": "A user-only implementation provider does not block a normally authorized implementation.",
     "prompt": "Implement ready ticket ARC-384 and verify it.",
     "setup": "The active host is Codex and implement requires user invocation.",
-    "expected_route_output": "[route: router → implement-handoff]",
-    "expected_behavior": "Tell the user to invoke $implement and stop without implementation changes, IMP state, or a claim that Verification ran."
+    "expected_behavior": "Implement and verify with host-native capability, report that the implement provider did not run, and create no provider-native artifacts.",
+    "optional_route_diagnostic": "[route: router → host-native-implementation → verification]"
   },
   {
     "id": "implementation-executed",
     "requirement": "An actually invoked implementation reports execution and subsequent Verification.",
     "prompt": "$implement Apply ready ticket ARC-384, then verify its acceptance criteria.",
     "setup": "Codex has explicitly invoked implement; no separate TDD or Code Review pass is needed beyond provider-owned composition.",
-    "expected_route_output": "[route: router → implement → verification]",
-    "expected_behavior": "Execute implement once, preserve the native ticket, and add only uncovered framework Verification evidence."
+    "expected_behavior": "Execute implement once, preserve the native ticket, and add only uncovered framework Verification evidence.",
+    "optional_route_diagnostic": "[route: router → implement → verification]"
   },
   {
     "id": "standalone-tdd",
     "requirement": "Standalone TDD remains dominant but meaningful code work still receives independent Verification.",
     "prompt": "Use TDD to add this already bounded behavior.",
     "setup": "The active host is Codex; TDD is implicitly invocable and the bounded change does not require implement.",
-    "expected_route_output": "[route: router → tdd → verification]",
-    "expected_behavior": "Run one upstream TDD loop followed by one framework acceptance/integration Verification pass, without starting implement or duplicate TDD/Review."
+    "expected_behavior": "Run one upstream TDD loop followed by one framework acceptance/integration Verification pass, without starting implement or duplicate TDD/Review.",
+    "optional_route_diagnostic": "[route: router → tdd → verification]"
   },
   {
     "id": "setup-handoff",
     "requirement": "Missing configuration interrupts only a selected configuration-dependent route and setup remains user-only.",
     "prompt": "Publish this settled specification to our configured tracker.",
     "setup": "The active host is GitHub Copilot; required tracker configuration is missing and setup is user-only.",
-    "expected_route_output": "[route: router → setup-matt-pocock-skills-handoff]",
-    "expected_behavior": "Tell the user to invoke /setup-matt-pocock-skills and stop without configuration, provider artifacts, or state writes."
+    "expected_behavior": "Tell the user to invoke /setup-matt-pocock-skills and stop without configuration, provider artifacts, or state writes.",
+    "optional_route_diagnostic": "[route: router → setup-matt-pocock-skills-handoff]"
   },
   {
     "id": "profile-readiness",
-    "requirement": "An uninitialized profile is a readiness condition rather than package corruption.",
+    "requirement": "Missing durable project state is a normal healthy condition rather than an initialization requirement.",
     "prompt": "Assess whether this mature repository is ready for routed project work.",
-    "setup": "Framework and providers are healthy, while the project profile retains its deterministic uninitialized values.",
-    "expected_route_output": "[route: router → direct]",
-    "expected_behavior": "Report the uninitialized profile separately from healthy package integrity and recommend one-time initialization from verified evidence."
+    "setup": "Framework and providers are healthy, while .ai-workflow-state/, the project profile, and active state are absent.",
+    "expected_behavior": "Report missing optional profile and active state as normal, preserve healthy package integrity, and emit no initialization warning.",
+    "optional_route_diagnostic": null
   },
   {
     "id": "profile-progressive-update",
     "requirement": "A verified durable project fact can be captured without rescanning the repository.",
     "prompt": "Record the verified test command we just used for future work.",
     "setup": "The fact was verified naturally during authorized work and repository writes are authorized.",
-    "expected_route_output": "[route: router → direct]",
-    "expected_behavior": "Update only the relevant concise profile entry, preserve canonical source precedence, and avoid a repository-wide enrichment scan."
+    "expected_behavior": "Create the profile lazily if absent or update only the relevant concise entry if present, preserve canonical source precedence, and avoid a repository-wide enrichment scan.",
+    "optional_route_diagnostic": "[route: router → direct]"
   },
   {
     "id": "read-only",
     "requirement": "Read-only Discovery performs bounded analysis without persisting workflow state.",
     "prompt": "Compare these two authentication boundaries and recommend one; do not edit the repository.",
     "setup": "The choice is consequential but can be resolved in one session and writes are not authorized.",
-    "expected_route_output": "[route: router → discovery]",
-    "expected_behavior": "Return ephemeral analysis without creating DEC state, updating active.md, or treating a provisional choice as authorization."
+    "expected_behavior": "Return ephemeral analysis without creating DEC state, updating active.md, or treating a provisional choice as authorization.",
+    "optional_route_diagnostic": "[route: router → discovery]"
   },
   {
     "id": "limited-host-unavailable",
-    "requirement": "A provider route that the active host cannot discover is reported as unavailable rather than simulated.",
+    "requirement": "A host without the preferred provider can still perform host-native research.",
     "prompt": "Research whether Karpenter supports these scaling constraints and cite primary sources.",
     "setup": "The active host is Claude Code, while the pinned provider is installed only under .agents/skills and is unavailable there.",
-    "expected_route_output": "[route: router → research-unavailable]",
-    "expected_behavior": "Classify Research, report the Claude Code host limitation, and neither simulate the upstream workflow nor claim that it executed."
+    "expected_behavior": "Research with normal Claude Code capability, report the provider fallback truthfully, and do not claim the upstream Research skill executed.",
+    "optional_route_diagnostic": "[route: router → host-native-research]"
   },
   {
     "id": "provider-integrity-error",
     "requirement": "A selected missing or incompatible provider fails closed without an execution claim.",
     "prompt": "Use Wayfinder for this huge effort.",
     "setup": "The active host supports provider skills, but the pinned Wayfinder directory is missing or incompatible.",
-    "expected_route_output": "[route: router → wayfinder-blocked]",
-    "expected_behavior": "Name the provider integrity failure, make no provider or workflow state change, and do not substitute a retired local workflow."
+    "expected_behavior": "Name the provider integrity failure, make no provider or workflow state change, and do not substitute a retired local workflow.",
+    "optional_route_diagnostic": "[route: router → wayfinder-blocked]"
   },
   {
     "id": "active-state-conflict",
     "requirement": "A conflicting durable active workflow blocks a second pre-execution state transition without overwriting it.",
     "prompt": "Start a new durable Discovery record for an unrelated change.",
     "setup": "A different durable implementation workflow is already active and has not been completed, interrupted, or superseded.",
-    "expected_route_output": "[route: router → discovery-blocked]",
-    "expected_behavior": "Name the state conflict, preserve the existing pointer, and require explicit resolution before starting Discovery."
+    "expected_behavior": "Name the state conflict, preserve the existing pointer, and require explicit resolution before starting Discovery.",
+    "optional_route_diagnostic": "[route: router → discovery-blocked]"
   },
   {
     "id": "no-trigger",
     "requirement": "Observability does not trigger workflow skill execution.",
     "prompt": "Answer this clear, bounded, low-risk question directly.",
     "setup": "No workflow skill is needed to answer the request.",
-    "expected_route_output": "[route: router → direct]",
-    "expected_behavior": "Report direct handling without reclassifying, explaining rejected routes, loading a skill, running a workflow, or writing state for observability."
+    "expected_behavior": "Report direct handling without reclassifying, explaining rejected routes, loading a skill, running a workflow, or writing state for observability.",
+    "optional_route_diagnostic": null
   }
 ]

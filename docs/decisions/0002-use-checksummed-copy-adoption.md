@@ -13,51 +13,47 @@ distinguish framework updates from user edits.
 
 Use one Python standard-library bootstrap operation that resolves an immutable
 source revision, validates an inert package, applies the payload, and verifies
-the result. Coordinate the local payload transaction with a separately
-checksummed provider transaction; preflight both before writes. A deliberate
-lifecycle command applies by default; `--dry-run` is an optional preview. Record
-the version, immutable Git revision, and SHA-256 of framework-owned files. For
-cross-version migration, make the immutable new package own explicit accepted
-predecessor records. Select one only when framework version, exact source
-revision, installation-manifest schema, complete managed-path key set, and every
-source SHA-256 match; reject an unknown, partial, or forged identity before
-planning writes or retirements. Keep these reviewed historical records separate
-from generated current-payload checksums so manifest refresh cannot invent a
-trust relationship. For provider directories, make the immutable package declaration own each file's
-repository/tag/revision, path, subtree SHA, complete inventory, and invocation
-contract. Do not make precomputed upstream file hashes an installed-output
-requirement. Reject unowned same-named directories, record framework-created
-ownership plus checksums of the bytes actually installed, and use those
-checksums as local cleanliness evidence. Seed
-project profile/state only when absent. Refuse an entire update when any
-framework file conflicts.
+the result. A deliberate lifecycle command applies by default; `--dry-run` is an
+optional preview. Record the version, source revision, ownership origin, and
+SHA-256 of framework-owned files. Cross-version update validates the installed
+ownership record structurally and compares current bytes with its recorded
+checksums. The new package authenticates its own payload; it does not carry a
+historical predecessor catalog.
 
-Across a provider declaration change, require the new package to authenticate
-the exact predecessor payload, its installed `providers.json`, and the provider
-state identity/inventory before planning migration. Preserve the origin of
-directories already compatible with the new declaration and install genuinely
-missing declared directories. Replace an incompatible directory only when the
-authenticated predecessor recorded it as created, its full metadata/inventory
-still matches that declaration, and every installed-file checksum is clean.
-Modified, pre-existing-compatible, unknown, partial, and inconsistent cases fail
-closed. Stage and authenticate the complete new baseline before applying all
-validated transitions. On removal, delete only checksum-matching framework files
-or exact declared provider directories that are package-authentic,
-record-checksum-clean, and recorded as created. Preserve pre-install,
-incompatible, modified, extra-file, undeclared, and project-owned paths.
+Treat providers as optional capability. Install the framework transactionally,
+then attempt a separately staged provider transaction. A provider failure leaves
+the valid framework installed and host-native workflows available. The provider
+declaration owns repository, tag, paths, invocation policy, and configuration
+requirements without duplicating upstream tree SHAs or complete inventories.
+Record checksums of the bytes actually installed and use those checksums as
+local ownership and cleanliness evidence. Reject unowned same-named directories.
+
+Across a provider declaration change, preserve compatible origins, add missing
+declared directories, and replace an incompatible directory only when local
+state records it as created or reconstructed and every installed-file checksum
+is clean. Preserve modified and pre-existing-compatible directories. Stage and
+validate new provider bytes before replacement. On removal, delete only
+checksum-clean framework files or provider directories locally recorded as
+created. Preserve pre-install, reconstructed, incompatible, modified, extra-file,
+undeclared, and project-owned paths.
+
+Keep lifecycle ownership confined to framework files: never create
+`.ai-workflow-state/` during install, update, status, remove, or reinstall.
+Authorized workflows create durable project state lazily only when useful
+profile context or cross-session continuity must be persisted. Refuse a
+framework update when any owned framework file conflicts.
 Always compose root `AGENTS.md` and `CLAUDE.md` through explicit markers: the
 framework owns the compact router/import and the project owns the editable
 section beneath it, which starts empty when no file existed.
 Record whether the composite was framework-created so removal can delete an
-untouched empty shell or retain project instructions. Authenticate removal
-against the same source revision and preflight mutations. Provider removal uses
+untouched empty shell or retain project instructions. Preflight removal against
+local ownership records. Provider removal uses
 same-filesystem quarantine renames: failures before every selected directory
 and the state file are quarantined roll back; a cleanup failure after that commit
 retains and reports the exact quarantine path instead of claiming rollback.
 Run payload install/update integrity post-checks before committing the local
-file transaction, restoring prior bytes and modes on failure. During update,
-commit that payload transaction inside the provider rollback window so a later
-failure restores predecessor provider directories and exact state. Remove only
+file transaction, restoring prior bytes and modes on failure. Provider update
+has its own rollback boundary and does not undo a verified payload update. Remove only
 transaction-created parent directories during rollback; do not prune untracked
 empty parents after a successful removal.
 
@@ -71,22 +67,21 @@ Clean framework-created policies from earlier installations migrate to the
 composite layout during update; locally changed legacy policies fail closed.
 Lifecycle operations resolve their package automatically; installed runtime
 behavior does not depend on the bootstrap skill or a local distribution checkout.
-Curated provider installation additionally depends on GitHub CLI during install
-or a declared upgrade. Normal runtime and the inner status checks remain
-repository-local after the exact package is loaded; the public bootstrap uses
-HTTPS to fetch that recorded package before invoking them.
+Curated provider installation additionally depends on GitHub CLI, but provider
+failure does not invalidate the framework installation. Normal runtime and inner
+status checks remain repository-local; the public bootstrap uses HTTPS to fetch
+the requested framework package.
 
 Provider origin and installed-hash history is repository-local ownership
 evidence, not a tamper-evident authority. A deliberate coordinated state forgery
 can reclassify a provider directory or its bytes. In ordinary operation,
-recorded-hash comparison plus declaration inventory bounds prevent automatic
-replacement or deletion of modified, extra-file, or undeclared content.
+recorded-hash and file-set comparison prevents automatic replacement or deletion
+of modified or extra-file content.
 
 Payload origin and composite-restoration history have the same local-trust
 limit. A deliberate coordinated manifest forgery can reclassify exact canonical
-managed bytes or substitute an exact current/audited historical canonical
-policy identity; it cannot authorize an invented source identity or deletion of
-modified, extra, undeclared, or unique project content. This limitation is
+managed bytes or restoration data. Without that forgery, modified, extra,
+undeclared, or unique project content remains protected. This limitation is
 accepted because removal remains useful and the framework deliberately has no
 external state service. A stronger historical-origin guarantee would require
 either never deleting exact installed content automatically or storing a trust

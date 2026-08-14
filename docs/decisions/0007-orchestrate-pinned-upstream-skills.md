@@ -21,10 +21,9 @@ which provides the desired non-floating default.
 
 ## Decision
 
-Make Agentic Workflow an orchestration and integration layer over a declarative
-curated provider set. Pin `mattpocock/skills` tag `v1.2.3`, commit
-`6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`, and record every selected skill's
-exact path, subtree SHA, and complete file inventory.
+Make Agentic Workflow an orchestration and integration layer over a declarative,
+optional provider set. Pin `mattpocock/skills` tag `v1.2.3` and record every
+selected skill's path, invocation policy, and configuration requirements.
 
 Select wayfinder, teach, research, to-spec, to-tickets, implement, tdd, and
 code-review as routed capabilities. Install setup-matt-pocock-skills as the
@@ -42,9 +41,9 @@ release, setup, Wayfinder, Teach, to-spec, to-tickets, implement, and triage are
 user-only in both primary hosts; Research, TDD, Code Review, Grilling,
 domain-modeling, prototype, and codebase-design are model-invocable. Validate
 Codex semantics from each exact `agents/openai.yaml` and GitHub Copilot semantics
-from each exact `SKILL.md` frontmatter. Keep all provider operations unavailable
-on Claude Code because this package does not project them from `.agents/skills`
-into Claude's native `.claude/skills` location.
+from installed provider metadata. Keep provider execution unavailable on Claude
+Code because this package does not project skills from `.agents/skills` into
+Claude's native `.claude/skills` location; host-native work remains available.
 
 Retain only local bounded Discovery, Debugging, Implementation integration, and
 acceptance/integration Verification. Retire local Teach, Decomposition, and
@@ -53,31 +52,24 @@ identifiers remain canonical; framework state stores only pointers and return
 targets.
 
 Install providers through GitHub CLI 2.97.0 or newer with an authenticated
-GitHub.com session. Preflight local and provider ownership before writes. Make
-the package declaration own the pinned repository, tag, immutable revision,
-skill paths, subtree SHAs, inventories, and invocation policy. Validate those
-properties after staging, but do not require installer output to reproduce
-precomputed upstream file hashes. Reject every same-named directory when no
-provider ownership state exists. After activation, record checksums of the bytes
-actually installed and use them to detect later local modifications. The inner
-provider-status check remains local once its exact framework package and
-recorded baseline are loaded; the public bootstrap still downloads the package.
+GitHub.com session. Install the framework independently, then attempt provider
+installation. Make the package declaration own the pinned repository, tag,
+skill paths, invocation policy, and configuration requirements. Validate
+required source/path/ref and invocation metadata after staging. Reject every
+same-named directory when no provider ownership state exists. After activation,
+record checksums of the bytes actually installed and use them to detect later
+local modifications. Inner provider status remains local.
 
-When a declaration changes, first authenticate the exact predecessor framework
-and its historical `providers.json` through the new package's accepted
-predecessor table. Require provider state to match that declaration exactly and
-preflight every directory transition. Preserve the origin of retained exact
-matches, add genuinely missing skills, and replace an incompatible directory
-only when predecessor state says `created` and its complete inventory, metadata,
-and recorded file checksums remain clean. Refuse replacement of modified,
-pre-existing-compatible, unknown, partial, or inconsistent directories. Stage
-and validate the complete new pin before mutation. Recreate a missing managed
-directory normally, even when the provider baseline itself is unchanged.
-Removal considers only
-exact declaration names and deletes only package-authentic,
-record-checksum-clean directories whose origin is `created`; preserve
-incompatible, modified, extra-file, undeclared, and pre-existing-compatible
-directories.
+When a declaration changes, use local provider state as the ownership and
+cleanliness baseline. Preserve the origin of retained matches, add genuinely
+missing skills, and replace an incompatible directory only when state says
+`created` or `reconstructed` and all recorded file checksums remain clean.
+Preserve modified and pre-existing-compatible directories. Stage and validate
+new provider bytes before mutation. Recreate a missing managed directory
+normally, even when the provider baseline itself is unchanged. Removal deletes
+only state-recorded, checksum-clean directories whose origin is `created` and
+preserves incompatible, reconstructed, modified, extra-file, and
+pre-existing-compatible directories.
 
 Provider versions never float. A maintainer upgrades only after reviewing a new
 stable release, updating declaration identities, exercising live provider
@@ -85,12 +77,12 @@ compatibility, running the hermetic suite, and releasing a new framework
 version. Do not use `--unpin` or `--force` as normal update behavior.
 
 Classification remains automatic from normal intent even when execution is not.
-For a selected user-only operation, return the exact `$skill-name` Codex or
-`/skill-name` Copilot handoff and do not simulate the skill, create artifacts,
-write state, or claim execution. Check setup prerequisites only for the selected
-configuration-dependent workflow. When absent, select setup and return that same
-kind of user-only handoff. Use Teach only for explicit sustained learning in a
-dedicated learning workspace. Upstream instructions do not expand user
+For a preferred user-only or unavailable provider, continue with host-native
+capability unless the user explicitly required that provider or a genuine
+configuration/safety boundary blocks work. In those blocking cases, return the
+exact `$skill-name` or `/skill-name` handoff and do not simulate the skill,
+create provider artifacts, write provider state, or claim execution. Use Teach
+only for explicit sustained learning. Upstream instructions do not expand user
 authorization.
 
 Allow one dominant workflow or activity plus zero or more capabilities. A
@@ -107,32 +99,29 @@ not load it. The installed on-disk footprint increases because complete
 upstream directories are present, but the always-on prompt stays small and the
 maintenance surface drops substantially.
 
-Routing can truthfully identify the appropriate provider workflow on hosts that
-require user invocation. That adds a short handoff round trip for user-only
-skills, but preserves both ordinary-intent classification and upstream policy.
-Claude Code can consume the root policy while provider execution remains
-explicitly unsupported; avoiding a duplicate provider tree keeps ownership and
-updates unambiguous.
+Routing can truthfully identify a useful provider while allowing normal work to
+continue through host-native capability when that provider cannot run. Explicit
+provider requests still receive an exact handoff. Claude Code can consume the
+root policy while provider execution remains unsupported; avoiding a duplicate
+provider tree keeps ownership and updates unambiguous.
 
-Initial provider adoption gains GitHub CLI, authentication, and temporary pinned
-staging prerequisites. Same-named directories without provider state require
-manual reconciliation. Normal
+Optional provider adoption gains GitHub CLI, authentication, and temporary pinned
+staging prerequisites; framework adoption does not depend on them. Same-named
+directories without provider state require manual reconciliation. Normal
 runtime and the inner status checks remain local after that baseline is recorded;
 the public bootstrap still downloads the exact framework package. A supported
-cross-version update can retain authenticated directories, add missing ones, and
-migrate changed pinned bytes without manual deletion when predecessor ownership
-and cleanliness are proven. Modified and pre-existing provider directories still
+cross-version update can retain locally recorded directories, add missing ones,
+and migrate changed pinned bytes without manual deletion when ownership and
+cleanliness are proven. Modified and pre-existing provider directories still
 require explicit owner reconciliation. This is more deliberate than a generic
 package-manager update and does not silently overwrite project-owned skills.
 
 The framework 0.7.0 upgrade changes the curated set by adding `triage` while
-retaining the v1.2.3 pin. Existing 0.6.0 targets therefore take the same staged,
-authenticated provider-baseline update path even though the upstream version is
+retaining the v1.2.3 pin. Existing 0.6.0 targets therefore take the staged,
+locally validated provider-baseline update path even though the upstream version is
 unchanged. Existing clean directories are retained with their established
 origins; only missing `triage` is added. This deterministically records the
-complete new set without treating the declaration-schema change itself as
-provider state and preserves the provenance needed for a later audited
-migration.
+new set without treating the declaration-schema change itself as provider state.
 
 Repository-local origin and installed-hash history is useful ownership evidence
 but is not tamper-evident. Deliberate coordinated state forgery can reclassify a

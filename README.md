@@ -18,7 +18,8 @@ flowchart LR
     router --> provider["Pinned provider skill"]
     provider --> gate{"Host permits invocation?"}
     gate -->|Yes| work["Work"]
-    gate -->|User-only| handoff["Exact skill handoff"]
+    gate -->|Unavailable or user-only| fallback["Truthful host-native fallback"]
+    gate -->|Explicitly required| handoff["Exact skill handoff"]
     local --> verify["Acceptance verification"]
     work --> verify
 ```
@@ -34,9 +35,11 @@ For example:
 
 The router selects the implementation path, preserves the ticket identifier and
 the no-commit boundary, and ends meaningful project changes with verification.
-If the selected provider skill requires explicit invocation, Codex returns the
-exact `$skill-name` handoff and Copilot returns `/skill-name` instead of claiming
-the skill ran.
+If a preferred provider cannot run, the host completes normally supported work
+with its native capability and reports the fallback when material. An exact
+`$skill-name` or `/skill-name` handoff is reserved for an explicitly required
+provider or a real configuration boundary; the framework never claims the
+provider ran when it did not.
 
 ## Supported hosts
 
@@ -51,12 +54,15 @@ the skill ran.
 
 Run every command in the environment that owns the target project: the macOS or
 Linux host terminal, the VS Code terminal inside a Dev Container, or native
-Windows PowerShell. Installation requires:
+Windows PowerShell. The framework lifecycle requires:
 
 - Python 3.11+
-- GitHub CLI 2.97.0 or newer with `gh skill`
-- an authenticated GitHub.com CLI session
 - HTTPS access to GitHub
+
+Installing the optional curated provider set additionally requires GitHub CLI 2.97.0
+or newer with `gh skill` and an authenticated GitHub.com CLI session.
+If those provider prerequisites are unavailable, framework installation still
+succeeds and host-native workflows remain usable.
 
 Git is recommended for recovery but is not required. Use the official
 [Python downloads](https://www.python.org/downloads/) and
@@ -93,7 +99,8 @@ gh auth login --hostname github.com --web
 
 Run the appropriate command from the ordinary project directory that should
 become the project root. Installation is persistent: it adds the framework
-policy, project skills, manifests, and initial workflow state shown below.
+policy, local integration skills, and ownership manifest shown below. It does
+not create durable project state.
 
 On macOS, Linux, or inside a Dev Container:
 
@@ -110,7 +117,7 @@ py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.
 A successful installation ends with:
 
 ```text
-✓ Agentic Workflow framework is installed; payload and curated upstream providers are verified.
+✓ Agentic Workflow framework is installed.
 ```
 
 Readiness warnings about project configuration do not mean installation failed.
@@ -130,7 +137,7 @@ target-project/
 │   └── agentic-workflow.json # active VS Code Preview adapter
 ├── .ai-workflow/             # reconstructable framework installation
 │   ├── install-manifest.json # framework ownership and checksums
-│   ├── provider-state.json   # provider ownership and checksums
+│   ├── provider-state.json   # only when optional providers are installed
 │   ├── providers.json        # tested capability mapping
 │   ├── routing.md            # progressively loaded detailed router contract
 │   ├── contracts/
@@ -138,17 +145,19 @@ target-project/
 │   ├── runtime/              # shared controller, host matrix, opt-in adapters
 │   ├── state/                # durable-state contract, not project state
 │   └── templates/
-└── .ai-workflow-state/       # durable, Git-trackable project state
+└── .ai-workflow-state/       # created lazily for durable, Git-trackable state
     ├── project-profile.md    # optional advisory project context
     └── active.md             # created only when durable continuity is needed
 ```
 
 `.ai-workflow/` is framework-owned and reconstructable. Durable repository
 context lives only under `.ai-workflow-state/`, which lifecycle install, update,
-remove, and reinstall preserve. Agent integration files are framework-owned
-files outside `.ai-workflow/` because Copilot, Codex, Claude, or another agent
-environment expects them at fixed paths. Per-turn controller state remains in
-the operating system temporary directory, outside the repository.
+remove, and reinstall preserve but never create. The directory is absent in a
+healthy installation until an authorized workflow has useful durable context or
+continuity to persist. Agent integration files are framework-owned files outside
+`.ai-workflow/` because Copilot, Codex, Claude, or another agent environment
+expects them at fixed paths. Per-turn controller state remains in the operating
+system temporary directory, outside the repository.
 `.ai-workflow-state/` is not added to `.gitignore`; projects may track it without
 making Git a framework prerequisite.
 
@@ -174,15 +183,18 @@ Examples:
   and verification while preserving the authorization boundary.
 
 Some planning, specification, ticketing, implementation, and setup skills are
-user-only in the supported hosts. When one is selected, follow the exact
-`$skill-name` or `/skill-name` handoff the router returns.
+user-only in the supported hosts. Normal intent falls back to the host agent
+when the provider was not explicitly invoked. Follow an exact `$skill-name` or
+`/skill-name` handoff only when the user required that provider or the selected
+operation genuinely depends on it.
 
 Project-specific setup is not run during installation. If a selected workflow
 needs tracker, domain, or triage-label configuration, the router first returns
 `$setup-matt-pocock-skills` in Codex or `/setup-matt-pocock-skills` in Copilot.
 Unrelated direct work does not require setup.
 
-Responses end with a compact effective-path marker such as:
+For debugging or observability, responses may include a compact effective-path
+marker such as:
 
 ```text
 [route: router → implement → verification]
@@ -196,8 +208,8 @@ appropriate framework revision automatically.
 
 | Action | Effect |
 |---|---|
-| `install` | Preflight and install the framework and pinned providers; fresh partial failures roll back |
-| `update` | Update checksum-clean framework content while preserving project-owned content and provider pins |
+| `install` | Install the framework transactionally; attempt optional pinned providers without making them a framework prerequisite |
+| `update` | Update checksum-clean framework content; update providers only when provider state already exists |
 | `status` | Read-only integrity and readiness check |
 | `remove` | Remove only unchanged framework-owned content; preserve project-owned or modified content |
 
@@ -232,33 +244,29 @@ modified or pre-existing skills intentionally remain.
 
 ## Safety guarantees
 
-- Install and update preflight the local payload and provider set before writes.
-- Cross-version updates accept an installed baseline only when its version,
-  immutable revision, manifest schema, complete path set, and every source hash
-  match an exact predecessor record audited into the new package. Unknown,
-  partial, or forged predecessor records fail before mutation.
+- Install and update verify the packaged payload before writes and use the
+  installed ownership record plus current-byte checks to plan replacements.
 - Same-named unknown, pre-existing, or locally modified skills block the
   operation instead of being replaced.
-- During an audited cross-version upgrade, update may replace a provider skill
-  only when the new package authenticates the exact predecessor declaration,
-  predecessor state records the directory as framework-created, and every
-  recorded file checksum remains clean. A missing old directory is installed
-  normally, including during an unchanged provider-baseline update. Users should
-  not need to delete `.agents`, `provider-state.json`, or individual skills for
-  a supported clean upgrade.
+- Provider update may replace a directory only when local provider state records
+  framework ownership and every recorded file checksum remains clean. Missing
+  directories can be recreated; unknown or changed directories are preserved.
 - Updates replace only checksum-clean framework content and never float pinned
   provider versions automatically.
-- Install and update verify the resulting payload before committing their local
-  file transaction; coordinated update holds predecessor provider backups until
-  both payload and provider verification succeed.
+- Framework and provider mutations each use staging, post-checks, and rollback
+  within their own ownership boundary. An optional provider failure never rolls
+  back a successful framework lifecycle operation.
 - Durable project state under `.ai-workflow-state/` survives install, update,
   removal, and framework-directory reconstruction byte-for-byte.
+- Install, update, status, remove, and reinstall never create
+  `.ai-workflow-state/`; authorized workflows create it only when durable state
+  is actually useful.
 - Deleting only `.ai-workflow/` and rerunning the coordinated installer is a
   supported recovery operation. Exact surviving framework and provider files
   reconstruct clean ownership metadata; conservatively reconstructed external
   files remain managed for updates but are preserved on later removal.
-- Removal deletes a provider directory only when the framework created it and
-  its complete contents still match the recorded, pinned source.
+- Removal deletes a provider directory only when the framework recorded it as
+  created and its current contents still match the locally recorded checksums.
 - Removal does not prune unowned empty parent directories that existed before
   the lifecycle operation.
 
@@ -269,13 +277,13 @@ modified or pre-existing skills intentionally remain.
   framework package.
 - The first-stage public command fetches `main` over TLS; the bootstrap then
   resolves and verifies an immutable framework revision.
-- The current framework release is `0.9.2` and its curated provider baseline is
+- The current framework release is `0.9.4` and its curated provider baseline is
   [`mattpocock/skills` v1.2.3](https://github.com/mattpocock/skills/releases/tag/v1.2.3).
 - Ownership history is stored inside the target repository and is not
   tamper-evident. Coordinated local forgery can reclassify exact canonical
-  framework or provider bytes; modified, extra, undeclared, and unique project
-  content remains outside automatic deletion. See the architecture document
-  for the accepted boundary.
+  framework or provider bytes. Without ownership-record tampering, modified,
+  extra, undeclared, and unique project content remains outside automatic
+  deletion. See the architecture document for the accepted boundary.
 
 See [Architecture and ownership](docs/architecture.md),
 [Workflow routing](docs/routing.md), [Verification](docs/verification.md), and

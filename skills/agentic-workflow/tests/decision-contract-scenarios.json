@@ -19,22 +19,22 @@
     "category": "wayfinder-handoff",
     "prompt": "Map this foggy multi-quarter platform migration.",
     "setup": "Wayfinder is compatible but its Codex policy requires user invocation.",
-    "dominant_activity": "wayfinder",
+    "dominant_activity": "host-native-planning",
     "capabilities": [],
     "provider_invocations": [
       {
         "name": "wayfinder",
         "policy": "user-only",
-        "invocation": "user-only-handoff",
+        "invocation": "not-invoked",
         "executed": false
       }
     ],
     "host": "codex",
-    "route_result": "user-only-handoff",
-    "executed": false,
+    "route_result": "host-native-fallback",
+    "executed": true,
     "repository_state_effect": "none",
     "external_scope": "none",
-    "expected_behavior": "Select Wayfinder, tell the user to invoke $wayfinder, emit a wayfinder-handoff marker, and create no map or workflow state."
+    "expected_behavior": "Plan with normal Codex capability, report that Wayfinder did not run when material, and create no provider artifact or automatic workflow state."
   },
   {
     "id": "wayfinder-with-research",
@@ -108,22 +108,22 @@
     "category": "standalone-teach-handoff",
     "prompt": "Teach me Kubernetes networking over several sessions.",
     "setup": "Teach is compatible and user-only, but the active primary host cannot be distinguished between Codex and GitHub Copilot.",
-    "dominant_activity": "teach",
+    "dominant_activity": "host-native-learning",
     "capabilities": [],
     "provider_invocations": [
       {
         "name": "teach",
         "policy": "user-only",
-        "invocation": "user-only-handoff",
+        "invocation": "not-invoked",
         "executed": false
       }
     ],
     "host": "host-neutral",
-    "route_result": "user-only-handoff",
-    "executed": false,
+    "route_result": "host-native-fallback",
+    "executed": true,
     "repository_state_effect": "none",
     "external_scope": "none",
-    "expected_behavior": "Select Teach, label Codex $teach and GitHub Copilot /teach guidance, assume neither host, and create no learning workspace."
+    "expected_behavior": "Teach with normal host capability without claiming Teach ran; add durable continuity only if the multi-session work actually needs it and writes are authorized."
   },
   {
     "id": "setup-user-only-copilot",
@@ -152,7 +152,7 @@
     "category": "implementation-handoff",
     "prompt": "Implement ready ticket ARC-384 and verify it.",
     "setup": "The local adapter confirms ready scope and implement is user-only in Codex.",
-    "dominant_activity": "implementation",
+    "dominant_activity": "host-native-implementation",
     "capabilities": [
       "verification"
     ],
@@ -160,16 +160,16 @@
       {
         "name": "implement",
         "policy": "user-only",
-        "invocation": "user-only-handoff",
+        "invocation": "not-invoked",
         "executed": false
       }
     ],
     "host": "codex",
-    "route_result": "user-only-handoff",
-    "executed": false,
-    "repository_state_effect": "none",
+    "route_result": "host-native-fallback",
+    "executed": true,
+    "repository_state_effect": "repository-write",
     "external_scope": "none",
-    "expected_behavior": "Tell the user to invoke $implement and stop before edits, IMP state, provider execution, or Verification."
+    "expected_behavior": "Implement and verify with normal Codex capability, preserve authorization boundaries, and report that the implement provider did not run."
   },
   {
     "id": "discovery-read-only",
@@ -262,10 +262,10 @@
     "capabilities": [],
     "provider_invocations": [],
     "host": "claude-code",
-    "route_result": "unavailable",
-    "executed": false,
-    "repository_state_effect": "none",
+    "route_result": "host-native-fallback",
+    "executed": true,
+    "repository_state_effect": "read-only",
     "external_scope": "none",
-    "expected_behavior": "Classify Debugging, report that this installation exposes policy only on Claude Code, do not simulate the missing local skill body, and make no state change."
+    "expected_behavior": "Diagnose with normal Claude Code capability, report that the packaged Debugging skill did not run when material, and make no state change."
   }
 ]

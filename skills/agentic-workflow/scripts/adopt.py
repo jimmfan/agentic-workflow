@@ -15,7 +15,7 @@ import re
 import stat
 import sys
 import tempfile
-from typing import Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Tuple
+from typing import Callable, Dict, List, Mapping, MutableMapping, Optional, Sequence, Tuple
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
@@ -37,6 +37,7 @@ PROJECT_BEGIN = b"\n<!-- ai-workflow:project-instructions -->\n"
 ENTRY_FIELDS = {"sha256", "source_sha256", "origin"}
 RESTORATION_FIELDS = {"preexisting_base64", "preexisting_sha256"}
 INSTALL_MANIFEST_SCHEMA = 3
+DISTRIBUTION_MANIFEST_SCHEMA = 5
 SUPPORTED_INSTALL_MANIFEST_SCHEMAS = {1, 2, INSTALL_MANIFEST_SCHEMA}
 ORIGINS = {
     "created",
@@ -64,13 +65,6 @@ DEFAULT_CREATED_MODE = 0o644
 MINIMUM_PYTHON = (3, 11)
 LOCAL_SOURCE_REVISION = "unreleased-local-package"
 OwnedMapping = Tuple[PurePosixPath, PurePosixPath]
-PredecessorIdentity = Tuple[
-    str,
-    frozenset[str],
-    frozenset[int],
-    Dict[PurePosixPath, str],
-]
-AcceptedPredecessors = List[PredecessorIdentity]
 
 
 class AdoptionError(RuntimeError):
@@ -195,41 +189,32 @@ def parse_version(raw: str) -> Tuple[int, int, int]:
 def load_source_manifest() -> Tuple[
     str,
     List[Tuple[PurePosixPath, PurePosixPath]],
-    List[Tuple[PurePosixPath, PurePosixPath]],
     set[PurePosixPath],
-    AcceptedPredecessors,
 ]:
     raw = load_json(SOURCE_MANIFEST, "source distribution manifest")
     required = {
         "schema_version",
         "framework_version",
         "framework_owned",
-        "project_seeds",
         "checksums",
         "retired_framework_owned",
-        "accepted_predecessors",
     }
-    if set(raw) != required or raw.get("schema_version") != 3:
+    if set(raw) != required or raw.get("schema_version") != DISTRIBUTION_MANIFEST_SCHEMA:
         raise AdoptionError("source manifest has unknown fields or an unsupported schema")
     version = raw.get("framework_version")
     owned_raw = raw.get("framework_owned")
-    seeds_raw = raw.get("project_seeds")
     checksums_raw = raw.get("checksums")
     retired_raw = raw.get("retired_framework_owned")
-    accepted_raw = raw.get("accepted_predecessors")
     if not isinstance(version, str):
         raise AdoptionError("source manifest needs a string framework_version")
     parse_version(version)
-    if not isinstance(owned_raw, list) or not isinstance(seeds_raw, list):
-        raise AdoptionError("source manifest needs framework_owned and project_seeds arrays")
+    if not isinstance(owned_raw, list):
+        raise AdoptionError("source manifest needs a framework_owned array")
     if (
         not isinstance(checksums_raw, dict)
         or not isinstance(retired_raw, list)
-        or not isinstance(accepted_raw, list)
     ):
-        raise AdoptionError(
-            "source manifest needs a checksums object plus accepted_predecessors and retired_framework_owned arrays"
-        )
+        raise AdoptionError("source manifest needs checksums and retired_framework_owned")
 
     owned: List[Tuple[PurePosixPath, PurePosixPath]] = []
     for item in owned_raw:
@@ -240,97 +225,9 @@ def load_source_manifest() -> Tuple[
     owned_targets = [target for _, target in owned]
     if len(set(owned_sources)) != len(owned_sources) or len(set(owned_targets)) != len(owned_targets):
         raise AdoptionError("framework-owned source and target paths must be unique")
-    seeds: List[Tuple[PurePosixPath, PurePosixPath]] = []
-    for item in seeds_raw:
-        if not isinstance(item, dict) or set(item) != {"source", "target"}:
-            raise AdoptionError("each project seed needs exactly source and target fields")
-        seeds.append((safe_relative(item["source"]), safe_relative(item["target"])))
-    seed_sources = [source for source, _ in seeds]
-    seed_targets = [target for _, target in seeds]
-    if len(set(seed_sources)) != len(seed_sources) or len(set(seed_targets)) != len(seed_targets):
-        raise AdoptionError("project seed source and target paths must be unique")
-    if set(owned_targets) & set(seed_targets):
-        raise AdoptionError("framework-owned paths and project seed targets must be disjoint")
-
     retired = {safe_relative(item) for item in retired_raw}
     if len(retired) != len(retired_raw) or retired & set(owned_targets):
         raise AdoptionError("retired framework paths must be unique and disjoint from current paths")
-
-    accepted: AcceptedPredecessors = []
-    allowed_predecessor_targets = set(owned_targets) | retired
-    predecessor_fields = {
-        "framework_version",
-        "source_revisions",
-        "install_manifest_schemas",
-        "framework_files",
-    }
-    seen_predecessors: set[Tuple[str, str, int]] = set()
-    for predecessor in accepted_raw:
-        if not isinstance(predecessor, dict) or set(predecessor) != predecessor_fields:
-            raise AdoptionError("accepted predecessor fields are malformed")
-        predecessor_version = predecessor.get("framework_version")
-        revisions_raw = predecessor.get("source_revisions")
-        schemas_raw = predecessor.get("install_manifest_schemas")
-        entries = predecessor.get("framework_files")
-        if not isinstance(predecessor_version, str):
-            raise AdoptionError("accepted predecessor framework_version must be a string")
-        if parse_version(predecessor_version) >= parse_version(version):
-            raise AdoptionError(
-                f"accepted predecessor version must be older than {version}: {predecessor_version!r}"
-            )
-        if (
-            not isinstance(revisions_raw, list)
-            or not revisions_raw
-            or not all(isinstance(item, str) for item in revisions_raw)
-            or len(revisions_raw) != len(set(revisions_raw))
-            or any(re.fullmatch(r"[0-9a-f]{40}", item) is None for item in revisions_raw)
-        ):
-            raise AdoptionError(
-                f"accepted predecessor source_revisions are malformed for {predecessor_version}"
-            )
-        if (
-            not isinstance(schemas_raw, list)
-            or not schemas_raw
-            or not all(type(item) is int for item in schemas_raw)
-            or len(schemas_raw) != len(set(schemas_raw))
-            or any(item not in SUPPORTED_INSTALL_MANIFEST_SCHEMAS for item in schemas_raw)
-        ):
-            raise AdoptionError(
-                f"accepted predecessor install_manifest_schemas are malformed for {predecessor_version}"
-            )
-        if not isinstance(entries, dict) or not entries:
-            raise AdoptionError(
-                f"accepted predecessor framework_files must be nonempty for {predecessor_version}"
-            )
-        parsed_entries: Dict[PurePosixPath, str] = {}
-        for raw_target, digest in entries.items():
-            target = safe_relative(raw_target)
-            if (
-                target not in allowed_predecessor_targets
-                and canonical_state_relative(target) not in allowed_predecessor_targets
-            ):
-                raise AdoptionError(
-                    f"accepted predecessor target is neither current nor explicitly retired: {target}"
-                )
-            if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
-                raise AdoptionError(
-                    f"invalid accepted predecessor source checksum for {predecessor_version} {target}"
-                )
-            parsed_entries[target] = digest
-        for revision in revisions_raw:
-            for schema in schemas_raw:
-                identity = (predecessor_version, revision, schema)
-                if identity in seen_predecessors:
-                    raise AdoptionError(f"duplicate accepted predecessor identity: {identity}")
-                seen_predecessors.add(identity)
-        accepted.append(
-            (
-                predecessor_version,
-                frozenset(revisions_raw),
-                frozenset(schemas_raw),
-                parsed_entries,
-            )
-        )
 
     for version_path, label in (
         (PACKAGE_ROOT / "VERSION", "package VERSION"),
@@ -342,9 +239,8 @@ def load_source_manifest() -> Tuple[
             raise AdoptionError(f"{label} {version_file!r} does not match manifest {version!r}")
 
     expected_checksum_paths = {path.as_posix() for path in owned_sources}
-    expected_checksum_paths.update(source.as_posix() for source, _ in seeds)
     if set(checksums_raw) != expected_checksum_paths:
-        raise AdoptionError("source manifest checksums do not exactly cover owned files and seed sources")
+        raise AdoptionError("source manifest checksums do not exactly cover framework-owned sources")
     for source_relative, target_relative in owned:
         path = SOURCE_ROOT.joinpath(*source_relative.parts)
         reviewed_source_mode(
@@ -354,16 +250,7 @@ def load_source_manifest() -> Tuple[
         )
         if checksums_raw.get(source_relative.as_posix()) != sha256_file(path):
             raise AdoptionError(f"payload checksum mismatch for {source_relative}")
-    for source_relative, _ in seeds:
-        path = SOURCE_ROOT.joinpath(*source_relative.parts)
-        reviewed_source_mode(
-            path,
-            f"seed source {source_relative}",
-            expected_mode=expected_source_mode(source_relative),
-        )
-        if checksums_raw.get(source_relative.as_posix()) != sha256_file(path):
-            raise AdoptionError(f"payload checksum mismatch for seed {source_relative}")
-    return version, owned, seeds, retired, accepted
+    return version, owned, retired
 
 
 def load_installed(
@@ -486,10 +373,6 @@ def parse_composite_policy(data: bytes) -> Tuple[bytes, bytes]:
     return managed, project
 
 
-def render_seed(source_relative: PurePosixPath) -> bytes:
-    return SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
-
-
 def restoration_bytes(
     details: Mapping[str, object], relative: PurePosixPath
 ) -> Optional[bytes]:
@@ -598,21 +481,9 @@ def require_no_legacy_durable_state(root: Path) -> None:
     )
 
 
-def authenticated_policy_digest(
-    relative: PurePosixPath,
-    digest: str,
-    current_source: bytes,
-    accepted: Sequence[PredecessorIdentity],
-) -> bool:
-    return digest == sha256_bytes(current_source) or any(
-        identities.get(relative) == digest
-        for _, _, _, identities in accepted
-    )
-
-
 def is_reinstall(root: Path) -> bool:
-    """Recognize an exact current or authenticated historical managed policy."""
-    _version, owned, _seeds, _retired, accepted = load_source_manifest()
+    """Recognize an existing structurally valid managed policy block."""
+    _version, owned, _retired = load_source_manifest()
     for source_relative, target_relative in owned:
         if target_relative not in COMPOSITE_POLICY_PATHS:
             continue
@@ -626,14 +497,7 @@ def is_reinstall(root: Path) -> bool:
             managed, _project = parse_composite_policy(current)
         except AdoptionError:
             continue
-        source = SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
-        if authenticated_policy_digest(
-            target_relative,
-            sha256_bytes(managed),
-            source,
-            accepted,
-        ):
-            return True
+        return True
     return False
 
 
@@ -643,7 +507,6 @@ def plan_new_owned(
     source_data: bytes,
     *,
     reinstall: bool = False,
-    accepted: Sequence[PredecessorIdentity] = (),
 ) -> Tuple[str, Optional[bytes], Dict[str, str]]:
     destination = target_path(root, relative)
     current = existing_regular(destination, f"existing target {relative}")
@@ -658,15 +521,6 @@ def plan_new_owned(
         return f"create framework file {relative}", source_data, entry(source_data, source_data, "created")
     if reinstall and relative in COMPOSITE_POLICY_PATHS:
         managed, project = parse_composite_policy(current)
-        if not authenticated_policy_digest(
-            relative,
-            sha256_bytes(managed),
-            source_data,
-            accepted,
-        ):
-            raise AdoptionError(
-                f"reinstall found an unauthenticated managed policy block in {relative}"
-            )
         repaired = compose_policy(source_data, project)
         return (
             f"reconstruct framework ownership and preserve project instructions in {relative}",
@@ -701,30 +555,8 @@ def plan_new_owned(
     )
 
 
-def plan_seeds(
-    root: Path,
-    seeds: Sequence[Tuple[PurePosixPath, PurePosixPath]],
-    excluded: Iterable[PurePosixPath] = (),
-) -> Tuple[List[str], Dict[str, bytes]]:
-    actions: List[str] = []
-    writes: Dict[str, bytes] = {}
-    excluded_set = set(excluded)
-    for source_relative, destination_relative in seeds:
-        if destination_relative in excluded_set:
-            continue
-        destination = target_path(root, destination_relative)
-        current = existing_regular(destination, f"project-owned seed target {destination_relative}")
-        key = destination_relative.as_posix()
-        if current is None:
-            actions.append(f"seed project-owned file {key}")
-            writes[key] = render_seed(source_relative)
-        else:
-            actions.append(f"preserve existing project-owned file {key}")
-    return actions, writes
-
-
-def plan_install(root: Path) -> Tuple[List[str], Dict[str, bytes], Dict[str, Dict[str, str]], str, List[OwnedMapping], List[Tuple[PurePosixPath, PurePosixPath]]]:
-    version, owned, seeds, _, accepted = load_source_manifest()
+def plan_install(root: Path) -> Tuple[List[str], Dict[str, bytes], Dict[str, Dict[str, str]], str, List[OwnedMapping]]:
+    version, owned, _ = load_source_manifest()
     require_no_legacy_durable_state(root)
     manifest_path = target_path(root, INSTALL_MANIFEST_PATH)
     if manifest_path.exists() or manifest_path.is_symlink():
@@ -740,17 +572,13 @@ def plan_install(root: Path) -> Tuple[List[str], Dict[str, bytes], Dict[str, Dic
             target_relative,
             source_data,
             reinstall=reinstall,
-            accepted=accepted,
         )
         actions.append(action)
         if data is not None:
             writes[target_relative.as_posix()] = data
         entries[target_relative.as_posix()] = details
-    seed_actions, seed_writes = plan_seeds(root, seeds)
-    actions.extend(seed_actions)
-    writes.update(seed_writes)
     actions.append(f"create installation manifest {INSTALL_MANIFEST_PATH}")
-    return actions, writes, entries, version, owned, seeds
+    return actions, writes, entries, version, owned
 
 
 def plan_existing_owned(
@@ -846,58 +674,10 @@ def plan_existing_owned(
     )
 
 
-def trusted_installed_sources(
-    installed: Mapping[str, object],
-    source_version: str,
-    current_sources: Mapping[PurePosixPath, str],
-    accepted: Sequence[PredecessorIdentity],
-) -> Dict[PurePosixPath, str]:
-    installed_version = installed["framework_version"]
-    installed_revision = installed["source_revision"]
-    installed_schema = installed["schema_version"]
-    old_files = installed["framework_files"]
-    if installed_version == source_version:
-        trusted = dict(current_sources)
-    else:
-        candidates = [
-            identities
-            for version, revisions, schemas, identities in accepted
-            if version == installed_version
-            and installed_revision in revisions
-            and installed_schema in schemas
-        ]
-        matching = [
-            identities
-            for identities in candidates
-            if set(old_files) == {path.as_posix() for path in identities}
-            and all(
-                old_files[path.as_posix()]["source_sha256"] == digest
-                for path, digest in identities.items()
-            )
-        ]
-        if len(matching) != 1:
-            raise AdoptionError(
-                "installation is not an exact package-authenticated predecessor "
-                f"({installed_version}, {installed_revision}, schema {installed_schema}); refusing update"
-            )
-        trusted = dict(matching[0])
-
-    expected_keys = {path.as_posix() for path in trusted}
-    if set(old_files) != expected_keys or any(
-        old_files[path.as_posix()]["source_sha256"] != digest
-        for path, digest in trusted.items()
-    ):
-        raise AdoptionError(
-            "installed framework source inventory is not the exact package-authenticated baseline; "
-            "refusing update"
-        )
-    return trusted
-
-
 def validate_legacy_installation(root: Path) -> str:
-    """Recognize an exact package-authenticated predecessor before directory relocation."""
+    """Recognize a recorded legacy installation before directory relocation."""
     installed = load_installed(root, LEGACY_INSTALL_MANIFEST_PATH)
-    source_version, owned, _seeds, _retired, accepted = load_source_manifest()
+    source_version, _owned, _retired = load_source_manifest()
     if parse_version(installed["framework_version"]) >= parse_version(source_version):
         raise AdoptionError(
             "legacy state is not from an older supported Agentic Workflow release"
@@ -917,30 +697,19 @@ def validate_legacy_installation(root: Path) -> str:
         for key in old_files
     ):
         raise AdoptionError("legacy installation mixes canonical and legacy state paths")
-    current_sources = {
-        target: sha256_file(SOURCE_ROOT.joinpath(*source.parts))
-        for source, target in owned
-    }
-    trusted_installed_sources(installed, source_version, current_sources, accepted)
     return str(installed["framework_version"])
 
 
 def restoration_identity_is_accepted(
     relative: PurePosixPath,
     details: Mapping[str, object],
-    current_source_sha256: str,
-    accepted: Sequence[PredecessorIdentity],
 ) -> bool:
     if details.get("origin") != "composite-preexisting-identical":
         return True
     restored = restoration_bytes(details, relative)
     if restored is None:
         return False
-    digest = sha256_bytes(restored)
-    return digest == current_source_sha256 or any(
-        identities.get(relative) == digest
-        for _, _, _, identities in accepted
-    )
+    return sha256_bytes(restored) == details.get("preexisting_sha256")
 
 
 def plan_update(root: Path) -> Tuple[
@@ -950,11 +719,10 @@ def plan_update(root: Path) -> Tuple[
     Dict[str, Dict[str, str]],
     str,
     List[OwnedMapping],
-    List[Tuple[PurePosixPath, PurePosixPath]],
 ]:
     require_no_legacy_durable_state(root)
     installed = load_installed(root)
-    version, owned, seeds, retired, accepted = load_source_manifest()
+    version, owned, retired = load_source_manifest()
     installed_version = installed["framework_version"]
     if parse_version(version) < parse_version(installed_version):
         raise AdoptionError(f"refusing downgrade from {installed_version} to {version}; use the installed version's source or reinstall deliberately")
@@ -974,18 +742,7 @@ def plan_update(root: Path) -> Tuple[
     if has_legacy_layout and has_canonical_layout:
         raise AdoptionError("installation manifest mixes canonical and legacy state paths")
     legacy_layout = has_legacy_layout
-    current_sources = {
-        target: sha256_file(SOURCE_ROOT.joinpath(*source.parts))
-        for source, target in owned
-    }
-    trusted_sources = trusted_installed_sources(
-        installed,
-        version,
-        current_sources,
-        accepted,
-    )
     new_keys = {target.as_posix() for _, target in owned}
-    seed_targets = {target for _, target in seeds}
     actions: List[str] = []
     writes: Dict[str, bytes] = {}
     removals: List[str] = []
@@ -1003,15 +760,12 @@ def plan_update(root: Path) -> Tuple[
         if old is None:
             action, data, details = plan_new_owned(root, target_relative, source_data)
         else:
-            source_digest = sha256_bytes(source_data)
             if not restoration_identity_is_accepted(
                 target_relative,
                 old,
-                source_digest,
-                accepted,
             ):
                 raise AdoptionError(
-                    f"pre-existing restoration identity is not package-authenticated for {target_relative}"
+                    f"pre-existing restoration data is inconsistent for {target_relative}"
                 )
             action, data, details = plan_existing_owned(root, target_relative, source_data, old)
         actions.append(action)
@@ -1019,7 +773,6 @@ def plan_update(root: Path) -> Tuple[
             writes[key] = data
         entries[key] = details
 
-    retired_seed_targets: List[PurePosixPath] = []
     for key in old_files:
         old_relative = safe_relative(key)
         relative = canonical_state_relative(old_relative) if legacy_layout else old_relative
@@ -1034,24 +787,17 @@ def plan_update(root: Path) -> Tuple[
         if (
             (relative in retired or old_relative in retired)
             and details["origin"] == "created"
-            and trusted_sources.get(old_relative) == details["source_sha256"]
-            and sha256_bytes(current) == details["source_sha256"]
+            and sha256_bytes(current) == details["sha256"]
         ):
             actions.append(f"remove explicitly retired unchanged framework file {relative}")
             removals.append(relative.as_posix())
             continue
-        suffix = " seed" if relative in seed_targets else ""
-        if relative in seed_targets:
-            retired_seed_targets.append(relative)
         actions.append(
-            f"preserve retired framework file as project-owned{suffix} {relative}; review and remove it separately if obsolete"
+            f"preserve retired framework file as project-owned {relative}; review and remove it separately if obsolete"
         )
 
-    seed_actions, seed_writes = plan_seeds(root, seeds, excluded=retired_seed_targets)
-    actions.extend(seed_actions)
-    writes.update(seed_writes)
     actions.append(f"refresh installation manifest {INSTALL_MANIFEST_PATH}")
-    return actions, writes, removals, entries, version, owned, seeds
+    return actions, writes, removals, entries, version, owned
 
 
 def preflight_parent(root: Path, path: Path) -> None:
@@ -1118,9 +864,7 @@ def prune_empty_framework_directories(root: Path) -> None:
             pass
 
 
-def source_target_modes(
-    owned: Sequence[OwnedMapping], seeds: Sequence[Tuple[PurePosixPath, PurePosixPath]]
-) -> Dict[str, int]:
+def source_target_modes(owned: Sequence[OwnedMapping]) -> Dict[str, int]:
     modes = {
         target_relative.as_posix(): reviewed_source_mode(
             SOURCE_ROOT.joinpath(*source_relative.parts),
@@ -1129,12 +873,6 @@ def source_target_modes(
         )
         for source_relative, target_relative in owned
     }
-    for source_relative, target_relative in seeds:
-        modes[target_relative.as_posix()] = reviewed_source_mode(
-            SOURCE_ROOT.joinpath(*source_relative.parts),
-            f"seed source {source_relative}",
-            expected_mode=expected_source_mode(source_relative),
-        )
     modes[INSTALL_MANIFEST_PATH.as_posix()] = DEFAULT_CREATED_MODE
     return modes
 
@@ -1217,20 +955,20 @@ def command_install(root: Path, dry_run: bool, revision: str) -> None:
     manifest_path = target_path(root, INSTALL_MANIFEST_PATH)
     if manifest_path.exists() or manifest_path.is_symlink():
         installed = load_installed(root)
-        version, _, _, _, _ = load_source_manifest()
+        version, _, _ = load_source_manifest()
         if installed["framework_version"] == version and command_status(
             root, verbose=False, expected_revision=revision
         ):
             print(f"✓ Agentic workflow {version} is already installed and verified.")
             return
         raise AdoptionError("an installation already exists but is different; run update or status")
-    actions, writes, entries, version, owned, seeds = plan_install(root)
+    actions, writes, entries, version, owned = plan_install(root)
     if dry_run:
         print_plan("INSTALL", root, actions)
         return
     manifest = installed_payload(version, entries, revision)
     ordered = sorted(writes.items()) + [(INSTALL_MANIFEST_PATH.as_posix(), manifest)]
-    source_modes = source_target_modes(owned, seeds)
+    source_modes = source_target_modes(owned)
     apply_transaction(
         root,
         ordered,
@@ -1244,13 +982,13 @@ def command_install(root: Path, dry_run: bool, revision: str) -> None:
 
 def command_update(root: Path, dry_run: bool, revision: str) -> None:
     validate_source_revision(revision, "package source revision")
-    actions, writes, removals, entries, version, owned, seeds = plan_update(root)
+    actions, writes, removals, entries, version, owned = plan_update(root)
     if dry_run:
         print_plan("UPDATE", root, actions)
         return
     manifest = installed_payload(version, entries, revision)
     ordered = sorted(writes.items()) + [(INSTALL_MANIFEST_PATH.as_posix(), manifest)]
-    source_modes = source_target_modes(owned, seeds)
+    source_modes = source_target_modes(owned)
     apply_transaction(
         root,
         ordered,
@@ -1270,43 +1008,20 @@ def command_status(
     require_no_legacy_durable_state(root)
     installed = load_installed(root)
     validate_source_revision(expected_revision, "package source revision")
-    if installed["source_revision"] != expected_revision:
-        raise AdoptionError(
-            "status package source revision "
-            f"{expected_revision} does not match installed {installed['source_revision']}"
-        )
-    source_version, owned, _, _, accepted = load_source_manifest()
-    if installed["framework_version"] != source_version:
-        raise AdoptionError(
-            f"status source version {source_version} does not match installed {installed['framework_version']}"
-        )
-    expected_keys = {target.as_posix() for _, target in owned}
-    installed_keys = set(installed["framework_files"])
-    if installed_keys != expected_keys:
-        raise AdoptionError("installation ownership does not match the exact source package")
-    for source_relative, target_relative in owned:
-        source_digest = sha256_file(SOURCE_ROOT.joinpath(*source_relative.parts))
-        if installed["framework_files"][target_relative.as_posix()]["source_sha256"] != source_digest:
-            raise AdoptionError(f"installation manifest source checksum was changed for {target_relative}")
+    source_version, _owned, _retired = load_source_manifest()
     if verbose:
         print(f"STATUS {root}")
         print(f"version: {installed['framework_version']}")
         print(f"source revision: {installed['source_revision']}")
+        if installed["framework_version"] != source_version:
+            print(f"available package version: {source_version}")
     states: List[str] = []
-    source_digests = {
-        target.as_posix(): sha256_file(SOURCE_ROOT.joinpath(*source.parts))
-        for source, target in owned
-    }
     for key, details in sorted(installed["framework_files"].items()):
         if not restoration_identity_is_accepted(
             safe_relative(key),
             details,
-            source_digests[key],
-            accepted,
         ):
-            raise AdoptionError(
-                f"pre-existing restoration identity is not package-authenticated for {key}"
-            )
+            raise AdoptionError(f"pre-existing restoration data is inconsistent for {key}")
         path = target_path(root, safe_relative(key))
         current = existing_regular(path, f"installed framework target {key}")
         if current is None:
@@ -1337,45 +1052,18 @@ def command_remove(
     legacy_durable = legacy_durable_paths(root)
     installed = load_installed(root)
     validate_source_revision(expected_revision, "package source revision")
-    if installed["source_revision"] != expected_revision:
-        raise AdoptionError(
-            "removal package source revision "
-            f"{expected_revision} does not match installed {installed['source_revision']}"
-        )
-    version, owned, seeds, _, accepted = load_source_manifest()
-    if installed["framework_version"] != version:
-        raise AdoptionError(
-            f"removal source version {version} does not match installed {installed['framework_version']}; use the recorded version's source"
-        )
-    source_keys = {target.as_posix() for _, target in owned}
-    installed_keys = set(installed["framework_files"])
-    if installed_keys != source_keys:
-        unexpected = sorted(installed_keys - source_keys)
-        missing = sorted(source_keys - installed_keys)
-        raise AdoptionError(
-            "installation ownership does not match this source; refusing deletion"
-            + (f"; unexpected: {', '.join(unexpected)}" if unexpected else "")
-            + (f"; missing: {', '.join(missing)}" if missing else "")
-        )
+    load_source_manifest()
 
     actions: List[str] = []
     writes: List[Tuple[str, bytes]] = []
     removals: List[str] = []
-    for source_relative, relative in owned:
-        key = relative.as_posix()
-        details = installed["framework_files"][key]
-        source_data = SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
-        if details["source_sha256"] != sha256_bytes(source_data):
-            raise AdoptionError(f"installed ownership checksum does not match this source for {relative}")
+    for key, details in sorted(installed["framework_files"].items()):
+        relative = safe_relative(key)
         if not restoration_identity_is_accepted(
             relative,
             details,
-            sha256_bytes(source_data),
-            accepted,
         ):
-            raise AdoptionError(
-                f"pre-existing restoration identity is not package-authenticated for {relative}"
-            )
+            raise AdoptionError(f"pre-existing restoration data is inconsistent for {relative}")
         path = target_path(root, relative)
         current = existing_regular(path, f"installed framework target {relative}")
         if current is None:

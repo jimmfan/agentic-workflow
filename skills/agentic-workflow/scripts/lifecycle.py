@@ -11,7 +11,7 @@ from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import sys
-from typing import Iterable, Mapping, Optional, Sequence
+from typing import Mapping, Optional, Sequence
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
@@ -22,7 +22,6 @@ DURABLE_STATE_DIRECTORY = Path(".ai-workflow-state")
 LEGACY_STATE_DIRECTORY = Path("ai-workflow")
 INSTALL_MANIFEST = STATE_DIRECTORY / "install-manifest.json"
 PROVIDER_DECLARATION = PACKAGE_ROOT / "payload" / "ai-workflow" / "providers.json"
-DISTRIBUTION_MANIFEST = PACKAGE_ROOT / "payload" / "distribution" / "manifest.json"
 PROJECT_PROFILE = DURABLE_STATE_DIRECTORY / "project-profile.md"
 ACTIVE_STATE = DURABLE_STATE_DIRECTORY / "active.md"
 ENFORCEMENT_CAPABILITIES = STATE_DIRECTORY / "runtime" / "capabilities.json"
@@ -32,7 +31,6 @@ CONFIGURATION_LABELS = {
     "domain": "domain config",
     "triage-labels": "triage config",
 }
-PROFILE_UNINITIALIZED_MARKER = "Initialization: uninitialized"
 ACTIVE_WORKFLOWS = {
     "debugging",
     "discovery",
@@ -106,21 +104,8 @@ def run_checked(
         )
 
 
-def load_provider_manager() -> object:
-    """Load the provider manager so its rollback window can include payload commit."""
-    spec = importlib.util.spec_from_file_location("agentic_workflow_provider_transaction", PROVIDERS)
-    if spec is None or spec.loader is None:
-        raise LifecycleError(f"cannot load provider transaction manager: {PROVIDERS}")
-    module = importlib.util.module_from_spec(spec)
-    try:
-        spec.loader.exec_module(module)
-    except (ImportError, OSError) as error:
-        raise LifecycleError(f"cannot load provider transaction manager: {error}") from error
-    return module
-
-
 def load_adopter_manager() -> object:
-    """Load the adopter to reuse its exact predecessor authentication boundary."""
+    """Load the adopter to reuse its managed-install validation boundary."""
     spec = importlib.util.spec_from_file_location("agentic_workflow_legacy_validator", ADOPTER)
     if spec is None or spec.loader is None:
         raise LifecycleError(f"cannot load legacy installation validator: {ADOPTER}")
@@ -159,7 +144,7 @@ def validate_legacy_update(root: Path) -> str:
         return adopter.validate_legacy_installation(root)  # type: ignore[attr-defined,no-any-return]
     except adopter.AdoptionError as error:  # type: ignore[attr-defined]
         raise LifecycleError(
-            "ai-workflow/ is not a recognizable package-authenticated legacy installation; "
+            "ai-workflow/ is not a recognizable managed legacy installation; "
             f"refusing to rename it: {error}"
         ) from error
 
@@ -224,8 +209,6 @@ def profile_state(root: Path) -> str:
         return "unreadable"
     if not text.strip():
         return "empty"
-    if any(line.strip() == PROFILE_UNINITIALIZED_MARKER for line in text.splitlines()):
-        return "uninitialized"
     return "present"
 
 
@@ -296,9 +279,9 @@ def load_provider_status_contract() -> tuple[
     if (
         not isinstance(declaration, dict)
         or set(declaration) != {"schema_version", "capabilities", "configuration", "hosts", "provider"}
-        or declaration.get("schema_version") != 3
+        or declaration.get("schema_version") != 4
     ):
-        raise LifecycleError("provider host declaration must use schema version 3")
+        raise LifecycleError("provider host declaration must use schema version 4")
     hosts = declaration.get("hosts")
     configuration = declaration.get("configuration")
     provider = declaration.get("provider")
@@ -390,32 +373,32 @@ def setup_capability(
 
 
 def print_readiness(root: Path, *, detailed: bool) -> None:
-    configuration, host_invocation = load_provider_status_contract()
+    try:
+        configuration, host_invocation = load_provider_status_contract()
+    except LifecycleError as error:
+        configuration = []
+        host_invocation = []
+        print(
+            "Optional provider readiness metadata is unavailable; "
+            f"host-native fallback remains available: {error}"
+        )
     readiness = project_readiness(root, configuration)
     capability = setup_capability(host_invocation)
     if detailed:
-        print("Project readiness (warnings do not affect integrity status):")
+        print(
+            "Project readiness (optional durable state; missing profile and active state are normal):"
+        )
         for label, state in readiness.items():
             print(f"  {label}: {state}")
         print("Host capability (setup workflow):")
         for host, state in capability.items():
             print(f"  {host} setup workflow: {state}")
-        if readiness["project profile"] == "uninitialized":
-            print(
-                "Readiness guidance: initialize the profile once from verified repository evidence "
-                "when writes are authorized; unrelated direct work remains available."
-            )
         return
     print(
-        "Project readiness (optional; does not affect installation integrity): "
+        "Project readiness (optional durable state; absence is normal and does not affect integrity): "
         + "; ".join(f"{label}={state}" for label, state in readiness.items())
     )
     print("Host/setup capability: " + "; ".join(f"{host}={state}" for host, state in capability.items()))
-    if readiness["project profile"] == "uninitialized":
-        print(
-            "Project initialization remains: initialize the profile once from verified repository "
-            "evidence when writes are authorized; unrelated direct work is ready."
-        )
 
 
 def enforcement_status(root: Path) -> Mapping[str, str]:
@@ -471,86 +454,10 @@ def status(root: Path, revision: str) -> int:
     payload = subprocess.run(command(ADOPTER, "status", root, False, revision)).returncode
     providers = subprocess.run(command(PROVIDERS, "status", root, False, revision)).returncode
     print(f"Framework integrity: {integrity_state(payload)}")
-    print(f"Provider integrity: {integrity_state(providers)}")
+    print(f"Optional provider capability: {integrity_state(providers)}")
     print_enforcement_status(root)
     print_readiness(root, detailed=True)
-    if payload == 2 or providers == 2:
-        return 2
-    return 0 if payload == 0 and providers == 0 else 1
-
-
-def payload_targets() -> tuple[tuple[Path, ...], tuple[Path, ...]]:
-    try:
-        manifest = json.loads(DISTRIBUTION_MANIFEST.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
-        raise LifecycleError(f"cannot read payload distribution manifest: {error}") from error
-    if not isinstance(manifest, dict):
-        raise LifecycleError("payload distribution manifest must be an object")
-
-    groups: list[tuple[Path, ...]] = []
-    for field in ("framework_owned", "project_seeds"):
-        mappings = manifest.get(field)
-        if not isinstance(mappings, list):
-            raise LifecycleError(f"payload distribution manifest needs {field} mappings")
-        targets = []
-        for item in mappings:
-            if not isinstance(item, dict) or set(item) != {"source", "target"}:
-                raise LifecycleError(
-                    f"payload distribution manifest has malformed {field} mapping"
-                )
-            targets.append(safe_configuration_path(item["target"], f"{field} target"))
-        groups.append(tuple(targets))
-    framework_targets, seed_targets = groups
-    return framework_targets + seed_targets, seed_targets
-
-
-def existing_parent_directories(root: Path, targets: Iterable[Path]) -> set[Path]:
-    existing = {root}
-    for relative in targets:
-        current = (root / relative).parent
-        while current != root:
-            if current.exists() or current.is_symlink():
-                existing.add(current)
-            current = current.parent
-    return existing
-
-
-def remove_created_empty_parents(
-    path: Path,
-    root: Path,
-    preexisting_directories: set[Path],
-) -> None:
-    current = path.parent
-    while current != root and current != root.parent:
-        if current in preexisting_directories:
-            break
-        try:
-            current.rmdir()
-        except OSError:
-            break
-        current = current.parent
-
-
-def rollback_new_seeds(
-    root: Path,
-    created: Mapping[Path, bytes],
-    cleanup_targets: Sequence[Path],
-    preexisting_directories: set[Path],
-) -> None:
-    for relative, expected in created.items():
-        destination = root / relative
-        if (
-            destination.is_file()
-            and not destination.is_symlink()
-            and destination.read_bytes() == expected
-        ):
-            destination.unlink()
-    for relative in sorted(cleanup_targets, key=lambda item: len(item.parts), reverse=True):
-        remove_created_empty_parents(
-            root / relative,
-            root,
-            preexisting_directories,
-        )
+    return 0 if payload == 0 else 1
 
 
 def install(root: Path, dry_run: bool, revision: str) -> None:
@@ -560,37 +467,20 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
     provider_extra = ("--reinstall",) if reinstall else ()
     if dry_run:
         run_checked(ADOPTER, "install", root, True, revision)
-        run_checked(
-            PROVIDERS,
-            "install",
-            root,
-            True,
-            revision,
-            extra=provider_extra,
-        )
+        try:
+            run_checked(
+                PROVIDERS,
+                "install",
+                root,
+                True,
+                revision,
+                extra=provider_extra,
+            )
+        except LifecycleError as error:
+            print(f"Optional provider preflight unavailable: {error}")
         return
-    existed = (root / INSTALL_MANIFEST).exists()
-    cleanup_targets, seed_targets = payload_targets()
-    preexisting_directories = existing_parent_directories(root, cleanup_targets)
-    originally_absent = {
-        target for target in seed_targets if not (root / target).exists()
-    }
     run_checked(ADOPTER, "install", root, True, revision, quiet=True)
-    run_checked(
-        PROVIDERS,
-        "install",
-        root,
-        True,
-        revision,
-        quiet=True,
-        extra=provider_extra,
-    )
     run_checked(ADOPTER, "install", root, False, revision)
-    created_seed_snapshots = {
-        relative: (root / relative).read_bytes()
-        for relative in originally_absent
-        if (root / relative).is_file() and not (root / relative).is_symlink()
-    }
     try:
         run_checked(
             PROVIDERS,
@@ -601,27 +491,12 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
             extra=provider_extra,
         )
     except LifecycleError as error:
-        if not existed:
-            rollback = subprocess.run(
-                command(ADOPTER, "remove", root, False, revision),
-                capture_output=True,
-                text=True,
-            )
-            if rollback.returncode != 0:
-                detail = "\n".join(
-                    part.strip() for part in (rollback.stdout, rollback.stderr) if part and part.strip()
-                )
-                raise LifecycleError(
-                    f"provider installation failed and payload rollback also failed: {error}; {detail}"
-                ) from error
-            rollback_new_seeds(
-                root,
-                created_seed_snapshots,
-                cleanup_targets,
-                preexisting_directories,
-            )
-        raise
-    print("✓ Agentic Workflow framework is installed; payload and curated upstream providers are verified.")
+        print(
+            "WARNING: Agentic Workflow was installed, but optional providers were not installed: "
+            f"{error}. Host-native workflows remain available.",
+            file=sys.stderr,
+        )
+    print("✓ Agentic Workflow framework is installed.")
     print_enforcement_status(root)
     print_readiness(root, detailed=False)
 
@@ -633,7 +508,7 @@ def update(root: Path, dry_run: bool, revision: str) -> None:
         version = validate_legacy_update(root)
         if dry_run:
             print(f"UPDATE DRY RUN for {root}")
-            print("  - migrate package-authenticated Agentic Workflow state ai-workflow/ -> .ai-workflow/")
+            print("  - migrate recognized managed Agentic Workflow state ai-workflow/ -> .ai-workflow/")
             print(f"  - continue the normal update from recognized legacy version {version}")
             print("No files changed. Re-run without --dry-run to apply this operation.")
             return
@@ -645,34 +520,47 @@ def update(root: Path, dry_run: bool, revision: str) -> None:
         )
     try:
         run_checked(ADOPTER, "update", root, True, revision, quiet=True)
-        manager = load_provider_manager()
-        manager.command_update(  # type: ignore[attr-defined]
-            root,
-            False,
-            commit_callback=lambda: run_checked(ADOPTER, "update", root, False, revision),
-        )
+        if dry_run:
+            run_checked(ADOPTER, "update", root, True, revision)
+        else:
+            run_checked(ADOPTER, "update", root, False, revision)
     except BaseException as error:
         if migrated:
             restore_legacy_state_name(root)
-        if "manager" in locals() and isinstance(error, manager.ProviderError):  # type: ignore[attr-defined]
-            raise LifecycleError(f"providers.py update failed: {error}") from error
-        if isinstance(error, OSError):
-            raise LifecycleError(
-                f"providers.py update failed: filesystem operation failed: {error}"
-            ) from error
         raise
-    print("✓ Agentic Workflow payload and curated upstream providers are updated and verified.")
+    provider_state = root / STATE_DIRECTORY / "provider-state.json"
+    if provider_state.exists() or provider_state.is_symlink():
+        try:
+            run_checked(PROVIDERS, "update", root, dry_run, revision)
+        except LifecycleError as error:
+            print(
+                "WARNING: framework update succeeded, but the optional provider update did not: "
+                f"{error}. Existing provider files were preserved; host-native fallback remains available.",
+                file=sys.stderr,
+            )
+    elif dry_run:
+        print("Optional providers are not installed; update will not create provider state.")
+    if dry_run:
+        return
+    print("✓ Agentic Workflow framework is updated and verified.")
     print_enforcement_status(root)
     print_readiness(root, detailed=False)
 
 
 def remove(root: Path, dry_run: bool, revision: str) -> None:
     run_checked(ADOPTER, "remove", root, True, revision, quiet=not dry_run)
-    run_checked(PROVIDERS, "remove", root, dry_run, revision)
+    try:
+        run_checked(PROVIDERS, "remove", root, dry_run, revision)
+    except LifecycleError as error:
+        print(
+            "WARNING: optional provider cleanup was skipped: "
+            f"{error}. Provider files and ownership state were preserved.",
+            file=sys.stderr,
+        )
     if dry_run:
         return
     run_checked(ADOPTER, "remove", root, False, revision)
-    print("✓ Agentic Workflow and its unchanged framework-installed providers were removed.")
+    print("✓ Agentic Workflow framework was removed; unchanged managed providers were removed when safe.")
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:

@@ -248,13 +248,15 @@ Before finishing a substantial change, confirm that:
 
 Simplify when these checks reveal unnecessary complexity.
 
-## Final response contract
+## Optional route visibility
 
-Every final response MUST end with exactly one route marker:
+When useful for debugging or observability, a final response may include one
+truthful route marker:
 
 `[route: router → <path>]`
 
-The marker is required even for short or direct responses. `direct` is a valid route.
+`direct` is a valid route. The marker's absence is normal and does not invalidate
+completed work.
 
 Examples:
 
@@ -264,4 +266,4 @@ Examples:
 
 `[route: router → implementation → verification]`
 
-Do not omit the route marker. Do not emit more than one route marker.
+Do not perform extra work merely to produce a marker.

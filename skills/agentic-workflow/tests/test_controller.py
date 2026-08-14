@@ -478,7 +478,7 @@ class ControllerTests(unittest.TestCase):
             "--route research --repository-write allowed --verification not-required"
         )
         self.assertEqual(self.state["selected_providers"], ["research"])
-        denied, _changed = CONTROLLER.handle_pre_tool(
+        allowed, _changed = CONTROLLER.handle_pre_tool(
             {
                 **self.payload,
                 "tool_name": "editFiles",
@@ -489,11 +489,8 @@ class ControllerTests(unittest.TestCase):
             self.root,
             "vscode",
         )
-        self.assertIn(
-            "validated started",
-            denied["hookSpecificOutput"]["permissionDecisionReason"],
-        )
-        read_denied, _changed = CONTROLLER.handle_pre_tool(
+        self.assertEqual(allowed, {})
+        read_allowed, _changed = CONTROLLER.handle_pre_tool(
             {
                 **self.payload,
                 "tool_name": "read_file",
@@ -504,10 +501,7 @@ class ControllerTests(unittest.TestCase):
             self.root,
             "vscode",
         )
-        self.assertIn(
-            "validated started",
-            read_denied["hookSpecificOutput"]["permissionDecisionReason"],
-        )
+        self.assertEqual(read_allowed, {})
         provider = CONTROLLER.command_parser().parse_args(
             ["provider", "--name", "research", "--outcome", "started"]
         )
@@ -537,6 +531,36 @@ class ControllerTests(unittest.TestCase):
             "vscode",
         )
         self.assertIn("executed", message)
+
+    def test_missing_optional_provider_contract_does_not_block_host_native_work(self) -> None:
+        (self.root / ".ai-workflow/providers.json").unlink()
+        self.management(
+            "python3 .ai-workflow/runtime/controller.py checkpoint --route host-native-research "
+            "--repository-write allowed --verification not-required --provider research"
+        )
+        self.management(
+            "python3 .ai-workflow/runtime/controller.py provider --name research --outcome unavailable"
+        )
+        output, _changed = CONTROLLER.handle_pre_tool(
+            {
+                **self.payload,
+                "tool_name": "editFiles",
+                "tool_input": {"files": ["src/app.py"]},
+                "tool_use_id": "host-native-write",
+            },
+            self.state,
+            self.root,
+            "vscode",
+        )
+        self.assertEqual(output, {})
+        self.assertEqual(CONTROLLER.stop_failures(self.state), [])
+
+    def test_unrecorded_optional_provider_outcome_does_not_block_completion(self) -> None:
+        self.management(
+            "python3 .ai-workflow/runtime/controller.py checkpoint --route research "
+            "--verification not-required --provider research"
+        )
+        self.assertEqual(CONTROLLER.stop_failures(self.state), [])
 
     def test_durable_state_conflict_requires_explicit_resolution_and_fresh_digest(self) -> None:
         active = self.root / ".ai-workflow-state/active.md"
@@ -655,6 +679,7 @@ class ControllerTests(unittest.TestCase):
     def test_missing_active_state_is_idle_and_allows_a_validated_first_write(self) -> None:
         active = self.root / ".ai-workflow-state/active.md"
         active.unlink()
+        active.parent.rmdir()
         current, digest = CONTROLLER.parse_active_workflow(self.root)
         self.assertEqual(current, "none")
         self.assertEqual(digest, CONTROLLER.hashlib.sha256(b"").hexdigest())
@@ -679,6 +704,17 @@ class ControllerTests(unittest.TestCase):
             "vscode",
         )
         self.assertEqual(output, {})
+
+        template = (PACKAGE / "payload/ai-workflow/templates/active-state.md").read_text(
+            encoding="utf-8"
+        )
+        active.parent.mkdir(parents=True)
+        active.write_text(
+            template.replace("- Active workflow: none", "- Active workflow: discovery", 1),
+            encoding="utf-8",
+        )
+        current, _digest = CONTROLLER.parse_active_workflow(self.root)
+        self.assertEqual(current, "discovery")
 
     def test_invalid_active_state_remains_a_correctness_error(self) -> None:
         active = self.root / ".ai-workflow-state/active.md"

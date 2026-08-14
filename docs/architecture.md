@@ -37,8 +37,8 @@ flowchart TD
     capabilities --> gate
     policy --> gate
     gate --> execute["Execute when invocation is permitted"]
-    gate --> handoff["Exact user handoff when user-only"]
-    gate --> unavailable["Unsupported-host diagnostic"]
+    gate --> fallback["Host-native fallback when provider is optional"]
+    gate --> handoff["Exact handoff when provider is explicitly required"]
     gate --> blocked["Authorization/state/provider-integrity diagnostic"]
     handoff --> explicit["User explicitly invokes selected skill"]
     explicit -->|"invocation satisfied; revalidate current gates"| gate
@@ -48,10 +48,11 @@ flowchart TD
 ```
 
 Classification, invocation capability, execution, and authorization are
-separate decisions. The router can correctly select Wayfinder from ordinary
-intent even when the active host requires the user to invoke it. In that case it
-returns the exact host syntax and records neither execution nor durable state.
-It never substitutes a weaker local workflow or copies the provider method.
+separate decisions. The router can prefer Wayfinder from ordinary intent even
+when the active host cannot invoke it. In that case normal planning continues
+with host-native capability and records neither provider execution nor durable
+state unless continuity later requires it. An explicit provider request returns
+the exact host syntax instead of silently substituting another provider.
 
 The dominant workflow is the durable continuity owner when persistence is
 needed. Research, Teach, Debugging, TDD, Verification, or Code Review may be a
@@ -66,10 +67,10 @@ tested pin after routing selects an upstream capability. Each skill directory
 then participates in normal host progressive discovery.
 
 `implement` owns its TDD and fixed-point Code Review subflows. The local
-implementation adapter returns the exact handoff when required; after permitted
-model invocation or explicit user invocation, it passes control to `implement`
-once and the local verifier reuses that evidence. The router does not invoke TDD
-or Code Review a second time merely because they are available.
+implementation adapter delegates once when provider execution is available and
+otherwise permits host-native implementation. The local verifier reuses actual
+provider evidence when present. The router does not invoke TDD or Code Review a
+second time merely because they are available.
 
 ## Deterministic lifecycle boundary
 
@@ -133,14 +134,13 @@ remain outside that directory only because supported agent environments require
 fixed discovery paths such as `.github/hooks/` and `.agents/skills/`.
 
 The current install manifest records framework files only. It does not checksum
-or enumerate mutable project state. The installer seeds
-`.ai-workflow-state/project-profile.md` only when absent and never seeds an idle
-`active.md`. A durable workflow creates the latter from the framework template
-only when continuity is actually required and repository writes are authorized.
+or enumerate mutable project state. Lifecycle operations never create
+`.ai-workflow-state/`. An authorized workflow creates `project-profile.md` only
+after it has useful verified durable context to record, and creates `active.md`
+from the framework template only when continuity is actually required.
 
-After deletion of `.ai-workflow/`, reinstall recognizes an exact current or
-package-authenticated historical managed policy and reconstructs ownership for
-exact surviving framework/provider files. Because the deleted metadata cannot
+After deletion of `.ai-workflow/`, reinstall recognizes a structurally valid
+managed policy and compatible surviving framework/provider files. Because the deleted metadata cannot
 prove whether an external exact file originally predated adoption,
 reconstructed files remain updateable but are conservatively preserved on
 removal. This is the one intentional recovery exception to ordinary created-file
@@ -161,10 +161,10 @@ load only when that route needs them.
 
 ## Provider selection
 
-The curated source is `mattpocock/skills` tag `v1.2.3`, immutable commit
-`6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`. The declaration records an exact
-upstream path, tag, subtree SHA, and complete file inventory for every selected
-skill. Routed capabilities are Wayfinder, Teach, Research, to-spec, to-tickets,
+The curated source is `mattpocock/skills` tag `v1.2.3`. The declaration records
+the reviewed repository/tag, upstream path, invocation policy, and configuration
+requirements for every selected skill. Routed capabilities are Wayfinder,
+Teach, Research, to-spec, to-tickets,
 implement, TDD, and Code Review. Setup is an explicit configuration operation.
 Grilling, domain-modeling, prototype, and codebase-design are composition
 dependencies. `triage` is an installed configuration dependency: its presence
@@ -173,14 +173,14 @@ to-tickets, but it is not promoted to a normal root route.
 
 The provider declaration records two orthogonal mappings: capabilities select
 skills, while every skill separately declares configuration prerequisites and
-per-host invocation behavior. Deterministic verification derives Codex policy
-from pinned `agents/openai.yaml`, Copilot policy from pinned `SKILL.md`
-frontmatter, and fails when declared semantics diverge from those exact files.
+per-host invocation behavior. Installation validates required invocation
+metadata in the installed skill without maintaining a parallel complete
+upstream inventory.
 Codex and GitHub Copilot are supported through `.agents/skills`; Claude Code's
 native project-skill location is `.claude/skills`. The root `CLAUDE.md` policy
-remains useful for classification and direct work, but neither local nor
-provider skill bodies are projected there, so every skill-backed route is
-reported unavailable rather than represented as full workflow support.
+remains useful for classification and host-native work, but neither local nor
+provider skill bodies are projected there. Provider execution remains
+unavailable rather than being falsely claimed.
 
 The local framework deliberately retains:
 
@@ -211,14 +211,14 @@ returns `$setup-matt-pocock-skills` for Codex or
 artifact. Unrelated direct work remains immediately available.
 
 Lifecycle output separates clean installation from project readiness. A clean
-framework/provider install may still report a missing, empty, uninitialized,
-unreadable, or unsafe profile, no active workflow, or missing setup
+framework/provider install may still report a missing, empty, unreadable, or
+unsafe profile, no active workflow, or missing setup
 configuration. Those observations do not make normal status fail. The profile
 is an optional project-owned advisory cache, not a versioned structured
 artifact: any other readable non-empty UTF-8 regular file is `present`,
-regardless of headings. Lifecycle operations seed it only when absent and never
-migrate existing content. Existing active state remains structurally validated
-because it controls resume and transition behavior. Initialization and later
+regardless of headings. Lifecycle operations never create or migrate it.
+Existing active state remains structurally validated
+because it controls resume and transition behavior. Profile creation and later
 maintenance require verified durable evidence and write authorization, and do
 not trigger an automatic full-repository scan.
 
@@ -238,11 +238,14 @@ payload/root/CLAUDE.md.template  -> CLAUDE.md
 payload/skills/*/SKILL.md        -> .agents/skills/*/SKILL.md
 payload/ai-workflow/routing.md   -> .ai-workflow/routing.md
 payload/ai-workflow/...          -> .ai-workflow/...
-payload/ai-workflow/templates/project-profile.md
-                                  -> .ai-workflow-state/project-profile.md (only if absent)
 payload/hosts/vscode-agentic-workflow.json -> .github/hooks/agentic-workflow.json
 gh skill exact upstream paths    -> .agents/skills/<upstream-name>/...
 ```
+
+The framework keeps profile and active-state templates under
+`.ai-workflow/templates/`; authorized workflows may use them when useful durable
+state is first required, but lifecycle operations never materialize those
+templates into `.ai-workflow-state/`.
 
 `bootstrap.py` resolves and downloads an immutable framework revision and runs
 the package verifier. `lifecycle.py` coordinates preflight and mutation.
@@ -250,20 +253,14 @@ the package verifier. `lifecycle.py` coordinates preflight and mutation.
 provider transaction through GitHub CLI. Installed repositories do not need the
 source checkout or bootstrap package at runtime.
 
-The schema-3 distribution manifest authenticates both the current payload and
-an explicit set of historical predecessor identities. A cross-version update
-selects a predecessor only by exact framework version, immutable source
-revision, installation-manifest schema, complete managed-path set, and every
-recorded source SHA-256. Same-version operations require the exact current
-source inventory. Unknown revisions, partial maps, invented paths, and changed
-source hashes fail before planning writes or retirements. Historical records
-are separately audited package data; refreshing current payload checksums does
-not discover or legitimize another predecessor. The target-local schema-3
-`install-manifest.json` records framework files only and remains ownership and
-cleanliness evidence, not the authority that defines an accepted source
-identity. Schemas 1 and 2 are read only when authenticating already-supported
-package predecessors; their `project_owned` inventories are not carried into
-new manifests.
+The schema-5 distribution manifest authenticates the current payload mappings,
+checksums, and retired framework paths. It does not carry a catalog of historical
+release identities. A cross-version update validates the installed ownership
+record structurally and compares current bytes with locally recorded checksums
+before replacement or retirement. The target-local schema-3
+`install-manifest.json` records framework files only; older schemas remain
+readable where inexpensive, and their `project_owned` inventories are not
+carried into new manifests.
 
 ## Optional observability boundary
 
@@ -282,78 +279,57 @@ Preview format adapters and lifecycle decision are documented in
 
 ## Provider lifecycle and pinning
 
-GitHub CLI 2.97.0 or newer is the provider installer. `providers.py` calls
-`gh skill install` with the exact upstream directory, `--pin v1.2.3`, project
-scope, and the Codex target (which resolves to the common `.agents/skills`
-location). It then independently validates:
+GitHub CLI 2.97.0 or newer is the optional provider installer. `providers.py`
+calls `gh skill install` with the reviewed upstream directory, `--pin v1.2.3`,
+project scope, and the Codex target (which resolves to the common
+`.agents/skills` location). It validates:
 
 - skill directory name and frontmatter name;
-- injected repository, path, tag/ref, and tree-SHA metadata;
-- the exact complete file set, including adjacent resources and
-  `agents/openai.yaml`; and
+- required repository, path, and tag/ref metadata; and
 - declared host invocation semantics from the installed metadata files.
-
-The verifier also binds the complete provider identity projection—repository,
-version, revision, skill paths, subtree SHAs, and inventories—to a separately
-reviewed static digest. Generated payload-manifest refresh cannot normalize a
-changed provider identity into that lock. Exact source-file hashes are not part
-of the installed provider contract because `gh skill install` may legitimately
-transform serialization while preserving the declared pinned identity.
 
 The framework does not call ordinary `gh skill update` during normal lifecycle
 work because pinned skills are intentionally skipped. A provider upgrade is a
-framework release change: maintainers review a new stable tag, update all
-declared subtree/file identities, run live and hermetic compatibility checks,
-then release. A target receives that baseline only through an explicit framework
-update.
+framework release change: maintainers review a new stable tag, run live and
+hermetic compatibility checks, then release. A target receives that baseline
+only through an explicit framework update.
 
 Initial adoption rejects every same-named pre-existing provider directory as
-unowned before contacting GitHub. It stages the exact pin, validates its pinned
-metadata, subtree identity, inventory, and invocation semantics, then records
-hashes of the bytes that the installer actually produced. Once that ownership
+unowned before contacting GitHub. It stages the pin, validates required metadata
+and invocation semantics, then records hashes of the bytes that the installer
+actually produced. Once that ownership
 and baseline are recorded, inner status checks compare the current directory to
 those recorded hashes and do not contact the provider upstream; the public
 bootstrap still needs HTTPS to fetch the recorded framework package.
 
-Across a declaration change, update first reuses the payload trust chain to
-select one exact audited predecessor. The accepted predecessor's complete
-framework source map authenticates the target's installed `providers.json`;
-that declaration must exactly match the provider identity, skill set, paths,
-and tree SHAs in `provider-state.json`. Every present predecessor directory must
-match its complete old inventory and pinned metadata, and every current file
-must still match the hashes recorded when that directory was installed. Update
-plans all conflicts before staging or mutation.
+Across a declaration change, update uses the target-local provider state as its
+ownership and cleanliness baseline. Every current file must still match the
+hashes recorded when that directory was installed. Update plans all conflicts
+before staging or mutation.
 
 A retained directory already compatible with the new declaration keeps its old
-`created` or `preexisting-compatible` origin. A missing predecessor-recorded
-directory is installed normally. An incompatible directory may be replaced only
-when its authenticated predecessor record says `created` and all integrity
-checks are clean; locally modified and pre-existing-compatible directories fail
-closed. New same-named unknown content also fails closed. The complete new pin
-is staged and validated before any authorized replacement, so this migration
-does not float versions. A missing managed directory is recreated normally,
+origin. A missing recorded directory is installed normally. An incompatible
+directory may be replaced only when its local record says `created` or
+`reconstructed` and all checksum checks are clean; locally modified and
+pre-existing-compatible directories are preserved. New same-named unknown
+content blocks replacement. New bytes are staged and validated before any
+authorized replacement, so this migration does not float versions. A missing managed directory is recreated normally,
 including when the provider declaration itself is unchanged.
 
-Remove considers only exact current declaration names. It deletes a directory
-only when its pinned metadata and complete inventory validate, its recorded
-checksums are still clean, and its origin is `created`; incompatible,
-modified, extra-file, undeclared, and `preexisting-compatible` directories are
-preserved. Origin and installed-hash history is repository-local evidence, not
-tamper-evident: coordinated state forgery can reclassify provider bytes. Without
-that forgery, modified, extra-file, and undeclared content remains outside
-automatic deletion.
+Remove considers only provider-state records. It deletes a directory only when
+its current file set and checksums still match the record and its origin is
+`created`; incompatible, modified, extra-file, `preexisting-compatible`, and
+`reconstructed` directories are preserved. Origin and installed-hash history is
+repository-local evidence, not tamper-evident.
 
 ## Coordinated transaction boundary
 
-A normal install preflights both payload and providers before writing either.
-The payload transaction runs first because it supplies the provider declaration
-and framework state locations; provider installation runs second. If the second
-stage unexpectedly fails after preflight, framework-created provider directories
-are rolled back, then the local payload is removed. Newly seeded profile/state
-files are removed only if they did not predate the operation and still equal the
-post-install snapshot. Seed targets come from the authenticated distribution
-manifest rather than a duplicate lifecycle list. Project-created or modified
-content and parent directories that predated the operation are preserved.
+A normal install preflights and commits the framework payload, then attempts the
+optional provider installation. Provider staging rolls back its own partial
+writes on failure, while the valid framework remains installed and usable.
+Lifecycle operations never seed durable profile or active state. Project-created
+or modified content and parent directories that predated the operation are
+preserved.
 
 Within the payload transaction, install and update run their integrity
 post-check before commit. A post-check or atomic-write failure restores all
@@ -362,27 +338,25 @@ that transaction. Successful removal deletes owned files but does not prune
 untracked empty parents, because the framework has no durable proof that it
 created those directories.
 
-Coordinated update opens the provider replacement transaction only after both
-payload and provider preflight succeed. It writes and verifies the new provider
-directories/state, then invokes the payload update while predecessor provider
-directories and the exact old state file remain quarantined on the target
-filesystem. A payload failure rolls itself back and then causes provider
-rollback; a provider post-check failure likewise restores the old provider set.
-Only after both layers verify does the provider transaction delete its backups.
+Update commits the framework transaction first. When provider state exists, it
+then attempts a separate provider transaction whose staging, post-check, and
+rollback protect the existing provider directories and state. A provider failure
+does not roll back the verified framework update; it reports degraded optional
+capability and leaves host-native fallback available.
 
 The consuming-project state root is `.ai-workflow/`. A one-time update migration
-recognizes the former `ai-workflow/` layout only through an exact
-package-authenticated predecessor manifest, renames the directory, translates
+recognizes the former `ai-workflow/` layout only through a valid managed
+installation manifest, renames the directory, translates
 its historical path identities, and continues the normal coordinated update.
 If update fails before commit, the original directory name is restored. The
 lifecycle never merges `ai-workflow/` with `.ai-workflow/`, and it never claims
 an unrelated same-named directory.
 
-Update preflights the payload before staging a changed provider baseline. It
-preserves every existing provider directory, authenticates retained declared
-directories, adds only missing ones, and only then updates the payload. Removal
-preflights the payload, safely processes bounded provider ownership, then
-removes the payload. A machine crash or failing storage remains a reason to use
+Update verifies and applies the payload before attempting a changed provider
+baseline. Provider update preserves conflicting directories and adds only safe
+missing ones. Removal preflights the payload, safely processes bounded provider
+ownership, then removes the payload even if optional provider cleanup cannot
+proceed. A machine crash or failing storage remains a reason to use
 version-control or filesystem backup recovery; the framework does not claim
 cross-process crash atomicity.
 
@@ -390,7 +364,8 @@ cross-process crash atomicity.
 
 - Framework-owned payload content is updated only when its currently installed
   managed bytes match recorded checksums.
-- Project seeds are created only when absent and never overwritten.
+- Durable project state is never created by lifecycle operations and is never
+  included in framework ownership metadata.
 - Root `AGENTS.md` and `CLAUDE.md` are composite, including fresh framework
   creation; the framework owns marked blocks and byte-preserves project
   sections. For an exact pre-existing policy, schema-2 and newer installation state also
@@ -400,12 +375,10 @@ cross-process crash atomicity.
   setup/project edits.
 - Payload origin and restoration fields, like provider origin, are
   repository-local history and not tamper-evident proof. The architecture
-  deliberately accepts that coordinated manifest forgery can reclassify or
-  substitute exact canonical current or audited historical policy bytes. It
-  cannot authorize deletion of modified managed bytes, invented source
-  identities, extra provider content, undeclared paths, or unique project
-  content. Eliminating this bounded limitation would require conservative
-  no-delete semantics or a trust anchor outside the target repository.
+  deliberately accepts that editing those records can reclassify ownership.
+  Without record forgery, current-byte checks keep modified managed bytes, extra
+  provider content, undeclared paths, and unique project content outside
+  automatic replacement or deletion.
 - Same-named incompatible local or provider skills block installation before
   writes.
 - Provider-native maps, tickets, specifications, learning records, and review

@@ -1,9 +1,9 @@
 # Package tests
 
-The suite proves that one public lifecycle safely coordinates the local payload
-and exact pinned provider declaration without depending on live GitHub state.
-Hermetic provider fixtures reproduce `gh skill` metadata and complete directory
-shapes; live CLI compatibility is documented separately in
+The suite proves that one public lifecycle safely manages the local payload and
+optional pinned provider declaration without depending on live GitHub state.
+Hermetic provider fixtures reproduce representative `gh skill` metadata and
+installed directory shapes; live CLI compatibility is documented separately in
 `docs/provider-research.md`.
 
 Run the full release gate from the **macOS host Terminal at this repository
@@ -20,29 +20,28 @@ validation, adjacent resources, pre-existing/modified ownership, missing CLI
 and auth preflight, post-preflight rollback, state-path injection, retired local
 workflow migration, non-Git targets, path-independent packages, archive safety,
 and POSIX/Windows mode semantics. It also proves transactional payload
-post-check rollback, manifest-derived seed cleanup, retention of pre-existing
-empty parent directories, and exact package-owned predecessor authentication.
-Negative cases cover changed/omitted current records, forged retired paths,
-unauthenticated restoration bytes, and provider identity drift that generated
-manifest refresh cannot bless. Lifecycle coverage also proves that fresh root
+post-check rollback, retention of pre-existing empty parent directories, and
+local ownership-record validation. Lifecycle coverage also proves that fresh root
 policies expose byte-preserved project regions, legacy framework-created
 `CLAUDE.md` files and exact pre-existing imports migrate without losing setup
-edits or removal identity, recorded framework revisions fail closed and bind
-status/removal to the exact loaded package, pre-existing provider bodies are
+edits or removal identity, status/removal use local installed ownership rather
+than exact historical package revisions, pre-existing provider bodies are
 rejected without ownership state, installer-transformed bytes are recorded at
-install time, ordinary local edits and forged extra-file inventories remain
-protected, declaration updates reject unknown old names and never replace an
+install time, ordinary local edits and unrecorded extra files remain protected,
+and declaration updates never replace an
 unowned directory, provider removal rolls back a failed quarantine
 transaction before commit and reports/retains a cleanup failure after commit,
-and project readiness observations remain separate from
-payload/provider integrity. Profile fixtures cover the canonical uninitialized
-seed, permissive readable-content classification, empty/unreadable/unsafe paths,
-and byte preservation without lifecycle migration; existing project-owned
-profiles are never rewritten. Ownership fixtures prove that `.ai-workflow/` is
-reconstructable, `.ai-workflow-state/` survives install/update/remove/reinstall,
-`active.md` is not created until needed, legacy durable paths are reported but
-never moved, and exact surviving provider/integration files can reconstruct
-conservative ownership after framework-directory deletion.
+and project readiness observations remain separate from payload/provider
+integrity. Profile fixtures cover normal absence, permissive readable-content
+classification, empty/unreadable/unsafe paths, authorized lazy
+creation, and byte preservation without lifecycle migration; existing
+project-owned profiles are never rewritten. Ownership fixtures prove that
+`.ai-workflow/` is reconstructable, lifecycle operations remain state-free until
+a workflow persists useful state, `.ai-workflow-state/` survives
+install/update/remove/reinstall, `active.md` is not created until needed, legacy
+durable paths are reported but never moved, and exact surviving
+provider/integration files can reconstruct conservative ownership after
+framework-directory deletion.
 
 `test_controller.py` exercises the host-neutral enforcement core directly. It
 covers actionable session bootstrap, exact-declaration auto-approval and
@@ -63,16 +62,14 @@ state, verification, and route-label behavior remains available from the
 managed progressive routing contract. Lifecycle tests inspect both the composed
 installed `AGENTS.md` and `.ai-workflow/routing.md`.
 
-Synthetic historical-package fixtures receive explicit fixture-only
-accepted-predecessor records in their copied new package. They exercise the
-planner without expanding production trust. Hermetic bootstrap packages also
-receive a fixture-only provider identity lock matching their deterministic
-source bodies; production `--refresh-manifest` never rewrites the reviewed
-provider lock.
+Synthetic old-package fixtures exercise the planner using their installed local
+ownership records. They do not add historical predecessor catalogs or provider
+identity locks to copied packages.
 
 `route-observability-scenarios.json` covers direct handling, dominant workflows,
-workflow-plus-capability composition, user-only handoffs, setup/profile
-readiness, read-only behavior, and the no-extra-execution guarantee.
+workflow-plus-capability composition, host-native provider fallbacks, explicit
+setup handoffs, profile readiness, read-only behavior, and optional route
+diagnostics.
 `decision-contract-scenarios.json` records the corresponding semantic decision
 categories independently of scenario numbering. Static verification checks
 their invocation, authorization, state-effect, line-format, and centralized

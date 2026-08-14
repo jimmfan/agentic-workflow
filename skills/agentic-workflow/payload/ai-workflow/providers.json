@@ -48,18 +48,8 @@
     "minimum_gh_version": "2.97.0",
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
-    "revision": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "skills": [
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml",
-          "domain.md",
-          "issue-tracker-github.md",
-          "issue-tracker-gitlab.md",
-          "issue-tracker-local.md",
-          "triage-labels.md"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "user-only",
@@ -67,14 +57,9 @@
         },
         "name": "setup-matt-pocock-skills",
         "path": "skills/engineering/setup-matt-pocock-skills",
-        "requires_configuration": [],
-        "tree_sha": "abf20c04a4aa8a37ff20aa7286f28857150f8b8d"
+        "requires_configuration": []
       },
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "user-only",
@@ -85,18 +70,9 @@
         "requires_configuration": [
           "domain",
           "issue-tracker"
-        ],
-        "tree_sha": "48c3a8b0a9705d6310d37f7f9b53bcb2c55955c7"
+        ]
       },
       {
-        "files": [
-          "GLOSSARY-FORMAT.md",
-          "LEARNING-RECORD-FORMAT.md",
-          "MISSION-FORMAT.md",
-          "RESOURCES-FORMAT.md",
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "user-only",
@@ -104,14 +80,9 @@
         },
         "name": "teach",
         "path": "skills/productivity/teach",
-        "requires_configuration": [],
-        "tree_sha": "15f8c86d39ef834e643d092733ca899b59049067"
+        "requires_configuration": []
       },
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "implicit",
@@ -119,14 +90,9 @@
         },
         "name": "research",
         "path": "skills/engineering/research",
-        "requires_configuration": [],
-        "tree_sha": "972a34cd8128b7952b7eb279b06715862db906a7"
+        "requires_configuration": []
       },
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "user-only",
@@ -138,14 +104,9 @@
           "domain",
           "issue-tracker",
           "triage-labels"
-        ],
-        "tree_sha": "dc32a36159f99c854cb470f371106cd38513a15f"
+        ]
       },
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "user-only",
@@ -157,14 +118,9 @@
           "domain",
           "issue-tracker",
           "triage-labels"
-        ],
-        "tree_sha": "80c1bedbdaa72a4abd524055013accb4fe0ea8c4"
+        ]
       },
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "user-only",
@@ -174,16 +130,9 @@
         "path": "skills/engineering/implement",
         "requires_configuration": [
           "issue-tracker"
-        ],
-        "tree_sha": "f07d230f645fc9ac390cf13a450bbff12ad791a3"
+        ]
       },
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml",
-          "mocking.md",
-          "tests.md"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "implicit",
@@ -191,14 +140,9 @@
         },
         "name": "tdd",
         "path": "skills/engineering/tdd",
-        "requires_configuration": [],
-        "tree_sha": "423f3cc2bccf3b0ed426fb35eeb4b38d9188a343"
+        "requires_configuration": []
       },
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "implicit",
@@ -208,14 +152,9 @@
         "path": "skills/engineering/code-review",
         "requires_configuration": [
           "issue-tracker"
-        ],
-        "tree_sha": "7a2057dcc514dc024d4e6bf8ad78021b97f229ae"
+        ]
       },
       {
-        "files": [
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "implicit",
@@ -223,16 +162,9 @@
         },
         "name": "grilling",
         "path": "skills/productivity/grilling",
-        "requires_configuration": [],
-        "tree_sha": "fd99bcbb818f7ef766b83656fb5fac0b58e223ad"
+        "requires_configuration": []
       },
       {
-        "files": [
-          "ADR-FORMAT.md",
-          "CONTEXT-FORMAT.md",
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "implicit",
@@ -240,16 +172,9 @@
         },
         "name": "domain-modeling",
         "path": "skills/engineering/domain-modeling",
-        "requires_configuration": [],
-        "tree_sha": "959e63161ff78b4b1cd553b2c0e09e0c68418e5f"
+        "requires_configuration": []
       },
       {
-        "files": [
-          "LOGIC.md",
-          "SKILL.md",
-          "UI.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "implicit",
@@ -257,16 +182,9 @@
         },
         "name": "prototype",
         "path": "skills/engineering/prototype",
-        "requires_configuration": [],
-        "tree_sha": "57569dda16077a016b8fb82494dbf9f6430d7cc4"
+        "requires_configuration": []
       },
       {
-        "files": [
-          "DEEPENING.md",
-          "DESIGN-IT-TWICE.md",
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "implicit",
@@ -274,16 +192,9 @@
         },
         "name": "codebase-design",
         "path": "skills/engineering/codebase-design",
-        "requires_configuration": [],
-        "tree_sha": "20b7cd1dd1fe5b0bd37ba72649f3a29375574b5b"
+        "requires_configuration": []
       },
       {
-        "files": [
-          "AGENT-BRIEF.md",
-          "OUT-OF-SCOPE.md",
-          "SKILL.md",
-          "agents/openai.yaml"
-        ],
         "invocation": {
           "claude-code": "unavailable",
           "codex": "user-only",
@@ -295,11 +206,10 @@
           "domain",
           "issue-tracker",
           "triage-labels"
-        ],
-        "tree_sha": "b20940845332f540e3f17b0cb32d45fd8c2298bf"
+        ]
       }
     ],
     "version": "v1.2.3"
   },
-  "schema_version": 3
+  "schema_version": 4
 }

@@ -5,9 +5,9 @@ installation, and lifecycle state. It is not a general destination for project
 documentation, specifications, tickets, or provider-native artifacts; those
 remain in their existing canonical locations. Mature planning, learning,
 research, specification, ticketing, implementation, TDD, and Code Review
-methods come from curated upstream skills installed under `.agents/skills/`.
-Their tested source, version, revision, subtree identities, complete file lists,
-and capability mapping are declared in `providers.json`.
+methods may come from curated upstream skills installed under `.agents/skills/`.
+Their reviewed repository, pinned version, paths, invocation requirements, and
+capability mapping are declared in `providers.json`.
 
 The root `AGENTS.md` is a small always-on orchestration kernel and hooks-off
 semantic fallback. Detailed selection, invocation, composition, and route-output
@@ -21,7 +21,7 @@ implementation integration, and acceptance/integration Verification:
 request -> router
         -> direct
         -> dominant workflow/activity + optional capabilities
-        -> invocation policy -> execute | exact handoff | unavailable
+        -> invocation policy -> execute | host-native fallback | explicit handoff
         -> upstream wayfinder | teach | research
         -> local discovery | debugging
         -> upstream to-spec -> to-tickets -> implement
@@ -43,13 +43,11 @@ and cloud agent have distinct schemas/runtime behavior and are not treated as
 aliases for the VS Code hook file.
 
 Routing selection is not execution. Codex and GitHub Copilot may invoke skills
-declared `implicit`; for a `user-only` selection the router returns the exact
-`$skill-name` Codex or `/skill-name` Copilot handoff and does not claim that the
-provider ran, create its artifacts, or write workflow state. Claude Code can
-read the root `CLAUDE.md`, but neither local nor provider skill bodies are
-projected from `.agents/skills` into Claude's native `.claude/skills` location.
-This installation therefore supports policy classification and direct work on
-Claude while reporting every skill-backed route unavailable.
+declared `implicit`. When a preferred provider is user-only and was not
+explicitly invoked, or is unavailable on the active host, ordinary intent uses
+truthful host-native capability instead. An exact handoff is reserved for an
+explicitly required provider or a genuine configuration boundary. No fallback
+may claim the provider ran, create provider-native artifacts, or copy its method.
 
 A capability can support another dominant workflow or be dominant when it
 directly matches intent. This permits Wayfinder plus Research or Implementation
@@ -62,39 +60,34 @@ requests its fixed-point Standards/Spec contract outside an implement run.
 
 ## Provider lifecycle
 
-The public ai-workflow bootstrap is the only required adoption path. Internally
-it delegates upstream installation to GitHub CLI `gh skill`, pins every skill to
-the tested tag, then validates injected source/ref/tree-SHA metadata and complete
-adjacent resources. It does not require the installer output to reproduce
-separately precomputed upstream file hashes. `provider-state.json` records
-ai-workflow ownership, the installed provider revision/version, and hashes of
-the bytes actually installed. Later updates use those hashes only to detect
-local modifications.
+The public ai-workflow bootstrap is the supported adoption path. Internally it
+installs the framework first and then asks GitHub CLI `gh skill` to install the
+optional provider set at the reviewed tag. It validates required source/path/ref
+and invocation metadata without duplicating upstream tree SHAs or complete file
+inventories. `provider-state.json` is created only when providers are installed;
+it records repository/version, ownership origin, and hashes of the bytes
+actually installed. Later updates use those local hashes to detect edits.
 
 Pinned providers do not float during normal updates. A maintainer upgrades the
-declaration to a reviewed stable tag and subtree identities, runs live provider
-compatibility checks plus the hermetic suite, refreshes the distribution
-manifest, and releases ai-workflow. Target projects receive that new baseline
-only through an intentional ai-workflow update. Missing or incompatible
-dependencies fail with a diagnostic; the router never falls back to a retired
-local fork.
+declaration to a reviewed stable tag, runs live provider compatibility checks
+plus the hermetic suite, refreshes the distribution manifest, and releases
+ai-workflow. Target projects receive that new baseline only through an
+intentional update. Missing or incompatible providers produce a truthful
+diagnostic and host-native fallback; the router never substitutes a retired
+local fork or claims provider execution.
 
-Across a declaration change, the new immutable package must first authenticate
-the installed framework as an audited predecessor. Its exact historical
-`providers.json` then authenticates the old provider identity and state shape.
-Update replaces a provider directory only when predecessor state records it as
-framework-created, every recorded installed-file SHA-256 is still clean, and
-the complete directory matches the predecessor's inventory and pinned metadata.
-Modified and pre-existing-compatible directories continue to fail closed.
-Directories already compatible with the new declaration are retained without
-losing their recorded origin; a predecessor-recorded directory that is genuinely
-absent is installed from the new declared pin. The complete transition set and
-new staged pin are verified before mutation. A supported clean upgrade therefore
-does not require deleting `.agents`, `provider-state.json`, or individual skills.
+Across a declaration change, update uses local provider state as the ownership
+and cleanliness baseline. It replaces a directory only when state records it as
+framework-created or reconstructed and every recorded installed-file SHA-256 is
+still clean. Modified and pre-existing-compatible directories are preserved.
+Compatible directories retain their origin; a recorded directory that is
+genuinely absent can be recreated from the new pin. New bytes are staged and
+verified before replacement.
 
-Fresh installs create only `.ai-workflow/`. Update recognizes the former
-`ai-workflow/` directory only when its installation manifest exactly matches a
-package-authenticated predecessor, then relocates it before continuing. If both
+Fresh framework installs create only `.ai-workflow/`; optional provider install
+also creates provider skill directories and `provider-state.json`. Update
+recognizes the former `ai-workflow/` directory only when it has a valid managed
+installation manifest, then relocates it before continuing. If both
 directories exist, or if `ai-workflow/` is unrelated or unrecognizable, the
 lifecycle stops without merging, overwriting, or claiming either directory.
 
@@ -104,29 +97,26 @@ provider baseline, or to recreate a missing managed directory. Initial adoption
 refuses any same-named directory because no framework ownership state exists for
 it; it never adopts or overwrites unknown content. Runtime use and the inner
 status checks read ordinary repository files and do not contact the provider
-upstream once that baseline and the exact framework package are recorded. The
-documented public bootstrap still needs HTTPS to fetch the framework package;
-an unchanged update needs no additional provider fetch.
+upstream. The documented public bootstrap still needs HTTPS to fetch the
+framework package; an unchanged update needs no additional provider fetch.
 Project-scoped `.agents/skills` is shared by Codex and GitHub Copilot. Removal
-considers only exact declared names and deletes only package-authentic,
-checksum-clean skills recorded as created by ai-workflow. It preserves
-legacy pre-existing-compatible, incompatible, locally changed, extra-file, and
-undeclared directories. Repository-local origin history is useful evidence but
-is not tamper-evident: coordinated forgery can reclassify an exact unmodified
-canonical provider directory, but cannot authorize deletion of modified,
-extra-file, or undeclared content.
+deletes only state-recorded, checksum-clean skills recorded as created by
+ai-workflow. It preserves pre-existing-compatible, reconstructed, incompatible,
+locally changed, and extra-file directories. Repository-local origin history is
+useful ownership evidence but is not tamper-evident.
 
 ## Setup lifecycle
 
 `setup-matt-pocock-skills` is installed but never run automatically during
 adoption or every prompt. Before the first tracker-dependent workflow, the
-router checks only that selected skill's declaration for the required
+router checks only that selected skill's declared requirements for
 `docs/agents/issue-tracker.md`, `docs/agents/domain.md`, and, where applicable,
 `docs/agents/triage-labels.md`. When absent, it selects setup and returns the
 exact user-only handoff on Codex or GitHub Copilot because setup is prompt-driven
-and writes user-owned configuration plus a root `## Agent skills` block. On a
-host where the provider is unavailable, it reports that limitation instead. It
-does not run or write merely because it was selected. `triage` is installed so
+and writes user-owned configuration plus a root `## Agent skills` block. If a
+normal workflow can proceed without that external configuration, it may instead
+use host-native capability. Setup never runs or writes merely because it was
+selected. `triage` is installed so
 setup can emit the label vocabulary required by to-spec and to-tickets; triage
 is not a normal root route. Rerun setup only to switch or reset that
 configuration; ordinary edits go directly to `docs/agents/*.md`.
@@ -144,8 +134,8 @@ The filesystem boundary has three categories:
 - `.ai-workflow/` is the framework installation. Its runtime, routing,
   contracts, templates, registry, and lifecycle metadata are reconstructable.
 - `.ai-workflow-state/` is durable, project-owned, Git-trackable repository
-  state. Lifecycle operations preserve it byte-for-byte, and the framework does
-  not add it to `.gitignore` or require Git.
+  state. Lifecycle operations preserve it byte-for-byte but never create it,
+  and the framework does not add it to `.gitignore` or require Git.
 - transient controller bookkeeping is machine-local under the operating system
   temporary directory and never belongs in the repository.
 
@@ -155,15 +145,17 @@ lifecycle-managed even though they are physically outside `.ai-workflow/`.
 
 `.ai-workflow-state/project-profile.md` is optional advisory context, while
 `.ai-workflow-state/active.md` is a stricter durable continuity pointer created
-only when a workflow needs persistence. A new profile is a deterministic
-`uninitialized` document whose unknown values are `None`, but existing readable
-non-empty profiles are simply `present`: headings and markers are not a
-versioned schema, and lifecycle operations never migrate their content. For a
-mature repository, initialize the profile once from verified repository
-evidence when writes are authorized; afterward add only concise, durable facts
-and pointers discovered naturally during work. Do not scan the whole repository
-per task, store secrets or task notes, or let the cache override current source,
-accepted ADRs/domain documentation, or canonical provider artifacts.
+only when a workflow needs persistence. Both files and their parent directory
+are created lazily by authorized workflows, never by lifecycle operations. The
+framework profile template is a starting point whose unknown values are `None`,
+but a workflow creates the project-owned profile only when it has useful
+verified context to persist. Existing readable non-empty
+profiles are simply `present`: headings and markers are not a versioned schema,
+and lifecycle operations never migrate their content. Add only concise, durable
+facts and pointers discovered naturally during work. Do not scan the whole
+repository per task, store secrets or task notes, or let the cache override
+current source, accepted ADRs/domain documentation, or canonical provider
+artifacts.
 
 Deleting `.ai-workflow/` and reinstalling reconstructs framework metadata
 without touching `.ai-workflow-state/`. Exact surviving integration/provider
@@ -173,18 +165,13 @@ but are conservatively preserved on removal. Development-era durable files
 inside `.ai-workflow/` are only detected and reported for manual relocation;
 normal lifecycle operations never move, merge, overwrite, or delete them.
 
-For a cross-version update, the immutable new package—not the target-local
-`install-manifest.json`—defines trusted predecessors. Version, exact source
-revision, installation-manifest schema, complete managed-path set, and every
-source SHA-256 must match one audited record before the updater plans a write or
-retirement. Provider migration additionally requires that authenticated record
-to cover the installed predecessor `providers.json`, and requires exact matching
-provider state and checksum-clean current directories. Unknown, partial, and
-forged predecessor identities fail closed. During coordinated update, the
-payload commits while provider backups are still reversible. Payload and
-provider post-check failures restore both layers to the predecessor state.
-Rollback removes only directories created by that operation; successful removal
-may leave pre-existing unowned empty parent directories.
+For a cross-version update, the new package authenticates its own payload while
+the target-local install and provider records establish ownership and the last
+recorded clean bytes. Current-byte mismatches block replacement or deletion.
+Framework and optional-provider transactions each stage and verify their own
+changes and restore their own prior bytes on failure. Rollback removes only
+directories created by that operation; successful removal may leave
+pre-existing unowned empty parent directories.
 
 Durable framework records link to canonical provider artifacts rather than
 copying their content or renaming their identifiers. The workflow that creates
@@ -204,27 +191,24 @@ content. Removal deletes only the managed region and leaves project content.
 
 Payload origin/restoration fields and provider origin/installed hashes are
 repository-local history, not tamper-evident proof. Coordinated local forgery
-can reclassify managed or provider bytes or substitute an exact current/audited
-historical policy identity. Without that forgery, modified, extra, undeclared,
+can reclassify managed or provider bytes or alter restoration data. Without that forgery, modified, extra, undeclared,
 and unique project content remains protected. A stronger historical-origin
 guarantee would require conservative no-delete behavior or a trust anchor
 outside the target repository.
 
-Normal lifecycle status reports framework integrity and provider integrity
-separately from host enforcement, durable project readiness, and setup
-capability. A missing, empty, uninitialized, unreadable, unsafe, or merely
-present profile does not become a false integrity claim. A missing active index
+Normal lifecycle status reports framework integrity and optional provider
+capability separately from host enforcement, durable project readiness, and setup
+capability. A missing, empty, unreadable, unsafe, or merely present profile does
+not become a false integrity claim. A missing active index
 means no durable workflow is recorded; an existing malformed or unsafe index is
 a correctness warning because it affects resumability. A disabled Preview hook
 or missing optional setup document also remains separate from integrity, while a
 missing or modified managed hook/file is still an integrity failure.
 
-Each final response ends with one effective route line, for example
-`[route: router → implement → verification]`. It lists router-selected stages
-and explicitly composed capabilities that actually ran, without re-expanding
-provider-owned internal composition such as implement's TDD and Code Review.
-Availability alone does not count, and reporting the route never causes another
-skill load or state write.
+When useful for debugging or observability, a response may include an effective
+route line such as `[route: router → implement → verification]`. If emitted, it
+lists only stages and capabilities that actually ran. Its absence is normal and
+never invalidates completed work or causes another skill load or state write.
 
 ## Optional observability
 

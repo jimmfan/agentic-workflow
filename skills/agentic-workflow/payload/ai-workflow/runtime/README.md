@@ -63,10 +63,11 @@ controller does not guess from shell keywords.
 python3 .ai-workflow/runtime/controller.py action --kind repository-write
 ```
 
-For a selected provider, record `started` before its first substantive tool. The
-controller derives provider selections from route labels that match declared
-provider names, so `--provider` is needed only when the route label does not
-name the provider:
+Only when actually executing a provider, record `started` before its first
+substantive tool. A preferred provider that falls back to host-native work needs
+no provider transition. The controller derives provider selections from route
+labels that match declared provider names, so `--provider` is needed only when
+the route label does not name the provider:
 
 ```text
 python3 .ai-workflow/runtime/controller.py provider --name implement --outcome started
@@ -82,7 +83,9 @@ The controller rejects `started` when the provider is unavailable, absent, not
 selected, missing a declared configuration prerequisite, or user-only without
 an exact explicit invocation in the current prompt. It rejects `executed`
 without that validated `started` transition. `handoff`, `unavailable`, and
-`blocked` are non-execution outcomes.
+`blocked` are non-execution outcomes. A missing optional provider declaration or
+outcome does not block host-native tools or completion; it only prevents a false
+provider execution claim.
 
 Before changing `.ai-workflow-state/active.md`, validate its current digest and
 the intended conflict resolution:
