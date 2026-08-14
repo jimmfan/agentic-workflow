@@ -237,7 +237,7 @@ modified or pre-existing skills intentionally remain.
   framework package.
 - The first-stage public command fetches `main` over TLS; the bootstrap then
   resolves and verifies an immutable framework revision.
-- The current framework release is `0.7.1` and its curated provider baseline is
+- The current framework release is `0.7.2` and its curated provider baseline is
   [`mattpocock/skills` v1.2.3](https://github.com/mattpocock/skills/releases/tag/v1.2.3).
 - Ownership history is stored inside the target repository and is not
   tamper-evident. Coordinated local forgery can reclassify exact canonical

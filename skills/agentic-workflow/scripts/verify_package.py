@@ -267,6 +267,34 @@ ACCEPTED_PREDECESSORS = (
             ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
         }
     },
+    {
+        "framework_version": "0.7.1",
+        "source_revisions": [
+            "5c3e7461bac7339e0da879ec3e60ac883544fdc0",
+            "a553b8884b3bc25909a7e6b104eeed086f961a91"
+        ],
+        "install_manifest_schemas": [
+            2
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "04e187a5ed32cdadd42277dc40e510b8361f7d1441a0f42aa970ead4d900eb8c",
+            "ai-workflow/contracts/project-profile.md": "40aec342a9826cb9f9a248958394514b991d47339565bac13366b50d9bb9ab7f",
+            "ai-workflow/observability/README.md": "1dad5693d97c49410e80ee053553e9cb4bb5360e5bdff42aae7ec242ce0d5658",
+            "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
+            "ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
+            "ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
+            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+            "AGENTS.md": "e0768ce25456cefe4e17854c7e577fcdc8d2b053278cd5c9f517e19a8dfcb77c",
+            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
+            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
+            ".agents/skills/workflow-implementation/SKILL.md": "ad4896aec01f8fca62ce2c162c6848a16d1784c17d67bffefc5d131d16278c6d",
+            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
+        }
+    },
 )
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
@@ -804,19 +832,52 @@ def check_workflow_contract() -> None:
     for route in ("normal", "teach", "discovery", "debugging", "to-tickets", "implementation", "verification", "code-review"):
         require(route in routes, f"acceptance catalog lacks the {route} route")
 
-    route_instruction = re.search(
-        r"Append `\[route: router → …\]`.*?(?=\n\n)",
-        policy,
-        re.DOTALL,
+    routing_heading = "## Routing requirement"
+    require(policy.count(routing_heading) == 1, "root policy needs exactly one prominent routing requirement")
+    routing_requirement = policy[
+        policy.index(routing_heading) : policy.index("\n\nOn explicit resume", policy.index(routing_heading))
+    ]
+    require(
+        policy.index(routing_heading) < 500,
+        "routing requirement is not near the beginning of the root policy",
     )
-    require(route_instruction is not None, "root policy lacks the compact route-output format")
-    route_instruction_text = " ".join(route_instruction.group(0).split())
-    require(len(route_instruction.group(0).encode("utf-8")) <= 300, "always-on route instruction exceeds 300 bytes")
-    require(len(route_instruction_text.split()) <= 40, "always-on route instruction exceeds 40 words")
-    require("router-visible execution" in route_instruction_text, "route output does not distinguish router-visible execution")
-    require("Explain routing only when requested" in route_instruction_text, "route output could add an unsolicited explanation")
-    require("never reassess it" in route_instruction_text, "route output could trigger another routing pass")
-    require("load skills, run workflows, or write state to produce" in route_instruction_text, "route output could trigger extra execution")
+    for term in (
+        "Every user request MUST be evaluated through the Agentic Workflow router before execution.",
+        "Select the minimum useful primary workflow and any supporting capabilities",
+        "`direct` is a valid route.",
+        "Do not skip routing merely because a request is simple",
+    ):
+        require(term in " ".join(routing_requirement.split()), f"routing requirement lacks: {term}")
+
+    final_heading = "## Final response contract"
+    require(policy.count(final_heading) == 1, "root policy needs exactly one final response contract")
+    final_contract = policy[policy.index(final_heading) :]
+    final_contract_text = " ".join(final_contract.split())
+    require(len(final_contract.encode("utf-8")) <= 900, "final response contract exceeds 900 bytes")
+    require(
+        policy.rstrip().endswith("write state merely to produce the marker."),
+        "final response contract is not the last root-policy section",
+    )
+    expected_markers = [
+        "[route: router → <path>]",
+        "[route: router → direct]",
+        "[route: router → discovery → research]",
+        "[route: router → implement → verification]",
+    ]
+    require(
+        re.findall(r"`(\[route: router → [^`\n]+\])`", final_contract) == expected_markers,
+        "final response contract route-marker examples drifted or were duplicated",
+    )
+    for term in (
+        "Every final response MUST end with exactly one route marker",
+        "router-visible stages that actually execute",
+        "Do not omit the route marker",
+        "Do not emit more than one route marker",
+        "Explain routing only when requested",
+        "never reassess it",
+        "load skills, run workflows, or write state merely to produce",
+    ):
+        require(term in final_contract_text, f"final response contract lacks: {term}")
     for skill_path in (PAYLOAD_ROOT / "skills").glob("*/SKILL.md"):
         require("[route: router" not in skill_path.read_text(encoding="utf-8"), f"route contract is duplicated in {skill_path}")
 

@@ -459,7 +459,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertIn("installed and verified", result.stdout)
         self.assertTrue((target / "AGENTS.md").is_file())
         self.assertIn(
-            "[route: router → …]",
+            "[route: router → <path>]",
             (target / "AGENTS.md").read_text(encoding="utf-8"),
         )
         claude = (target / "CLAUDE.md").read_bytes()
@@ -481,6 +481,45 @@ class LifecycleTests(unittest.TestCase):
         status = adopt(ADOPT, "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
         self.assertIn("Installation is clean", status.stdout)
+
+    def test_fresh_install_places_route_contract_at_managed_policy_edges(self) -> None:
+        target = git_repository(self.base / "salient-route-contract")
+
+        installed = adopt(ADOPT, "install", target)
+
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        data = (target / "AGENTS.md").read_bytes()
+        managed, project = ADOPTER.parse_composite_policy(data)
+        policy = managed.decode("utf-8")
+        self.assertEqual(project, b"")
+        self.assertEqual(data.count(ADOPTER.MANAGED_BEGIN), 1)
+        self.assertEqual(data.count(ADOPTER.MANAGED_END), 1)
+        self.assertEqual(data.count(ADOPTER.PROJECT_BEGIN), 1)
+        self.assertEqual(policy.count("## Routing requirement"), 1)
+        self.assertLess(policy.index("## Routing requirement"), 500)
+        self.assertLess(
+            policy.index("## Routing requirement"),
+            policy.index("On explicit resume"),
+        )
+        self.assertIn(
+            "Every user request MUST be evaluated through the Agentic Workflow router",
+            policy,
+        )
+        self.assertEqual(policy.count("## Final response contract"), 1)
+        self.assertTrue(
+            policy.rstrip().endswith("write state merely to produce the marker.")
+        )
+        self.assertIn(
+            "Every final response MUST end with exactly one route marker",
+            policy,
+        )
+        for marker in (
+            "[route: router → <path>]",
+            "[route: router → direct]",
+            "[route: router → discovery → research]",
+            "[route: router → implement → verification]",
+        ):
+            self.assertEqual(policy.count(f"`{marker}`"), 1)
 
     def test_non_git_install_update_status_and_remove(self) -> None:
         target = self.base / "ordinary-project"
@@ -2121,6 +2160,106 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(removed.returncode, 0, removed.stderr)
         self.assertEqual(policy.read_bytes(), project)
 
+    def test_update_refreshes_route_contract_and_preserves_project_policy(self) -> None:
+        old_package = self.base / "older-route-contract-package"
+        shutil.copytree(PACKAGE, old_package)
+        (old_package / "VERSION").write_text("0.7.1\n", encoding="utf-8")
+        refreshed = run(
+            sys.executable,
+            old_package / "scripts/verify_package.py",
+            "--refresh-manifest",
+        )
+        self.assertEqual(refreshed.returncode, 0, refreshed.stderr)
+
+        source_relative = "root/AGENTS.md.template"
+        old_source_path = old_package / "payload" / source_relative
+        old_source = old_source_path.read_text(encoding="utf-8")
+        old_source = old_source.replace("## Routing requirement", "## Routing", 1)
+        old_source = old_source.replace(
+            "Every user request MUST be evaluated through the Agentic Workflow router before\nexecution.",
+            "Evaluate each request through the router before execution.",
+            1,
+        )
+        old_source = old_source.replace(
+            "## Final response contract",
+            "## Route output",
+            1,
+        )
+        old_source = old_source.replace(
+            "Every final response MUST end with exactly one route marker:",
+            "Append one route marker:",
+            1,
+        )
+        old_source_path.write_text(old_source, encoding="utf-8")
+        distribution_path = old_package / "payload/distribution/manifest.json"
+        distribution = json.loads(distribution_path.read_text(encoding="utf-8"))
+        distribution["checksums"][source_relative] = hashlib.sha256(
+            old_source.encode("utf-8")
+        ).hexdigest()
+        distribution_path.write_text(
+            json.dumps(distribution, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
+        target = git_repository(self.base / "older-route-contract-project")
+        installed = adopt(old_package / "scripts/adopt.py", "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        policy_path = target / "AGENTS.md"
+        old_managed, _ = ADOPTER.parse_composite_policy(policy_path.read_bytes())
+        self.assertNotIn(b"## Routing requirement", old_managed)
+        self.assertNotIn(b"## Final response contract", old_managed)
+
+        project = b"# Project instructions\n\nKeep this project-owned guidance.\n"
+        policy_path.write_bytes(ADOPTER.compose_policy(old_managed, project))
+        trusted_adopt = package_accepting_installed_fixture(
+            self.base,
+            target,
+            "current-route-contract-package",
+        )
+
+        updated = adopt(trusted_adopt, "update", target)
+
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        data = policy_path.read_bytes()
+        managed, preserved_project = ADOPTER.parse_composite_policy(data)
+        self.assertEqual(
+            managed,
+            (PACKAGE / "payload/root/AGENTS.md.template").read_bytes(),
+        )
+        self.assertEqual(preserved_project, project)
+        self.assertEqual(data.count(ADOPTER.MANAGED_BEGIN), 1)
+        self.assertEqual(data.count(ADOPTER.MANAGED_END), 1)
+        self.assertEqual(data.count(ADOPTER.PROJECT_BEGIN), 1)
+        text = managed.decode("utf-8")
+        self.assertEqual(text.count("## Routing requirement"), 1)
+        self.assertEqual(text.count("## Final response contract"), 1)
+        for marker in (
+            "[route: router → <path>]",
+            "[route: router → direct]",
+            "[route: router → discovery → research]",
+            "[route: router → implement → verification]",
+        ):
+            self.assertEqual(text.count(f"`{marker}`"), 1)
+
+    def test_update_rejects_locally_modified_managed_policy_without_mutation(self) -> None:
+        target = git_repository(self.base / "locally-modified-managed-policy")
+        installed = adopt(ADOPT, "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        policy_path = target / "AGENTS.md"
+        managed, _ = ADOPTER.parse_composite_policy(policy_path.read_bytes())
+        project = b"# Project instructions\n\nPreserve this content.\n"
+        modified = ADOPTER.compose_policy(
+            managed + b"\nLocally changed framework-managed guidance.\n",
+            project,
+        )
+        policy_path.write_bytes(modified)
+
+        updated = adopt(ADOPT, "update", target)
+
+        self.assertEqual(updated.returncode, 2)
+        self.assertIn("managed policy block was locally changed", updated.stderr)
+        self.assertEqual(policy_path.read_bytes(), modified)
+
     def test_exact_preexisting_agents_survives_source_update_and_restores_original(self) -> None:
         old_package = self.base / "older-policy-package"
         shutil.copytree(PACKAGE, old_package)
@@ -3145,15 +3284,20 @@ class LifecycleTests(unittest.TestCase):
 
     def test_route_observability_contract_is_centralized_and_compact(self) -> None:
         policy = (PACKAGE / "payload/root/AGENTS.md.template").read_text(encoding="utf-8")
-        start = policy.index("Append `[route: router → …]`")
-        route_instruction = policy[start : policy.index("\n\n", start)]
+        start = policy.index("## Final response contract")
+        route_instruction = policy[start:]
         compact_instruction = " ".join(route_instruction.split())
-        self.assertLessEqual(len(route_instruction.encode("utf-8")), 300)
-        self.assertLessEqual(len(compact_instruction.split()), 40)
-        self.assertIn("router-visible execution", compact_instruction)
+        self.assertLessEqual(len(route_instruction.encode("utf-8")), 900)
+        self.assertTrue(
+            policy.rstrip().endswith("write state merely to produce the marker.")
+        )
+        self.assertIn("router-visible stages that actually execute", compact_instruction)
         self.assertIn("Explain routing only when requested", compact_instruction)
         self.assertIn("never reassess it", compact_instruction)
-        self.assertIn("load skills, run workflows, or write state to produce", compact_instruction)
+        self.assertIn(
+            "load skills, run workflows, or write state merely to produce",
+            compact_instruction,
+        )
         for skill in (PACKAGE / "payload/skills").glob("*/SKILL.md"):
             self.assertNotIn("[route: router", skill.read_text(encoding="utf-8"))
 
