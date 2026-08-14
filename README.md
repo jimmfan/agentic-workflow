@@ -125,26 +125,38 @@ installation integrity.
 target-project/
 ├── AGENTS.md                  # managed router + project-owned section
 ├── CLAUDE.md                 # root-policy import + project-owned section
-├── .agents/skills/           # local workflows + pinned provider skills
+├── .agents/skills/           # framework-managed agent integration files
 ├── .github/hooks/
 │   └── agentic-workflow.json # active VS Code Preview adapter
-└── .ai-workflow/             # internal project-local framework state
-    ├── install-manifest.json # framework ownership and checksums
-    ├── provider-state.json   # provider ownership and checksums
-    ├── providers.json        # tested capability mapping
-    ├── routing.md            # progressively loaded detailed router contract
-    ├── project-profile.md    # project-owned seed
-    ├── contracts/
-    ├── observability/        # optional, inert export analyzer
-    ├── runtime/              # shared controller, host matrix, opt-in adapters
-    └── state/
+├── .ai-workflow/             # reconstructable framework installation
+│   ├── install-manifest.json # framework ownership and checksums
+│   ├── provider-state.json   # provider ownership and checksums
+│   ├── providers.json        # tested capability mapping
+│   ├── routing.md            # progressively loaded detailed router contract
+│   ├── contracts/
+│   ├── observability/        # optional, inert export analyzer
+│   ├── runtime/              # shared controller, host matrix, opt-in adapters
+│   ├── state/                # durable-state contract, not project state
+│   └── templates/
+└── .ai-workflow-state/       # durable, Git-trackable project state
+    ├── project-profile.md    # optional advisory project context
+    └── active.md             # created only when durable continuity is needed
 ```
 
-The dot-prefixed directory is Agentic Workflow bookkeeping, not a general
-location for project documentation or provider-native artifacts. Updating a
-recognized pre-0.8 installation migrates `ai-workflow/` to `.ai-workflow/`
-automatically. If both directories exist, the lifecycle stops rather than
-merging or overwriting either one.
+`.ai-workflow/` is framework-owned and reconstructable. Durable repository
+context lives only under `.ai-workflow-state/`, which lifecycle install, update,
+remove, and reinstall preserve. Agent integration files are framework-owned
+files outside `.ai-workflow/` because Copilot, Codex, Claude, or another agent
+environment expects them at fixed paths. Per-turn controller state remains in
+the operating system temporary directory, outside the repository.
+`.ai-workflow-state/` is not added to `.gitignore`; projects may track it without
+making Git a framework prerequisite.
+
+A recognized pre-0.8 framework directory may still migrate from `ai-workflow/`
+to `.ai-workflow/`. Durable files at the development-era paths
+`.ai-workflow/project-profile.md` or `.ai-workflow/state/{active.md,records,archive}`
+are not migrated automatically: install, update, and status report the exact
+paths and require manual relocation without overwriting new durable state.
 
 ## Use it
 
@@ -239,8 +251,12 @@ modified or pre-existing skills intentionally remain.
 - Install and update verify the resulting payload before committing their local
   file transaction; coordinated update holds predecessor provider backups until
   both payload and provider verification succeed.
-- Project-owned policy sections, profiles, state, and workflow artifacts survive
-  update and removal.
+- Durable project state under `.ai-workflow-state/` survives install, update,
+  removal, and framework-directory reconstruction byte-for-byte.
+- Deleting only `.ai-workflow/` and rerunning the coordinated installer is a
+  supported recovery operation. Exact surviving framework and provider files
+  reconstruct clean ownership metadata; conservatively reconstructed external
+  files remain managed for updates but are preserved on later removal.
 - Removal deletes a provider directory only when the framework created it and
   its complete contents still match the recorded, pinned source.
 - Removal does not prune unowned empty parent directories that existed before
@@ -253,7 +269,7 @@ modified or pre-existing skills intentionally remain.
   framework package.
 - The first-stage public command fetches `main` over TLS; the bootstrap then
   resolves and verifies an immutable framework revision.
-- The current framework release is `0.9.1` and its curated provider baseline is
+- The current framework release is `0.9.2` and its curated provider baseline is
   [`mattpocock/skills` v1.2.3](https://github.com/mattpocock/skills/releases/tag/v1.2.3).
 - Ownership history is stored inside the target repository and is not
   tamper-evident. Coordinated local forgery can reclassify exact canonical

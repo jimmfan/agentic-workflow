@@ -1,8 +1,11 @@
 # Durable workflow state contract
 
-Repository files, not agent or chat memory, preserve workflow continuity. The
-single `active.md` index identifies the repository's one dominant durable
-workflow; detailed records use templates from `../templates/`. Supporting
+Repository files, not agent or chat memory, preserve workflow continuity. All
+durable Agentic Workflow state lives under `.ai-workflow-state/`, outside the
+reinstallable `.ai-workflow/` framework directory. The single
+`.ai-workflow-state/active.md` index identifies the repository's one dominant
+durable workflow; detailed records use framework templates from
+`.ai-workflow/templates/`. Supporting
 capabilities may run inside that workflow without replacing it or causing an
 index transition. Actual code and live evidence remain authoritative for current
 system behavior. Accepted repository decisions remain canonical for their domain
@@ -12,25 +15,27 @@ workflow status when chat disagrees.
 When sources disagree, first verify current behavior against live/source
 evidence. Accepted ADRs and domain documentation are canonical for project
 decisions; provider-native artifacts are canonical for provider-owned output;
-framework records own local decisions, workflow status, and pointers. The
-project profile is only a concise cache/pointer layer. Agent memory and chat
+Agentic Workflow durable records hold local decisions, workflow status, and
+pointers. The project profile is only a concise cache/pointer layer. Agent memory and chat
 recollection are convenience signals and cannot silently supersede any of those
 sources. Persist only a concise accepted result from delegated work, never a raw
 transcript or private memory.
 
 ## Locations and identifiers
 
-- `active.md`: one small active/interrupted workflow and provider pointer.
-- `records/<ID>-<slug>.md`: active durable records.
-- `archive/<year>/<ID>-<slug>.md`: completed, rejected, or superseded history.
+- `.ai-workflow-state/active.md`: one small active/interrupted workflow and
+  provider pointer.
+- `.ai-workflow-state/records/<ID>-<slug>.md`: active durable records.
+- `.ai-workflow-state/archive/<year>/<ID>-<slug>.md`: completed, rejected, or
+  superseded history.
 
 Use stable, never-reused identifiers: `DEC-NNNN` for bounded local decisions,
 `IMP-NNNN` for implementation orchestration, `DBG-NNNN` for debugging, and
 `IDP-NNNN` for optional internal-developer-platform opportunities. Allocate one
 greater than the highest
 matching ID in both records and archive. Renaming a slug does not change its ID.
-These prefixes apply only to framework-owned state; they never wrap or replace
-an identifier owned by Wayfinder or another native tracker.
+These prefixes apply only to Agentic Workflow durable records; they never wrap
+or replace an identifier owned by Wayfinder or another native tracker.
 
 Wayfinder-owned maps and decision tickets remain outside this allocator. Store a
 needed origin or return pointer exactly as Wayfinder supplies it, including the
@@ -43,8 +48,8 @@ Decision statuses are `proposed`, `provisional`, `accepted`, `rejected`, and
 `superseded`. Implementation and debugging records use `active`, `interrupted`,
 `blocked`, `completed`, and `superseded`. Provider-owned maps, course workspaces,
 specifications, tickets, and reviews keep their native status and identity;
-framework state stores only pointers and exact return targets. `blocked` requires
-a named blocker and recovery condition. Only decisions may use `provisional`;
+Agentic Workflow durable state stores only pointers and exact return targets.
+`blocked` requires a named blocker and recovery condition. Only decisions may use `provisional`;
 every provisional decision must state a review trigger. An IDP opportunity is
 supplemental, never an active workflow, and uses `proposed`, `accepted`,
 `rejected`, `completed`, or `superseded`.
@@ -123,7 +128,8 @@ promoted.
 
 ## Active index rules
 
-`active.md` follows `../templates/active-state.md`. Use `none` when idle. The
+`.ai-workflow-state/active.md` follows
+`.ai-workflow/templates/active-state.md`. Use `none` when idle. The
 repository supports one durable active framework workflow and, at most, one
 interrupted workflow. The index names the dominant workflow, existing record
 paths, a precise pending question, and an actionable resume target. The
@@ -167,10 +173,11 @@ when it does not alter or interfere with the active workflow.
 Never delete questionable history as a repair. Supersede it with a linked record
 when necessary.
 
-If `active.md` is missing, there is no trustworthy durable resume pointer. Report
-the missing state and do not infer one from chat. Recreate an idle index from the
-template only when repository evidence or the user confirms that no workflow was
-active; otherwise repair it from explicitly confirmed facts.
+If `active.md` is missing, no durable workflow is recorded. Do not infer one from
+chat. Create the index from the framework template only when an authorized
+durable workflow transition actually needs it. Once it exists, missing fields,
+unknown values, unsafe paths, and conflicting pointers remain correctness
+errors; never replace questionable state merely to make it parse.
 
 To reduce collisions across concurrent chats, inspect the active index, records,
 and archives immediately before an authorized write. Reserve an ID only after
@@ -189,6 +196,6 @@ once per year; consolidate repeated background into project documentation withou
 discarding stable IDs or decision history.
 
 Never store secrets, tokens, private keys, raw credentials, sensitive command
-output, or unnecessary personal data. Put unavoidable local transient material
-under `.ai-workflow-local/` and add that path to the consuming repository's
-`.gitignore`; the framework creates no such directory by default.
+output, or unnecessary personal data. Per-turn controller bookkeeping stays in
+the operating system temporary directory, outside the repository; it is
+disposable, noncanonical, and never moved into `.ai-workflow-state/`.

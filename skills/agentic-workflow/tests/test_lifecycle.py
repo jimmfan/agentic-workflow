@@ -34,60 +34,6 @@ FORMER_FRAMEWORK_DOCS = (
     "docs/routing.md",
     "docs/verification.md",
 )
-LEGACY_PROJECT_PROFILE = b"""# Project profile
-
-## Purpose and success
-
-Describe the project, its users, and observable success.
-
-## Technology and architecture
-
-List verified technologies, important components, and their relationships.
-
-## Important paths
-
-Map the few directories an agent usually needs. Name the project-owned durable
-specification location and local ticket destination or accepted native tracker,
-or state that each has not been established.
-
-## Terminology
-
-Define project-specific terms. Use `None` when there are none.
-
-## Constraints and policy
-
-Record security, organizational, compatibility, approval, and scope constraints.
-
-## Delivery workflow
-
-Describe how a change normally moves from development through release. State any
-plan-approval policy, when proportional independent review is required, and who
-may accept a review limitation. Review does not replace executable Verification.
-
-## Commands
-
-Copy a complete entry from `ai-workflow/contracts/project-profile.md` for each
-real command or manual check. If none are configured, write:
-
-`No project checks are configured. Report verification as blocked; do not invent commands.`
-
-## Debugging model
-
-Describe the project's request/data/control path and useful evidence at each
-layer. Use `None` until verified.
-
-## Decision considerations
-
-List domain-specific tradeoffs and policies. Use `None` until verified.
-
-## Profile maintenance
-
-- Owner: Project maintainers
-- Last reviewed: YYYY-MM-DD
-- Becomes stale when: Architecture, toolchain, delivery, or policy changes.
-- Conflict behavior: Verify against source and live evidence, report the conflict,
-  and update this profile before relying on the disputed field.
-"""
 
 
 def load_script(name: str, path: Path):
@@ -189,7 +135,10 @@ def relocate_fixture_to_legacy_layout(target: Path) -> None:
         legacy_path(path): details
         for path, details in manifest["framework_files"].items()
     }
-    manifest["project_owned"] = [legacy_path(path) for path in manifest["project_owned"]]
+    if "project_owned" in manifest:
+        manifest["project_owned"] = [
+            legacy_path(path) for path in manifest["project_owned"]
+        ]
     manifest_path.write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -504,7 +453,9 @@ class LifecycleTests(unittest.TestCase):
         self.assertTrue((target / ".github/hooks/agentic-workflow.json").is_file())
         self.assertFalse((target / ".agents/skills/workflow-teach").exists())
         self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "uninitialized")
-        self.assertTrue((target / ".ai-workflow/state/active.md").is_file())
+        self.assertFalse((target / ".ai-workflow-state/active.md").exists())
+        self.assertFalse((target / ".ai-workflow/project-profile.md").exists())
+        self.assertFalse((target / ".ai-workflow/state/active.md").exists())
         self.assertFalse((target / "ai-workflow").exists())
         self.assertFalse((target / "docs").exists())
         for relative in FORMER_FRAMEWORK_DOCS:
@@ -514,6 +465,15 @@ class LifecycleTests(unittest.TestCase):
         )
         self.assertEqual(manifest["framework_files"]["AGENTS.md"]["origin"], "composite-created")
         self.assertEqual(manifest["framework_files"]["CLAUDE.md"]["origin"], "composite-created")
+        self.assertEqual(manifest["schema_version"], 3)
+        self.assertNotIn("project_owned", manifest)
+        self.assertTrue(
+            all(
+                not path.startswith(".ai-workflow-state/")
+                for path in manifest["framework_files"]
+            )
+        )
+        self.assertFalse((target / ".gitignore").exists())
         status = adopt(ADOPT, "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
         self.assertIn("Installation is clean", status.stdout)
@@ -658,69 +618,243 @@ class LifecycleTests(unittest.TestCase):
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
         self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
-        self.assertTrue((target / ".ai-workflow/project-profile.md").is_file())
+        self.assertTrue((target / ".ai-workflow-state/project-profile.md").is_file())
 
-    def test_project_profile_seed_has_a_deterministic_uninitialized_state(self) -> None:
+    def test_current_project_profile_template_is_uninitialized(self) -> None:
         target = self.base / "profile-seed"
-        profile = target / ".ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow-state/project-profile.md"
         profile.parent.mkdir(parents=True)
         source = PACKAGE / "payload/ai-workflow/templates/project-profile.md"
         profile.write_bytes(source.read_bytes())
 
-        text = profile.read_text(encoding="utf-8")
-        nonblank = [line for line in text.splitlines() if line.strip()]
-        self.assertEqual(nonblank[:2], ["# Project profile", "Initialization: uninitialized"])
-        sections = text.split("\n## ")
-        self.assertEqual(len(sections), len(LIFECYCLE_MANAGER.PROFILE_HEADINGS) + 1)
-        for expected, section in zip(LIFECYCLE_MANAGER.PROFILE_HEADINGS, sections[1:]):
-            heading, body = section.split("\n", 1)
-            self.assertEqual(heading, expected)
-            self.assertEqual(body.strip(), "None")
         self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "uninitialized")
 
-        initialized = text.replace(
-            "Initialization: uninitialized",
-            "Initialization: initialized",
-            1,
-        ).replace(
-            "## Purpose and success\n\nNone",
-            "## Purpose and success\n\nVerified reusable project purpose.",
-            1,
-        )
-        profile.write_text(initialized, encoding="utf-8")
-        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "initialized")
+    def test_missing_project_profile_is_missing(self) -> None:
+        target = self.base / "missing-profile"
+        target.mkdir()
 
-        misplaced = text.replace("Initialization: uninitialized\n\n", "", 1).replace(
-            "## Purpose and success\n",
-            "## Purpose and success\n\nInitialization: uninitialized\n",
-            1,
-        )
-        profile.write_text(misplaced, encoding="utf-8")
-        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "invalid")
+        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "missing")
 
-    def test_legacy_uninitialized_profile_is_recognized_and_never_rewritten(self) -> None:
-        self.assertEqual(
-            hashlib.sha256(LEGACY_PROJECT_PROFILE).hexdigest(),
-            LIFECYCLE_MANAGER.LEGACY_UNINITIALIZED_PROFILE_SHA256,
-        )
-        target = self.base / "legacy-profile-project"
-        profile = target / ".ai-workflow/project-profile.md"
+    def test_readable_nonempty_project_profiles_are_present_without_schema_validation(self) -> None:
+        target = self.base / "present-profile"
+        profile = target / ".ai-workflow-state/project-profile.md"
         profile.parent.mkdir(parents=True)
-        profile.write_bytes(LEGACY_PROJECT_PROFILE)
+        cases = {
+            "older markerless populated": """# Project profile
+
+## Purpose and success
+
+Verified purpose from an older Agentic Workflow installation.
+
+## Commands
+
+Use the repository's documented checks.
+""",
+            "arbitrary reasonable content": "# Project context\n\nSee README.md and docs/architecture.md.\n",
+            "explicit initialized marker": "# Project profile\n\nInitialization: initialized\n",
+            "reordered headings": "## Commands\n\nNone\n\n## Purpose and success\n\nExample\n",
+            "renamed headings": "# Project notes\n\n## What matters\n\nKeep this concise.\n",
+            "missing headings": "Canonical decisions live in docs/decisions/.\n",
+        }
+        for label, content in cases.items():
+            with self.subTest(label=label):
+                profile.write_text(content, encoding="utf-8")
+                self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "present")
+
+    def test_empty_or_whitespace_only_project_profile_is_empty(self) -> None:
+        target = self.base / "empty-profile"
+        profile = target / ".ai-workflow-state/project-profile.md"
+        profile.parent.mkdir(parents=True)
+        for content in (b"", b" \n\t\n"):
+            with self.subTest(content=content):
+                profile.write_bytes(content)
+                self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "empty")
+
+    def test_unreadable_project_profile_is_unreadable(self) -> None:
+        target = self.base / "unreadable-profile"
+        profile = target / ".ai-workflow-state/project-profile.md"
+        profile.parent.mkdir(parents=True)
+        profile.write_text("project context\n", encoding="utf-8")
+
+        with mock.patch.object(Path, "read_bytes", side_effect=OSError("read denied")):
+            self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "unreadable")
+
+        profile.write_bytes(b"\xff\xfe")
+        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "unreadable")
+
+    def test_unsafe_project_profile_path_or_type_is_unsafe(self) -> None:
+        directory_target = self.base / "directory-profile"
+        (directory_target / ".ai-workflow-state/project-profile.md").mkdir(parents=True)
+        self.assertEqual(LIFECYCLE_MANAGER.profile_state(directory_target), "unsafe")
+
+        parent_file_target = self.base / "unsafe-parent"
+        parent_file_target.mkdir()
+        (parent_file_target / ".ai-workflow-state").write_text(
+            "not a directory\n", encoding="utf-8"
+        )
+        self.assertEqual(LIFECYCLE_MANAGER.profile_state(parent_file_target), "unsafe")
+
+    def test_legacy_durable_paths_are_detected_preserved_and_never_migrated(self) -> None:
+        fresh = git_repository(self.base / "legacy-durable-install")
+        legacy_profile = fresh / ".ai-workflow/project-profile.md"
+        legacy_active = fresh / ".ai-workflow/state/active.md"
+        legacy_profile.parent.mkdir(parents=True)
+        legacy_active.parent.mkdir(parents=True)
+        legacy_profile_bytes = b"legacy profile\n"
+        legacy_active_bytes = b"# Active workflow\n\n- Active workflow: debugging\n"
+        legacy_profile.write_bytes(legacy_profile_bytes)
+        legacy_active.write_bytes(legacy_active_bytes)
+
+        rejected = adopt(ADOPT, "install", fresh)
+
+        self.assertEqual(rejected.returncode, 2)
+        self.assertIn("legacy durable state detected", rejected.stderr)
+        self.assertIn("move it manually into .ai-workflow-state/", rejected.stderr)
+        self.assertIn("Automatic durable-state migration is intentionally disabled", rejected.stderr)
+        self.assertEqual(legacy_profile.read_bytes(), legacy_profile_bytes)
+        self.assertEqual(legacy_active.read_bytes(), legacy_active_bytes)
+        self.assertFalse((fresh / ".ai-workflow-state").exists())
+        self.assertFalse((fresh / ".ai-workflow/install-manifest.json").exists())
+
+        installed = git_repository(self.base / "legacy-durable-update")
+        self.assertEqual(adopt(ADOPT, "install", installed).returncode, 0)
+        old_active = installed / ".ai-workflow/state/active.md"
+        old_active.write_bytes(legacy_active_bytes)
+        manifest = installed / ".ai-workflow/install-manifest.json"
+        manifest_bytes = manifest.read_bytes()
+
+        update = adopt(ADOPT, "update", installed)
+
+        self.assertEqual(update.returncode, 2)
+        self.assertIn("legacy durable state detected", update.stderr)
+        self.assertEqual(old_active.read_bytes(), legacy_active_bytes)
+        self.assertEqual(manifest.read_bytes(), manifest_bytes)
+        self.assertFalse((installed / ".ai-workflow-state/active.md").exists())
+
+        removed = adopt(ADOPT, "remove", installed)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertEqual(old_active.read_bytes(), legacy_active_bytes)
+        self.assertIn("Legacy durable state was also preserved", removed.stdout)
+
+    def test_active_state_readiness_is_strict_only_when_state_exists(self) -> None:
+        target = self.base / "active-readiness"
+        target.mkdir()
+        active = target / ".ai-workflow-state/active.md"
+        self.assertEqual(LIFECYCLE_MANAGER.active_state(target), "none")
+
+        active.parent.mkdir()
+        active.write_text(
+            "# Active workflow\n\n- Active workflow: verification\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(LIFECYCLE_MANAGER.active_state(target), "verification")
+
+        active.write_text(
+            "# Active workflow\n\n- Active workflow: invented\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(LIFECYCLE_MANAGER.active_state(target), "invalid")
+
+        active.unlink()
+        outside = target / "outside-active.md"
+        outside.write_text("- Active workflow: none\n", encoding="utf-8")
+        active.symlink_to(outside)
+        self.assertEqual(LIFECYCLE_MANAGER.active_state(target), "unsafe")
+
+    def test_lifecycle_preserves_existing_durable_state_without_migration(self) -> None:
+        target = git_repository(self.base / "preserved-profile")
+        profile = target / ".ai-workflow-state/project-profile.md"
+        active = target / ".ai-workflow-state/active.md"
+        profile.parent.mkdir(parents=True)
+        markerless = b"# Project profile\n\nVerified project-owned context.\n"
+        active_bytes = b"# Active workflow\n\n- Active workflow: implementation\n"
+        profile.write_bytes(markerless)
+        active.write_bytes(active_bytes)
 
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "legacy-uninitialized")
+        self.assertEqual(profile.read_bytes(), markerless)
+        self.assertEqual(active.read_bytes(), active_bytes)
+
         updated = adopt(ADOPT, "update", target)
+
         self.assertEqual(updated.returncode, 0, updated.stderr)
-        self.assertEqual(profile.read_bytes(), LEGACY_PROJECT_PROFILE)
+        self.assertEqual(profile.read_bytes(), markerless)
+        self.assertEqual(active.read_bytes(), active_bytes)
+        self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "present")
+        self.assertEqual(LIFECYCLE_MANAGER.active_state(target), "implementation")
+
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
-        self.assertEqual(profile.read_bytes(), LEGACY_PROJECT_PROFILE)
+        self.assertEqual(profile.read_bytes(), markerless)
+        self.assertEqual(active.read_bytes(), active_bytes)
+
+    def test_framework_directory_can_be_deleted_and_reinstalled_without_state_loss(self) -> None:
+        target = git_repository(self.base / "reinstall-recovery").resolve()
+        ADOPTER.command_install(target, False, REVISION)
+        with mock.patch.object(
+            PROVIDER_MANAGER, "find_gh", return_value=Path("gh")
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+
+        profile = target / ".ai-workflow-state/project-profile.md"
+        active = target / ".ai-workflow-state/active.md"
+        profile_bytes = b"# Project context\n\nCanonical docs live under docs/.\n"
+        active_bytes = b"# Active workflow\n\n- Active workflow: debugging\n"
+        profile.write_bytes(profile_bytes)
+        active.write_bytes(active_bytes)
+
+        shutil.rmtree(target / ".ai-workflow")
+        self.assertEqual(profile.read_bytes(), profile_bytes)
+        self.assertEqual(active.read_bytes(), active_bytes)
+        self.assertTrue(ADOPTER.is_reinstall(target))
+
+        ADOPTER.command_install(target, False, REVISION)
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "find_gh",
+            side_effect=AssertionError("reinstall must not require GitHub CLI"),
+        ):
+            PROVIDER_MANAGER.command_install(
+                target,
+                dry_run=False,
+                reinstall=True,
+            )
+
+        self.assertEqual(profile.read_bytes(), profile_bytes)
+        self.assertEqual(active.read_bytes(), active_bytes)
+        self.assertTrue(ADOPTER.command_status(target, verbose=False, expected_revision=REVISION))
+        self.assertTrue(PROVIDER_MANAGER.command_status(target, verbose=False))
+        provider_state = json.loads(
+            (target / ".ai-workflow/provider-state.json").read_text(encoding="utf-8")
+        )
+        self.assertTrue(
+            all(
+                record["origin"] == "reconstructed"
+                for record in provider_state["skills"].values()
+            )
+        )
+        hook = target / ".github/hooks/agentic-workflow.json"
+        local_skill = target / ".agents/skills/workflow-discovery/SKILL.md"
+        provider_skill = target / ".agents/skills/research/SKILL.md"
+
+        PROVIDER_MANAGER.command_remove(target, dry_run=False)
+        ADOPTER.command_remove(target, False, REVISION)
+
+        self.assertEqual(profile.read_bytes(), profile_bytes)
+        self.assertEqual(active.read_bytes(), active_bytes)
+        self.assertTrue(hook.is_file())
+        self.assertTrue(local_skill.is_file())
+        self.assertTrue(provider_skill.is_file())
+        self.assertFalse((target / ".ai-workflow").exists())
 
     def test_status_reports_readiness_warnings_separately_from_integrity(self) -> None:
         target = self.base / "readiness-project"
-        profile = target / ".ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow-state/project-profile.md"
         profile.parent.mkdir(parents=True)
         profile.write_bytes(
             (PACKAGE / "payload/ai-workflow/templates/project-profile.md").read_bytes()
@@ -756,6 +890,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertIn("GitHub Copilot CLI/cloud: shared file unvalidated", rendered)
         self.assertIn("Project readiness (warnings do not affect integrity status):", rendered)
         self.assertIn("project profile: uninitialized", rendered)
+        self.assertIn("active workflow: none", rendered)
         self.assertIn("issue tracker config: missing", rendered)
         self.assertIn("domain config: missing", rendered)
         self.assertIn("triage config: missing", rendered)
@@ -789,7 +924,8 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(
             LIFECYCLE_MANAGER.project_readiness(target, configuration),
             {
-                "project profile": "initialized",
+                "project profile": "present",
+                "active workflow": "none",
                 "issue tracker config": "configured",
                 "domain config": "configured",
                 "triage config": "configured",
@@ -2064,6 +2200,49 @@ class LifecycleTests(unittest.TestCase):
             sorted(path.relative_to(target).as_posix() for path in target.rglob("*")),
         )
 
+    def test_coordinated_reinstall_enables_provider_state_reconstruction(self) -> None:
+        target = (self.base / "coordinated-reinstall").resolve()
+        target.mkdir()
+        calls = []
+
+        class FakeAdopterManager:
+            @staticmethod
+            def is_reinstall(root):
+                self.assertEqual(root, target)
+                return True
+
+        def checked(
+            script, action, root, dry_run, revision, *, quiet=False, extra=()
+        ):
+            calls.append((script, action, root, dry_run, revision, quiet, tuple(extra)))
+
+        with mock.patch.object(
+            LIFECYCLE_MANAGER,
+            "load_adopter_manager",
+            return_value=FakeAdopterManager,
+        ), mock.patch.object(
+            LIFECYCLE_MANAGER,
+            "run_checked",
+            side_effect=checked,
+        ):
+            LIFECYCLE_MANAGER.install(target, dry_run=True, revision=REVISION)
+
+        self.assertEqual(
+            calls,
+            [
+                (LIFECYCLE_MANAGER.ADOPTER, "install", target, True, REVISION, False, ()),
+                (
+                    LIFECYCLE_MANAGER.PROVIDERS,
+                    "install",
+                    target,
+                    True,
+                    REVISION,
+                    False,
+                    ("--reinstall",),
+                ),
+            ],
+        )
+
     def test_coordinated_update_commits_payload_inside_provider_rollback_window(self) -> None:
         target = self.base / "coordinated-update"
         target.mkdir()
@@ -2152,9 +2331,9 @@ class LifecycleTests(unittest.TestCase):
         installed = adopt(old_package / "scripts/adopt.py", "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
 
-        profile = target / ".ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow-state/project-profile.md"
         profile.write_bytes(profile.read_bytes() + b"\nProject-owned profile note.\n")
-        record = target / ".ai-workflow/state/records/DBG-0001-preserved.md"
+        record = target / ".ai-workflow-state/records/DBG-0001-preserved.md"
         record.parent.mkdir(parents=True)
         record.write_text("preserved framework continuity\n", encoding="utf-8")
         policy = target / "AGENTS.md"
@@ -2212,9 +2391,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertTrue(
             all(not path.startswith("ai-workflow/") for path in migrated_manifest["framework_files"])
         )
-        self.assertTrue(
-            all(not path.startswith("ai-workflow/") for path in migrated_manifest["project_owned"])
-        )
+        self.assertNotIn("project_owned", migrated_manifest)
 
         status = run(
             sys.executable,
@@ -2295,11 +2472,13 @@ class LifecycleTests(unittest.TestCase):
     def test_coordinated_install_rolls_back_new_payload_and_seeds_on_provider_failure(self) -> None:
         target = self.base / "provider-runtime-failure"
         target.mkdir()
-        preexisting_seed_parent = target / ".ai-workflow/state"
+        preexisting_seed_parent = target / ".ai-workflow-state"
         preexisting_seed_parent.mkdir(parents=True)
         original_run_checked = LIFECYCLE_MANAGER.run_checked
 
-        def controlled_run_checked(script, action, root, dry_run, revision, *, quiet=False):
+        def controlled_run_checked(
+            script, action, root, dry_run, revision, *, quiet=False, extra=()
+        ):
             if script == LIFECYCLE_MANAGER.PROVIDERS:
                 if dry_run:
                     return None
@@ -2311,6 +2490,7 @@ class LifecycleTests(unittest.TestCase):
                 dry_run,
                 revision,
                 quiet=quiet,
+                extra=extra,
             )
 
         with mock.patch.object(
@@ -2621,6 +2801,7 @@ class LifecycleTests(unittest.TestCase):
         manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest["schema_version"] = 1
+        manifest["project_owned"] = []
         manifest["framework_files"]["AGENTS.md"] = {
             "origin": "preexisting-identical",
             "sha256": digest,
@@ -2721,6 +2902,7 @@ class LifecycleTests(unittest.TestCase):
             "composite-preexisting-identical",
         )
         manifest["schema_version"] = 1
+        manifest["project_owned"] = []
         manifest["framework_files"]["CLAUDE.md"].pop("preexisting_base64")
         manifest["framework_files"]["CLAUDE.md"].pop("preexisting_sha256")
         manifest_path.write_text(
@@ -2879,7 +3061,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(installed.returncode, 0, installed.stderr)
         composite = (target / "AGENTS.md").read_bytes()
         self.assertIn(original, composite)
-        profile = target / ".ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow-state/project-profile.md"
         profile.write_text("project-owned customization\n", encoding="utf-8")
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
@@ -3083,40 +3265,50 @@ class LifecycleTests(unittest.TestCase):
             ):
                 ADOPTER.load_source_manifest()
 
-    def test_v090_release_baselines_are_authenticated_predecessors(self) -> None:
+    def test_recent_release_baselines_are_authenticated_predecessors(self) -> None:
         source_version, owned, _seeds, _retired, accepted = ADOPTER.load_source_manifest()
         current_sources = {
             target: ADOPTER.sha256_file(ADOPTER.SOURCE_ROOT.joinpath(*source.parts))
             for source, target in owned
         }
         expected_revisions = {
-            "0719332f547eb0b18bc6f23df73fd37313408017",
-            "62f08dd16fe588b48f591398f66a2f585149f14b",
+            "0.9.0": {
+                "0719332f547eb0b18bc6f23df73fd37313408017",
+                "62f08dd16fe588b48f591398f66a2f585149f14b",
+            },
+            "0.9.1": {
+                "97570ac2c1d366bb4fc05e9f0110630f94c4c4a2",
+            },
         }
-        v090 = [item for item in accepted if item[0] == "0.9.0"]
-        self.assertEqual(
-            {revision for _, revisions, _, _ in v090 for revision in revisions},
-            expected_revisions,
-        )
+        for expected_version, revisions_for_version in expected_revisions.items():
+            releases = [item for item in accepted if item[0] == expected_version]
+            self.assertEqual(
+                {
+                    revision
+                    for _, revisions, _, _ in releases
+                    for revision in revisions
+                },
+                revisions_for_version,
+            )
 
-        for version, revisions, schemas, identities in v090:
-            for revision in revisions:
-                installed = {
-                    "framework_version": version,
-                    "source_revision": revision,
-                    "schema_version": next(iter(schemas)),
-                    "framework_files": {
-                        path.as_posix(): {"source_sha256": digest}
-                        for path, digest in identities.items()
-                    },
-                }
-                trusted = ADOPTER.trusted_installed_sources(
-                    installed,
-                    source_version,
-                    current_sources,
-                    accepted,
-                )
-                self.assertEqual(trusted, identities)
+            for version, revisions, schemas, identities in releases:
+                for revision in revisions:
+                    installed = {
+                        "framework_version": version,
+                        "source_revision": revision,
+                        "schema_version": next(iter(schemas)),
+                        "framework_files": {
+                            path.as_posix(): {"source_sha256": digest}
+                            for path, digest in identities.items()
+                        },
+                    }
+                    trusted = ADOPTER.trusted_installed_sources(
+                        installed,
+                        source_version,
+                        current_sources,
+                        accepted,
+                    )
+                    self.assertEqual(trusted, identities)
 
     def test_tamper_is_reported_and_blocks_update(self) -> None:
         target = git_repository(self.base / "target")
@@ -3425,7 +3617,7 @@ class LifecycleTests(unittest.TestCase):
         target = git_repository(self.base / "target")
         old_install = adopt(old_package / "scripts/adopt.py", "install", target)
         self.assertEqual(old_install.returncode, 0, old_install.stderr)
-        profile = target / ".ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow-state/project-profile.md"
         profile.write_text("custom project profile\n", encoding="utf-8")
         trusted_adopt = package_accepting_installed_fixture(
             self.base,

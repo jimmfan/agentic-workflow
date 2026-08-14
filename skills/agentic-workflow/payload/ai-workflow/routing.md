@@ -85,8 +85,8 @@ the local diagnosis-only workflow.
 
 The workflow that creates a durable artifact owns its canonical form. Native
 specifications, tickets, maps, research, course workspaces, reviews, and provider
-identifiers remain canonical in their native locations. Framework state stores
-only orchestration status, concise pointers, and exact return targets when
+identifiers remain canonical in their native locations. Agentic Workflow
+durable state stores only orchestration status, concise pointers, and exact return targets when
 needed; it does not mirror provider bodies or allocate shadow identifiers.
 
 For durable workflow mechanics, conflicts, pointers, re-entry, and record

@@ -85,11 +85,15 @@ The integration suite covers:
   callback fails;
 - migration that retires the local Teach, Decomposition, and Review copies plus
   obsolete learning/ticket templates only when unchanged;
-- canonical `.ai-workflow/` state across fresh install, status, update, and
-  removal, plus authenticated update-only migration from `ai-workflow/`,
-  dual-directory conflict rejection, and repository-local isolation;
-- the canonical uninitialized project-profile seed, readiness versus integrity,
-  one-time/progressive profile rules, and target `docs/` preservation;
+- reconstructable `.ai-workflow/` installation content across fresh install,
+  status, update, removal, and reinstall; durable `.ai-workflow-state/`
+  byte-preservation; authenticated update-only migration from `ai-workflow/`;
+  dual-directory conflict rejection; and repository-local isolation;
+- the canonical uninitialized project-profile seed, permissive missing/present/
+  empty/unreadable/unsafe readiness states, byte-preserving updates without
+  profile migration, no eager active index, strict active-state handling,
+  legacy durable-path detection without migration, readiness versus integrity,
+  one-time/progressive profile guidance, and target `docs/` preservation;
 - installation without Git metadata or a Git executable;
 - path-independent package copies and a local archive bootstrap fixture; and
 - strict POSIX modes plus bounded native Windows mode normalization.

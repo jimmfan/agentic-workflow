@@ -1,0 +1,38 @@
+{
+  "name": "Agentic Workflow (Python 3.14 + uv)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "PYTHON_VARIANT": "3.14-bookworm",
+      "UV_VERSION": "0.11.32"
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1.1.0": {
+      "version": "2.97.0"
+    }
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "python3 .devcontainer/check_environment.py",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python3",
+        "python.testing.pytestEnabled": false,
+        "python.testing.unittestEnabled": true,
+        "python.testing.unittestArgs": [
+          "-v",
+          "-s",
+          "skills/agentic-workflow/tests",
+          "-p",
+          "test_*.py"
+        ]
+      }
+    }
+  }
+}

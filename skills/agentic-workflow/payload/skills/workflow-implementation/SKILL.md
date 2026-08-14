@@ -15,7 +15,7 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
    spec or ticket artifact. The workflow that created that durable artifact owns
    its canonical location; consume it by reference instead of copying it into a
    framework path. On resume, validate the exact `IMP` pointer and provider
-   artifact in `.ai-workflow/state/active.md`.
+   artifact in `.ai-workflow-state/active.md`.
 2. Return a material unresolved choice to `workflow-discovery` and an
    unexplained existing failure to `workflow-debugging`.
 3. Use one coherent ready scope. If substantial work needs dependency-ordered
@@ -71,4 +71,5 @@ that remain uncovered.
 Complete or archive an `IMP` only when the selected provider work is finished,
 required framework verification passes or an authorized limitation is recorded,
 and the exact return target is durable. If tickets remain, return to the native
-ticket frontier; never infer or mirror the next ticket in framework state.
+ticket frontier; never infer or mirror the next ticket in Agentic Workflow
+durable state.

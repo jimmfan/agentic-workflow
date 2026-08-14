@@ -1,31 +1,45 @@
 # Project profile contract
 
-`.ai-workflow/project-profile.md` is a project-local, framework-managed cache of verified
-context that is likely to help future work. It specializes the generic workflow
-policy without changing core skills. It is not a chat log, task journal,
-speculative architecture document, README copy, source-of-truth replacement, or
-place for secret values. The profile is not a shell script; an agent may run a
+`.ai-workflow-state/project-profile.md` is optional, project-owned advisory context: a
+concise cache of verified facts and pointers likely to help future work. It is
+not a versioned structured artifact, chat log, task journal, speculative
+architecture document, README copy, source-of-truth replacement, or place for
+secret values. The profile is not a shell script; an agent may run a recorded
 command only after applying the safety gate below.
 
-## Initialization and maintenance
+Lifecycle operations seed the current template only when the profile is absent.
+They preserve every existing profile byte-for-byte during install, update, and
+removal. A newer template never requires an existing profile to migrate.
 
-The first nonblank line below the title must be exactly one of:
+## Presence and initialization
 
-```text
-Initialization: uninitialized
-Initialization: initialized
-```
+Readiness classification is deliberately permissive:
 
-The installed seed is deterministically uninitialized: it uses the first value
-and represents every unknown section as `None`. Missing project setup does not
-prevent unrelated direct work and is not framework corruption.
+- `missing`: the file does not exist;
+- `uninitialized`: a readable profile contains the advisory
+  `Initialization: uninitialized` marker;
+- `present`: any other readable, non-empty UTF-8 regular file;
+- `empty`: the file contains only whitespace;
+- `unreadable`: its bytes cannot be read or decoded as UTF-8; and
+- `unsafe`: the path traverses a symlink, has a non-directory parent, or is not
+  a regular file.
+
+These states do not validate semantic quality. In particular, `present` means
+only that advisory context exists. Heading names, order, and counts are not a
+schema, and an initialization marker is not required in an existing populated
+profile.
+
+The installed template uses `Initialization: uninitialized` and `None` for
+unknown sections. The marker is an advisory signal, not a format version. Missing,
+empty, or uninitialized project context does not prevent unrelated direct work
+and is not framework corruption.
 
 For a mature existing repository, initialize the profile once from verified
 repository evidence. Keep the investigation bounded to useful canonical files
 and relevant live checks; do not scan the entire repository merely to populate
-the profile. Change the marker to `initialized` only when the recorded facts
-have been checked. A new or intentionally sparse repository may remain
-uninitialized until reusable context exists.
+the profile. Remove or change the uninitialized marker after recording checked
+facts. A new or intentionally sparse repository may remain uninitialized until
+reusable context exists.
 
 After initialization, update the profile progressively when normal work
 naturally establishes information that is all three of:
@@ -53,10 +67,9 @@ authorized. The workflow that creates a durable artifact owns its canonical
 artifact; the profile may point to that artifact but does not require or create
 a duplicate.
 
-## Required headings
+## Suggested contents
 
-Every profile must contain these level-two headings in this order, using `None`
-when a section has no verified content:
+The shipped template currently suggests these sections:
 
 1. `Purpose and success`
 2. `Technology and architecture`
@@ -80,9 +93,13 @@ Under `Delivery workflow`, state when proportional independent review is
 required and who may accept a review limitation. Projects may make review
 stricter but must not let review replace executable Verification evidence.
 
-Once initialized, the maintenance section identifies the owner, last review
-date, facts that make the profile stale, and the action to take when reality
-conflicts with it. While uninitialized, its value is `None`.
+Projects may rename, reorder, omit, or extend these sections. Agents should use
+the readable context that is relevant rather than rejecting the document for
+format differences.
+
+When present, the maintenance section can identify the owner, last review date,
+facts that make the profile stale, and the action to take when reality conflicts
+with it. While uninitialized, its value may remain `None`.
 
 Under `Commands`, `None` means that no project check has been configured yet.
 Report verification as blocked rather than inventing a command.

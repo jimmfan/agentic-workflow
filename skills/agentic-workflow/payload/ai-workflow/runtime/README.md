@@ -84,7 +84,7 @@ an exact explicit invocation in the current prompt. It rejects `executed`
 without that validated `started` transition. `handoff`, `unavailable`, and
 `blocked` are non-execution outcomes.
 
-Before changing `.ai-workflow/state/active.md`, validate its current digest and
+Before changing `.ai-workflow-state/active.md`, validate its current digest and
 the intended conflict resolution:
 
 ```text

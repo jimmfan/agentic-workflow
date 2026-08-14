@@ -22,6 +22,7 @@ PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 SOURCE_ROOT = PACKAGE_ROOT / "payload"
 SOURCE_MANIFEST = SOURCE_ROOT / "distribution" / "manifest.json"
 STATE_DIRECTORY = PurePosixPath(".ai-workflow")
+DURABLE_STATE_DIRECTORY = PurePosixPath(".ai-workflow-state")
 LEGACY_STATE_DIRECTORY = PurePosixPath("ai-workflow")
 INSTALL_MANIFEST_PATH = STATE_DIRECTORY / "install-manifest.json"
 LEGACY_INSTALL_MANIFEST_PATH = LEGACY_STATE_DIRECTORY / "install-manifest.json"
@@ -35,11 +36,12 @@ MANAGED_END = b"<!-- ai-workflow:managed-end -->\n"
 PROJECT_BEGIN = b"\n<!-- ai-workflow:project-instructions -->\n"
 ENTRY_FIELDS = {"sha256", "source_sha256", "origin"}
 RESTORATION_FIELDS = {"preexisting_base64", "preexisting_sha256"}
-INSTALL_MANIFEST_SCHEMA = 2
-SUPPORTED_INSTALL_MANIFEST_SCHEMAS = {1, INSTALL_MANIFEST_SCHEMA}
+INSTALL_MANIFEST_SCHEMA = 3
+SUPPORTED_INSTALL_MANIFEST_SCHEMAS = {1, 2, INSTALL_MANIFEST_SCHEMA}
 ORIGINS = {
     "created",
     "preexisting-identical",
+    "reconstructed",
     "composite",
     "composite-created",
     "composite-preexisting-identical",
@@ -49,11 +51,11 @@ COMPOSITE_ORIGINS = {
     "composite-created",
     "composite-preexisting-identical",
 }
-DEFAULT_PROJECT_OWNED = (
-    ".ai-workflow/project-profile.md",
-    ".ai-workflow/state/active.md",
-    ".ai-workflow/state/records/",
-    ".ai-workflow/state/archive/",
+LEGACY_DURABLE_PATHS = (
+    PurePosixPath(".ai-workflow/project-profile.md"),
+    PurePosixPath(".ai-workflow/state/active.md"),
+    PurePosixPath(".ai-workflow/state/records"),
+    PurePosixPath(".ai-workflow/state/archive"),
 )
 REVIEWED_SOURCE_MODES = {0o644, 0o755}
 WINDOWS_ORDINARY_SOURCE_MODES = {0o444, 0o555, 0o666, 0o777}
@@ -370,8 +372,19 @@ def load_installed(
 ) -> MutableMapping[str, object]:
     path = target_path(root, manifest_relative)
     raw = load_json(path, "installation manifest")
-    required = {"schema_version", "framework_version", "source_revision", "installed_at", "framework_files", "project_owned"}
     schema_version = raw.get("schema_version")
+    common_fields = {
+        "schema_version",
+        "framework_version",
+        "source_revision",
+        "installed_at",
+        "framework_files",
+    }
+    required = (
+        common_fields
+        if schema_version == INSTALL_MANIFEST_SCHEMA
+        else common_fields | {"project_owned"}
+    )
     if (
         set(raw) != required
         or type(schema_version) is not int
@@ -401,7 +414,11 @@ def load_installed(
             value = details.get(field)
             if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None:
                 raise AdoptionError(f"invalid {field} for {path_key}")
-        if details["origin"] in {"created", "preexisting-identical"} and details["sha256"] != details["source_sha256"]:
+        if details["origin"] in {
+            "created",
+            "preexisting-identical",
+            "reconstructed",
+        } and details["sha256"] != details["source_sha256"]:
             raise AdoptionError(f"non-composite checksums disagree for {path_key}")
         if details["origin"] in COMPOSITE_ORIGINS and path_key not in COMPOSITE_POLICY_PATHS:
             legacy_allowed = path_key == LEGACY_POLICY_PATH and parse_version(version) < (0, 2, 0)
@@ -428,18 +445,21 @@ def load_installed(
     validate_source_revision(raw.get("source_revision"), "installation manifest source_revision")
     if not isinstance(raw.get("installed_at"), str):
         raise AdoptionError("installation manifest timestamp must be a string")
-    project_owned = raw.get("project_owned")
-    if not isinstance(project_owned, list) or not all(isinstance(item, str) for item in project_owned):
-        raise AdoptionError("installation manifest project_owned must be an array")
-    project_paths = [safe_relative(item) for item in project_owned]
-    if len(project_paths) != len(set(project_paths)):
-        raise AdoptionError("installation manifest project_owned contains duplicates")
-    overlap = set(project_paths) & {safe_relative(item) for item in files}
-    if overlap:
-        raise AdoptionError(
-            "installation manifest records paths as both framework-owned and project-owned: "
-            + ", ".join(str(path) for path in sorted(overlap))
-        )
+    if schema_version < INSTALL_MANIFEST_SCHEMA:
+        project_owned = raw.get("project_owned")
+        if not isinstance(project_owned, list) or not all(
+            isinstance(item, str) for item in project_owned
+        ):
+            raise AdoptionError("installation manifest project_owned must be an array")
+        project_paths = [safe_relative(item) for item in project_owned]
+        if len(project_paths) != len(set(project_paths)):
+            raise AdoptionError("installation manifest project_owned contains duplicates")
+        overlap = set(project_paths) & {safe_relative(item) for item in files}
+        if overlap:
+            raise AdoptionError(
+                "installation manifest records paths as both framework-owned and project-owned: "
+                + ", ".join(str(item) for item in sorted(overlap))
+            )
     return raw
 
 
@@ -466,12 +486,8 @@ def parse_composite_policy(data: bytes) -> Tuple[bytes, bytes]:
     return managed, project
 
 
-def render_seed(source_relative: PurePosixPath, destination_relative: PurePosixPath) -> bytes:
-    data = SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
-    if destination_relative == STATE_DIRECTORY / "state/active.md":
-        today = dt.datetime.now(dt.timezone.utc).date().isoformat().encode("ascii")
-        data = data.replace(b"YYYY-MM-DD", today)
-    return data
+def render_seed(source_relative: PurePosixPath) -> bytes:
+    return SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
 
 
 def restoration_bytes(
@@ -536,22 +552,15 @@ def entry(
 def installed_payload(
     version: str,
     files: Mapping[str, Mapping[str, str]],
-    owned: Sequence[OwnedMapping],
-    seeds: Sequence[Tuple[PurePosixPath, PurePosixPath]],
     revision: str,
-    project_owned: Sequence[PurePosixPath] = (),
 ) -> bytes:
     validate_source_revision(revision, "package source revision")
-    project_paths = {PurePosixPath(item) for item in DEFAULT_PROJECT_OWNED}
-    project_paths.update(project_owned)
-    project_paths.difference_update(target for _, target in owned)
     payload = {
         "schema_version": INSTALL_MANIFEST_SCHEMA,
         "framework_version": version,
         "source_revision": revision,
         "installed_at": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
         "framework_files": {path: dict(details) for path, details in sorted(files.items())},
-        "project_owned": [path.as_posix() for path in sorted(project_paths)],
     }
     return (json.dumps(payload, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
@@ -563,8 +572,78 @@ def existing_regular(path: Path, label: str) -> Optional[bytes]:
     return path.read_bytes()
 
 
+def legacy_durable_paths(root: Path) -> List[PurePosixPath]:
+    found: List[PurePosixPath] = []
+    for relative in LEGACY_DURABLE_PATHS:
+        try:
+            path = target_path(root, relative)
+        except AdoptionError:
+            found.append(relative)
+            continue
+        if path.exists() or path.is_symlink():
+            found.append(relative)
+    return found
+
+
+def require_no_legacy_durable_state(root: Path) -> None:
+    found = legacy_durable_paths(root)
+    if not found:
+        return
+    paths = ", ".join(item.as_posix() for item in found)
+    raise AdoptionError(
+        "legacy durable state detected at "
+        + paths
+        + "; move it manually into .ai-workflow-state/ without overwriting any existing "
+        "destination, then rerun. Automatic durable-state migration is intentionally disabled."
+    )
+
+
+def authenticated_policy_digest(
+    relative: PurePosixPath,
+    digest: str,
+    current_source: bytes,
+    accepted: Sequence[PredecessorIdentity],
+) -> bool:
+    return digest == sha256_bytes(current_source) or any(
+        identities.get(relative) == digest
+        for _, _, _, identities in accepted
+    )
+
+
+def is_reinstall(root: Path) -> bool:
+    """Recognize an exact current or authenticated historical managed policy."""
+    _version, owned, _seeds, _retired, accepted = load_source_manifest()
+    for source_relative, target_relative in owned:
+        if target_relative not in COMPOSITE_POLICY_PATHS:
+            continue
+        current = existing_regular(
+            target_path(root, target_relative),
+            f"possible reinstall policy {target_relative}",
+        )
+        if current is None:
+            continue
+        try:
+            managed, _project = parse_composite_policy(current)
+        except AdoptionError:
+            continue
+        source = SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
+        if authenticated_policy_digest(
+            target_relative,
+            sha256_bytes(managed),
+            source,
+            accepted,
+        ):
+            return True
+    return False
+
+
 def plan_new_owned(
-    root: Path, relative: PurePosixPath, source_data: bytes
+    root: Path,
+    relative: PurePosixPath,
+    source_data: bytes,
+    *,
+    reinstall: bool = False,
+    accepted: Sequence[PredecessorIdentity] = (),
 ) -> Tuple[str, Optional[bytes], Dict[str, str]]:
     destination = target_path(root, relative)
     current = existing_regular(destination, f"existing target {relative}")
@@ -577,6 +656,23 @@ def plan_new_owned(
                 entry(combined, source_data, "composite-created"),
             )
         return f"create framework file {relative}", source_data, entry(source_data, source_data, "created")
+    if reinstall and relative in COMPOSITE_POLICY_PATHS:
+        managed, project = parse_composite_policy(current)
+        if not authenticated_policy_digest(
+            relative,
+            sha256_bytes(managed),
+            source_data,
+            accepted,
+        ):
+            raise AdoptionError(
+                f"reinstall found an unauthenticated managed policy block in {relative}"
+            )
+        repaired = compose_policy(source_data, project)
+        return (
+            f"reconstruct framework ownership and preserve project instructions in {relative}",
+            None if repaired == current else repaired,
+            entry(repaired, source_data, "composite"),
+        )
     if current == source_data:
         if relative in COMPOSITE_POLICY_PATHS:
             combined = compose_policy(source_data, b"")
@@ -589,6 +685,12 @@ def plan_new_owned(
                     "composite-preexisting-identical",
                     preexisting=current,
                 ),
+            )
+        if reinstall:
+            return (
+                f"reconstruct conservative framework ownership for {relative}",
+                None,
+                entry(current, source_data, "reconstructed"),
             )
         return f"adopt identical framework file {relative} but preserve it on removal", None, entry(current, source_data, "preexisting-identical")
     if relative in COMPOSITE_POLICY_PATHS:
@@ -615,23 +717,31 @@ def plan_seeds(
         key = destination_relative.as_posix()
         if current is None:
             actions.append(f"seed project-owned file {key}")
-            writes[key] = render_seed(source_relative, destination_relative)
+            writes[key] = render_seed(source_relative)
         else:
             actions.append(f"preserve existing project-owned file {key}")
     return actions, writes
 
 
 def plan_install(root: Path) -> Tuple[List[str], Dict[str, bytes], Dict[str, Dict[str, str]], str, List[OwnedMapping], List[Tuple[PurePosixPath, PurePosixPath]]]:
-    version, owned, seeds, _, _ = load_source_manifest()
+    version, owned, seeds, _, accepted = load_source_manifest()
+    require_no_legacy_durable_state(root)
     manifest_path = target_path(root, INSTALL_MANIFEST_PATH)
     if manifest_path.exists() or manifest_path.is_symlink():
         raise AdoptionError("installation manifest already exists; use update")
+    reinstall = is_reinstall(root)
     actions: List[str] = []
     writes: Dict[str, bytes] = {}
     entries: Dict[str, Dict[str, str]] = {}
     for source_relative, target_relative in owned:
         source_data = SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
-        action, data, details = plan_new_owned(root, target_relative, source_data)
+        action, data, details = plan_new_owned(
+            root,
+            target_relative,
+            source_data,
+            reinstall=reinstall,
+            accepted=accepted,
+        )
         actions.append(action)
         if data is not None:
             writes[target_relative.as_posix()] = data
@@ -728,7 +838,12 @@ def plan_existing_owned(
         raise AdoptionError(
             f"framework update would replace a file that predated installation: {relative}; reconcile it explicitly first"
         )
-    return f"update framework file {relative}", source_data, entry(source_data, source_data, "created")
+    next_origin = "reconstructed" if origin == "reconstructed" else "created"
+    return (
+        f"update framework file {relative}",
+        source_data,
+        entry(source_data, source_data, next_origin),
+    )
 
 
 def trusted_installed_sources(
@@ -828,7 +943,16 @@ def restoration_identity_is_accepted(
     )
 
 
-def plan_update(root: Path) -> Tuple[List[str], Dict[str, bytes], List[str], Dict[str, Dict[str, str]], str, List[OwnedMapping], List[Tuple[PurePosixPath, PurePosixPath]], List[PurePosixPath]]:
+def plan_update(root: Path) -> Tuple[
+    List[str],
+    Dict[str, bytes],
+    List[str],
+    Dict[str, Dict[str, str]],
+    str,
+    List[OwnedMapping],
+    List[Tuple[PurePosixPath, PurePosixPath]],
+]:
+    require_no_legacy_durable_state(root)
     installed = load_installed(root)
     version, owned, seeds, retired, accepted = load_source_manifest()
     installed_version = installed["framework_version"]
@@ -895,10 +1019,6 @@ def plan_update(root: Path) -> Tuple[List[str], Dict[str, bytes], List[str], Dic
             writes[key] = data
         entries[key] = details
 
-    reclassified = [
-        canonical_state_relative(safe_relative(item)) if legacy_layout else safe_relative(item)
-        for item in installed["project_owned"]
-    ]
     retired_seed_targets: List[PurePosixPath] = []
     for key in old_files:
         old_relative = safe_relative(key)
@@ -920,7 +1040,6 @@ def plan_update(root: Path) -> Tuple[List[str], Dict[str, bytes], List[str], Dic
             actions.append(f"remove explicitly retired unchanged framework file {relative}")
             removals.append(relative.as_posix())
             continue
-        reclassified.append(relative)
         suffix = " seed" if relative in seed_targets else ""
         if relative in seed_targets:
             retired_seed_targets.append(relative)
@@ -932,7 +1051,7 @@ def plan_update(root: Path) -> Tuple[List[str], Dict[str, bytes], List[str], Dic
     actions.extend(seed_actions)
     writes.update(seed_writes)
     actions.append(f"refresh installation manifest {INSTALL_MANIFEST_PATH}")
-    return actions, writes, removals, entries, version, owned, seeds, sorted(set(reclassified))
+    return actions, writes, removals, entries, version, owned, seeds
 
 
 def preflight_parent(root: Path, path: Path) -> None:
@@ -982,6 +1101,21 @@ def remove_transaction_created_parents(
         except OSError:
             return
         parent = parent.parent
+
+
+def prune_empty_framework_directories(root: Path) -> None:
+    framework_root = root / STATE_DIRECTORY
+    if not framework_root.exists() or framework_root.is_symlink():
+        return
+    for current, _directories, _files in os.walk(
+        framework_root,
+        topdown=False,
+        followlinks=False,
+    ):
+        try:
+            Path(current).rmdir()
+        except OSError:
+            pass
 
 
 def source_target_modes(
@@ -1094,7 +1228,7 @@ def command_install(root: Path, dry_run: bool, revision: str) -> None:
     if dry_run:
         print_plan("INSTALL", root, actions)
         return
-    manifest = installed_payload(version, entries, owned, seeds, revision)
+    manifest = installed_payload(version, entries, revision)
     ordered = sorted(writes.items()) + [(INSTALL_MANIFEST_PATH.as_posix(), manifest)]
     source_modes = source_target_modes(owned, seeds)
     apply_transaction(
@@ -1110,11 +1244,11 @@ def command_install(root: Path, dry_run: bool, revision: str) -> None:
 
 def command_update(root: Path, dry_run: bool, revision: str) -> None:
     validate_source_revision(revision, "package source revision")
-    actions, writes, removals, entries, version, owned, seeds, project_owned = plan_update(root)
+    actions, writes, removals, entries, version, owned, seeds = plan_update(root)
     if dry_run:
         print_plan("UPDATE", root, actions)
         return
-    manifest = installed_payload(version, entries, owned, seeds, revision, project_owned)
+    manifest = installed_payload(version, entries, revision)
     ordered = sorted(writes.items()) + [(INSTALL_MANIFEST_PATH.as_posix(), manifest)]
     source_modes = source_target_modes(owned, seeds)
     apply_transaction(
@@ -1133,6 +1267,7 @@ def command_status(
     verbose: bool = True,
     expected_revision: str = LOCAL_SOURCE_REVISION,
 ) -> bool:
+    require_no_legacy_durable_state(root)
     installed = load_installed(root)
     validate_source_revision(expected_revision, "package source revision")
     if installed["source_revision"] != expected_revision:
@@ -1199,6 +1334,7 @@ def command_remove(
     dry_run: bool,
     expected_revision: str = LOCAL_SOURCE_REVISION,
 ) -> None:
+    legacy_durable = legacy_durable_paths(root)
     installed = load_installed(root)
     validate_source_revision(expected_revision, "package source revision")
     if installed["source_revision"] != expected_revision:
@@ -1246,6 +1382,10 @@ def command_remove(
             actions.append(f"already absent {relative}")
         elif details["origin"] == "preexisting-identical":
             actions.append(f"preserve file that predated installation {relative}")
+        elif details["origin"] == "reconstructed":
+            actions.append(
+                f"preserve reconstructed file without framework-created removal proof {relative}"
+            )
         elif details["origin"] in COMPOSITE_ORIGINS:
             try:
                 managed, project = parse_composite_policy(current)
@@ -1276,14 +1416,28 @@ def command_remove(
             removals.append(key)
         else:
             actions.append(f"preserve locally changed framework file {relative}")
-    actions.append("preserve all project-owned profile and state files")
+    actions.append(f"preserve durable project state under {DURABLE_STATE_DIRECTORY}")
+    if legacy_durable:
+        actions.append(
+            "preserve detected legacy durable state for manual relocation: "
+            + ", ".join(item.as_posix() for item in legacy_durable)
+        )
     actions.append(f"remove installation manifest {INSTALL_MANIFEST_PATH}")
     if dry_run:
         print_plan("REMOVE", root, actions)
         return
     removals.append(INSTALL_MANIFEST_PATH.as_posix())
     apply_transaction(root, writes, removals)
-    print("✓ Agentic workflow removed; project-owned profile, state, and instructions were preserved.")
+    prune_empty_framework_directories(root)
+    print(
+        "✓ Agentic workflow removed; durable project state under "
+        f"{DURABLE_STATE_DIRECTORY} was preserved."
+    )
+    if legacy_durable:
+        print(
+            "Legacy durable state was also preserved for manual relocation: "
+            + ", ".join(item.as_posix() for item in legacy_durable)
+        )
 
 
 def print_plan(action: str, root: Path, actions: Sequence[str]) -> None:

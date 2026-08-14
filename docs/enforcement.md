@@ -98,7 +98,7 @@ source `AGENTS.md`; they are not installed into consuming projects.
 | Decide verification relevance before completion | Programmatic invariant after observed repository writes; model judgment for relevance | Checkpoint/Stop gate | Root policy and Verification skill |
 | Do not claim required verification without evidence or an accepted limitation | Programmatic transition plus model sufficiency judgment | Evidence-to-observed-tool link and Stop gate | Verification skill and acceptance scenarios |
 | Never invent project commands; separate passed, failed, skipped, blocked, unavailable | Model contract | Verification workflow | Profile contract and root policy |
-| Keep the project profile soft, evidence-backed, and non-blocking | Soft heuristic with schema checks | Lifecycle readiness/profile validator | Root policy and profile contract/template |
+| Keep the project profile soft, evidence-backed, and non-blocking | Filesystem-safety and readability classification only | Lifecycle readiness/profile classifier | Root policy and profile contract/template |
 | Emit exactly one truthful route marker | Model contract | Root final-response contract | Route scenarios and package verifier; VS Code Stop has no documented final-message field |
 | Install/update/remove only authenticated, owned, clean paths | Programmatic invariant | `adopt.py`, `providers.py`, distribution and target manifests | Package skill, architecture, lifecycle tests |
 | Preserve uncommitted/user-owned content and fail closed on conflicts | Programmatic invariant | Transaction preflight, rollback, ownership hashes | Source/installed policy and lifecycle tests |
@@ -154,7 +154,7 @@ and hashes. It does not contain prompts, tool arguments/results, source, or
 credentials, and it is removed after a successful Stop gate. It is orchestration
 evidence, not canonical project state and not a tamper-resistant audit log.
 
-Durable state remains `.ai-workflow/state/active.md` and provider-native
+Durable state remains `.ai-workflow-state/active.md` and provider-native
 artifacts. The controller does not create a second durable workflow model.
 
 ## Security and trust boundary

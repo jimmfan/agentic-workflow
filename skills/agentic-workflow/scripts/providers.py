@@ -559,7 +559,11 @@ def load_state(root: Path) -> MutableMapping[str, object]:
             or set(record) != {"files", "origin", "path", "tree_sha"}
         ):
             raise ProviderError(f"provider state has invalid record for {name}")
-        if record.get("origin") not in {"created", "preexisting-compatible"}:
+        if record.get("origin") not in {
+            "created",
+            "preexisting-compatible",
+            "reconstructed",
+        }:
             raise ProviderError(f"provider state has invalid origin for {name}")
         safe_relative(record.get("path"), f"provider state path for {name}")
         if not isinstance(record.get("tree_sha"), str) or SHA.fullmatch(str(record.get("tree_sha"))) is None:
@@ -704,16 +708,18 @@ def authenticated_predecessor_declaration(
     """Bind old provider state to an exact predecessor audited by the new package."""
     installed_path = target_path(root, INSTALL_MANIFEST_RELATIVE)
     installed = load_json(installed_path, "installation manifest for provider migration")
-    if set(installed) != {
+    installed_schema = installed.get("schema_version")
+    required_fields = {
         "schema_version",
         "framework_version",
         "source_revision",
         "installed_at",
         "framework_files",
-        "project_owned",
-    }:
+    }
+    if installed_schema in {1, 2}:
+        required_fields.add("project_owned")
+    if installed_schema not in {1, 2, 3} or set(installed) != required_fields:
         raise ProviderError("installation manifest cannot authenticate provider migration")
-    installed_schema = installed.get("schema_version")
     installed_version = installed.get("framework_version")
     installed_revision = installed.get("source_revision")
     installed_files = installed.get("framework_files")
@@ -1046,6 +1052,7 @@ def command_install(
     dry_run: bool,
     *,
     commit_callback: Optional[Callable[[], None]] = None,
+    reinstall: bool = False,
 ) -> None:
     provider, skills = load_declaration()
     state_path = target_path(root, STATE_RELATIVE)
@@ -1062,15 +1069,60 @@ def command_install(
         name = str(skill["name"])
         destination = skill_directory(root, name)
         if destination.exists() or destination.is_symlink():
-            collisions.append(
-                f".agents/skills/{name} already exists and is not known to be managed "
-                "by Agentic Workflow. Refusing to overwrite it."
-            )
+            collisions.append(name)
     if collisions:
-        raise ProviderError(
-            "provider install preflight found unowned directories; no provider files were changed:\n"
-            + "\n".join(collisions)
+        if not reinstall:
+            raise ProviderError(
+                "provider install preflight found unowned directories; no provider files were changed:\n"
+                + "\n".join(
+                    f".agents/skills/{name} already exists and is not known to be managed "
+                    "by Agentic Workflow. Refusing to overwrite it."
+                    for name in collisions
+                )
+            )
+        expected_names = {str(skill["name"]) for skill in skills}
+        if set(collisions) != expected_names:
+            raise ProviderError(
+                "framework reinstall found only part of the declared provider skill set; "
+                "restore or reconcile .agents/skills before retrying"
+            )
+        recovered_records: Dict[str, Mapping[str, object]] = {}
+        for skill in skills:
+            name = str(skill["name"])
+            try:
+                files = verify_skill(root, provider, skill)
+            except ProviderError as error:
+                raise ProviderError(
+                    f"framework reinstall cannot authenticate existing provider skill {name}: {error}"
+                ) from error
+            recovered_records[name] = {
+                "files": files,
+                "origin": "reconstructed",
+                "path": skill["path"],
+                "tree_sha": skill["tree_sha"],
+            }
+        if dry_run:
+            print(f"PROVIDERS REINSTALL DRY RUN for {root}")
+            print(
+                f"  - reconstruct provider ownership state for {len(skills)} exact pinned skills"
+            )
+            print("  - preserve reconstructed skills on later removal")
+            print("No provider files changed.")
+            return
+        try:
+            atomic_json(state_path, state_value(provider, recovered_records))
+            if not command_status(root, verbose=False):
+                raise ProviderError("post-reinstall provider verification failed")
+            if commit_callback is not None:
+                commit_callback()
+        except BaseException:
+            state_path.unlink(missing_ok=True)
+            raise
+        print(
+            "✓ Provider ownership state reconstructed from exact pinned skills; "
+            "the skills will be preserved on removal."
         )
+        return
     new_destinations = [skill_directory(root, str(skill["name"])) for skill in skills]
     rollback_paths = new_destinations + [state_path]
     preexisting_directories = existing_parent_directories(root, rollback_paths)
@@ -1266,7 +1318,7 @@ def command_update(
             verify_skill(root, provider, new_by_name[name])
             actions[name] = "retain"
         except ProviderError:
-            if record.get("origin") == "created":
+            if record.get("origin") in {"created", "reconstructed"}:
                 actions[name] = "replace"
             else:
                 transition_errors.append(
@@ -1434,7 +1486,10 @@ def command_update(
                     destination.parent.mkdir(parents=True, exist_ok=True)
                     (staged / name).replace(destination)
                     activated.append((destination, backup))
-                if name in old_records and action == "retain":
+                if name in old_records and (
+                    action == "retain"
+                    or old_records[name].get("origin") == "reconstructed"
+                ):
                     origin = str(old_records[name]["origin"])
                 else:
                     origin = "created"
@@ -1535,8 +1590,10 @@ def command_remove(root: Path, dry_run: bool) -> None:
     for name, record in sorted(records.items()):
         if not isinstance(record, dict):
             raise ProviderError(f"invalid provider record for {name}")
-        if record.get("origin") == "preexisting-compatible":
-            actions.append(f"preserve pre-existing compatible provider skill {name}")
+        if record.get("origin") in {"preexisting-compatible", "reconstructed"}:
+            actions.append(
+                f"preserve provider skill without framework-created removal proof {name}"
+            )
             continue
         try:
             verify_skill(root, provider, by_name[name])
@@ -1564,6 +1621,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("action", choices=("install", "update", "status", "remove"))
     parser.add_argument("target", nargs="?", default=Path.cwd(), type=Path)
     parser.add_argument("--dry-run", action="store_true", help="show the provider operation without changing files")
+    parser.add_argument("--reinstall", action="store_true", help=argparse.SUPPRESS)
     return parser.parse_args(argv)
 
 
@@ -1572,13 +1630,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if args.action == "status" and args.dry_run:
         raise ProviderError("--dry-run is not valid for status")
+    if args.reinstall and args.action != "install":
+        raise ProviderError("--reinstall is valid only for provider install")
     root = args.target.expanduser().resolve()
     if not root.is_dir():
         raise ProviderError(f"target project directory does not exist: {root}")
     if root == Path(root.anchor):
         raise ProviderError("refusing to operate on a filesystem root")
     if args.action == "install":
-        command_install(root, args.dry_run)
+        command_install(root, args.dry_run, reinstall=args.reinstall)
     elif args.action == "update":
         command_update(root, args.dry_run)
     elif args.action == "status":

@@ -24,7 +24,7 @@ from typing import Any, Mapping, MutableMapping, Optional, Sequence
 SCHEMA_VERSION = 1
 MINIMUM_PYTHON = (3, 11)
 PROVIDER_PATH = Path(".ai-workflow/providers.json")
-ACTIVE_STATE_PATH = Path(".ai-workflow/state/active.md")
+ACTIVE_STATE_PATH = Path(".ai-workflow-state/active.md")
 PROTECTED_PATHS = (
     ".ai-workflow/runtime/",
     ".github/hooks/agentic-workflow.json",
@@ -415,6 +415,8 @@ def is_management_shell_tool(tool_name: object) -> bool:
 
 def parse_active_workflow(root: Path) -> tuple[str, str]:
     path = root / ACTIVE_STATE_PATH
+    if not path.exists() and not path.is_symlink():
+        return "none", hashlib.sha256(b"").hexdigest()
     if not plain_project_file(root, ACTIVE_STATE_PATH):
         raise ControllerError("durable active state must be a regular non-symlink file")
     try:

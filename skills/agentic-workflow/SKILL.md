@@ -25,13 +25,22 @@ provider invocation, composition, state, and route-output behavior is
 progressively loaded from `.ai-workflow/routing.md` and the selected owner
 contracts rather than duplicated in always-loaded context.
 
+`.ai-workflow/` is the reconstructable framework installation.
+`.ai-workflow-state/` is durable project-owned state and survives install,
+update, remove, and reinstall unchanged. Framework-owned **agent integration
+files** remain at paths required by each supported environment. Per-session
+controller state stays in the operating system temporary directory, outside the
+repository.
+
 The purpose of the coordinated path is to prevent a project from receiving only
 half of the framework. Install and dry-run preflight both local ownership and
 provider compatibility before writes. A successful install leaves the compact
 router, four local integration/safety skills, all complete pinned provider
 directories, and both clean ownership records in the target. Installation
-success is distinct from project readiness: an uninitialized profile or missing
-tracker/domain/triage configuration is a warning, not package corruption.
+success is distinct from project readiness: the optional project-owned profile
+is classified only by filesystem safety, readability, emptiness, and its advisory
+uninitialized marker. Its state and missing tracker/domain/triage configuration
+are readiness observations, not package corruption.
 
 Before a fresh provider install or provider-baseline upgrade, GitHub CLI 2.97.0
 or newer must expose
@@ -39,12 +48,15 @@ or newer must expose
 authenticate `gh` in the same host, Dev Container, or Windows environment that
 owns the target project. Do not install `gh`, start login, or mutate a target
 unless the user has authorized the adoption task. Initial adoption rejects any
-same-named provider directory without framework ownership state. It stages the
-exact pin, validates its repository/ref/tree metadata and inventory, then records
-hashes of the bytes actually installed. Inner status checks use those hashes to
-detect local edits without a provider network call; the public bootstrap still
-needs HTTPS to fetch the recorded package. Unknown and locally modified skills
-always fail closed.
+same-named provider directory without framework ownership state. The narrow
+reinstall exception requires an exact authenticated managed-policy footprint
+plus the complete exact pinned provider set; it reconstructs conservative
+ownership metadata locally without claiming deleted historical origin. Ordinary
+installation stages the exact pin, validates its repository/ref/tree metadata
+and inventory, then records hashes of the bytes actually installed. Inner status
+checks use those hashes to detect local edits without a provider network call;
+the public bootstrap still needs HTTPS to fetch the recorded package. Unknown
+and locally modified skills always fail closed.
 
 The provider declaration separates capability routing from invocation policy.
 Codex and GitHub Copilot discover the installed `.agents/skills` tree; a
@@ -78,9 +90,10 @@ python3 scripts/lifecycle.py remove /path/to/project
 ```
 
 `status` reports framework integrity, provider integrity, host enforcement,
-project readiness, and setup capability separately. Missing optional readiness
-items keep the clean status exit code; managed-file or provider-integrity
-failures do not. A selected
+durable project readiness, and setup capability separately. Missing optional
+profile or active-workflow state keeps the clean status exit code; malformed or
+unsafe active state remains a resumability warning, and managed-file or
+provider-integrity failures do not pass. A selected
 configuration-dependent workflow checks its declared requirements and, when
 missing, directs the user to the user-only setup skill on a supported host or
 reports the provider unavailable on an unsupported host. Unrelated direct work
@@ -102,24 +115,28 @@ skill set, paths, and tree SHAs. Validate every transition before staging or
 mutation. A missing predecessor-recorded directory is absence and may receive
 the new declared skill. Retain a directory already compatible with the new
 declaration and preserve its recorded origin. Replace an incompatible directory
-only when the authenticated predecessor recorded it as `created`, its complete
-inventory and metadata match that predecessor, and every installed-file SHA-256
-still matches predecessor state. Modified and `preexisting-compatible`
-directories fail closed with ownership/integrity diagnostics. Stage and verify
-the complete new pin before any replacement; provider versions never float.
+only when the authenticated predecessor recorded it as `created` or
+conservatively `reconstructed`, its complete inventory and metadata match that
+predecessor, and every installed-file SHA-256 still matches predecessor state.
+Modified and `preexisting-compatible` directories fail closed with
+ownership/integrity diagnostics. Reconstructed directories remain managed for
+update but are preserved on removal. Stage and verify the complete new pin
+before any replacement; provider versions never float.
 
 The coordinated update commits the payload while provider backups remain
 reversible. A payload or provider post-check failure restores the predecessor
 provider directories and exact state file, while the payload transaction
-restores its own bytes and modes. Users should not delete `.agents`, individual
-provider directories, or either ownership file during a supported clean
-upgrade; those records are required to prove safe migration.
+restores its own bytes and modes. During a normal clean upgrade, keep `.agents`
+and `.ai-workflow/` intact so their records prove exact origin. Deleting only
+`.ai-workflow/` is instead an explicit reinstall/repair path: the installer
+reconstructs conservative ownership from exact surviving managed files and
+never touches `.ai-workflow-state/`.
 
 `remove` is bounded to exact declaration names. Delete only a directory whose
 complete inventory is package-authentic, whose installed checksums still match
 its record, and whose origin is `created`; preserve incompatible, modified,
-extra-file, undeclared, and `preexisting-compatible` directories. Origin history
-is repository-local evidence, not tamper-evident. Coordinated forgery can
+extra-file, undeclared, `preexisting-compatible`, and `reconstructed`
+directories. Origin history is repository-local evidence, not tamper-evident. Coordinated forgery can
 reclassify an exact unmodified canonical directory, but cannot authorize
 deletion of modified, extra-file, or undeclared content.
 

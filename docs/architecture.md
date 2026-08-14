@@ -101,7 +101,56 @@ the decision.
 Per-session controller state is metadata-only and lives under the operating
 system temporary directory. It is not repository truth, contains no prompt or
 tool content, and is deleted after a successful completion gate. Canonical
-durable state remains in `.ai-workflow/state/` or provider-native artifacts.
+durable Agentic Workflow state remains in `.ai-workflow-state/` or
+provider-native artifacts.
+
+## Filesystem ownership boundary
+
+The physical layout follows ownership rather than file purpose:
+
+```text
+FRAMEWORK OWNED AND RECONSTRUCTABLE
+├── .ai-workflow/
+├── managed AGENTS.md and CLAUDE.md content
+└── agent integration files at host-required paths
+
+PROJECT OWNED AND DURABLE
+└── .ai-workflow-state/
+    ├── project-profile.md
+    ├── active.md              # only when durable continuity exists
+    ├── records/
+    └── archive/
+
+TRANSIENT AND MACHINE LOCAL
+└── operating-system temporary directory
+```
+
+`.ai-workflow/` contains only package/configuration-derived runtime, routing,
+contracts, templates, provider declarations, and lifecycle ownership metadata.
+It is disposable: deleting it and reinstalling reconstructs the installation
+without touching `.ai-workflow-state/`. Framework-owned agent integration files
+remain outside that directory only because supported agent environments require
+fixed discovery paths such as `.github/hooks/` and `.agents/skills/`.
+
+The current install manifest records framework files only. It does not checksum
+or enumerate mutable project state. The installer seeds
+`.ai-workflow-state/project-profile.md` only when absent and never seeds an idle
+`active.md`. A durable workflow creates the latter from the framework template
+only when continuity is actually required and repository writes are authorized.
+
+After deletion of `.ai-workflow/`, reinstall recognizes an exact current or
+package-authenticated historical managed policy and reconstructs ownership for
+exact surviving framework/provider files. Because the deleted metadata cannot
+prove whether an external exact file originally predated adoption,
+reconstructed files remain updateable but are conservatively preserved on
+removal. This is the one intentional recovery exception to ordinary created-file
+removal.
+
+Development-era durable paths inside `.ai-workflow/` are not an upgrade format.
+Install, update, and status detect `.ai-workflow/project-profile.md`,
+`.ai-workflow/state/active.md`, and the old records/archive directories and stop
+with manual relocation guidance. They never merge or migrate those paths.
+Removal preserves them and reports their locations.
 
 The installed root policy is intentionally only an orchestration kernel and
 hooks-off semantic fallback. Detailed classification, invocation, composition,
@@ -162,12 +211,16 @@ returns `$setup-matt-pocock-skills` for Codex or
 artifact. Unrelated direct work remains immediately available.
 
 Lifecycle output separates clean installation from project readiness. A clean
-framework/provider install may still report an uninitialized profile or missing
-setup configuration as warnings. Those warnings do not make normal status fail.
-The profile is seeded in a deterministic `uninitialized` state with `None` for
-unknown facts; initialization and later maintenance require verified durable
-evidence and write authorization, and do not trigger an automatic full-repository
-scan.
+framework/provider install may still report a missing, empty, uninitialized,
+unreadable, or unsafe profile, no active workflow, or missing setup
+configuration. Those observations do not make normal status fail. The profile
+is an optional project-owned advisory cache, not a versioned structured
+artifact: any other readable non-empty UTF-8 regular file is `present`,
+regardless of headings. Lifecycle operations seed it only when absent and never
+migrate existing content. Existing active state remains structurally validated
+because it controls resume and transition behavior. Initialization and later
+maintenance require verified durable evidence and write authorization, and do
+not trigger an automatic full-repository scan.
 
 Teach is selected only for explicit sustained learning intent. Its mission,
 glossary, resources, lessons, and learning records belong in a dedicated
@@ -185,6 +238,8 @@ payload/root/CLAUDE.md.template  -> CLAUDE.md
 payload/skills/*/SKILL.md        -> .agents/skills/*/SKILL.md
 payload/ai-workflow/routing.md   -> .ai-workflow/routing.md
 payload/ai-workflow/...          -> .ai-workflow/...
+payload/ai-workflow/templates/project-profile.md
+                                  -> .ai-workflow-state/project-profile.md (only if absent)
 payload/hosts/vscode-agentic-workflow.json -> .github/hooks/agentic-workflow.json
 gh skill exact upstream paths    -> .agents/skills/<upstream-name>/...
 ```
@@ -203,9 +258,12 @@ recorded source SHA-256. Same-version operations require the exact current
 source inventory. Unknown revisions, partial maps, invented paths, and changed
 source hashes fail before planning writes or retirements. Historical records
 are separately audited package data; refreshing current payload checksums does
-not discover or legitimize another predecessor. The target-local schema-2
-`install-manifest.json` remains ownership and cleanliness evidence, not the
-authority that defines an accepted source identity.
+not discover or legitimize another predecessor. The target-local schema-3
+`install-manifest.json` records framework files only and remains ownership and
+cleanliness evidence, not the authority that defines an accepted source
+identity. Schemas 1 and 2 are read only when authenticating already-supported
+package predecessors; their `project_owned` inventories are not carried into
+new manifests.
 
 ## Optional observability boundary
 
@@ -335,7 +393,7 @@ cross-process crash atomicity.
 - Project seeds are created only when absent and never overwritten.
 - Root `AGENTS.md` and `CLAUDE.md` are composite, including fresh framework
   creation; the framework owns marked blocks and byte-preserves project
-  sections. For an exact pre-existing policy, schema-2 installation state also
+  sections. For an exact pre-existing policy, schema-2 and newer installation state also
   retains checksum-validated restoration bytes so later managed-source updates
   cannot erase the removal baseline. Update migrates schema-1 exact-policy and
   previous clean fully-owned `CLAUDE.md` records into this model before normal
@@ -360,14 +418,15 @@ cross-process crash atomicity.
 
 Live/source evidence is authoritative for current behavior. Accepted ADRs and
 domain documentation are canonical for project decisions; native provider
-artifacts are canonical for provider-owned outputs; the project profile is only
-a concise verified cache and pointer layer. All outrank private memory and chat
-recollection. Wayfinder's configured tracker owns map and decision-ticket
+artifacts are canonical for provider-owned outputs; the optional project-owned
+profile is only non-authoritative advisory context: a concise verified cache and
+pointer layer. All outrank private memory and chat recollection. Wayfinder's
+configured tracker owns map and decision-ticket
 identities, labels, linked titles, and map vocabulary. to-tickets similarly owns
 its ticket identity and frontier. The framework never allocates a parallel
 `DEC`, `TKT`, `UNK`, or learning alias for those artifacts.
 
-`state/active.md` represents one durable active framework workflow per
+`.ai-workflow-state/active.md` represents one durable active framework workflow per
 repository. Capabilities may compose inside it without taking over the pointer.
 A conflicting second durable workflow must be resolved explicitly—complete,
 interrupt, or supersede the first—rather than overwritten. Ephemeral direct and

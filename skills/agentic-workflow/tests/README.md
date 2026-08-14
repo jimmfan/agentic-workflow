@@ -34,10 +34,15 @@ install time, ordinary local edits and forged extra-file inventories remain
 protected, declaration updates reject unknown old names and never replace an
 unowned directory, provider removal rolls back a failed quarantine
 transaction before commit and reports/retains a cleanup failure after commit,
-and project readiness warnings remain separate from
-payload/provider integrity. Profile fixtures cover
-the canonical uninitialized seed and non-destructive recognition of the legacy
-uninitialized seed; existing project-owned profiles are never rewritten.
+and project readiness observations remain separate from
+payload/provider integrity. Profile fixtures cover the canonical uninitialized
+seed, permissive readable-content classification, empty/unreadable/unsafe paths,
+and byte preservation without lifecycle migration; existing project-owned
+profiles are never rewritten. Ownership fixtures prove that `.ai-workflow/` is
+reconstructable, `.ai-workflow-state/` survives install/update/remove/reinstall,
+`active.md` is not created until needed, legacy durable paths are reported but
+never moved, and exact surviving provider/integration files can reconstruct
+conservative ownership after framework-directory deletion.
 
 `test_controller.py` exercises the host-neutral enforcement core directly. It
 covers actionable session bootstrap, exact-declaration auto-approval and
@@ -45,7 +50,8 @@ lookalike rejection, per-prompt route reset, the pre-execution route checkpoint,
 direct/read-only terminal work, ambiguous and mutating opaque commands,
 diagnosis-mode native write denial, truthful user-only provider execution,
 digest-bound durable-state conflict resolution, evidence-linked completion,
-metadata-only transient state, and one-block Stop loop prevention. Static checks
+strict existing active-state validation plus safe first creation, metadata-only
+transient state outside the repository, and one-block Stop loop prevention. Static checks
 validate the active VS Code Preview adapter and keep Codex, Claude Code, Copilot
 CLI, and Copilot cloud capability claims distinct. This is hermetic contract
 coverage, not proof that a live host loaded its hooks or suppressed an approval

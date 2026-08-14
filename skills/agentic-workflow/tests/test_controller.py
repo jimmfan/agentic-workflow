@@ -76,7 +76,7 @@ class ControllerTests(unittest.TestCase):
         providers = self.root / ".ai-workflow/providers.json"
         providers.parent.mkdir(parents=True)
         providers.write_text(json.dumps(declaration), encoding="utf-8")
-        active = self.root / ".ai-workflow/state/active.md"
+        active = self.root / ".ai-workflow-state/active.md"
         active.parent.mkdir(parents=True)
         active.write_text("# Active workflow\n\n- Active workflow: none\n", encoding="utf-8")
         for name in ("wayfinder", "research"):
@@ -539,7 +539,7 @@ class ControllerTests(unittest.TestCase):
         self.assertIn("executed", message)
 
     def test_durable_state_conflict_requires_explicit_resolution_and_fresh_digest(self) -> None:
-        active = self.root / ".ai-workflow/state/active.md"
+        active = self.root / ".ai-workflow-state/active.md"
         active.write_text("# Active workflow\n\n- Active workflow: implementation\n", encoding="utf-8")
         self.management(
             "python3 .ai-workflow/runtime/controller.py checkpoint --route discovery "
@@ -566,7 +566,7 @@ class ControllerTests(unittest.TestCase):
             {
                 **self.payload,
                 "tool_name": "editFiles",
-                "tool_input": {"files": [".ai-workflow/state/active.md"]},
+                "tool_input": {"files": [".ai-workflow-state/active.md"]},
                 "tool_use_id": "durable-write",
             },
             self.state,
@@ -644,13 +644,53 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(CONTROLLER.stop_failures(self.state), [])
 
     def test_durable_state_symlink_is_rejected(self) -> None:
-        active = self.root / ".ai-workflow/state/active.md"
+        active = self.root / ".ai-workflow-state/active.md"
         outside = self.root / "outside-active.md"
         outside.write_text("# Active workflow\n\n- Active workflow: none\n", encoding="utf-8")
         active.unlink()
         active.symlink_to(outside)
         with self.assertRaisesRegex(CONTROLLER.ControllerError, "non-symlink"):
             CONTROLLER.parse_active_workflow(self.root)
+
+    def test_missing_active_state_is_idle_and_allows_a_validated_first_write(self) -> None:
+        active = self.root / ".ai-workflow-state/active.md"
+        active.unlink()
+        current, digest = CONTROLLER.parse_active_workflow(self.root)
+        self.assertEqual(current, "none")
+        self.assertEqual(digest, CONTROLLER.hashlib.sha256(b"").hexdigest())
+
+        self.management(
+            "python3 .ai-workflow/runtime/controller.py checkpoint --route discovery "
+            "--repository-write allowed --verification required"
+        )
+        self.management(
+            "python3 .ai-workflow/runtime/controller.py durable "
+            "--target discovery --resolution same"
+        )
+        output, _changed = CONTROLLER.handle_pre_tool(
+            {
+                **self.payload,
+                "tool_name": "editFiles",
+                "tool_input": {"files": [".ai-workflow-state/active.md"]},
+                "tool_use_id": "first-durable-write",
+            },
+            self.state,
+            self.root,
+            "vscode",
+        )
+        self.assertEqual(output, {})
+
+    def test_invalid_active_state_remains_a_correctness_error(self) -> None:
+        active = self.root / ".ai-workflow-state/active.md"
+        active.write_text("# Active workflow\n\n- Active workflow: invented\n", encoding="utf-8")
+        with self.assertRaisesRegex(CONTROLLER.ControllerError, "invalid Active workflow"):
+            CONTROLLER.parse_active_workflow(self.root)
+
+    def test_transient_state_path_remains_outside_the_repository(self) -> None:
+        transient = CONTROLLER.state_path(self.root, self.payload, "vscode")
+        with self.assertRaises(ValueError):
+            transient.relative_to(self.root)
+        self.assertNotIn(".ai-workflow-state", transient.parts)
 
     def test_stop_blocks_once_then_terminates_without_loop(self) -> None:
         self.state["substantive_execution"] = True

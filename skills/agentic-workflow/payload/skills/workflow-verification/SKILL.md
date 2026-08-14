@@ -13,7 +13,7 @@ automatic proof and not work to repeat without a gap.
 
 1. Read the acceptance criteria, selected provider artifacts, changed scope,
    risks, and evidence already produced by `implement`, `tdd`, or `code-review`.
-2. Read configured commands from `.ai-workflow/project-profile.md`. Never invent
+2. Read configured commands from `.ai-workflow-state/project-profile.md`. Never invent
    a project command.
 3. Select the smallest additional checks that cover unresolved acceptance
    behavior, integration boundaries, expected artifacts, workflow completion,

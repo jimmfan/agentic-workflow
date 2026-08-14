@@ -4,11 +4,11 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import importlib.util
 import json
 import os
 from pathlib import Path, PurePosixPath
+import re
 import subprocess
 import sys
 from typing import Iterable, Mapping, Optional, Sequence
@@ -18,11 +18,13 @@ PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 ADOPTER = PACKAGE_ROOT / "scripts" / "adopt.py"
 PROVIDERS = PACKAGE_ROOT / "scripts" / "providers.py"
 STATE_DIRECTORY = Path(".ai-workflow")
+DURABLE_STATE_DIRECTORY = Path(".ai-workflow-state")
 LEGACY_STATE_DIRECTORY = Path("ai-workflow")
 INSTALL_MANIFEST = STATE_DIRECTORY / "install-manifest.json"
 PROVIDER_DECLARATION = PACKAGE_ROOT / "payload" / "ai-workflow" / "providers.json"
 DISTRIBUTION_MANIFEST = PACKAGE_ROOT / "payload" / "distribution" / "manifest.json"
-PROJECT_PROFILE = STATE_DIRECTORY / "project-profile.md"
+PROJECT_PROFILE = DURABLE_STATE_DIRECTORY / "project-profile.md"
+ACTIVE_STATE = DURABLE_STATE_DIRECTORY / "active.md"
 ENFORCEMENT_CAPABILITIES = STATE_DIRECTORY / "runtime" / "capabilities.json"
 VSCODE_HOOK = Path(".github/hooks/agentic-workflow.json")
 CONFIGURATION_LABELS = {
@@ -30,25 +32,15 @@ CONFIGURATION_LABELS = {
     "domain": "domain config",
     "triage-labels": "triage config",
 }
-PROFILE_HEADINGS = (
-    "Purpose and success",
-    "Technology and architecture",
-    "Important paths",
-    "Terminology",
-    "Constraints and policy",
-    "Delivery workflow",
-    "Commands",
-    "Debugging model",
-    "Decision considerations",
-    "Profile maintenance",
-)
-PROFILE_INITIALIZATION = {
-    "Initialization: uninitialized": "uninitialized",
-    "Initialization: initialized": "initialized",
+PROFILE_UNINITIALIZED_MARKER = "Initialization: uninitialized"
+ACTIVE_WORKFLOWS = {
+    "debugging",
+    "discovery",
+    "implementation",
+    "none",
+    "provider",
+    "verification",
 }
-LEGACY_UNINITIALIZED_PROFILE_SHA256 = (
-    "a1ab827e351693fb700120877d2df4548cfa56d9662906cff8e85e85e17ff22a"
-)
 SETUP_SKILL = "setup-matt-pocock-skills"
 HOST_FIELDS = {"availability", "discovery", "explicit_prefix", "invocation_source"}
 INVOCATION_VALUES = {"implicit", "user-only", "unavailable"}
@@ -70,12 +62,20 @@ def require_supported_python() -> None:
         raise LifecycleError(f"Python 3.11 or newer is required; found Python {found}")
 
 
-def command(script: Path, action: str, root: Path, dry_run: bool, revision: str) -> list[str]:
+def command(
+    script: Path,
+    action: str,
+    root: Path,
+    dry_run: bool,
+    revision: str,
+    extra: Sequence[str] = (),
+) -> list[str]:
     value = [sys.executable, str(script), action, str(root)]
     if script == ADOPTER:
         value.extend(("--source-revision", revision))
     if dry_run:
         value.append("--dry-run")
+    value.extend(extra)
     return value
 
 
@@ -87,9 +87,10 @@ def run_checked(
     revision: str,
     *,
     quiet: bool = False,
+    extra: Sequence[str] = (),
 ) -> None:
     result = subprocess.run(
-        command(script, action, root, dry_run, revision),
+        command(script, action, root, dry_run, revision, extra),
         capture_output=quiet,
         text=True,
     )
@@ -208,39 +209,42 @@ def readiness_path(root: Path, relative: Path) -> Optional[Path]:
 def profile_state(root: Path) -> str:
     path = readiness_path(root, PROJECT_PROFILE)
     if path is None:
-        return "invalid"
+        return "unsafe"
     if not path.exists() and not path.is_symlink():
         return "missing"
     if path.is_symlink() or not path.is_file():
-        return "invalid"
+        return "unsafe"
     try:
         data = path.read_bytes()
     except OSError:
         return "unreadable"
-    if hashlib.sha256(data).hexdigest() == LEGACY_UNINITIALIZED_PROFILE_SHA256:
-        return "legacy-uninitialized"
     try:
         text = data.decode("utf-8")
     except UnicodeDecodeError:
+        return "unreadable"
+    if not text.strip():
+        return "empty"
+    if any(line.strip() == PROFILE_UNINITIALIZED_MARKER for line in text.splitlines()):
+        return "uninitialized"
+    return "present"
+
+
+def active_state(root: Path) -> str:
+    path = readiness_path(root, ACTIVE_STATE)
+    if path is None:
+        return "unsafe"
+    if not path.exists() and not path.is_symlink():
+        return "none"
+    if path.is_symlink() or not path.is_file():
+        return "unsafe"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return "unreadable"
+    matches = re.findall(r"^- Active workflow: ([a-z-]+)$", text, flags=re.MULTILINE)
+    if len(matches) != 1 or matches[0] not in ACTIVE_WORKFLOWS:
         return "invalid"
-    lines = text.splitlines()
-    nonblank = [index for index, line in enumerate(lines) if line.strip()]
-    if (
-        len(nonblank) < 2
-        or lines[nonblank[0]].strip() != "# Project profile"
-        or lines[nonblank[1]].strip() not in PROFILE_INITIALIZATION
-    ):
-        return "invalid"
-    headings = [line[3:].strip() for line in text.splitlines() if line.startswith("## ")]
-    positions = []
-    for heading in PROFILE_HEADINGS:
-        if headings.count(heading) != 1:
-            return "invalid"
-        positions.append(headings.index(heading))
-    if positions != sorted(positions):
-        return "invalid"
-    markers = [PROFILE_INITIALIZATION[line.strip()] for line in lines if line.strip() in PROFILE_INITIALIZATION]
-    return markers[0] if len(markers) == 1 else "invalid"
+    return matches[0]
 
 
 def configuration_state(root: Path, relative: Path) -> str:
@@ -262,7 +266,10 @@ def project_readiness(
 ) -> Mapping[str, str]:
     if configuration is None:
         configuration, _capability = load_provider_status_contract()
-    states = {"project profile": profile_state(root)}
+    states = {
+        "project profile": profile_state(root),
+        "active workflow": active_state(root),
+    }
     states.update(
         (label, configuration_state(root, relative))
         for label, relative in configuration
@@ -393,7 +400,7 @@ def print_readiness(root: Path, *, detailed: bool) -> None:
         print("Host capability (setup workflow):")
         for host, state in capability.items():
             print(f"  {host} setup workflow: {state}")
-        if readiness["project profile"] in {"uninitialized", "legacy-uninitialized"}:
+        if readiness["project profile"] == "uninitialized":
             print(
                 "Readiness guidance: initialize the profile once from verified repository evidence "
                 "when writes are authorized; unrelated direct work remains available."
@@ -404,7 +411,7 @@ def print_readiness(root: Path, *, detailed: bool) -> None:
         + "; ".join(f"{label}={state}" for label, state in readiness.items())
     )
     print("Host/setup capability: " + "; ".join(f"{host}={state}" for host, state in capability.items()))
-    if readiness["project profile"] in {"uninitialized", "legacy-uninitialized"}:
+    if readiness["project profile"] == "uninitialized":
         print(
             "Project initialization remains: initialize the profile once from verified repository "
             "evidence when writes are authorized; unrelated direct work is ready."
@@ -547,9 +554,20 @@ def rollback_new_seeds(
 
 
 def install(root: Path, dry_run: bool, revision: str) -> None:
+    root = root.resolve()
+    adopter = load_adopter_manager()
+    reinstall = adopter.is_reinstall(root)  # type: ignore[attr-defined]
+    provider_extra = ("--reinstall",) if reinstall else ()
     if dry_run:
         run_checked(ADOPTER, "install", root, True, revision)
-        run_checked(PROVIDERS, "install", root, True, revision)
+        run_checked(
+            PROVIDERS,
+            "install",
+            root,
+            True,
+            revision,
+            extra=provider_extra,
+        )
         return
     existed = (root / INSTALL_MANIFEST).exists()
     cleanup_targets, seed_targets = payload_targets()
@@ -558,7 +576,15 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
         target for target in seed_targets if not (root / target).exists()
     }
     run_checked(ADOPTER, "install", root, True, revision, quiet=True)
-    run_checked(PROVIDERS, "install", root, True, revision, quiet=True)
+    run_checked(
+        PROVIDERS,
+        "install",
+        root,
+        True,
+        revision,
+        quiet=True,
+        extra=provider_extra,
+    )
     run_checked(ADOPTER, "install", root, False, revision)
     created_seed_snapshots = {
         relative: (root / relative).read_bytes()
@@ -566,7 +592,14 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
         if (root / relative).is_file() and not (root / relative).is_symlink()
     }
     try:
-        run_checked(PROVIDERS, "install", root, False, revision)
+        run_checked(
+            PROVIDERS,
+            "install",
+            root,
+            False,
+            revision,
+            extra=provider_extra,
+        )
     except LifecycleError as error:
         if not existed:
             rollback = subprocess.run(

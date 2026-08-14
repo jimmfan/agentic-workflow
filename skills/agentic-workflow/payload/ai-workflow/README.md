@@ -139,14 +139,39 @@ project.
 
 ## Framework-owned continuity and safety
 
-`project-profile.md` and `state/active.md` are framework-specific project-local
-state whose contents are project-owned and survive removal. A new profile is a
-deterministic `uninitialized` document whose unknown values are `None`. For a
-mature repository, initialize it once from verified repository evidence when
-writes are authorized; afterward add only concise, durable facts and pointers
-discovered naturally during work. Do not scan the whole repository per task,
-store secrets or task notes, or let the cache override current source, accepted
-ADRs/domain documentation, or canonical provider artifacts.
+The filesystem boundary has three categories:
+
+- `.ai-workflow/` is the framework installation. Its runtime, routing,
+  contracts, templates, registry, and lifecycle metadata are reconstructable.
+- `.ai-workflow-state/` is durable, project-owned, Git-trackable repository
+  state. Lifecycle operations preserve it byte-for-byte, and the framework does
+  not add it to `.gitignore` or require Git.
+- transient controller bookkeeping is machine-local under the operating system
+  temporary directory and never belongs in the repository.
+
+Framework-owned **agent integration files** live at host-required paths such as
+`.github/hooks/`, `.agents/skills/`, `AGENTS.md`, and `CLAUDE.md`. They remain
+lifecycle-managed even though they are physically outside `.ai-workflow/`.
+
+`.ai-workflow-state/project-profile.md` is optional advisory context, while
+`.ai-workflow-state/active.md` is a stricter durable continuity pointer created
+only when a workflow needs persistence. A new profile is a deterministic
+`uninitialized` document whose unknown values are `None`, but existing readable
+non-empty profiles are simply `present`: headings and markers are not a
+versioned schema, and lifecycle operations never migrate their content. For a
+mature repository, initialize the profile once from verified repository
+evidence when writes are authorized; afterward add only concise, durable facts
+and pointers discovered naturally during work. Do not scan the whole repository
+per task, store secrets or task notes, or let the cache override current source,
+accepted ADRs/domain documentation, or canonical provider artifacts.
+
+Deleting `.ai-workflow/` and reinstalling reconstructs framework metadata
+without touching `.ai-workflow-state/`. Exact surviving integration/provider
+files can be authenticated locally; because deleted ownership history cannot
+prove their original creation, reconstructed external files remain updateable
+but are conservatively preserved on removal. Development-era durable files
+inside `.ai-workflow/` are only detected and reported for manual relocation;
+normal lifecycle operations never move, merge, overwrite, or delete them.
 
 For a cross-version update, the immutable new package—not the target-local
 `install-manifest.json`—defines trusted predecessors. Version, exact source
@@ -186,10 +211,13 @@ guarantee would require conservative no-delete behavior or a trust anchor
 outside the target repository.
 
 Normal lifecycle status reports framework integrity and provider integrity
-separately from host enforcement, project readiness, and setup capability. An
-uninitialized profile, disabled Preview hook, or missing optional setup document
-does not become a false integrity claim; a missing or modified managed hook/file
-remains an integrity failure.
+separately from host enforcement, durable project readiness, and setup
+capability. A missing, empty, uninitialized, unreadable, unsafe, or merely
+present profile does not become a false integrity claim. A missing active index
+means no durable workflow is recorded; an existing malformed or unsafe index is
+a correctness warning because it affects resumability. A disabled Preview hook
+or missing optional setup document also remains separate from integrity, while a
+missing or modified managed hook/file is still an integrity failure.
 
 Each final response ends with one effective route line, for example
 `[route: router → implement → verification]`. It lists router-selected stages
