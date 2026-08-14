@@ -7,9 +7,10 @@ architecture document, README copy, source-of-truth replacement, or place for
 secret values. The profile is not a shell script; an agent may run a recorded
 command only after applying the safety gate below.
 
-Lifecycle operations never create the profile or its parent directory. They
-preserve every existing profile byte-for-byte during install, update, removal,
-and reinstall. An authorized workflow may use the framework template as a
+Install and update establish the parent `.ai-workflow-state/` directory but
+never seed the profile. Lifecycle operations preserve every existing profile
+byte-for-byte during install, update, removal, and reinstall. An authorized
+workflow may use the framework template as a
 starting point only when it has useful verified durable context to record; it
 must populate that context before creating the project-owned file. A newer
 template never requires an existing profile to migrate.

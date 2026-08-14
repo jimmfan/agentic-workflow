@@ -117,14 +117,21 @@ py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.
 A successful installation ends with:
 
 ```text
-✓ Agentic Workflow framework is installed.
+✓ Agentic Workflow installed successfully.
+✓ Framework integrity verified.
+✓ Ready for normal agent work.
+Project state: .ai-workflow-state/ (empty until needed)
 ```
 
-Readiness warnings about project configuration do not mean installation failed.
+Optional provider failures may add one neutral note but do not change framework
+success or host-native readiness. Full optional configuration and static host
+details are available through `status`, where a healthy project ends with
+`No action required.`
 Open a fresh Copilot chat or Codex task from the project root so the host
 discovers the new policy and skills. VS Code hooks are Preview and require a
-trusted workspace; lifecycle `status` reports host enforcement separately from
-installation integrity.
+trusted workspace; lifecycle `status` reports host integration separately from
+installation integrity and labels installed/static checks separately from live
+host verification.
 
 ### What gets installed
 
@@ -145,16 +152,16 @@ target-project/
 │   ├── runtime/              # shared controller, host matrix, opt-in adapters
 │   ├── state/                # durable-state contract, not project state
 │   └── templates/
-└── .ai-workflow-state/       # created lazily for durable, Git-trackable state
-    ├── project-profile.md    # optional advisory project context
+└── .ai-workflow-state/       # empty canonical project-owned state directory after install
+    ├── project-profile.md    # created only when useful context is persisted
     └── active.md             # created only when durable continuity is needed
 ```
 
-`.ai-workflow/` is framework-owned and reconstructable. Durable repository
-context lives only under `.ai-workflow-state/`, which lifecycle install, update,
-remove, and reinstall preserve but never create. The directory is absent in a
-healthy installation until an authorized workflow has useful durable context or
-continuity to persist. Agent integration files are framework-owned files outside
+`.ai-workflow/` is framework-owned and reconstructable. Lifecycle install and
+update establish the empty `.ai-workflow-state/` directory as the canonical
+project-owned durable-state location, but never seed a profile, active state, or
+configuration file. Existing contents survive install, update, remove, and
+reinstall byte-for-byte. Agent integration files are framework-owned files outside
 `.ai-workflow/` because Copilot, Codex, Claude, or another agent environment
 expects them at fixed paths. Per-turn controller state remains in the operating
 system temporary directory, outside the repository.
@@ -162,10 +169,12 @@ system temporary directory, outside the repository.
 making Git a framework prerequisite.
 
 A recognized pre-0.8 framework directory may still migrate from `ai-workflow/`
-to `.ai-workflow/`. Durable files at the development-era paths
-`.ai-workflow/project-profile.md` or `.ai-workflow/state/{active.md,records,archive}`
-are not migrated automatically: install, update, and status report the exact
-paths and require manual relocation without overwriting new durable state.
+to `.ai-workflow/`. Install and update also migrate the four known
+development-era durable paths—`.ai-workflow/project-profile.md` and
+`.ai-workflow/state/{active.md,records,archive}`—only when
+`.ai-workflow-state/` is absent or empty. Moves preserve bytes and never scan for
+similarly named files. A populated destination, symlink, or type conflict stops
+before mutation rather than guessing or merging.
 
 ## Use it
 
@@ -258,9 +267,10 @@ modified or pre-existing skills intentionally remain.
   back a successful framework lifecycle operation.
 - Durable project state under `.ai-workflow-state/` survives install, update,
   removal, and framework-directory reconstruction byte-for-byte.
-- Install, update, status, remove, and reinstall never create
-  `.ai-workflow-state/`; authorized workflows create it only when durable state
-  is actually useful.
+- Install, update, and reinstall ensure `.ai-workflow-state/` exists, while
+  leaving it empty until an authorized workflow has useful profile context or
+  durable continuity to persist. Status is read-only, and removal preserves the
+  directory and every project-owned entry.
 - Deleting only `.ai-workflow/` and rerunning the coordinated installer is a
   supported recovery operation. Exact surviving framework and provider files
   reconstruct clean ownership metadata; conservatively reconstructed external
@@ -277,7 +287,7 @@ modified or pre-existing skills intentionally remain.
   framework package.
 - The first-stage public command fetches `main` over TLS; the bootstrap then
   resolves and verifies an immutable framework revision.
-- The current framework release is `0.9.4` and its curated provider baseline is
+- The current framework release is `0.9.5` and its curated provider baseline is
   [`mattpocock/skills` v1.2.3](https://github.com/mattpocock/skills/releases/tag/v1.2.3).
 - Ownership history is stored inside the target repository and is not
   tamper-evident. Coordinated local forgery can reclassify exact canonical

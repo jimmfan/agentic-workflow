@@ -99,7 +99,7 @@
     "id": "profile-readiness",
     "requirement": "Missing durable project state is a normal healthy condition rather than an initialization requirement.",
     "prompt": "Assess whether this mature repository is ready for routed project work.",
-    "setup": "Framework and providers are healthy, while .ai-workflow-state/, the project profile, and active state are absent.",
+    "setup": "Framework and providers are healthy, .ai-workflow-state/ exists and is empty, and the optional project profile and active state are absent.",
     "expected_behavior": "Report missing optional profile and active state as normal, preserve healthy package integrity, and emit no initialization warning.",
     "optional_route_diagnostic": null
   },

@@ -52,16 +52,34 @@ COMPOSITE_ORIGINS = {
     "composite-created",
     "composite-preexisting-identical",
 }
-LEGACY_DURABLE_PATHS = (
-    PurePosixPath(".ai-workflow/project-profile.md"),
-    PurePosixPath(".ai-workflow/state/active.md"),
-    PurePosixPath(".ai-workflow/state/records"),
-    PurePosixPath(".ai-workflow/state/archive"),
+LEGACY_DURABLE_MAPPINGS = (
+    (
+        PurePosixPath(".ai-workflow/project-profile.md"),
+        DURABLE_STATE_DIRECTORY / "project-profile.md",
+        "file",
+    ),
+    (
+        PurePosixPath(".ai-workflow/state/active.md"),
+        DURABLE_STATE_DIRECTORY / "active.md",
+        "file",
+    ),
+    (
+        PurePosixPath(".ai-workflow/state/records"),
+        DURABLE_STATE_DIRECTORY / "records",
+        "directory",
+    ),
+    (
+        PurePosixPath(".ai-workflow/state/archive"),
+        DURABLE_STATE_DIRECTORY / "archive",
+        "directory",
+    ),
 )
+LEGACY_DURABLE_PATHS = tuple(source for source, _destination, _kind in LEGACY_DURABLE_MAPPINGS)
 REVIEWED_SOURCE_MODES = {0o644, 0o755}
 WINDOWS_ORDINARY_SOURCE_MODES = {0o444, 0o555, 0o666, 0o777}
 EXECUTABLE_PAYLOAD_PATHS = frozenset()
 DEFAULT_CREATED_MODE = 0o644
+DEFAULT_DIRECTORY_MODE = 0o755
 MINIMUM_PYTHON = (3, 11)
 LOCAL_SOURCE_REVISION = "unreleased-local-package"
 OwnedMapping = Tuple[PurePosixPath, PurePosixPath]
@@ -468,17 +486,129 @@ def legacy_durable_paths(root: Path) -> List[PurePosixPath]:
     return found
 
 
-def require_no_legacy_durable_state(root: Path) -> None:
-    found = legacy_durable_paths(root)
-    if not found:
-        return
-    paths = ", ".join(item.as_posix() for item in found)
-    raise AdoptionError(
-        "legacy durable state detected at "
-        + paths
-        + "; move it manually into .ai-workflow-state/ without overwriting any existing "
-        "destination, then rerun. Automatic durable-state migration is intentionally disabled."
-    )
+def plan_durable_state_migration(
+    root: Path,
+) -> List[Tuple[Path, Path]]:
+    planned: List[Tuple[Path, Path]] = []
+    for source_relative, destination_relative, expected_kind in LEGACY_DURABLE_MAPPINGS:
+        source = target_path(root, source_relative)
+        if not source.exists() and not source.is_symlink():
+            continue
+        if expected_kind == "file" and (source.is_symlink() or not source.is_file()):
+            raise AdoptionError(
+                f"known legacy durable state must be a regular non-symlink file: {source_relative}"
+            )
+        if expected_kind == "directory" and (source.is_symlink() or not source.is_dir()):
+            raise AdoptionError(
+                f"known legacy durable state must be a regular non-symlink directory: {source_relative}"
+            )
+        destination = target_path(root, destination_relative)
+        if destination.exists() or destination.is_symlink():
+            raise AdoptionError(
+                "durable-state migration destination already exists; refusing to overwrite or merge: "
+                f"{destination_relative}"
+            )
+        planned.append((source, destination))
+
+    canonical = target_path(root, DURABLE_STATE_DIRECTORY)
+    if canonical.exists() or canonical.is_symlink():
+        if canonical.is_symlink() or not canonical.is_dir():
+            raise AdoptionError(
+                f"canonical durable-state path must be a regular non-symlink directory: {canonical}"
+            )
+        if planned:
+            try:
+                populated = next(canonical.iterdir(), None)
+            except OSError as error:
+                raise AdoptionError(f"cannot inspect canonical durable-state directory: {error}") from error
+            if populated is not None:
+                raise AdoptionError(
+                    "known legacy durable state and a non-empty .ai-workflow-state/ both exist; "
+                    "refusing to guess, merge, or overwrite project state"
+                )
+    return planned
+
+
+def ensure_durable_state_directory(root: Path) -> bool:
+    canonical = target_path(root, DURABLE_STATE_DIRECTORY)
+    if canonical.exists() or canonical.is_symlink():
+        if canonical.is_symlink() or not canonical.is_dir():
+            raise AdoptionError(
+                f"canonical durable-state path must be a regular non-symlink directory: {canonical}"
+            )
+        return False
+    canonical.mkdir(mode=DEFAULT_DIRECTORY_MODE)
+    return True
+
+
+def prepare_durable_state(
+    root: Path,
+    planned: Sequence[Tuple[Path, Path]],
+) -> Tuple[bool, List[Tuple[Path, Path]]]:
+    created = ensure_durable_state_directory(root)
+    moved: List[Tuple[Path, Path]] = []
+    try:
+        for source, destination in planned:
+            destination.parent.mkdir(parents=True, exist_ok=True, mode=DEFAULT_DIRECTORY_MODE)
+            os.replace(source, destination)
+            moved.append((source, destination))
+    except BaseException as error:
+        rollback_errors: List[str] = []
+        for source, destination in reversed(moved):
+            try:
+                source.parent.mkdir(parents=True, exist_ok=True, mode=DEFAULT_DIRECTORY_MODE)
+                os.replace(destination, source)
+            except BaseException as rollback_error:
+                rollback_errors.append(f"{destination}: {rollback_error}")
+        if created:
+            try:
+                target_path(root, DURABLE_STATE_DIRECTORY).rmdir()
+            except OSError:
+                pass
+        if rollback_errors:
+            raise AdoptionError(
+                f"durable-state migration failed and rollback also failed: {error}; "
+                + "; ".join(rollback_errors)
+            ) from error
+        raise
+    return created, moved
+
+
+def rollback_durable_state_preparation(
+    root: Path,
+    created: bool,
+    moved: Sequence[Tuple[Path, Path]],
+) -> None:
+    errors: List[str] = []
+    for source, destination in reversed(moved):
+        try:
+            source.parent.mkdir(parents=True, exist_ok=True, mode=DEFAULT_DIRECTORY_MODE)
+            os.replace(destination, source)
+        except BaseException as error:
+            errors.append(f"{destination}: {error}")
+    if created:
+        try:
+            target_path(root, DURABLE_STATE_DIRECTORY).rmdir()
+        except OSError as error:
+            errors.append(f"{DURABLE_STATE_DIRECTORY}: {error}")
+    if errors:
+        raise AdoptionError("could not roll back durable-state preparation: " + "; ".join(errors))
+
+
+def durable_state_plan_actions(
+    root: Path,
+    planned: Sequence[Tuple[Path, Path]],
+) -> List[str]:
+    actions = [
+        f"migrate known durable state {source.relative_to(root)} -> {destination.relative_to(root)}"
+        for source, destination in planned
+    ]
+    canonical = target_path(root, DURABLE_STATE_DIRECTORY)
+    if not canonical.exists() and not canonical.is_symlink():
+        actions.append(f"create canonical project state directory {DURABLE_STATE_DIRECTORY}/")
+    else:
+        actions.append(f"preserve canonical project state directory {DURABLE_STATE_DIRECTORY}/")
+    return actions
 
 
 def is_reinstall(root: Path) -> bool:
@@ -557,7 +687,6 @@ def plan_new_owned(
 
 def plan_install(root: Path) -> Tuple[List[str], Dict[str, bytes], Dict[str, Dict[str, str]], str, List[OwnedMapping]]:
     version, owned, _ = load_source_manifest()
-    require_no_legacy_durable_state(root)
     manifest_path = target_path(root, INSTALL_MANIFEST_PATH)
     if manifest_path.exists() or manifest_path.is_symlink():
         raise AdoptionError("installation manifest already exists; use update")
@@ -720,7 +849,6 @@ def plan_update(root: Path) -> Tuple[
     str,
     List[OwnedMapping],
 ]:
-    require_no_legacy_durable_state(root)
     installed = load_installed(root)
     version, owned, retired = load_source_manifest()
     installed_version = installed["framework_version"]
@@ -952,6 +1080,7 @@ def apply_transaction(
 
 def command_install(root: Path, dry_run: bool, revision: str) -> None:
     validate_source_revision(revision, "package source revision")
+    durable_migrations = plan_durable_state_migration(root)
     manifest_path = target_path(root, INSTALL_MANIFEST_PATH)
     if manifest_path.exists() or manifest_path.is_symlink():
         installed = load_installed(root)
@@ -959,44 +1088,80 @@ def command_install(root: Path, dry_run: bool, revision: str) -> None:
         if installed["framework_version"] == version and command_status(
             root, verbose=False, expected_revision=revision
         ):
+            actions = durable_state_plan_actions(root, durable_migrations)
+            if dry_run:
+                print_plan("INSTALL", root, actions)
+                return
+            _created, moved = prepare_durable_state(root, durable_migrations)
+            if moved:
+                print("✓ Known durable project state migrated to .ai-workflow-state/.")
             print(f"✓ Agentic workflow {version} is already installed and verified.")
             return
         raise AdoptionError("an installation already exists but is different; run update or status")
     actions, writes, entries, version, owned = plan_install(root)
+    actions = durable_state_plan_actions(root, durable_migrations) + actions
     if dry_run:
         print_plan("INSTALL", root, actions)
         return
     manifest = installed_payload(version, entries, revision)
     ordered = sorted(writes.items()) + [(INSTALL_MANIFEST_PATH.as_posix(), manifest)]
     source_modes = source_target_modes(owned)
-    apply_transaction(
-        root,
-        ordered,
-        (),
-        {key: source_modes[key] for key, _ in ordered},
-        postcheck=lambda: command_status(root, verbose=False, expected_revision=revision),
-        postcheck_error="post-install verification failed",
-    )
+    created, moved = prepare_durable_state(root, durable_migrations)
+    try:
+        apply_transaction(
+            root,
+            ordered,
+            (),
+            {key: source_modes[key] for key, _ in ordered},
+            postcheck=lambda: command_status(root, verbose=False, expected_revision=revision),
+            postcheck_error="post-install verification failed",
+        )
+    except BaseException as error:
+        try:
+            rollback_durable_state_preparation(root, created, moved)
+        except AdoptionError as rollback_error:
+            raise AdoptionError(
+                f"framework install failed and durable-state rollback also failed: {error}; "
+                f"{rollback_error}"
+            ) from error
+        raise
+    if moved:
+        print("✓ Known durable project state migrated to .ai-workflow-state/.")
     print(f"✓ Agentic workflow {version} installed and verified.")
 
 
 def command_update(root: Path, dry_run: bool, revision: str) -> None:
     validate_source_revision(revision, "package source revision")
+    durable_migrations = plan_durable_state_migration(root)
     actions, writes, removals, entries, version, owned = plan_update(root)
+    actions = durable_state_plan_actions(root, durable_migrations) + actions
     if dry_run:
         print_plan("UPDATE", root, actions)
         return
     manifest = installed_payload(version, entries, revision)
     ordered = sorted(writes.items()) + [(INSTALL_MANIFEST_PATH.as_posix(), manifest)]
     source_modes = source_target_modes(owned)
-    apply_transaction(
-        root,
-        ordered,
-        removals,
-        {key: source_modes[key] for key, _ in ordered},
-        postcheck=lambda: command_status(root, verbose=False, expected_revision=revision),
-        postcheck_error="post-update verification failed",
-    )
+    created, moved = prepare_durable_state(root, durable_migrations)
+    try:
+        apply_transaction(
+            root,
+            ordered,
+            removals,
+            {key: source_modes[key] for key, _ in ordered},
+            postcheck=lambda: command_status(root, verbose=False, expected_revision=revision),
+            postcheck_error="post-update verification failed",
+        )
+    except BaseException as error:
+        try:
+            rollback_durable_state_preparation(root, created, moved)
+        except AdoptionError as rollback_error:
+            raise AdoptionError(
+                f"framework update failed and durable-state rollback also failed: {error}; "
+                f"{rollback_error}"
+            ) from error
+        raise
+    if moved:
+        print("✓ Known durable project state migrated to .ai-workflow-state/.")
     print(f"✓ Agentic workflow updated to {version} and verified.")
 
 
@@ -1005,7 +1170,6 @@ def command_status(
     verbose: bool = True,
     expected_revision: str = LOCAL_SOURCE_REVISION,
 ) -> bool:
-    require_no_legacy_durable_state(root)
     installed = load_installed(root)
     validate_source_revision(expected_revision, "package source revision")
     source_version, _owned, _retired = load_source_manifest()
@@ -1107,7 +1271,7 @@ def command_remove(
     actions.append(f"preserve durable project state under {DURABLE_STATE_DIRECTORY}")
     if legacy_durable:
         actions.append(
-            "preserve detected legacy durable state for manual relocation: "
+            "preserve known prior durable state in place: "
             + ", ".join(item.as_posix() for item in legacy_durable)
         )
     actions.append(f"remove installation manifest {INSTALL_MANIFEST_PATH}")
@@ -1123,7 +1287,7 @@ def command_remove(
     )
     if legacy_durable:
         print(
-            "Legacy durable state was also preserved for manual relocation: "
+            "Known prior durable state was also preserved in place: "
             + ", ".join(item.as_posix() for item in legacy_durable)
         )
 

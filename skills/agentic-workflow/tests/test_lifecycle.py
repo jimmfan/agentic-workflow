@@ -362,7 +362,8 @@ class LifecycleTests(unittest.TestCase):
         self.assertTrue((target / ".github/hooks/agentic-workflow.json").is_file())
         self.assertFalse((target / ".agents/skills/workflow-teach").exists())
         self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "missing")
-        self.assertFalse((target / ".ai-workflow-state").exists())
+        self.assertTrue((target / ".ai-workflow-state").is_dir())
+        self.assertEqual(list((target / ".ai-workflow-state").iterdir()), [])
         self.assertFalse((target / ".ai-workflow/project-profile.md").exists())
         self.assertFalse((target / ".ai-workflow/state/active.md").exists())
         self.assertFalse((target / "ai-workflow").exists())
@@ -512,31 +513,34 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(second_status.returncode, 0, second_status.stderr)
         self.assertTrue(second_manifest.is_file())
 
-    def test_non_git_install_repeated_update_status_and_remove_remain_state_free(self) -> None:
+    def test_non_git_install_repeated_update_and_remove_preserve_empty_state_directory(self) -> None:
         target = self.base / "ordinary-project"
         target.mkdir()
         self.assertFalse((target / ".git").exists())
 
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        self.assertFalse((target / ".ai-workflow-state").exists())
+        state = target / ".ai-workflow-state"
+        self.assertTrue(state.is_dir())
+        self.assertEqual(list(state.iterdir()), [])
         status = adopt(ADOPT, "status", target)
         self.assertEqual(status.returncode, 0, status.stderr)
         updated = adopt(ADOPT, "update", target)
         self.assertEqual(updated.returncode, 0, updated.stderr)
-        self.assertFalse((target / ".ai-workflow-state").exists())
+        self.assertEqual(list(state.iterdir()), [])
         updated_again = adopt(ADOPT, "update", target)
         self.assertEqual(updated_again.returncode, 0, updated_again.stderr)
-        self.assertFalse((target / ".ai-workflow-state").exists())
+        self.assertEqual(list(state.iterdir()), [])
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
         self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
-        self.assertFalse((target / ".ai-workflow-state").exists())
+        self.assertTrue(state.is_dir())
+        self.assertEqual(list(state.iterdir()), [])
 
     def test_nonempty_project_profile_template_is_present_when_explicitly_persisted(self) -> None:
         target = self.base / "profile-seed"
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         source = PACKAGE / "payload/ai-workflow/templates/project-profile.md"
         profile.write_bytes(source.read_bytes())
 
@@ -546,7 +550,7 @@ class LifecycleTests(unittest.TestCase):
         target = git_repository(self.base / "lazy-profile")
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        self.assertFalse((target / ".ai-workflow-state").exists())
+        self.assertEqual(list((target / ".ai-workflow-state").iterdir()), [])
 
         template = (target / ".ai-workflow/templates/project-profile.md").read_text(
             encoding="utf-8"
@@ -561,7 +565,6 @@ class LifecycleTests(unittest.TestCase):
             1,
         )
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
         profile.write_text(useful_profile, encoding="utf-8")
 
         expected = profile.read_bytes()
@@ -579,7 +582,7 @@ class LifecycleTests(unittest.TestCase):
     def test_readable_nonempty_project_profiles_are_present_without_schema_validation(self) -> None:
         target = self.base / "present-profile"
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         cases = {
             "older markerless populated": """# Project profile
 
@@ -605,7 +608,7 @@ Use the repository's documented checks.
     def test_empty_or_whitespace_only_project_profile_is_empty(self) -> None:
         target = self.base / "empty-profile"
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         for content in (b"", b" \n\t\n"):
             with self.subTest(content=content):
                 profile.write_bytes(content)
@@ -614,7 +617,7 @@ Use the repository's documented checks.
     def test_unreadable_project_profile_is_unreadable(self) -> None:
         target = self.base / "unreadable-profile"
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         profile.write_text("project context\n", encoding="utf-8")
 
         with mock.patch.object(Path, "read_bytes", side_effect=OSError("read denied")):
@@ -635,7 +638,7 @@ Use the repository's documented checks.
         )
         self.assertEqual(LIFECYCLE_MANAGER.profile_state(parent_file_target), "unsafe")
 
-    def test_legacy_durable_paths_are_detected_preserved_and_never_migrated(self) -> None:
+    def test_known_legacy_durable_paths_migrate_without_changing_bytes(self) -> None:
         fresh = git_repository(self.base / "legacy-durable-install")
         legacy_profile = fresh / ".ai-workflow/project-profile.md"
         legacy_active = fresh / ".ai-workflow/state/active.md"
@@ -645,37 +648,90 @@ Use the repository's documented checks.
         legacy_active_bytes = b"# Active workflow\n\n- Active workflow: debugging\n"
         legacy_profile.write_bytes(legacy_profile_bytes)
         legacy_active.write_bytes(legacy_active_bytes)
+        legacy_record = fresh / ".ai-workflow/state/records/DBG-0001.md"
+        legacy_archive = fresh / ".ai-workflow/state/archive/2026/DISC-0001.md"
+        legacy_record.parent.mkdir(parents=True)
+        legacy_archive.parent.mkdir(parents=True)
+        legacy_record.write_bytes(b"record bytes\x00\xff")
+        legacy_archive.write_bytes(b"archive bytes\r\n")
 
-        rejected = adopt(ADOPT, "install", fresh)
+        installed_fresh = adopt(ADOPT, "install", fresh)
 
-        self.assertEqual(rejected.returncode, 2)
-        self.assertIn("legacy durable state detected", rejected.stderr)
-        self.assertIn("move it manually into .ai-workflow-state/", rejected.stderr)
-        self.assertIn("Automatic durable-state migration is intentionally disabled", rejected.stderr)
-        self.assertEqual(legacy_profile.read_bytes(), legacy_profile_bytes)
-        self.assertEqual(legacy_active.read_bytes(), legacy_active_bytes)
-        self.assertFalse((fresh / ".ai-workflow-state").exists())
-        self.assertFalse((fresh / ".ai-workflow/install-manifest.json").exists())
+        self.assertEqual(installed_fresh.returncode, 0, installed_fresh.stderr)
+        self.assertFalse(legacy_profile.exists())
+        self.assertFalse(legacy_active.exists())
+        self.assertEqual(
+            (fresh / ".ai-workflow-state/project-profile.md").read_bytes(),
+            legacy_profile_bytes,
+        )
+        self.assertEqual(
+            (fresh / ".ai-workflow-state/active.md").read_bytes(),
+            legacy_active_bytes,
+        )
+        self.assertEqual(
+            (fresh / ".ai-workflow-state/records/DBG-0001.md").read_bytes(),
+            b"record bytes\x00\xff",
+        )
+        self.assertEqual(
+            (fresh / ".ai-workflow-state/archive/2026/DISC-0001.md").read_bytes(),
+            b"archive bytes\r\n",
+        )
+        self.assertTrue((fresh / ".ai-workflow/install-manifest.json").is_file())
 
         installed = git_repository(self.base / "legacy-durable-update")
         self.assertEqual(adopt(ADOPT, "install", installed).returncode, 0)
         old_active = installed / ".ai-workflow/state/active.md"
         old_active.write_bytes(legacy_active_bytes)
         manifest = installed / ".ai-workflow/install-manifest.json"
-        manifest_bytes = manifest.read_bytes()
 
         update = adopt(ADOPT, "update", installed)
 
-        self.assertEqual(update.returncode, 2)
-        self.assertIn("legacy durable state detected", update.stderr)
-        self.assertEqual(old_active.read_bytes(), legacy_active_bytes)
-        self.assertEqual(manifest.read_bytes(), manifest_bytes)
-        self.assertFalse((installed / ".ai-workflow-state/active.md").exists())
+        self.assertEqual(update.returncode, 0, update.stderr)
+        self.assertFalse(old_active.exists())
+        self.assertEqual(
+            (installed / ".ai-workflow-state/active.md").read_bytes(),
+            legacy_active_bytes,
+        )
+        self.assertTrue(manifest.is_file())
 
         removed = adopt(ADOPT, "remove", installed)
         self.assertEqual(removed.returncode, 0, removed.stderr)
-        self.assertEqual(old_active.read_bytes(), legacy_active_bytes)
-        self.assertIn("Legacy durable state was also preserved", removed.stdout)
+        self.assertEqual(
+            (installed / ".ai-workflow-state/active.md").read_bytes(),
+            legacy_active_bytes,
+        )
+
+    def test_legacy_durable_migration_refuses_nonempty_canonical_state(self) -> None:
+        target = git_repository(self.base / "legacy-durable-conflict")
+        legacy = target / ".ai-workflow/project-profile.md"
+        legacy.parent.mkdir(parents=True)
+        legacy.write_bytes(b"legacy profile\n")
+        canonical = target / ".ai-workflow-state/project-profile.md"
+        canonical.parent.mkdir(parents=True)
+        canonical.write_bytes(b"canonical profile\n")
+
+        result = adopt(ADOPT, "install", target)
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("refusing to overwrite", result.stderr)
+        self.assertEqual(legacy.read_bytes(), b"legacy profile\n")
+        self.assertEqual(canonical.read_bytes(), b"canonical profile\n")
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
+
+    def test_failed_install_rolls_known_legacy_state_back_byte_for_byte(self) -> None:
+        target = git_repository(self.base / "legacy-durable-rollback").resolve()
+        legacy = target / ".ai-workflow/project-profile.md"
+        legacy.parent.mkdir(parents=True)
+        expected = b"legacy profile\x00\xff\r\n"
+        legacy.write_bytes(expected)
+
+        with mock.patch.object(ADOPTER, "command_status", return_value=False):
+            with self.assertRaisesRegex(ADOPTER.AdoptionError, "post-install verification failed"):
+                ADOPTER.command_install(target, False, REVISION)
+
+        self.assertEqual(legacy.read_bytes(), expected)
+        self.assertFalse((target / ".ai-workflow-state").exists())
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
 
     def test_active_state_readiness_is_strict_only_when_state_exists(self) -> None:
         target = self.base / "active-readiness"
@@ -706,7 +762,7 @@ Use the repository's documented checks.
         target = git_repository(self.base / "preserved-profile")
         profile = target / ".ai-workflow-state/project-profile.md"
         active = target / ".ai-workflow-state/active.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         markerless = b"# Project profile\n\nVerified project-owned context.\n"
         active_bytes = b"# Active workflow\n\n- Active workflow: implementation\n"
         profile.write_bytes(markerless)
@@ -744,7 +800,7 @@ Use the repository's documented checks.
 
         profile = target / ".ai-workflow-state/project-profile.md"
         active = target / ".ai-workflow-state/active.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         profile_bytes = b"# Project context\n\nCanonical docs live under docs/.\n"
         active_bytes = b"# Active workflow\n\n- Active workflow: debugging\n"
         profile.write_bytes(profile_bytes)
@@ -796,66 +852,28 @@ Use the repository's documented checks.
 
     def test_status_treats_missing_durable_state_as_healthy_and_normal(self) -> None:
         target = self.base / "readiness-project"
+        target.mkdir()
+        self.assertEqual(adopt(ADOPT, "install", target).returncode, 0)
         profile = target / ".ai-workflow-state/project-profile.md"
-        capabilities = target / ".ai-workflow/runtime/capabilities.json"
-        capabilities.parent.mkdir(parents=True)
-        capabilities.write_bytes(
-            (PACKAGE / "payload/ai-workflow/runtime/capabilities.json").read_bytes()
-        )
-        hook = target / ".github/hooks/agentic-workflow.json"
-        hook.parent.mkdir(parents=True)
-        hook.write_bytes(
-            (PACKAGE / "payload/hosts/vscode-agentic-workflow.json").read_bytes()
-        )
-        child_statuses = [
-            subprocess.CompletedProcess([], 0),
-            subprocess.CompletedProcess([], 0),
-        ]
-        output = io.StringIO()
-        with mock.patch.object(
-            LIFECYCLE_MANAGER.subprocess,
-            "run",
-            side_effect=child_statuses,
-        ), redirect_stdout(output):
-            result = LIFECYCLE_MANAGER.status(target, REVISION)
+        result = adopt(LIFECYCLE, "status", target)
 
-        self.assertEqual(result, 0)
-        rendered = output.getvalue()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rendered = result.stdout
+        self.assertIn("Agentic Workflow: healthy", rendered)
         self.assertIn("Framework integrity: healthy", rendered)
-        self.assertIn("Optional provider capability: healthy", rendered)
-        self.assertIn("Host enforcement (capability, not installation integrity):", rendered)
-        self.assertIn("GitHub Copilot in VS Code: partial/Preview", rendered)
-        self.assertIn("GitHub Copilot CLI/cloud: shared file unvalidated", rendered)
-        self.assertIn(
-            "Project readiness (optional durable state; missing profile and active state are normal):",
-            rendered,
-        )
-        self.assertIn("project profile: missing", rendered)
-        self.assertIn("active workflow: none", rendered)
-        self.assertIn("issue tracker config: missing", rendered)
-        self.assertIn("domain config: missing", rendered)
-        self.assertIn("triage config: missing", rendered)
-        self.assertIn(
-            "Codex setup workflow: user invocation required (`$setup-matt-pocock-skills`)",
-            rendered,
-        )
-        self.assertIn(
-            "GitHub Copilot setup workflow: user invocation required (`/setup-matt-pocock-skills`)",
-            rendered,
-        )
-        self.assertIn("Claude Code setup workflow: unavailable", rendered)
+        self.assertIn("Project state: ready / none active", rendered)
+        self.assertIn("Normal agent workflows: ready", rendered)
+        self.assertIn("Provider skills: not installed (optional); host-native fallback is ready", rendered)
+        self.assertIn("project profile: not configured (optional)", rendered)
+        self.assertIn("issue tracker config: not configured (optional", rendered)
+        self.assertIn("Codex: project instructions installed; host-native work ready", rendered)
+        self.assertIn("live host loading not verified", rendered)
+        self.assertIn("No action required.", rendered)
+        self.assertNotIn("partial", rendered.lower())
+        self.assertNotIn("warning", rendered.lower())
+        self.assertNotIn("clean:", rendered)
         self.assertNotIn("initializ", rendered.lower())
 
-        compact_output = io.StringIO()
-        with redirect_stdout(compact_output):
-            LIFECYCLE_MANAGER.print_readiness(target, detailed=False)
-        compact = compact_output.getvalue()
-        self.assertIn("absence is normal", compact)
-        self.assertIn("project profile=missing", compact)
-        self.assertIn("active workflow=none", compact)
-        self.assertNotIn("initializ", compact.lower())
-
-        profile.parent.mkdir(parents=True)
         profile.write_text("# Project context\n\nVerified durable context.\n", encoding="utf-8")
         configuration, _host_invocation = LIFECYCLE_MANAGER.load_provider_status_contract()
         for _label, relative in configuration:
@@ -872,6 +890,39 @@ Use the repository's documented checks.
                 "triage config": "configured",
             },
         )
+
+    def test_status_distinguishes_framework_corruption_from_optional_absence(self) -> None:
+        target = self.base / "corrupt-status-project"
+        target.mkdir()
+        self.assertEqual(adopt(ADOPT, "install", target).returncode, 0)
+        routing = target / ".ai-workflow/routing.md"
+        routing.write_bytes(routing.read_bytes() + b"locally corrupted\n")
+
+        result = adopt(LIFECYCLE, "status", target)
+
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("Agentic Workflow: unhealthy", result.stdout)
+        self.assertIn("Framework integrity: unhealthy", result.stdout)
+        self.assertIn("Normal agent workflows: not ready", result.stdout)
+        self.assertIn("modified: .ai-workflow/routing.md", result.stdout)
+        self.assertIn("Action required:", result.stdout)
+        self.assertNotIn("No action required.", result.stdout)
+
+    def test_status_reports_invalid_active_state_without_mislabeling_framework(self) -> None:
+        target = self.base / "invalid-active-status-project"
+        target.mkdir()
+        self.assertEqual(adopt(ADOPT, "install", target).returncode, 0)
+        (target / ".ai-workflow-state/active.md").write_text(
+            "# Active workflow\n\n- Active workflow: invented\n",
+            encoding="utf-8",
+        )
+
+        result = adopt(LIFECYCLE, "status", target)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Agentic Workflow: healthy", result.stdout)
+        self.assertIn("Project state: needs attention / active state invalid", result.stdout)
+        self.assertIn("repair .ai-workflow-state/active.md (invalid)", result.stdout)
 
     def test_provider_install_is_pinned_complete_idempotent_and_removable(self) -> None:
         target = self.base / "provider-target"
@@ -1980,13 +2031,24 @@ Use the repository's documented checks.
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("optional providers were not installed", result.stderr)
+        self.assertIn("Optional provider enhancements were not installed", result.stderr)
+        self.assertIn("normal host-native work remains ready", result.stderr)
+        self.assertEqual(
+            result.stdout.splitlines(),
+            [
+                "✓ Agentic Workflow installed successfully.",
+                "✓ Framework integrity verified.",
+                "✓ Ready for normal agent work.",
+                "Project state: .ai-workflow-state/ (empty until needed)",
+            ],
+        )
         self.assertTrue((target / "AGENTS.md").is_file())
         self.assertTrue((target / "CLAUDE.md").is_file())
         self.assertTrue((target / ".agents/skills/workflow-discovery/SKILL.md").is_file())
         self.assertTrue((target / ".ai-workflow/install-manifest.json").is_file())
         self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
-        self.assertFalse((target / ".ai-workflow-state").exists())
+        self.assertTrue((target / ".ai-workflow-state").is_dir())
+        self.assertEqual(list((target / ".ai-workflow-state").iterdir()), [])
 
     def test_coordinated_reinstall_enables_provider_state_reconstruction(self) -> None:
         target = (self.base / "coordinated-reinstall").resolve()
@@ -1998,6 +2060,11 @@ Use the repository's documented checks.
             def is_reinstall(root):
                 self.assertEqual(root, target)
                 return True
+
+            @staticmethod
+            def legacy_durable_paths(root):
+                self.assertEqual(root, target)
+                return []
 
         def checked(
             script, action, root, dry_run, revision, *, quiet=False, extra=()
@@ -2055,8 +2122,8 @@ Use the repository's documented checks.
             calls,
             [
                 (LIFECYCLE_MANAGER.ADOPTER, True, True),
-                (LIFECYCLE_MANAGER.ADOPTER, False, False),
-                (LIFECYCLE_MANAGER.PROVIDERS, False, False),
+                (LIFECYCLE_MANAGER.ADOPTER, False, True),
+                (LIFECYCLE_MANAGER.PROVIDERS, False, True),
             ],
         )
 
@@ -2102,7 +2169,7 @@ Use the repository's documented checks.
         self.assertEqual(installed.returncode, 0, installed.stderr)
 
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         profile.write_bytes(b"# Project context\n\nProject-owned profile note.\n")
         record = target / ".ai-workflow-state/records/DBG-0001-preserved.md"
         record.parent.mkdir(parents=True)
@@ -2246,7 +2313,7 @@ Use the repository's documented checks.
         self.assertTrue((target / "CLAUDE.md").is_file())
         self.assertTrue((target / ".agents/skills/workflow-discovery/SKILL.md").is_file())
         self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
-        self.assertFalse((target / ".ai-workflow-state").exists())
+        self.assertTrue((target / ".ai-workflow-state").is_dir())
 
     def test_target_project_docs_are_never_supplied_or_removed(self) -> None:
         target = self.base / "documented-project"
@@ -2791,7 +2858,7 @@ Use the repository's documented checks.
         composite = (target / "AGENTS.md").read_bytes()
         self.assertIn(original, composite)
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         profile.write_text("project-owned customization\n", encoding="utf-8")
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
@@ -2881,6 +2948,7 @@ Use the repository's documented checks.
         self.assertEqual(policy.read_bytes(), original)
         self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
         self.assertFalse((target / ".agents").exists())
+        self.assertFalse((target / ".ai-workflow-state").exists())
 
     def test_reserved_project_marker_is_unhealthy_and_blocks_update(self) -> None:
         target = git_repository(self.base / "reserved-project-marker")
@@ -3141,7 +3209,7 @@ Use the repository's documented checks.
         old_install = adopt(old_package / "scripts/adopt.py", "install", target)
         self.assertEqual(old_install.returncode, 0, old_install.stderr)
         profile = target / ".ai-workflow-state/project-profile.md"
-        profile.parent.mkdir(parents=True)
+        profile.parent.mkdir(parents=True, exist_ok=True)
         profile.write_text("custom project profile\n", encoding="utf-8")
         trusted_adopt = copied_adopter_fixture(
             self.base,
@@ -3522,7 +3590,8 @@ Use the repository's documented checks.
             env=environment,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("installed and verified", result.stdout)
+        self.assertIn("Agentic Workflow installed successfully", result.stdout)
+        self.assertIn("Framework integrity verified", result.stdout)
         installed = json.loads((target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(installed["source_revision"], REVISION)
         self.assertTrue((target / ".ai-workflow/provider-state.json").is_file())

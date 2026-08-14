@@ -364,41 +364,89 @@ def setup_capability(
         label = HOST_LABELS.get(host_id, host_id)
         if policy == "user-only":
             invocation = f"{record['explicit_prefix']}{SETUP_SKILL}"
-            capabilities[label] = f"user invocation required (`{invocation}`)"
+            capabilities[label] = f"`{invocation}` only when optional provider setup is needed"
         elif policy == "implicit":
-            capabilities[label] = "implicit invocation available"
+            capabilities[label] = "optional setup can run when needed"
         else:
-            capabilities[label] = "unavailable"
+            capabilities[label] = "optional provider setup unavailable; host-native work remains ready"
     return capabilities
 
 
-def print_readiness(root: Path, *, detailed: bool) -> None:
+def durable_directory_state(root: Path) -> str:
+    path = readiness_path(root, DURABLE_STATE_DIRECTORY)
+    if path is None:
+        return "unsafe"
+    if not path.exists() and not path.is_symlink():
+        return "absent"
+    if path.is_symlink() or not path.is_dir():
+        return "unsafe"
+    return "ready"
+
+
+def project_state_summary(root: Path) -> str:
+    directory = durable_directory_state(root)
+    active = active_state(root)
+    if directory == "unsafe":
+        return "unsafe / durable workflows blocked"
+    if directory == "absent":
+        return "directory absent / none active"
+    if active == "none":
+        return "ready / none active"
+    if active in ACTIVE_WORKFLOWS:
+        return f"ready / {active} active"
+    return f"needs attention / active state {active}"
+
+
+def optional_state_label(label: str, state: str) -> str:
+    if label == "project profile":
+        return {
+            "missing": "not configured (optional)",
+            "empty": "empty (optional; ignored until populated)",
+            "present": "configured",
+            "unreadable": "unreadable (optional profile cannot be used)",
+            "unsafe": "unsafe (optional profile cannot be used)",
+        }.get(state, state)
+    return {
+        "missing": "not configured (optional; checked only when a selected workflow requires it)",
+        "configured": "configured",
+        "empty": "empty (checked only when a selected workflow requires it)",
+        "unreadable": "unreadable (relevant only to workflows that require it)",
+        "invalid": "unsafe (relevant only to workflows that require it)",
+    }.get(state, state)
+
+
+def print_optional_status(root: Path, provider_returncode: int) -> None:
     try:
         configuration, host_invocation = load_provider_status_contract()
     except LifecycleError as error:
         configuration = []
         host_invocation = []
-        print(
-            "Optional provider readiness metadata is unavailable; "
-            f"host-native fallback remains available: {error}"
-        )
+        provider_metadata_error: Optional[LifecycleError] = error
+    else:
+        provider_metadata_error = None
     readiness = project_readiness(root, configuration)
     capability = setup_capability(host_invocation)
-    if detailed:
-        print(
-            "Project readiness (optional durable state; missing profile and active state are normal):"
-        )
-        for label, state in readiness.items():
-            print(f"  {label}: {state}")
-        print("Host capability (setup workflow):")
+    provider_state = readiness_path(root, STATE_DIRECTORY / "provider-state.json")
+
+    print("Optional provider enhancements:")
+    if provider_returncode == 0 and provider_state is not None and (
+        provider_state.exists() or provider_state.is_symlink()
+    ):
+        print("  Provider skills: installed and healthy")
+    elif provider_returncode == 0:
+        print("  Provider skills: not installed (optional); host-native fallback is ready")
+    else:
+        print("  Provider skills: unavailable or locally changed; host-native fallback is ready")
+    if provider_metadata_error is not None:
+        print(f"  Static provider declaration: unavailable ({provider_metadata_error})")
+    for label, state in readiness.items():
+        if label == "active workflow":
+            continue
+        print(f"  {label}: {optional_state_label(label, state)}")
+    if capability:
+        print("  Optional setup invocation (only when a selected workflow needs it):")
         for host, state in capability.items():
-            print(f"  {host} setup workflow: {state}")
-        return
-    print(
-        "Project readiness (optional durable state; absence is normal and does not affect integrity): "
-        + "; ".join(f"{label}={state}" for label, state in readiness.items())
-    )
-    print("Host/setup capability: " + "; ".join(f"{host}={state}" for host, state in capability.items()))
+            print(f"    {host}: {state}")
 
 
 def enforcement_status(root: Path) -> Mapping[str, str]:
@@ -406,10 +454,10 @@ def enforcement_status(root: Path) -> Mapping[str, str]:
     hook_path = readiness_path(root, VSCODE_HOOK)
     if capabilities_path is None or not capabilities_path.is_file() or capabilities_path.is_symlink():
         return {
-            "GitHub Copilot in VS Code": "unavailable (capability metadata missing or invalid)",
-            "Codex": "instruction-only",
-            "Claude Code": "instruction-only",
-            "GitHub Copilot CLI/cloud": "instruction-only",
+            "GitHub Copilot in VS Code": "adapter metadata unavailable; live capability not verified",
+            "Codex": "optional adapter metadata unavailable; live capability not verified",
+            "Claude Code": "optional adapter metadata unavailable; live capability not verified",
+            "GitHub Copilot CLI/cloud": "live capability not verified",
         }
     try:
         value = json.loads(capabilities_path.read_text(encoding="utf-8"))
@@ -418,26 +466,26 @@ def enforcement_status(root: Path) -> Mapping[str, str]:
             raise ValueError("unsupported capability schema")
     except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError):
         return {
-            "GitHub Copilot in VS Code": "unavailable (capability metadata unreadable)",
-            "Codex": "instruction-only",
-            "Claude Code": "instruction-only",
-            "GitHub Copilot CLI/cloud": "instruction-only",
+            "GitHub Copilot in VS Code": "adapter metadata unreadable; live capability not verified",
+            "Codex": "optional adapter metadata unreadable; live capability not verified",
+            "Claude Code": "optional adapter metadata unreadable; live capability not verified",
+            "GitHub Copilot CLI/cloud": "live capability not verified",
         }
-    vscode = "partial/Preview"
+    vscode = "project instructions installed; Preview adapter"
     if hook_path is None or not hook_path.is_file() or hook_path.is_symlink():
-        vscode += " (active hook missing; instruction fallback)"
+        vscode += " not installed; instruction fallback ready"
     else:
-        vscode += " (active adapter installed)"
+        vscode += " installed; live host loading not verified"
     return {
         "GitHub Copilot in VS Code": vscode,
-        "Codex": "partial optional adapter; instruction fallback by default",
-        "Claude Code": "partial optional adapter; provider skills unavailable",
-        "GitHub Copilot CLI/cloud": "shared file unvalidated; instruction fallback",
+        "Codex": "project instructions installed; host-native work ready",
+        "Claude Code": "project instructions installed; host-native work ready",
+        "GitHub Copilot CLI/cloud": "shared instructions installed; live behavior not verified",
     }
 
 
-def print_enforcement_status(root: Path) -> None:
-    print("Host enforcement (capability, not installation integrity):")
+def print_host_status(root: Path) -> None:
+    print("Host integration (installed/static capability; live host loading not verified):")
     for host, state in enforcement_status(root).items():
         print(f"  {host}: {state}")
 
@@ -450,20 +498,99 @@ def integrity_state(returncode: int) -> str:
     return "error"
 
 
+def diagnostic_lines(result: subprocess.CompletedProcess[str]) -> list[str]:
+    lines = [
+        line.strip()
+        for output in (result.stdout, result.stderr)
+        if output
+        for line in output.splitlines()
+        if line.strip()
+    ]
+    useful = [
+        line
+        for line in lines
+        if line.startswith(("missing:", "modified:", "incompatible:", "ERROR:"))
+        or "differs from" in line
+    ]
+    return useful or lines[:3]
+
+
 def status(root: Path, revision: str) -> int:
-    payload = subprocess.run(command(ADOPTER, "status", root, False, revision)).returncode
-    providers = subprocess.run(command(PROVIDERS, "status", root, False, revision)).returncode
-    print(f"Framework integrity: {integrity_state(payload)}")
-    print(f"Optional provider capability: {integrity_state(providers)}")
-    print_enforcement_status(root)
-    print_readiness(root, detailed=True)
-    return 0 if payload == 0 else 1
+    payload = subprocess.run(
+        command(ADOPTER, "status", root, False, revision),
+        capture_output=True,
+        text=True,
+    )
+    providers = subprocess.run(
+        command(PROVIDERS, "status", root, False, revision),
+        capture_output=True,
+        text=True,
+    )
+    framework_healthy = payload.returncode == 0
+    print(f"Agentic Workflow: {'healthy' if framework_healthy else 'unhealthy'}")
+    print(f"Framework integrity: {integrity_state(payload.returncode)}")
+    print(f"Project state: {project_state_summary(root)}")
+    print(f"Normal agent workflows: {'ready' if framework_healthy else 'not ready'}")
+    if not framework_healthy:
+        print("Framework diagnostics:")
+        for line in diagnostic_lines(payload):
+            print(f"  {line}")
+    print()
+    print_optional_status(root, providers.returncode)
+    if providers.returncode != 0:
+        for line in diagnostic_lines(providers):
+            print(f"    {line}")
+    print_host_status(root)
+
+    actions = []
+    if not framework_healthy:
+        actions.append("repair or update the framework installation before relying on it")
+    directory = durable_directory_state(root)
+    if directory == "absent":
+        actions.append("run install or update to restore the canonical .ai-workflow-state/ directory")
+    elif directory == "unsafe":
+        actions.append("reconcile the unsafe .ai-workflow-state/ path before using durable workflows")
+    active = active_state(root)
+    if active in {"invalid", "unreadable", "unsafe"}:
+        actions.append(f"repair .ai-workflow-state/active.md ({active}) before resuming durable work")
+    adopter = load_adopter_manager()
+    legacy = adopter.legacy_durable_paths(root)  # type: ignore[attr-defined]
+    if legacy:
+        actions.append("run update to migrate known prior durable-state paths without overwriting project state")
+    print()
+    if actions:
+        print("Action required:")
+        for action in actions:
+            print(f"  - {action}")
+    else:
+        print("No action required.")
+    return 0 if framework_healthy else 1
+
+
+def concise_error(error: BaseException) -> str:
+    return str(error).splitlines()[0]
+
+
+def installed_project_state_message(root: Path, migrated: bool) -> str:
+    path = root / DURABLE_STATE_DIRECTORY
+    try:
+        populated = next(path.iterdir(), None) is not None
+    except OSError:
+        populated = True
+    if migrated:
+        detail = "known prior state migrated and preserved"
+    elif populated:
+        detail = "existing contents preserved"
+    else:
+        detail = "empty until needed"
+    return f"Project state: {DURABLE_STATE_DIRECTORY}/ ({detail})"
 
 
 def install(root: Path, dry_run: bool, revision: str) -> None:
     root = root.resolve()
     adopter = load_adopter_manager()
     reinstall = adopter.is_reinstall(root)  # type: ignore[attr-defined]
+    legacy_durable = adopter.legacy_durable_paths(root)  # type: ignore[attr-defined]
     provider_extra = ("--reinstall",) if reinstall else ()
     if dry_run:
         run_checked(ADOPTER, "install", root, True, revision)
@@ -480,7 +607,7 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
             print(f"Optional provider preflight unavailable: {error}")
         return
     run_checked(ADOPTER, "install", root, True, revision, quiet=True)
-    run_checked(ADOPTER, "install", root, False, revision)
+    run_checked(ADOPTER, "install", root, False, revision, quiet=True)
     try:
         run_checked(
             PROVIDERS,
@@ -488,17 +615,19 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
             root,
             False,
             revision,
+            quiet=True,
             extra=provider_extra,
         )
     except LifecycleError as error:
         print(
-            "WARNING: Agentic Workflow was installed, but optional providers were not installed: "
-            f"{error}. Host-native workflows remain available.",
+            "Optional provider enhancements were not installed; normal host-native work remains ready.\n"
+            f"  Detail: {concise_error(error)}",
             file=sys.stderr,
         )
-    print("✓ Agentic Workflow framework is installed.")
-    print_enforcement_status(root)
-    print_readiness(root, detailed=False)
+    print("✓ Agentic Workflow installed successfully.")
+    print("✓ Framework integrity verified.")
+    print("✓ Ready for normal agent work.")
+    print(installed_project_state_message(root, bool(legacy_durable)))
 
 
 def update(root: Path, dry_run: bool, revision: str) -> None:
@@ -518,12 +647,14 @@ def update(root: Path, dry_run: bool, revision: str) -> None:
         raise LifecycleError(
             "no Agentic Workflow installation exists at .ai-workflow/install-manifest.json"
         )
+    adopter = load_adopter_manager()
+    legacy_durable = adopter.legacy_durable_paths(root)  # type: ignore[attr-defined]
     try:
         run_checked(ADOPTER, "update", root, True, revision, quiet=True)
         if dry_run:
             run_checked(ADOPTER, "update", root, True, revision)
         else:
-            run_checked(ADOPTER, "update", root, False, revision)
+            run_checked(ADOPTER, "update", root, False, revision, quiet=True)
     except BaseException as error:
         if migrated:
             restore_legacy_state_name(root)
@@ -531,26 +662,28 @@ def update(root: Path, dry_run: bool, revision: str) -> None:
     provider_state = root / STATE_DIRECTORY / "provider-state.json"
     if provider_state.exists() or provider_state.is_symlink():
         try:
-            run_checked(PROVIDERS, "update", root, dry_run, revision)
+            run_checked(PROVIDERS, "update", root, dry_run, revision, quiet=not dry_run)
         except LifecycleError as error:
             print(
-                "WARNING: framework update succeeded, but the optional provider update did not: "
-                f"{error}. Existing provider files were preserved; host-native fallback remains available.",
+                "Optional provider enhancements were not updated; existing provider files were preserved "
+                "and normal host-native work remains ready.\n"
+                f"  Detail: {concise_error(error)}",
                 file=sys.stderr,
             )
     elif dry_run:
         print("Optional providers are not installed; update will not create provider state.")
     if dry_run:
         return
-    print("✓ Agentic Workflow framework is updated and verified.")
-    print_enforcement_status(root)
-    print_readiness(root, detailed=False)
+    print("✓ Agentic Workflow updated successfully.")
+    print("✓ Framework integrity verified.")
+    print("✓ Ready for normal agent work.")
+    print(installed_project_state_message(root, bool(legacy_durable)))
 
 
 def remove(root: Path, dry_run: bool, revision: str) -> None:
     run_checked(ADOPTER, "remove", root, True, revision, quiet=not dry_run)
     try:
-        run_checked(PROVIDERS, "remove", root, dry_run, revision)
+        run_checked(PROVIDERS, "remove", root, dry_run, revision, quiet=not dry_run)
     except LifecycleError as error:
         print(
             "WARNING: optional provider cleanup was skipped: "
@@ -559,8 +692,13 @@ def remove(root: Path, dry_run: bool, revision: str) -> None:
         )
     if dry_run:
         return
-    run_checked(ADOPTER, "remove", root, False, revision)
+    run_checked(ADOPTER, "remove", root, False, revision, quiet=True)
     print("✓ Agentic Workflow framework was removed; unchanged managed providers were removed when safe.")
+    durable = root / DURABLE_STATE_DIRECTORY
+    if durable.is_dir() and not durable.is_symlink():
+        print(f"Project state preserved: {DURABLE_STATE_DIRECTORY}/")
+    else:
+        print("No canonical project state directory was present; removal created or deleted none.")
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:

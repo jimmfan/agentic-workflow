@@ -134,8 +134,9 @@ The filesystem boundary has three categories:
 - `.ai-workflow/` is the framework installation. Its runtime, routing,
   contracts, templates, registry, and lifecycle metadata are reconstructable.
 - `.ai-workflow-state/` is durable, project-owned, Git-trackable repository
-  state. Lifecycle operations preserve it byte-for-byte but never create it,
-  and the framework does not add it to `.gitignore` or require Git.
+  state. Install and update create the directory when absent but never seed a
+  state file. Lifecycle operations preserve existing contents byte-for-byte,
+  and the framework does not add the directory to `.gitignore` or require Git.
 - transient controller bookkeeping is machine-local under the operating system
   temporary directory and never belongs in the repository.
 
@@ -145,8 +146,8 @@ lifecycle-managed even though they are physically outside `.ai-workflow/`.
 
 `.ai-workflow-state/project-profile.md` is optional advisory context, while
 `.ai-workflow-state/active.md` is a stricter durable continuity pointer created
-only when a workflow needs persistence. Both files and their parent directory
-are created lazily by authorized workflows, never by lifecycle operations. The
+only when a workflow needs persistence. The parent directory is established by
+install/update; both files are created lazily only by authorized workflows. The
 framework profile template is a starting point whose unknown values are `None`,
 but a workflow creates the project-owned profile only when it has useful
 verified context to persist. Existing readable non-empty
@@ -157,13 +158,15 @@ repository per task, store secrets or task notes, or let the cache override
 current source, accepted ADRs/domain documentation, or canonical provider
 artifacts.
 
-Deleting `.ai-workflow/` and reinstalling reconstructs framework metadata
-without touching `.ai-workflow-state/`. Exact surviving integration/provider
+Deleting `.ai-workflow/` and reinstalling reconstructs framework metadata while
+preserving every `.ai-workflow-state/` entry. Exact surviving integration/provider
 files can be authenticated locally; because deleted ownership history cannot
 prove their original creation, reconstructed external files remain updateable
-but are conservatively preserved on removal. Development-era durable files
-inside `.ai-workflow/` are only detected and reported for manual relocation;
-normal lifecycle operations never move, merge, overwrite, or delete them.
+but are conservatively preserved on removal. Install and update migrate only the
+known development-era profile, active, records, and archive paths when the
+canonical state directory is absent or empty. A populated destination or unsafe
+path is reported as a conflict; lifecycle never guesses, merges, or overwrites
+project state.
 
 For a cross-version update, the new package authenticates its own payload while
 the target-local install and provider records establish ownership and the last
@@ -196,10 +199,12 @@ and unique project content remains protected. A stronger historical-origin
 guarantee would require conservative no-delete behavior or a trust anchor
 outside the target repository.
 
-Normal lifecycle status reports framework integrity and optional provider
-capability separately from host enforcement, durable project readiness, and setup
-capability. A missing, empty, unreadable, unsafe, or merely present profile does
-not become a false integrity claim. A missing active index
+Normal lifecycle status reports overall and framework integrity, project-state
+readiness, and normal-work availability first. Optional provider/configuration
+and installed/static host capability follow in a separate section; live host
+loading is never inferred. Healthy state ends with `No action required.` A
+missing, empty, unreadable, unsafe, or merely present profile does not become a
+false framework-integrity claim. A missing active index
 means no durable workflow is recorded; an existing malformed or unsafe index is
 a correctness warning because it affects resumability. A disabled Preview hook
 or missing optional setup document also remains separate from integrity, while a

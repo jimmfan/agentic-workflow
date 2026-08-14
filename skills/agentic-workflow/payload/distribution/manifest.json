@@ -1,7 +1,7 @@
 {
   "checksums": {
-    "ai-workflow/README.md": "5127d6cdc64592535cbbdbd75690b8bda5cdbf1d1ebb9b38cc478405b0e51f5a",
-    "ai-workflow/contracts/project-profile.md": "6adb7fff2b87ff9202cfffa0ba84ea8691187a5389af25aa8b810f6fffc4e9e4",
+    "ai-workflow/README.md": "2f70ecc0845a6d54ed7040928dd09e5af7851a0ffa257068fe01962870c2477b",
+    "ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
     "ai-workflow/observability/README.md": "1f0e121e0352a367937423eb235f31f82161c9666734a97d0f7df7b085e58dad",
     "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
     "ai-workflow/providers.json": "c1df6868d7dfdc5f9eb7f815584fdeba122017cd0c8ad3fe1e8e20c84d12e80d",
@@ -118,7 +118,7 @@
       "target": ".agents/skills/workflow-verification/SKILL.md"
     }
   ],
-  "framework_version": "0.9.4",
+  "framework_version": "0.9.5",
   "retired_framework_owned": [
     ".agents/skills/workflow-decomposition/SKILL.md",
     ".agents/skills/workflow-review/SKILL.md",

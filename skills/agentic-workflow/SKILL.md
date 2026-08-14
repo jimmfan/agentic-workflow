@@ -17,8 +17,8 @@ unique `.github/hooks/agentic-workflow.json` Preview adapter plus the shared
 standard-library Python controller. Codex and Claude examples remain opt-in to
 avoid overwriting user-owned fixed hook settings; Copilot CLI/cloud are separate
 compatibility investigations. Hooks are not a hard prerequisite: the installed
-root policy remains the functional fallback and `status` reports host
-enforcement separately from package integrity.
+root policy remains the functional fallback and `status` reports installed/static
+host integration separately from package integrity and live host verification.
 
 The installed root is a compact orchestration kernel. Detailed classification,
 provider invocation, composition, state, and route-output behavior is
@@ -26,9 +26,10 @@ progressively loaded from `.ai-workflow/routing.md` and the selected owner
 contracts rather than duplicated in always-loaded context.
 
 `.ai-workflow/` is the reconstructable framework installation.
-`.ai-workflow-state/` is optional durable project-owned state, is created lazily
-by authorized workflows, and survives install, update, remove, and reinstall
-unchanged. Lifecycle operations do not create it as scaffolding. Framework-owned
+`.ai-workflow-state/` is the canonical durable project-owned state location.
+Install and update create the directory when absent, but do not seed any state
+files; existing contents survive install, update, remove, and reinstall
+unchanged. Framework-owned
 **agent integration files** remain at paths required by each supported
 environment. Per-session controller state stays in the operating system
 temporary directory, outside the repository.
@@ -70,8 +71,9 @@ and reversal guidance; do not bypass the runtime check.
 For a deliberate install request, run the lifecycle once with `install`; it
 preflights and transactionally applies the framework, then attempts the optional
 providers. A provider failure is reported without rolling back the framework.
-It may also report provider setup capability, but it
-does not create optional durable project state or execute interactive setup. Use
+Successful install output stays compact and does not dump optional host or setup
+matrices. It creates only the empty canonical project-state directory and does
+not create a profile, active state, configuration, or execute interactive setup. Use
 `--dry-run` only when the user requests a preview. Do not require a separate
 preview, apply, or status command for normal installation.
 
@@ -86,9 +88,12 @@ python3 scripts/lifecycle.py status /path/to/project
 python3 scripts/lifecycle.py remove /path/to/project
 ```
 
-`status` reports framework integrity, optional provider capability, host enforcement,
-durable project readiness, and setup capability separately. Missing optional
-profile or active-workflow state is normal and keeps the clean status exit code;
+`status` answers framework health, project-state readiness, and normal workflow
+availability first, then groups optional provider/configuration and static host
+details separately. Missing optional profile or active-workflow state is normal
+and keeps the clean status exit code; a healthy status explicitly says no action
+is required. Host entries describe installed/static capability and do not claim
+live host loading. Optional
 malformed or unsafe active state remains a resumability warning, and
 managed-file failures do not pass. Optional provider failures are reported as
 degraded capability while host-native work remains available. A selected
@@ -122,7 +127,10 @@ usable. During a normal clean upgrade, keep `.agents` and `.ai-workflow/` intact
 so their local records preserve ownership. Deleting only
 `.ai-workflow/` is instead an explicit reinstall/repair path: the installer
 reconstructs conservative ownership from exact surviving managed files and
-never touches `.ai-workflow-state/`.
+preserves `.ai-workflow-state/` contents. Install and update safely move only
+the known development-era profile, active, records, and archive paths when the
+canonical state directory is absent or empty; any populated destination or
+unsafe path blocks migration without overwriting project state.
 
 `remove` is bounded to provider-state records. Delete only a directory whose
 current files and checksums still match its record and whose origin is

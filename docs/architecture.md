@@ -134,10 +134,12 @@ remain outside that directory only because supported agent environments require
 fixed discovery paths such as `.github/hooks/` and `.agents/skills/`.
 
 The current install manifest records framework files only. It does not checksum
-or enumerate mutable project state. Lifecycle operations never create
-`.ai-workflow-state/`. An authorized workflow creates `project-profile.md` only
-after it has useful verified durable context to record, and creates `active.md`
-from the framework template only when continuity is actually required.
+or enumerate mutable project state. Install and update ensure the canonical
+`.ai-workflow-state/` directory exists, but the directory and everything inside
+it remain project-owned. An authorized workflow creates `project-profile.md`
+only after it has useful verified durable context to record, and creates
+`active.md` from the framework template only when continuity is actually
+required.
 
 After deletion of `.ai-workflow/`, reinstall recognizes a structurally valid
 managed policy and compatible surviving framework/provider files. Because the deleted metadata cannot
@@ -146,11 +148,13 @@ reconstructed files remain updateable but are conservatively preserved on
 removal. This is the one intentional recovery exception to ordinary created-file
 removal.
 
-Development-era durable paths inside `.ai-workflow/` are not an upgrade format.
-Install, update, and status detect `.ai-workflow/project-profile.md`,
-`.ai-workflow/state/active.md`, and the old records/archive directories and stop
-with manual relocation guidance. They never merge or migrate those paths.
-Removal preserves them and reports their locations.
+The four known development-era durable paths are
+`.ai-workflow/project-profile.md`, `.ai-workflow/state/active.md`,
+`.ai-workflow/state/records`, and `.ai-workflow/state/archive`. Install and
+update move those exact paths into `.ai-workflow-state/` only when the canonical
+directory is absent or empty. The move preserves bytes and uses no repository
+search. A populated destination, unsafe path, or type conflict fails before
+mutation; removal preserves any old paths that have not been migrated.
 
 The installed root policy is intentionally only an orchestration kernel and
 hooks-off semantic fallback. Detailed classification, invocation, composition,
@@ -210,13 +214,17 @@ returns `$setup-matt-pocock-skills` for Codex or
 `/setup-matt-pocock-skills` for Copilot. It does not claim setup ran or write an
 artifact. Unrelated direct work remains immediately available.
 
-Lifecycle output separates clean installation from project readiness. A clean
-framework/provider install may still report a missing, empty, unreadable, or
-unsafe profile, no active workflow, or missing setup
-configuration. Those observations do not make normal status fail. The profile
+Lifecycle output leads with installation integrity and normal-work readiness.
+Install is quiet after success; `status` places optional provider, profile,
+configuration, and static host details secondarily and explicitly says when no
+action is required. A missing optional profile, no active workflow, or absent
+setup configuration does not make normal status fail. Malformed or unsafe
+existing durable state remains visible. The profile
 is an optional project-owned advisory cache, not a versioned structured
 artifact: any other readable non-empty UTF-8 regular file is `present`,
-regardless of headings. Lifecycle operations never create or migrate it.
+regardless of headings. Lifecycle operations never seed or rewrite it, although
+they may move its bytes from the one known development-era path when the
+canonical state directory is empty.
 Existing active state remains structurally validated
 because it controls resume and transition behavior. Profile creation and later
 maintenance require verified durable evidence and write authorization, and do
@@ -245,7 +253,7 @@ gh skill exact upstream paths    -> .agents/skills/<upstream-name>/...
 The framework keeps profile and active-state templates under
 `.ai-workflow/templates/`; authorized workflows may use them when useful durable
 state is first required, but lifecycle operations never materialize those
-templates into `.ai-workflow-state/`.
+templates as project state files.
 
 `bootstrap.py` resolves and downloads an immutable framework revision and runs
 the package verifier. `lifecycle.py` coordinates preflight and mutation.
@@ -324,12 +332,12 @@ repository-local evidence, not tamper-evident.
 
 ## Coordinated transaction boundary
 
-A normal install preflights and commits the framework payload, then attempts the
-optional provider installation. Provider staging rolls back its own partial
-writes on failure, while the valid framework remains installed and usable.
-Lifecycle operations never seed durable profile or active state. Project-created
-or modified content and parent directories that predated the operation are
-preserved.
+A normal install preflights and commits the framework payload, establishes the
+empty canonical project-state directory, then attempts the optional provider
+installation. Provider staging rolls back its own partial writes on failure,
+while the valid framework remains installed and usable. Lifecycle operations
+never seed durable profile or active state. Project-created or modified content
+is preserved.
 
 Within the payload transaction, install and update run their integrity
 post-check before commit. A post-check or atomic-write failure restores all

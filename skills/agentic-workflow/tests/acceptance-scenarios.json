@@ -356,7 +356,7 @@
     "prompt": "Explain this function in a workspace where hooks are organization-disabled.",
     "setup": "The installed policy and skills are readable but VS Code does not execute workspace hooks.",
     "expected_route": "normal/direct",
-    "expected_behavior": "The root policy routes the bounded explanation directly and lifecycle status reports a partial or instruction fallback rather than claiming enforcement.",
+    "expected_behavior": "The root policy routes the bounded explanation directly and lifecycle status reports installed/static host integration separately from live host verification.",
     "evidence": "The response is useful and truthful without controller state or repository mutation."
   },
   {

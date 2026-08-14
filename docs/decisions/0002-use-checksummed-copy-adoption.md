@@ -37,10 +37,14 @@ checksum-clean framework files or provider directories locally recorded as
 created. Preserve pre-install, reconstructed, incompatible, modified, extra-file,
 undeclared, and project-owned paths.
 
-Keep lifecycle ownership confined to framework files: never create
-`.ai-workflow-state/` during install, update, status, remove, or reinstall.
-Authorized workflows create durable project state lazily only when useful
-profile context or cross-session continuity must be persisted. Refuse a
+Keep lifecycle ownership confined to framework files while establishing the
+canonical `.ai-workflow-state/` directory during install and update. The
+directory and every entry inside it are project-owned and excluded from the
+framework ownership manifest. Lifecycle operations never seed profile, active,
+or configuration files; authorized workflows create those lazily only when
+useful context or cross-session continuity must be persisted. Migrate only the
+four known development-era durable paths when the canonical directory is absent
+or empty, preserve bytes, and reject conflicts rather than merging. Refuse a
 framework update when any owned framework file conflicts.
 Always compose root `AGENTS.md` and `CLAUDE.md` through explicit markers: the
 framework owns the compact router/import and the project owns the editable

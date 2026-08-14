@@ -74,12 +74,13 @@ The integration suite covers:
   status, update, removal, and reinstall; durable `.ai-workflow-state/`
   byte-preservation; validated update-only migration from `ai-workflow/`;
   dual-directory conflict rejection; and repository-local isolation;
-- state-free clean install and repeated update, permissive missing/present/empty/
-  unreadable/unsafe profile states, byte-preserving lifecycle
-  operations, lazy authorized profile and active-state creation, strict existing
-  active-state handling, legacy durable-path detection without migration,
-  readiness versus integrity, progressive profile guidance, and target `docs/`
-  preservation;
+- empty canonical state-directory creation on clean install and repeated update;
+  no seeded profile or active file; permissive missing/present/empty/unreadable/
+  unsafe profile states; byte-preserving lifecycle operations; lazy authorized
+  profile and active-state creation; strict existing active-state handling;
+  narrow migration of the four known development-era durable paths with conflict
+  rejection; integrity-first status output; progressive profile guidance; and
+  target `docs/` preservation;
 - installation without Git metadata or a Git executable;
 - path-independent package copies and a local archive bootstrap fixture; and
 - strict POSIX modes plus bounded native Windows mode normalization.
@@ -177,7 +178,7 @@ step uses skill syntax.
 | Existing unexplained failure | Local Debugging is dominant; diagnosis does not authorize a fix |
 | Explicit sustained learning request | Prefer Teach when invoked; otherwise teach host-natively and add state only if continuity needs it |
 | Configuration-dependent request with setup files absent | Select setup and return the exact setup handoff; write nothing before invocation |
-| Healthy project with no durable state | Report the missing profile and active state as normal; emit no initialization warning |
+| Healthy project with no durable state | Keep `.ai-workflow-state/` empty, report `ready / none active`, and say `No action required.` |
 | Verified durable project fact discovered during authorized work | Create or update one concise profile entry; do not rescan the repository |
 | Read-only bounded decision analysis | Use Discovery ephemerally; leave profile, active state, and decision records byte-identical |
 

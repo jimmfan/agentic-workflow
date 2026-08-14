@@ -36,10 +36,11 @@ integrity. Profile fixtures cover normal absence, permissive readable-content
 classification, empty/unreadable/unsafe paths, authorized lazy
 creation, and byte preservation without lifecycle migration; existing
 project-owned profiles are never rewritten. Ownership fixtures prove that
-`.ai-workflow/` is reconstructable, lifecycle operations remain state-free until
-a workflow persists useful state, `.ai-workflow-state/` survives
-install/update/remove/reinstall, `active.md` is not created until needed, legacy
-durable paths are reported but never moved, and exact surviving
+`.ai-workflow/` is reconstructable, install creates an empty canonical
+`.ai-workflow-state/`, no state files exist until a workflow persists useful
+state, existing contents survive install/update/remove/reinstall, `active.md` is
+not created until needed, the four known legacy durable paths migrate only into
+an empty destination, conflicts fail without mutation, and exact surviving
 provider/integration files can reconstruct conservative ownership after
 framework-directory deletion.
 
