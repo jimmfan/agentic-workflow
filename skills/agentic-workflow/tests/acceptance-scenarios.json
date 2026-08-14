@@ -282,7 +282,7 @@
     "id": 32,
     "requirement": "Provider declaration changes preserve existing directories and add only missing authenticated dependencies.",
     "prompt": "Update ai-workflow to the dependency-expanded release at the same tested provider pin.",
-    "setup": "Existing declared provider directories match the new package-owned source identities and one newly declared dependency is absent.",
+    "setup": "Existing declared provider directories are unchanged from their recorded installed hashes and one newly declared dependency is absent.",
     "expected_route": "installation/provider-update->verification",
     "expected_behavior": "Stage the complete pin, authenticate and preserve every existing directory, record retained directories as pre-existing-compatible, add only the missing dependency, and run compatibility checks.",
     "evidence": "Existing directory bytes remain unchanged and only the missing dependency plus the new ownership baseline are written after all checks pass."
@@ -298,11 +298,11 @@
   },
   {
     "id": 34,
-    "requirement": "A provider pin transition with changed canonical bytes fails closed without replacing existing directories.",
+    "requirement": "A provider pin transition replaces an unchanged framework-owned directory.",
     "prompt": "Update ai-workflow to a reviewed provider pin whose skill bodies changed.",
-    "setup": "The existing provider baseline is clean, but at least one retained directory does not match the new package-owned source identity.",
-    "expected_route": "installation/provider-upgrade-blocked",
-    "expected_behavior": "Stop before GitHub staging or target mutation, name the incompatible existing directory, and require explicit owner reconciliation or removal of the old clean baseline before installing the new one.",
-    "evidence": "Provider files and ownership state remain byte-identical after the rejected transition."
+    "setup": "The existing provider baseline is framework-owned and still matches the hashes recorded when it was installed; the new declaration uses a reviewed explicit pin.",
+    "expected_route": "installation/provider-update->verification",
+    "expected_behavior": "Validate every provider transition and the complete new pin before mutation, replace the clean managed directory transactionally, and record hashes of the newly installed bytes.",
+    "evidence": "The provider state records the new explicit version/revision and installed-file hashes, and rollback tests prove that a later failure restores the predecessor exactly."
   }
 ]

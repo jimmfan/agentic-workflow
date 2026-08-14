@@ -203,15 +203,10 @@ def fixture_provider_source_files(skill: Mapping[str, object]) -> Mapping[str, b
 
 
 def fixture_provider_declaration() -> tuple[Mapping[str, object], list[Mapping[str, object]]]:
-    """Mirror the packaged declaration while authenticating hermetic fixture bytes."""
+    """Mirror the packaged declaration for hermetic installer output."""
     provider, skills = REAL_PROVIDER_LOAD_DECLARATION()
     cloned_provider = json.loads(json.dumps(provider))
     cloned_skills = cloned_provider["skills"]
-    for skill in cloned_skills:
-        skill["source_sha256"] = {
-            relative: hashlib.sha256(content).hexdigest()
-            for relative, content in fixture_provider_source_files(skill).items()
-        }
     return cloned_provider, cloned_skills
 
 
@@ -220,11 +215,6 @@ def fixture_package(source: Path, destination: Path) -> Path:
     shutil.copytree(source, destination)
     declaration_path = destination / "payload/ai-workflow/providers.json"
     declaration = json.loads(declaration_path.read_text(encoding="utf-8"))
-    for skill in declaration["provider"]["skills"]:
-        skill["source_sha256"] = {
-            relative: hashlib.sha256(content).hexdigest()
-            for relative, content in fixture_provider_source_files(skill).items()
-        }
     declaration_path.write_text(
         json.dumps(declaration, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -237,7 +227,7 @@ def fixture_package(source: Path, destination: Path) -> Path:
         "skills": [
             {
                 key: skill.get(key)
-                for key in ("name", "path", "tree_sha", "files", "source_sha256")
+                for key in ("name", "path", "tree_sha", "files")
             }
             for skill in provider["skills"]
         ],
@@ -316,7 +306,7 @@ def write_provider_state(
     provider: Mapping[str, object],
     skills: list[Mapping[str, object]],
     *,
-    origin: str = "preexisting-compatible",
+    origin: str = "created",
 ) -> None:
     records = {}
     for skill in skills:
@@ -415,8 +405,6 @@ def provider_upgrade_fixture(
     for skill in upgraded_skills:
         if skill["name"] not in changed_names:
             continue
-        changed_source = fixture_provider_source_files(skill)["SKILL.md"] + UPGRADED_PROVIDER_SUFFIX
-        skill["source_sha256"]["SKILL.md"] = hashlib.sha256(changed_source).hexdigest()
         skill["tree_sha"] = "4" * 40
     return upgraded, upgraded_skills
 
@@ -676,34 +664,91 @@ class LifecycleTests(unittest.TestCase):
             self.assertFalse((target / ".agents/skills" / str(skill["name"])).exists())
         self.assertTrue(preexisting_skills_parent.is_dir())
 
-    def test_provider_preserves_preexisting_compatible_and_changed_skills(self) -> None:
-        target = self.base / "provider-preservation"
+    def test_fresh_pinned_install_records_transformed_installer_bytes(self) -> None:
+        target = self.base / "provider-transformed-install"
+        target.mkdir()
+
+        def transformed_install(
+            gh: Path,
+            root: Path,
+            provider: Mapping[str, object],
+            skill: Mapping[str, object],
+            *,
+            directory: Optional[Path] = None,
+        ) -> None:
+            fake_provider_install(gh, root, provider, skill, directory=directory)
+            if skill["name"] == "setup-matt-pocock-skills":
+                installed = (directory or root / ".agents/skills") / str(skill["name"]) / "SKILL.md"
+                installed.write_text(
+                    installed.read_text(encoding="utf-8").replace(
+                        f"    github-path: {skill['path']}",
+                        f"    github-path: '{skill['path']}'",
+                        1,
+                    )
+                    + "\n<!-- installer-normalized serialization -->\n",
+                    encoding="utf-8",
+                )
+
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "find_gh",
+            return_value=Path("gh"),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=transformed_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+
+        transformed = target / ".agents/skills/setup-matt-pocock-skills/SKILL.md"
+        state = json.loads(
+            (target / "ai-workflow/provider-state.json").read_text(encoding="utf-8")
+        )
+        self.assertTrue(
+            transformed.read_bytes().endswith(b"<!-- installer-normalized serialization -->\n")
+        )
+        self.assertEqual(
+            state["skills"]["setup-matt-pocock-skills"]["files"]["SKILL.md"],
+            PROVIDER_MANAGER.sha256(transformed),
+        )
+        self.assertTrue(PROVIDER_MANAGER.command_status(target, verbose=False))
+
+    def test_provider_rejects_unknown_same_named_directory_without_overwrite(self) -> None:
+        target = self.base / "provider-unknown-directory"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
         preexisting = skills[0]
-        write_provider_skill(target, provider, preexisting)
+        directory = write_provider_skill(target, provider, preexisting)
+        before = {
+            path.relative_to(target).as_posix(): path.read_bytes()
+            for path in target.rglob("*")
+            if path.is_file()
+        }
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
             PROVIDER_MANAGER,
             "run_gh_install",
             side_effect=fake_provider_install,
-        ):
-            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        ) as install:
+            with self.assertRaisesRegex(
+                PROVIDER_MANAGER.ProviderError,
+                "already exists and is not known to be managed",
+            ):
+                PROVIDER_MANAGER.command_install(target, dry_run=False)
 
-        state_path = target / "ai-workflow/provider-state.json"
-        state = json.loads(state_path.read_text(encoding="utf-8"))
-        self.assertEqual(state["skills"][preexisting["name"]]["origin"], "preexisting-compatible")
-        changed_name = str(skills[1]["name"])
-        changed = target / ".agents/skills" / changed_name / "SKILL.md"
-        changed.write_text(changed.read_text(encoding="utf-8") + "local change\n", encoding="utf-8")
+        install.assert_not_called()
+        self.assertEqual(
+            {
+                path.relative_to(target).as_posix(): path.read_bytes()
+                for path in target.rglob("*")
+                if path.is_file()
+            },
+            before,
+        )
+        self.assertTrue(directory.is_dir())
+        self.assertFalse((target / "ai-workflow/provider-state.json").exists())
 
-        PROVIDER_MANAGER.command_remove(target, dry_run=False)
-        self.assertTrue((target / ".agents/skills" / str(preexisting["name"])).is_dir())
-        self.assertTrue((target / ".agents/skills" / changed_name).is_dir())
-        for skill in skills[2:]:
-            self.assertFalse((target / ".agents/skills" / str(skill["name"])).exists())
-
-    def test_forged_provider_state_checksum_cannot_hide_or_delete_altered_source(self) -> None:
-        target = self.base / "provider-forged-checksum"
+    def test_recorded_install_checksum_detects_and_preserves_local_edit(self) -> None:
+        target = self.base / "provider-local-edit"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
             PROVIDER_MANAGER,
@@ -718,14 +763,6 @@ class LifecycleTests(unittest.TestCase):
         altered = changed_path.read_bytes() + b"project-owned alteration\n"
         changed_path.write_bytes(altered)
         state_path = target / "ai-workflow/provider-state.json"
-        state = json.loads(state_path.read_text(encoding="utf-8"))
-        state["skills"][changed_name]["files"]["SKILL.md"] = PROVIDER_MANAGER.sha256(
-            changed_path
-        )
-        state_path.write_text(
-            json.dumps(state, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
 
         self.assertFalse(PROVIDER_MANAGER.command_status(target, verbose=False))
         PROVIDER_MANAGER.command_remove(target, dry_run=False)
@@ -786,15 +823,14 @@ class LifecycleTests(unittest.TestCase):
         self.assertTrue(empty.is_dir())
         self.assertFalse((target / "ai-workflow/provider-state.json").exists())
 
-    def test_provider_rejects_altered_preexisting_body_against_authenticated_staging(self) -> None:
-        target = self.base / "provider-authenticated-preexisting"
+    def test_provider_rejects_even_compatible_unknown_directory(self) -> None:
+        target = self.base / "provider-compatible-but-unknown"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
         preexisting = skills[0]
         directory = write_provider_skill(target, provider, preexisting)
         skill_path = directory / "SKILL.md"
-        altered = skill_path.read_text(encoding="utf-8") + "locally altered body\n"
-        skill_path.write_text(altered, encoding="utf-8")
+        original = skill_path.read_text(encoding="utf-8")
 
         with mock.patch.object(
             PROVIDER_MANAGER,
@@ -807,12 +843,12 @@ class LifecycleTests(unittest.TestCase):
         ) as install:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "source content is incompatible",
+                "already exists and is not known to be managed",
             ):
                 PROVIDER_MANAGER.command_install(target, dry_run=False)
 
         install.assert_not_called()
-        self.assertEqual(skill_path.read_text(encoding="utf-8"), altered)
+        self.assertEqual(skill_path.read_text(encoding="utf-8"), original)
         self.assertFalse((target / "ai-workflow/provider-state.json").exists())
         for skill in skills[1:]:
             self.assertFalse((target / ".agents/skills" / str(skill["name"])).exists())
@@ -928,7 +964,7 @@ class LifecycleTests(unittest.TestCase):
             quarantines,
         )
 
-    def test_provider_incompatibility_fails_without_fallback_or_overwrite(self) -> None:
+    def test_unknown_provider_incompatibility_fails_without_fallback_or_overwrite(self) -> None:
         target = self.base / "provider-conflict"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
@@ -947,14 +983,14 @@ class LifecycleTests(unittest.TestCase):
         ) as install:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "incompatible or unexpected GitHub metadata",
+                "already exists and is not known to be managed",
             ):
                 PROVIDER_MANAGER.command_install(target, dry_run=False)
         install.assert_not_called()
         self.assertEqual(skill_path.read_text(encoding="utf-8"), original)
         self.assertFalse((target / "ai-workflow/provider-state.json").exists())
 
-    def test_provider_source_normalization_rejects_unexpected_injected_metadata(self) -> None:
+    def test_provider_rejects_unexpected_injected_metadata(self) -> None:
         target = self.base / "provider-unexpected-metadata"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
@@ -976,7 +1012,7 @@ class LifecycleTests(unittest.TestCase):
         ):
             PROVIDER_MANAGER.verify_skill(target, provider, skill)
 
-    def test_provider_rejects_noncanonical_quoted_provenance_value(self) -> None:
+    def test_provider_accepts_equivalent_quoted_provenance_value(self) -> None:
         target = self.base / "provider-quoted-metadata"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
@@ -993,11 +1029,7 @@ class LifecycleTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-        with self.assertRaisesRegex(
-            PROVIDER_MANAGER.ProviderError,
-            "incompatible or unexpected GitHub metadata",
-        ):
-            PROVIDER_MANAGER.verify_skill(target, provider, skill)
+        PROVIDER_MANAGER.verify_skill(target, provider, skill)
 
     def test_provider_rejects_copilot_invocation_metadata_mismatch(self) -> None:
         target = self.base / "provider-copilot-invocation-mismatch"
@@ -1053,8 +1085,42 @@ class LifecycleTests(unittest.TestCase):
         (target / ".agents/skills/tdd/mocking.md").unlink()
 
         self.assertFalse(PROVIDER_MANAGER.command_status(target, verbose=False))
-        with self.assertRaisesRegex(PROVIDER_MANAGER.ProviderError, "locally changed or removed"):
+        with self.assertRaisesRegex(PROVIDER_MANAGER.ProviderError, "has local modifications"):
             PROVIDER_MANAGER.command_update(target, dry_run=False)
+
+    def test_deleted_managed_provider_is_recreated_on_same_baseline_update(self) -> None:
+        target = self.base / "provider-recreate-deleted"
+        target.mkdir()
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "find_gh",
+            return_value=Path("gh"),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+
+        deleted = target / ".agents/skills/code-review"
+        shutil.rmtree(deleted)
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "find_gh",
+            return_value=Path("gh"),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_update(target, dry_run=False)
+
+        self.assertTrue(deleted.is_dir())
+        state = json.loads(
+            (target / "ai-workflow/provider-state.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(state["skills"]["code-review"]["origin"], "created")
+        self.assertTrue(PROVIDER_MANAGER.command_status(target, verbose=False))
 
     def test_clean_predecessor_provider_migrates_to_declared_revision(self) -> None:
         target = self.base / "provider-upgrade"
@@ -1157,9 +1223,10 @@ class LifecycleTests(unittest.TestCase):
                 PROVIDER_MANAGER.command_update(target, dry_run=False)
 
         diagnostic = str(raised.exception)
-        self.assertIn("code-review was installed by the authenticated predecessor", diagnostic)
-        self.assertIn("Expected predecessor SHA-256", diagnostic)
-        self.assertIn("Found SHA-256", diagnostic)
+        self.assertIn("code-review was installed by Agentic Workflow", diagnostic)
+        self.assertIn("Refusing to overwrite", diagnostic)
+        self.assertIn(".agents/skills/code-review/SKILL.md", diagnostic)
+        self.assertNotIn("SHA-256", diagnostic)
         find_gh.assert_not_called()
         self.assertEqual(
             {path: path.read_bytes() for path in target.rglob("*") if path.is_file()},
@@ -1170,14 +1237,9 @@ class LifecycleTests(unittest.TestCase):
         target = self.base / "provider-upgrade-preexisting"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
-        preexisting = next(skill for skill in skills if skill["name"] == "code-review")
-        write_provider_skill(target, provider, preexisting)
-        with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
-            PROVIDER_MANAGER,
-            "run_gh_install",
-            side_effect=fake_provider_install,
-        ):
-            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        for skill in skills:
+            write_provider_skill(target, provider, skill)
+        write_provider_state(target, provider, skills, origin="preexisting-compatible")
         predecessor_manifest = self.base / "preexisting-predecessor.json"
         write_authenticated_provider_predecessor(
             target,
@@ -1291,8 +1353,8 @@ class LifecycleTests(unittest.TestCase):
                 PROVIDER_MANAGER.command_update(target, dry_run=False)
 
         diagnostic = str(raised.exception)
-        self.assertIn("provider skill code-review", diagnostic)
-        self.assertIn("provider skill implement", diagnostic)
+        self.assertIn("code-review was installed by Agentic Workflow", diagnostic)
+        self.assertIn("implement was installed by Agentic Workflow", diagnostic)
         find_gh.assert_not_called()
 
     def test_malformed_predecessor_provider_state_fails_closed(self) -> None:
@@ -1513,7 +1575,7 @@ class LifecycleTests(unittest.TestCase):
         )
         self.assertTrue(PROVIDER_MANAGER.command_status(target, verbose=False))
 
-    def test_dependency_set_update_rejects_canonized_altered_preexisting_body(self) -> None:
+    def test_dependency_set_update_rejects_locally_altered_preexisting_body(self) -> None:
         target = self.base / "provider-dependency-authentication"
         target.mkdir()
         provider, skills = PROVIDER_MANAGER.load_declaration()
@@ -1550,9 +1612,6 @@ class LifecycleTests(unittest.TestCase):
         altered_path = target / ".agents/skills" / altered_name / "SKILL.md"
         altered = altered_path.read_text(encoding="utf-8") + "canonized local alteration\n"
         altered_path.write_text(altered, encoding="utf-8")
-        state["skills"][altered_name]["files"]["SKILL.md"] = PROVIDER_MANAGER.sha256(
-            altered_path
-        )
         state_path.write_text(
             json.dumps(state, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
@@ -1574,7 +1633,7 @@ class LifecycleTests(unittest.TestCase):
         ) as install:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "cannot be proven to match the authenticated predecessor",
+                "has local modifications",
             ):
                 PROVIDER_MANAGER.command_update(target, dry_run=True)
 
@@ -1590,16 +1649,7 @@ class LifecycleTests(unittest.TestCase):
         provider, skills = PROVIDER_MANAGER.load_declaration()
         for skill in skills:
             write_provider_skill(target, provider, skill)
-        with mock.patch.object(
-            PROVIDER_MANAGER,
-            "find_gh",
-            return_value=Path("gh"),
-        ), mock.patch.object(
-            PROVIDER_MANAGER,
-            "run_gh_install",
-            side_effect=fake_provider_install,
-        ):
-            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        write_provider_state(target, provider, skills)
 
         state_path = target / "ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -1627,7 +1677,7 @@ class LifecycleTests(unittest.TestCase):
         ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "cannot be proven framework-managed",
+                "already exists and is not known to be managed",
             ):
                 PROVIDER_MANAGER.command_update(target, dry_run=True)
         find_gh.assert_not_called()
@@ -3031,7 +3081,7 @@ class LifecycleTests(unittest.TestCase):
         shutil.copytree(PACKAGE, copied)
         declaration_path = copied / "payload/ai-workflow/providers.json"
         declaration = json.loads(declaration_path.read_text(encoding="utf-8"))
-        declaration["provider"]["skills"][0]["source_sha256"]["SKILL.md"] = "a" * 64
+        declaration["provider"]["skills"][0]["tree_sha"] = "a" * 40
         declaration_path.write_text(
             json.dumps(declaration, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",

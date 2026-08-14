@@ -25,15 +25,13 @@ or newer must expose
 `gh skill`, and `gh auth status --hostname github.com` must succeed. Install and
 authenticate `gh` in the same host, Dev Container, or Windows environment that
 owns the target project. Do not install `gh`, start login, or mutate a target
-unless the user has authorized the adoption task. Initial adoption stages the
-exact pin even when provider directories already exist, so mutable metadata is
-never accepted as content identity. After that baseline is authenticated and
-recorded, inner status checks need no provider network call; the public bootstrap
-still needs HTTPS to fetch the recorded package. Incompatible same-named skills
-always fail closed. The package declaration owns each upstream file's canonical
-SHA-256. Verification normalizes only the exact, fully validated GitHub-injected
-provenance block in `SKILL.md`; mutable state hashes are installation-cleanliness
-evidence, not content authority.
+unless the user has authorized the adoption task. Initial adoption rejects any
+same-named provider directory without framework ownership state. It stages the
+exact pin, validates its repository/ref/tree metadata and inventory, then records
+hashes of the bytes actually installed. Inner status checks use those hashes to
+detect local edits without a provider network call; the public bootstrap still
+needs HTTPS to fetch the recorded package. Unknown and locally modified skills
+always fail closed.
 
 The provider declaration separates capability routing from invocation policy.
 Codex and GitHub Copilot discover the installed `.agents/skills` tree; a

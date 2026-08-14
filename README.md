@@ -215,8 +215,9 @@ modified or pre-existing skills intentionally remain.
   only when the new package authenticates the exact predecessor declaration,
   predecessor state records the directory as framework-created, and every
   recorded file checksum remains clean. A missing old directory is installed
-  normally. Users should not need to delete `.agents`, `provider-state.json`, or
-  individual skills for a supported clean upgrade.
+  normally, including during an unchanged provider-baseline update. Users should
+  not need to delete `.agents`, `provider-state.json`, or individual skills for
+  a supported clean upgrade.
 - Updates replace only checksum-clean framework content and never float pinned
   provider versions automatically.
 - Install and update verify the resulting payload before committing their local
@@ -236,7 +237,7 @@ modified or pre-existing skills intentionally remain.
   framework package.
 - The first-stage public command fetches `main` over TLS; the bootstrap then
   resolves and verifies an immutable framework revision.
-- The current framework release is `0.7.0` and its curated provider baseline is
+- The current framework release is `0.7.1` and its curated provider baseline is
   [`mattpocock/skills` v1.2.3](https://github.com/mattpocock/skills/releases/tag/v1.2.3).
 - Ownership history is stored inside the target repository and is not
   tamper-evident. Coordinated local forgery can reclassify exact canonical

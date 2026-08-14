@@ -181,15 +181,15 @@ location). It then independently validates:
 - skill directory name and frontmatter name;
 - injected repository, path, tag/ref, and tree-SHA metadata;
 - the exact complete file set, including adjacent resources and
-  `agents/openai.yaml`;
-- package-owned canonical source SHA-256 of every file. Installed `SKILL.md`
-  bytes are normalized only by removing the exact GitHub-injected provenance
-  block after all of its expected keys and values pass validation.
+  `agents/openai.yaml`; and
+- declared host invocation semantics from the installed metadata files.
 
 The verifier also binds the complete provider identity projection—repository,
-version, revision, skill paths, subtree SHAs, inventories, and per-file source
-hashes—to a separately reviewed static digest. Generated payload-manifest
-refresh cannot normalize a changed provider identity into that lock.
+version, revision, skill paths, subtree SHAs, and inventories—to a separately
+reviewed static digest. Generated payload-manifest refresh cannot normalize a
+changed provider identity into that lock. Exact source-file hashes are not part
+of the installed provider contract because `gh skill install` may legitimately
+transform serialization while preserving the declared pinned identity.
 
 The framework does not call ordinary `gh skill update` during normal lifecycle
 work because pinned skills are intentionally skipped. A provider upgrade is a
@@ -198,22 +198,22 @@ declared subtree/file identities, run live and hermetic compatibility checks,
 then release. A target receives that baseline only through an explicit framework
 update.
 
-Initial adoption stages the exact pin independently and compares any
-pre-existing provider directory byte-for-byte before recording it as
-`preexisting-compatible`; mutable injected metadata alone is not content
-identity. Once the exact framework package and authenticated provider baseline
-are recorded, the inner status checks are local and do not contact the provider
-upstream; the public bootstrap still needs HTTPS to fetch that recorded package.
-Local status treats declaration source hashes as content authority and state
-hashes only as installation-cleanliness evidence.
+Initial adoption rejects every same-named pre-existing provider directory as
+unowned before contacting GitHub. It stages the exact pin, validates its pinned
+metadata, subtree identity, inventory, and invocation semantics, then records
+hashes of the bytes that the installer actually produced. Once that ownership
+and baseline are recorded, inner status checks compare the current directory to
+those recorded hashes and do not contact the provider upstream; the public
+bootstrap still needs HTTPS to fetch the recorded framework package.
 
 Across a declaration change, update first reuses the payload trust chain to
 select one exact audited predecessor. The accepted predecessor's complete
 framework source map authenticates the target's installed `providers.json`;
 that declaration must exactly match the provider identity, skill set, paths,
 and tree SHAs in `provider-state.json`. Every present predecessor directory must
-match its complete old inventory and metadata, and every installed-file SHA-256
-must still match state. Update plans all conflicts before staging or mutation.
+match its complete old inventory and pinned metadata, and every current file
+must still match the hashes recorded when that directory was installed. Update
+plans all conflicts before staging or mutation.
 
 A retained directory already compatible with the new declaration keeps its old
 `created` or `preexisting-compatible` origin. A missing predecessor-recorded
@@ -221,16 +221,18 @@ directory is installed normally. An incompatible directory may be replaced only
 when its authenticated predecessor record says `created` and all integrity
 checks are clean; locally modified and pre-existing-compatible directories fail
 closed. New same-named unknown content also fails closed. The complete new pin
-is staged and authenticated before any authorized replacement, so this migration
-does not float versions or weaken package-owned source identity.
+is staged and validated before any authorized replacement, so this migration
+does not float versions. A missing managed directory is recreated normally,
+including when the provider declaration itself is unchanged.
 
 Remove considers only exact current declaration names. It deletes a directory
-only when package source identities authenticate its complete inventory, its
-recorded checksums are still clean, and its origin is `created`; incompatible,
+only when its pinned metadata and complete inventory validate, its recorded
+checksums are still clean, and its origin is `created`; incompatible,
 modified, extra-file, undeclared, and `preexisting-compatible` directories are
-preserved. Origin history is repository-local evidence, not tamper-evident:
-coordinated forgery can reclassify an exact unmodified canonical directory, but
-cannot authorize deletion of modified, extra-file, or undeclared content.
+preserved. Origin and installed-hash history is repository-local evidence, not
+tamper-evident: coordinated state forgery can reclassify provider bytes. Without
+that forgery, modified, extra-file, and undeclared content remains outside
+automatic deletion.
 
 ## Coordinated transaction boundary
 

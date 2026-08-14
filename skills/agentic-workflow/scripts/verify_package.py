@@ -240,6 +240,33 @@ ACCEPTED_PREDECESSORS = (
             ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
         }
     },
+    {
+        "framework_version": "0.7.0",
+        "source_revisions": [
+            "0c808f8124fae03f22da0b6864c3ae266f7a791c"
+        ],
+        "install_manifest_schemas": [
+            2
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "d57bae19d11e8cc875053959a05599776b6600957a29a777a9a0352d8eaa5714",
+            "ai-workflow/contracts/project-profile.md": "40aec342a9826cb9f9a248958394514b991d47339565bac13366b50d9bb9ab7f",
+            "ai-workflow/observability/README.md": "42d845e0b16a43533503febb74ab05103adb0361fc8f820e9e71f5ff628da991",
+            "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
+            "ai-workflow/providers.json": "025cfbb446d3c6a79bebf47b81c668a7b3719f9d9d9b32c2eb753938c6c0dc42",
+            "ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
+            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+            "AGENTS.md": "e0768ce25456cefe4e17854c7e577fcdc8d2b053278cd5c9f517e19a8dfcb77c",
+            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
+            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
+            ".agents/skills/workflow-implementation/SKILL.md": "ad4896aec01f8fca62ce2c162c6848a16d1784c17d67bffefc5d131d16278c6d",
+            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
+        }
+    },
 )
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
@@ -247,7 +274,7 @@ PROVIDER_REPOSITORY = "mattpocock/skills"
 PROVIDER_VERSION = "v1.2.3"
 PROVIDER_REVISION = "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e"
 # Separately reviewed trust anchor; --refresh-manifest must never derive this value.
-AUDITED_PROVIDER_IDENTITY_SHA256 = "a755f8e63ba6c16628140615dd16e3a1f7a6b7445f057e645204eb9a9aa10735"
+AUDITED_PROVIDER_IDENTITY_SHA256 = "9e75a59dafcc9febda407768efa76e48887ecf8c1600e4bb517acb29fb4e3d8f"
 MINIMUM_PYTHON = (3, 11)
 CANONICAL_FRAMEWORK_REPOSITORY = "jimmfan/agentic-workflow"
 LEGACY_FRAMEWORK_REPOSITORY = "jimmfan/agentic-workflow-instructions"
@@ -1094,7 +1121,7 @@ def check_provider_contract() -> None:
         isinstance(declaration, dict)
         and set(declaration)
         == {"schema_version", "capabilities", "configuration", "hosts", "provider"}
-        and declaration.get("schema_version") == 2,
+        and declaration.get("schema_version") == 3,
         "provider declaration has unknown fields or an unsupported schema",
     )
     require(
@@ -1134,7 +1161,7 @@ def check_provider_contract() -> None:
         "skills": [
             {
                 key: item.get(key)
-                for key in ("name", "path", "tree_sha", "files", "source_sha256")
+                for key in ("name", "path", "tree_sha", "files")
             }
             for item in skills
             if isinstance(item, dict)
@@ -1163,17 +1190,14 @@ def check_provider_contract() -> None:
                 "name",
                 "path",
                 "requires_configuration",
-                "source_sha256",
                 "tree_sha",
             },
-            "provider skill entries need files, invocation, name, path, requirements, "
-            "source_sha256, and tree_sha",
+            "provider skill entries need files, invocation, name, path, requirements, and tree_sha",
         )
         name = item.get("name")
         path = item.get("path")
         tree_sha = item.get("tree_sha")
         files = item.get("files")
-        source_sha256 = item.get("source_sha256")
         invocation = item.get("invocation")
         requirements = item.get("requires_configuration")
         require(isinstance(name, str) and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) is not None, f"invalid provider skill name: {name!r}")
@@ -1187,19 +1211,6 @@ def check_provider_contract() -> None:
             require(isinstance(raw, str), f"provider skill {name} has a non-string file path")
             checked_files.append(safe_relative(raw).as_posix())
         require(checked_files == sorted(set(checked_files)), f"provider skill {name} file inventory must be sorted and unique")
-        require(
-            isinstance(source_sha256, dict) and set(source_sha256) == set(checked_files),
-            f"provider skill {name} source SHA-256 map must cover its exact file inventory",
-        )
-        require(
-            all(
-                isinstance(relative, str)
-                and isinstance(digest, str)
-                and re.fullmatch(r"[0-9a-f]{64}", digest) is not None
-                for relative, digest in source_sha256.items()
-            ),
-            f"provider skill {name} has an invalid source SHA-256",
-        )
         require(
             isinstance(invocation, dict) and set(invocation) == set(PROVIDER_HOSTS),
             f"provider skill {name} invocation must cover every declared host",

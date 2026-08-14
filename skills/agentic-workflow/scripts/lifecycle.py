@@ -211,9 +211,9 @@ def load_provider_status_contract() -> tuple[
     if (
         not isinstance(declaration, dict)
         or set(declaration) != {"schema_version", "capabilities", "configuration", "hosts", "provider"}
-        or declaration.get("schema_version") != 2
+        or declaration.get("schema_version") != 3
     ):
-        raise LifecycleError("provider host declaration must use schema version 2")
+        raise LifecycleError("provider host declaration must use schema version 3")
     hosts = declaration.get("hosts")
     configuration = declaration.get("configuration")
     provider = declaration.get("provider")

@@ -12,7 +12,7 @@ repository.
 The static provider gate requires the reviewed `mattpocock/skills` repository,
 tag `v1.2.3`, immutable commit, exact curated capability mapping, semantic
 minimum GitHub CLI 2.97.0 or newer, unique upstream paths, full subtree SHAs, sorted
-complete file inventories, exact per-file source SHA-256 maps, and no name
+complete file inventories, and no name
 overlap with local skills. It validates
 Codex invocation modes against the exact pinned `agents/openai.yaml`, Copilot
 modes against exact pinned `SKILL.md` frontmatter, and the complete declared
@@ -26,7 +26,7 @@ Implementation adapter delegates TDD and Code Review rather than copying their
 procedures.
 
 A separately reviewed static digest freezes the provider repository, tag,
-revision, every selected path and subtree SHA, and every file/source-hash map.
+revision, every selected path and subtree SHA, and every complete file inventory.
 It is intentionally independent of generated distribution-manifest checksums:
 `--refresh-manifest` cannot update it. Change that lock only after primary-source
 review and live compatibility validation of the complete new provider identity.
@@ -41,19 +41,21 @@ The integration suite covers:
   preservation of pre-existing empty parent directories;
 - missing GitHub CLI and unauthenticated CLI diagnostics before writes;
 - pinned complete provider installation, injected metadata, adjacent resources,
-  canonical source hashes, idempotency, local-only inner status checks, and safe
-  removal;
+  installer serialization changes, recorded installed-file hashes, idempotency,
+  local-only inner status checks, and safe removal;
 - implicit and user-only invocation declarations, selected-but-not-executed
   handoffs, unsupported-host behavior, and pinned metadata mismatch rejection;
-- preservation of pre-existing compatible and locally changed provider skills;
+- rejection of unknown same-named directories and preservation of locally
+  changed provider skills;
 - rejection of incompatible pins, missing adjacent resources, provider-state
-  path injection, forged body checksums, forged extra-file inventories, and
+  path injection, forged extra-file inventories, and
   unknown old-state names during declaration changes;
 - authenticated declaration-change migration that preserves clean retained
   origins, adds a missing dependency, replaces only checksum-clean
-  predecessor-created directories, accepts a missing old directory, aggregates
-  multiple conflicts before staging, and fails modified, pre-existing,
-  malformed, or unknown ownership without mutation;
+  predecessor-created directories, recreates a missing directory on changed and
+  unchanged baselines, aggregates multiple conflicts before staging, and fails
+  modified, legacy pre-existing, malformed, or unknown ownership without
+  mutation;
 - fresh and pre-existing composite root policy ownership, authenticated
   restoration of an exact pre-existing `AGENTS.md` across managed-source
   updates, migration of previous fully-owned policy records, and preservation
@@ -168,10 +170,10 @@ state changed.
 Provider compatibility should also be exercised in a disposable non-Git
 directory with an authenticated GitHub CLI before changing the declared
 baseline. Confirm that all declared adjacent files appear, frontmatter contains
-the declared path/ref/tree SHA, normalized files match the package-owned source
-hashes, fresh adoption rejects a body-edited
-same-metadata pre-existing skill, repeating install is idempotent, inner status
-is clean and local, and removal preserves any authenticated pre-existing skill.
+the declared path/ref/tree SHA, installer-transformed serialization is accepted
+and recorded, fresh adoption rejects every same-named unowned directory,
+repeating install is idempotent, inner status is clean and local, and removal
+preserves locally modified content.
 
 ## Reversal and cleanup
 
@@ -180,11 +182,11 @@ For a manual disposable-target check, run the documented framework `remove`
 command from that target before deleting the disposable directory. If removal
 preserves a pre-existing or modified skill, review it explicitly rather than
 forcing deletion. Never remove `provider-state.json` first: it is the ownership
-history needed for bounded removal. It is not tamper-evident content authority;
-the exact recorded package declaration supplies content authority. Payload and
-provider origin/restoration history is likewise local and not tamper-evident;
-coordinated forgery can reclassify exact canonical bytes, while modified,
-extra, undeclared, and unique project content remains protected.
+and installed-byte history needed for bounded update and removal. It is not
+tamper-evident; coordinated state forgery can reclassify provider bytes. The
+package declaration still bounds repository/tag/revision, paths, subtree SHAs,
+and inventories; ordinary modified, extra, undeclared, and unique project
+content remains protected.
 
 ## Continuous integration
 

@@ -29,10 +29,10 @@ policies expose byte-preserved project regions, legacy framework-created
 `CLAUDE.md` files and exact pre-existing imports migrate without losing setup
 edits or removal identity, recorded framework revisions fail closed and bind
 status/removal to the exact loaded package, pre-existing provider bodies are
-authenticated against an independently staged pin, normalized content is bound
-to package-owned source hashes, forged state checksums cannot hide body or
-extra-file changes, declaration updates reject unknown old names and never
-replace an existing directory, provider removal rolls back a failed quarantine
+rejected without ownership state, installer-transformed bytes are recorded at
+install time, ordinary local edits and forged extra-file inventories remain
+protected, declaration updates reject unknown old names and never replace an
+unowned directory, provider removal rolls back a failed quarantine
 transaction before commit and reports/retains a cleanup failure after commit,
 and project readiness warnings remain separate from
 payload/provider integrity. Profile fixtures cover

@@ -54,16 +54,14 @@ targets.
 
 Install providers through GitHub CLI 2.97.0 or newer with an authenticated
 GitHub.com session. Preflight local and provider ownership before writes. Make
-the package declaration own the canonical SHA-256 of every upstream file;
-normalize an installed `SKILL.md` only by removing the exact GitHub-injected
-provenance metadata after its full validation. Record created versus
-pre-existing-compatible origins and installed checksums as local history, not
-content authority. Never overwrite an incompatible same-named skill. Before
-initial adoption, stage the exact pin independently and compare any pre-existing
-directory against it rather than trusting mutable metadata or state hashes. The
-inner provider-status check remains local once its exact framework package and
-authenticated baseline are loaded; the public bootstrap still downloads the
-package.
+the package declaration own the pinned repository, tag, immutable revision,
+skill paths, subtree SHAs, inventories, and invocation policy. Validate those
+properties after staging, but do not require installer output to reproduce
+precomputed upstream file hashes. Reject every same-named directory when no
+provider ownership state exists. After activation, record checksums of the bytes
+actually installed and use them to detect later local modifications. The inner
+provider-status check remains local once its exact framework package and
+recorded baseline are loaded; the public bootstrap still downloads the package.
 
 When a declaration changes, first authenticate the exact predecessor framework
 and its historical `providers.json` through the new package's accepted
@@ -73,7 +71,9 @@ matches, add genuinely missing skills, and replace an incompatible directory
 only when predecessor state says `created` and its complete inventory, metadata,
 and recorded file checksums remain clean. Refuse replacement of modified,
 pre-existing-compatible, unknown, partial, or inconsistent directories. Stage
-and authenticate the complete new pin before mutation. Removal considers only
+and validate the complete new pin before mutation. Recreate a missing managed
+directory normally, even when the provider baseline itself is unchanged.
+Removal considers only
 exact declaration names and deletes only package-authentic,
 record-checksum-clean directories whose origin is `created`; preserve
 incompatible, modified, extra-file, undeclared, and pre-existing-compatible
@@ -114,8 +114,9 @@ Claude Code can consume the root policy while provider execution remains
 explicitly unsupported; avoiding a duplicate provider tree keeps ownership and
 updates unambiguous.
 
-Initial provider adoption gains GitHub CLI, authentication, and temporary exact
-staging prerequisites even when same-named directories already exist. Normal
+Initial provider adoption gains GitHub CLI, authentication, and temporary pinned
+staging prerequisites. Same-named directories without provider state require
+manual reconciliation. Normal
 runtime and the inner status checks remain local after that baseline is recorded;
 the public bootstrap still downloads the exact framework package. A supported
 cross-version update can retain authenticated directories, add missing ones, and
@@ -133,11 +134,11 @@ complete new set without treating the declaration-schema change itself as
 provider state and preserves the provenance needed for a later audited
 migration.
 
-Repository-local origin history is useful ownership evidence but is not
-tamper-evident. A deliberate coordinated origin forgery can reclassify an exact,
-unmodified canonical provider directory; the package-owned content identities
-and declaration bounds still prevent deletion of modified, extra-file, or
-undeclared content.
+Repository-local origin and installed-hash history is useful ownership evidence
+but is not tamper-evident. Deliberate coordinated state forgery can reclassify a
+directory or its bytes. This accepted local-trust boundary keeps ordinary local
+edits, extra files, and undeclared directories outside automatic replacement or
+deletion without turning provider installation into source-file auditing.
 
 ## Alternatives considered
 

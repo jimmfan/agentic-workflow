@@ -112,7 +112,7 @@ def load_declaration() -> Tuple[Mapping[str, object], List[Mapping[str, object]]
     raw = load_json(DECLARATION_PATH, "provider declaration")
     if set(raw) != {"schema_version", "capabilities", "configuration", "hosts", "provider"} or raw.get(
         "schema_version"
-    ) != 2:
+    ) != 3:
         raise ProviderError("provider declaration has unknown fields or an unsupported schema")
     capabilities = raw.get("capabilities")
     configuration = raw.get("configuration")
@@ -179,12 +179,10 @@ def load_declaration() -> Tuple[Mapping[str, object], List[Mapping[str, object]]
             "name",
             "path",
             "requires_configuration",
-            "source_sha256",
             "tree_sha",
         }:
             raise ProviderError(
-                "each provider skill needs files, invocation, name, path, requirements, "
-                "source_sha256, and tree_sha"
+                "each provider skill needs files, invocation, name, path, requirements, and tree_sha"
             )
         name = item.get("name")
         if not isinstance(name, str) or SKILL_NAME.fullmatch(name) is None:
@@ -199,18 +197,6 @@ def load_declaration() -> Tuple[Mapping[str, object], List[Mapping[str, object]]
         checked_files = [safe_relative(value, f"file in provider skill {name}").as_posix() for value in files]
         if checked_files != sorted(set(checked_files)):
             raise ProviderError(f"provider skill {name} files must be unique and sorted")
-        source_sha256 = item.get("source_sha256")
-        if not isinstance(source_sha256, dict) or set(source_sha256) != set(checked_files):
-            raise ProviderError(
-                f"provider skill {name} source_sha256 must cover its exact file inventory"
-            )
-        if any(
-            not isinstance(relative, str)
-            or not isinstance(digest, str)
-            or SHA256.fullmatch(digest) is None
-            for relative, digest in source_sha256.items()
-        ):
-            raise ProviderError(f"provider skill {name} has an invalid source SHA-256")
         invocation = item.get("invocation")
         if not isinstance(invocation, dict) or set(invocation) != set(HOSTS):
             raise ProviderError(f"provider skill {name} invocation must cover every declared host")
@@ -274,86 +260,8 @@ def frontmatter(path: Path) -> Tuple[Mapping[str, str], Mapping[str, str]]:
                 top[key.strip()] = value.strip().strip("\"'")
         elif in_metadata and ":" in line:
             key, value = line.split(":", 1)
-            metadata[key.strip()] = value.strip()
+            metadata[key.strip()] = value.strip().strip("\"'")
     return top, metadata
-
-
-def normalized_skill_source(
-    path: Path,
-    expected_metadata: Mapping[str, str],
-) -> bytes:
-    """Remove only the GitHub CLI metadata block from a provider SKILL.md.
-
-    The pinned upstream source has no ``metadata`` field. GitHub CLI injects one
-    when it installs a skill, so source identity is the exact upstream bytes
-    after removing that one authenticated block. All other frontmatter ordering,
-    quoting, whitespace, line endings, and body bytes remain significant.
-    """
-    try:
-        text = path.read_bytes().decode("utf-8")
-    except (OSError, UnicodeDecodeError) as exc:
-        raise ProviderError(f"cannot read installed skill source at {path}: {exc}") from exc
-    lines = text.splitlines(keepends=True)
-    if not lines or lines[0] != "---\n":
-        raise ProviderError(f"installed skill lacks valid frontmatter: {path}")
-    try:
-        closing = lines.index("---\n", 1)
-    except ValueError as exc:
-        raise ProviderError(f"installed skill lacks valid frontmatter: {path}") from exc
-
-    starts = [
-        index
-        for index, line in enumerate(lines[1:closing], start=1)
-        if re.fullmatch(r"metadata:[ ]*(?:\n)?", line) is not None
-    ]
-    if len(starts) != 1:
-        raise ProviderError(
-            f"installed skill must contain exactly one GitHub metadata block: {path}"
-        )
-    start = starts[0]
-    end = start + 1
-    parsed: Dict[str, str] = {}
-    while end < closing and lines[end].startswith((" ", "\t")):
-        line = lines[end]
-        indentation = line[: len(line) - len(line.lstrip())]
-        if "\t" in indentation or ":" not in line:
-            raise ProviderError(f"installed skill has malformed GitHub metadata: {path}")
-        key, value = line.split(":", 1)
-        key = key.strip()
-        if not key or key in parsed:
-            raise ProviderError(f"installed skill has malformed GitHub metadata: {path}")
-        parsed[key] = value.strip()
-        end += 1
-    if parsed != dict(expected_metadata):
-        raise ProviderError(
-            f"installed skill has incompatible or unexpected GitHub metadata: {path}"
-        )
-    return "".join(lines[:start] + lines[end:]).encode("utf-8")
-
-
-def verify_source_content(
-    directory: Path,
-    skill: Mapping[str, object],
-    expected_metadata: Mapping[str, str],
-) -> None:
-    name = str(skill["name"])
-    declared = skill.get("source_sha256")
-    if not isinstance(declared, Mapping):
-        raise ProviderError(f"provider skill {name} has invalid source SHA-256 declarations")
-    for relative in skill["files"]:  # type: ignore[union-attr]
-        relative_text = str(relative)
-        path = directory / relative_text
-        if relative_text == "SKILL.md":
-            content = normalized_skill_source(path, expected_metadata)
-            actual = hashlib.sha256(content).hexdigest()
-        else:
-            actual = sha256(path)
-        expected = declared.get(relative_text)
-        if actual != expected:
-            raise ProviderError(
-                f"provider skill {name} source content is incompatible at {relative_text}: "
-                f"expected SHA-256 {expected}, found {actual}"
-            )
 
 
 def metadata_boolean(value: Optional[str], label: str, *, default: bool) -> bool:
@@ -513,7 +421,6 @@ def verify_skill(
             f"provider skill {name} has incompatible or unexpected GitHub metadata"
         )
     verify_invocation_metadata(directory, skill, top)
-    verify_source_content(directory, skill, expected_metadata)
     return {relative: sha256(directory / relative) for relative in actual_files}
 
 
@@ -686,6 +593,16 @@ def load_predecessor_declaration(
             "source_sha256",
             "tree_sha",
         }
+    elif schema == 3:
+        expected_top = {"schema_version", "capabilities", "configuration", "hosts", "provider"}
+        expected_skill_fields = {
+            "files",
+            "invocation",
+            "name",
+            "path",
+            "requires_configuration",
+            "tree_sha",
+        }
     else:
         raise ProviderError("authenticated predecessor provider declaration has an unsupported schema")
     if set(raw) != expected_top:
@@ -740,19 +657,22 @@ def load_predecessor_declaration(
         ]
         if checked_files != sorted(set(checked_files)):
             raise ProviderError(f"authenticated predecessor file inventory is malformed for {name}")
-        if schema == 2:
-            source_sha256 = item.get("source_sha256")
+        if schema in {2, 3}:
             invocation = item.get("invocation")
             requirements = item.get("requires_configuration")
-            if (
-                not isinstance(source_sha256, dict)
-                or set(source_sha256) != set(checked_files)
-                or any(
-                    not isinstance(digest, str) or SHA256.fullmatch(digest) is None
-                    for digest in source_sha256.values()
-                )
-            ):
-                raise ProviderError(f"authenticated predecessor source hashes are malformed for {name}")
+            if schema == 2:
+                source_sha256 = item.get("source_sha256")
+                if (
+                    not isinstance(source_sha256, dict)
+                    or set(source_sha256) != set(checked_files)
+                    or any(
+                        not isinstance(digest, str) or SHA256.fullmatch(digest) is None
+                        for digest in source_sha256.values()
+                    )
+                ):
+                    raise ProviderError(
+                        f"authenticated predecessor source hashes are malformed for {name}"
+                    )
             if not isinstance(invocation, dict) or set(invocation) != set(HOSTS) or any(
                 value not in INVOCATION_MODES for value in invocation.values()
             ):
@@ -951,9 +871,8 @@ def verify_predecessor_skill(
         raise ProviderError(
             f"predecessor provider skill {name} does not match its authenticated source metadata"
         )
-    if "source_sha256" in skill:
+    if "invocation" in skill:
         verify_invocation_metadata(directory, skill, top)
-        verify_source_content(directory, skill, expected_metadata)
 
 
 def predecessor_checksum_conflicts(
@@ -961,7 +880,7 @@ def predecessor_checksum_conflicts(
     name: str,
     record: Mapping[str, object],
 ) -> List[str]:
-    """Return precise path/hash differences from the predecessor installation record."""
+    """Return paths that differ from the bytes recorded when the provider was installed."""
     directory = skill_directory(root, name)
     expected = record.get("files")
     if not isinstance(expected, dict):
@@ -974,25 +893,13 @@ def predecessor_checksum_conflicts(
     expected_files = sorted(expected)
     expected_directories = implied_directories(expected_files)
     for relative in sorted(set(expected_files) - set(actual_files)):
-        conflicts.append(
-            f"  .agents/skills/{name}/{relative}\n"
-            f"    Expected predecessor SHA-256: {expected[relative]}\n"
-            "    Found SHA-256: missing"
-        )
+        conflicts.append(f"  .agents/skills/{name}/{relative} (missing)")
     for relative in sorted(set(actual_files) - set(expected_files)):
-        conflicts.append(
-            f"  .agents/skills/{name}/{relative}\n"
-            "    Expected predecessor SHA-256: absent\n"
-            f"    Found SHA-256: {sha256(directory / relative)}"
-        )
+        conflicts.append(f"  .agents/skills/{name}/{relative} (unexpected)")
     for relative in sorted(set(actual_files) & set(expected_files)):
         actual = sha256(directory / relative)
         if actual != expected[relative]:
-            conflicts.append(
-                f"  .agents/skills/{name}/{relative}\n"
-                f"    Expected predecessor SHA-256: {expected[relative]}\n"
-                f"    Found SHA-256: {actual}"
-            )
+            conflicts.append(f"  .agents/skills/{name}/{relative}")
     for relative in sorted(set(expected_directories) - set(actual_directories)):
         conflicts.append(f"  .agents/skills/{name}/{relative}/ (expected directory is missing)")
     for relative in sorted(set(actual_directories) - set(expected_directories)):
@@ -1121,39 +1028,8 @@ def checksums_match(root: Path, name: str, record: Mapping[str, object]) -> bool
     return all(sha256(directory / relative) == expected[relative] for relative in actual_files)
 
 
-def verify_authenticated_match(actual: Path, staged: Path, name: str) -> None:
-    """Require an existing provider directory to byte-match authenticated staging."""
-    actual_files, actual_directories = directory_inventory(actual)
-    staged_files, staged_directories = directory_inventory(staged)
-    if actual_files != staged_files or actual_directories != staged_directories:
-        missing = sorted(set(staged_files) - set(actual_files))
-        extra = sorted(set(actual_files) - set(staged_files))
-        missing_directories = sorted(set(staged_directories) - set(actual_directories))
-        extra_directories = sorted(set(actual_directories) - set(staged_directories))
-        detail = (f"; missing: {', '.join(missing)}" if missing else "") + (
-            f"; unexpected: {', '.join(extra)}" if extra else ""
-        ) + (
-            f"; missing directories: {', '.join(missing_directories)}"
-            if missing_directories
-            else ""
-        ) + (
-            f"; unexpected directories: {', '.join(extra_directories)}"
-            if extra_directories
-            else ""
-        )
-        raise ProviderError(
-            f"pre-existing provider skill {name} does not match authenticated pinned staging{detail}"
-        )
-    for relative in staged_files:
-        if actual.joinpath(relative).read_bytes() != staged.joinpath(relative).read_bytes():
-            raise ProviderError(
-                f"pre-existing provider skill {name} does not byte-match authenticated pinned staging: "
-                f"{relative}"
-            )
-
-
 def cleanup_provider_staging(transaction: Path) -> None:
-    """Remove authenticated staging before committing target ownership state."""
+    """Remove validated staging before committing target ownership state."""
     shutil.rmtree(transaction)
 
 
@@ -1173,20 +1049,21 @@ def command_install(
             return
         raise ProviderError("provider state already exists but dependencies differ; run status or update")
 
-    origins: Dict[str, str] = {}
+    collisions = []
     for skill in skills:
         name = str(skill["name"])
         destination = skill_directory(root, name)
         if destination.exists() or destination.is_symlink():
-            verify_skill(root, provider, skill)
-            origins[name] = "preexisting-compatible"
-        else:
-            origins[name] = "created"
-    new_destinations = [
-        skill_directory(root, str(skill["name"]))
-        for skill in skills
-        if origins[str(skill["name"])] == "created"
-    ]
+            collisions.append(
+                f".agents/skills/{name} already exists and is not known to be managed "
+                "by Agentic Workflow. Refusing to overwrite it."
+            )
+    if collisions:
+        raise ProviderError(
+            "provider install preflight found unowned directories; no provider files were changed:\n"
+            + "\n".join(collisions)
+        )
+    new_destinations = [skill_directory(root, str(skill["name"])) for skill in skills]
     rollback_paths = new_destinations + [state_path]
     preexisting_directories = existing_parent_directories(root, rollback_paths)
     gh = find_gh(provider)
@@ -1197,20 +1074,12 @@ def command_install(
         for skill in skills:
             run_gh_install(gh, root, provider, skill, directory=staged)
             verify_skill(transaction, provider, skill)
-        for skill in skills:
-            name = str(skill["name"])
-            if origins[name] == "preexisting-compatible":
-                verify_authenticated_match(
-                    skill_directory(root, name),
-                    staged / name,
-                    name,
-                )
 
         if dry_run:
             print(f"PROVIDERS INSTALL DRY RUN for {root}")
-            print(f"  - authenticated and staged {len(skills)} pinned skills with {gh}")
+            print(f"  - validated and staged {len(skills)} pinned skills with {gh}")
             for skill in skills:
-                print(f"  - {origins[str(skill['name'])]}: {skill['name']}@{provider['version']}")
+                print(f"  - install managed provider skill {skill['name']}@{provider['version']}")
             print("No provider files changed.")
             return
 
@@ -1220,14 +1089,13 @@ def command_install(
             for skill in skills:
                 name = str(skill["name"])
                 destination = skill_directory(root, name)
-                if origins[name] == "created":
-                    destination.parent.mkdir(parents=True, exist_ok=True)
-                    (staged / name).replace(destination)
-                    moved_new.append(destination)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                (staged / name).replace(destination)
+                moved_new.append(destination)
                 files = verify_skill(root, provider, skill)
                 records[name] = {
                     "files": files,
-                    "origin": origins[name],
+                    "origin": "created",
                     "path": skill["path"],
                     "tree_sha": skill["tree_sha"],
                 }
@@ -1332,16 +1200,18 @@ def command_update(
         command_install(root, dry_run, commit_callback=commit_callback)
         return
     state = load_state(root)
-    if state_matches_declaration(state, provider, skills):
-        if not command_status(root, verbose=False):
-            raise ProviderError("provider dependencies were locally changed or removed; refusing to overwrite them")
-        if commit_callback is not None:
-            commit_callback()
-        print(f"✓ Upstream provider baseline remains {provider['repository']}@{provider['version']}.")
-        return
-
-    old_provider, old_skills, predecessor_version = authenticated_predecessor_declaration(root)
-    old_records = validate_predecessor_state(state, old_provider, old_skills)
+    same_baseline = state_matches_declaration(state, provider, skills)
+    if same_baseline:
+        old_provider = provider
+        old_skills = list(skills)
+        predecessor_version: Optional[str] = None
+        records = state.get("skills")
+        if not isinstance(records, dict):
+            raise ProviderError("provider state skills must be an object")
+        old_records = records
+    else:
+        old_provider, old_skills, predecessor_version = authenticated_predecessor_declaration(root)
+        old_records = validate_predecessor_state(state, old_provider, old_skills)
     old_by_name = {str(item["name"]): item for item in old_skills}
     new_by_name = {str(item["name"]): item for item in skills}
     if (
@@ -1371,8 +1241,8 @@ def command_update(
         conflicts = predecessor_checksum_conflicts(root, name, record)
         if conflicts:
             transition_errors.append(
-                f"provider skill {name} was installed by the authenticated predecessor "
-                "but has been modified locally.\nRefusing to replace:\n"
+                f"{name} was installed by Agentic Workflow but has local modifications.\n"
+                "Refusing to overwrite:\n"
                 + "\n".join(conflicts)
             )
             continue
@@ -1404,19 +1274,21 @@ def command_update(
         if not destination.exists() and not destination.is_symlink():
             actions[name] = "add"
             continue
-        try:
-            verify_skill(root, provider, skill)
-            actions[name] = "preexisting-compatible"
-        except ProviderError as error:
-            transition_errors.append(
-                f"existing provider skill {name} cannot be proven framework-managed. "
-                f"Refusing to replace it: {error}"
-            )
+        transition_errors.append(
+            f".agents/skills/{name} already exists and is not known to be managed by "
+            "Agentic Workflow. Refusing to overwrite it."
+        )
     if transition_errors:
         raise ProviderError(
             "provider transition preflight found conflicts; no provider files were changed:\n\n"
             + "\n\n".join(transition_errors)
         )
+
+    if all(action == "retain" for action in actions.values()):
+        if commit_callback is not None:
+            commit_callback()
+        print(f"✓ Upstream provider baseline remains {provider['repository']}@{provider['version']}.")
+        return
 
     retained_transactions = sorted(root.glob(f"{UPDATE_QUARANTINE_PREFIX}*"))
     if retained_transactions:
@@ -1447,39 +1319,55 @@ def command_update(
             verify_skill(staging_root, provider, skill)
 
         staging_conflicts: List[str] = []
-        try:
-            refreshed_provider, refreshed_skills, refreshed_version = (
-                authenticated_predecessor_declaration(root)
-            )
-            if (
-                refreshed_provider != old_provider
-                or refreshed_skills != old_skills
-                or refreshed_version != predecessor_version
-                or load_state(root) != state
-            ):
+        if same_baseline:
+            try:
+                if load_state(root) != state:
+                    staging_conflicts.append(
+                        "provider ownership evidence changed during pinned staging"
+                    )
+            except ProviderError as error:
                 staging_conflicts.append(
-                    "predecessor ownership evidence changed during authenticated staging"
+                    f"provider ownership evidence changed during pinned staging: {error}"
                 )
-        except ProviderError as error:
-            staging_conflicts.append(
-                f"predecessor ownership evidence changed during authenticated staging: {error}"
-            )
+        else:
+            try:
+                refreshed_provider, refreshed_skills, refreshed_version = (
+                    authenticated_predecessor_declaration(root)
+                )
+                if (
+                    refreshed_provider != old_provider
+                    or refreshed_skills != old_skills
+                    or refreshed_version != predecessor_version
+                    or load_state(root) != state
+                ):
+                    staging_conflicts.append(
+                        "predecessor ownership evidence changed during pinned staging"
+                    )
+            except ProviderError as error:
+                staging_conflicts.append(
+                    f"predecessor ownership evidence changed during pinned staging: {error}"
+                )
         for skill in skills:
             name = str(skill["name"])
-            if actions[name] in {"retain", "preexisting-compatible"}:
-                try:
-                    verify_authenticated_match(
-                        skill_directory(root, name),
-                        staged / name,
-                        name,
+            if actions[name] == "retain":
+                conflicts = predecessor_checksum_conflicts(root, name, old_records[name])
+                if conflicts:
+                    staging_conflicts.append(
+                        f"provider skill {name} changed during pinned staging:\n"
+                        + "\n".join(conflicts)
                     )
+                    continue
+                try:
+                    verify_skill(root, provider, skill)
                 except ProviderError as error:
-                    staging_conflicts.append(str(error))
+                    staging_conflicts.append(
+                        f"provider skill {name} changed during pinned staging: {error}"
+                    )
             elif actions[name] == "replace":
                 conflicts = predecessor_checksum_conflicts(root, name, old_records[name])
                 if conflicts:
                     staging_conflicts.append(
-                        f"provider skill {name} changed during authenticated staging:\n"
+                        f"provider skill {name} changed during pinned staging:\n"
                         + "\n".join(conflicts)
                     )
                     continue
@@ -1487,31 +1375,32 @@ def command_update(
                     verify_predecessor_skill(root, old_provider, old_by_name[name])
                 except ProviderError as error:
                     staging_conflicts.append(
-                        f"provider skill {name} changed during authenticated staging: {error}"
+                        f"provider skill {name} changed during pinned staging: {error}"
                     )
             elif actions[name] in {"add", "install-missing"}:
                 destination = skill_directory(root, name)
                 if destination.exists() or destination.is_symlink():
                     staging_conflicts.append(
-                        f"provider path appeared during authenticated staging; refusing to replace it: "
+                        f"provider path appeared during pinned staging; refusing to replace it: "
                         f".agents/skills/{name}"
                     )
         if staging_conflicts:
             raise ProviderError(
-                "authenticated staging found provider conflicts; no provider files were changed:\n\n"
+                "pinned staging found provider conflicts; no provider files were changed:\n\n"
                 + "\n\n".join(staging_conflicts)
             )
 
         migrations = [name for name, action in sorted(actions.items()) if action == "replace"]
         if dry_run:
             print(f"PROVIDERS UPDATE DRY RUN for {root}")
-            print(f"  - authenticated predecessor framework {predecessor_version}")
-            print(f"  - authenticated and staged {len(skills)} pinned skills with {gh}")
+            if predecessor_version is not None:
+                print(f"  - authenticated predecessor framework {predecessor_version}")
+            print(f"  - validated and staged {len(skills)} pinned skills with {gh}")
             if migrations:
                 print("  - provider migration:")
                 for name in migrations:
                     print(
-                        f"      {name}: predecessor-managed, checksum-clean; "
+                        f"      {name}: managed and unmodified; "
                         f"{old_provider['version']} -> {provider['version']}"
                     )
             for name, action in sorted(actions.items()):
@@ -1537,9 +1426,7 @@ def command_update(
                     destination.parent.mkdir(parents=True, exist_ok=True)
                     (staged / name).replace(destination)
                     activated.append((destination, backup))
-                if action == "preexisting-compatible":
-                    origin = "preexisting-compatible"
-                elif name in old_records and action == "retain":
+                if name in old_records and action == "retain":
                     origin = str(old_records[name]["origin"])
                 else:
                     origin = "created"
@@ -1614,13 +1501,12 @@ def command_update(
                     )
 
     if migrations:
-        print("Provider migration:")
         for name in migrations:
             print(
-                f"  {name}: predecessor-managed, checksum-clean; "
-                f"{old_provider['version']} -> {provider['version']}"
+                f"Updating provider {name}:\n"
+                f"  {provider['repository']} {old_provider['version']} -> {provider['version']}"
             )
-            print(f"✓ Migrated provider skill {name}.")
+            print("✓ Provider updated.")
     print(f"✓ Curated upstream skills updated intentionally to {provider['repository']}@{provider['version']}.")
 
 

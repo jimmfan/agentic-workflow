@@ -24,10 +24,11 @@ source SHA-256 match; reject an unknown, partial, or forged identity before
 planning writes or retirements. Keep these reviewed historical records separate
 from generated current-payload checksums so manifest refresh cannot invent a
 trust relationship. For provider directories, make the immutable package declaration own each file's
-canonical source SHA-256; normalize `SKILL.md` only by removing the exact,
-validated GitHub-injected provenance block. Separately record whether each
-directory was framework-created or already compatible, plus installed-file
-checksums as local cleanliness evidence rather than content authority. Seed
+repository/tag/revision, path, subtree SHA, complete inventory, and invocation
+contract. Do not make precomputed upstream file hashes an installed-output
+requirement. Reject unowned same-named directories, record framework-created
+ownership plus checksums of the bytes actually installed, and use those
+checksums as local cleanliness evidence. Seed
 project profile/state only when absent. Refuse an entire update when any
 framework file conflicts.
 
@@ -75,11 +76,11 @@ or a declared upgrade. Normal runtime and the inner status checks remain
 repository-local after the exact package is loaded; the public bootstrap uses
 HTTPS to fetch that recorded package before invoking them.
 
-Provider origin history is repository-local ownership evidence, not a
-tamper-evident authority. A deliberate coordinated origin forgery can
-reclassify an exact, unmodified canonical provider directory. Package identities
-and inventory bounds still prevent it from authorizing deletion of modified,
-extra-file, or undeclared content.
+Provider origin and installed-hash history is repository-local ownership
+evidence, not a tamper-evident authority. A deliberate coordinated state forgery
+can reclassify a provider directory or its bytes. In ordinary operation,
+recorded-hash comparison plus declaration inventory bounds prevent automatic
+replacement or deletion of modified, extra-file, or undeclared content.
 
 Payload origin and composite-restoration history have the same local-trust
 limit. A deliberate coordinated manifest forgery can reclassify exact canonical

@@ -172,7 +172,7 @@ labels one report:
 python3 ai-workflow/observability/analyze.py --format json \
   --tag experiment=route-contract-v1 \
   --tag variant=skill-telemetry \
-  --tag framework=0.7.0 \
+  --tag framework=0.7.1 \
   --tag verification=pass \
   /absolute/path/to/closed-variant-export.jsonl
 ```

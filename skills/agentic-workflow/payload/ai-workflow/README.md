@@ -46,12 +46,11 @@ requests its fixed-point Standards/Spec contract outside an implement run.
 The public ai-workflow bootstrap is the only required adoption path. Internally
 it delegates upstream installation to GitHub CLI `gh skill`, pins every skill to
 the tested tag, then validates injected source/ref/tree-SHA metadata and complete
-adjacent resources. The package declaration owns the canonical SHA-256 for every
-upstream file; verification removes only the exact validated GitHub provenance
-block from `SKILL.md` before comparing its source hash. `provider-state.json`
-records only ai-workflow lifecycle origin and installed-file checksums. Those
-checksums are cleanliness evidence, not content authority, and the state file is
-not a second package manager.
+adjacent resources. It does not require the installer output to reproduce
+separately precomputed upstream file hashes. `provider-state.json` records
+ai-workflow ownership, the installed provider revision/version, and hashes of
+the bytes actually installed. Later updates use those hashes only to detect
+local modifications.
 
 Pinned providers do not float during normal updates. A maintainer upgrades the
 declaration to a reviewed stable tag and subtree identities, runs live provider
@@ -66,7 +65,7 @@ the installed framework as an audited predecessor. Its exact historical
 `providers.json` then authenticates the old provider identity and state shape.
 Update replaces a provider directory only when predecessor state records it as
 framework-created, every recorded installed-file SHA-256 is still clean, and
-the complete directory matches the predecessor's inventory and source metadata.
+the complete directory matches the predecessor's inventory and pinned metadata.
 Modified and pre-existing-compatible directories continue to fail closed.
 Directories already compatible with the new declaration are retained without
 losing their recorded origin; a predecessor-recorded directory that is genuinely
@@ -76,8 +75,9 @@ does not require deleting `.agents`, `provider-state.json`, or individual skills
 
 Python 3.11 or newer is required for lifecycle commands. GitHub CLI 2.97.0 or
 newer is required for initial provider adoption or an update that changes the
-provider baseline. Initial adoption stages the exact pin and byte-compares any
-pre-existing directory before claiming compatibility. Runtime use and the inner
+provider baseline, or to recreate a missing managed directory. Initial adoption
+refuses any same-named directory because no framework ownership state exists for
+it; it never adopts or overwrites unknown content. Runtime use and the inner
 status checks read ordinary repository files and do not contact the provider
 upstream once that baseline and the exact framework package are recorded. The
 documented public bootstrap still needs HTTPS to fetch the framework package;
@@ -85,7 +85,7 @@ an unchanged update needs no additional provider fetch.
 Project-scoped `.agents/skills` is shared by Codex and GitHub Copilot. Removal
 considers only exact declared names and deletes only package-authentic,
 checksum-clean skills recorded as created by ai-workflow. It preserves
-pre-existing-compatible, incompatible, locally changed, extra-file, and
+legacy pre-existing-compatible, incompatible, locally changed, extra-file, and
 undeclared directories. Repository-local origin history is useful evidence but
 is not tamper-evident: coordinated forgery can reclassify an exact unmodified
 canonical provider directory, but cannot authorize deletion of modified,
@@ -151,13 +151,13 @@ project-owned region without breaking status or update. Updates migrate the
 previous clean fully-owned `CLAUDE.md` form and preserve existing project
 content. Removal deletes only the managed region and leaves project content.
 
-Payload origin/restoration fields and provider origin are repository-local
-history, not tamper-evident proof. Coordinated local forgery can reclassify exact
-canonical managed/provider bytes or substitute an exact current/audited
-historical policy identity. It cannot authorize invented source identities or
-deletion of modified, extra, undeclared, or unique project content. A stronger
-historical-origin guarantee would require conservative no-delete behavior or a
-trust anchor outside the target repository.
+Payload origin/restoration fields and provider origin/installed hashes are
+repository-local history, not tamper-evident proof. Coordinated local forgery
+can reclassify managed or provider bytes or substitute an exact current/audited
+historical policy identity. Without that forgery, modified, extra, undeclared,
+and unique project content remains protected. A stronger historical-origin
+guarantee would require conservative no-delete behavior or a trust anchor
+outside the target repository.
 
 Normal lifecycle status reports framework integrity and provider integrity
 separately from project readiness and setup host capability. An uninitialized profile
