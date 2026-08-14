@@ -10,6 +10,14 @@ It is separate from the consuming-project policy installed from:
 
 Do not copy source-repository maintenance instructions into consuming projects, or consuming-project routing instructions into this file.
 
+## Routing requirement
+
+Every user request MUST be evaluated through the Agentic Workflow router before execution.
+
+Select the minimum useful primary workflow and any supporting capabilities according to the routing policy. Clear, bounded, low-risk work may route directly; `direct` is a valid route.
+
+Do not skip routing merely because a request is simple or can be answered without invoking a skill.
+
 ## How to interpret this guidance
 
 Authorization, safety, preservation of user work, accepted public contracts, and truthful verification claims are hard constraints.
@@ -239,3 +247,21 @@ Before finishing a substantial change, confirm that:
 * documentation describes the resulting product rather than the entire investigation.
 
 Simplify when these checks reveal unnecessary complexity.
+
+## Final response contract
+
+Every final response MUST end with exactly one route marker:
+
+`[route: router → <path>]`
+
+The marker is required even for short or direct responses. `direct` is a valid route.
+
+Examples:
+
+`[route: router → direct]`
+
+`[route: router → discovery → research]`
+
+`[route: router → implementation → verification]`
+
+Do not omit the route marker. Do not emit more than one route marker.
