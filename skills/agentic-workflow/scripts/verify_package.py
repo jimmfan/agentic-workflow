@@ -600,6 +600,7 @@ def check_structure() -> None:
         PAYLOAD_ROOT / "VERSION",
         MANIFEST_PATH,
         PAYLOAD_ROOT / "ai-workflow" / "README.md",
+        PAYLOAD_ROOT / "ai-workflow" / "routing.md",
         PAYLOAD_ROOT / "ai-workflow" / "providers.json",
         PAYLOAD_ROOT / "ai-workflow" / "runtime" / "controller.py",
         PAYLOAD_ROOT / "ai-workflow" / "runtime" / "capabilities.json",
@@ -957,27 +958,40 @@ def check_enforcement_contract() -> None:
     policy = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
     require(
         ".ai-workflow/runtime/README.md" in policy
-        and "GitHub Copilot in VS Code is the reference host" in policy
         and "when hooks do not run" in policy,
-        "installed policy lacks the reference-host and degraded-mode contract",
+        "installed policy lacks the runtime pointer and degraded-mode contract",
     )
 
 
 def check_workflow_contract() -> None:
     policy = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
+    routing = (PAYLOAD_ROOT / "ai-workflow" / "routing.md").read_text(encoding="utf-8")
     normalized_policy = " ".join(policy.split())
-    require(len(policy.encode("utf-8")) < 5000, "installed root policy exceeds the compact v0 budget")
+    normalized_routing = " ".join(routing.split())
+    require(len(policy.encode("utf-8")) < 3200, "installed root policy exceeds the orchestration-kernel budget")
     for name in SKILLS:
-        require(name in policy, f"root policy does not route to {name}")
+        require(name in routing, f"progressive routing contract does not route to {name}")
     require(
         "`workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and "
-        "`workflow-verification` shorten to `discovery`, `debugging`, `implement`, and "
-        "`verification` in markers."
-        in normalized_policy,
-        "root policy does not define stable compact labels for every local workflow",
+        "`workflow-verification` become `discovery`, `debugging`, `implement`, and "
+        "`verification`."
+        in normalized_routing,
+        "progressive routing contract does not define stable compact local labels",
     )
     for provider in ("wayfinder", "teach", "research", "to-spec", "to-tickets", "implement", "tdd", "code-review"):
-        require(provider in policy, f"root policy does not route or compose upstream {provider}")
+        require(provider in routing, f"progressive routing contract does not route or compose upstream {provider}")
+    for detailed_term in (
+        "wayfinder",
+        "setup-matt-pocock-skills",
+        "Claude Code",
+        "Copilot CLI",
+        "code-review",
+        "active.md",
+    ):
+        require(
+            detailed_term not in policy,
+            f"root orchestration kernel duplicates conditional detail: {detailed_term}",
+        )
     catalog_path = PACKAGE_ROOT / "tests" / "acceptance-scenarios.json"
     try:
         catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
@@ -997,51 +1011,56 @@ def check_workflow_contract() -> None:
     for route in ("normal", "teach", "discovery", "debugging", "to-tickets", "implementation", "verification", "code-review"):
         require(route in routes, f"acceptance catalog lacks the {route} route")
 
-    routing_heading = "## Routing requirement"
-    require(policy.count(routing_heading) == 1, "root policy needs exactly one prominent routing requirement")
-    routing_requirement = policy[
-        policy.index(routing_heading) : policy.index("\n\nOn explicit resume", policy.index(routing_heading))
-    ]
+    invariants_heading = "## Universal invariants"
+    require(policy.count(invariants_heading) == 1, "root policy needs one prominent invariant section")
     require(
-        policy.index(routing_heading) < 500,
-        "routing requirement is not near the beginning of the root policy",
+        policy.index(invariants_heading) < 500,
+        "universal invariants are not near the beginning of the root policy",
     )
     for term in (
-        "Every user request MUST be evaluated through the Agentic Workflow router before execution.",
-        "Select the minimum useful primary workflow and any supporting capabilities",
-        "`direct` is a valid route.",
-        "Do not skip routing for simple work.",
+        "Every request MUST be evaluated through the Agentic Workflow router.",
+        "`direct` is a first-class route.",
+        "MUST NOT expand the authority granted by the user's request",
+        "Execution and completion claims MUST be truthful",
+        "Unavailable or user-only operations MUST NOT be simulated or silently replaced",
+        "durable state MUST be preserved",
+        "Material completion claims MUST reflect actual evidence",
     ):
-        require(term in " ".join(routing_requirement.split()), f"routing requirement lacks: {term}")
+        require(term in normalized_policy, f"root invariant contract lacks: {term}")
+    require(
+        len(re.findall(r"\bMUST(?: NOT)?\b", policy)) == 6
+        and not re.search(r"\b(?:ALWAYS|NEVER)\b", policy),
+        "root hard requirements must remain limited to the six audited invariants",
+    )
+    for heading in ("## Routing defaults", "## Load only when relevant", "## Route visibility"):
+        require(policy.count(heading) == 1, f"root policy needs exactly one {heading} section")
+    for pointer in (
+        ".ai-workflow/routing.md",
+        ".ai-workflow/runtime/README.md",
+        ".ai-workflow/state/README.md",
+        ".ai-workflow/contracts/project-profile.md",
+    ):
+        require(pointer in policy, f"root policy lacks progressive-loading pointer: {pointer}")
 
-    final_heading = "## Final response contract"
-    require(policy.count(final_heading) == 1, "root policy needs exactly one final response contract")
+    final_heading = "## Route visibility"
     final_contract = policy[policy.index(final_heading) :]
     final_contract_text = " ".join(final_contract.split())
-    require(len(final_contract.encode("utf-8")) <= 900, "final response contract exceeds 900 bytes")
+    require(len(final_contract.encode("utf-8")) <= 400, "route visibility contract exceeds 400 bytes")
     require(
-        policy.rstrip().endswith("write state merely to produce the marker."),
-        "final response contract is not the last root-policy section",
+        policy.rstrip().endswith("do no extra work merely to produce the marker."),
+        "route visibility is not the last root-policy section",
     )
-    expected_markers = [
-        "[route: router → <path>]",
-        "[route: router → direct]",
-        "[route: router → discovery → research]",
-        "[route: router → implement → verification]",
-    ]
     require(
-        re.findall(r"`(\[route: router → [^`\n]+\])`", final_contract) == expected_markers,
-        "final response contract route-marker examples drifted or were duplicated",
+        re.findall(r"`(\[route: router → [^`\n]+\])`", final_contract)
+        == ["[route: router → <executed path>]"],
+        "root route visibility must contain only the generic compact marker",
     )
     for term in (
-        "Every final response MUST end with exactly one route marker",
-        "router-visible stages that actually execute",
-        "Do not omit or duplicate the marker",
-        "Explain routing only when requested",
-        "never reassess it",
-        "load skills, run workflows, or write state merely to produce",
+        "one truthful",
+        ".ai-workflow/routing.md",
+        "no extra work merely to produce",
     ):
-        require(term in final_contract_text, f"final response contract lacks: {term}")
+        require(term in final_contract_text, f"route visibility contract lacks: {term}")
     for skill_path in (PAYLOAD_ROOT / "skills").glob("*/SKILL.md"):
         require("[route: router" not in skill_path.read_text(encoding="utf-8"), f"route contract is duplicated in {skill_path}")
 

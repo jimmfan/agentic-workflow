@@ -53,3 +53,14 @@ that versioned file, but their runtime guarantee remains separately unvalidated.
 Secondary adapters are not automatically merged into user-owned fixed
 configuration files. Direct native edits to the controller/active hook are
 denied; package update is the supported mutation path.
+
+VS Code does not currently expose a structured model-to-hook metadata channel,
+and `UserPromptSubmit` has no model-context output. The model therefore declares
+its route through the compact controller CLI. The session/root instruction path
+provides the exact protocol before first tool use; `PreToolUse` parses and
+records an exact declaration before the route gate and returns `allow` only for
+that framework-internal call. Shell metacharacters, alternate controller paths,
+unknown launchers, malformed arguments, and non-shell tools never receive that
+approval. This preserves the hard checkpoint without turning ordinary host
+actions into framework-approved operations. A future native semantic metadata
+channel can replace this transport behind the same controller contract.

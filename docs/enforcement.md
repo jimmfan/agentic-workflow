@@ -57,9 +57,9 @@ Research was refreshed from primary documentation on 2026-08-14.
 
 | Host | Current lifecycle surface | Enforcement consequence |
 |---|---|---|
-| GitHub Copilot in VS Code | Workspace `.github/hooks/*.json`; PascalCase `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, and `Stop`; structured JSON; PreToolUse deny; Stop continuation. The feature is **Preview**, may be organization-disabled, and does not run in an untrusted workspace. | Active reference adapter at `.github/hooks/agentic-workflow.json`. It enforces observable gates but is reported `partial/Preview`, never a hard adoption prerequisite. |
-| OpenAI Codex | Project `.codex/hooks.json` or config; trust is recorded against the hook definition; broad local tool coverage, but hosted and specialized paths can be uncovered. PreToolUse can deny and Stop can continue. | Shared controller supports Codex wire decisions. The template is opt-in because `.codex/hooks.json` may be user-owned and commands can start below the repository root. |
-| Claude Code | Project `.claude/settings.json`; PreToolUse/PostToolUse/Stop and related events; commands run with user permissions. Interactive trust and noninteractive `-p`/SDK behavior differ. | Shared controller supports the core decisions. The template is opt-in; fixed settings ownership and noninteractive trust require deliberate integration. Current provider skills remain unavailable because there is no `.claude/skills` projection. |
+| GitHub Copilot in VS Code | Workspace `.github/hooks/*.json`; PascalCase `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, and `Stop`; structured JSON; PreToolUse allow/ask/deny; Stop continuation. `SessionStart` can inject model context, but `UserPromptSubmit` has common user-facing output only. The feature is **Preview**, may be organization-disabled, and does not run in an untrusted workspace. | Active reference adapter at `.github/hooks/agentic-workflow.json`. It auto-approves only strictly parsed controller declarations and enforces observable gates, but remains `partial/Preview`, never a hard adoption prerequisite. |
+| OpenAI Codex | Project `.codex/hooks.json` or config; trust is recorded against the hook definition; `UserPromptSubmit` can inject context; broad local tool coverage, but hosted and specialized paths can be uncovered. PreToolUse can deny and Stop can continue; permission approval is a separate event. | Shared controller supplies fresh prompt guidance and core wire decisions. The template is opt-in because `.codex/hooks.json` may be user-owned and commands can start below the repository root. |
+| Claude Code | Project `.claude/settings.json`; `UserPromptSubmit` can inject context; PreToolUse can allow/ask/deny, while managed deny/ask rules still win; commands run with user permissions. Interactive trust and noninteractive `-p`/SDK behavior differ. | Shared controller supplies fresh prompt guidance and auto-approves strictly parsed declarations. The template is opt-in; fixed settings ownership and noninteractive trust require deliberate integration. Current provider skills remain unavailable because there is no `.claude/skills` projection. |
 | GitHub Copilot CLI | Version-1 `.github/hooks/*.json`; both lower-camel native and PascalCase VS Code-compatible payloads; local command runtime and failure behavior differ from VS Code. | The versioned reference file is structurally discoverable, but live CLI enforcement is not release-validated or claimed. Instruction fallback remains. |
 | GitHub Copilot cloud agent | Discovers the repository hook file in an ephemeral Linux sandbox; event/runtime subset, restricted environment, and no interactive user approval. | The shared file may run, but cloud enforcement is not inferred from VS Code validation or claimed by this release. Instruction fallback remains. |
 
@@ -117,6 +117,33 @@ boundary: a compact root instruction, detailed owner document, machine check,
 and acceptance scenario may describe the same invariant. Detailed methodology
 is not copied into the root policy or controller.
 
+## Instruction placement
+
+The installed root policy is the always-loaded orchestration kernel. It owns
+only routing existence, authorization non-expansion, truthful execution claims,
+host/provider separation, preservation of user/canonical work, and
+evidence-grounded completion, plus minimum-process defaults and progressive
+loading pointers.
+
+Conditional detail has one installed owner:
+
+- `.ai-workflow/routing.md`: classification ladder, provider invocation/setup,
+  host availability fallback, composition, authorization examples, evidence
+  semantics, and route-marker labels;
+- `.ai-workflow/runtime/README.md` and `capabilities.json`: controller protocol,
+  host lifecycle surfaces, deterministic guarantees, and degradation;
+- `.ai-workflow/state/README.md`: durable conflicts, identifiers, pointers,
+  re-entry, and transitions;
+- `.ai-workflow/contracts/project-profile.md`: optional profile initialization,
+  precedence, commands, safety metadata, and maintenance; and
+- selected workflow/provider skills: specialized methodology, including
+  Implementation-owned TDD/Code Review composition and Verification procedure.
+
+This placement keeps hooks-off behavior safe: the root still supplies the
+universal semantic boundaries and directs every non-obvious route to the full
+installed routing contract. It does not duplicate controller state mechanics or
+load provider methodology for confidently direct work.
+
 ## State and privacy
 
 Transient controller state lives under the operating system temporary directory,
@@ -141,8 +168,9 @@ artifacts. The controller does not create a second durable workflow model.
   read credentials. Cloud-provided tokens remain host-owned and are not copied
   into state.
 - Controller declarations are parsed as an exact Python/script argv. Newlines,
-  shell operators, unknown trailing arguments, invalid enums, and unsafe compact
-  labels are rejected; arbitrary shell text is never interpreted as policy.
+  shell control/expansion syntax, alternate controller paths, ambiguous command
+  fields, unknown trailing arguments, invalid enums, and unsafe compact labels
+  are rejected; arbitrary shell text is never interpreted as policy.
 - Provider prerequisites, installed skill files, active state, and transient
   state reject path traversal and symlinked components. Native tool path text is
   normalized for Windows separators before protected-path checks.
@@ -157,8 +185,10 @@ artifacts. The controller does not create a second durable workflow model.
 
 ## Failure and fallback model
 
-- A policy denial returns structured hook output with exit code zero; normal
-  host approval behavior is preserved for allowed calls.
+- A policy denial returns structured hook output with exit code zero. The VS Code
+  adapter returns `allow` only for an exact framework declaration already
+  applied to transient state; all requested calls retain normal host approval
+  behavior, and a more restrictive hook or managed rule still wins.
 - A malformed controller transition stops processing with a concise diagnostic.
 - Stop blocks once. If the host reports `stop_hook_active`, or a second Stop
   arrives for the same failure, the controller returns a terminating failure
@@ -182,3 +212,8 @@ Preview and can change. If a host supplies neither a session ID nor a transcript
 path, concurrent sessions in the same project share the conservative fallback
 state key. These constraints are why the common contract is small, the fallback
 remains complete, and lifecycle status says `partial` rather than `enforced`.
+
+The VS Code transport still costs a compact model tool call because the host has
+no native semantic declaration channel. It should no longer produce a routine
+approval prompt, but the declaration can remain visible in tool history. A
+managed host rule or another hook can legitimately require approval or deny it.

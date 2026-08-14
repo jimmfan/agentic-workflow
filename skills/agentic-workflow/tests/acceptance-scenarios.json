@@ -376,5 +376,14 @@
     "expected_route": "normal/direct",
     "expected_behavior": "Status identifies VS Code as the Preview reference adapter and CLI/cloud as separate instruction-only runtimes in this release.",
     "evidence": "No PascalCase VS Code configuration is represented as validated CLI or cloud enforcement."
+  },
+  {
+    "id": 43,
+    "requirement": "The compact hooks-off kernel progressively loads enough policy for a non-direct route.",
+    "prompt": "Research whether Karpenter supports these scaling constraints and cite primary sources.",
+    "setup": "GitHub Copilot in VS Code has hooks disabled, while AGENTS.md, .ai-workflow/routing.md, providers.json, and the Research skill are installed and readable.",
+    "expected_route": "normal/research",
+    "expected_behavior": "The root recognizes that the request is not confidently direct, loads the detailed routing contract, resolves the compatible implicit provider, preserves authorization and canonical boundaries, and reports only work that actually executes.",
+    "evidence": "The route remains usable without controller state and ends truthfully as Research rather than direct, unavailable, or a simulated handoff."
   }
 ]

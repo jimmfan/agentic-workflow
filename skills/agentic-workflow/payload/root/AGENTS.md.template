@@ -1,98 +1,53 @@
-# AI engineering orchestration policy
+# Agentic Workflow
 
-Use host-native tools, sandbox, and approvals. Agentic Workflow routes and
-composes; upstream skills own their methodology. Hooks add deterministic checks,
-but these instructions remain binding when hooks do not run.
+Agentic Workflow is a small intent router over host tools and replaceable skills.
+Use host-native sandboxing and approvals. Code checks observable invariants where
+hooks run; this policy remains the semantic fallback when hooks do not run.
 
-## Routing requirement
+## Universal invariants
 
-Every user request MUST be evaluated through the Agentic Workflow router before
-execution.
+- Every request MUST be evaluated through the Agentic Workflow router. `direct`
+  is a first-class route.
+- Routing, skills, state, specifications, tickets, providers, and hooks MUST NOT
+  expand the authority granted by the user's request.
+- Execution and completion claims MUST be truthful: do not report an operation,
+  command, check, review, or workflow as executed or passed when it was not.
+- Selection, invocation capability, authorization, and execution are distinct.
+  Unavailable or user-only operations MUST NOT be simulated or silently replaced.
+- Unrelated user work, canonical identifiers/artifacts, and relevant active
+  durable state MUST be preserved; live source and accepted canonical artifacts
+  outrank profiles, memory, and chat.
+- Material completion claims MUST reflect actual evidence and distinguish failed,
+  blocked, skipped, and unavailable checks.
 
-Select the minimum useful primary workflow and any supporting capabilities
-according to the routing policy. Clear, bounded, low-risk work may route
-directly; `direct` is a valid route. Do not skip routing for simple work.
+## Routing defaults
 
-On explicit resume, validate `.ai-workflow/state/active.md` and continue its exact
-provider artifact or local record. Otherwise classify in this order:
+- Choose the minimum useful process. Keep clear, bounded, low-risk work direct.
+- Choose one dominant workflow or activity and add only supporting capabilities
+  that materially help; availability alone is not a reason to invoke one.
+- Honor explicitly named installed skills, subject to authorization and host
+  compatibility.
+- Reuse trustworthy evidence and prefer provider-owned methodology over repeated
+  framework stages.
+- Load detailed policy and context only after it becomes relevant to the route.
 
-1. Honor an explicitly named installed skill.
-2. Use upstream `teach` for sustained learning, not an ordinary answer.
-3. Use upstream `wayfinder` for a huge, foggy effort that cannot fit one session;
-   use `workflow-discovery` for a bounded consequential decision.
-4. Use `workflow-debugging` for an unexplained failure. Diagnosis never
-   authorizes a fix.
-5. Use upstream `research` for substantive research, not a simple lookup.
-6. For settled work, use `to-spec` for useful durability, `to-tickets` for
-   multi-session dependency ordering, then `workflow-implementation` for one
-   coherent scope.
-7. Use `workflow-verification` after meaningful changes or to audit completion,
-   reusing evidence. Use `code-review` directly only outside an `implement` run.
-8. Handle other clear, bounded, low-risk work directly.
+## Load only when relevant
 
-## Execution and enforcement
+- For a named skill, resume, uncertain route, or any route not confidently
+  direct, read `.ai-workflow/routing.md` before substantive execution.
+- After selection, read only the selected skill and the needed provider metadata;
+  do not load unrelated skills merely because they are installed.
+- When lifecycle hooks report enforcement active, use their supplied checkpoint
+  on every prompt before substantive tools and their action declaration before
+  opaque tools; `direct` remains valid and declarations never expand authority.
+  Load `.ai-workflow/runtime/README.md` only for conditional transitions.
+- Before durable workflow mutation, read `.ai-workflow/state/README.md`. Before
+  profile mutation, read `.ai-workflow/contracts/project-profile.md`.
+- Project-profile maintenance is opportunistic: prefer a small update only when
+  verified durable knowledge emerges naturally and writes are authorized.
 
-Selection, invocation, and execution are separate. Resolve each selected
-operation's pin, prerequisites, and host policy from
-`.ai-workflow/providers.json`; invoke only as allowed. For a user-only
-selection, give `$<name>` for Codex or `/<name>` for Copilot. A handoff does not
-execute, simulate, authorize, or write. Stop on unavailable/incompatible
-operations; never use a retired local copy.
+## Route visibility
 
-GitHub Copilot in VS Code is the reference host. When its installed hook is
-active, use `.ai-workflow/runtime/README.md`: record route and authority before
-substantive tools, classify opaque actions, record provider outcomes, validate
-durable transitions, and record verification evidence. Declarations report
-model judgments; they do not expand authorization or host approvals.
-
-Claude Code receives this policy but has no `.claude/skills` projection. Report
-skill-backed routes unavailable; keep direct work available. Codex and Claude
-hooks are opt-in because fixed settings may be user-owned. Copilot CLI/cloud are
-separate runtimes, not aliases for VS Code.
-
-After selecting a configuration-dependent operation, check its prerequisites.
-If missing, select user-only `setup-matt-pocock-skills` through the same gate;
-never run it automatically or check it for unrelated direct work.
-
-Before another durable route, inspect `active.md` and resolve conflicts. Record
-a provider pointer only after execution begins, continuity needs it, and writes
-are authorized. Selection/handoff never writes state. Preserve provider-native
-artifacts and identifiers; do not create shadows.
-
-Upstream `implement` composes `tdd` and closes with `code-review`; do not repeat
-those stages. Provider instructions never expand authorization: do not commit,
-publish, mutate trackers, run setup, or write course artifacts unless requested.
-Naming one external read-only target authorizes only that read.
-
-Read the project profile only for needed facts. If uninitialized, recommend one
-bounded initialization when writes are authorized; never block unrelated work.
-Cache only verified durable facts found naturally. Source, accepted decisions,
-and canonical artifacts outrank profiles, pointers, memory, and chat.
-
-Never invent a command. Separate checks run from skipped, blocked, or unavailable
-checks. Before completion, decide if verification is required and record relevant
-observed evidence. Accept a limitation only with user or policy authorization.
-
-## Final response contract
-
-Every final response MUST end with exactly one route marker:
-
-`[route: router → <path>]`
-
-Report router-visible stages that actually execute, in order. `direct` is valid.
-Suffix a user-only selection with `-handoff`, a host limit with `-unavailable`,
-and a gate stop with `-blocked`.
-
-`workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and
-`workflow-verification` shorten to `discovery`, `debugging`, `implement`, and
-`verification` in markers.
-
-Examples:
-
-`[route: router → direct]`
-
-`[route: router → discovery → research]`
-
-`[route: router → implement → verification]`
-
-Do not omit or duplicate the marker. Explain routing only when requested; never reassess it, load skills, run workflows, or write state merely to produce the marker.
+For v0.x visibility, end with one truthful
+`[route: router → <executed path>]` marker. Follow `.ai-workflow/routing.md` for
+labels, and do no extra work merely to produce the marker.

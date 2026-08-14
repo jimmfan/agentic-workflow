@@ -9,6 +9,8 @@
       "fallback": "AGENTS.md instruction contract",
       "lifecycle": "Preview",
       "notes": [
+        "SessionStart plus the root policy supplies the protocol because UserPromptSubmit cannot inject model context.",
+        "Strictly parsed framework declarations are auto-approved; other hooks and managed rules remain more restrictive.",
         "PreToolUse can deny structured native tool calls and declared opaque actions.",
         "PostToolUse reports host-level tool completion, not semantic command success.",
         "Stop can request one continuation; the controller then terminates instead of looping.",
@@ -23,6 +25,7 @@
       "lifecycle": "host hooks",
       "notes": [
         "Project hook settings require host trust and user review.",
+        "UserPromptSubmit can inject fresh protocol guidance; permission approval remains a distinct host event.",
         "Not every hosted or specialized tool path is hook-covered.",
         "Agentic Workflow does not merge or overwrite an existing .codex/hooks.json."
       ]
@@ -35,6 +38,7 @@
       "lifecycle": "host hooks",
       "notes": [
         "Agentic Workflow does not merge or overwrite an existing .claude/settings.json.",
+        "UserPromptSubmit injects fresh protocol guidance, and exact declarations are eligible for PreToolUse allow without overriding deny or ask rules.",
         "The current provider projection remains unavailable under .claude/skills.",
         "Noninteractive trust behavior requires independent review before enablement."
       ]

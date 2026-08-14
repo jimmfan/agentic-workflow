@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -118,8 +119,22 @@ class ControllerTests(unittest.TestCase):
         )
         self.assertTrue(changed)
         specific = output.get("hookSpecificOutput", {})
-        self.assertNotEqual(specific.get("permissionDecision"), "deny", output)
+        self.assertEqual(specific.get("permissionDecision"), "allow", output)
         return str(specific.get("additionalContext", ""))
+
+    def test_session_bootstrap_is_actionable_before_the_first_tool(self) -> None:
+        output = CONTROLLER.handle_hook(
+            {**self.payload, "hook_event_name": "SessionStart", "source": "new"},
+            "vscode",
+        )
+        context = output["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("For every user prompt", context)
+        self.assertIn("`direct` is valid", context)
+        self.assertIn("controller.py checkpoint --route direct", context)
+        self.assertIn("--next-action read-only", context)
+        self.assertIn("controller.py action --kind <kind>", context)
+        self.assertIn("never expand user authority", context)
+        CONTROLLER.remove_state(CONTROLLER.state_path(self.root, self.payload, "vscode"))
 
     def test_route_checkpoint_is_required_before_substantive_tool(self) -> None:
         output, _changed = CONTROLLER.handle_pre_tool(
@@ -135,7 +150,12 @@ class ControllerTests(unittest.TestCase):
         )
         specific = output["hookSpecificOutput"]
         self.assertEqual(specific["permissionDecision"], "deny")
-        self.assertIn("route checkpoint", specific["permissionDecisionReason"])
+        reason = specific["permissionDecisionReason"]
+        self.assertIn("Route checkpoint missing", reason)
+        self.assertIn("controller.py checkpoint", reason)
+        self.assertIn("`direct` is valid", reason)
+        self.assertIn("--next-action <kind>", reason)
+        self.assertIn("never grant authority", reason)
 
         output, _changed = CONTROLLER.handle_pre_tool(
             {**self.payload, "tool_name": "read_file", "tool_input": {"path": "README.md"}},
@@ -161,6 +181,95 @@ class ControllerTests(unittest.TestCase):
             "vscode",
         )
         self.assertEqual(allowed, {})
+
+    def test_exact_declaration_is_auto_approved_but_shell_lookalikes_are_not(self) -> None:
+        valid = {
+            **self.payload,
+            "tool_name": "run_in_terminal",
+            "tool_input": {
+                "command": (
+                    "python3 .ai-workflow/runtime/controller.py checkpoint --route direct "
+                    "--mode read-only --repository-write denied --verification not-required"
+                )
+            },
+            "tool_use_id": "valid-declaration",
+        }
+        accepted, changed = CONTROLLER.handle_pre_tool(
+            valid, self.state, self.root, "vscode"
+        )
+        self.assertTrue(changed)
+        self.assertEqual(
+            accepted["hookSpecificOutput"]["permissionDecision"],
+            "allow",
+        )
+
+        for command in (
+            "python3 .ai-workflow/runtime/controller.py checkpoint --route direct; touch x",
+            "python3 .ai-workflow/runtime/controller.py checkpoint --route $(touch x)",
+            "/usr/bin/python3 .ai-workflow/runtime/controller.py checkpoint --route direct",
+            "python3 /tmp/.ai-workflow/runtime/controller.py checkpoint --route direct",
+        ):
+            fresh = CONTROLLER.new_state(self.root, self.payload, "vscode")
+            denied, changed = CONTROLLER.handle_pre_tool(
+                {
+                    **self.payload,
+                    "tool_name": "run_in_terminal",
+                    "tool_input": {"command": command},
+                    "tool_use_id": command,
+                },
+                fresh,
+                self.root,
+                "vscode",
+            )
+            self.assertFalse(changed, command)
+            self.assertEqual(
+                denied["hookSpecificOutput"]["permissionDecision"],
+                "deny",
+                command,
+            )
+            self.assertIsNone(fresh["route"], command)
+
+        fresh = CONTROLLER.new_state(self.root, self.payload, "vscode")
+        ambiguous_fields, changed = CONTROLLER.handle_pre_tool(
+            {
+                **self.payload,
+                "tool_name": "run_in_terminal",
+                "tool_input": {
+                    "command": valid["tool_input"]["command"],
+                    "script": "touch x",
+                },
+                "tool_use_id": "ambiguous-command-fields",
+            },
+            fresh,
+            self.root,
+            "vscode",
+        )
+        self.assertFalse(changed)
+        self.assertEqual(
+            ambiguous_fields["hookSpecificOutput"]["permissionDecision"],
+            "deny",
+        )
+        self.assertIsNone(fresh["route"])
+
+        fresh = CONTROLLER.new_state(self.root, self.payload, "vscode")
+        read_output, changed = CONTROLLER.handle_pre_tool(
+            {
+                **self.payload,
+                "tool_name": "read_file",
+                "tool_input": {
+                    "command": (
+                        "python3 .ai-workflow/runtime/controller.py checkpoint --route direct"
+                    )
+                },
+                "tool_use_id": "wrong-tool",
+            },
+            fresh,
+            self.root,
+            "vscode",
+        )
+        self.assertTrue(changed)
+        self.assertEqual(read_output, {})
+        self.assertIsNone(fresh["route"])
 
     def test_diagnosis_checkpoint_denies_native_repository_write(self) -> None:
         self.management(
@@ -233,6 +342,69 @@ class ControllerTests(unittest.TestCase):
             {**shell, "tool_use_id": "shell-two"}, self.state, self.root, "vscode"
         )
         self.assertEqual(denied_again["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def test_terminal_commands_stay_opaque_and_use_declared_authority(self) -> None:
+        context = self.management(
+            "python3 .ai-workflow/runtime/controller.py checkpoint --route direct "
+            "--mode read-only --repository-write denied --verification not-required "
+            "--next-action read-only"
+        )
+        self.assertIn("route checkpoint recorded", context)
+
+        read = {
+            **self.payload,
+            "tool_name": "run_in_terminal",
+            "tool_input": {"command": "git log -3 --oneline"},
+            "tool_use_id": "read-git-history",
+        }
+        allowed, _changed = CONTROLLER.handle_pre_tool(
+            read, self.state, self.root, "vscode"
+        )
+        self.assertEqual(allowed, {})
+        CONTROLLER.handle_post_tool(read, self.state)
+        self.assertFalse(self.state["repository_changed"])
+        self.assertEqual(self.state["last_successful_tool"]["kind"], "read-only")
+
+        ambiguous, _changed = CONTROLLER.handle_pre_tool(
+            {
+                **read,
+                "tool_input": {"command": "python3 scripts/report.py"},
+                "tool_use_id": "ambiguous-command",
+            },
+            self.state,
+            self.root,
+            "vscode",
+        )
+        self.assertEqual(
+            ambiguous["hookSpecificOutput"]["permissionDecision"],
+            "deny",
+        )
+        self.assertIn(
+            "Declare the next opaque tool action",
+            ambiguous["hookSpecificOutput"]["permissionDecisionReason"],
+        )
+
+        self.management(
+            "python3 .ai-workflow/runtime/controller.py action --kind repository-write"
+        )
+        mutating, _changed = CONTROLLER.handle_pre_tool(
+            {
+                **read,
+                "tool_input": {"command": "touch generated.txt"},
+                "tool_use_id": "mutating-command",
+            },
+            self.state,
+            self.root,
+            "vscode",
+        )
+        self.assertEqual(
+            mutating["hookSpecificOutput"]["permissionDecision"],
+            "deny",
+        )
+        self.assertIn(
+            "read-only route checkpoint",
+            mutating["hookSpecificOutput"]["permissionDecisionReason"],
+        )
 
     def test_external_and_destructive_declarations_remain_authorization_gated(self) -> None:
         self.management(
@@ -535,6 +707,10 @@ class ControllerTests(unittest.TestCase):
         }
         accepted = CONTROLLER.handle_hook(declaration, "vscode")
         self.assertIn("additionalContext", accepted["hookSpecificOutput"])
+        self.assertEqual(
+            accepted["hookSpecificOutput"]["permissionDecision"],
+            "allow",
+        )
 
         allowed = CONTROLLER.handle_hook(
             {
@@ -548,6 +724,146 @@ class ControllerTests(unittest.TestCase):
         )
         self.assertEqual(allowed, {})
         CONTROLLER.remove_state(CONTROLLER.state_path(self.root, self.payload, "vscode"))
+
+    def test_vscode_command_adapter_emits_checkpoint_approval_on_stdout(self) -> None:
+        prompt = subprocess.run(
+            [sys.executable, str(CONTROLLER_PATH), "hook", "--host", "vscode"],
+            input=json.dumps(
+                {
+                    **self.payload,
+                    "hook_event_name": "UserPromptSubmit",
+                    "prompt": "Inspect recent git history.",
+                }
+            ),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(prompt.returncode, 0, prompt.stderr)
+        self.assertEqual(json.loads(prompt.stdout), {})
+
+        checkpoint = subprocess.run(
+            [sys.executable, str(CONTROLLER_PATH), "hook", "--host", "vscode"],
+            input=json.dumps(
+                {
+                    **self.payload,
+                    "hook_event_name": "PreToolUse",
+                    "tool_name": "run_in_terminal",
+                    "tool_input": {
+                        "command": (
+                            "python3 .ai-workflow/runtime/controller.py checkpoint "
+                            "--route direct --mode read-only --repository-write denied "
+                            "--verification not-required --next-action read-only"
+                        )
+                    },
+                    "tool_use_id": "wire-process-checkpoint",
+                }
+            ),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(checkpoint.returncode, 0, checkpoint.stderr)
+        output = json.loads(checkpoint.stdout)
+        self.assertEqual(
+            output["hookSpecificOutput"]["permissionDecision"],
+            "allow",
+        )
+
+        terminal = subprocess.run(
+            [sys.executable, str(CONTROLLER_PATH), "hook", "--host", "vscode"],
+            input=json.dumps(
+                {
+                    **self.payload,
+                    "hook_event_name": "PreToolUse",
+                    "tool_name": "run_in_terminal",
+                    "tool_input": {"command": "git log -3 --oneline"},
+                    "tool_use_id": "wire-process-git-log",
+                }
+            ),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(terminal.returncode, 0, terminal.stderr)
+        self.assertEqual(json.loads(terminal.stdout), {})
+        CONTROLLER.remove_state(CONTROLLER.state_path(self.root, self.payload, "vscode"))
+
+    def test_prompt_reset_does_not_inherit_route_and_next_checkpoint_is_approved(self) -> None:
+        prompt = {
+            **self.payload,
+            "hook_event_name": "UserPromptSubmit",
+            "prompt": "Inspect recent git history.",
+        }
+        self.assertEqual(CONTROLLER.handle_hook(prompt, "vscode"), {})
+
+        checkpoint = {
+            **self.payload,
+            "hook_event_name": "PreToolUse",
+            "tool_name": "run_in_terminal",
+            "tool_input": {
+                "command": (
+                    "python3 .ai-workflow/runtime/controller.py checkpoint --route direct "
+                    "--mode read-only --repository-write denied --verification not-required "
+                    "--next-action read-only"
+                )
+            },
+            "tool_use_id": "prompt-a-checkpoint",
+        }
+        first = CONTROLLER.handle_hook(checkpoint, "vscode")
+        self.assertEqual(first["hookSpecificOutput"]["permissionDecision"], "allow")
+
+        second_prompt = {
+            **prompt,
+            "prompt": "Now inspect a different part of the repository.",
+        }
+        self.assertEqual(CONTROLLER.handle_hook(second_prompt, "vscode"), {})
+        path = CONTROLLER.state_path(self.root, self.payload, "vscode")
+        reset = CONTROLLER.load_state(path, self.root, self.payload, "vscode")
+        self.assertIsNone(reset["route"])
+        self.assertIsNone(reset["pending_action"])
+
+        second = {**checkpoint, "tool_use_id": "prompt-b-checkpoint"}
+        accepted = CONTROLLER.handle_hook(second, "vscode")
+        self.assertEqual(accepted["hookSpecificOutput"]["permissionDecision"], "allow")
+        current = CONTROLLER.load_state(path, self.root, self.payload, "vscode")
+        self.assertEqual(current["route"], "direct")
+        CONTROLLER.remove_state(path)
+
+    def test_hosts_with_prompt_context_support_receive_fresh_protocol_guidance(self) -> None:
+        for host in ("codex", "claude-code"):
+            output = CONTROLLER.handle_hook(
+                {
+                    **self.payload,
+                    "hook_event_name": "UserPromptSubmit",
+                    "prompt": "Inspect recent git history.",
+                },
+                host,
+            )
+            specific = output["hookSpecificOutput"]
+            self.assertEqual(specific["hookEventName"], "UserPromptSubmit")
+            self.assertIn("controller.py checkpoint", specific["additionalContext"])
+            CONTROLLER.remove_state(CONTROLLER.state_path(self.root, self.payload, host))
+
+        claude_state = CONTROLLER.new_state(self.root, self.payload, "claude-code")
+        accepted, changed = CONTROLLER.handle_pre_tool(
+            {
+                **self.payload,
+                "tool_name": "Bash",
+                "tool_input": {
+                    "command": (
+                        "python3 .ai-workflow/runtime/controller.py checkpoint --route direct "
+                        "--mode read-only --repository-write denied --verification not-required"
+                    )
+                },
+                "tool_use_id": "claude-checkpoint",
+            },
+            claude_state,
+            self.root,
+            "claude-code",
+        )
+        self.assertTrue(changed)
+        self.assertEqual(accepted["hookSpecificOutput"]["permissionDecision"], "allow")
 
     def test_stop_generated_continuation_does_not_reset_turn_state(self) -> None:
         self.state["route"] = "implement"

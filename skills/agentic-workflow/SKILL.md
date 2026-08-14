@@ -20,6 +20,11 @@ compatibility investigations. Hooks are not a hard prerequisite: the installed
 root policy remains the functional fallback and `status` reports host
 enforcement separately from package integrity.
 
+The installed root is a compact orchestration kernel. Detailed classification,
+provider invocation, composition, state, and route-output behavior is
+progressively loaded from `.ai-workflow/routing.md` and the selected owner
+contracts rather than duplicated in always-loaded context.
+
 The purpose of the coordinated path is to prevent a project from receiving only
 half of the framework. Install and dry-run preflight both local ownership and
 provider compatibility before writes. A successful install leaves the compact

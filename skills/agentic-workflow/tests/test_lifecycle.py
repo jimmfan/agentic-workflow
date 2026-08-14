@@ -491,7 +491,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertIn("installed and verified", result.stdout)
         self.assertTrue((target / "AGENTS.md").is_file())
         self.assertIn(
-            "[route: router → <path>]",
+            "[route: router → <executed path>]",
             (target / "AGENTS.md").read_text(encoding="utf-8"),
         )
         claude = (target / "CLAUDE.md").read_bytes()
@@ -499,6 +499,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(managed, b"@AGENTS.md\n")
         self.assertEqual(project, b"")
         self.assertTrue((target / ".agents/skills/workflow-discovery/SKILL.md").is_file())
+        self.assertTrue((target / ".ai-workflow/routing.md").is_file())
         self.assertTrue((target / ".ai-workflow/runtime/controller.py").is_file())
         self.assertTrue((target / ".github/hooks/agentic-workflow.json").is_file())
         self.assertFalse((target / ".agents/skills/workflow-teach").exists())
@@ -517,7 +518,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(status.returncode, 0, status.stderr)
         self.assertIn("Installation is clean", status.stdout)
 
-    def test_fresh_install_places_route_contract_at_managed_policy_edges(self) -> None:
+    def test_fresh_install_places_small_kernel_and_progressive_route_contract(self) -> None:
         target = git_repository(self.base / "salient-route-contract")
 
         installed = adopt(ADOPT, "install", target)
@@ -530,31 +531,24 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(data.count(ADOPTER.MANAGED_BEGIN), 1)
         self.assertEqual(data.count(ADOPTER.MANAGED_END), 1)
         self.assertEqual(data.count(ADOPTER.PROJECT_BEGIN), 1)
-        self.assertEqual(policy.count("## Routing requirement"), 1)
-        self.assertLess(policy.index("## Routing requirement"), 500)
-        self.assertLess(
-            policy.index("## Routing requirement"),
-            policy.index("On explicit resume"),
-        )
+        self.assertEqual(policy.count("## Universal invariants"), 1)
+        self.assertLess(policy.index("## Universal invariants"), 500)
         self.assertIn(
-            "Every user request MUST be evaluated through the Agentic Workflow router",
+            "Every request MUST be evaluated through the Agentic Workflow router",
             policy,
         )
-        self.assertEqual(policy.count("## Final response contract"), 1)
+        self.assertIn("When lifecycle hooks report enforcement active", policy)
+        self.assertIn("checkpoint\n  on every prompt before substantive tools", policy)
+        self.assertIn("declarations never expand authority", policy)
+        self.assertEqual(policy.count("## Route visibility"), 1)
         self.assertTrue(
-            policy.rstrip().endswith("write state merely to produce the marker.")
+            policy.rstrip().endswith("do no extra work merely to produce the marker.")
         )
-        self.assertIn(
-            "Every final response MUST end with exactly one route marker",
-            policy,
-        )
-        for marker in (
-            "[route: router → <path>]",
-            "[route: router → direct]",
-            "[route: router → discovery → research]",
-            "[route: router → implement → verification]",
-        ):
-            self.assertEqual(policy.count(f"`{marker}`"), 1)
+        self.assertEqual(policy.count("`[route: router → <executed path>]`"), 1)
+        self.assertLess(len(policy.encode("utf-8")), 3200)
+        routing = (target / ".ai-workflow/routing.md").read_text(encoding="utf-8")
+        for name in ("wayfinder", "teach", "research", "to-spec", "to-tickets", "implement"):
+            self.assertIn(name, routing)
 
     def test_reference_hook_is_owned_transactionally_and_modified_bytes_are_preserved(self) -> None:
         target = git_repository(self.base / "reference-hook-lifecycle")
@@ -2471,20 +2465,20 @@ class LifecycleTests(unittest.TestCase):
         source_relative = "root/AGENTS.md.template"
         old_source_path = old_package / "payload" / source_relative
         old_source = old_source_path.read_text(encoding="utf-8")
-        old_source = old_source.replace("## Routing requirement", "## Routing", 1)
+        old_source = old_source.replace("## Universal invariants", "## Invariants", 1)
         old_source = old_source.replace(
-            "Every user request MUST be evaluated through the Agentic Workflow router before\nexecution.",
-            "Evaluate each request through the router before execution.",
+            "Every request MUST be evaluated through the Agentic Workflow router.",
+            "Evaluate each request through the router.",
             1,
         )
         old_source = old_source.replace(
-            "## Final response contract",
+            "## Route visibility",
             "## Route output",
             1,
         )
         old_source = old_source.replace(
-            "Every final response MUST end with exactly one route marker:",
-            "Append one route marker:",
+            "For v0.x visibility, end with one truthful",
+            "Append one route marker using",
             1,
         )
         old_source_path.write_text(old_source, encoding="utf-8")
@@ -2503,8 +2497,8 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(installed.returncode, 0, installed.stderr)
         policy_path = target / "AGENTS.md"
         old_managed, _ = ADOPTER.parse_composite_policy(policy_path.read_bytes())
-        self.assertNotIn(b"## Routing requirement", old_managed)
-        self.assertNotIn(b"## Final response contract", old_managed)
+        self.assertNotIn(b"## Universal invariants", old_managed)
+        self.assertNotIn(b"## Route visibility", old_managed)
 
         project = b"# Project instructions\n\nKeep this project-owned guidance.\n"
         policy_path.write_bytes(ADOPTER.compose_policy(old_managed, project))
@@ -2528,15 +2522,9 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(data.count(ADOPTER.MANAGED_END), 1)
         self.assertEqual(data.count(ADOPTER.PROJECT_BEGIN), 1)
         text = managed.decode("utf-8")
-        self.assertEqual(text.count("## Routing requirement"), 1)
-        self.assertEqual(text.count("## Final response contract"), 1)
-        for marker in (
-            "[route: router → <path>]",
-            "[route: router → direct]",
-            "[route: router → discovery → research]",
-            "[route: router → implement → verification]",
-        ):
-            self.assertEqual(text.count(f"`{marker}`"), 1)
+        self.assertEqual(text.count("## Universal invariants"), 1)
+        self.assertEqual(text.count("## Route visibility"), 1)
+        self.assertEqual(text.count("`[route: router → <executed path>]`"), 1)
 
     def test_update_rejects_locally_modified_managed_policy_without_mutation(self) -> None:
         target = git_repository(self.base / "locally-modified-managed-policy")
@@ -3581,20 +3569,21 @@ class LifecycleTests(unittest.TestCase):
 
     def test_route_observability_contract_is_centralized_and_compact(self) -> None:
         policy = (PACKAGE / "payload/root/AGENTS.md.template").read_text(encoding="utf-8")
-        start = policy.index("## Final response contract")
+        routing = (PACKAGE / "payload/ai-workflow/routing.md").read_text(encoding="utf-8")
+        start = policy.index("## Route visibility")
         route_instruction = policy[start:]
         compact_instruction = " ".join(route_instruction.split())
-        self.assertLessEqual(len(route_instruction.encode("utf-8")), 900)
+        self.assertLessEqual(len(route_instruction.encode("utf-8")), 400)
         self.assertTrue(
-            policy.rstrip().endswith("write state merely to produce the marker.")
+            policy.rstrip().endswith("do no extra work merely to produce the marker.")
         )
-        self.assertIn("router-visible stages that actually execute", compact_instruction)
-        self.assertIn("Explain routing only when requested", compact_instruction)
-        self.assertIn("never reassess it", compact_instruction)
-        self.assertIn(
-            "load skills, run workflows, or write state merely to produce",
-            compact_instruction,
-        )
+        self.assertIn("one truthful", compact_instruction)
+        self.assertIn(".ai-workflow/routing.md", compact_instruction)
+        self.assertIn("no extra work merely to produce", compact_instruction)
+        self.assertNotIn("-handoff", policy)
+        self.assertIn("<skill>-handoff", routing)
+        self.assertIn("router-selected stages", routing)
+        self.assertIn("Do not reroute", routing)
         for skill in (PACKAGE / "payload/skills").glob("*/SKILL.md"):
             self.assertNotIn("[route: router", skill.read_text(encoding="utf-8"))
 
@@ -3734,7 +3723,7 @@ class LifecycleTests(unittest.TestCase):
         policy = (PACKAGE / "payload/root/AGENTS.md.template").read_text(encoding="utf-8")
         self.assertNotIn("wayfinder:map", policy)
         self.assertNotIn("wayfinder:research", policy)
-        self.assertLess(len(policy.encode("utf-8")), 5000)
+        self.assertLess(len(policy.encode("utf-8")), 3200)
 
     def test_package_is_path_independent(self) -> None:
         copied = self.base / "nested/location/agentic-workflow"

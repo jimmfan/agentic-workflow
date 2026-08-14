@@ -40,13 +40,22 @@ the canonical uninitialized seed and non-destructive recognition of the legacy
 uninitialized seed; existing project-owned profiles are never rewritten.
 
 `test_controller.py` exercises the host-neutral enforcement core directly. It
-covers the pre-execution route checkpoint, diagnosis-mode native write denial,
-single-use opaque-action declarations, truthful user-only provider execution,
+covers actionable session bootstrap, exact-declaration auto-approval and
+lookalike rejection, per-prompt route reset, the pre-execution route checkpoint,
+direct/read-only terminal work, ambiguous and mutating opaque commands,
+diagnosis-mode native write denial, truthful user-only provider execution,
 digest-bound durable-state conflict resolution, evidence-linked completion,
 metadata-only transient state, and one-block Stop loop prevention. Static checks
 validate the active VS Code Preview adapter and keep Codex, Claude Code, Copilot
 CLI, and Copilot cloud capability claims distinct. This is hermetic contract
-coverage, not proof that a live host loaded its hooks.
+coverage, not proof that a live host loaded its hooks or suppressed an approval
+dialog.
+
+Workflow contract tests keep the installed root policy within its orchestration
+kernel budget and verify that detailed routing, invocation, composition, host,
+state, verification, and route-label behavior remains available from the
+managed progressive routing contract. Lifecycle tests inspect both the composed
+installed `AGENTS.md` and `.ai-workflow/routing.md`.
 
 Synthetic historical-package fixtures receive explicit fixture-only
 accepted-predecessor records in their copied new package. They exercise the

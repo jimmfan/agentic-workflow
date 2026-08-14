@@ -11,10 +11,17 @@ repository.
 
 The gate also validates the VS Code reference hook schema, host capability
 matrix, controller runtime contract, and executable controller scenarios for
-route checkpointing, diagnosis-only write denial, truthful provider execution,
-durable-state conflicts, verification evidence, metadata privacy, and bounded
-Stop behavior. These tests prove controller/package behavior; they are not live
-validation inside VS Code, Codex, Claude Code, Copilot CLI, or Copilot cloud.
+fresh-prompt protocol bootstrap, exact-declaration auto-approval, route
+checkpointing/reset, opaque terminal actions, diagnosis-only write denial,
+truthful provider execution, durable-state conflicts, verification evidence,
+metadata privacy, and bounded Stop behavior. These tests prove controller/package
+behavior; they are not live validation inside VS Code, Codex, Claude Code,
+Copilot CLI, or Copilot cloud.
+
+The workflow contract check separately enforces the compact root-policy budget,
+the six audited universal hard invariants, progressive-loading pointers, and the
+complete installed `.ai-workflow/routing.md` contract. Lifecycle tests inspect
+the composed installed `AGENTS.md`, not only its source template.
 
 The static provider gate requires the reviewed `mattpocock/skills` repository,
 tag `v1.2.3`, immutable commit, exact curated capability mapping, semantic
@@ -149,10 +156,17 @@ For the primary VS Code reference check, use a trusted disposable workspace and
 confirm that `.github/hooks/agentic-workflow.json` appears in the Agent
 Customizations hooks view. Open **Developer: Show Agent Debug Logs** and verify
 that SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, and Stop load.
-Exercise one diagnosis-mode native write denial and one required-verification
-Stop continuation. Record the VS Code/Copilot version and whether organization
-policy enables hooks. This manually validates the Preview host surface and must
-be reported separately from the hermetic release gate. Removing the disposable
+Start a new chat with “Inspect the recent git history and summarize what
+changed.” Confirm that Copilot records a direct/read-only checkpoint before
+`git log`, that the checkpoint declaration's PreToolUse result is `allow`, and
+that no **Run bash command?** prompt appears for the checkpoint. Any prompt for
+the actual `git` command is governed by VS Code and is not a framework failure.
+Then submit a second prompt and confirm the first route is reset and the next
+checkpoint is again accepted without a preliminary denial. Exercise one
+diagnosis-mode native write denial and one required-verification Stop
+continuation. Record the VS Code/Copilot version and whether organization policy
+enables hooks. This manually validates the Preview host surface and must be
+reported separately from the hermetic release gate. Removing the disposable
 workspace reverses the test; no production project should be used.
 
 For GitHub Copilot, inspect Chat Diagnostics or the agent customization view and

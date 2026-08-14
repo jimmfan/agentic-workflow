@@ -87,6 +87,7 @@ WRITE_TOOL_MARKERS = (
 )
 WRITE_TOOL_NAMES = {"edit", "write", "delete", "move", "rename"}
 SHELL_TOOL_MARKERS = ("terminal", "shell", "bash", "execcommand", "runcommand")
+MANAGEMENT_SHELL_TOOLS = {"bash", "runinterminal", "runterminalcommand"}
 ACTION_KINDS = {
     "read-only",
     "external-read",
@@ -320,6 +321,7 @@ def command_parser() -> argparse.ArgumentParser:
         "--verification", choices=("required", "not-required", "unspecified"), default="unspecified"
     )
     checkpoint.add_argument("--provider", action="append", default=[])
+    checkpoint.add_argument("--next-action", choices=sorted(ACTION_KINDS))
 
     action = subparsers.add_parser("action", add_help=False, exit_on_error=False)
     action.add_argument("--kind", choices=sorted(ACTION_KINDS), required=True)
@@ -350,7 +352,10 @@ def command_parser() -> argparse.ArgumentParser:
 
 
 def management_argv(command: str) -> Optional[list[str]]:
-    if any(character in command for character in ("\n", "\r", "\x00")):
+    # This is intentionally a tiny declaration grammar, not a shell parser. A
+    # command with any shell control/expansion syntax must remain an ordinary
+    # opaque action and must never inherit the declaration auto-approval.
+    if any(character in command for character in "\n\r\x00;&|<>`$(){}*?[]!#"):
         return None
     try:
         values = shlex.split(command, posix=os.name != "nt")
@@ -358,11 +363,8 @@ def management_argv(command: str) -> Optional[list[str]]:
         return None
     if not values:
         return None
-    disallowed = {";", "&&", "||", "|", ">", ">>", "<", "2>", "&"}
-    if any(value in disallowed for value in values):
-        return None
     index = 0
-    executable = Path(values[index].strip('"')).name.lower()
+    executable = values[index].strip('"').lower()
     if executable in {"py", "py.exe"}:
         index += 1
         if index < len(values) and values[index] == "-3":
@@ -374,7 +376,10 @@ def management_argv(command: str) -> Optional[list[str]]:
     if index >= len(values):
         return None
     controller = values[index].replace("\\", "/").strip('"')
-    if not controller.endswith(".ai-workflow/runtime/controller.py"):
+    if controller not in {
+        ".ai-workflow/runtime/controller.py",
+        "./.ai-workflow/runtime/controller.py",
+    }:
         return None
     return values[index + 1 :]
 
@@ -389,7 +394,7 @@ def command_candidates(value: object) -> list[str]:
         item = value.get(key)
         if isinstance(item, str):
             candidates.append(item)
-    return candidates
+    return candidates if len(candidates) == 1 else []
 
 
 def parse_management(tool_input: object) -> Optional[argparse.Namespace]:
@@ -402,6 +407,10 @@ def parse_management(tool_input: object) -> Optional[argparse.Namespace]:
         except (argparse.ArgumentError, SystemExit):
             raise ControllerError("invalid Agentic Workflow controller declaration")
     return None
+
+
+def is_management_shell_tool(tool_name: object) -> bool:
+    return normalize_tool_name(tool_name) in MANAGEMENT_SHELL_TOOLS
 
 
 def parse_active_workflow(root: Path) -> tuple[str, str]:
@@ -456,7 +465,7 @@ def apply_management(
         state["verification"] = {"requirement": args.verification, "evidence": []}
         state["selected_providers"] = provider_names
         state["provider_outcomes"] = {}
-        state["pending_action"] = None
+        state["pending_action"] = args.next_action
         return f"route checkpoint recorded: {args.route}"
 
     if not state.get("route"):
@@ -600,9 +609,23 @@ def deny(reason: str, host: str) -> Mapping[str, object]:
     }
 
 
-def pre_tool_output(reason: Optional[str], host: str, context: Optional[str] = None) -> Mapping[str, object]:
+def pre_tool_output(
+    reason: Optional[str],
+    host: str,
+    context: Optional[str] = None,
+    *,
+    approve_internal: bool = False,
+) -> Mapping[str, object]:
     if reason:
         return deny(reason, host)
+    if approve_internal and host in {"vscode", "claude-code"}:
+        output: MutableMapping[str, object] = {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "allow",
+        }
+        if context:
+            output["additionalContext"] = context
+        return {"hookSpecificOutput": output}
     if context:
         return {
             "hookSpecificOutput": {
@@ -611,6 +634,39 @@ def pre_tool_output(reason: Optional[str], host: str, context: Optional[str] = N
             }
         }
     return {}
+
+
+def controller_launcher() -> str:
+    return "py -3" if os.name == "nt" else "python3"
+
+
+def protocol_guidance() -> str:
+    launcher = controller_launcher()
+    return (
+        "Agentic Workflow enforcement is active. For every user prompt, choose a semantic route "
+        "before substantive tools; `direct` is valid. For a direct read-only terminal task, run "
+        f"exactly: `{launcher} .ai-workflow/runtime/controller.py checkpoint --route direct "
+        "--mode read-only --repository-write denied --verification not-required --next-action "
+        "read-only`. Choose different declared values when the request differs. Before each later "
+        f"terminal or opaque action, run `{launcher} .ai-workflow/runtime/controller.py action "
+        "--kind <kind>`. Declarations record transient framework metadata only and never expand "
+        "user authority."
+    )
+
+
+def missing_checkpoint_reason(kind: str) -> str:
+    launcher = controller_launcher()
+    opaque = (
+        " Append `--next-action <kind>` before retrying this opaque tool."
+        if kind == "opaque"
+        else ""
+    )
+    return (
+        "Route checkpoint missing. Choose the semantic route (`direct` is valid), then run "
+        f"`{launcher} .ai-workflow/runtime/controller.py checkpoint --route '<selected-route>' "
+        "--mode normal --repository-write denied --verification unspecified`; replace the declared "
+        f"values to match the request.{opaque} Declarations never grant authority."
+    )
 
 
 def validate_authorization(state: Mapping[str, object], kind: str) -> Optional[str]:
@@ -637,16 +693,23 @@ def handle_pre_tool(
     host: str,
 ) -> tuple[Mapping[str, object], bool]:
     tool_input = payload.get("tool_input")
-    management = parse_management(tool_input)
+    management = (
+        parse_management(tool_input)
+        if is_management_shell_tool(payload.get("tool_name"))
+        else None
+    )
     if management is not None:
         message = apply_management(management, state, root, host)
-        return pre_tool_output(None, host, message), True
+        return pre_tool_output(
+            None,
+            host,
+            message,
+            approve_internal=True,
+        ), True
 
     kind = classify_tool(payload.get("tool_name"))
     if kind not in {"read-only", "neutral"} and not state.get("route"):
-        return pre_tool_output(
-            "Record the Agentic Workflow route checkpoint before substantive tool use.", host
-        ), False
+        return pre_tool_output(missing_checkpoint_reason(kind), host), False
 
     effective_kind = kind
     if kind == "opaque":
@@ -718,7 +781,9 @@ def handle_pre_tool(
 
 
 def handle_post_tool(payload: Mapping[str, object], state: MutableMapping[str, object]) -> None:
-    if parse_management(payload.get("tool_input")) is not None:
+    if is_management_shell_tool(payload.get("tool_name")) and parse_management(
+        payload.get("tool_input")
+    ) is not None:
         return
     tool_id = payload.get("tool_use_id")
     identifier = compact_hash(str(tool_id)) if tool_id is not None else json_hash(
@@ -795,11 +860,7 @@ def handle_hook(payload: Mapping[str, object], host: str) -> Mapping[str, object
         return {
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
-                "additionalContext": (
-                    "Agentic Workflow enforcement is active. Before substantive tools, record a route "
-                    "checkpoint with .ai-workflow/runtime/controller.py; declare each opaque action; "
-                    "record provider outcomes and verification evidence before completion."
-                ),
+                "additionalContext": protocol_guidance(),
             }
         }
 
@@ -816,6 +877,13 @@ def handle_hook(payload: Mapping[str, object], host: str) -> Mapping[str, object
         state = new_state(root, payload, host)
         state["user_invoked_providers"] = provider_invocations(prompt, root, host)
         save_state(path, state)
+        if host in {"codex", "claude-code"}:
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "UserPromptSubmit",
+                    "additionalContext": protocol_guidance(),
+                }
+            }
         return {}
     if event == "PreToolUse":
         output, changed = handle_pre_tool(payload, state, root, host)

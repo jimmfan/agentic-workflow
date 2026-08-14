@@ -132,6 +132,7 @@ target-project/
     ├── install-manifest.json # framework ownership and checksums
     ├── provider-state.json   # provider ownership and checksums
     ├── providers.json        # tested capability mapping
+    ├── routing.md            # progressively loaded detailed router contract
     ├── project-profile.md    # project-owned seed
     ├── contracts/
     ├── observability/        # optional, inert export analyzer

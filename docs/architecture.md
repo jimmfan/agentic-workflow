@@ -81,6 +81,14 @@ outcomes, native repository-write authorization, digest-bound durable-state
 transitions, and completion evidence. Opaque operations require a one-use model
 classification; the controller does not parse arbitrary shell semantics.
 
+VS Code exposes no documented structured channel for a model to send its own
+semantic route directly to a lifecycle hook, and `UserPromptSubmit` cannot inject
+model context. The reference adapter therefore keeps the compact controller CLI
+as the declaration transport. Session/root context supplies the protocol before
+tool use, and `PreToolUse` auto-approves only a strictly parsed framework
+declaration after applying it to transient state. All requested terminal and
+other host actions remain separate tool calls under ordinary host policy.
+
 Codex and Claude Code adapters are shipped as opt-in examples under
 `.ai-workflow/runtime/adapters/` because their fixed project settings may
 already be user-owned and their trust/runtime contracts differ. Copilot CLI and
@@ -94,6 +102,13 @@ Per-session controller state is metadata-only and lives under the operating
 system temporary directory. It is not repository truth, contains no prompt or
 tool content, and is deleted after a successful completion gate. Canonical
 durable state remains in `.ai-workflow/state/` or provider-native artifacts.
+
+The installed root policy is intentionally only an orchestration kernel and
+hooks-off semantic fallback. Detailed classification, invocation, composition,
+and route-output rules live in `.ai-workflow/routing.md` and load only for a
+named skill, resume, uncertain route, or route that is not confidently direct.
+Selected skills, provider metadata, runtime, state, and profile contracts then
+load only when that route needs them.
 
 ## Provider selection
 
@@ -168,6 +183,7 @@ customization paths:
 payload/root/AGENTS.md.template  -> AGENTS.md
 payload/root/CLAUDE.md.template  -> CLAUDE.md
 payload/skills/*/SKILL.md        -> .agents/skills/*/SKILL.md
+payload/ai-workflow/routing.md   -> .ai-workflow/routing.md
 payload/ai-workflow/...          -> .ai-workflow/...
 payload/hosts/vscode-agentic-workflow.json -> .github/hooks/agentic-workflow.json
 gh skill exact upstream paths    -> .agents/skills/<upstream-name>/...

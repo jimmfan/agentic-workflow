@@ -9,11 +9,13 @@ methods come from curated upstream skills installed under `.agents/skills/`.
 Their tested source, version, revision, subtree identities, complete file lists,
 and capability mapping are declared in `providers.json`.
 
-The root `AGENTS.md` is the small always-on router. Detailed skill bodies load
-only when the host actually invokes them, not merely when the router selects a
-user-only handoff. Framework-owned local skills remain for bounded Discovery,
-diagnosis with authorization controls, implementation integration, and
-acceptance/integration Verification:
+The root `AGENTS.md` is a small always-on orchestration kernel and hooks-off
+semantic fallback. Detailed selection, invocation, composition, and route-output
+rules live in `routing.md`, which loads only for a named skill, resume, uncertain
+route, or route not confidently direct. Skill bodies load only after selection
+and, for user-only providers, actual invocation. Framework-owned local skills
+remain for bounded Discovery, diagnosis with authorization controls,
+implementation integration, and acceptance/integration Verification:
 
 ```text
 request -> router
