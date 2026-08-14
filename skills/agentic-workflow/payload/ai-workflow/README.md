@@ -40,8 +40,9 @@ only through an intentional ai-workflow update. Missing or incompatible
 dependencies fail with a diagnostic; the router never falls back to a retired
 local fork.
 
-GitHub CLI 2.90.0 or newer is required for install and update. Runtime use and
-status verification read ordinary repository files and do not contact upstream.
+Python 3.11 or newer and GitHub CLI 2.97.0 or newer are required for install and
+update. Runtime use and status verification read ordinary repository files and
+do not contact upstream.
 Project-scoped `.agents/skills` is shared by Codex and GitHub Copilot. Removal
 deletes only checksum-clean skills that ai-workflow installed and preserves
 pre-existing compatible or locally changed skill directories.
@@ -80,6 +81,17 @@ Each final response ends with one effective route line, for example
 `[route: router → implement → verification]`. It lists only stages or upstream
 skills that materially affected the response; availability alone does not count
 and reporting the route never causes another skill load or state write.
+
+## Optional observability
+
+`observability/analyze.py` is an inert, read-only utility for explicitly chosen
+OTLP or Copilot JSON exports. It enables no host telemetry, reads no project
+source, stores no data, creates no database, and is never called by the router
+or a workflow. Its deterministic metadata-only report can compare observed
+skill sequences, model calls, tokens, tools, duration, and errors when native
+single-session debugging is insufficient. See
+[`observability/README.md`](observability/README.md) for input compatibility,
+privacy, exact opt-in and reversal steps, controlled experiments, and limits.
 
 ## Wayfinder identity boundary
 

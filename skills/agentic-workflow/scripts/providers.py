@@ -23,10 +23,17 @@ SKILLS_RELATIVE = PurePosixPath(".agents/skills")
 VERSION = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 SHA = re.compile(r"[0-9a-f]{40}")
 SKILL_NAME = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+MINIMUM_PYTHON = (3, 11)
 
 
 class ProviderError(RuntimeError):
     """A provider declaration, dependency, or lifecycle invariant failed."""
+
+
+def require_supported_python() -> None:
+    if sys.version_info < MINIMUM_PYTHON:
+        found = ".".join(str(part) for part in sys.version_info[:3])
+        raise ProviderError(f"Python 3.11 or newer is required; found Python {found}")
 
 
 def sha256(path: Path) -> str:
@@ -212,10 +219,11 @@ def verify_skill(
 
 
 def find_gh(provider: Mapping[str, object]) -> Path:
+    minimum_text = str(provider["minimum_gh_version"])
     command = shutil.which("gh")
     if command is None:
         raise ProviderError(
-            "GitHub CLI 2.90.0 or newer with `gh skill` is required; install or update gh, "
+            f"GitHub CLI {minimum_text} or newer with `gh skill` is required; install or update gh, "
             "verify with `gh --version` and `gh skill --help`, then rerun this command"
         )
     result = subprocess.run([command, "--version"], capture_output=True, text=True)
@@ -224,7 +232,7 @@ def find_gh(provider: Mapping[str, object]) -> Path:
     match = re.search(r"gh version ([0-9]+\.[0-9]+\.[0-9]+)", result.stdout)
     if match is None:
         raise ProviderError(f"cannot determine GitHub CLI version from: {result.stdout.strip()!r}")
-    minimum = parse_version(str(provider["minimum_gh_version"]), "minimum_gh_version")
+    minimum = parse_version(minimum_text, "minimum_gh_version")
     if parse_version(match.group(1), "GitHub CLI version") < minimum:
         raise ProviderError(
             f"GitHub CLI {provider['minimum_gh_version']} or newer is required; found {match.group(1)} at {command}"
@@ -624,6 +632,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
+    require_supported_python()
     args = parse_args(argv or sys.argv[1:])
     if args.action == "status" and args.dry_run:
         raise ProviderError("--dry-run is not valid for status")

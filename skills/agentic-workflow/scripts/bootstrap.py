@@ -25,6 +25,7 @@ MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
 MAX_MEMBERS = 500
 EXECUTABLE_PACKAGE_PATHS = frozenset()
+MINIMUM_PYTHON = (3, 11)
 ARCHIVE_MODE_VARIANTS = {
     0o644: {0o644, 0o664},
     0o755: {0o755, 0o775},
@@ -33,6 +34,12 @@ ARCHIVE_MODE_VARIANTS = {
 
 class BootstrapError(RuntimeError):
     """A bounded bootstrap failure with an actionable message."""
+
+
+def require_supported_python() -> None:
+    if sys.version_info < MINIMUM_PYTHON:
+        found = ".".join(str(part) for part in sys.version_info[:3])
+        raise BootstrapError(f"Python 3.11 or newer is required; found Python {found}")
 
 
 def request_bytes(url: str) -> bytes:
@@ -184,6 +191,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
+    require_supported_python()
     args = parse_args(argv or sys.argv[1:])
     target = args.target.expanduser().resolve()
     if not target.is_dir():

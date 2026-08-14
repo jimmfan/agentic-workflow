@@ -1,8 +1,10 @@
 {
   "checksums": {
-    "ai-workflow/README.md": "b298d84a132a5d016267bf01d6ee6dbc07e38fab0af8c1893e3be4a8f506da85",
+    "ai-workflow/README.md": "73ebfe85a0383d9f381235c4a3ce617136436c1b4bad2f12d2c48dea81806124",
     "ai-workflow/contracts/project-profile.md": "31a41742b4e878123d6f1c0c7bdb80263bbb43fb9088f93581a289876b7f5f05",
-    "ai-workflow/providers.json": "88f6ac49e2d51ede4ce95e51891edae9e9c9e1f92ffbe914e8b5c96d0b4e1493",
+    "ai-workflow/observability/README.md": "b4a97a538adb0a2fd8b536010c77a1d9b4b587d0b645c291f640da945c5fa4b0",
+    "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
+    "ai-workflow/providers.json": "840ed9deab447cf9cf52280e578127af93a558b3c3456b6fcf803efb51c8e142",
     "ai-workflow/state/README.md": "8c8836e401527b366fae994dd978eeef11a83c6793307df4e6b0ededdc314c1b",
     "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
     "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
@@ -23,6 +25,14 @@
     {
       "source": "ai-workflow/contracts/project-profile.md",
       "target": "ai-workflow/contracts/project-profile.md"
+    },
+    {
+      "source": "ai-workflow/observability/README.md",
+      "target": "ai-workflow/observability/README.md"
+    },
+    {
+      "source": "ai-workflow/observability/analyze.py",
+      "target": "ai-workflow/observability/analyze.py"
     },
     {
       "source": "ai-workflow/providers.json",
@@ -73,7 +83,7 @@
       "target": ".agents/skills/workflow-verification/SKILL.md"
     }
   ],
-  "framework_version": "0.5.0",
+  "framework_version": "0.6.0",
   "project_seeds": [
     {
       "source": "ai-workflow/templates/project-profile.md",

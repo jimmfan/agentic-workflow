@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -20,6 +21,8 @@ PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 MANIFEST_PATH = PAYLOAD_ROOT / "distribution" / "manifest.json"
 ROUTE_SCENARIOS_PATH = PACKAGE_ROOT / "tests" / "route-observability-scenarios.json"
 PROVIDERS_PATH = PAYLOAD_ROOT / "ai-workflow" / "providers.json"
+OBSERVABILITY_ANALYZER = PAYLOAD_ROOT / "ai-workflow" / "observability" / "analyze.py"
+OBSERVABILITY_GUIDE = PAYLOAD_ROOT / "ai-workflow" / "observability" / "README.md"
 SEMVER = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 SKILLS = (
     "workflow-debugging",
@@ -57,6 +60,7 @@ WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
 PROVIDER_REPOSITORY = "mattpocock/skills"
 PROVIDER_VERSION = "v1.2.3"
 PROVIDER_REVISION = "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e"
+MINIMUM_PYTHON = (3, 11)
 PROVIDER_CAPABILITIES = {
     "code-review": "code-review",
     "implementation": "implement",
@@ -86,6 +90,12 @@ PROVIDER_SKILLS = {
 
 class VerificationError(RuntimeError):
     """A package invariant failed."""
+
+
+def require_supported_python() -> None:
+    if sys.version_info < MINIMUM_PYTHON:
+        found = ".".join(str(part) for part in sys.version_info[:3])
+        raise VerificationError(f"Python 3.11 or newer is required; found Python {found}")
 
 
 def require(condition: bool, message: str) -> None:
@@ -211,6 +221,8 @@ def check_structure() -> None:
         MANIFEST_PATH,
         PAYLOAD_ROOT / "ai-workflow" / "README.md",
         PAYLOAD_ROOT / "ai-workflow" / "providers.json",
+        OBSERVABILITY_ANALYZER,
+        OBSERVABILITY_GUIDE,
     ]
     required.extend(PAYLOAD_ROOT / "skills" / name / "SKILL.md" for name in SKILLS)
     for path in required:
@@ -222,6 +234,42 @@ def check_structure() -> None:
         fields = parse_frontmatter(path)
         require(fields.get("name") == name, f"skill name does not match directory: {name}")
         require(bool(fields.get("description")), f"skill lacks description: {name}")
+
+
+def check_python_runtime_contract() -> None:
+    entry_points = [
+        PACKAGE_ROOT / "scripts" / "adopt.py",
+        PACKAGE_ROOT / "scripts" / "bootstrap.py",
+        PACKAGE_ROOT / "scripts" / "lifecycle.py",
+        PACKAGE_ROOT / "scripts" / "providers.py",
+        PACKAGE_ROOT / "scripts" / "verify_package.py",
+        OBSERVABILITY_ANALYZER,
+    ]
+    for path in entry_points:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        assignments = {
+            target.id: ast.literal_eval(node.value)
+            for node in tree.body
+            if isinstance(node, ast.Assign)
+            for target in node.targets
+            if isinstance(target, ast.Name) and target.id == "MINIMUM_PYTHON"
+        }
+        require(
+            assignments.get("MINIMUM_PYTHON") == MINIMUM_PYTHON,
+            f"entry point must declare Python {MINIMUM_PYTHON[0]}.{MINIMUM_PYTHON[1]} minimum: {path}",
+        )
+        main = next(
+            (node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "main"),
+            None,
+        )
+        first_statement = main.body[0] if main is not None and main.body else None
+        require(
+            isinstance(first_statement, ast.Expr)
+            and isinstance(first_statement.value, ast.Call)
+            and isinstance(first_statement.value.func, ast.Name)
+            and first_statement.value.func.id == "require_supported_python",
+            f"entry point must check Python before other work: {path}",
+        )
 
 
 def check_filesystem_entries() -> None:
@@ -391,8 +439,8 @@ def check_provider_contract() -> None:
         "provider minimum GitHub CLI version must be semantic",
     )
     require(
-        tuple(int(part) for part in minimum.split(".")) >= (2, 90, 0),
-        "provider minimum GitHub CLI version predates gh skill",
+        tuple(int(part) for part in minimum.split(".")) >= (2, 97, 0),
+        "provider minimum GitHub CLI version predates the reviewed security baseline",
     )
     skills = provider.get("skills")
     require(isinstance(skills, list), "provider skills must be an array")
@@ -502,6 +550,74 @@ def check_wayfinder_ownership_contract() -> None:
         require(term in scenario_text, f"Wayfinder acceptance coverage lacks: {term}")
 
 
+def check_observability_contract() -> None:
+    try:
+        tree = ast.parse(OBSERVABILITY_ANALYZER.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError) as exc:
+        raise VerificationError(f"cannot parse optional observability analyzer: {exc}") from exc
+    imports = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imports.update(alias.name.split(".", 1)[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imports.add(node.module.split(".", 1)[0])
+    allowed = {
+        "__future__",
+        "argparse",
+        "dataclasses",
+        "hashlib",
+        "json",
+        "pathlib",
+        "re",
+        "statistics",
+        "sys",
+        "typing",
+    }
+    require(imports <= allowed, "optional observability analyzer must use the Python standard library only")
+    analyzer = OBSERVABILITY_ANALYZER.read_text(encoding="utf-8")
+    for forbidden in (
+        "sqlite3",
+        "subprocess",
+        "urllib",
+        "socket",
+        ".write_text(",
+        ".write_bytes(",
+        "/Users/",
+        "/tmp/",
+        "C:\\\\",
+    ):
+        require(forbidden not in analyzer, f"optional observability analyzer crosses its read-only boundary: {forbidden}")
+    require("1.133" not in analyzer, "observability capability detection must not use a VS Code version gate")
+    require('"capabilities"' in analyzer, "observability output must report detected capabilities")
+    require('decode("utf-8-sig")' in analyzer, "observability analyzer must accept a UTF-8 BOM")
+    require("splitlines(keepends=True)" in analyzer, "observability analyzer must normalize platform line endings")
+    guide = OBSERVABILITY_GUIDE.read_text(encoding="utf-8")
+    for term in (
+        "github.copilot.chat.otel.captureContent",
+        "outer-invoke-fallback",
+        "no skill event observed",
+        "Developer: Reload Window",
+        "outside all\nsource repositories",
+        "VS Code 1.133.x",
+        "cross-platform by design",
+        "live-tested only on Apple Silicon macOS",
+    ):
+        require(term in guide, f"optional observability guide lacks required boundary: {term}")
+    runtime = "\n".join(
+        [
+            (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8"),
+            *[
+                path.read_text(encoding="utf-8")
+                for path in (PAYLOAD_ROOT / "skills").glob("*/SKILL.md")
+            ],
+        ]
+    )
+    require(
+        "observability/analyze.py" not in runtime,
+        "portable router and workflow skills must not invoke the optional analyzer",
+    )
+
+
 def check_no_external_runtime() -> None:
     forbidden_paths = []
     forbidden_text = []
@@ -561,9 +677,12 @@ def check_installed_skill_references() -> None:
 
 
 def run_tests() -> None:
+    environment = dict(os.environ)
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
     result = subprocess.run(
         [sys.executable, "-m", "unittest", "discover", "-s", str(PACKAGE_ROOT / "tests"), "-p", "test_*.py", "-v"],
         cwd=PACKAGE_ROOT,
+        env=environment,
     )
     require(result.returncode == 0, "package lifecycle tests failed")
 
@@ -576,17 +695,20 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 
 def main(argv: Iterable[str] = ()) -> int:
+    require_supported_python()
     args = parse_args(list(argv))
     if args.refresh_manifest:
         refresh_manifest()
     checks = (
         check_structure,
+        check_python_runtime_contract,
         check_filesystem_entries,
         check_manifest,
         check_inert_payload,
         check_workflow_contract,
         check_provider_contract,
         check_wayfinder_ownership_contract,
+        check_observability_contract,
         check_no_external_runtime,
         check_markdown_links,
         check_installed_skill_references,

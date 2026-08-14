@@ -15,7 +15,7 @@ without loading every workflow body into every prompt.
 
 ## Curated provider baseline
 
-Version 0.5.0 is tested against upstream tag `v1.2.3`, commit
+Version 0.6.0 is tested against upstream tag `v1.2.3`, commit
 `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`. The declaration in
 `ai-workflow/providers.json` pins the exact tag, subtree SHA, upstream path, and
 complete file inventory for each selected skill.
@@ -40,12 +40,64 @@ authorization, external-signal handling, and durable resume state.
 
 ## Prerequisites
 
-Installation needs Python 3.9+, HTTPS access to GitHub, and GitHub CLI 2.90.0
+Installation needs Python 3.11+, HTTPS access to GitHub, and GitHub CLI 2.97.0
 or newer with the public-preview `gh skill` command. The installer requires an
 authenticated GitHub.com CLI session before writing a fresh dependency set;
 this avoids unauthenticated API rate limits and makes dependency preflight
 reliable. Runtime work and local provider verification use ordinary repository
-files and do not contact upstream.
+files and do not contact upstream. Python 3.11 is the compatibility floor, not
+an exact pin: newer supported Python 3 releases are accepted.
+
+First, verify Python in the **same macOS host Terminal, VS Code Dev Container
+terminal, Linux shell, or native Windows PowerShell that owns the target
+project**. These checks are read-only and must report Python 3.11 or newer:
+
+```bash
+python3 --version
+```
+
+```powershell
+py -3 --version
+```
+
+If macOS reports an older version, run the following in the **macOS host
+Terminal**. This persistently installs Homebrew's current supported Python,
+refreshes the shell's command lookup for the current session, and verifies the
+interpreter selected by the public commands below:
+
+```bash
+brew install python
+hash -r
+python3 --version
+```
+
+If native Windows reports an older version, run the following in **native
+Windows PowerShell**. This persistently installs the current Python 3.14 release
+line and verifies that the Python launcher can select it:
+
+```powershell
+winget install --id Python.Python.3.14 --exact
+py -3.14 --version
+```
+
+Use `py -3.14` in place of `py -3` in later commands if another installed
+Python remains the launcher's default. In a **Debian 12, Ubuntu 24.04, or newer
+Linux host or Dev Container terminal**, the distribution Python satisfies the
+floor; this persistent install and read-only verification are sufficient:
+
+```bash
+sudo apt update
+sudo apt install python3 -y
+python3 --version
+```
+
+If that reports less than 3.11, use a newer supported distribution or Dev
+Container base before installation; the framework deliberately does not direct
+users to replace an operating system's managed Python. To reverse only the
+optional Python installs above, use `brew uninstall python` in the macOS host
+Terminal or `winget uninstall --id Python.Python.3.14 --exact` in native Windows
+PowerShell. Do not remove a distribution-managed `python3`, because operating
+system tools may depend on it.
 
 Install and authenticate `gh` in the **same environment that owns the target
 project**. For a normal macOS checkout, that is the macOS host Terminal. For a
@@ -57,7 +109,7 @@ stores a credential in the platform credential store when one is available.
 ### macOS
 
 In the **macOS host Terminal**, this persistently installs GitHub CLI with
-Homebrew. If it is already installed but older than 2.90.0, use the upgrade
+Homebrew. If it is already installed but older than 2.97.0, use the upgrade
 command instead. GitHub lists Homebrew as its supported macOS package path.
 
 ```bash
@@ -220,6 +272,7 @@ target-project/
     ├── install-manifest.json           # local payload ownership/checksums
     ├── project-profile.md              # project-owned seed
     ├── contracts/
+    ├── observability/                   # inert optional export analyzer
     ├── state/
     └── templates/
 ```
@@ -232,6 +285,14 @@ The provider skills are project scoped, which is the common `.agents/skills`
 location documented by GitHub CLI for Codex and GitHub Copilot. Detailed skill
 bodies load on demand. The root router is under 5 KB and contains capability
 names and integration boundaries, not copied provider prompt bodies.
+
+The optional observability directory contains a read-only, standard-library
+analyzer for user-supplied OTLP or Copilot JSON exports. It is never imported by
+the router or a workflow, enables no telemetry, stores no data, and is fully
+documented in
+[`ai-workflow/observability/README.md`](skills/agentic-workflow/payload/ai-workflow/observability/README.md).
+The tested baseline, supported contracts, privacy boundary, limitations, and
+BUILD SMALLER decision are in [Optional observability](docs/observability.md).
 
 ## First runtime setup
 
@@ -362,7 +423,9 @@ skills/agentic-workflow/
 │   ├── distribution/manifest.json
 │   ├── root/AGENTS.md.template
 │   ├── skills/workflow-*/SKILL.md
-│   └── ai-workflow/providers.json
+│   └── ai-workflow/
+│       ├── providers.json
+│       └── observability/          # optional read-only export analyzer
 └── tests/
 ```
 
@@ -397,8 +460,8 @@ static files cannot prove that a running editor mounted its skill catalog.
 ## Requirements and limitations
 
 The supported target environments are macOS, Linux, and native Windows with
-Python 3.9+ and filesystem semantics visible to Python. Fresh provider install
-also needs GitHub CLI 2.90.0+, HTTPS access, and GitHub.com authentication. Git
+Python 3.11+ and filesystem semantics visible to Python. Fresh provider install
+also needs GitHub CLI 2.97.0+, HTTPS access, and GitHub.com authentication. Git
 is recommended but not required by the installer.
 
 Routing is instruction-driven, not host telemetry. The compact route line is an

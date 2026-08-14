@@ -40,11 +40,18 @@ REVIEWED_SOURCE_MODES = {0o644, 0o755}
 WINDOWS_ORDINARY_SOURCE_MODES = {0o444, 0o555, 0o666, 0o777}
 EXECUTABLE_PAYLOAD_PATHS = frozenset()
 DEFAULT_CREATED_MODE = 0o644
+MINIMUM_PYTHON = (3, 11)
 OwnedMapping = Tuple[PurePosixPath, PurePosixPath]
 
 
 class AdoptionError(RuntimeError):
     """A recoverable validation or safety failure."""
+
+
+def require_supported_python() -> None:
+    if sys.version_info < MINIMUM_PYTHON:
+        found = ".".join(str(part) for part in sys.version_info[:3])
+        raise AdoptionError(f"Python 3.11 or newer is required; found Python {found}")
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -792,6 +799,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
+    require_supported_python()
     args = parse_args(argv or sys.argv[1:])
     if args.action == "status" and args.dry_run:
         raise AdoptionError("--dry-run is not valid for status")

@@ -39,7 +39,7 @@ Review plus their obsolete learning/ticket templates. Upstream artifacts and
 identifiers remain canonical; framework state stores only pointers and return
 targets.
 
-Install providers through GitHub CLI 2.90.0 or newer with an authenticated
+Install providers through GitHub CLI 2.97.0 or newer with an authenticated
 GitHub.com session. Preflight local and provider ownership before writes. Record
 created versus pre-existing-compatible origins and all file checksums. Never
 overwrite an incompatible same-named skill. Status remains local. Removal

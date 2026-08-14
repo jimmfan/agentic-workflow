@@ -107,9 +107,24 @@ the package verifier. `lifecycle.py` coordinates preflight and mutation.
 provider transaction through GitHub CLI. Installed repositories do not need the
 source checkout or bootstrap package at runtime.
 
+## Optional observability boundary
+
+The installed `ai-workflow/observability/analyze.py` is a leaf utility, not a
+runtime component. No root policy, local skill, provider skill, lifecycle
+script, state template, or verification route imports or invokes it. It reads
+only user-named telemetry exports, emits only to standard output, and uses no
+database or third-party dependency. This preserves portable instruction-driven
+routing even when VS Code, Copilot, OpenTelemetry, and SQLite are absent.
+
+Native Agent Debug remains the per-session diagnostic UI, and an existing OTLP
+collector/backend remains the production storage/dashboard path. The optional
+normalizer adds only framework-aware, privacy-reduced cross-run summaries. Its
+Preview format adapters and lifecycle decision are documented in
+[Optional observability](observability.md).
+
 ## Provider lifecycle and pinning
 
-GitHub CLI 2.90.0 or newer is the provider installer. `providers.py` calls
+GitHub CLI 2.97.0 or newer is the provider installer. `providers.py` calls
 `gh skill install` with the exact upstream directory, `--pin v1.2.3`, project
 scope, and the Codex target (which resolves to the common `.agents/skills`
 location). It then independently validates:

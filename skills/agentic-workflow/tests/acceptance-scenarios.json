@@ -273,7 +273,7 @@
     "id": 31,
     "requirement": "Dependency installation is portable, pinned, complete, and metadata-bearing.",
     "prompt": "Install ai-workflow into this non-Git project.",
-    "setup": "GitHub CLI 2.90.0 or newer is on PATH on macOS, Windows, or Linux.",
+    "setup": "GitHub CLI 2.97.0 or newer is on PATH on macOS, Windows, or Linux.",
     "expected_route": "installation/provider-lifecycle",
     "expected_behavior": "Use gh skill exact-path project installs at the declared tag, copy full skill directories, and verify source/ref/tree metadata.",
     "evidence": "All declared files exist under .agents/skills and provider status is clean."

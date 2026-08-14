@@ -10,7 +10,7 @@
     "tickets": "to-tickets"
   },
   "provider": {
-    "minimum_gh_version": "2.90.0",
+    "minimum_gh_version": "2.97.0",
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
     "revision": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",

@@ -136,6 +136,15 @@ class LifecycleTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
+    def test_all_entry_points_require_supported_python(self) -> None:
+        modules = (ADOPTER, BOOTSTRAPPER, LIFECYCLE_MANAGER, PROVIDER_MANAGER, VERIFIER)
+        for module in modules:
+            with self.subTest(module=module.__name__):
+                self.assertEqual(module.MINIMUM_PYTHON, (3, 11))
+                with mock.patch.object(module.sys, "version_info", (3, 10, 14)):
+                    with self.assertRaisesRegex(RuntimeError, "Python 3.11 or newer is required"):
+                        module.require_supported_python()
+
     def test_fresh_install_is_one_operation_and_verified(self) -> None:
         target = git_repository(self.base / "target")
         result = adopt(ADOPT, "install", target)
@@ -363,6 +372,17 @@ class LifecycleTests(unittest.TestCase):
             with self.assertRaisesRegex(PROVIDER_MANAGER.ProviderError, "gh auth login"):
                 PROVIDER_MANAGER.find_gh(provider)
 
+    def test_provider_rejects_gh_before_security_baseline(self) -> None:
+        provider, _ = PROVIDER_MANAGER.load_declaration()
+        response = subprocess.CompletedProcess([], 0, "gh version 2.96.0 (2026-07-15)\n", "")
+        with mock.patch.object(PROVIDER_MANAGER.shutil, "which", return_value="/fixture/gh"), mock.patch.object(
+            PROVIDER_MANAGER.subprocess,
+            "run",
+            return_value=response,
+        ):
+            with self.assertRaisesRegex(PROVIDER_MANAGER.ProviderError, "2.97.0 or newer"):
+                PROVIDER_MANAGER.find_gh(provider)
+
     def test_provider_declaration_maps_capabilities_without_router_prompt_copies(self) -> None:
         provider, skills = PROVIDER_MANAGER.load_declaration()
         declaration = json.loads(
@@ -406,7 +426,7 @@ class LifecycleTests(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 2)
-        self.assertIn("GitHub CLI 2.90.0 or newer", result.stderr)
+        self.assertIn("GitHub CLI 2.97.0 or newer", result.stderr)
         self.assertFalse((target / "AGENTS.md").exists())
         self.assertFalse((target / "CLAUDE.md").exists())
         self.assertFalse((target / ".agents").exists())

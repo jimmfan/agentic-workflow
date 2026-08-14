@@ -18,13 +18,18 @@ provider compatibility before writes. A successful install leaves the compact
 router, four local integration/safety skills, all complete pinned provider
 directories, and both clean ownership records in the target.
 
-Before a fresh provider install, GitHub CLI 2.90.0 or newer must expose
+Before a fresh provider install, GitHub CLI 2.97.0 or newer must expose
 `gh skill`, and `gh auth status --hostname github.com` must succeed. Install and
 authenticate `gh` in the same host, Dev Container, or Windows environment that
 owns the target project. Do not install `gh`, start login, or mutate a target
 unless the user has authorized the adoption task. Existing exact-compatible
 provider directories can be adopted without a network call; incompatible
 same-named skills always fail closed.
+
+All bootstrap and lifecycle entry points require Python 3.11 or newer and fail
+before network or target filesystem work on an older interpreter. The public
+README contains environment-specific installation, verification, side-effect,
+and reversal guidance; do not bypass the runtime check.
 
 For a deliberate install request, run the lifecycle once with `install`; it
 performs preflight, applies both components, rolls back a failed fresh install,
