@@ -185,7 +185,7 @@
     }
   ],
   "checksums": {
-    "ai-workflow/README.md": "8932e23bb6c2fb16d6541f3f1dc3835610f74f9e8510a277122742b5b1a4e922",
+    "ai-workflow/README.md": "d57bae19d11e8cc875053959a05599776b6600957a29a777a9a0352d8eaa5714",
     "ai-workflow/contracts/project-profile.md": "40aec342a9826cb9f9a248958394514b991d47339565bac13366b50d9bb9ab7f",
     "ai-workflow/observability/README.md": "42d845e0b16a43533503febb74ab05103adb0361fc8f820e9e71f5ff628da991",
     "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",

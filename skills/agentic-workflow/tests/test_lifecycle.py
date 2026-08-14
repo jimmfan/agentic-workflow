@@ -339,6 +339,107 @@ def write_provider_state(
     )
 
 
+def provider_declaration_document(provider: Mapping[str, object]) -> Mapping[str, object]:
+    declaration = json.loads(
+        (PACKAGE / "payload/ai-workflow/providers.json").read_text(encoding="utf-8")
+    )
+    declaration["provider"] = json.loads(json.dumps(provider))
+    return declaration
+
+
+def write_authenticated_provider_predecessor(
+    root: Path,
+    declaration: Mapping[str, object],
+    manifest_path: Path,
+    *,
+    framework_version: str = "0.6.9",
+    source_revision: str = "2" * 40,
+) -> None:
+    """Write fixture-only payload evidence that authenticates an old provider declaration."""
+    declaration_path = root / "ai-workflow/providers.json"
+    declaration_path.parent.mkdir(parents=True, exist_ok=True)
+    declaration_bytes = (
+        json.dumps(declaration, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
+    declaration_path.write_bytes(declaration_bytes)
+    digest = hashlib.sha256(declaration_bytes).hexdigest()
+    install_manifest = {
+        "framework_files": {
+            "ai-workflow/providers.json": {
+                "origin": "created",
+                "sha256": digest,
+                "source_sha256": digest,
+            }
+        },
+        "framework_version": framework_version,
+        "installed_at": "2026-08-14T00:00:00+00:00",
+        "project_owned": [],
+        "schema_version": 2,
+        "source_revision": source_revision,
+    }
+    (root / "ai-workflow/install-manifest.json").write_text(
+        json.dumps(install_manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    source_manifest = {
+        "accepted_predecessors": [
+            {
+                "framework_files": {"ai-workflow/providers.json": digest},
+                "framework_version": framework_version,
+                "install_manifest_schemas": [2],
+                "source_revisions": [source_revision],
+            }
+        ],
+        "schema_version": 3,
+    }
+    manifest_path.write_text(
+        json.dumps(source_manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+UPGRADED_PROVIDER_SUFFIX = b"Upstream fixture revision B.\n"
+
+
+def provider_upgrade_fixture(
+    provider: Mapping[str, object],
+    changed_names: set[str],
+    *,
+    change_identity: bool = True,
+) -> tuple[Mapping[str, object], list[Mapping[str, object]]]:
+    upgraded = json.loads(json.dumps(provider))
+    if change_identity:
+        upgraded["version"] = "v1.2.4"
+        upgraded["revision"] = "3" * 40
+    upgraded_skills = upgraded["skills"]
+    for skill in upgraded_skills:
+        if skill["name"] not in changed_names:
+            continue
+        changed_source = fixture_provider_source_files(skill)["SKILL.md"] + UPGRADED_PROVIDER_SUFFIX
+        skill["source_sha256"]["SKILL.md"] = hashlib.sha256(changed_source).hexdigest()
+        skill["tree_sha"] = "4" * 40
+    return upgraded, upgraded_skills
+
+
+def fake_upgraded_provider_install(
+    changed_names: set[str],
+):
+    def install(
+        _gh: Path,
+        root: Path,
+        provider: Mapping[str, object],
+        skill: Mapping[str, object],
+        *,
+        directory: Optional[Path] = None,
+    ) -> None:
+        installed = write_provider_skill(root, provider, skill, skills_root=directory)
+        if skill["name"] in changed_names:
+            path = installed / "SKILL.md"
+            path.write_bytes(path.read_bytes() + UPGRADED_PROVIDER_SUFFIX)
+
+    return install
+
+
 class LifecycleTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="agentic-workflow-test-")
@@ -955,7 +1056,7 @@ class LifecycleTests(unittest.TestCase):
         with self.assertRaisesRegex(PROVIDER_MANAGER.ProviderError, "locally changed or removed"):
             PROVIDER_MANAGER.command_update(target, dry_run=False)
 
-    def test_provider_changed_byte_version_transition_fails_closed_without_mutation(self) -> None:
+    def test_clean_predecessor_provider_migrates_to_declared_revision(self) -> None:
         target = self.base / "provider-upgrade"
         target.mkdir()
         with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
@@ -966,35 +1067,19 @@ class LifecycleTests(unittest.TestCase):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
 
         old_provider, skills = PROVIDER_MANAGER.load_declaration()
-        upgraded_provider = json.loads(json.dumps(old_provider))
-        upgraded_provider["version"] = "v1.2.4"
-        upgraded_provider["revision"] = "2" * 40
-        upgraded_skills = upgraded_provider["skills"]
-        changed_skill = next(
-            skill for skill in upgraded_skills if skill["name"] == "implement"
+        predecessor_manifest = self.base / "provider-upgrade-predecessors.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
         )
-        changed_source = fixture_provider_source_files(changed_skill)["SKILL.md"] + (
-            b"Upstream v1.2.4 changed this body.\n"
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(
+            old_provider,
+            {"code-review"},
         )
-        changed_skill["source_sha256"]["SKILL.md"] = hashlib.sha256(
-            changed_source
-        ).hexdigest()
-
-        def fake_upgraded_install(
-            _gh: Path,
-            root: Path,
-            provider: Mapping[str, object],
-            skill: Mapping[str, object],
-            *,
-            directory: Optional[Path] = None,
-        ) -> None:
-            installed = write_provider_skill(root, provider, skill, skills_root=directory)
-            if skill["name"] == "implement":
-                path = installed / "SKILL.md"
-                path.write_bytes(path.read_bytes() + b"Upstream v1.2.4 changed this body.\n")
 
         state_path = target / "ai-workflow/provider-state.json"
-        before = {
+        before_dry_run = {
             path.relative_to(target).as_posix(): path.read_bytes()
             for path in target.rglob("*")
             if path.is_file()
@@ -1005,27 +1090,367 @@ class LifecycleTests(unittest.TestCase):
             return_value=(upgraded_provider, upgraded_skills),
         ), mock.patch.object(
             PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
             "find_gh",
             return_value=Path("gh"),
         ), mock.patch.object(
             PROVIDER_MANAGER,
             "run_gh_install",
-            side_effect=fake_upgraded_install,
+            side_effect=fake_upgraded_provider_install({"code-review"}),
         ):
+            PROVIDER_MANAGER.command_update(target, dry_run=True)
+            self.assertEqual(
+                {
+                    path.relative_to(target).as_posix(): path.read_bytes()
+                    for path in target.rglob("*")
+                    if path.is_file()
+                },
+                before_dry_run,
+            )
+            PROVIDER_MANAGER.command_update(target, dry_run=False)
+
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        self.assertEqual(state["provider"]["version"], "v1.2.4")
+        self.assertEqual(state["provider"]["revision"], "3" * 40)
+        self.assertTrue(
+            (target / ".agents/skills/code-review/SKILL.md").read_bytes().endswith(
+                UPGRADED_PROVIDER_SUFFIX
+            )
+        )
+        self.assertTrue(all(record["origin"] == "created" for record in state["skills"].values()))
+        self.assertFalse(list(target.glob(f"{PROVIDER_MANAGER.UPDATE_QUARANTINE_PREFIX}*")))
+
+    def test_locally_modified_predecessor_provider_refuses_migration(self) -> None:
+        target = self.base / "provider-upgrade-modified"
+        target.mkdir()
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        predecessor_manifest = self.base / "modified-predecessor.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
+        changed = target / ".agents/skills/code-review/SKILL.md"
+        changed.write_bytes(changed.read_bytes() + b"local project change\n")
+        before = {path: path.read_bytes() for path in target.rglob("*") if path.is_file()}
+
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "load_declaration",
+            return_value=(upgraded_provider, upgraded_skills),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
+            with self.assertRaises(PROVIDER_MANAGER.ProviderError) as raised:
+                PROVIDER_MANAGER.command_update(target, dry_run=False)
+
+        diagnostic = str(raised.exception)
+        self.assertIn("code-review was installed by the authenticated predecessor", diagnostic)
+        self.assertIn("Expected predecessor SHA-256", diagnostic)
+        self.assertIn("Found SHA-256", diagnostic)
+        find_gh.assert_not_called()
+        self.assertEqual(
+            {path: path.read_bytes() for path in target.rglob("*") if path.is_file()},
+            before,
+        )
+
+    def test_preexisting_provider_refuses_predecessor_replacement(self) -> None:
+        target = self.base / "provider-upgrade-preexisting"
+        target.mkdir()
+        provider, skills = PROVIDER_MANAGER.load_declaration()
+        preexisting = next(skill for skill in skills if skill["name"] == "code-review")
+        write_provider_skill(target, provider, preexisting)
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        predecessor_manifest = self.base / "preexisting-predecessor.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(provider),
+            predecessor_manifest,
+        )
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(provider, {"code-review"})
+        before = (target / ".agents/skills/code-review/SKILL.md").read_bytes()
+
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "load_declaration",
+            return_value=(upgraded_provider, upgraded_skills),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "update never replaces an existing provider directory",
+                "cannot be proven framework-managed.*pre-existing-compatible",
             ):
                 PROVIDER_MANAGER.command_update(target, dry_run=False)
 
-        after = {
+        find_gh.assert_not_called()
+        self.assertEqual(
+            (target / ".agents/skills/code-review/SKILL.md").read_bytes(),
+            before,
+        )
+
+    def test_deleted_predecessor_provider_directory_is_installed_from_new_baseline(self) -> None:
+        target = self.base / "provider-upgrade-deleted"
+        target.mkdir()
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        predecessor_manifest = self.base / "deleted-predecessor.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
+        shutil.rmtree(target / ".agents/skills/code-review")
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
+
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "load_declaration",
+            return_value=(upgraded_provider, upgraded_skills),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "find_gh",
+            return_value=Path("gh"),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_upgraded_provider_install({"code-review"}),
+        ):
+            PROVIDER_MANAGER.command_update(target, dry_run=False)
+
+        self.assertTrue(
+            (target / ".agents/skills/code-review/SKILL.md").read_bytes().endswith(
+                UPGRADED_PROVIDER_SUFFIX
+            )
+        )
+        state = json.loads((target / "ai-workflow/provider-state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["skills"]["code-review"]["origin"], "created")
+
+    def test_provider_transition_reports_all_modified_skills_before_staging(self) -> None:
+        target = self.base / "provider-upgrade-multiple-conflicts"
+        target.mkdir()
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        predecessor_manifest = self.base / "multiple-predecessor.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
+        for name in ("code-review", "implement"):
+            path = target / ".agents/skills" / name / "SKILL.md"
+            path.write_bytes(path.read_bytes() + f"local {name} change\n".encode("utf-8"))
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(
+            old_provider,
+            {"code-review", "implement"},
+        )
+
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "load_declaration",
+            return_value=(upgraded_provider, upgraded_skills),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
+            with self.assertRaises(PROVIDER_MANAGER.ProviderError) as raised:
+                PROVIDER_MANAGER.command_update(target, dry_run=False)
+
+        diagnostic = str(raised.exception)
+        self.assertIn("provider skill code-review", diagnostic)
+        self.assertIn("provider skill implement", diagnostic)
+        find_gh.assert_not_called()
+
+    def test_malformed_predecessor_provider_state_fails_closed(self) -> None:
+        target = self.base / "provider-upgrade-malformed-state"
+        target.mkdir()
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        predecessor_manifest = self.base / "malformed-state-predecessor.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
+        state_path = target / "ai-workflow/provider-state.json"
+        state_path.write_text("not json\n", encoding="utf-8")
+        provider_before = {
+            path.relative_to(target).as_posix(): path.read_bytes()
+            for path in (target / ".agents/skills").rglob("*")
+            if path.is_file()
+        }
+
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "load_declaration",
+            return_value=(upgraded_provider, upgraded_skills),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
+            with self.assertRaisesRegex(
+                PROVIDER_MANAGER.ProviderError,
+                "cannot read provider state",
+            ):
+                PROVIDER_MANAGER.command_update(target, dry_run=False)
+
+        find_gh.assert_not_called()
+        self.assertEqual(state_path.read_text(encoding="utf-8"), "not json\n")
+        self.assertEqual(
+            {
+                path.relative_to(target).as_posix(): path.read_bytes()
+                for path in (target / ".agents/skills").rglob("*")
+                if path.is_file()
+            },
+            provider_before,
+        )
+
+    def test_provider_transition_retains_unchanged_skill_and_created_origin(self) -> None:
+        target = self.base / "provider-upgrade-one-skill"
+        target.mkdir()
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        predecessor_manifest = self.base / "one-skill-predecessor.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(
+            old_provider,
+            {"code-review"},
+            change_identity=False,
+        )
+        retained = target / ".agents/skills/wayfinder/SKILL.md"
+        retained_before = retained.read_bytes()
+
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "load_declaration",
+            return_value=(upgraded_provider, upgraded_skills),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "find_gh",
+            return_value=Path("gh"),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_upgraded_provider_install({"code-review"}),
+        ):
+            PROVIDER_MANAGER.command_update(target, dry_run=False)
+
+        self.assertEqual(retained.read_bytes(), retained_before)
+        state = json.loads((target / "ai-workflow/provider-state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["skills"]["wayfinder"]["origin"], "created")
+
+    def test_provider_migration_callback_failure_restores_predecessor_exactly(self) -> None:
+        target = self.base / "provider-upgrade-callback-rollback"
+        target.mkdir()
+        with mock.patch.object(PROVIDER_MANAGER, "find_gh", return_value=Path("gh")), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_provider_install,
+        ):
+            PROVIDER_MANAGER.command_install(target, dry_run=False)
+        old_provider, _skills = PROVIDER_MANAGER.load_declaration()
+        predecessor_manifest = self.base / "callback-predecessor.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
+        upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
+        before = {
             path.relative_to(target).as_posix(): path.read_bytes()
             for path in target.rglob("*")
             if path.is_file()
         }
-        self.assertEqual(after, before)
-        self.assertTrue(state_path.is_file())
-        self.assertFalse(list(target.glob(".ai-workflow-providers-*")))
+
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "load_declaration",
+            return_value=(upgraded_provider, upgraded_skills),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "find_gh",
+            return_value=Path("gh"),
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
+            "run_gh_install",
+            side_effect=fake_upgraded_provider_install({"code-review"}),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "simulated payload failure"):
+                PROVIDER_MANAGER.command_update(
+                    target,
+                    dry_run=False,
+                    commit_callback=lambda: (_ for _ in ()).throw(
+                        RuntimeError("simulated payload failure")
+                    ),
+                )
+
+        self.assertEqual(
+            {
+                path.relative_to(target).as_posix(): path.read_bytes()
+                for path in target.rglob("*")
+                if path.is_file()
+            },
+            before,
+        )
+        self.assertFalse(list(target.glob(f"{PROVIDER_MANAGER.UPDATE_QUARANTINE_PREFIX}*")))
 
     def test_dependency_set_update_preserves_clean_preexisting_skills_and_adds_triage(self) -> None:
         target = self.base / "provider-dependency-set-upgrade"
@@ -1035,6 +1460,14 @@ class LifecycleTests(unittest.TestCase):
         for skill in old_skills:
             write_provider_skill(target, provider, skill)
         write_provider_state(target, provider, old_skills, origin="created")
+        old_provider = json.loads(json.dumps(provider))
+        old_provider["skills"] = json.loads(json.dumps(old_skills))
+        predecessor_manifest = self.base / "dependency-set-predecessors.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
         triage = target / ".agents/skills/triage"
         state_path = target / "ai-workflow/provider-state.json"
         retained_bytes = {
@@ -1045,6 +1478,10 @@ class LifecycleTests(unittest.TestCase):
         }
 
         with mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(
             PROVIDER_MANAGER,
             "find_gh",
             return_value=Path("gh"),
@@ -1069,7 +1506,7 @@ class LifecycleTests(unittest.TestCase):
         )
         self.assertTrue(
             all(
-                record["origin"] == "preexisting-compatible"
+                record["origin"] == "created"
                 for name, record in updated["skills"].items()
                 if name != "triage"
             )
@@ -1099,6 +1536,16 @@ class LifecycleTests(unittest.TestCase):
         state_path = target / "ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         del state["skills"]["triage"]
+        old_provider = json.loads(json.dumps(provider))
+        old_provider["skills"] = [
+            json.loads(json.dumps(skill)) for skill in skills if skill["name"] != "triage"
+        ]
+        predecessor_manifest = self.base / "dependency-auth-predecessors.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
         altered_name = str(skills[0]["name"])
         altered_path = target / ".agents/skills" / altered_name / "SKILL.md"
         altered = altered_path.read_text(encoding="utf-8") + "canonized local alteration\n"
@@ -1114,6 +1561,10 @@ class LifecycleTests(unittest.TestCase):
 
         with mock.patch.object(
             PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(
+            PROVIDER_MANAGER,
             "find_gh",
             return_value=Path("gh"),
         ), mock.patch.object(
@@ -1123,7 +1574,7 @@ class LifecycleTests(unittest.TestCase):
         ) as install:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "existing provider skill .* is not compatible with the new declaration",
+                "cannot be proven to match the authenticated predecessor",
             ):
                 PROVIDER_MANAGER.command_update(target, dry_run=True)
 
@@ -1131,7 +1582,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(state_path.read_bytes(), state_before)
         self.assertEqual(altered_path.read_text(encoding="utf-8"), altered)
         self.assertFalse(triage.exists())
-        self.assertFalse(list(target.glob(".ai-workflow-providers-*")))
+        self.assertFalse(list(target.glob(f"{PROVIDER_MANAGER.UPDATE_QUARANTINE_PREFIX}*")))
 
     def test_dependency_set_update_preflights_new_skill_collision_before_gh(self) -> None:
         target = self.base / "provider-dependency-collision"
@@ -1157,12 +1608,26 @@ class LifecycleTests(unittest.TestCase):
             json.dumps(state, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
+        old_provider = json.loads(json.dumps(provider))
+        old_provider["skills"] = [
+            json.loads(json.dumps(skill)) for skill in skills if skill["name"] != "triage"
+        ]
+        predecessor_manifest = self.base / "dependency-collision-predecessors.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(old_provider),
+            predecessor_manifest,
+        )
         (target / ".agents/skills/triage/OUT-OF-SCOPE.md").unlink()
 
-        with mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "new provider dependency triage collides",
+                "cannot be proven framework-managed",
             ):
                 PROVIDER_MANAGER.command_update(target, dry_run=True)
         find_gh.assert_not_called()
@@ -1219,11 +1684,22 @@ class LifecycleTests(unittest.TestCase):
             encoding="utf-8",
         )
         state_before = state_path.read_bytes()
+        provider, _skills = PROVIDER_MANAGER.load_declaration()
+        predecessor_manifest = self.base / "extra-state-predecessors.json"
+        write_authenticated_provider_predecessor(
+            target,
+            provider_declaration_document(provider),
+            predecessor_manifest,
+        )
 
-        with mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
+        with mock.patch.object(
+            PROVIDER_MANAGER,
+            "SOURCE_MANIFEST_PATH",
+            predecessor_manifest,
+        ), mock.patch.object(PROVIDER_MANAGER, "find_gh") as find_gh:
             with self.assertRaisesRegex(
                 PROVIDER_MANAGER.ProviderError,
-                "provider state contains names outside this package declaration; refusing update",
+                "provider state skill set does not match the authenticated predecessor declaration",
             ):
                 PROVIDER_MANAGER.command_update(target, dry_run=False)
 
@@ -1361,6 +1837,52 @@ class LifecycleTests(unittest.TestCase):
         self.assertFalse(
             (target / "ai-workflow").exists(),
             sorted(path.relative_to(target).as_posix() for path in target.rglob("*")),
+        )
+
+    def test_coordinated_update_commits_payload_inside_provider_rollback_window(self) -> None:
+        target = self.base / "coordinated-update"
+        target.mkdir()
+        events = []
+
+        class FakeProviderManager:
+            class ProviderError(RuntimeError):
+                pass
+
+            @staticmethod
+            def command_update(root, dry_run, *, commit_callback=None):
+                self.assertEqual(root, target)
+                self.assertFalse(dry_run)
+                self.assertIsNotNone(commit_callback)
+                events.append("provider-transaction-open")
+                commit_callback()
+                events.append("provider-transaction-commit")
+
+        def checked(script, action, root, dry_run, revision, *, quiet=False):
+            self.assertEqual(script, LIFECYCLE_MANAGER.ADOPTER)
+            self.assertEqual(action, "update")
+            self.assertEqual(root, target)
+            self.assertEqual(revision, REVISION)
+            events.append("payload-preflight" if dry_run else "payload-commit")
+
+        with mock.patch.object(
+            LIFECYCLE_MANAGER,
+            "run_checked",
+            side_effect=checked,
+        ), mock.patch.object(
+            LIFECYCLE_MANAGER,
+            "load_provider_manager",
+            return_value=FakeProviderManager,
+        ):
+            LIFECYCLE_MANAGER.update(target, dry_run=False, revision=REVISION)
+
+        self.assertEqual(
+            events,
+            [
+                "payload-preflight",
+                "provider-transaction-open",
+                "payload-commit",
+                "provider-transaction-commit",
+            ],
         )
 
     def test_coordinated_rollback_derives_seed_targets_from_manifest(self) -> None:

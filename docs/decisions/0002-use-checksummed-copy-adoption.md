@@ -31,12 +31,16 @@ checksums as local cleanliness evidence rather than content authority. Seed
 project profile/state only when absent. Refuse an entire update when any
 framework file conflicts.
 
-Across a provider declaration change, refuse unknown old-state names, stage and
-authenticate the new baseline, preserve every existing provider directory,
-downgrade retained directories to `preexisting-compatible`, and add only
-missing declared directories. This allows same-pin dependency-set additions;
-changed-byte pin transitions require explicit owner reconciliation or
-remove-then-install. On removal, delete only checksum-matching framework files
+Across a provider declaration change, require the new package to authenticate
+the exact predecessor payload, its installed `providers.json`, and the provider
+state identity/inventory before planning migration. Preserve the origin of
+directories already compatible with the new declaration and install genuinely
+missing declared directories. Replace an incompatible directory only when the
+authenticated predecessor recorded it as created, its full metadata/inventory
+still matches that declaration, and every installed-file checksum is clean.
+Modified, pre-existing-compatible, unknown, partial, and inconsistent cases fail
+closed. Stage and authenticate the complete new baseline before applying all
+validated transitions. On removal, delete only checksum-matching framework files
 or exact declared provider directories that are package-authentic,
 record-checksum-clean, and recorded as created. Preserve pre-install,
 incompatible, modified, extra-file, undeclared, and project-owned paths.
@@ -50,7 +54,9 @@ same-filesystem quarantine renames: failures before every selected directory
 and the state file are quarantined roll back; a cleanup failure after that commit
 retains and reports the exact quarantine path instead of claiming rollback.
 Run payload install/update integrity post-checks before committing the local
-file transaction, restoring prior bytes and modes on failure. Remove only
+file transaction, restoring prior bytes and modes on failure. During update,
+commit that payload transaction inside the provider rollback window so a later
+failure restores predecessor provider directories and exact state. Remove only
 transaction-created parent directories during rollback; do not prune untracked
 empty parents after a successful removal.
 

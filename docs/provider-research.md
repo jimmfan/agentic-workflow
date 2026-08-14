@@ -160,14 +160,20 @@ Normal framework update does not float provider versions. A future provider
 upgrade requires review of a new stable tag, regenerated path/tree/file
 identities, an explicitly reviewed identity-lock update, live exact-path
 installation checks, hermetic lifecycle tests, manifest refresh, and a framework
-release. On any declaration change, target
-update rejects unknown names in old state, stages the new baseline, preserves
-every existing directory, records retained exact matches conservatively as
-pre-existing-compatible, and adds only missing declared skills. This supports
-the same-pin `triage` dependency migration; a changed-byte future pin fails
-closed for explicit owner reconciliation or remove-then-install. Removal is
-bounded to exact declaration names and preserves pre-existing, incompatible,
-modified, extra-file, and undeclared skills.
+release. On a declaration change, target update authenticates the exact old
+framework and its historical `providers.json` through the new package's audited
+predecessor table, then requires provider state to match that declaration.
+Every present old directory is checked against its complete predecessor
+inventory/metadata and recorded file SHA-256 values before any staging.
+
+Retained exact matches preserve their existing origin; missing declared skills
+are added. Changed provider bytes are replaced only for checksum-clean
+directories recorded as framework-created. Modified, pre-existing-compatible,
+unknown, partial, and inconsistent directories fail closed, and all conflicts
+are reported during preflight. The complete new pin is staged and authenticated
+before applying any valid transition. Removal remains bounded to exact
+declaration names and preserves pre-existing, incompatible, modified,
+extra-file, and undeclared skills.
 
 The repository-local `origin` record is historical ownership evidence, not a
 tamper-evident trust anchor. Coordinated forgery can reclassify an exact,

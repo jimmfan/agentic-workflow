@@ -209,11 +209,19 @@ modified or pre-existing skills intentionally remain.
   immutable revision, manifest schema, complete path set, and every source hash
   match an exact predecessor record audited into the new package. Unknown,
   partial, or forged predecessor records fail before mutation.
-- Same-named incompatible skills block the operation instead of being replaced.
+- Same-named unknown, pre-existing, or locally modified skills block the
+  operation instead of being replaced.
+- During an audited cross-version upgrade, update may replace a provider skill
+  only when the new package authenticates the exact predecessor declaration,
+  predecessor state records the directory as framework-created, and every
+  recorded file checksum remains clean. A missing old directory is installed
+  normally. Users should not need to delete `.agents`, `provider-state.json`, or
+  individual skills for a supported clean upgrade.
 - Updates replace only checksum-clean framework content and never float pinned
   provider versions automatically.
 - Install and update verify the resulting payload before committing their local
-  file transaction; a failed post-check restores the prior bytes and modes.
+  file transaction; coordinated update holds predecessor provider backups until
+  both payload and provider verification succeed.
 - Project-owned policy sections, profiles, state, and workflow artifacts survive
   update and removal.
 - Removal deletes a provider directory only when the framework created it and

@@ -59,12 +59,20 @@ compatibility checks plus the hermetic suite, refreshes the distribution
 manifest, and releases ai-workflow. Target projects receive that new baseline
 only through an intentional ai-workflow update. Missing or incompatible
 dependencies fail with a diagnostic; the router never falls back to a retired
-local fork. Across a declaration change, update rejects unknown old-state names,
-authenticates and preserves every existing declared provider directory, records
-retained directories conservatively as `preexisting-compatible`, and adds only
-missing declared dependencies. A future pin with changed bytes fails closed
-until the owner explicitly reconciles the existing directories or removes the
-old clean baseline before installing the new one.
+local fork.
+
+Across a declaration change, the new immutable package must first authenticate
+the installed framework as an audited predecessor. Its exact historical
+`providers.json` then authenticates the old provider identity and state shape.
+Update replaces a provider directory only when predecessor state records it as
+framework-created, every recorded installed-file SHA-256 is still clean, and
+the complete directory matches the predecessor's inventory and source metadata.
+Modified and pre-existing-compatible directories continue to fail closed.
+Directories already compatible with the new declaration are retained without
+losing their recorded origin; a predecessor-recorded directory that is genuinely
+absent is installed from the new declared pin. The complete transition set and
+new staged pin are verified before mutation. A supported clean upgrade therefore
+does not require deleting `.agents`, `provider-state.json`, or individual skills.
 
 Python 3.11 or newer is required for lifecycle commands. GitHub CLI 2.97.0 or
 newer is required for initial provider adoption or an update that changes the
@@ -118,11 +126,14 @@ For a cross-version update, the immutable new package—not the target-local
 `install-manifest.json`—defines trusted predecessors. Version, exact source
 revision, installation-manifest schema, complete managed-path set, and every
 source SHA-256 must match one audited record before the updater plans a write or
-retirement. Unknown, partial, and forged predecessor identities fail closed.
-Install and update run their payload integrity post-check before committing the
-file transaction, restoring prior bytes and modes on failure. Rollback removes
-only directories created by that operation; successful removal may leave
-pre-existing unowned empty parent directories.
+retirement. Provider migration additionally requires that authenticated record
+to cover the installed predecessor `providers.json`, and requires exact matching
+provider state and checksum-clean current directories. Unknown, partial, and
+forged predecessor identities fail closed. During coordinated update, the
+payload commits while provider backups are still reversible. Payload and
+provider post-check failures restore both layers to the predecessor state.
+Rollback removes only directories created by that operation; successful removal
+may leave pre-existing unowned empty parent directories.
 
 Durable framework records link to canonical provider artifacts rather than
 copying their content or renaming their identifiers. The workflow that creates

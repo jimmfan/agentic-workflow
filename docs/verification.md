@@ -49,9 +49,11 @@ The integration suite covers:
 - rejection of incompatible pins, missing adjacent resources, provider-state
   path injection, forged body checksums, forged extra-file inventories, and
   unknown old-state names during declaration changes;
-- additive declaration-change migration that preserves and downgrades existing
-  authenticated directories, adds only missing dependencies, and fails a
-  changed-byte future pin without mutation;
+- authenticated declaration-change migration that preserves clean retained
+  origins, adds a missing dependency, replaces only checksum-clean
+  predecessor-created directories, accepts a missing old directory, aggregates
+  multiple conflicts before staging, and fails modified, pre-existing,
+  malformed, or unknown ownership without mutation;
 - fresh and pre-existing composite root policy ownership, authenticated
   restoration of an exact pre-existing `AGENTS.md` across managed-source
   updates, migration of previous fully-owned policy records, and preservation
@@ -62,6 +64,9 @@ The integration suite covers:
   installation-manifest schema, complete path set, and every source hash, plus
   negative cases for changed/omitted current records, forged retired paths, and
   unauthenticated composite-restoration bytes;
+- coordinated update ordering that commits the payload inside the provider
+  rollback window, with exact provider directory/state restoration when that
+  callback fails;
 - migration that retires the local Teach, Decomposition, and Review copies plus
   obsolete learning/ticket templates only when unchanged;
 - the canonical uninitialized project-profile seed, readiness versus integrity,

@@ -13,12 +13,15 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from typing import Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Tuple
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 DECLARATION_PATH = PACKAGE_ROOT / "payload" / "ai-workflow" / "providers.json"
+SOURCE_MANIFEST_PATH = PACKAGE_ROOT / "payload" / "distribution" / "manifest.json"
 STATE_RELATIVE = PurePosixPath("ai-workflow/provider-state.json")
+INSTALL_MANIFEST_RELATIVE = PurePosixPath("ai-workflow/install-manifest.json")
+INSTALLED_DECLARATION_RELATIVE = PurePosixPath("ai-workflow/providers.json")
 SKILLS_RELATIVE = PurePosixPath(".agents/skills")
 VERSION = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 SHA = re.compile(r"[0-9a-f]{40}")
@@ -26,6 +29,7 @@ SHA256 = re.compile(r"[0-9a-f]{64}")
 SKILL_NAME = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 MINIMUM_PYTHON = (3, 11)
 REMOVAL_QUARANTINE_PREFIX = ".ai-workflow-provider-remove-"
+UPDATE_QUARANTINE_PREFIX = ".ai-workflow-provider-update-"
 INVOCATION_MODES = {"implicit", "unavailable", "user-only"}
 HOSTS = {
     "claude-code": {
@@ -663,6 +667,339 @@ def load_state(root: Path) -> MutableMapping[str, object]:
     return state
 
 
+def load_predecessor_declaration(
+    raw: Mapping[str, object],
+) -> Tuple[Mapping[str, object], List[Mapping[str, object]]]:
+    """Validate the provider identity embedded in an authenticated predecessor payload."""
+    schema = raw.get("schema_version")
+    if schema == 1:
+        expected_top = {"schema_version", "capabilities", "provider"}
+        expected_skill_fields = {"files", "name", "path", "tree_sha"}
+    elif schema == 2:
+        expected_top = {"schema_version", "capabilities", "configuration", "hosts", "provider"}
+        expected_skill_fields = {
+            "files",
+            "invocation",
+            "name",
+            "path",
+            "requires_configuration",
+            "source_sha256",
+            "tree_sha",
+        }
+    else:
+        raise ProviderError("authenticated predecessor provider declaration has an unsupported schema")
+    if set(raw) != expected_top:
+        raise ProviderError("authenticated predecessor provider declaration has unknown fields")
+    capabilities = raw.get("capabilities")
+    provider = raw.get("provider")
+    if not isinstance(capabilities, dict) or not capabilities:
+        raise ProviderError("authenticated predecessor provider declaration needs capabilities")
+    if not isinstance(provider, dict) or set(provider) != {
+        "minimum_gh_version",
+        "name",
+        "repository",
+        "revision",
+        "skills",
+        "version",
+    }:
+        raise ProviderError("authenticated predecessor provider identity is malformed")
+    for field in ("minimum_gh_version", "name", "repository", "revision", "version"):
+        if not isinstance(provider.get(field), str) or not provider[field]:
+            raise ProviderError(f"authenticated predecessor provider {field} is malformed")
+    parse_version(str(provider["minimum_gh_version"]), "predecessor minimum_gh_version")
+    parse_version(str(provider["version"]), "predecessor provider version")
+    if SHA.fullmatch(str(provider["revision"])) is None:
+        raise ProviderError("authenticated predecessor provider revision is malformed")
+    if re.fullmatch(
+        r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", str(provider["repository"])
+    ) is None:
+        raise ProviderError("authenticated predecessor provider repository is malformed")
+
+    skills = provider.get("skills")
+    if not isinstance(skills, list) or not skills:
+        raise ProviderError("authenticated predecessor provider skills are missing")
+    checked: List[Mapping[str, object]] = []
+    names = set()
+    paths = set()
+    for item in skills:
+        if not isinstance(item, dict) or set(item) != expected_skill_fields:
+            raise ProviderError("authenticated predecessor provider skill record is malformed")
+        name = item.get("name")
+        if not isinstance(name, str) or SKILL_NAME.fullmatch(name) is None:
+            raise ProviderError(f"authenticated predecessor provider skill name is malformed: {name!r}")
+        path = safe_relative(item.get("path"), f"predecessor provider path for {name}").as_posix()
+        tree_sha = item.get("tree_sha")
+        if not isinstance(tree_sha, str) or SHA.fullmatch(tree_sha) is None:
+            raise ProviderError(f"authenticated predecessor tree SHA is malformed for {name}")
+        files = item.get("files")
+        if not isinstance(files, list) or "SKILL.md" not in files:
+            raise ProviderError(f"authenticated predecessor file inventory is malformed for {name}")
+        checked_files = [
+            safe_relative(value, f"predecessor provider file for {name}").as_posix()
+            for value in files
+        ]
+        if checked_files != sorted(set(checked_files)):
+            raise ProviderError(f"authenticated predecessor file inventory is malformed for {name}")
+        if schema == 2:
+            source_sha256 = item.get("source_sha256")
+            invocation = item.get("invocation")
+            requirements = item.get("requires_configuration")
+            if (
+                not isinstance(source_sha256, dict)
+                or set(source_sha256) != set(checked_files)
+                or any(
+                    not isinstance(digest, str) or SHA256.fullmatch(digest) is None
+                    for digest in source_sha256.values()
+                )
+            ):
+                raise ProviderError(f"authenticated predecessor source hashes are malformed for {name}")
+            if not isinstance(invocation, dict) or set(invocation) != set(HOSTS) or any(
+                value not in INVOCATION_MODES for value in invocation.values()
+            ):
+                raise ProviderError(f"authenticated predecessor invocation policy is malformed for {name}")
+            if not isinstance(requirements, list) or any(
+                not isinstance(value, str) for value in requirements
+            ):
+                raise ProviderError(f"authenticated predecessor requirements are malformed for {name}")
+        if name in names or path in paths:
+            raise ProviderError(f"duplicate authenticated predecessor provider skill: {name}")
+        names.add(name)
+        paths.add(path)
+        checked.append(item)
+    if any(
+        not isinstance(capability, str)
+        or not capability
+        or not isinstance(skill_name, str)
+        or skill_name not in names
+        for capability, skill_name in capabilities.items()
+    ):
+        raise ProviderError("authenticated predecessor capability map is malformed")
+    return provider, checked
+
+
+def authenticated_predecessor_declaration(
+    root: Path,
+) -> Tuple[Mapping[str, object], List[Mapping[str, object]], str]:
+    """Bind old provider state to an exact predecessor audited by the new package."""
+    installed_path = target_path(root, INSTALL_MANIFEST_RELATIVE)
+    installed = load_json(installed_path, "installation manifest for provider migration")
+    if set(installed) != {
+        "schema_version",
+        "framework_version",
+        "source_revision",
+        "installed_at",
+        "framework_files",
+        "project_owned",
+    }:
+        raise ProviderError("installation manifest cannot authenticate provider migration")
+    installed_schema = installed.get("schema_version")
+    installed_version = installed.get("framework_version")
+    installed_revision = installed.get("source_revision")
+    installed_files = installed.get("framework_files")
+    if (
+        type(installed_schema) is not int
+        or not isinstance(installed_version, str)
+        or not isinstance(installed_revision, str)
+        or SHA.fullmatch(installed_revision) is None
+        or not isinstance(installed_files, dict)
+        or not installed_files
+    ):
+        raise ProviderError("installation manifest cannot authenticate provider migration")
+    parse_version(installed_version, "installed framework version")
+    installed_sources: Dict[str, str] = {}
+    for relative, details in installed_files.items():
+        safe_relative(relative, "installed framework path")
+        if not isinstance(details, dict):
+            raise ProviderError("installation manifest has malformed provider migration evidence")
+        source_digest = details.get("source_sha256")
+        installed_digest = details.get("sha256")
+        if (
+            not isinstance(source_digest, str)
+            or SHA256.fullmatch(source_digest) is None
+            or not isinstance(installed_digest, str)
+            or SHA256.fullmatch(installed_digest) is None
+        ):
+            raise ProviderError("installation manifest has malformed provider migration checksums")
+        installed_sources[str(relative)] = source_digest
+
+    source_manifest = load_json(SOURCE_MANIFEST_PATH, "source distribution manifest")
+    accepted = source_manifest.get("accepted_predecessors")
+    if source_manifest.get("schema_version") != 3 or not isinstance(accepted, list):
+        raise ProviderError("source package cannot authenticate provider predecessors")
+    matches: List[Mapping[str, object]] = []
+    for candidate in accepted:
+        if not isinstance(candidate, dict) or set(candidate) != {
+            "framework_version",
+            "source_revisions",
+            "install_manifest_schemas",
+            "framework_files",
+        }:
+            raise ProviderError("source package has malformed accepted predecessor evidence")
+        identities = candidate.get("framework_files")
+        revisions = candidate.get("source_revisions")
+        schemas = candidate.get("install_manifest_schemas")
+        if (
+            candidate.get("framework_version") == installed_version
+            and isinstance(revisions, list)
+            and installed_revision in revisions
+            and isinstance(schemas, list)
+            and installed_schema in schemas
+            and isinstance(identities, dict)
+            and installed_sources == identities
+        ):
+            matches.append(candidate)
+    if len(matches) != 1:
+        raise ProviderError(
+            "provider migration requires an exact package-authenticated predecessor; "
+            f"found {installed_version}, {installed_revision}, schema {installed_schema}"
+        )
+
+    declaration_key = INSTALLED_DECLARATION_RELATIVE.as_posix()
+    authenticated_sources = matches[0]["framework_files"]
+    if not isinstance(authenticated_sources, dict) or declaration_key not in authenticated_sources:
+        raise ProviderError(
+            "authenticated predecessor does not contain a provider declaration; refusing migration"
+        )
+    declaration_details = installed_files.get(declaration_key)
+    declaration_path = target_path(root, INSTALLED_DECLARATION_RELATIVE)
+    if not isinstance(declaration_details, dict):
+        raise ProviderError("installation manifest lacks provider declaration ownership evidence")
+    expected_source = authenticated_sources[declaration_key]
+    try:
+        declaration_bytes = declaration_path.read_bytes()
+    except OSError as error:
+        raise ProviderError(
+            f"cannot read authenticated predecessor provider declaration: {error}"
+        ) from error
+    if (
+        declaration_details.get("source_sha256") != expected_source
+        or declaration_details.get("sha256") != expected_source
+        or hashlib.sha256(declaration_bytes).hexdigest() != expected_source
+    ):
+        raise ProviderError(
+            "installed predecessor provider declaration is modified or inconsistent; refusing migration"
+        )
+    try:
+        raw_declaration = json.loads(declaration_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ProviderError(
+            f"authenticated predecessor provider declaration is malformed: {error}"
+        ) from error
+    if not isinstance(raw_declaration, dict):
+        raise ProviderError("authenticated predecessor provider declaration must be an object")
+    predecessor_provider, predecessor_skills = load_predecessor_declaration(raw_declaration)
+    return predecessor_provider, predecessor_skills, installed_version
+
+
+def validate_predecessor_state(
+    state: Mapping[str, object],
+    provider: Mapping[str, object],
+    skills: Sequence[Mapping[str, object]],
+) -> Mapping[str, Mapping[str, object]]:
+    expected_provider = {
+        "name": provider["name"],
+        "repository": provider["repository"],
+        "revision": provider["revision"],
+        "version": provider["version"],
+    }
+    if state.get("provider") != expected_provider:
+        raise ProviderError(
+            "provider state identity does not match the authenticated predecessor declaration"
+        )
+    records = state.get("skills")
+    by_name = {str(skill["name"]): skill for skill in skills}
+    if not isinstance(records, dict) or set(records) != set(by_name):
+        raise ProviderError(
+            "provider state skill set does not match the authenticated predecessor declaration"
+        )
+    for name, skill in by_name.items():
+        record = records.get(name)
+        if (
+            not isinstance(record, dict)
+            or record.get("path") != skill["path"]
+            or record.get("tree_sha") != skill["tree_sha"]
+            or not isinstance(record.get("files"), dict)
+            or set(record["files"]) != set(skill["files"])
+        ):
+            raise ProviderError(
+                f"provider state for {name} is inconsistent with the authenticated predecessor"
+            )
+    return records  # type: ignore[return-value]
+
+
+def verify_predecessor_skill(
+    root: Path,
+    provider: Mapping[str, object],
+    skill: Mapping[str, object],
+) -> None:
+    """Verify package-authenticated predecessor metadata and its complete inventory."""
+    name = str(skill["name"])
+    directory = skill_directory(root, name)
+    actual_files, actual_directories = directory_inventory(directory)
+    expected_files = list(skill["files"])  # type: ignore[arg-type]
+    if actual_files != expected_files or actual_directories != implied_directories(expected_files):
+        raise ProviderError(f"predecessor provider skill {name} has an incompatible inventory")
+    top, metadata = frontmatter(directory / "SKILL.md")
+    expected_metadata = {
+        "github-path": str(skill["path"]),
+        "github-pinned": str(provider["version"]),
+        "github-ref": f"refs/tags/{provider['version']}",
+        "github-repo": f"https://github.com/{provider['repository']}",
+        "github-tree-sha": str(skill["tree_sha"]),
+    }
+    if top.get("name") != name or metadata != expected_metadata:
+        raise ProviderError(
+            f"predecessor provider skill {name} does not match its authenticated source metadata"
+        )
+    if "source_sha256" in skill:
+        verify_invocation_metadata(directory, skill, top)
+        verify_source_content(directory, skill, expected_metadata)
+
+
+def predecessor_checksum_conflicts(
+    root: Path,
+    name: str,
+    record: Mapping[str, object],
+) -> List[str]:
+    """Return precise path/hash differences from the predecessor installation record."""
+    directory = skill_directory(root, name)
+    expected = record.get("files")
+    if not isinstance(expected, dict):
+        return [f"provider state for {name} lacks predecessor file checksums"]
+    try:
+        actual_files, actual_directories = directory_inventory(directory)
+    except ProviderError as error:
+        return [str(error)]
+    conflicts: List[str] = []
+    expected_files = sorted(expected)
+    expected_directories = implied_directories(expected_files)
+    for relative in sorted(set(expected_files) - set(actual_files)):
+        conflicts.append(
+            f"  .agents/skills/{name}/{relative}\n"
+            f"    Expected predecessor SHA-256: {expected[relative]}\n"
+            "    Found SHA-256: missing"
+        )
+    for relative in sorted(set(actual_files) - set(expected_files)):
+        conflicts.append(
+            f"  .agents/skills/{name}/{relative}\n"
+            "    Expected predecessor SHA-256: absent\n"
+            f"    Found SHA-256: {sha256(directory / relative)}"
+        )
+    for relative in sorted(set(actual_files) & set(expected_files)):
+        actual = sha256(directory / relative)
+        if actual != expected[relative]:
+            conflicts.append(
+                f"  .agents/skills/{name}/{relative}\n"
+                f"    Expected predecessor SHA-256: {expected[relative]}\n"
+                f"    Found SHA-256: {actual}"
+            )
+    for relative in sorted(set(expected_directories) - set(actual_directories)):
+        conflicts.append(f"  .agents/skills/{name}/{relative}/ (expected directory is missing)")
+    for relative in sorted(set(actual_directories) - set(expected_directories)):
+        conflicts.append(f"  .agents/skills/{name}/{relative}/ (unexpected directory)")
+    return conflicts
+
+
 def existing_parent_directories(root: Path, paths: Sequence[Path]) -> set[Path]:
     existing = {root}
     for path in paths:
@@ -820,11 +1157,18 @@ def cleanup_provider_staging(transaction: Path) -> None:
     shutil.rmtree(transaction)
 
 
-def command_install(root: Path, dry_run: bool) -> None:
+def command_install(
+    root: Path,
+    dry_run: bool,
+    *,
+    commit_callback: Optional[Callable[[], None]] = None,
+) -> None:
     provider, skills = load_declaration()
     state_path = target_path(root, STATE_RELATIVE)
     if state_path.exists() or state_path.is_symlink():
         if command_status(root, verbose=False):
+            if commit_callback is not None:
+                commit_callback()
             print(f"✓ Upstream provider {provider['repository']}@{provider['version']} is already compatible.")
             return
         raise ProviderError("provider state already exists but dependencies differ; run status or update")
@@ -891,6 +1235,8 @@ def command_install(root: Path, dry_run: bool) -> None:
             atomic_json(state_path, state_value(provider, records))
             if not command_status(root, verbose=False):
                 raise ProviderError("post-install provider verification failed")
+            if commit_callback is not None:
+                commit_callback()
         except BaseException as error:
             rollback_errors = []
             try:
@@ -974,25 +1320,31 @@ def command_status(root: Path, verbose: bool = True) -> bool:
     return clean
 
 
-def command_update(root: Path, dry_run: bool) -> None:
+def command_update(
+    root: Path,
+    dry_run: bool,
+    *,
+    commit_callback: Optional[Callable[[], None]] = None,
+) -> None:
     provider, skills = load_declaration()
     state_path = target_path(root, STATE_RELATIVE)
-    if not state_path.exists():
-        command_install(root, dry_run)
+    if not state_path.exists() and not state_path.is_symlink():
+        command_install(root, dry_run, commit_callback=commit_callback)
         return
     state = load_state(root)
     if state_matches_declaration(state, provider, skills):
         if not command_status(root, verbose=False):
             raise ProviderError("provider dependencies were locally changed or removed; refusing to overwrite them")
+        if commit_callback is not None:
+            commit_callback()
         print(f"✓ Upstream provider baseline remains {provider['repository']}@{provider['version']}.")
         return
 
-    old_records = state["skills"]
-    if not isinstance(old_records, dict):
-        raise ProviderError("provider state skills must be an object")
-    old_provider = state.get("provider")
+    old_provider, old_skills, predecessor_version = authenticated_predecessor_declaration(root)
+    old_records = validate_predecessor_state(state, old_provider, old_skills)
+    old_by_name = {str(item["name"]): item for item in old_skills}
     new_by_name = {str(item["name"]): item for item in skills}
-    if not isinstance(old_provider, dict) or (
+    if (
         old_provider.get("name") != provider["name"]
         or old_provider.get("repository") != provider["repository"]
     ):
@@ -1000,110 +1352,231 @@ def command_update(root: Path, dry_run: bool) -> None:
             "installed provider belongs to a different provider source; "
             "update with its exact framework package before changing providers"
         )
-    unknown_old_names = sorted(set(old_records) - set(new_by_name))
+    unknown_old_names = sorted(set(old_by_name) - set(new_by_name))
     if unknown_old_names:
         raise ProviderError(
-            "provider state contains names outside this package declaration; refusing update: "
+            "authenticated predecessor contains provider names outside this package declaration; "
+            "automatic removal is not authorized: "
             + ", ".join(unknown_old_names)
         )
-    for name, record in old_records.items():
-        if not isinstance(record, dict):
-            raise ProviderError(f"invalid old provider record for {name}")
+
+    actions: Dict[str, str] = {}
+    transition_errors: List[str] = []
+    for name, predecessor_skill in sorted(old_by_name.items()):
+        record = old_records[name]
+        destination = skill_directory(root, name)
+        if not destination.exists() and not destination.is_symlink():
+            actions[name] = "install-missing"
+            continue
+        conflicts = predecessor_checksum_conflicts(root, name, record)
+        if conflicts:
+            transition_errors.append(
+                f"provider skill {name} was installed by the authenticated predecessor "
+                "but has been modified locally.\nRefusing to replace:\n"
+                + "\n".join(conflicts)
+            )
+            continue
+        try:
+            verify_predecessor_skill(root, old_provider, predecessor_skill)
+        except ProviderError as error:
+            transition_errors.append(
+                f"existing provider skill {name} cannot be proven to match the authenticated "
+                f"predecessor. Refusing to replace it: {error}"
+            )
+            continue
         try:
             verify_skill(root, provider, new_by_name[name])
-        except ProviderError as error:
-            raise ProviderError(
-                f"existing provider skill {name} is not compatible with the new declaration; "
-                "update never replaces an existing provider directory, so reconcile it explicitly "
-                f"before retrying: {error}"
-            ) from error
+            actions[name] = "retain"
+        except ProviderError:
+            if record.get("origin") == "created":
+                actions[name] = "replace"
+            else:
+                transition_errors.append(
+                    f"existing provider skill {name} cannot be proven framework-managed; "
+                    "the authenticated predecessor records it as pre-existing-compatible. "
+                    "Refusing to replace it."
+                )
     for skill in skills:
         name = str(skill["name"])
         if name in old_records:
             continue
         destination = skill_directory(root, name)
-        if destination.exists() or destination.is_symlink():
-            try:
-                verify_skill(root, provider, skill)
-            except ProviderError as error:
-                raise ProviderError(
-                    f"new provider dependency {name} collides with an incompatible pre-existing skill: {error}"
-                ) from error
+        if not destination.exists() and not destination.is_symlink():
+            actions[name] = "add"
+            continue
+        try:
+            verify_skill(root, provider, skill)
+            actions[name] = "preexisting-compatible"
+        except ProviderError as error:
+            transition_errors.append(
+                f"existing provider skill {name} cannot be proven framework-managed. "
+                f"Refusing to replace it: {error}"
+            )
+    if transition_errors:
+        raise ProviderError(
+            "provider transition preflight found conflicts; no provider files were changed:\n\n"
+            + "\n\n".join(transition_errors)
+        )
+
+    retained_transactions = sorted(root.glob(f"{UPDATE_QUARANTINE_PREFIX}*"))
+    if retained_transactions:
+        raise ProviderError(
+            "a retained provider-update quarantine blocks another migration; inspect and remove "
+            + ", ".join(str(path) for path in retained_transactions)
+        )
+
     new_destinations = [
         skill_directory(root, str(skill["name"]))
         for skill in skills
-        if not skill_directory(root, str(skill["name"])).exists()
-        and not skill_directory(root, str(skill["name"])).is_symlink()
+        if actions[str(skill["name"])] in {"add", "install-missing"}
     ]
     preexisting_directories = existing_parent_directories(root, new_destinations)
     gh = find_gh(provider)
-    with tempfile.TemporaryDirectory(prefix=".ai-workflow-providers-", dir=root) as temporary:
-        transaction = Path(temporary)
-        staged = transaction / ".agents" / "skills"
-        staged.mkdir(parents=True)
+    transaction = Path(tempfile.mkdtemp(prefix=UPDATE_QUARANTINE_PREFIX, dir=root))
+    staging_root = transaction / "new"
+    staged = staging_root / ".agents" / "skills"
+    backups = transaction / "predecessor"
+    state_backup = transaction / STATE_RELATIVE.name
+    staged.mkdir(parents=True)
+    backups.mkdir()
+    committed = False
+    cleanup_transaction = True
+    try:
         for skill in skills:
             run_gh_install(gh, root, provider, skill, directory=staged)
-            verify_skill(transaction, provider, skill)
+            verify_skill(staging_root, provider, skill)
 
+        staging_conflicts: List[str] = []
+        try:
+            refreshed_provider, refreshed_skills, refreshed_version = (
+                authenticated_predecessor_declaration(root)
+            )
+            if (
+                refreshed_provider != old_provider
+                or refreshed_skills != old_skills
+                or refreshed_version != predecessor_version
+                or load_state(root) != state
+            ):
+                staging_conflicts.append(
+                    "predecessor ownership evidence changed during authenticated staging"
+                )
+        except ProviderError as error:
+            staging_conflicts.append(
+                f"predecessor ownership evidence changed during authenticated staging: {error}"
+            )
         for skill in skills:
             name = str(skill["name"])
-            destination = skill_directory(root, name)
-            if destination.exists() or destination.is_symlink():
-                verify_authenticated_match(
-                    destination,
-                    staged / name,
-                    name,
-                )
+            if actions[name] in {"retain", "preexisting-compatible"}:
+                try:
+                    verify_authenticated_match(
+                        skill_directory(root, name),
+                        staged / name,
+                        name,
+                    )
+                except ProviderError as error:
+                    staging_conflicts.append(str(error))
+            elif actions[name] == "replace":
+                conflicts = predecessor_checksum_conflicts(root, name, old_records[name])
+                if conflicts:
+                    staging_conflicts.append(
+                        f"provider skill {name} changed during authenticated staging:\n"
+                        + "\n".join(conflicts)
+                    )
+                    continue
+                try:
+                    verify_predecessor_skill(root, old_provider, old_by_name[name])
+                except ProviderError as error:
+                    staging_conflicts.append(
+                        f"provider skill {name} changed during authenticated staging: {error}"
+                    )
+            elif actions[name] in {"add", "install-missing"}:
+                destination = skill_directory(root, name)
+                if destination.exists() or destination.is_symlink():
+                    staging_conflicts.append(
+                        f"provider path appeared during authenticated staging; refusing to replace it: "
+                        f".agents/skills/{name}"
+                    )
+        if staging_conflicts:
+            raise ProviderError(
+                "authenticated staging found provider conflicts; no provider files were changed:\n\n"
+                + "\n\n".join(staging_conflicts)
+            )
 
+        migrations = [name for name, action in sorted(actions.items()) if action == "replace"]
         if dry_run:
             print(f"PROVIDERS UPDATE DRY RUN for {root}")
+            print(f"  - authenticated predecessor framework {predecessor_version}")
             print(f"  - authenticated and staged {len(skills)} pinned skills with {gh}")
-            print("  - preserve every existing authenticated provider directory")
-            print("  - add only missing declared provider directories")
+            if migrations:
+                print("  - provider migration:")
+                for name in migrations:
+                    print(
+                        f"      {name}: predecessor-managed, checksum-clean; "
+                        f"{old_provider['version']} -> {provider['version']}"
+                    )
+            for name, action in sorted(actions.items()):
+                if action != "replace":
+                    print(f"  - {action.replace('-', ' ')} provider skill {name}")
             print(f"  - record compatible baseline {provider['repository']}@{provider['version']}")
             print("No provider files changed.")
             return
 
+        activated: List[Tuple[Path, Optional[Path]]] = []
+        state_backed_up = False
         new_records: Dict[str, Mapping[str, object]] = {}
-        moved_new: List[Path] = []
-        state_replaced = False
         try:
             for skill in skills:
                 name = str(skill["name"])
                 destination = skill_directory(root, name)
-                if destination.exists() or destination.is_symlink():
-                    origin = "preexisting-compatible"
-                    files = verify_skill(root, provider, skill)
-                else:
+                action = actions[name]
+                if action in {"replace", "add", "install-missing"}:
+                    backup: Optional[Path] = None
+                    if action == "replace":
+                        backup = backups / name
+                        destination.replace(backup)
                     destination.parent.mkdir(parents=True, exist_ok=True)
                     (staged / name).replace(destination)
-                    moved_new.append(destination)
+                    activated.append((destination, backup))
+                if action == "preexisting-compatible":
+                    origin = "preexisting-compatible"
+                elif name in old_records and action == "retain":
+                    origin = str(old_records[name]["origin"])
+                else:
                     origin = "created"
-                    files = verify_skill(root, provider, skill)
+                files = verify_skill(root, provider, skill)
                 new_records[name] = {
                     "files": files,
                     "origin": origin,
                     "path": skill["path"],
                     "tree_sha": skill["tree_sha"],
                 }
-            cleanup_provider_staging(transaction)
+            state_path.replace(state_backup)
+            state_backed_up = True
             atomic_json(state_path, state_value(provider, new_records))
-            state_replaced = True
             if not command_status(root, verbose=False):
                 raise ProviderError("post-update provider verification failed")
+            if commit_callback is not None:
+                commit_callback()
         except BaseException as error:
             rollback_errors = []
-            for destination in reversed(moved_new):
+            if state_backed_up:
+                try:
+                    if state_path.is_symlink() or (state_path.exists() and not state_path.is_file()):
+                        raise ProviderError(f"rollback state target is not a regular file: {state_path}")
+                    state_path.unlink(missing_ok=True)
+                    state_backup.replace(state_path)
+                except BaseException as rollback_error:
+                    rollback_errors.append(f"provider state: {rollback_error}")
+            for destination, backup in reversed(activated):
                 try:
                     if destination.exists() and not destination.is_symlink():
                         remove_tree(destination, root)
+                    elif destination.is_symlink():
+                        raise ProviderError(f"rollback target became a symlink: {destination}")
+                    if backup is not None:
+                        backup.replace(destination)
                 except BaseException as rollback_error:
                     rollback_errors.append(f"{destination}: {rollback_error}")
-            if state_replaced:
-                try:
-                    atomic_json(state_path, state)
-                except BaseException as rollback_error:
-                    rollback_errors.append(f"provider state: {rollback_error}")
             for path in reversed(new_destinations):
                 try:
                     remove_created_empty_parents(
@@ -1114,11 +1587,40 @@ def command_update(root: Path, dry_run: bool) -> None:
                 except BaseException as rollback_error:
                     rollback_errors.append(f"{path.parent}: {rollback_error}")
             if rollback_errors:
+                cleanup_transaction = False
                 raise ProviderError(
                     f"provider update failed and rollback also failed: {error}; "
                     + "; ".join(rollback_errors)
+                    + f"; rollback quarantine retained at {transaction}"
                 ) from error
             raise
+        committed = True
+    finally:
+        if cleanup_transaction:
+            try:
+                shutil.rmtree(transaction)
+            except OSError as error:
+                if committed:
+                    print(
+                        "WARNING: provider update committed, but predecessor-backup cleanup failed; "
+                        f"inspect and remove {transaction}: {error}",
+                        file=sys.stderr,
+                    )
+                else:
+                    print(
+                        "WARNING: provider update did not commit, and staging cleanup failed; "
+                        f"inspect and remove {transaction}: {error}",
+                        file=sys.stderr,
+                    )
+
+    if migrations:
+        print("Provider migration:")
+        for name in migrations:
+            print(
+                f"  {name}: predecessor-managed, checksum-clean; "
+                f"{old_provider['version']} -> {provider['version']}"
+            )
+            print(f"✓ Migrated provider skill {name}.")
     print(f"✓ Curated upstream skills updated intentionally to {provider['repository']}@{provider['version']}.")
 
 

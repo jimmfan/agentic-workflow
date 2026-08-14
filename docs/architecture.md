@@ -207,14 +207,22 @@ upstream; the public bootstrap still needs HTTPS to fetch that recorded package.
 Local status treats declaration source hashes as content authority and state
 hashes only as installation-cleanliness evidence.
 
-Across a declaration change, update rejects unknown old-state skill names,
-stages the complete new pin, authenticates every existing declared directory
-against it, downgrades retained directories to `preexisting-compatible`, and
-adds only missing declared directories. It never removes or replaces an
-existing provider directory during the transition. This permits a same-pin
-dependency-set addition such as 0.7.0's `triage` migration; a future pin with
-changed canonical bytes fails closed until the owner explicitly reconciles the
-directory or completes remove-then-install.
+Across a declaration change, update first reuses the payload trust chain to
+select one exact audited predecessor. The accepted predecessor's complete
+framework source map authenticates the target's installed `providers.json`;
+that declaration must exactly match the provider identity, skill set, paths,
+and tree SHAs in `provider-state.json`. Every present predecessor directory must
+match its complete old inventory and metadata, and every installed-file SHA-256
+must still match state. Update plans all conflicts before staging or mutation.
+
+A retained directory already compatible with the new declaration keeps its old
+`created` or `preexisting-compatible` origin. A missing predecessor-recorded
+directory is installed normally. An incompatible directory may be replaced only
+when its authenticated predecessor record says `created` and all integrity
+checks are clean; locally modified and pre-existing-compatible directories fail
+closed. New same-named unknown content also fails closed. The complete new pin
+is staged and authenticated before any authorized replacement, so this migration
+does not float versions or weaken package-owned source identity.
 
 Remove considers only exact current declaration names. It deletes a directory
 only when package source identities authenticate its complete inventory, its
@@ -242,6 +250,14 @@ replaced/deleted bytes and modes and removes only parent directories created by
 that transaction. Successful removal deletes owned files but does not prune
 untracked empty parents, because the framework has no durable proof that it
 created those directories.
+
+Coordinated update opens the provider replacement transaction only after both
+payload and provider preflight succeed. It writes and verifies the new provider
+directories/state, then invokes the payload update while predecessor provider
+directories and the exact old state file remain quarantined on the target
+filesystem. A payload failure rolls itself back and then causes provider
+rollback; a provider post-check failure likewise restores the old provider set.
+Only after both layers verify does the provider transaction delete its backups.
 
 Update preflights the payload before staging a changed provider baseline. It
 preserves every existing provider directory, authenticates retained declared

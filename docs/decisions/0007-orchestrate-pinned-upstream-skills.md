@@ -65,14 +65,19 @@ inner provider-status check remains local once its exact framework package and
 authenticated baseline are loaded; the public bootstrap still downloads the
 package.
 
-When a declaration changes, refuse unknown old-state skill names, stage the
-complete new pin, authenticate existing declared directories against it,
-downgrade retained directories to `preexisting-compatible`, and add only
-missing declared skills. Never remove or replace an existing provider directory
-in that transition. Removal considers only exact declaration names and deletes
-only package-authentic, record-checksum-clean directories whose origin is
-`created`; preserve incompatible, modified, extra-file, undeclared, and
-pre-existing-compatible directories.
+When a declaration changes, first authenticate the exact predecessor framework
+and its historical `providers.json` through the new package's accepted
+predecessor table. Require provider state to match that declaration exactly and
+preflight every directory transition. Preserve the origin of retained exact
+matches, add genuinely missing skills, and replace an incompatible directory
+only when predecessor state says `created` and its complete inventory, metadata,
+and recorded file checksums remain clean. Refuse replacement of modified,
+pre-existing-compatible, unknown, partial, or inconsistent directories. Stage
+and authenticate the complete new pin before mutation. Removal considers only
+exact declaration names and deletes only package-authentic,
+record-checksum-clean directories whose origin is `created`; preserve
+incompatible, modified, extra-file, undeclared, and pre-existing-compatible
+directories.
 
 Provider versions never float. A maintainer upgrades only after reviewing a new
 stable release, updating declaration identities, exercising live provider
@@ -112,20 +117,21 @@ updates unambiguous.
 Initial provider adoption gains GitHub CLI, authentication, and temporary exact
 staging prerequisites even when same-named directories already exist. Normal
 runtime and the inner status checks remain local after that baseline is recorded;
-the public bootstrap still downloads the exact framework package. A same-pin
-dependency-set change can retain authenticated directories and add only missing
-ones. A future pin that changes canonical bytes instead fails closed and
-requires explicit owner reconciliation or remove-then-install. This is more
-deliberate than a generic package-manager update and preferable to silently
-overwriting project-owned skills.
+the public bootstrap still downloads the exact framework package. A supported
+cross-version update can retain authenticated directories, add missing ones, and
+migrate changed pinned bytes without manual deletion when predecessor ownership
+and cleanliness are proven. Modified and pre-existing provider directories still
+require explicit owner reconciliation. This is more deliberate than a generic
+package-manager update and does not silently overwrite project-owned skills.
 
 The framework 0.7.0 upgrade changes the curated set by adding `triage` while
 retaining the v1.2.3 pin. Existing 0.6.0 targets therefore take the same staged,
 authenticated provider-baseline update path even though the upstream version is
-unchanged. Existing directories are retained and downgraded to
-`preexisting-compatible`; only missing `triage` is added. This deterministically
-records the complete new set without treating the declaration-schema change
-itself as provider state.
+unchanged. Existing clean directories are retained with their established
+origins; only missing `triage` is added. This deterministically records the
+complete new set without treating the declaration-schema change itself as
+provider state and preserves the provenance needed for a later audited
+migration.
 
 Repository-local origin history is useful ownership evidence but is not
 tamper-evident. A deliberate coordinated origin forgery can reclassify an exact,

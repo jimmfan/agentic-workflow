@@ -83,13 +83,25 @@ commit and restore prior bytes and modes on failure. Rollback removes only
 transaction-created parent directories; successful removal leaves unowned empty
 parents in place.
 
-On a provider declaration change, `update` must reject unknown old-state skill
-names, stage the complete new pin, authenticate every existing declared
-directory, downgrade retained directories to `preexisting-compatible`, and add
-only missing declared skills. It must never replace or remove an existing
-provider directory during that transition. This supports a same-pin dependency
-addition; changed canonical bytes at a future pin fail closed until the owner
-explicitly reconciles the directory or completes remove-then-install.
+On a provider declaration change, `update` must first authenticate the complete
+installed framework as an audited predecessor and use that predecessor's
+checksummed `providers.json` to validate the exact provider state identity,
+skill set, paths, and tree SHAs. Validate every transition before staging or
+mutation. A missing predecessor-recorded directory is absence and may receive
+the new declared skill. Retain a directory already compatible with the new
+declaration and preserve its recorded origin. Replace an incompatible directory
+only when the authenticated predecessor recorded it as `created`, its complete
+inventory and metadata match that predecessor, and every installed-file SHA-256
+still matches predecessor state. Modified and `preexisting-compatible`
+directories fail closed with ownership/integrity diagnostics. Stage and verify
+the complete new pin before any replacement; provider versions never float.
+
+The coordinated update commits the payload while provider backups remain
+reversible. A payload or provider post-check failure restores the predecessor
+provider directories and exact state file, while the payload transaction
+restores its own bytes and modes. Users should not delete `.agents`, individual
+provider directories, or either ownership file during a supported clean
+upgrade; those records are required to prove safe migration.
 
 `remove` is bounded to exact declaration names. Delete only a directory whose
 complete inventory is package-authentic, whose installed checksums still match

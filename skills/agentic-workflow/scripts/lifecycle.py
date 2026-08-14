@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 from pathlib import Path, PurePosixPath
 import subprocess
@@ -97,6 +98,19 @@ def run_checked(
             f"{script.name} {action} failed with exit code {result.returncode}"
             + (f": {detail}" if detail else "")
         )
+
+
+def load_provider_manager() -> object:
+    """Load the provider manager so its rollback window can include payload commit."""
+    spec = importlib.util.spec_from_file_location("agentic_workflow_provider_transaction", PROVIDERS)
+    if spec is None or spec.loader is None:
+        raise LifecycleError(f"cannot load provider transaction manager: {PROVIDERS}")
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+    except (ImportError, OSError) as error:
+        raise LifecycleError(f"cannot load provider transaction manager: {error}") from error
+    return module
 
 
 def readiness_path(root: Path, relative: Path) -> Optional[Path]:
@@ -460,10 +474,20 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
 
 def update(root: Path, dry_run: bool, revision: str) -> None:
     run_checked(ADOPTER, "update", root, True, revision, quiet=not dry_run)
-    run_checked(PROVIDERS, "update", root, dry_run, revision)
     if dry_run:
+        run_checked(PROVIDERS, "update", root, True, revision)
         return
-    run_checked(ADOPTER, "update", root, False, revision)
+    manager = load_provider_manager()
+    try:
+        manager.command_update(  # type: ignore[attr-defined]
+            root,
+            False,
+            commit_callback=lambda: run_checked(ADOPTER, "update", root, False, revision),
+        )
+    except manager.ProviderError as error:  # type: ignore[attr-defined]
+        raise LifecycleError(f"providers.py update failed: {error}") from error
+    except OSError as error:
+        raise LifecycleError(f"providers.py update failed: filesystem operation failed: {error}") from error
     print("✓ Agentic Workflow payload and curated upstream providers are updated and verified.")
     print_readiness(root, detailed=False)
 
