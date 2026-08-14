@@ -3083,6 +3083,41 @@ class LifecycleTests(unittest.TestCase):
             ):
                 ADOPTER.load_source_manifest()
 
+    def test_v090_release_baselines_are_authenticated_predecessors(self) -> None:
+        source_version, owned, _seeds, _retired, accepted = ADOPTER.load_source_manifest()
+        current_sources = {
+            target: ADOPTER.sha256_file(ADOPTER.SOURCE_ROOT.joinpath(*source.parts))
+            for source, target in owned
+        }
+        expected_revisions = {
+            "0719332f547eb0b18bc6f23df73fd37313408017",
+            "62f08dd16fe588b48f591398f66a2f585149f14b",
+        }
+        v090 = [item for item in accepted if item[0] == "0.9.0"]
+        self.assertEqual(
+            {revision for _, revisions, _, _ in v090 for revision in revisions},
+            expected_revisions,
+        )
+
+        for version, revisions, schemas, identities in v090:
+            for revision in revisions:
+                installed = {
+                    "framework_version": version,
+                    "source_revision": revision,
+                    "schema_version": next(iter(schemas)),
+                    "framework_files": {
+                        path.as_posix(): {"source_sha256": digest}
+                        for path, digest in identities.items()
+                    },
+                }
+                trusted = ADOPTER.trusted_installed_sources(
+                    installed,
+                    source_version,
+                    current_sources,
+                    accepted,
+                )
+                self.assertEqual(trusted, identities)
+
     def test_tamper_is_reported_and_blocks_update(self) -> None:
         target = git_repository(self.base / "target")
         self.assertEqual(adopt(ADOPT, "install", target).returncode, 0)
