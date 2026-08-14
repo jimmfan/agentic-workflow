@@ -50,7 +50,7 @@ Rejected as a framework replacement:
   interruption/resume contract. It remains available only if separately and
   explicitly installed by a project; the framework does not silently substitute
   it.
-
+gi
 The full selected provider directories occupy approximately 132 KB at this
 release. That on-disk cost does not imply an equivalent prompt cost: agent hosts
 discover skill metadata first and load full instructions only on actual
