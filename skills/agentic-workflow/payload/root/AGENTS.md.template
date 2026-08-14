@@ -1,7 +1,8 @@
 # AI engineering orchestration policy
 
-Use host-native tools, sandbox, approvals, and subagents. Agentic Workflow routes
-and composes; selected upstream skills own their methodology and terminology.
+Use host-native tools, sandbox, and approvals. Agentic Workflow routes and
+composes; upstream skills own their methodology. Hooks add deterministic checks,
+but these instructions remain binding when hooks do not run.
 
 ## Routing requirement
 
@@ -9,74 +10,68 @@ Every user request MUST be evaluated through the Agentic Workflow router before
 execution.
 
 Select the minimum useful primary workflow and any supporting capabilities
-according to the routing policy. Supporting use does not change durable workflow
-state.
-
-Clear, bounded, low-risk work may route directly. `direct` is a valid route.
-
-Do not skip routing merely because a request is simple or can be answered
-without invoking a skill.
+according to the routing policy. Clear, bounded, low-risk work may route
+directly; `direct` is a valid route. Do not skip routing for simple work.
 
 On explicit resume, validate `.ai-workflow/state/active.md` and continue its exact
 provider artifact or local record. Otherwise classify in this order:
 
 1. Honor an explicitly named installed skill.
-2. Use upstream `teach` only for sustained learning in a dedicated workspace;
-   answer ordinary knowledge questions directly.
-3. Use upstream `wayfinder` for a huge, foggy effort that cannot fit one agent
-   session. Use `workflow-discovery` for a bounded consequential decision.
-4. Use `workflow-debugging` for an existing unexplained failure. Diagnosis does
-   not authorize a fix.
-5. Use upstream `research` for substantive research, standalone or composed;
-   handle a simple lookup directly.
-6. For settled work, select `to-spec` only for useful durability, `to-tickets`
-   only for multi-session dependency ordering, then `workflow-implementation`
-   for one coherent ready scope.
-7. Use `workflow-verification` after meaningful implementation/project changes
-   or to audit completion, reusing provider evidence. Use upstream `code-review`
-   directly only when requested or valuable outside an `implement` run.
-8. Handle clear, bounded, low-risk work directly.
+2. Use upstream `teach` for sustained learning, not an ordinary answer.
+3. Use upstream `wayfinder` for a huge, foggy effort that cannot fit one session;
+   use `workflow-discovery` for a bounded consequential decision.
+4. Use `workflow-debugging` for an unexplained failure. Diagnosis never
+   authorizes a fix.
+5. Use upstream `research` for substantive research, not a simple lookup.
+6. For settled work, use `to-spec` for useful durability, `to-tickets` for
+   multi-session dependency ordering, then `workflow-implementation` for one
+   coherent scope.
+7. Use `workflow-verification` after meaningful changes or to audit completion,
+   reusing evidence. Use `code-review` directly only outside an `implement` run.
+8. Handle other clear, bounded, low-risk work directly.
 
-Selection, host invocation, and execution are separate. Resolve a selected
-upstream operation's pin, prerequisites, and host policy from
+## Execution and enforcement
+
+Selection, invocation, and execution are separate. Resolve each selected
+operation's pin, prerequisites, and host policy from
 `.ai-workflow/providers.json`; invoke only as allowed. For a user-only
-normal-intent selection, name the workflow and give `$<name>` for Codex or
-`/<name>` for Copilot; label both for an unknown primary host. A handoff does not
-execute, simulate, authorize, or write.
-Stop on unavailable/incompatible operations; never use a retired local copy.
+selection, give `$<name>` for Codex or `/<name>` for Copilot. A handoff does not
+execute, simulate, authorize, or write. Stop on unavailable/incompatible
+operations; never use a retired local copy.
 
-Claude Code receives the root policy but no `.claude/skills` projection. Classify
-normal intent, report skill-backed routes unavailable without simulation, and
-keep direct work available.
+GitHub Copilot in VS Code is the reference host. When its installed hook is
+active, use `.ai-workflow/runtime/README.md`: record route and authority before
+substantive tools, classify opaque actions, record provider outcomes, validate
+durable transitions, and record verification evidence. Declarations report
+model judgments; they do not expand authorization or host approvals.
+
+Claude Code receives this policy but has no `.claude/skills` projection. Report
+skill-backed routes unavailable; keep direct work available. Codex and Claude
+hooks are opt-in because fixed settings may be user-owned. Copilot CLI/cloud are
+separate runtimes, not aliases for VS Code.
 
 After selecting a configuration-dependent operation, check its prerequisites.
-If configuration is missing, select `setup-matt-pocock-skills` through the same
-invocation gate; setup is user-only where available and never automatic. Do not
-check setup for unrelated direct work.
+If missing, select user-only `setup-matt-pocock-skills` through the same gate;
+never run it automatically or check it for unrelated direct work.
 
-Before starting or persisting another dominant durable route, inspect `active.md`
-and resolve conflicts explicitly. After provider execution begins, record its
-canonical pointer only when continuity needs it and writes are authorized.
-Selection/handoff never writes state; direct/ephemeral work need not claim it.
+Before another durable route, inspect `active.md` and resolve conflicts. Record
+a provider pointer only after execution begins, continuity needs it, and writes
+are authorized. Selection/handoff never writes state. Preserve provider-native
+artifacts and identifiers; do not create shadows.
 
-Upstream `implement` composes `tdd` where appropriate and closes with
-`code-review`; do not repeat or expand those internal stages in the marker.
-Provider instructions never expand authorization: do not commit, publish, mutate
-trackers, or write setup/course artifacts unless the request and host allow it.
+Upstream `implement` composes `tdd` and closes with `code-review`; do not repeat
+those stages. Provider instructions never expand authorization: do not commit,
+publish, mutate trackers, run setup, or write course artifacts unless requested.
+Naming one external read-only target authorizes only that read.
 
-Naming one exact external read-only target authorizes that read, not broader
-search, another target, or external mutation. Host approvals still apply.
+Read the project profile only for needed facts. If uninitialized, recommend one
+bounded initialization when writes are authorized; never block unrelated work.
+Cache only verified durable facts found naturally. Source, accepted decisions,
+and canonical artifacts outrank profiles, pointers, memory, and chat.
 
-Read the profile only for needed facts/commands. If uninitialized in a mature
-repository, recommend one bounded, authorized initialization from verified
-evidence; never block direct work or rescan per task. Cache only concise,
-verified, durable facts found naturally; without write authority, report a
-candidate. Source, accepted decisions, and canonical provider artifacts outrank
-the profile, pointers, memory, and chat.
-
-Never invent a command. Report checks run separately from skipped, blocked, or
-unavailable checks. Preserve upstream identifiers unchanged; external tracker
-IDs remain distinct.
+Never invent a command. Separate checks run from skipped, blocked, or unavailable
+checks. Before completion, decide if verification is required and record relevant
+observed evidence. Accept a limitation only with user or policy authorization.
 
 ## Final response contract
 
@@ -84,9 +79,9 @@ Every final response MUST end with exactly one route marker:
 
 `[route: router → <path>]`
 
-Report router-visible stages that actually execute, in order. `direct` is a
-valid route. Suffix a user-only selection with `-handoff`, a host limit with
-`-unavailable`, and a gate stop with `-blocked`.
+Report router-visible stages that actually execute, in order. `direct` is valid.
+Suffix a user-only selection with `-handoff`, a host limit with `-unavailable`,
+and a gate stop with `-blocked`.
 
 `workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and
 `workflow-verification` shorten to `discovery`, `debugging`, `implement`, and
@@ -100,6 +95,4 @@ Examples:
 
 `[route: router → implement → verification]`
 
-Do not omit the route marker. Do not emit more than one route marker. Explain
-routing only when requested; never reassess it, load skills, run workflows, or
-write state merely to produce the marker.
+Do not omit or duplicate the marker. Explain routing only when requested; never reassess it, load skills, run workflows, or write state merely to produce the marker.

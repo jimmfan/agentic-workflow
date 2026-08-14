@@ -23,6 +23,8 @@ INSTALL_MANIFEST = STATE_DIRECTORY / "install-manifest.json"
 PROVIDER_DECLARATION = PACKAGE_ROOT / "payload" / "ai-workflow" / "providers.json"
 DISTRIBUTION_MANIFEST = PACKAGE_ROOT / "payload" / "distribution" / "manifest.json"
 PROJECT_PROFILE = STATE_DIRECTORY / "project-profile.md"
+ENFORCEMENT_CAPABILITIES = STATE_DIRECTORY / "runtime" / "capabilities.json"
+VSCODE_HOOK = Path(".github/hooks/agentic-workflow.json")
 CONFIGURATION_LABELS = {
     "issue-tracker": "issue tracker config",
     "domain": "domain config",
@@ -409,6 +411,47 @@ def print_readiness(root: Path, *, detailed: bool) -> None:
         )
 
 
+def enforcement_status(root: Path) -> Mapping[str, str]:
+    capabilities_path = readiness_path(root, ENFORCEMENT_CAPABILITIES)
+    hook_path = readiness_path(root, VSCODE_HOOK)
+    if capabilities_path is None or not capabilities_path.is_file() or capabilities_path.is_symlink():
+        return {
+            "GitHub Copilot in VS Code": "unavailable (capability metadata missing or invalid)",
+            "Codex": "instruction-only",
+            "Claude Code": "instruction-only",
+            "GitHub Copilot CLI/cloud": "instruction-only",
+        }
+    try:
+        value = json.loads(capabilities_path.read_text(encoding="utf-8"))
+        hosts = value["hosts"]
+        if value.get("schema_version") != 1 or not isinstance(hosts, dict):
+            raise ValueError("unsupported capability schema")
+    except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+        return {
+            "GitHub Copilot in VS Code": "unavailable (capability metadata unreadable)",
+            "Codex": "instruction-only",
+            "Claude Code": "instruction-only",
+            "GitHub Copilot CLI/cloud": "instruction-only",
+        }
+    vscode = "partial/Preview"
+    if hook_path is None or not hook_path.is_file() or hook_path.is_symlink():
+        vscode += " (active hook missing; instruction fallback)"
+    else:
+        vscode += " (active adapter installed)"
+    return {
+        "GitHub Copilot in VS Code": vscode,
+        "Codex": "partial optional adapter; instruction fallback by default",
+        "Claude Code": "partial optional adapter; provider skills unavailable",
+        "GitHub Copilot CLI/cloud": "shared file unvalidated; instruction fallback",
+    }
+
+
+def print_enforcement_status(root: Path) -> None:
+    print("Host enforcement (capability, not installation integrity):")
+    for host, state in enforcement_status(root).items():
+        print(f"  {host}: {state}")
+
+
 def integrity_state(returncode: int) -> str:
     if returncode == 0:
         return "healthy"
@@ -422,6 +465,7 @@ def status(root: Path, revision: str) -> int:
     providers = subprocess.run(command(PROVIDERS, "status", root, False, revision)).returncode
     print(f"Framework integrity: {integrity_state(payload)}")
     print(f"Provider integrity: {integrity_state(providers)}")
+    print_enforcement_status(root)
     print_readiness(root, detailed=True)
     if payload == 2 or providers == 2:
         return 2
@@ -545,6 +589,7 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
             )
         raise
     print("✓ Agentic Workflow framework is installed; payload and curated upstream providers are verified.")
+    print_enforcement_status(root)
     print_readiness(root, detailed=False)
 
 
@@ -584,6 +629,7 @@ def update(root: Path, dry_run: bool, revision: str) -> None:
             ) from error
         raise
     print("✓ Agentic Workflow payload and curated upstream providers are updated and verified.")
+    print_enforcement_status(root)
     print_readiness(root, detailed=False)
 
 

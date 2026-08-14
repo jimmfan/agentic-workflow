@@ -1,15 +1,18 @@
 # Agentic Workflow
 
-Agentic Workflow adds a compact project-level router to OpenAI Codex and GitHub
-Copilot agent mode. You ask for work normally; it keeps simple requests direct
-and routes larger work through curated, pinned skills for planning, research,
-specification, tickets, implementation, testing, and review.
+Agentic Workflow adds a compact project-level router and lifecycle guardrails to
+GitHub Copilot in VS Code, OpenAI Codex, and compatible instruction-driven
+hosts. You ask for work normally; it keeps simple requests direct and routes
+larger work through curated, pinned skills.
 
 ## How it works
 
 ```mermaid
 flowchart LR
     request["Your request"] --> router["Compact router"]
+    router --> controller["Shared lifecycle controller"]
+    controller --> vscode["VS Code Copilot adapter (reference)"]
+    controller --> secondary["Optional Codex / Claude adapters"]
     router --> direct["Direct work"]
     router --> local["Local safety workflow"]
     router --> provider["Pinned provider skill"]
@@ -21,9 +24,9 @@ flowchart LR
 ```
 
 The router chooses the smallest useful workflow based on the request, risk, and
-uncertainty. Provider skills keep their native methods and artifacts; the local
-framework supplies routing, authorization boundaries, lifecycle safety, and
-final acceptance verification.
+uncertainty. Provider skills keep their native methods and artifacts. A small
+shared controller checks observable lifecycle invariants where host hooks run;
+the instruction contract remains functional when hooks are unavailable.
 
 For example:
 
@@ -39,9 +42,10 @@ the skill ran.
 
 | Host | Support |
 |---|---|
-| OpenAI Codex | Full router and project-skill support; user-only skills use `$skill-name` |
-| GitHub Copilot agent mode | Full router and project-skill support; user-only skills use `/skill-name` |
-| Claude Code | Root-policy classification and direct work only; project skills are not projected into `.claude/skills` |
+| GitHub Copilot in VS Code | Primary/reference host. Router and project skills plus an active **Preview** hook adapter; user-only skills use `/skill-name`. Hooks may be disabled, so instruction fallback remains complete. |
+| OpenAI Codex | Strong secondary host. Router and project skills; optional hook template; user-only skills use `$skill-name`. |
+| Claude Code | Compatibility target. Root-policy classification and direct work; optional hook template; project skills are not projected into `.claude/skills`. |
+| GitHub Copilot CLI/cloud agent | The versioned reference file is structurally discoverable, but runtime guarantees differ and are not release-validated; instruction fallback remains. |
 
 ## Prerequisites
 
@@ -110,8 +114,10 @@ A successful installation ends with:
 ```
 
 Readiness warnings about project configuration do not mean installation failed.
-Open a fresh Codex task or Copilot chat from the project root so the host
-discovers the new policy and skills.
+Open a fresh Copilot chat or Codex task from the project root so the host
+discovers the new policy and skills. VS Code hooks are Preview and require a
+trusted workspace; lifecycle `status` reports host enforcement separately from
+installation integrity.
 
 ### What gets installed
 
@@ -120,13 +126,16 @@ target-project/
 ├── AGENTS.md                  # managed router + project-owned section
 ├── CLAUDE.md                 # root-policy import + project-owned section
 ├── .agents/skills/           # local workflows + pinned provider skills
-└── .ai-workflow/                # internal project-local framework state
+├── .github/hooks/
+│   └── agentic-workflow.json # active VS Code Preview adapter
+└── .ai-workflow/             # internal project-local framework state
     ├── install-manifest.json # framework ownership and checksums
     ├── provider-state.json   # provider ownership and checksums
     ├── providers.json        # tested capability mapping
     ├── project-profile.md    # project-owned seed
     ├── contracts/
     ├── observability/        # optional, inert export analyzer
+    ├── runtime/              # shared controller, host matrix, opt-in adapters
     └── state/
 ```
 
@@ -243,7 +252,7 @@ modified or pre-existing skills intentionally remain.
   framework package.
 - The first-stage public command fetches `main` over TLS; the bootstrap then
   resolves and verifies an immutable framework revision.
-- The current framework release is `0.7.2` and its curated provider baseline is
+- The current framework release is `0.9.0` and its curated provider baseline is
   [`mattpocock/skills` v1.2.3](https://github.com/mattpocock/skills/releases/tag/v1.2.3).
 - Ownership history is stored inside the target repository and is not
   tamper-evident. Coordinated local forgery can reclassify exact canonical

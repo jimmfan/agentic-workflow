@@ -39,6 +39,15 @@ payload/provider integrity. Profile fixtures cover
 the canonical uninitialized seed and non-destructive recognition of the legacy
 uninitialized seed; existing project-owned profiles are never rewritten.
 
+`test_controller.py` exercises the host-neutral enforcement core directly. It
+covers the pre-execution route checkpoint, diagnosis-mode native write denial,
+single-use opaque-action declarations, truthful user-only provider execution,
+digest-bound durable-state conflict resolution, evidence-linked completion,
+metadata-only transient state, and one-block Stop loop prevention. Static checks
+validate the active VS Code Preview adapter and keep Codex, Claude Code, Copilot
+CLI, and Copilot cloud capability claims distinct. This is hermetic contract
+coverage, not proof that a live host loaded its hooks.
+
 Synthetic historical-package fixtures receive explicit fixture-only
 accepted-predecessor records in their copied new package. They exercise the
 planner without expanding production trust. Hermetic bootstrap packages also

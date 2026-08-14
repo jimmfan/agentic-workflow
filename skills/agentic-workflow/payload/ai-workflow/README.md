@@ -26,6 +26,20 @@ request -> router
         -> local verification
 ```
 
+GitHub Copilot in VS Code is the primary/reference runtime. The installed
+`.github/hooks/agentic-workflow.json` Preview adapter calls
+`runtime/controller.py` to check route checkpoints, authorization boundaries,
+provider outcomes, durable-state transitions, and verification evidence. Hooks
+may be disabled, unsupported, or untrusted, so the root instruction contract
+remains complete and direct work remains available. `runtime/capabilities.json`
+records the truthful host matrix; `runtime/README.md` defines the compact
+model-to-controller protocol and limitations.
+
+Codex and Claude Code examples under `runtime/adapters/` are opt-in rather than
+active: their fixed project hook files may already be user-owned. Copilot CLI
+and cloud agent have distinct schemas/runtime behavior and are not treated as
+aliases for the VS Code hook file.
+
 Routing selection is not execution. Codex and GitHub Copilot may invoke skills
 declared `implicit`; for a `user-only` selection the router returns the exact
 `$skill-name` Codex or `/skill-name` Copilot handoff and does not claim that the
@@ -170,10 +184,10 @@ guarantee would require conservative no-delete behavior or a trust anchor
 outside the target repository.
 
 Normal lifecycle status reports framework integrity and provider integrity
-separately from project readiness and setup host capability. An uninitialized profile
-or missing optional setup document is a readiness warning and keeps a healthy
-status successful; a missing or modified managed file remains an integrity
-failure.
+separately from host enforcement, project readiness, and setup capability. An
+uninitialized profile, disabled Preview hook, or missing optional setup document
+does not become a false integrity claim; a missing or modified managed hook/file
+remains an integrity failure.
 
 Each final response ends with one effective route line, for example
 `[route: router → implement → verification]`. It lists router-selected stages

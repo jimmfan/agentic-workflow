@@ -12,6 +12,14 @@ pinned upstream provider set owned by `scripts/providers.py`.
 `scripts/verify_package.py` validates both declarations before any adoption
 operation.
 
+GitHub Copilot in VS Code is the primary/reference runtime. Adoption installs a
+unique `.github/hooks/agentic-workflow.json` Preview adapter plus the shared
+standard-library Python controller. Codex and Claude examples remain opt-in to
+avoid overwriting user-owned fixed hook settings; Copilot CLI/cloud are separate
+compatibility investigations. Hooks are not a hard prerequisite: the installed
+root policy remains the functional fallback and `status` reports host
+enforcement separately from package integrity.
+
 The purpose of the coordinated path is to prevent a project from receiving only
 half of the framework. Install and dry-run preflight both local ownership and
 provider compatibility before writes. A successful install leaves the compact
@@ -64,9 +72,10 @@ python3 scripts/lifecycle.py status /path/to/project
 python3 scripts/lifecycle.py remove /path/to/project
 ```
 
-`status` reports framework integrity, provider integrity, project readiness, and
-setup host capability separately. Missing optional readiness items keep the clean
-status exit code; managed-file or provider-integrity failures do not. A selected
+`status` reports framework integrity, provider integrity, host enforcement,
+project readiness, and setup capability separately. Missing optional readiness
+items keep the clean status exit code; managed-file or provider-integrity
+failures do not. A selected
 configuration-dependent workflow checks its declared requirements and, when
 missing, directs the user to the user-only setup skill on a supported host or
 reports the provider unavailable on an unsupported host. Unrelated direct work

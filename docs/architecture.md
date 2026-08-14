@@ -17,9 +17,19 @@ alone does not load them.
 
 ## Runtime path
 
+GitHub Copilot in VS Code is the primary/reference host. The shared semantic
+contract is host-neutral; adapters use only the deterministic surface each host
+actually provides. VS Code hooks are Preview, so the instruction path remains a
+complete fallback rather than a degraded afterthought.
+
 ```mermaid
 flowchart TD
     request["Normal user intent"] --> router["Compact router"]
+    router --> checkpoint["Declared lifecycle checkpoint"]
+    checkpoint --> controller["Shared controller"]
+    controller --> vscode["VS Code Copilot adapter (reference, Preview)"]
+    controller --> codex["Codex adapter (optional)"]
+    controller --> claude["Claude Code adapter (optional)"]
     router --> dominant["Dominant workflow or activity"]
     router --> capabilities["Zero or more capabilities"]
     router --> policy["Provider + host invocation policy"]
@@ -60,6 +70,30 @@ implementation adapter returns the exact handoff when required; after permitted
 model invocation or explicit user invocation, it passes control to `implement`
 once and the local verifier reuses that evidence. The router does not invoke TDD
 or Code Review a second time merely because they are available.
+
+## Deterministic lifecycle boundary
+
+The active VS Code adapter installs at the unique workspace path
+`.github/hooks/agentic-workflow.json` and calls the shared standard-library
+Python controller for SessionStart, UserPromptSubmit, PreToolUse, PostToolUse,
+and Stop. The controller checks declared route/authority state, provider
+outcomes, native repository-write authorization, digest-bound durable-state
+transitions, and completion evidence. Opaque operations require a one-use model
+classification; the controller does not parse arbitrary shell semantics.
+
+Codex and Claude Code adapters are shipped as opt-in examples under
+`.ai-workflow/runtime/adapters/` because their fixed project settings may
+already be user-owned and their trust/runtime contracts differ. Copilot CLI and
+cloud agent can parse the versioned VS Code-compatible file but have different
+execution surfaces; their enforcement is not inferred from VS Code. The complete host research, hard-rule
+ownership audit, privacy boundary, fallback behavior, and known gaps are in
+[Lifecycle enforcement and hard-rule audit](enforcement.md). ADR 0009 records
+the decision.
+
+Per-session controller state is metadata-only and lives under the operating
+system temporary directory. It is not repository truth, contains no prompt or
+tool content, and is deleted after a successful completion gate. Canonical
+durable state remains in `.ai-workflow/state/` or provider-native artifacts.
 
 ## Provider selection
 
@@ -135,6 +169,7 @@ payload/root/AGENTS.md.template  -> AGENTS.md
 payload/root/CLAUDE.md.template  -> CLAUDE.md
 payload/skills/*/SKILL.md        -> .agents/skills/*/SKILL.md
 payload/ai-workflow/...          -> .ai-workflow/...
+payload/hosts/vscode-agentic-workflow.json -> .github/hooks/agentic-workflow.json
 gh skill exact upstream paths    -> .agents/skills/<upstream-name>/...
 ```
 

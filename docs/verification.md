@@ -9,6 +9,13 @@ and installed-skill references. With `--tests`, it also runs lifecycle and
 decision-contract tests in ordinary temporary projects and a temporary Git
 repository.
 
+The gate also validates the VS Code reference hook schema, host capability
+matrix, controller runtime contract, and executable controller scenarios for
+route checkpointing, diagnosis-only write denial, truthful provider execution,
+durable-state conflicts, verification evidence, metadata privacy, and bounded
+Stop behavior. These tests prove controller/package behavior; they are not live
+validation inside VS Code, Codex, Claude Code, Copilot CLI, or Copilot cloud.
+
 The static provider gate requires the reviewed `mattpocock/skills` repository,
 tag `v1.2.3`, immutable commit, exact curated capability mapping, semantic
 minimum GitHub CLI 2.97.0 or newer, unique upstream paths, full subtree SHAs, sorted
@@ -137,6 +144,16 @@ checksum failure; inspect the changed payload first.
 Static checks cannot prove that a running editor discovered instructions. In a
 fresh non-production target, run the public bootstrap from the environment that
 owns that target, then start a new host session.
+
+For the primary VS Code reference check, use a trusted disposable workspace and
+confirm that `.github/hooks/agentic-workflow.json` appears in the Agent
+Customizations hooks view. Open **Developer: Show Agent Debug Logs** and verify
+that SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, and Stop load.
+Exercise one diagnosis-mode native write denial and one required-verification
+Stop continuation. Record the VS Code/Copilot version and whether organization
+policy enables hooks. This manually validates the Preview host surface and must
+be reported separately from the hermetic release gate. Removing the disposable
+workspace reverses the test; no production project should be used.
 
 For GitHub Copilot, inspect Chat Diagnostics or the agent customization view and
 confirm root `AGENTS.md` plus the four local and fourteen upstream skill

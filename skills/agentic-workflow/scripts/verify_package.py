@@ -322,6 +322,33 @@ ACCEPTED_PREDECESSORS = (
             ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
         }
     },
+    {
+        "framework_version": "0.8.0",
+        "source_revisions": [
+            "e109bbc7d8cf3c0049b0a52ceab529a61f345e4c"
+        ],
+        "install_manifest_schemas": [
+            2
+        ],
+        "framework_files": {
+            ".ai-workflow/README.md": "1d0d3cc1fda538bc2a4eb7a9dcba9b83c1c6bd3dcc4a6f6c72d7fade513b7dc5",
+            ".ai-workflow/contracts/project-profile.md": "f55766b08d7ce6cff8705a0e2dce753339ecdcce6fcc1344f24abde9882d536b",
+            ".ai-workflow/observability/README.md": "1f0e121e0352a367937423eb235f31f82161c9666734a97d0f7df7b085e58dad",
+            ".ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
+            ".ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
+            ".ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
+            ".ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
+            ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+            ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+            "AGENTS.md": "79519d5a2b9f92afb5937f40a4608a3db809545ba8e09ce2764a05efad98b5c5",
+            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            ".agents/skills/workflow-debugging/SKILL.md": "7ad372931577d2683fbd0feed26989a54be613d576d62480906973cfab64aedb",
+            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
+            ".agents/skills/workflow-implementation/SKILL.md": "8567e3fe64479f7b2fcb89fa13e54428ea74c624cd6eaf880ff18e73605d682a",
+            ".agents/skills/workflow-verification/SKILL.md": "80725f9ec9929d9261b0f56e8864d9fcbe04c4c08f1d7ef7eb37a4ff0060720c"
+        }
+    },
 )
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
@@ -482,6 +509,8 @@ def target_for(source: str) -> str:
         return "AGENTS.md"
     if source == "root/CLAUDE.md.template":
         return "CLAUDE.md"
+    if source == "hosts/vscode-agentic-workflow.json":
+        return ".github/hooks/agentic-workflow.json"
     match = re.fullmatch(r"skills/([^/]+)/(.*)", source)
     if match:
         return f".agents/skills/{match.group(1)}/{match.group(2)}"
@@ -572,6 +601,10 @@ def check_structure() -> None:
         MANIFEST_PATH,
         PAYLOAD_ROOT / "ai-workflow" / "README.md",
         PAYLOAD_ROOT / "ai-workflow" / "providers.json",
+        PAYLOAD_ROOT / "ai-workflow" / "runtime" / "controller.py",
+        PAYLOAD_ROOT / "ai-workflow" / "runtime" / "capabilities.json",
+        PAYLOAD_ROOT / "ai-workflow" / "runtime" / "README.md",
+        PAYLOAD_ROOT / "hosts" / "vscode-agentic-workflow.json",
         OBSERVABILITY_ANALYZER,
         OBSERVABILITY_GUIDE,
         DECISION_SCENARIOS_PATH,
@@ -628,6 +661,7 @@ def check_python_runtime_contract() -> None:
         PACKAGE_ROOT / "scripts" / "lifecycle.py",
         PACKAGE_ROOT / "scripts" / "providers.py",
         PACKAGE_ROOT / "scripts" / "verify_package.py",
+        PAYLOAD_ROOT / "ai-workflow" / "runtime" / "controller.py",
         OBSERVABILITY_ANALYZER,
     ]
     for path in entry_points:
@@ -820,7 +854,7 @@ def check_manifest() -> None:
 def check_inert_payload() -> None:
     allowed_package_entries = {"SKILL.md", "VERSION", "examples", "payload", "scripts", "tests"}
     require({path.name for path in PACKAGE_ROOT.iterdir()} <= allowed_package_entries, "package root contains an unexpected entry")
-    allowed_payload_entries = {"VERSION", "ai-workflow", "distribution", "root", "skills"}
+    allowed_payload_entries = {"VERSION", "ai-workflow", "distribution", "hosts", "root", "skills"}
     require({path.name for path in PAYLOAD_ROOT.iterdir()} == allowed_payload_entries, "payload top-level entries drifted")
     require(not (PAYLOAD_ROOT / "AGENTS.md").exists(), "payload must not contain an active root AGENTS.md")
     require(not (PAYLOAD_ROOT / "CLAUDE.md").exists(), "payload must not contain an active root CLAUDE.md")
@@ -832,6 +866,101 @@ def check_inert_payload() -> None:
     require(not nested_claude, "payload contains an active CLAUDE.md instead of an inert template")
     symlinks = [path.relative_to(PACKAGE_ROOT).as_posix() for path in PACKAGE_ROOT.rglob("*") if path.is_symlink()]
     require(not symlinks, "package must not contain symlinks: " + ", ".join(symlinks))
+
+
+def check_enforcement_contract() -> None:
+    controller = PAYLOAD_ROOT / "ai-workflow" / "runtime" / "controller.py"
+    capabilities_path = PAYLOAD_ROOT / "ai-workflow" / "runtime" / "capabilities.json"
+    hook_path = PAYLOAD_ROOT / "hosts" / "vscode-agentic-workflow.json"
+    adapters = (
+        PAYLOAD_ROOT / "ai-workflow" / "runtime" / "adapters" / "codex-hooks.example.json",
+        PAYLOAD_ROOT / "ai-workflow" / "runtime" / "adapters" / "claude-settings.example.json",
+    )
+    for path in (capabilities_path, hook_path, *adapters):
+        try:
+            value = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise VerificationError(
+                f"cannot read enforcement JSON {path.relative_to(PACKAGE_ROOT)}: {exc}"
+            ) from exc
+        require(isinstance(value, dict), f"enforcement JSON must be an object: {path}")
+
+    capabilities = json.loads(capabilities_path.read_text(encoding="utf-8"))
+    expected_hosts = {
+        "github-copilot-vscode",
+        "codex",
+        "claude-code",
+        "github-copilot-cli",
+        "github-copilot-cloud",
+    }
+    require(
+        set(capabilities) == {"hosts", "reference_host", "schema_version"}
+        and capabilities["schema_version"] == 1,
+        "enforcement capability document has an unsupported schema",
+    )
+    hosts = capabilities["hosts"]
+    require(isinstance(hosts, dict) and set(hosts) == expected_hosts, "host enforcement matrix drifted")
+    require(
+        capabilities["reference_host"] == "github-copilot-vscode"
+        and hosts["github-copilot-vscode"]["adapter"] == "active"
+        and hosts["github-copilot-vscode"]["lifecycle"] == "Preview",
+        "VS Code Copilot must remain the Preview reference adapter",
+    )
+    require(
+        hosts["codex"]["adapter"] == "opt-in-template"
+        and hosts["claude-code"]["adapter"] == "opt-in-template"
+        and hosts["github-copilot-cli"]["adapter"] == "shared-file-not-release-validated"
+        and hosts["github-copilot-cloud"]["adapter"] == "shared-file-not-release-validated",
+        "secondary and separate-host adapter claims drifted",
+    )
+
+    hook = json.loads(hook_path.read_text(encoding="utf-8"))
+    require(
+        set(hook) == {"hooks", "version"}
+        and hook["version"] == 1
+        and isinstance(hook["hooks"], dict),
+        "VS Code hook shape drifted",
+    )
+    expected_events = {"SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "Stop"}
+    require(set(hook["hooks"]) == expected_events, "VS Code enforcement event set drifted")
+    expected_command = "python3 .ai-workflow/runtime/controller.py hook --host vscode"
+    for event, entries in hook["hooks"].items():
+        require(isinstance(entries, list) and len(entries) == 1, f"{event} needs one hook command")
+        entry = entries[0]
+        require(
+            isinstance(entry, dict)
+            and set(entry) == {"command", "cwd", "timeout", "type", "windows"}
+            and entry["type"] == "command"
+            and entry["command"] == expected_command
+            and entry["cwd"] == "."
+            and entry["timeout"] == 10,
+            f"invalid VS Code hook command for {event}",
+        )
+    manifest_target = target_for("hosts/vscode-agentic-workflow.json")
+    require(
+        manifest_target == ".github/hooks/agentic-workflow.json",
+        "VS Code hook must install at its unique active workspace path",
+    )
+
+    source = controller.read_text(encoding="utf-8")
+    ast.parse(source, filename=str(controller))
+    for term in (
+        "checkpoint",
+        "repository-write",
+        "provider_outcomes",
+        "durable_grant",
+        "verification",
+        "stop_hook_active",
+        "tempfile.gettempdir()",
+    ):
+        require(term in source, f"controller contract lacks {term!r}")
+    policy = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
+    require(
+        ".ai-workflow/runtime/README.md" in policy
+        and "GitHub Copilot in VS Code is the reference host" in policy
+        and "when hooks do not run" in policy,
+        "installed policy lacks the reference-host and degraded-mode contract",
+    )
 
 
 def check_workflow_contract() -> None:
@@ -881,7 +1010,7 @@ def check_workflow_contract() -> None:
         "Every user request MUST be evaluated through the Agentic Workflow router before execution.",
         "Select the minimum useful primary workflow and any supporting capabilities",
         "`direct` is a valid route.",
-        "Do not skip routing merely because a request is simple",
+        "Do not skip routing for simple work.",
     ):
         require(term in " ".join(routing_requirement.split()), f"routing requirement lacks: {term}")
 
@@ -907,8 +1036,7 @@ def check_workflow_contract() -> None:
     for term in (
         "Every final response MUST end with exactly one route marker",
         "router-visible stages that actually execute",
-        "Do not omit the route marker",
-        "Do not emit more than one route marker",
+        "Do not omit or duplicate the marker",
         "Explain routing only when requested",
         "never reassess it",
         "load skills, run workflows, or write state merely to produce",
@@ -1589,6 +1717,7 @@ def main(argv: Iterable[str] = ()) -> int:
         check_filesystem_entries,
         check_manifest,
         check_inert_payload,
+        check_enforcement_contract,
         check_workflow_contract,
         check_provider_contract,
         check_wayfinder_ownership_contract,

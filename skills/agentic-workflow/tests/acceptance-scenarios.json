@@ -304,5 +304,77 @@
     "expected_route": "installation/provider-update->verification",
     "expected_behavior": "Validate every provider transition and the complete new pin before mutation, replace the clean managed directory transactionally, and record hashes of the newly installed bytes.",
     "evidence": "The provider state records the new explicit version/revision and installed-file hashes, and rollback tests prove that a later failure restores the predecessor exactly."
+  },
+  {
+    "id": 35,
+    "requirement": "The active VS Code adapter requires a route checkpoint before substantive tool execution.",
+    "prompt": "Change the bounded implementation.",
+    "setup": "GitHub Copilot in VS Code loaded the installed Preview hook and the agent attempts a terminal or write tool before declaring the route.",
+    "expected_route": "router-blocked",
+    "expected_behavior": "PreToolUse denies the substantive call and instructs the agent to record the model-selected route and authority checkpoint.",
+    "evidence": "The denied tool has no side effect; a native read remains available for routing evidence."
+  },
+  {
+    "id": 36,
+    "requirement": "Diagnosis mode deterministically denies repository writes visible to the host.",
+    "prompt": "Diagnose the failure but do not fix it.",
+    "setup": "The controller recorded route debugging, mode diagnosis, and repository-write denied.",
+    "expected_route": "debugging-blocked",
+    "expected_behavior": "PreToolUse denies a native file edit and denies any declared opaque repository-write action.",
+    "evidence": "The target file remains byte-identical and the denial names the diagnosis boundary."
+  },
+  {
+    "id": 37,
+    "requirement": "A user-only provider cannot be reported executed without exact current-prompt invocation.",
+    "prompt": "Plan this foggy effort.",
+    "setup": "VS Code selected user-only Wayfinder but the prompt does not contain /wayfinder.",
+    "expected_route": "wayfinder-handoff",
+    "expected_behavior": "The controller rejects the started transition and therefore also rejects outcome executed; handoff is a valid non-execution terminal outcome.",
+    "evidence": "Provider state contains handoff, not executed, and no provider artifact or durable pointer is created."
+  },
+  {
+    "id": 38,
+    "requirement": "A durable active-state edit requires explicit conflict resolution bound to fresh bytes.",
+    "prompt": "Start Discovery while Implementation is active.",
+    "setup": "active.md names implementation and the route intends durable discovery.",
+    "expected_route": "discovery-blocked",
+    "expected_behavior": "The controller rejects resolution same, accepts only complete/interruption/supersession, and invalidates a grant if active.md changes before the write.",
+    "evidence": "No stale grant can authorize the native active.md edit."
+  },
+  {
+    "id": 39,
+    "requirement": "Required verification must reference an observed successful tool before completion.",
+    "prompt": "Implement and verify the change.",
+    "setup": "The controller observed a repository write and the checkpoint marks verification required.",
+    "expected_route": "implementation->verification",
+    "expected_behavior": "Stop continues once until passed satisfying evidence is recorded from a successful PostToolUse event or an authorized limitation exists.",
+    "evidence": "Completion succeeds after linked evidence; a second unresolved Stop terminates instead of looping."
+  },
+  {
+    "id": 40,
+    "requirement": "Instruction-driven behavior remains functional when hooks are unavailable.",
+    "prompt": "Explain this function in a workspace where hooks are organization-disabled.",
+    "setup": "The installed policy and skills are readable but VS Code does not execute workspace hooks.",
+    "expected_route": "normal/direct",
+    "expected_behavior": "The root policy routes the bounded explanation directly and lifecycle status reports a partial or instruction fallback rather than claiming enforcement.",
+    "evidence": "The response is useful and truthful without controller state or repository mutation."
+  },
+  {
+    "id": 41,
+    "requirement": "Lifecycle owns the active reference adapter transactionally.",
+    "prompt": "Install, inspect, update, and remove Agentic Workflow.",
+    "setup": "A disposable target has no conflicting .github/hooks/agentic-workflow.json path.",
+    "expected_route": "installation->verification",
+    "expected_behavior": "Install creates the unique hook and controller, status verifies them, update replaces only checksum-clean owned bytes, and remove preserves modified or pre-existing content.",
+    "evidence": "Ownership manifests and lifecycle tests cover the hook/controller targets and rollback."
+  },
+  {
+    "id": 42,
+    "requirement": "VS Code, Copilot CLI, and Copilot cloud hook guarantees remain distinct.",
+    "prompt": "Report host enforcement capability.",
+    "setup": "The package capability matrix is installed.",
+    "expected_route": "normal/direct",
+    "expected_behavior": "Status identifies VS Code as the Preview reference adapter and CLI/cloud as separate instruction-only runtimes in this release.",
+    "evidence": "No PascalCase VS Code configuration is represented as validated CLI or cloud enforcement."
   }
 ]

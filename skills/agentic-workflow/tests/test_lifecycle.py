@@ -499,6 +499,8 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(managed, b"@AGENTS.md\n")
         self.assertEqual(project, b"")
         self.assertTrue((target / ".agents/skills/workflow-discovery/SKILL.md").is_file())
+        self.assertTrue((target / ".ai-workflow/runtime/controller.py").is_file())
+        self.assertTrue((target / ".github/hooks/agentic-workflow.json").is_file())
         self.assertFalse((target / ".agents/skills/workflow-teach").exists())
         self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "uninitialized")
         self.assertTrue((target / ".ai-workflow/state/active.md").is_file())
@@ -553,6 +555,36 @@ class LifecycleTests(unittest.TestCase):
             "[route: router → implement → verification]",
         ):
             self.assertEqual(policy.count(f"`{marker}`"), 1)
+
+    def test_reference_hook_is_owned_transactionally_and_modified_bytes_are_preserved(self) -> None:
+        target = git_repository(self.base / "reference-hook-lifecycle")
+        installed = adopt(ADOPT, "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        hook = target / ".github/hooks/agentic-workflow.json"
+        packaged = PACKAGE / "payload/hosts/vscode-agentic-workflow.json"
+        self.assertEqual(hook.read_bytes(), packaged.read_bytes())
+
+        hook.write_text('{"project_owned": true}\n', encoding="utf-8")
+        status = adopt(ADOPT, "status", target)
+        self.assertEqual(status.returncode, 1)
+        self.assertIn("modified", status.stdout)
+
+        removed = adopt(ADOPT, "remove", target)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertEqual(hook.read_text(encoding="utf-8"), '{"project_owned": true}\n')
+
+    def test_reference_hook_collision_fails_before_any_payload_write(self) -> None:
+        target = git_repository(self.base / "reference-hook-conflict")
+        hook = target / ".github/hooks/agentic-workflow.json"
+        hook.parent.mkdir(parents=True)
+        hook.write_text('{"existing": true}\n', encoding="utf-8")
+
+        installed = adopt(ADOPT, "install", target)
+
+        self.assertEqual(installed.returncode, 2)
+        self.assertIn("overwrite existing framework path", installed.stderr.lower())
+        self.assertEqual(hook.read_text(encoding="utf-8"), '{"existing": true}\n')
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
 
     def test_lifecycle_rejects_unrelated_or_ambiguous_legacy_directories(self) -> None:
         unrelated = self.base / "unrelated-legacy-directory"
@@ -699,6 +731,16 @@ class LifecycleTests(unittest.TestCase):
         profile.write_bytes(
             (PACKAGE / "payload/ai-workflow/templates/project-profile.md").read_bytes()
         )
+        capabilities = target / ".ai-workflow/runtime/capabilities.json"
+        capabilities.parent.mkdir(parents=True)
+        capabilities.write_bytes(
+            (PACKAGE / "payload/ai-workflow/runtime/capabilities.json").read_bytes()
+        )
+        hook = target / ".github/hooks/agentic-workflow.json"
+        hook.parent.mkdir(parents=True)
+        hook.write_bytes(
+            (PACKAGE / "payload/hosts/vscode-agentic-workflow.json").read_bytes()
+        )
         child_statuses = [
             subprocess.CompletedProcess([], 0),
             subprocess.CompletedProcess([], 0),
@@ -715,6 +757,9 @@ class LifecycleTests(unittest.TestCase):
         rendered = output.getvalue()
         self.assertIn("Framework integrity: healthy", rendered)
         self.assertIn("Provider integrity: healthy", rendered)
+        self.assertIn("Host enforcement (capability, not installation integrity):", rendered)
+        self.assertIn("GitHub Copilot in VS Code: partial/Preview", rendered)
+        self.assertIn("GitHub Copilot CLI/cloud: shared file unvalidated", rendered)
         self.assertIn("Project readiness (warnings do not affect integrity status):", rendered)
         self.assertIn("project profile: uninitialized", rendered)
         self.assertIn("issue tracker config: missing", rendered)

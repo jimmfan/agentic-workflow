@@ -14,6 +14,13 @@ Routing keeps four decisions separate:
 3. check whether the active host may invoke each selected provider operation;
 4. execute only within the user's authorization.
 
+Where a host adapter is active, the agent records these decisions through the
+shared controller before substantive tools. The hook validates transition
+consistency; it does not choose the route. GitHub Copilot in VS Code is the
+reference adapter. Because its hook API is Preview and can be disabled, this
+document and the installed root policy remain the fallback contract. See
+[Lifecycle enforcement](enforcement.md).
+
 A capability is not permanently supporting-only. Research, Teach, Debugging,
 TDD, Verification, and Code Review may support another workflow, or be the
 dominant activity when that directly matches the request. A supporting
