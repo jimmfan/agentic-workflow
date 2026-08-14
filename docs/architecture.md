@@ -51,7 +51,7 @@ instruction-level composition contract, not a scheduler or workflow engine.
 The complete selection rules remain in [Workflow routing](routing.md).
 
 The root router contains capability names and composition constraints, not the
-provider prompt bodies. `ai-workflow/providers.json` maps capabilities to the
+provider prompt bodies. `.ai-workflow/providers.json` maps capabilities to the
 tested pin after routing selects an upstream capability. Each skill directory
 then participates in normal host progressive discovery.
 
@@ -134,7 +134,7 @@ customization paths:
 payload/root/AGENTS.md.template  -> AGENTS.md
 payload/root/CLAUDE.md.template  -> CLAUDE.md
 payload/skills/*/SKILL.md        -> .agents/skills/*/SKILL.md
-payload/ai-workflow/...          -> ai-workflow/...
+payload/ai-workflow/...          -> .ai-workflow/...
 gh skill exact upstream paths    -> .agents/skills/<upstream-name>/...
 ```
 
@@ -158,7 +158,7 @@ authority that defines an accepted source identity.
 
 ## Optional observability boundary
 
-The installed `ai-workflow/observability/analyze.py` is a leaf utility, not a
+The installed `.ai-workflow/observability/analyze.py` is a leaf utility, not a
 runtime component. No root policy, local skill, provider skill, lifecycle
 script, state template, or verification route imports or invokes it. It reads
 only user-named telemetry exports, emits only to standard output, and uses no
@@ -260,6 +260,14 @@ directories and the exact old state file remain quarantined on the target
 filesystem. A payload failure rolls itself back and then causes provider
 rollback; a provider post-check failure likewise restores the old provider set.
 Only after both layers verify does the provider transaction delete its backups.
+
+The consuming-project state root is `.ai-workflow/`. A one-time update migration
+recognizes the former `ai-workflow/` layout only through an exact
+package-authenticated predecessor manifest, renames the directory, translates
+its historical path identities, and continues the normal coordinated update.
+If update fails before commit, the original directory name is restored. The
+lifecycle never merges `ai-workflow/` with `.ai-workflow/`, and it never claims
+an unrelated same-named directory.
 
 Update preflights the payload before staging a changed provider baseline. It
 preserves every existing provider directory, authenticates retained declared

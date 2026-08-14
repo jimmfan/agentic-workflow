@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path, PurePosixPath
 import subprocess
 import sys
@@ -16,10 +17,12 @@ from typing import Iterable, Mapping, Optional, Sequence
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 ADOPTER = PACKAGE_ROOT / "scripts" / "adopt.py"
 PROVIDERS = PACKAGE_ROOT / "scripts" / "providers.py"
-INSTALL_MANIFEST = Path("ai-workflow/install-manifest.json")
+STATE_DIRECTORY = Path(".ai-workflow")
+LEGACY_STATE_DIRECTORY = Path("ai-workflow")
+INSTALL_MANIFEST = STATE_DIRECTORY / "install-manifest.json"
 PROVIDER_DECLARATION = PACKAGE_ROOT / "payload" / "ai-workflow" / "providers.json"
 DISTRIBUTION_MANIFEST = PACKAGE_ROOT / "payload" / "distribution" / "manifest.json"
-PROJECT_PROFILE = Path("ai-workflow/project-profile.md")
+PROJECT_PROFILE = STATE_DIRECTORY / "project-profile.md"
 CONFIGURATION_LABELS = {
     "issue-tracker": "issue tracker config",
     "domain": "domain config",
@@ -111,6 +114,79 @@ def load_provider_manager() -> object:
     except (ImportError, OSError) as error:
         raise LifecycleError(f"cannot load provider transaction manager: {error}") from error
     return module
+
+
+def load_adopter_manager() -> object:
+    """Load the adopter to reuse its exact predecessor authentication boundary."""
+    spec = importlib.util.spec_from_file_location("agentic_workflow_legacy_validator", ADOPTER)
+    if spec is None or spec.loader is None:
+        raise LifecycleError(f"cannot load legacy installation validator: {ADOPTER}")
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+    except (ImportError, OSError) as error:
+        raise LifecycleError(f"cannot load legacy installation validator: {error}") from error
+    return module
+
+
+def state_layout(root: Path) -> str:
+    canonical = root / STATE_DIRECTORY
+    legacy = root / LEGACY_STATE_DIRECTORY
+    canonical_exists = canonical.exists() or canonical.is_symlink()
+    legacy_exists = legacy.exists() or legacy.is_symlink()
+    if canonical_exists and legacy_exists:
+        raise LifecycleError(
+            "conflicting Agentic Workflow state directories exist: "
+            "ai-workflow/ and .ai-workflow/; refusing to merge or overwrite either directory"
+        )
+    if canonical_exists:
+        if canonical.is_symlink() or not canonical.is_dir():
+            raise LifecycleError(f"canonical state path must be a regular directory: {canonical}")
+        return "canonical"
+    if legacy_exists:
+        if legacy.is_symlink() or not legacy.is_dir():
+            raise LifecycleError(f"legacy state path must be a regular directory: {legacy}")
+        return "legacy"
+    return "absent"
+
+
+def validate_legacy_update(root: Path) -> str:
+    adopter = load_adopter_manager()
+    try:
+        return adopter.validate_legacy_installation(root)  # type: ignore[attr-defined,no-any-return]
+    except adopter.AdoptionError as error:  # type: ignore[attr-defined]
+        raise LifecycleError(
+            "ai-workflow/ is not a recognizable package-authenticated legacy installation; "
+            f"refusing to rename it: {error}"
+        ) from error
+
+
+def relocate_legacy_state(root: Path) -> None:
+    legacy = root / LEGACY_STATE_DIRECTORY
+    canonical = root / STATE_DIRECTORY
+    print("Migrating Agentic Workflow state:")
+    print("  ai-workflow/ -> .ai-workflow/")
+    try:
+        os.replace(legacy, canonical)
+    except OSError as error:
+        raise LifecycleError(f"could not migrate legacy project state: {error}") from error
+    print("OK: migrated legacy project state")
+
+
+def restore_legacy_state_name(root: Path) -> None:
+    canonical = root / STATE_DIRECTORY
+    legacy = root / LEGACY_STATE_DIRECTORY
+    if legacy.exists() or legacy.is_symlink():
+        raise LifecycleError(
+            "update failed after migration and the legacy state path reappeared; "
+            "cannot restore the original directory name safely"
+        )
+    try:
+        os.replace(canonical, legacy)
+    except OSError as error:
+        raise LifecycleError(
+            f"update failed after migration and the legacy directory name could not be restored: {error}"
+        ) from error
 
 
 def readiness_path(root: Path, relative: Path) -> Optional[Path]:
@@ -473,21 +549,40 @@ def install(root: Path, dry_run: bool, revision: str) -> None:
 
 
 def update(root: Path, dry_run: bool, revision: str) -> None:
-    run_checked(ADOPTER, "update", root, True, revision, quiet=not dry_run)
-    if dry_run:
-        run_checked(PROVIDERS, "update", root, True, revision)
-        return
-    manager = load_provider_manager()
+    layout = state_layout(root)
+    migrated = False
+    if layout == "legacy":
+        version = validate_legacy_update(root)
+        if dry_run:
+            print(f"UPDATE DRY RUN for {root}")
+            print("  - migrate package-authenticated Agentic Workflow state ai-workflow/ -> .ai-workflow/")
+            print(f"  - continue the normal update from recognized legacy version {version}")
+            print("No files changed. Re-run without --dry-run to apply this operation.")
+            return
+        relocate_legacy_state(root)
+        migrated = True
+    elif layout == "absent":
+        raise LifecycleError(
+            "no Agentic Workflow installation exists at .ai-workflow/install-manifest.json"
+        )
     try:
+        run_checked(ADOPTER, "update", root, True, revision, quiet=True)
+        manager = load_provider_manager()
         manager.command_update(  # type: ignore[attr-defined]
             root,
             False,
             commit_callback=lambda: run_checked(ADOPTER, "update", root, False, revision),
         )
-    except manager.ProviderError as error:  # type: ignore[attr-defined]
-        raise LifecycleError(f"providers.py update failed: {error}") from error
-    except OSError as error:
-        raise LifecycleError(f"providers.py update failed: filesystem operation failed: {error}") from error
+    except BaseException as error:
+        if migrated:
+            restore_legacy_state_name(root)
+        if "manager" in locals() and isinstance(error, manager.ProviderError):  # type: ignore[attr-defined]
+            raise LifecycleError(f"providers.py update failed: {error}") from error
+        if isinstance(error, OSError):
+            raise LifecycleError(
+                f"providers.py update failed: filesystem operation failed: {error}"
+            ) from error
+        raise
     print("✓ Agentic Workflow payload and curated upstream providers are updated and verified.")
     print_readiness(root, detailed=False)
 
@@ -520,6 +615,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         raise LifecycleError(f"target project directory does not exist: {root}")
     if root == Path(root.anchor):
         raise LifecycleError("refusing to operate on a filesystem root")
+    layout = state_layout(root)
+    if layout == "legacy" and args.action != "update":
+        raise LifecycleError(
+            "legacy Agentic Workflow state exists at ai-workflow/; run update to validate and "
+            "migrate it to .ai-workflow/ before using this lifecycle operation"
+        )
     if args.action == "install":
         install(root, args.dry_run, args.source_revision)
     elif args.action == "update":

@@ -31,6 +31,8 @@ ARCHIVE_MODE_VARIANTS = {
     0o644: {0o644, 0o664},
     0o755: {0o755, 0o775},
 }
+CANONICAL_STATE_DIRECTORY = ".ai-workflow"
+LEGACY_STATE_DIRECTORY = "ai-workflow"
 
 
 class BootstrapError(RuntimeError):
@@ -72,8 +74,21 @@ def resolve_revision(ref: str) -> str:
 def installed_revision(target: Path) -> Optional[str]:
     if target.is_symlink():
         raise BootstrapError(f"refusing to follow target symlink while reading source revision: {target}")
+    canonical = target / CANONICAL_STATE_DIRECTORY
+    legacy = target / LEGACY_STATE_DIRECTORY
+    canonical_manifest = canonical / "install-manifest.json"
+    legacy_manifest = legacy / "install-manifest.json"
+    canonical_present = (
+        canonical.exists() or canonical.is_symlink() or canonical_manifest.is_symlink()
+    )
+    legacy_present = legacy.exists() or legacy.is_symlink() or legacy_manifest.is_symlink()
+    if canonical_present and legacy_present:
+        raise BootstrapError(
+            "conflicting Agentic Workflow state directories exist: ai-workflow/ and .ai-workflow/"
+        )
+    state_directory = CANONICAL_STATE_DIRECTORY if canonical_present else LEGACY_STATE_DIRECTORY
     current = target
-    for part in ("ai-workflow", "install-manifest.json"):
+    for part in (state_directory, "install-manifest.json"):
         current = current / part
         if current.is_symlink():
             raise BootstrapError(f"refusing to follow target symlink while reading source revision: {current}")

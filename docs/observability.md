@@ -13,7 +13,7 @@ The resulting architecture is:
 ```text
 VS Code / Copilot / OTel
         ↓ existing telemetry generation
-ai-workflow metadata analyzer
+Agentic Workflow metadata analyzer
         ↓
 workflow-aware normalized metrics
 ```
@@ -127,7 +127,7 @@ existing collector/backend for large or continuous telemetry.
 
 ## Maintenance and reversal
 
-Exporter compatibility is isolated in `ai-workflow/observability/analyze.py`.
+Exporter compatibility is isolated in `.ai-workflow/observability/analyze.py`.
 Preserve content-free fixtures for the 1.133.x raw shape and standard OTLP
 boundary. Add a new mapping only for a demonstrated current need; do not grow a
 historical format library. Unknown structural drift should remain visible,

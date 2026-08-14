@@ -120,7 +120,7 @@ target-project/
 ├── AGENTS.md                  # managed router + project-owned section
 ├── CLAUDE.md                 # root-policy import + project-owned section
 ├── .agents/skills/           # local workflows + pinned provider skills
-└── ai-workflow/
+└── .ai-workflow/                # internal project-local framework state
     ├── install-manifest.json # framework ownership and checksums
     ├── provider-state.json   # provider ownership and checksums
     ├── providers.json        # tested capability mapping
@@ -129,6 +129,12 @@ target-project/
     ├── observability/        # optional, inert export analyzer
     └── state/
 ```
+
+The dot-prefixed directory is Agentic Workflow bookkeeping, not a general
+location for project documentation or provider-native artifacts. Updating a
+recognized pre-0.8 installation migrates `ai-workflow/` to `.ai-workflow/`
+automatically. If both directories exist, the lifecycle stops rather than
+merging or overwriting either one.
 
 ## Use it
 

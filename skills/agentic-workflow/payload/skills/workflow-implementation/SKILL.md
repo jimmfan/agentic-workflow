@@ -15,7 +15,7 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
    spec or ticket artifact. The workflow that created that durable artifact owns
    its canonical location; consume it by reference instead of copying it into a
    framework path. On resume, validate the exact `IMP` pointer and provider
-   artifact in `ai-workflow/state/active.md`.
+   artifact in `.ai-workflow/state/active.md`.
 2. Return a material unresolved choice to `workflow-discovery` and an
    unexplained existing failure to `workflow-debugging`.
 3. Use one coherent ready scope. If substantial work needs dependency-ordered
@@ -30,7 +30,7 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
 
 ## Resolve invocation before execution
 
-Resolve the implementation capability through `ai-workflow/providers.json` and
+Resolve the implementation capability through `.ai-workflow/providers.json` and
 validate the installed `implement` skill. If its pinned metadata, dependencies,
 or active-host support are missing, stop with the provider diagnostic rather
 than substituting local build, TDD, or review instructions.

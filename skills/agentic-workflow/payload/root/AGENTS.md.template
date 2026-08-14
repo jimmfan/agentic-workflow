@@ -17,7 +17,7 @@ Clear, bounded, low-risk work may route directly. `direct` is a valid route.
 Do not skip routing merely because a request is simple or can be answered
 without invoking a skill.
 
-On explicit resume, validate `ai-workflow/state/active.md` and continue its exact
+On explicit resume, validate `.ai-workflow/state/active.md` and continue its exact
 provider artifact or local record. Otherwise classify in this order:
 
 1. Honor an explicitly named installed skill.
@@ -39,7 +39,7 @@ provider artifact or local record. Otherwise classify in this order:
 
 Selection, host invocation, and execution are separate. Resolve a selected
 upstream operation's pin, prerequisites, and host policy from
-`ai-workflow/providers.json`; invoke only as allowed. For a user-only
+`.ai-workflow/providers.json`; invoke only as allowed. For a user-only
 normal-intent selection, name the workflow and give `$<name>` for Codex or
 `/<name>` for Copilot; label both for an unknown primary host. A handoff does not
 execute, simulate, authorize, or write.

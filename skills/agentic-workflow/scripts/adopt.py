@@ -21,7 +21,10 @@ from typing import Callable, Dict, Iterable, List, Mapping, MutableMapping, Opti
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 SOURCE_ROOT = PACKAGE_ROOT / "payload"
 SOURCE_MANIFEST = SOURCE_ROOT / "distribution" / "manifest.json"
-INSTALL_MANIFEST_PATH = PurePosixPath("ai-workflow/install-manifest.json")
+STATE_DIRECTORY = PurePosixPath(".ai-workflow")
+LEGACY_STATE_DIRECTORY = PurePosixPath("ai-workflow")
+INSTALL_MANIFEST_PATH = STATE_DIRECTORY / "install-manifest.json"
+LEGACY_INSTALL_MANIFEST_PATH = LEGACY_STATE_DIRECTORY / "install-manifest.json"
 POLICY_PATH = PurePosixPath("AGENTS.md")
 CLAUDE_POLICY_PATH = PurePosixPath("CLAUDE.md")
 COMPOSITE_POLICY_PATHS = {POLICY_PATH, CLAUDE_POLICY_PATH}
@@ -47,10 +50,10 @@ COMPOSITE_ORIGINS = {
     "composite-preexisting-identical",
 }
 DEFAULT_PROJECT_OWNED = (
-    "ai-workflow/project-profile.md",
-    "ai-workflow/state/active.md",
-    "ai-workflow/state/records/",
-    "ai-workflow/state/archive/",
+    ".ai-workflow/project-profile.md",
+    ".ai-workflow/state/active.md",
+    ".ai-workflow/state/records/",
+    ".ai-workflow/state/archive/",
 )
 REVIEWED_SOURCE_MODES = {0o644, 0o755}
 WINDOWS_ORDINARY_SOURCE_MODES = {0o444, 0o555, 0o666, 0o777}
@@ -102,6 +105,19 @@ def safe_relative(raw: str) -> PurePosixPath:
     path = PurePosixPath(raw)
     if not raw or path.is_absolute() or ".." in path.parts or "." in path.parts or "\\" in raw:
         raise AdoptionError(f"unsafe project-relative path in manifest: {raw!r}")
+    return path
+
+
+def canonical_state_relative(path: PurePosixPath) -> PurePosixPath:
+    """Translate the one supported legacy state prefix to the canonical prefix."""
+    if path.parts and path.parts[0] == LEGACY_STATE_DIRECTORY.name:
+        return STATE_DIRECTORY.joinpath(*path.parts[1:])
+    return path
+
+
+def legacy_state_relative(path: PurePosixPath) -> PurePosixPath:
+    if path.parts and path.parts[0] == STATE_DIRECTORY.name:
+        return LEGACY_STATE_DIRECTORY.joinpath(*path.parts[1:])
     return path
 
 
@@ -287,7 +303,10 @@ def load_source_manifest() -> Tuple[
         parsed_entries: Dict[PurePosixPath, str] = {}
         for raw_target, digest in entries.items():
             target = safe_relative(raw_target)
-            if target not in allowed_predecessor_targets:
+            if (
+                target not in allowed_predecessor_targets
+                and canonical_state_relative(target) not in allowed_predecessor_targets
+            ):
                 raise AdoptionError(
                     f"accepted predecessor target is neither current nor explicitly retired: {target}"
                 )
@@ -345,8 +364,11 @@ def load_source_manifest() -> Tuple[
     return version, owned, seeds, retired, accepted
 
 
-def load_installed(root: Path) -> MutableMapping[str, object]:
-    path = target_path(root, INSTALL_MANIFEST_PATH)
+def load_installed(
+    root: Path,
+    manifest_relative: PurePosixPath = INSTALL_MANIFEST_PATH,
+) -> MutableMapping[str, object]:
+    path = target_path(root, manifest_relative)
     raw = load_json(path, "installation manifest")
     required = {"schema_version", "framework_version", "source_revision", "installed_at", "framework_files", "project_owned"}
     schema_version = raw.get("schema_version")
@@ -446,7 +468,7 @@ def parse_composite_policy(data: bytes) -> Tuple[bytes, bytes]:
 
 def render_seed(source_relative: PurePosixPath, destination_relative: PurePosixPath) -> bytes:
     data = SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
-    if destination_relative == PurePosixPath("ai-workflow/state/active.md"):
+    if destination_relative == STATE_DIRECTORY / "state/active.md":
         today = dt.datetime.now(dt.timezone.utc).date().isoformat().encode("ascii")
         data = data.replace(b"YYYY-MM-DD", today)
     return data
@@ -757,6 +779,37 @@ def trusted_installed_sources(
     return trusted
 
 
+def validate_legacy_installation(root: Path) -> str:
+    """Recognize an exact package-authenticated predecessor before directory relocation."""
+    installed = load_installed(root, LEGACY_INSTALL_MANIFEST_PATH)
+    source_version, owned, _seeds, _retired, accepted = load_source_manifest()
+    if parse_version(installed["framework_version"]) >= parse_version(source_version):
+        raise AdoptionError(
+            "legacy state is not from an older supported Agentic Workflow release"
+        )
+    old_files = installed["framework_files"]
+    legacy_keys = [
+        safe_relative(key)
+        for key in old_files
+        if safe_relative(key).parts[0] == LEGACY_STATE_DIRECTORY.name
+    ]
+    if not legacy_keys:
+        raise AdoptionError(
+            "legacy directory does not contain a recognizable Agentic Workflow ownership inventory"
+        )
+    if any(
+        safe_relative(key).parts[0] == STATE_DIRECTORY.name
+        for key in old_files
+    ):
+        raise AdoptionError("legacy installation mixes canonical and legacy state paths")
+    current_sources = {
+        target: sha256_file(SOURCE_ROOT.joinpath(*source.parts))
+        for source, target in owned
+    }
+    trusted_installed_sources(installed, source_version, current_sources, accepted)
+    return str(installed["framework_version"])
+
+
 def restoration_identity_is_accepted(
     relative: PurePosixPath,
     details: Mapping[str, object],
@@ -782,6 +835,21 @@ def plan_update(root: Path) -> Tuple[List[str], Dict[str, bytes], List[str], Dic
     if parse_version(version) < parse_version(installed_version):
         raise AdoptionError(f"refusing downgrade from {installed_version} to {version}; use the installed version's source or reinstall deliberately")
     old_files = installed["framework_files"]
+    canonical_state_keys = {
+        target.as_posix()
+        for _source, target in owned
+        if target.parts[0] == STATE_DIRECTORY.name
+    }
+    legacy_state_keys = {
+        legacy_state_relative(target).as_posix()
+        for _source, target in owned
+        if target.parts[0] == STATE_DIRECTORY.name
+    }
+    has_legacy_layout = bool(set(old_files) & legacy_state_keys)
+    has_canonical_layout = bool(set(old_files) & canonical_state_keys)
+    if has_legacy_layout and has_canonical_layout:
+        raise AdoptionError("installation manifest mixes canonical and legacy state paths")
+    legacy_layout = has_legacy_layout
     current_sources = {
         target: sha256_file(SOURCE_ROOT.joinpath(*source.parts))
         for source, target in owned
@@ -802,7 +870,12 @@ def plan_update(root: Path) -> Tuple[List[str], Dict[str, bytes], List[str], Dic
     for source_relative, target_relative in owned:
         key = target_relative.as_posix()
         source_data = SOURCE_ROOT.joinpath(*source_relative.parts).read_bytes()
-        old = old_files.get(key)
+        old_key = key
+        if legacy_layout:
+            legacy_key = legacy_state_relative(target_relative).as_posix()
+            if legacy_key in old_files:
+                old_key = legacy_key
+        old = old_files.get(old_key)
         if old is None:
             action, data, details = plan_new_owned(root, target_relative, source_data)
         else:
@@ -822,12 +895,16 @@ def plan_update(root: Path) -> Tuple[List[str], Dict[str, bytes], List[str], Dic
             writes[key] = data
         entries[key] = details
 
-    reclassified = [safe_relative(item) for item in installed["project_owned"]]
+    reclassified = [
+        canonical_state_relative(safe_relative(item)) if legacy_layout else safe_relative(item)
+        for item in installed["project_owned"]
+    ]
     retired_seed_targets: List[PurePosixPath] = []
     for key in old_files:
-        if key in new_keys:
+        old_relative = safe_relative(key)
+        relative = canonical_state_relative(old_relative) if legacy_layout else old_relative
+        if relative.as_posix() in new_keys:
             continue
-        relative = safe_relative(key)
         destination = target_path(root, relative)
         current = existing_regular(destination, f"retired framework target {relative}")
         if current is None:
@@ -835,13 +912,13 @@ def plan_update(root: Path) -> Tuple[List[str], Dict[str, bytes], List[str], Dic
             continue
         details = old_files[key]
         if (
-            relative in retired
+            (relative in retired or old_relative in retired)
             and details["origin"] == "created"
-            and trusted_sources.get(relative) == details["source_sha256"]
+            and trusted_sources.get(old_relative) == details["source_sha256"]
             and sha256_bytes(current) == details["source_sha256"]
         ):
             actions.append(f"remove explicitly retired unchanged framework file {relative}")
-            removals.append(key)
+            removals.append(relative.as_posix())
             continue
         reclassified.append(relative)
         suffix = " seed" if relative in seed_targets else ""

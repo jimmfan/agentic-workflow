@@ -62,14 +62,14 @@ project and export exist only inside a Dev Container; in that case use the
 **VS Code terminal inside that Dev Container**. It makes no persistent change:
 
 ```bash
-python3 ai-workflow/observability/analyze.py /absolute/path/to/copilot-otel.jsonl
+python3 .ai-workflow/observability/analyze.py /absolute/path/to/copilot-otel.jsonl
 ```
 
 On native Windows, run the equivalent read-only command in **PowerShell from
 the installed project root**:
 
 ```powershell
-py -3 ai-workflow/observability/analyze.py "C:\absolute\path\to\copilot-otel.jsonl"
+py -3 .ai-workflow/observability/analyze.py "C:\absolute\path\to\copilot-otel.jsonl"
 ```
 
 Success exits 0 and starts with `Agentic Workflow observability report`. An
@@ -82,7 +82,7 @@ Use deterministic JSON for scripts. The following command is also read-only
 and writes JSON to the terminal:
 
 ```bash
-python3 ai-workflow/observability/analyze.py --format json /absolute/path/to/copilot-otel.jsonl
+python3 .ai-workflow/observability/analyze.py --format json /absolute/path/to/copilot-otel.jsonl
 ```
 
 The output contains pseudonymous identifiers derived from normalized span
@@ -169,7 +169,7 @@ verify them. Use only non-sensitive values. This read-only macOS/Linux command
 labels one report:
 
 ```bash
-python3 ai-workflow/observability/analyze.py --format json \
+python3 .ai-workflow/observability/analyze.py --format json \
   --tag experiment=route-contract-v1 \
   --tag variant=skill-telemetry \
   --tag framework=0.7.1 \
@@ -178,7 +178,7 @@ python3 ai-workflow/observability/analyze.py --format json \
 ```
 
 On native Windows PowerShell, place the same options on one line after
-`py -3 ai-workflow/observability/analyze.py`. Compare the raw group medians and
+`py -3 .ai-workflow/observability/analyze.py`. Compare the raw group medians and
 review the actual verification evidence; do not collapse tokens, correctness,
 and duration into an unvalidated “efficiency score.” A tagged
 `verification=pass` is only trustworthy when it refers to a separately reviewed

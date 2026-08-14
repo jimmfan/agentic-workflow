@@ -32,8 +32,8 @@ SKILLS = (
     "workflow-verification",
 )
 SEEDS = (
-    {"source": "ai-workflow/templates/project-profile.md", "target": "ai-workflow/project-profile.md"},
-    {"source": "ai-workflow/templates/active-state.md", "target": "ai-workflow/state/active.md"},
+    {"source": "ai-workflow/templates/project-profile.md", "target": ".ai-workflow/project-profile.md"},
+    {"source": "ai-workflow/templates/active-state.md", "target": ".ai-workflow/state/active.md"},
 )
 RETIRED = (
     ".agents/skills/workflow-decomposition/SKILL.md",
@@ -295,6 +295,33 @@ ACCEPTED_PREDECESSORS = (
             ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
         }
     },
+    {
+        "framework_version": "0.7.2",
+        "source_revisions": [
+            "2ee25dc08706921d996b03aca9295293a7c94808"
+        ],
+        "install_manifest_schemas": [
+            2
+        ],
+        "framework_files": {
+            "ai-workflow/README.md": "04e187a5ed32cdadd42277dc40e510b8361f7d1441a0f42aa970ead4d900eb8c",
+            "ai-workflow/contracts/project-profile.md": "40aec342a9826cb9f9a248958394514b991d47339565bac13366b50d9bb9ab7f",
+            "ai-workflow/observability/README.md": "1dad5693d97c49410e80ee053553e9cb4bb5360e5bdff42aae7ec242ce0d5658",
+            "ai-workflow/observability/analyze.py": "5e71a8e3d1260c703102ed6d699dc85a857beabd14fd8b386695137ab17950d7",
+            "ai-workflow/providers.json": "942af1b27efdcda34149b4b6fb9c2185158d60668c22b8490a7491cd3277edf1",
+            "ai-workflow/state/README.md": "7f2eedf5b5f7f276aeae5421e89a348708fdb5da36c0aa9775edd150a74b8a02",
+            "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
+            "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+            "ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+            "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+            "AGENTS.md": "1e765ce61eabbd4636f534ef52a21e6d686a857b3121eeff317e85b8fb5e7b5e",
+            "CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            ".agents/skills/workflow-debugging/SKILL.md": "0764e5e41cccebf90c7c2b931f845676c1dc283268c2057b41b73243641ba140",
+            ".agents/skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
+            ".agents/skills/workflow-implementation/SKILL.md": "ad4896aec01f8fca62ce2c162c6848a16d1784c17d67bffefc5d131d16278c6d",
+            ".agents/skills/workflow-verification/SKILL.md": "e29d14c5c798a353d7d2f8a16baa477f19715d5a278e08b4257db22255c8bf18"
+        }
+    },
 )
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 WINDOWS_ORDINARY_MODES = {0o444, 0o555, 0o666, 0o777}
@@ -458,7 +485,15 @@ def target_for(source: str) -> str:
     match = re.fullmatch(r"skills/([^/]+)/(.*)", source)
     if match:
         return f".agents/skills/{match.group(1)}/{match.group(2)}"
+    if source == "ai-workflow" or source.startswith("ai-workflow/"):
+        return "." + source
     return source
+
+
+def canonical_state_relative(path: PurePosixPath) -> PurePosixPath:
+    if path.parts and path.parts[0] == "ai-workflow":
+        return PurePosixPath(".ai-workflow", *path.parts[1:])
+    return path
 
 
 def version() -> str:
@@ -763,7 +798,8 @@ def check_manifest() -> None:
         for raw_target, digest in identities.items():
             target = safe_relative(raw_target)
             require(
-                target in allowed_predecessor_targets,
+                target in allowed_predecessor_targets
+                or canonical_state_relative(target) in allowed_predecessor_targets,
                 f"accepted predecessor target is neither current nor retired: {target}",
             )
             require(

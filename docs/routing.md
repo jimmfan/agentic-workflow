@@ -55,7 +55,7 @@ Examples:
 ## Invocation gate
 
 Automatic routing is not automatic invocation. After classification, resolve
-the selected operation through `ai-workflow/providers.json` and apply its
+the selected operation through `.ai-workflow/providers.json` and apply its
 declared policy for the active host:
 
 - implicitly/model invocable: the host may load and execute it normally;
@@ -99,7 +99,7 @@ second pass requires a distinct user request or evidence that invalidates the
 earlier result. Do not use upstream failure diagnostics as a fallback for the
 local diagnosis-only workflow.
 
-`ai-workflow/state/active.md` represents the one dominant durable workflow for
+`.ai-workflow/state/active.md` represents the one dominant durable workflow for
 the repository. Supporting capability use does not replace that workflow or
 require an index transition. If another durable workflow would conflict with
 the active one, stop and resolve the conflict explicitly; never overwrite the

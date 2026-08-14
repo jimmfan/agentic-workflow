@@ -19,9 +19,10 @@ from typing import Callable, Dict, Iterable, List, Mapping, MutableMapping, Opti
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 DECLARATION_PATH = PACKAGE_ROOT / "payload" / "ai-workflow" / "providers.json"
 SOURCE_MANIFEST_PATH = PACKAGE_ROOT / "payload" / "distribution" / "manifest.json"
-STATE_RELATIVE = PurePosixPath("ai-workflow/provider-state.json")
-INSTALL_MANIFEST_RELATIVE = PurePosixPath("ai-workflow/install-manifest.json")
-INSTALLED_DECLARATION_RELATIVE = PurePosixPath("ai-workflow/providers.json")
+STATE_RELATIVE = PurePosixPath(".ai-workflow/provider-state.json")
+INSTALL_MANIFEST_RELATIVE = PurePosixPath(".ai-workflow/install-manifest.json")
+INSTALLED_DECLARATION_RELATIVE = PurePosixPath(".ai-workflow/providers.json")
+LEGACY_INSTALLED_DECLARATION_RELATIVE = PurePosixPath("ai-workflow/providers.json")
 SKILLS_RELATIVE = PurePosixPath(".agents/skills")
 VERSION = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 SHA = re.compile(r"[0-9a-f]{40}")
@@ -774,9 +775,16 @@ def authenticated_predecessor_declaration(
             f"found {installed_version}, {installed_revision}, schema {installed_schema}"
         )
 
-    declaration_key = INSTALLED_DECLARATION_RELATIVE.as_posix()
+    canonical_declaration_key = INSTALLED_DECLARATION_RELATIVE.as_posix()
+    legacy_declaration_key = LEGACY_INSTALLED_DECLARATION_RELATIVE.as_posix()
     authenticated_sources = matches[0]["framework_files"]
-    if not isinstance(authenticated_sources, dict) or declaration_key not in authenticated_sources:
+    if not isinstance(authenticated_sources, dict):
+        raise ProviderError("authenticated predecessor framework inventory is malformed")
+    if canonical_declaration_key in authenticated_sources:
+        declaration_key = canonical_declaration_key
+    elif legacy_declaration_key in authenticated_sources:
+        declaration_key = legacy_declaration_key
+    else:
         raise ProviderError(
             "authenticated predecessor does not contain a provider declaration; refusing migration"
         )

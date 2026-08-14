@@ -71,6 +71,9 @@ The integration suite covers:
   callback fails;
 - migration that retires the local Teach, Decomposition, and Review copies plus
   obsolete learning/ticket templates only when unchanged;
+- canonical `.ai-workflow/` state across fresh install, status, update, and
+  removal, plus authenticated update-only migration from `ai-workflow/`,
+  dual-directory conflict rejection, and repository-local isolation;
 - the canonical uninitialized project-profile seed, readiness versus integrity,
   one-time/progressive profile rules, and target `docs/` preservation;
 - installation without Git metadata or a Git executable;

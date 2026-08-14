@@ -20,8 +20,8 @@ application startup.
 - `tests/`: unit and integration tests.
 - `migrations/`: reviewed schema changes.
 - `docs/specs/`: project-owned durable behavior specifications.
-- `ai-workflow/state/records/TKT-*.md`: local canonical implementation tickets;
-  no native tracker is configured in this fixture.
+- `docs/tickets/`: project-owned local implementation tickets; no native tracker
+  is configured in this fixture.
 
 ## Terminology
 

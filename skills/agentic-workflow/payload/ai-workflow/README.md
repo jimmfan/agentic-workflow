@@ -1,6 +1,9 @@
 # Installed AI workflow orchestration
 
-ai-workflow is the routing and integration layer. Mature planning, learning,
+`.ai-workflow/` is Agentic Workflow's internal, repository-local routing,
+installation, and lifecycle state. It is not a general destination for project
+documentation, specifications, tickets, or provider-native artifacts; those
+remain in their existing canonical locations. Mature planning, learning,
 research, specification, ticketing, implementation, TDD, and Code Review
 methods come from curated upstream skills installed under `.agents/skills/`.
 Their tested source, version, revision, subtree identities, complete file lists,
@@ -73,6 +76,12 @@ absent is installed from the new declared pin. The complete transition set and
 new staged pin are verified before mutation. A supported clean upgrade therefore
 does not require deleting `.agents`, `provider-state.json`, or individual skills.
 
+Fresh installs create only `.ai-workflow/`. Update recognizes the former
+`ai-workflow/` directory only when its installation manifest exactly matches a
+package-authenticated predecessor, then relocates it before continuing. If both
+directories exist, or if `ai-workflow/` is unrelated or unrecognizable, the
+lifecycle stops without merging, overwriting, or claiming either directory.
+
 Python 3.11 or newer is required for lifecycle commands. GitHub CLI 2.97.0 or
 newer is required for initial provider adoption or an update that changes the
 provider baseline, or to recreate a missing managed directory. Initial adoption
@@ -114,7 +123,8 @@ project.
 
 ## Framework-owned continuity and safety
 
-`project-profile.md` and `state/active.md` are project-owned. A new profile is a
+`project-profile.md` and `state/active.md` are framework-specific project-local
+state whose contents are project-owned and survive removal. A new profile is a
 deterministic `uninitialized` document whose unknown values are `None`. For a
 mature repository, initialize it once from verified repository evidence when
 writes are authorized; afterward add only concise, durable facts and pointers

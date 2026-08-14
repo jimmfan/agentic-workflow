@@ -1,6 +1,6 @@
 # Project profile contract
 
-`ai-workflow/project-profile.md` is a project-owned, curated cache of verified
+`.ai-workflow/project-profile.md` is a project-local, framework-managed cache of verified
 context that is likely to help future work. It specializes the generic workflow
 policy without changing core skills. It is not a chat log, task journal,
 speculative architecture document, README copy, source-of-truth replacement, or

@@ -138,12 +138,18 @@ def adopt(script: Path, action: str, target: Path, *extra: str) -> subprocess.Co
     return run(sys.executable, script, action, target, "--source-revision", REVISION, *extra)
 
 
-def package_accepting_installed_fixture(base: Path, target: Path, label: str) -> Path:
+def package_root_accepting_installed_fixture(
+    base: Path,
+    target: Path,
+    label: str,
+    *,
+    manifest_relative: Path = Path(".ai-workflow/install-manifest.json"),
+) -> Path:
     """Create a new-package fixture whose immutable manifest reviews this synthetic install."""
     copied = base / label
     shutil.copytree(PACKAGE, copied)
     installed = json.loads(
-        (target / "ai-workflow/install-manifest.json").read_text(encoding="utf-8")
+        (target / manifest_relative).read_text(encoding="utf-8")
     )
     predecessor = {
         "framework_version": installed["framework_version"],
@@ -161,7 +167,33 @@ def package_accepting_installed_fixture(base: Path, target: Path, label: str) ->
         json.dumps(manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    return copied / "scripts/adopt.py"
+    return copied
+
+
+def package_accepting_installed_fixture(base: Path, target: Path, label: str) -> Path:
+    return package_root_accepting_installed_fixture(base, target, label) / "scripts/adopt.py"
+
+
+def relocate_fixture_to_legacy_layout(target: Path) -> None:
+    """Represent a pre-0.8 installation after creating it with current fixture helpers."""
+    canonical = target / ".ai-workflow"
+    legacy = target / "ai-workflow"
+    canonical.replace(legacy)
+    manifest_path = legacy / "install-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    def legacy_path(value: str) -> str:
+        return value[1:] if value == ".ai-workflow" or value.startswith(".ai-workflow/") else value
+
+    manifest["framework_files"] = {
+        legacy_path(path): details
+        for path, details in manifest["framework_files"].items()
+    }
+    manifest["project_owned"] = [legacy_path(path) for path in manifest["project_owned"]]
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def fixture_provider_source_files(skill: Mapping[str, object]) -> Mapping[str, bytes]:
@@ -321,7 +353,7 @@ def write_provider_state(
             "path": skill["path"],
             "tree_sha": skill["tree_sha"],
         }
-    state_path = root / "ai-workflow/provider-state.json"
+    state_path = root / ".ai-workflow/provider-state.json"
     state_path.parent.mkdir(parents=True, exist_ok=True)
     state_path.write_text(
         json.dumps(PROVIDER_MANAGER.state_value(provider, records), indent=2, sort_keys=True) + "\n",
@@ -346,7 +378,7 @@ def write_authenticated_provider_predecessor(
     source_revision: str = "2" * 40,
 ) -> None:
     """Write fixture-only payload evidence that authenticates an old provider declaration."""
-    declaration_path = root / "ai-workflow/providers.json"
+    declaration_path = root / ".ai-workflow/providers.json"
     declaration_path.parent.mkdir(parents=True, exist_ok=True)
     declaration_bytes = (
         json.dumps(declaration, indent=2, sort_keys=True) + "\n"
@@ -355,7 +387,7 @@ def write_authenticated_provider_predecessor(
     digest = hashlib.sha256(declaration_bytes).hexdigest()
     install_manifest = {
         "framework_files": {
-            "ai-workflow/providers.json": {
+            ".ai-workflow/providers.json": {
                 "origin": "created",
                 "sha256": digest,
                 "source_sha256": digest,
@@ -367,14 +399,14 @@ def write_authenticated_provider_predecessor(
         "schema_version": 2,
         "source_revision": source_revision,
     }
-    (root / "ai-workflow/install-manifest.json").write_text(
+    (root / ".ai-workflow/install-manifest.json").write_text(
         json.dumps(install_manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     source_manifest = {
         "accepted_predecessors": [
             {
-                "framework_files": {"ai-workflow/providers.json": digest},
+                "framework_files": {".ai-workflow/providers.json": digest},
                 "framework_version": framework_version,
                 "install_manifest_schemas": [2],
                 "source_revisions": [source_revision],
@@ -469,12 +501,13 @@ class LifecycleTests(unittest.TestCase):
         self.assertTrue((target / ".agents/skills/workflow-discovery/SKILL.md").is_file())
         self.assertFalse((target / ".agents/skills/workflow-teach").exists())
         self.assertEqual(LIFECYCLE_MANAGER.profile_state(target), "uninitialized")
-        self.assertTrue((target / "ai-workflow/state/active.md").is_file())
+        self.assertTrue((target / ".ai-workflow/state/active.md").is_file())
+        self.assertFalse((target / "ai-workflow").exists())
         self.assertFalse((target / "docs").exists())
         for relative in FORMER_FRAMEWORK_DOCS:
             self.assertFalse((target / relative).exists())
         manifest = json.loads(
-            (target / "ai-workflow/install-manifest.json").read_text(encoding="utf-8")
+            (target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8")
         )
         self.assertEqual(manifest["framework_files"]["AGENTS.md"]["origin"], "composite-created")
         self.assertEqual(manifest["framework_files"]["CLAUDE.md"]["origin"], "composite-created")
@@ -521,6 +554,70 @@ class LifecycleTests(unittest.TestCase):
         ):
             self.assertEqual(policy.count(f"`{marker}`"), 1)
 
+    def test_lifecycle_rejects_unrelated_or_ambiguous_legacy_directories(self) -> None:
+        unrelated = self.base / "unrelated-legacy-directory"
+        legacy_note = unrelated / "ai-workflow/project-notes.md"
+        legacy_note.parent.mkdir(parents=True)
+        legacy_note.write_text("project-owned notes\n", encoding="utf-8")
+
+        rejected = run(
+            sys.executable,
+            LIFECYCLE,
+            "update",
+            unrelated,
+            "--source-revision",
+            REVISION,
+        )
+
+        self.assertEqual(rejected.returncode, 2)
+        self.assertIn("not a recognizable package-authenticated legacy installation", rejected.stderr)
+        self.assertEqual(legacy_note.read_text(encoding="utf-8"), "project-owned notes\n")
+        self.assertFalse((unrelated / ".ai-workflow").exists())
+
+        ambiguous = self.base / "ambiguous-state"
+        canonical_note = ambiguous / ".ai-workflow/canonical.txt"
+        legacy_note = ambiguous / "ai-workflow/legacy.txt"
+        canonical_note.parent.mkdir(parents=True)
+        legacy_note.parent.mkdir(parents=True)
+        canonical_note.write_text("canonical\n", encoding="utf-8")
+        legacy_note.write_text("legacy\n", encoding="utf-8")
+        for action in ("install", "update", "status", "remove"):
+            with self.subTest(action=action):
+                result = run(
+                    sys.executable,
+                    LIFECYCLE,
+                    action,
+                    ambiguous,
+                    "--source-revision",
+                    REVISION,
+                )
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("refusing to merge or overwrite", result.stderr)
+        self.assertEqual(canonical_note.read_text(encoding="utf-8"), "canonical\n")
+        self.assertEqual(legacy_note.read_text(encoding="utf-8"), "legacy\n")
+
+    def test_installations_are_detected_and_managed_per_repository(self) -> None:
+        first = self.base / "first-project"
+        second = self.base / "second-project"
+        first.mkdir()
+        second.mkdir()
+
+        first_install = adopt(ADOPT, "install", first)
+        second_install = adopt(ADOPT, "install", second)
+        self.assertEqual(first_install.returncode, 0, first_install.stderr)
+        self.assertEqual(second_install.returncode, 0, second_install.stderr)
+        first_manifest = first / ".ai-workflow/install-manifest.json"
+        second_manifest = second / ".ai-workflow/install-manifest.json"
+        self.assertTrue(first_manifest.is_file())
+        self.assertTrue(second_manifest.is_file())
+
+        removed = adopt(ADOPT, "remove", first)
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertFalse(first_manifest.exists())
+        second_status = adopt(ADOPT, "status", second)
+        self.assertEqual(second_status.returncode, 0, second_status.stderr)
+        self.assertTrue(second_manifest.is_file())
+
     def test_non_git_install_update_status_and_remove(self) -> None:
         target = self.base / "ordinary-project"
         target.mkdir()
@@ -534,12 +631,12 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(updated.returncode, 0, updated.stderr)
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
-        self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
-        self.assertTrue((target / "ai-workflow/project-profile.md").is_file())
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
+        self.assertTrue((target / ".ai-workflow/project-profile.md").is_file())
 
     def test_project_profile_seed_has_a_deterministic_uninitialized_state(self) -> None:
         target = self.base / "profile-seed"
-        profile = target / "ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow/project-profile.md"
         profile.parent.mkdir(parents=True)
         source = PACKAGE / "payload/ai-workflow/templates/project-profile.md"
         profile.write_bytes(source.read_bytes())
@@ -581,7 +678,7 @@ class LifecycleTests(unittest.TestCase):
             LIFECYCLE_MANAGER.LEGACY_UNINITIALIZED_PROFILE_SHA256,
         )
         target = self.base / "legacy-profile-project"
-        profile = target / "ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow/project-profile.md"
         profile.parent.mkdir(parents=True)
         profile.write_bytes(LEGACY_PROJECT_PROFILE)
 
@@ -597,7 +694,7 @@ class LifecycleTests(unittest.TestCase):
 
     def test_status_reports_readiness_warnings_separately_from_integrity(self) -> None:
         target = self.base / "readiness-project"
-        profile = target / "ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow/project-profile.md"
         profile.parent.mkdir(parents=True)
         profile.write_bytes(
             (PACKAGE / "payload/ai-workflow/templates/project-profile.md").read_bytes()
@@ -680,7 +777,7 @@ class LifecycleTests(unittest.TestCase):
             "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
         )
         self.assertTrue(PROVIDER_MANAGER.command_status(target, verbose=False))
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         self.assertEqual(set(state["skills"]), {str(skill["name"]) for skill in skills})
         self.assertTrue(all(record["origin"] == "created" for record in state["skills"].values()))
@@ -741,7 +838,7 @@ class LifecycleTests(unittest.TestCase):
 
         transformed = target / ".agents/skills/setup-matt-pocock-skills/SKILL.md"
         state = json.loads(
-            (target / "ai-workflow/provider-state.json").read_text(encoding="utf-8")
+            (target / ".ai-workflow/provider-state.json").read_text(encoding="utf-8")
         )
         self.assertTrue(
             transformed.read_bytes().endswith(b"<!-- installer-normalized serialization -->\n")
@@ -784,7 +881,7 @@ class LifecycleTests(unittest.TestCase):
             before,
         )
         self.assertTrue(directory.is_dir())
-        self.assertFalse((target / "ai-workflow/provider-state.json").exists())
+        self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
 
     def test_recorded_install_checksum_detects_and_preserves_local_edit(self) -> None:
         target = self.base / "provider-local-edit"
@@ -801,7 +898,7 @@ class LifecycleTests(unittest.TestCase):
         changed_path = target / ".agents/skills" / changed_name / "SKILL.md"
         altered = changed_path.read_bytes() + b"project-owned alteration\n"
         changed_path.write_bytes(altered)
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
 
         self.assertFalse(PROVIDER_MANAGER.command_status(target, verbose=False))
         PROVIDER_MANAGER.command_remove(target, dry_run=False)
@@ -824,7 +921,7 @@ class LifecycleTests(unittest.TestCase):
         changed_name = str(skills[0]["name"])
         extra = target / ".agents/skills" / changed_name / "PROJECT-NOTES.md"
         extra.write_text("project-owned evidence\n", encoding="utf-8")
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         state["skills"][changed_name]["files"]["PROJECT-NOTES.md"] = PROVIDER_MANAGER.sha256(
             extra
@@ -860,7 +957,7 @@ class LifecycleTests(unittest.TestCase):
         PROVIDER_MANAGER.command_remove(target, dry_run=False)
 
         self.assertTrue(empty.is_dir())
-        self.assertFalse((target / "ai-workflow/provider-state.json").exists())
+        self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
 
     def test_provider_rejects_even_compatible_unknown_directory(self) -> None:
         target = self.base / "provider-compatible-but-unknown"
@@ -888,7 +985,7 @@ class LifecycleTests(unittest.TestCase):
 
         install.assert_not_called()
         self.assertEqual(skill_path.read_text(encoding="utf-8"), original)
-        self.assertFalse((target / "ai-workflow/provider-state.json").exists())
+        self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
         for skill in skills[1:]:
             self.assertFalse((target / ".agents/skills" / str(skill["name"])).exists())
         self.assertFalse(list(target.glob(".ai-workflow-providers-*")))
@@ -912,7 +1009,7 @@ class LifecycleTests(unittest.TestCase):
             with self.assertRaisesRegex(OSError, "simulated staging cleanup failure"):
                 PROVIDER_MANAGER.command_install(target, dry_run=False)
 
-        self.assertFalse((target / "ai-workflow/provider-state.json").exists())
+        self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
         self.assertFalse((target / ".agents/skills").exists())
         self.assertFalse(list(target.glob(".ai-workflow-providers-*")))
 
@@ -927,7 +1024,7 @@ class LifecycleTests(unittest.TestCase):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
 
         _provider, skills = PROVIDER_MANAGER.load_declaration()
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         state_before = state_path.read_bytes()
         failed = False
 
@@ -966,7 +1063,7 @@ class LifecycleTests(unittest.TestCase):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
 
         _provider, skills = PROVIDER_MANAGER.load_declaration()
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         real_rmtree = PROVIDER_MANAGER.shutil.rmtree
         failed = False
 
@@ -1027,7 +1124,7 @@ class LifecycleTests(unittest.TestCase):
                 PROVIDER_MANAGER.command_install(target, dry_run=False)
         install.assert_not_called()
         self.assertEqual(skill_path.read_text(encoding="utf-8"), original)
-        self.assertFalse((target / "ai-workflow/provider-state.json").exists())
+        self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
 
     def test_provider_rejects_unexpected_injected_metadata(self) -> None:
         target = self.base / "provider-unexpected-metadata"
@@ -1156,7 +1253,7 @@ class LifecycleTests(unittest.TestCase):
 
         self.assertTrue(deleted.is_dir())
         state = json.loads(
-            (target / "ai-workflow/provider-state.json").read_text(encoding="utf-8")
+            (target / ".ai-workflow/provider-state.json").read_text(encoding="utf-8")
         )
         self.assertEqual(state["skills"]["code-review"]["origin"], "created")
         self.assertTrue(PROVIDER_MANAGER.command_status(target, verbose=False))
@@ -1183,7 +1280,7 @@ class LifecycleTests(unittest.TestCase):
             {"code-review"},
         )
 
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         before_dry_run = {
             path.relative_to(target).as_posix(): path.read_bytes()
             for path in target.rglob("*")
@@ -1352,7 +1449,7 @@ class LifecycleTests(unittest.TestCase):
                 UPGRADED_PROVIDER_SUFFIX
             )
         )
-        state = json.loads((target / "ai-workflow/provider-state.json").read_text(encoding="utf-8"))
+        state = json.loads((target / ".ai-workflow/provider-state.json").read_text(encoding="utf-8"))
         self.assertEqual(state["skills"]["code-review"]["origin"], "created")
 
     def test_provider_transition_reports_all_modified_skills_before_staging(self) -> None:
@@ -1413,7 +1510,7 @@ class LifecycleTests(unittest.TestCase):
             predecessor_manifest,
         )
         upgraded_provider, upgraded_skills = provider_upgrade_fixture(old_provider, {"code-review"})
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         state_path.write_text("not json\n", encoding="utf-8")
         provider_before = {
             path.relative_to(target).as_posix(): path.read_bytes()
@@ -1491,7 +1588,7 @@ class LifecycleTests(unittest.TestCase):
             PROVIDER_MANAGER.command_update(target, dry_run=False)
 
         self.assertEqual(retained.read_bytes(), retained_before)
-        state = json.loads((target / "ai-workflow/provider-state.json").read_text(encoding="utf-8"))
+        state = json.loads((target / ".ai-workflow/provider-state.json").read_text(encoding="utf-8"))
         self.assertEqual(state["skills"]["wayfinder"]["origin"], "created")
 
     def test_provider_migration_callback_failure_restores_predecessor_exactly(self) -> None:
@@ -1570,7 +1667,7 @@ class LifecycleTests(unittest.TestCase):
             predecessor_manifest,
         )
         triage = target / ".agents/skills/triage"
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         retained_bytes = {
             path.relative_to(target / ".agents/skills").as_posix(): path.read_bytes()
             for skill in old_skills
@@ -1634,7 +1731,7 @@ class LifecycleTests(unittest.TestCase):
 
         triage = target / ".agents/skills/triage"
         shutil.rmtree(triage)
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         del state["skills"]["triage"]
         old_provider = json.loads(json.dumps(provider))
@@ -1690,7 +1787,7 @@ class LifecycleTests(unittest.TestCase):
             write_provider_skill(target, provider, skill)
         write_provider_state(target, provider, skills)
 
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         del state["skills"]["triage"]
         state_path.write_text(
@@ -1735,7 +1832,7 @@ class LifecycleTests(unittest.TestCase):
         ):
             PROVIDER_MANAGER.command_install(target, dry_run=False)
 
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         first_name = next(iter(state["skills"]))
         state["skills"]["../../protected"] = state["skills"].pop(first_name)
@@ -1760,7 +1857,7 @@ class LifecycleTests(unittest.TestCase):
         project_owned.mkdir()
         marker = project_owned / "keep.txt"
         marker.write_text("project-owned content\n", encoding="utf-8")
-        state_path = target / "ai-workflow/provider-state.json"
+        state_path = target / ".ai-workflow/provider-state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         state["skills"]["project-owned"] = {
             "files": {"keep.txt": PROVIDER_MANAGER.sha256(marker)},
@@ -1924,13 +2021,14 @@ class LifecycleTests(unittest.TestCase):
         self.assertFalse((target / "CLAUDE.md").exists())
         self.assertFalse((target / ".agents").exists())
         self.assertFalse(
-            (target / "ai-workflow").exists(),
+            (target / ".ai-workflow").exists(),
             sorted(path.relative_to(target).as_posix() for path in target.rglob("*")),
         )
 
     def test_coordinated_update_commits_payload_inside_provider_rollback_window(self) -> None:
         target = self.base / "coordinated-update"
         target.mkdir()
+        (target / ".ai-workflow").mkdir()
         events = []
 
         class FakeProviderManager:
@@ -1974,6 +2072,160 @@ class LifecycleTests(unittest.TestCase):
             ],
         )
 
+    def test_update_migrates_a_recognized_legacy_state_directory(self) -> None:
+        old_package = self.base / "legacy-package"
+        shutil.copytree(PACKAGE, old_package)
+        (old_package / "VERSION").write_text("0.7.9\n", encoding="utf-8")
+        refreshed = run(
+            sys.executable,
+            old_package / "scripts/verify_package.py",
+            "--refresh-manifest",
+        )
+        self.assertEqual(refreshed.returncode, 0, refreshed.stderr)
+        retired_source = old_package / "payload/ai-workflow/templates/learning-record.md"
+        retired_source.write_text("legacy framework template\n", encoding="utf-8")
+        old_manifest_path = old_package / "payload/distribution/manifest.json"
+        old_manifest = json.loads(old_manifest_path.read_text(encoding="utf-8"))
+        old_manifest["retired_framework_owned"].remove(
+            "ai-workflow/templates/learning-record.md"
+        )
+        old_manifest["framework_owned"].append(
+            {
+                "source": "ai-workflow/templates/learning-record.md",
+                "target": ".ai-workflow/templates/learning-record.md",
+            }
+        )
+        old_manifest["framework_owned"].sort(key=lambda item: item["source"])
+        old_manifest["checksums"]["ai-workflow/templates/learning-record.md"] = hashlib.sha256(
+            retired_source.read_bytes()
+        ).hexdigest()
+        old_manifest_path.write_text(
+            json.dumps(old_manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
+        target = self.base / "legacy-installation"
+        target.mkdir()
+        provider, skills = fixture_provider_declaration()
+        for skill in skills:
+            write_provider_skill(target, provider, skill)
+        write_provider_state(target, provider, skills)
+        installed = adopt(old_package / "scripts/adopt.py", "install", target)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+
+        profile = target / ".ai-workflow/project-profile.md"
+        profile.write_bytes(profile.read_bytes() + b"\nProject-owned profile note.\n")
+        record = target / ".ai-workflow/state/records/DBG-0001-preserved.md"
+        record.parent.mkdir(parents=True)
+        record.write_text("preserved framework continuity\n", encoding="utf-8")
+        policy = target / "AGENTS.md"
+        policy.write_bytes(policy.read_bytes() + b"Project-owned policy.\n")
+        expected_profile = profile.read_bytes()
+        expected_record = record.read_bytes()
+        expected_policy = policy.read_bytes()
+        retired = target / ".ai-workflow/templates/learning-record.md"
+        self.assertTrue(retired.is_file())
+        relocate_fixture_to_legacy_layout(target)
+
+        trusted_package = package_root_accepting_installed_fixture(
+            self.base,
+            target,
+            "legacy-aware-package",
+            manifest_relative=Path("ai-workflow/install-manifest.json"),
+        )
+        lifecycle = trusted_package / "scripts/lifecycle.py"
+
+        preview = run(
+            sys.executable,
+            lifecycle,
+            "update",
+            target,
+            "--source-revision",
+            REVISION,
+            "--dry-run",
+        )
+        self.assertEqual(preview.returncode, 0, preview.stderr)
+        self.assertIn("ai-workflow/ -> .ai-workflow/", preview.stdout)
+        self.assertTrue((target / "ai-workflow").is_dir())
+        self.assertFalse((target / ".ai-workflow").exists())
+
+        updated = run(
+            sys.executable,
+            lifecycle,
+            "update",
+            target,
+            "--source-revision",
+            REVISION,
+        )
+        self.assertEqual(updated.returncode, 0, updated.stderr)
+        self.assertIn("Migrating Agentic Workflow state", updated.stdout)
+        self.assertIn("OK: migrated legacy project state", updated.stdout)
+        self.assertFalse((target / "ai-workflow").exists())
+        self.assertTrue((target / ".ai-workflow/install-manifest.json").is_file())
+        self.assertTrue((target / ".ai-workflow/provider-state.json").is_file())
+        self.assertFalse(retired.exists())
+        self.assertEqual(profile.read_bytes(), expected_profile)
+        self.assertEqual(record.read_bytes(), expected_record)
+        self.assertEqual(policy.read_bytes(), expected_policy)
+        migrated_manifest = json.loads(
+            (target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertTrue(
+            all(not path.startswith("ai-workflow/") for path in migrated_manifest["framework_files"])
+        )
+        self.assertTrue(
+            all(not path.startswith("ai-workflow/") for path in migrated_manifest["project_owned"])
+        )
+
+        status = run(
+            sys.executable,
+            lifecycle,
+            "status",
+            target,
+            "--source-revision",
+            REVISION,
+        )
+        self.assertEqual(status.returncode, 0, status.stderr)
+
+        removed = run(
+            sys.executable,
+            lifecycle,
+            "remove",
+            target,
+            "--source-revision",
+            REVISION,
+        )
+        self.assertEqual(removed.returncode, 0, removed.stderr)
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
+        self.assertFalse((target / ".ai-workflow/provider-state.json").exists())
+        self.assertEqual(profile.read_bytes(), expected_profile)
+        self.assertEqual(record.read_bytes(), expected_record)
+        self.assertEqual(policy.read_bytes(), b"Project-owned policy.\n")
+
+    def test_failed_update_restores_the_legacy_directory_name(self) -> None:
+        target = self.base / "legacy-rollback"
+        legacy_note = target / "ai-workflow/preserved.txt"
+        legacy_note.parent.mkdir(parents=True)
+        legacy_note.write_text("preserved\n", encoding="utf-8")
+
+        with mock.patch.object(
+            LIFECYCLE_MANAGER,
+            "validate_legacy_update",
+            return_value="0.7.9",
+        ), mock.patch.object(
+            LIFECYCLE_MANAGER,
+            "run_checked",
+            side_effect=LIFECYCLE_MANAGER.LifecycleError("simulated payload preflight failure"),
+        ):
+            with self.assertRaisesRegex(
+                LIFECYCLE_MANAGER.LifecycleError,
+                "simulated payload preflight failure",
+            ):
+                LIFECYCLE_MANAGER.update(target, dry_run=False, revision=REVISION)
+
+        self.assertEqual(legacy_note.read_text(encoding="utf-8"), "preserved\n")
+        self.assertFalse((target / ".ai-workflow").exists())
+
     def test_coordinated_rollback_derives_seed_targets_from_manifest(self) -> None:
         manifest = json.loads(
             LIFECYCLE_MANAGER.DISTRIBUTION_MANIFEST.read_text(encoding="utf-8")
@@ -1981,7 +2233,7 @@ class LifecycleTests(unittest.TestCase):
         manifest["project_seeds"].append(
             {
                 "source": "ai-workflow/templates/future-seed.md",
-                "target": "ai-workflow/future-seed.md",
+                "target": ".ai-workflow/future-seed.md",
             }
         )
         manifest_path = self.base / "future-distribution-manifest.json"
@@ -1997,14 +2249,14 @@ class LifecycleTests(unittest.TestCase):
         ):
             cleanup_targets, seed_targets = LIFECYCLE_MANAGER.payload_targets()
 
-        future = Path("ai-workflow/future-seed.md")
+        future = Path(".ai-workflow/future-seed.md")
         self.assertIn(future, cleanup_targets)
         self.assertIn(future, seed_targets)
 
     def test_coordinated_install_rolls_back_new_payload_and_seeds_on_provider_failure(self) -> None:
         target = self.base / "provider-runtime-failure"
         target.mkdir()
-        preexisting_seed_parent = target / "ai-workflow/state"
+        preexisting_seed_parent = target / ".ai-workflow/state"
         preexisting_seed_parent.mkdir(parents=True)
         original_run_checked = LIFECYCLE_MANAGER.run_checked
 
@@ -2069,7 +2321,7 @@ class LifecycleTests(unittest.TestCase):
             cwd=target,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue((target / "ai-workflow/install-manifest.json").is_file())
+        self.assertTrue((target / ".ai-workflow/install-manifest.json").is_file())
 
     def test_explicit_target_is_used_from_another_directory(self) -> None:
         working = self.base / "working"
@@ -2086,8 +2338,8 @@ class LifecycleTests(unittest.TestCase):
             cwd=working,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue((target / "ai-workflow/install-manifest.json").is_file())
-        self.assertFalse((working / "ai-workflow").exists())
+        self.assertTrue((target / ".ai-workflow/install-manifest.json").is_file())
+        self.assertFalse((working / ".ai-workflow").exists())
 
     def test_install_does_not_need_git_executable(self) -> None:
         target = self.base / "no-git-project"
@@ -2104,7 +2356,7 @@ class LifecycleTests(unittest.TestCase):
             env=environment,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue((target / "ai-workflow/install-manifest.json").is_file())
+        self.assertTrue((target / ".ai-workflow/install-manifest.json").is_file())
 
     def test_filesystem_root_is_rejected(self) -> None:
         root = Path(Path.cwd().anchor)
@@ -2128,7 +2380,7 @@ class LifecycleTests(unittest.TestCase):
         result = adopt(ADOPT, "install", target, "--dry-run")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("DRY RUN", result.stdout)
-        self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
 
     def test_fresh_policy_allows_project_owned_customization(self) -> None:
         target = git_repository(self.base / "target")
@@ -2139,7 +2391,7 @@ class LifecycleTests(unittest.TestCase):
         initial = policy.read_bytes()
         self.assertTrue(initial.startswith(ADOPTER.MANAGED_BEGIN))
         self.assertIn(ADOPTER.MANAGED_END + ADOPTER.PROJECT_BEGIN, initial)
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         self.assertEqual(manifest["framework_files"]["AGENTS.md"]["origin"], "composite-created")
 
@@ -2290,7 +2542,7 @@ class LifecycleTests(unittest.TestCase):
         managed, project = ADOPTER.parse_composite_policy(policy.read_bytes())
         self.assertEqual((managed, project), (original, b""))
 
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         record = manifest["framework_files"]["AGENTS.md"]
         self.assertEqual(manifest["schema_version"], ADOPTER.INSTALL_MANIFEST_SCHEMA)
@@ -2333,7 +2585,7 @@ class LifecycleTests(unittest.TestCase):
         project = b"\n## Agent skills\n\nLegacy setup-owned suffix.\n"
         policy.write_bytes(source + project)
         digest = hashlib.sha256(source).hexdigest()
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest["schema_version"] = 1
         manifest["framework_files"]["AGENTS.md"] = {
@@ -2372,7 +2624,7 @@ class LifecycleTests(unittest.TestCase):
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
 
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         original_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         cases = (
             ("malformed", {"preexisting_base64": "not base64!"}, "invalid preexisting_base64"),
@@ -2411,7 +2663,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(updated.returncode, 0, updated.stderr)
         self.assertEqual(ADOPTER.parse_composite_policy(policy.read_bytes()), (managed, setup_content))
         manifest = json.loads(
-            (target / "ai-workflow/install-manifest.json").read_text(encoding="utf-8")
+            (target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8")
         )
         self.assertEqual(manifest["framework_files"]["CLAUDE.md"]["origin"], "composite-created")
 
@@ -2429,7 +2681,7 @@ class LifecycleTests(unittest.TestCase):
         managed, project = ADOPTER.parse_composite_policy(policy.read_bytes())
         self.assertEqual(managed, ADOPTER.LEGACY_CREATED_CLAUDE_POLICY)
         self.assertEqual(project, b"")
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         self.assertEqual(
             manifest["framework_files"]["CLAUDE.md"]["origin"],
@@ -2474,7 +2726,7 @@ class LifecycleTests(unittest.TestCase):
         policy = target / "CLAUDE.md"
         policy.write_bytes(legacy_policy + setup_content)
         digest = hashlib.sha256(legacy_policy).hexdigest()
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest["framework_files"]["CLAUDE.md"] = {
             "origin": "created",
@@ -2510,7 +2762,7 @@ class LifecycleTests(unittest.TestCase):
         policy = target / "CLAUDE.md"
         policy.write_bytes(legacy_policy + setup_content)
         digest = hashlib.sha256(legacy_policy).hexdigest()
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest["framework_files"]["CLAUDE.md"] = {
             "origin": "preexisting-identical",
@@ -2570,7 +2822,7 @@ class LifecycleTests(unittest.TestCase):
         source = (PACKAGE / "payload/root/AGENTS.md.template").read_bytes()
         policy.write_bytes(source)
         digest = hashlib.sha256(source).hexdigest()
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest["framework_files"]["AGENTS.md"] = {
             "origin": "created",
@@ -2594,13 +2846,13 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(installed.returncode, 0, installed.stderr)
         composite = (target / "AGENTS.md").read_bytes()
         self.assertIn(original, composite)
-        profile = target / "ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow/project-profile.md"
         profile.write_text("project-owned customization\n", encoding="utf-8")
         removed = adopt(ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
         self.assertEqual((target / "AGENTS.md").read_bytes(), original)
         self.assertEqual(profile.read_text(encoding="utf-8"), "project-owned customization\n")
-        self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
 
     def test_existing_claude_policy_is_preserved_through_install_update_and_remove(self) -> None:
         target = git_repository(self.base / "target")
@@ -2669,7 +2921,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("would overwrite existing framework path", result.stderr)
         self.assertEqual(conflict.read_text(encoding="utf-8"), "project owned\n")
-        self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
 
     def test_reserved_composite_marker_fails_install_before_writes(self) -> None:
         target = git_repository(self.base / "reserved-policy-marker")
@@ -2682,7 +2934,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(installed.returncode, 2)
         self.assertIn("reserved ai-workflow composite marker", installed.stderr)
         self.assertEqual(policy.read_bytes(), original)
-        self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
         self.assertFalse((target / ".agents").exists())
 
     def test_reserved_project_marker_is_unhealthy_and_blocks_update(self) -> None:
@@ -2713,7 +2965,7 @@ class LifecycleTests(unittest.TestCase):
                 ADOPTER.command_install(target, False, REVISION)
 
         self.assertEqual(policy.read_bytes(), original)
-        self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
         self.assertFalse((target / ".agents").exists())
 
     def test_payload_write_failure_removes_only_transaction_created_parents(self) -> None:
@@ -2739,7 +2991,7 @@ class LifecycleTests(unittest.TestCase):
         target = git_repository(self.base / "update-postcheck-rollback").resolve()
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         policy = target / "AGENTS.md"
         before_manifest = manifest_path.read_bytes()
         before_policy = policy.read_bytes()
@@ -2774,11 +3026,11 @@ class LifecycleTests(unittest.TestCase):
         target = git_repository(self.base / "target")
         first = adopt(ADOPT, "install", target)
         self.assertEqual(first.returncode, 0, first.stderr)
-        manifest = (target / "ai-workflow/install-manifest.json").read_bytes()
+        manifest = (target / ".ai-workflow/install-manifest.json").read_bytes()
         second = adopt(ADOPT, "install", target)
         self.assertEqual(second.returncode, 0, second.stderr)
         self.assertIn("already installed and verified", second.stdout)
-        self.assertEqual((target / "ai-workflow/install-manifest.json").read_bytes(), manifest)
+        self.assertEqual((target / ".ai-workflow/install-manifest.json").read_bytes(), manifest)
 
     def test_accepted_predecessor_requires_immutable_git_revision(self) -> None:
         manifest = json.loads(ADOPTER.SOURCE_MANIFEST.read_text(encoding="utf-8"))
@@ -2816,7 +3068,7 @@ class LifecycleTests(unittest.TestCase):
         path = target / relative
         forged = b"project-authored bytes\n"
         path.write_bytes(forged)
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         digest = hashlib.sha256(forged).hexdigest()
         manifest["framework_files"][relative].update(
@@ -2839,7 +3091,7 @@ class LifecycleTests(unittest.TestCase):
         target = git_repository(self.base / "omitted-predecessor-record")
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         policy = target / "AGENTS.md"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         del manifest["framework_files"]["AGENTS.md"]
@@ -2867,7 +3119,7 @@ class LifecycleTests(unittest.TestCase):
         retired.parent.mkdir(parents=True)
         retired.write_bytes(b"project routing\n")
         digest = hashlib.sha256(retired.read_bytes()).hexdigest()
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest["framework_files"][relative] = {
             "origin": "created",
@@ -2894,7 +3146,7 @@ class LifecycleTests(unittest.TestCase):
         policy.write_bytes(source)
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         forged = b"attacker-selected restoration\n"
         record = manifest["framework_files"]["AGENTS.md"]
@@ -2922,7 +3174,7 @@ class LifecycleTests(unittest.TestCase):
         skill = target / relative
         skill.write_text(skill.read_text(encoding="utf-8") + "\nlocal change\n", encoding="utf-8")
         digest = hashlib.sha256(skill.read_bytes()).hexdigest()
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest["framework_files"][relative]["sha256"] = digest
         manifest["framework_files"][relative]["source_sha256"] = digest
@@ -2933,7 +3185,7 @@ class LifecycleTests(unittest.TestCase):
 
     def test_malformed_recorded_revision_cannot_fall_back_to_main(self) -> None:
         target = self.base / "malformed-revision"
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest_path.parent.mkdir(parents=True)
         for malformed in (None, "", "main", "1" * 39, "A" * 40):
             with self.subTest(malformed=malformed):
@@ -2965,7 +3217,7 @@ class LifecycleTests(unittest.TestCase):
 
     def test_repository_rename_preserves_installed_revision_lookup(self) -> None:
         target = self.base / "pre-rename-revision"
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest_path.parent.mkdir(parents=True)
         pre_rename_revision = "f1fda30e5d9e7740bf6ddcc32ab0c3df1262a037"
         manifest_path.write_text(
@@ -2992,8 +3244,8 @@ class LifecycleTests(unittest.TestCase):
         target.mkdir()
         target = target.resolve()
         for linked_path in (
-            target / "ai-workflow",
-            target / "ai-workflow/install-manifest.json",
+            target / ".ai-workflow",
+            target / ".ai-workflow/install-manifest.json",
         ):
             with self.subTest(linked_path=linked_path), mock.patch.object(
                 BOOTSTRAPPER.Path,
@@ -3016,7 +3268,7 @@ class LifecycleTests(unittest.TestCase):
         target = git_repository(self.base / "revision-binding")
         installed = adopt(ADOPT, "install", target)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        manifest_path = target / "ai-workflow/install-manifest.json"
+        manifest_path = target / ".ai-workflow/install-manifest.json"
         manifest_before = manifest_path.read_bytes()
         different_revision = "2" * 40
 
@@ -3081,7 +3333,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertIn("source revision: unreleased-local-package", status.stdout)
         removed = run(sys.executable, ADOPT, "remove", target)
         self.assertEqual(removed.returncode, 0, removed.stderr)
-        self.assertFalse((target / "ai-workflow/install-manifest.json").exists())
+        self.assertFalse((target / ".ai-workflow/install-manifest.json").exists())
 
     def test_update_preserves_project_owned_content_and_removes_allowlisted_retirement(self) -> None:
         old_package = self.base / "old-package"
@@ -3105,7 +3357,7 @@ class LifecycleTests(unittest.TestCase):
         target = git_repository(self.base / "target")
         old_install = adopt(old_package / "scripts/adopt.py", "install", target)
         self.assertEqual(old_install.returncode, 0, old_install.stderr)
-        profile = target / "ai-workflow/project-profile.md"
+        profile = target / ".ai-workflow/project-profile.md"
         profile.write_text("custom project profile\n", encoding="utf-8")
         trusted_adopt = package_accepting_installed_fixture(
             self.base,
@@ -3480,9 +3732,9 @@ class LifecycleTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("installed and verified", result.stdout)
-        installed = json.loads((target / "ai-workflow/install-manifest.json").read_text(encoding="utf-8"))
+        installed = json.loads((target / ".ai-workflow/install-manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(installed["source_revision"], REVISION)
-        self.assertTrue((target / "ai-workflow/provider-state.json").is_file())
+        self.assertTrue((target / ".ai-workflow/provider-state.json").is_file())
 
     def test_bootstrap_defaults_to_current_project_directory(self) -> None:
         packaged = fixture_package(PACKAGE, self.base / "fixture-package")
@@ -3512,7 +3764,7 @@ class LifecycleTests(unittest.TestCase):
             cwd=target,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue((target / "ai-workflow/install-manifest.json").is_file())
+        self.assertTrue((target / ".ai-workflow/install-manifest.json").is_file())
 
     def test_windows_ordinary_modes_are_canonicalized(self) -> None:
         source = self.base / "downloaded.md"

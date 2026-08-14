@@ -20,8 +20,8 @@ and GitHub registration form separate diagnostic layers.
 - `clusters/`: cluster-specific declarative configuration.
 - `docs/runbooks/`: operational evidence and recovery procedures.
 - `docs/specs/`: project-owned durable platform specifications.
-- `ai-workflow/state/records/TKT-*.md`: local canonical implementation tickets;
-  no native tracker is configured in this fixture.
+- `docs/tickets/`: project-owned local implementation tickets; no native tracker
+  is configured in this fixture.
 
 ## Terminology
 
