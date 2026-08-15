@@ -119,6 +119,12 @@ Framework-owned state should be limited to orchestration information such as:
 
 Do not create shadow tickets, unknowns, decisions, specifications, learning records, or review records when the selected provider already owns those concepts.
 
+The configured local Wayfinder representation under
+`.ai-workflow-state/wayfinder/` is canonical project-owned state, not a shadow
+copy of an upstream tracker. Its U#/D#/T# files follow the dedicated installed
+contract, and its map is the effort's re-entry point. The framework has no
+global active index.
+
 Repository artifacts and accepted project state outrank chat recollection or private agent memory.
 
 Do not modify a downstream consuming project unless the task explicitly includes a migration, adoption test, or disposable compatibility test.
@@ -220,6 +226,11 @@ Do not turn a research transcript into product documentation. Preserve durable b
 
 Test Agentic Workflow’s boundaries rather than reproducing upstream providers’ internal test suites.
 
+Treat human-authored behavioral scenarios under
+`skills/agentic-workflow/tests/scenarios/` as product contracts. Assert
+observable engineering outcomes and prohibited effects, not hidden reasoning or
+one exact workflow trace when multiple routes can satisfy the contract.
+
 Prioritize tests for:
 
 * routing selection;
@@ -235,6 +246,10 @@ Prioritize tests for:
 
 Avoid brittle assertions against exact upstream prompt wording unless that wording is an actual integration contract.
 
+Keep live-agent behavioral tests opt-in, scheduled, or release-gated. The normal
+pull-request gate must remain deterministic and must not require model access,
+network credentials, or private reasoning traces.
+
 Do not represent fixture or simulated success as proof of live provider, editor, model, or operating-system behavior.
 
 ## Verification
@@ -243,7 +258,7 @@ Follow `docs/verification.md` for the current verification and release commands.
 
 Run verification with Python 3.11 or newer, using the supported interpreter appropriate to the host.
 
-After an intentional payload or version change, refresh generated manifest data only as documented. Never refresh generated files merely to hide or normalize an unexplained difference.
+After adding, removing, or remapping a packaged payload file, or changing the framework version, refresh the distribution map only as documented. Ordinary edits to already mapped payload files need no metadata refresh. Never refresh generated files merely to hide or normalize an unexplained difference.
 
 Run targeted tests while developing and the full release gate before considering a substantial change complete. If an applicable check cannot run, report it explicitly as skipped or blocked and do not imply that it passed.
 

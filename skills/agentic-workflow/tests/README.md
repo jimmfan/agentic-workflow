@@ -1,38 +1,47 @@
-# Test boundary
+# Test architecture
 
-The v0 suite tests the behavior Agentic Workflow owns, rather than reproducing
-optional provider internals or deferred runtime systems.
+Tests are separated by determinism and product boundary.
 
-`test_lifecycle.py` covers:
+## Deterministic contract and unit tests
 
-- install/update/status/remove smoke behavior;
-- current desired-state replacement for missing, drifted, extra, and obsolete
-  `.ai-workflow/` files;
-- byte-preservation of arbitrary `.ai-workflow-state/` contents across update,
-  removal, and reinstall;
-- narrow legacy durable-state migration and conflict preservation;
-- composite project-region preservation and malformed-boundary rejection;
-- external collision, symlink, filesystem-root, and deletion-evidence safety;
-- provider failure isolation and preservation of existing provider content;
-- cp1252-safe terminal output;
-- strict CI rejection of stale generated checksums while runtime still accepts
-  actual safe package bytes; and
-- corrupt/traversing/link archive and minimum-runtime-file rejection.
+- `test_behavior_contract.py` validates the TOML scenario contract, behavior
+  vocabulary, fixture size, observable evaluator, route-marker optionality,
+  progressive Wayfinder state inputs, and live command protocol using a
+  deterministic fake agent.
+- `test_routing.py` validates representative selection, invocation,
+  authorization, record-based resume, and durable-effect decisions without
+  requiring one exact trace.
+- `behavior.py validate` checks every human-authored scenario and fixture
+  reference as part of static package verification.
 
-`test_routing.py` validates that the decision catalog keeps dominant selection,
-supporting capabilities, provider invocation, execution, authorization effects,
-fallback, and blocked outcomes explicit. The optional route marker is checked as
-instruction metadata, not telemetry.
+## Deterministic fixture and lifecycle integration
 
-`acceptance-scenarios.json` lists the end-to-end product acceptance cases.
-`decision-contract-scenarios.json` retains representative routing and authority
-decisions. Neither fixture claims a live editor, operating system, provider
-network, or model was exercised.
+- `test_behavior_fixtures.py` copies fixtures to temporary workspaces, checks
+  reset behavior, verifies implementation fixtures begin red, detects a
+  destructive state mutation, and runs install/update/repeated-update/remove/
+  reinstall against every fixture.
+- `test_lifecycle.py` retains focused archive, composite, collision, migration,
+  provider-isolation, cp1252, and current-state reconciliation coverage.
+- `acceptance-scenarios.json` lists lifecycle product acceptance cases.
+- `decision-contract-scenarios.json` keeps representative routing decisions.
 
-From the source repository root, run:
+## Human behavioral contracts and live smoke tests
 
-```bash
-python3 skills/agentic-workflow/scripts/verify_package.py --tests
-```
+- `scenarios/*.toml` contain starting state, natural-language request, expected
+  behavior, prohibited behavior, and a small observable oracle.
+- `fixtures/*` are tiny consuming repositories with no copied framework payload.
+- `behavior.py live` installs the framework into disposable fixture copies, runs
+  a caller-supplied agent command, captures public evidence, and evaluates the
+  scenario without asking for hidden reasoning.
 
-The command is read-only unless `--refresh-manifest` is also supplied.
+Five live cases are enabled by default: simple bounded work, external research,
+existing Wayfinder state, verification failure/recovery, and a blocked project.
+They are opt-in and not part of ordinary pull requests.
+
+The broader deterministic catalog also covers creating the canonical local
+Wayfinder U#/D#/T# layout and ensuring that an unrelated existing effort neither
+captures a simple route nor gets loaded. Non-Wayfinder durable work resumes from
+its named DEC/IMP/DBG record without a global active index.
+
+See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema,
+evidence model, commands, side effects, cleanup, and limitations.

@@ -23,7 +23,7 @@ Keep four decisions separate:
 |---|---|---|
 | User explicitly names an installed skill | Named skill | Honor it unless authorization, safety, or host compatibility blocks execution |
 | Explicit sustained learning intent | `teach` | Dedicated learning workspace; ordinary questions stay direct |
-| Huge, foggy effort that will not fit one agent session | `wayfinder` | Preserve its native map and tracker identity |
+| Huge, foggy effort that will not fit one agent session | `wayfinder` | Use the configured local state contract when durable repository planning is authorized |
 | Bounded consequential architecture, security, cost, dependency, or visible-behavior choice | local Discovery | Analyze ephemerally unless durable state is useful and writes are authorized |
 | Existing unexplained failure or regression | local Debugging | Diagnosis alone does not authorize a fix |
 | Explicit substantive research or external facts needing primary sources | `research` | May be dominant or composed; simple lookups stay direct |
@@ -93,10 +93,27 @@ identifiers remain canonical in their native locations. Agentic Workflow
 durable state stores only orchestration status, concise pointers, and exact return targets when
 needed; it does not mirror provider bodies or allocate shadow identifiers.
 
+Local Wayfinder is the narrow exception to the general pointer rule: its
+configured canonical representation lives at
+`.ai-workflow-state/wayfinder/<effort>/` under
+`contracts/wayfinder-state.md`. The framework supplies only that storage and
+re-entry contract; the provider retains its reasoning method. A selected
+user-only provider that did not execute must not be claimed as executed, but
+authorized host-native planning may still use the framework's local
+representation when durable continuity is genuinely useful. Do not create a
+second `.scratch/` or external-tracker copy.
+
+The existence of a Wayfinder effort does not select Wayfinder for every request.
+For an explicit or likely resume, read the relevant low-resolution map and only
+the child U/D/T files needed for the current work. An implementation request may
+consume a settled D# and T# without reopening Wayfinder; a confidently unrelated
+request does not scan the tree. The map itself is the effort's re-entry point.
+
 For durable workflow mechanics, conflicts, pointers, re-entry, and record
-allocation, follow `contracts/durable-state.md`. Never silently replace an
-unrelated active workflow. Ephemeral direct work and supporting capabilities do
-not acquire durable state merely because they ran.
+allocation, follow `contracts/durable-state.md`; for Wayfinder use the dedicated
+contract. No workflow uses a global active index. Never silently replace or
+merge an unrelated durable record. Ephemeral direct work and supporting
+capabilities do not acquire durable state merely because they ran.
 
 ## Authorization and evidence
 

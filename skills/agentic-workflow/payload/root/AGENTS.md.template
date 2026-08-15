@@ -39,6 +39,10 @@ loaded routing contract are the runtime; there is no separate controller.
   direct, read `.ai-workflow/routing.md` before substantive execution.
 - After selection, read only the selected skill and the needed provider metadata;
   do not load unrelated skills merely because they are installed.
+- When Wayfinder is selected or a request may continue a relevant effort under
+  `.ai-workflow-state/wayfinder/`, read
+  `.ai-workflow/contracts/wayfinder-state.md` before its map. An unrelated map's
+  existence never selects Wayfinder.
 - Before durable workflow mutation, read `.ai-workflow/contracts/durable-state.md`. Before
   profile mutation, read `.ai-workflow/contracts/project-profile.md`.
 - Project-profile maintenance is opportunistic: prefer a small update only when

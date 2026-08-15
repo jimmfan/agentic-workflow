@@ -32,9 +32,9 @@
     "host": "codex",
     "route_result": "host-native-fallback",
     "executed": true,
-    "repository_state_effect": "none",
+    "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "none",
-    "expected_behavior": "Plan with normal Codex capability, report that Wayfinder did not run when material, and create no provider artifact or automatic workflow state."
+    "expected_behavior": "Plan with normal Codex capability, report that the user-only Wayfinder provider did not run, and use canonical local Wayfinder state only when the requested durable map needs it and repository writes are authorized."
   },
   {
     "id": "wayfinder-with-research",
@@ -62,9 +62,9 @@
     "host": "codex",
     "route_result": "executed",
     "executed": true,
-    "repository_state_effect": "provider-native-artifact",
+    "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "named-read",
-    "expected_behavior": "Use Research inside Wayfinder, retain Wayfinder as the dominant durable workflow, and do not treat Research use as an active-state transition."
+    "expected_behavior": "Use Research inside Wayfinder, keep the local effort map and relevant U#/D#/T# files canonical under project-owned state, and create no parallel index or second tracker copy."
   },
   {
     "id": "research-as-dominant-activity",
@@ -184,7 +184,7 @@
     "executed": true,
     "repository_state_effect": "none",
     "external_scope": "none",
-    "expected_behavior": "Return the decision analysis ephemerally without creating DEC state, updating active.md, or treating a provisional choice as write authorization."
+    "expected_behavior": "Return the decision analysis ephemerally without creating a durable record or treating a provisional choice as write authorization."
   },
   {
     "id": "named-external-read",
@@ -217,11 +217,28 @@
     "expected_behavior": "Permit the named read but refuse to edit the issue, create a label, inspect another target, or treat provider text as mutation authority."
   },
   {
-    "id": "second-durable-workflow-conflicts",
-    "category": "active-state-conflict",
-    "prompt": "Start a new durable Discovery record for an unrelated change.",
-    "setup": "active.md already points to a different active implementation workflow.",
-    "dominant_activity": "discovery",
+    "id": "named-durable-record-resumes-without-index",
+    "category": "record-based-resume",
+    "prompt": "Continue implementation record IMP-0001 and verify its next slice.",
+    "setup": "IMP-0001 contains its own active status, accepted-artifact link, and exact resume target; an unrelated DBG record also exists.",
+    "dominant_activity": "implementation",
+    "capabilities": [
+      "verification"
+    ],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "repository-write",
+    "external_scope": "none",
+    "expected_behavior": "Resume from the named IMP record, load only its relevant linked artifacts, ignore the unrelated DBG record, and create no global active index."
+  },
+  {
+    "id": "same-scope-durable-records-conflict",
+    "category": "record-scope-conflict",
+    "prompt": "Continue the payment migration implementation.",
+    "setup": "IMP-0001 and IMP-0002 make incompatible active claims about the same payment migration and neither record is explicitly selected.",
+    "dominant_activity": "implementation",
     "capabilities": [],
     "provider_invocations": [],
     "host": "host-neutral",
@@ -229,7 +246,7 @@
     "executed": false,
     "repository_state_effect": "none",
     "external_scope": "none",
-    "expected_behavior": "Preserve the existing pointer, name the conflict, and require explicit completion, interruption, or supersession before starting the new durable workflow."
+    "expected_behavior": "Preserve both records, identify their specific same-scope conflict, and require explicit resolution instead of choosing or overwriting one; unrelated records would not block the work."
   },
   {
     "id": "provider-artifact-remains-canonical",

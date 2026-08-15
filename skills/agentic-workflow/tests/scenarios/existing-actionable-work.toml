@@ -1,0 +1,42 @@
+schema_version = 1
+id = "existing-actionable-work"
+name = "Persisted actionable implementation continues from current state"
+fixture = "actionable-work"
+request = "Continue implementation record IMP-0001, complete its next actionable slice, and verify the result."
+starting_state = [
+  "IMP-0001 is active and contains the exact resume target.",
+  "An accepted project decision defines the discount bounds.",
+  "An unexpected user note exists inside project-owned workflow state.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "verification_performed",
+  "project_state_preserved",
+]
+must_not = [
+  "repeat_resolved_discovery",
+  "ignore_persisted_decisions",
+  "overwrite_project_owned_state",
+]
+live = false
+verification_command = "Run python verify.py after implementing the bounded discount behavior."
+preserve_paths = [
+  ".ai-workflow-state/user-notes.txt",
+  "docs/decisions/0001-discount-bounds.md",
+]
+forbid_created_globs = ["docs/decisions/0002*.md", "planning/**", "wayfinder/**"]
+route_must_not_include = ["discovery", "wayfinder"]
+state_must_include = [
+  ".ai-workflow-state/records/IMP-0001-discount-bounds.md",
+  "docs/decisions/0001-discount-bounds.md",
+]
+state_must_not_include = [
+  ".ai-workflow-state/user-notes.txt",
+]
+
+[[assertions]]
+kind = "path_not_contains"
+path = "pricing.py"
+value = "NotImplementedError"

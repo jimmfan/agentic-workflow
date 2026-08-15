@@ -14,8 +14,8 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
 1. Read the project profile, applicable accepted decisions, and the canonical
    spec or ticket artifact. The workflow that created that durable artifact owns
    its canonical location; consume it by reference instead of copying it into a
-   framework path. On resume, validate the exact `IMP` pointer and provider
-   artifact in `.ai-workflow-state/active.md`.
+   framework path. On resume, validate the named `IMP` record and its provider
+   artifact before continuing at the record's exact `Resume target`.
 2. Return a material unresolved choice to `workflow-discovery` and an
    unexplained existing failure to `workflow-debugging`.
 3. Use one coherent ready scope. If substantial work needs dependency-ordered
@@ -26,7 +26,7 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
    provider handoff was selected. After execution begins, create one only when
    orchestration must survive sessions and repository writes are authorized.
    Link the canonical spec, map, or ticket; do not copy its body or overwrite a
-   different active durable workflow.
+   different durable record.
 
 ## Resolve invocation before execution
 
@@ -42,9 +42,9 @@ user-only `implement`, give the exact handoff: `$implement` in Codex or
 `/implement` in GitHub Copilot. If the active primary host cannot be
 distinguished, label both forms without guessing. Otherwise use host-native
 implementation without loading or simulating the provider, creating its native
-artifacts, or claiming it ran. Host-native work may still create durable `IMP`
-or active state later, but only when continuity is genuinely needed and writes
-are authorized.
+artifacts, or claiming it ran. Host-native work may still create a durable `IMP`
+record later, but only when continuity is genuinely needed and writes are
+authorized.
 
 ## Execute once
 
@@ -52,7 +52,7 @@ When the provider is actually invoked, give `implement` the accepted
 scope, canonical artifact, observable acceptance criteria, and configured
 project commands. Let it invoke `tdd` and `code-review` as capabilities inside
 the dominant Implementation workflow. Their use does not replace the dominant
-durable workflow or require an `active.md` transition. Do not run either again
+durable workflow or require a separate durable record. Do not run either again
 unless the user later requests a distinct fixed-point review or new evidence
 invalidates the earlier result. When host-native implementation is the
 fallback, use the same accepted scope and criteria without imitating

@@ -1,21 +1,4 @@
 {
-  "checksums": {
-    "ai-workflow/README.md": "f2dbc1b0665c7857dee224213c9dcfda994b997db190fd79419cc3ad69a33968",
-    "ai-workflow/contracts/durable-state.md": "1356a3c6450f025ca98e63397dce5b405b5092ec21967801322c4de5d6e47d90",
-    "ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
-    "ai-workflow/providers.json": "23cd76da393e2e467bc8b1406fe9ccd9c2b9e065100d5096615ced29b21f3425",
-    "ai-workflow/routing.md": "6cc300180e6dbeab0008fa851252ebe2b9ad65a1de67bf110efbdbfd5feab099",
-    "ai-workflow/templates/active-state.md": "68fd32693339531b47baa5116367d4bfcb06e8cfa79c425a4e09c9d265fe5c74",
-    "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
-    "ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
-    "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
-    "root/AGENTS.md.template": "580591b56678c8b476cfab8591bba52d8562248d41dd870b55f7cb197709a394",
-    "root/CLAUDE.md.template": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
-    "skills/workflow-debugging/SKILL.md": "19617666057b7bb67b13b63e15a52b367f48cacc271a2c024e4d8cb379080009",
-    "skills/workflow-discovery/SKILL.md": "bd5fb4ea11d345831f060619f6a1d5c86ca477c1ea0e48d3a588a4dfed90b7d1",
-    "skills/workflow-implementation/SKILL.md": "d5891498c26677b3f9dc1ff63b439a5df7e45252ca2db2425c0738d22b68ec95",
-    "skills/workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185"
-  },
   "framework_owned": [
     {
       "source": "skills/workflow-debugging/SKILL.md",
@@ -46,16 +29,16 @@
       "target": ".ai-workflow/contracts/project-profile.md"
     },
     {
+      "source": "ai-workflow/contracts/wayfinder-state.md",
+      "target": ".ai-workflow/contracts/wayfinder-state.md"
+    },
+    {
       "source": "ai-workflow/providers.json",
       "target": ".ai-workflow/providers.json"
     },
     {
       "source": "ai-workflow/routing.md",
       "target": ".ai-workflow/routing.md"
-    },
-    {
-      "source": "ai-workflow/templates/active-state.md",
-      "target": ".ai-workflow/templates/active-state.md"
     },
     {
       "source": "ai-workflow/templates/decision-record.md",
@@ -78,6 +61,6 @@
       "target": "CLAUDE.md"
     }
   ],
-  "framework_version": "0.11.0",
+  "framework_version": "0.11.1",
   "schema_version": 6
 }

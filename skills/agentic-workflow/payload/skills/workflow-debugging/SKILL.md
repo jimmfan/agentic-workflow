@@ -8,9 +8,10 @@ description: Diagnose an existing unexplained failure through an evidence-driven
 Find the cause before choosing the fix. The first plausible theory is a
 hypothesis, not a diagnosis.
 
-When resuming from `.ai-workflow-state/active.md`, require
-`Active workflow: debugging`, validate its evidence record, and continue with
-the stored hypothesis or diagnostic at `Resume target`.
+When resuming a named `DBG-NNNN` record, validate its status and evidence, then
+continue with the stored hypothesis or diagnostic at `Resume target`. For a
+likely resume without an exact record, follow the durable-state contract's
+progressive identification rule rather than reconstructing state from chat.
 
 ## Establish the investigation
 

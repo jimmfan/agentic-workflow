@@ -1,0 +1,2 @@
+This user-created state file is not part of a framework template. Preserve it.
+

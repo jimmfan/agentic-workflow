@@ -35,10 +35,12 @@ remain authoritative. The router separates selection, provider invocation,
 authorization, execution, and completion evidence; none of those decisions
 expands another.
 
-One workflow owns durable continuity when persistence is useful. Supporting
-Research, TDD, Verification, or Code Review does not take over that pointer.
-Provider-native maps, tickets, specifications, research, and learning artifacts
-remain canonical; framework state may store only concise orchestration pointers.
+Durable workflows resume from their canonical record or map when persistence is
+useful. Supporting Research, TDD, Verification, or Code Review does not create a
+second continuity record. Provider-native tickets, specifications, research,
+and learning artifacts remain canonical; framework records store only concise
+orchestration pointers. Local Wayfinder maps and U#/D#/T# children live under
+`.ai-workflow-state/wayfinder/` and use the effort map for re-entry.
 
 An optional response marker such as
 `[route: router -> discovery -> research]` provides sufficient v0 route
@@ -55,9 +57,9 @@ FRAMEWORK-OWNED, RECONSTRUCTABLE
 PROJECT-OWNED, DURABLE
 └── .ai-workflow-state/
     ├── project-profile.md      # optional
-    ├── active.md               # optional
     ├── records/                # optional
-    └── archive/                # optional
+    ├── archive/                # optional
+    └── wayfinder/              # optional canonical local maps and U#/D#/T# state
 
 OPTIONAL, INDEPENDENT
 └── upstream provider directories under .agents/skills/
@@ -70,10 +72,11 @@ small install manifest. It is disposable. Install and update stage a new current
 directory and replace the old one as a unit. Missing, modified, obsolete, or
 extra files inside it need no historical checksum investigation.
 
-The distribution manifest is a current source-to-target map. It also carries
-generated source checksums for the maintainer release gate, but runtime reads
-actual source bytes and ignores those checksum duplicates. There is no retired
-path catalog.
+The distribution manifest contains only the current framework version and
+source-to-target install map. Runtime reads actual source bytes. Ordinary
+content edits require no metadata refresh; adding, removing, or remapping a
+packaged file requires an explicit map refresh. There is no retired path catalog
+or duplicate payload checksum inventory.
 
 The target-local schema-1 install manifest contains only:
 
@@ -90,14 +93,25 @@ repair of current managed content.
 `.ai-workflow-state/` and every entry below it are project-owned. Lifecycle
 operations ensure the directory exists during install/update, but never seed,
 inventory, checksum, merge, rewrite, or remove its contents. Missing optional
-profile, active, record, and archive files are normal.
+profile, record, archive, and Wayfinder files are normal. An existing
+`.ai-workflow-state/active.md` is preserved as opaque legacy project data but is
+not a current routing or re-entry artifact.
+
+When Wayfinder needs Git-native multi-session state, its dedicated progressively
+loaded contract configures `.ai-workflow-state/wayfinder/<effort>/` as the
+canonical local representation. It creates no global index, shadow `.scratch/`
+tree, persisted frontier, lifecycle schema, or external-tracker sync. The map
+itself is the re-entry point, and human edits remain opaque project data to
+lifecycle code.
 
 Only four development-era sources receive compatibility handling:
 `.ai-workflow/project-profile.md` and
-`.ai-workflow/state/{active.md,records,archive}`. Each missing source is ignored.
-An absent destination receives the original entry, an identical destination is
-accepted, and a differing or unsafe destination stops before mutation. No other
-migration framework exists.
+`.ai-workflow/state/{active.md,records,archive}`. The old active index moves to
+the inert `.ai-workflow-state/legacy-active.md` filename solely to avoid data
+loss; it is not interpreted. Each missing source is ignored. An absent
+destination receives the original entry, an identical destination is accepted,
+and a differing or unsafe destination stops before mutation. No other migration
+framework exists.
 
 ### Composite root policies
 
@@ -134,6 +148,12 @@ skill through `gh skill install`. Existing same-named content is always
 preserved. A missing GitHub CLI, authentication failure, unavailable network, or
 provider installer error produces a warning and never invalidates a successful
 core operation.
+
+The pinned Wayfinder provider retains its reasoning method and terminology. The
+framework's local state contract adapts only its configured storage and re-entry
+boundary: low-resolution maps, fog of war, named links, and dependency-derived
+frontier semantics remain provider-aligned, while local persistence moves from
+the provider's default `.scratch/` tracker to project-owned workflow state.
 
 The framework keeps no provider state, installed-file hashes, provenance chain,
 quarantine store, staged upgrade engine, or automatic deletion behavior.
@@ -179,10 +199,10 @@ preserves `.ai-workflow-state/` plus all providers.
 ## Verification boundary
 
 `verify_package.py` is a maintainer/CI/release gate, not an adoption prerequisite.
-It checks current generated mappings and checksums, versions, safe package paths
-and modes, routing/provider contracts, documentation links, scenario catalogs,
-and the acceptance suite. Thus stale generated release metadata can fail CI
-without making safe current package bytes unavailable to an end user.
+It checks the current explicit mapping and version, safe package paths and modes,
+routing/provider contracts, documentation links, scenario catalogs, and the
+acceptance suite. A stale file inventory or mapping can fail CI without making
+safe current mapped package bytes unavailable to an end user.
 
 Tests prioritize four boundaries:
 
@@ -211,8 +231,11 @@ claims that every host or operating system was exercised live.
 Live source and observed behavior are authoritative for current system facts.
 Accepted repository decisions and documentation own project decisions;
 provider-native artifacts own provider output; `.ai-workflow-state/` owns local
-workflow continuity; an optional project profile is only an advisory cache. All
-of these outrank private agent memory and chat recollection.
+workflow continuity, including canonical local Wayfinder efforts; an optional
+project profile is only an advisory cache. All of these outrank private agent
+memory and chat recollection.
 
 See [Workflow routing](routing.md), [Verification](verification.md), and
-[ADR-0010](decisions/0010-separate-lifecycle-safety-and-reconciliation.md).
+[ADR-0010](decisions/0010-separate-lifecycle-safety-and-reconciliation.md) plus
+[ADR-0011](decisions/0011-use-project-owned-wayfinder-state.md) and
+[ADR-0012](decisions/0012-remove-global-active-index.md).

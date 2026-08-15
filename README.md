@@ -34,7 +34,10 @@ flowchart LR
 Routing is instruction-driven. The root policy selects the minimum useful route,
 preserves the user's authorization boundary, and never claims an unavailable
 provider ran. Provider artifacts and identifiers remain canonical in their
-native locations. A compact optional marker such as
+native locations. Durable workflows resume from their canonical record or map;
+there is no global active index. Local Wayfinder efforts use the canonical
+project-owned tree under `.ai-workflow-state/wayfinder/`, loaded only when
+relevant. A compact optional marker such as
 `[route: router -> implement -> verification]` is sufficient route visibility.
 
 Codex and GitHub Copilot discover project skills in `.agents/skills`. Claude can
@@ -55,6 +58,9 @@ target-project/
 │   ├── contracts/
 │   └── templates/
 └── .ai-workflow-state/          # durable project-owned state; never inventoried
+    ├── records/                 # optional DEC/IMP/DBG records with resume targets
+    ├── archive/                 # completed/superseded record history
+    └── wayfinder/<effort>/      # optional canonical map and U#/D#/T# children
 ```
 
 `.ai-workflow/` is framework-owned. Install and update may replace the whole
@@ -62,6 +68,10 @@ directory with the current desired files; a missing or edited framework file is
 repairable, not evidence of corruption. `.ai-workflow-state/` and everything
 under it are project-owned. Lifecycle operations create the directory when
 needed but never seed, checksum, enumerate, rewrite, or remove its contents.
+
+Wayfinder state is created only for a genuinely relevant durable planning
+effort. Its map stays low resolution, child files load progressively, and an
+unrelated existing effort never turns a simple request into Wayfinder work.
 
 `AGENTS.md` and `CLAUDE.md` are composite files. Only the unambiguous marked
 managed region is replaced; bytes outside it survive update and removal.
@@ -174,13 +184,14 @@ deleted only by the project owner after reviewing its contents.
 Install and update recognize only four development-era durable locations:
 
 - `.ai-workflow/project-profile.md`
-- `.ai-workflow/state/active.md`
+- `.ai-workflow/state/active.md` -> `.ai-workflow-state/legacy-active.md`
 - `.ai-workflow/state/records/`
 - `.ai-workflow/state/archive/`
 
 A missing source is normal. An absent canonical destination receives the bytes;
 an identical destination reconciles safely; conflicting content or an unsafe
-path stops before mutation and preserves both copies. Historical framework files,
+path stops before mutation and preserves both copies. `legacy-active.md` is
+preserved historical data and is not used for routing or resume. Historical framework files,
 including `.ai-workflow/state/README.md`, are irrelevant to current desired state
 and are never required or recreated.
 
@@ -196,17 +207,19 @@ The runtime keeps only safeguards tied to data loss or reliable routing:
 - migrate only named durable state and stop on a byte conflict; and
 - isolate optional provider failure from core lifecycle success.
 
-Generated source checksums are release metadata, not an end-user runtime gate.
-Maintainers verify them strictly from the **source repository root** with this
-read-only command:
+The distribution manifest is an explicit source-to-target install map, not a
+payload checksum inventory. Maintainers verify that map from the **source
+repository root** with this read-only command:
 
 ```bash
 python3 skills/agentic-workflow/scripts/verify_package.py --tests
 ```
 
-Success ends with `OK: Agentic Workflow package verification passed.` If it
-reports a stale manifest after an intentional payload or version change, review
-the diff and then run this persistent metadata refresh from the same directory:
+Success ends with `OK: Agentic Workflow package verification passed.` Ordinary
+edits to an already mapped payload file require no metadata refresh. If the gate
+reports a stale manifest after adding, removing, or remapping a packaged file—or
+after a version change—review the diff and then run this persistent map refresh
+from the same directory:
 
 ```bash
 python3 skills/agentic-workflow/scripts/verify_package.py --refresh-manifest --tests
@@ -217,10 +230,11 @@ Revert an unwanted refresh with your version-control restore command for
 still fails, the first useful diagnostic is the first reported failed test or
 contract, not a runtime reinstall.
 
-The current framework release is `0.11.0`; the optional provider declaration is
+The current framework release is `0.11.1`; the optional provider declaration is
 pinned to `mattpocock/skills` `v1.2.3`.
 
 See [Architecture and ownership](docs/architecture.md),
-[Workflow routing](docs/routing.md), [Verification](docs/verification.md), and
+[Workflow routing](docs/routing.md), [Verification](docs/verification.md),
+[Behavioral testing](docs/behavioral-testing.md), and
 [Provider research](docs/provider-research.md). Agentic Workflow is available
 under the [MIT License](LICENSE).

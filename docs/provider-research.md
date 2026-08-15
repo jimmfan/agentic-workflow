@@ -32,6 +32,15 @@ The local framework retains only materially distinct boundaries:
 The provider `implement` skill owns its TDD and closing Code Review stages. The
 framework does not mechanically repeat them.
 
+Wayfinder v1.2.3 defines a low-resolution map with Destination, Notes, Decisions
+so far, Not yet specified, and Out of scope; it loads child decision tickets on
+demand and derives the frontier from open, unblocked, unclaimed children. Its
+default local-Markdown tracker stores those artifacts below `.scratch/`.
+Agentic Workflow deliberately configures its canonical local representation
+under `.ai-workflow-state/wayfinder/` instead, with stable U#/D#/T# children and
+the map itself as the re-entry point. This is a storage and re-entry adaptation,
+not a copied planning method or a provider fork; see ADR-0011.
+
 ## Installation policy
 
 After core reconciliation succeeds, `providers.py` inspects declared destination

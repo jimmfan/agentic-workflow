@@ -84,6 +84,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertTrue((self.project / ".ai-workflow/routing.md").is_file())
         self.assertTrue((self.project / ".ai-workflow-state").is_dir())
         self.assertEqual(list((self.project / ".ai-workflow-state").iterdir()), [])
+        self.assertFalse((self.project / ".ai-workflow/templates/active-state.md").exists())
         self.assertFalse((self.project / ".ai-workflow/state/README.md").exists())
         manifest = json.loads((self.project / ".ai-workflow/install-manifest.json").read_text())
         self.assertEqual(manifest["schema_version"], 1)
@@ -155,6 +156,47 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(tree_snapshot(state), original)
         self.assert_ok(self.adopt("install"))
         self.assertEqual(tree_snapshot(state), original)
+
+    def test_human_edited_wayfinder_state_is_opaque_to_lifecycle(self) -> None:
+        effort = self.project / ".ai-workflow-state/wayfinder/custom-effort"
+        (effort / "unknowns").mkdir(parents=True)
+        (effort / "map.md").write_text(
+            "# Personal layout\n\nNo standard headings; keep exactly.\n",
+            encoding="utf-8",
+        )
+        (effort / "unknowns/U9-free-form.md").write_text(
+            "A human can structure this however they find useful.\n",
+            encoding="utf-8",
+        )
+        original = tree_snapshot(effort)
+
+        for command in ("install", "update", "remove", "install"):
+            with self.subTest(command=command):
+                self.assert_ok(self.adopt(command))
+                self.assertEqual(tree_snapshot(effort), original)
+
+    def test_legacy_active_index_is_preserved_as_inert_history(self) -> None:
+        retired = self.project / ".ai-workflow-state/active.md"
+        retired.parent.mkdir(parents=True)
+        retired_bytes = b"# Existing project-owned file\n\nPreserve but never consult.\n"
+        retired.write_bytes(retired_bytes)
+        legacy = self.project / ".ai-workflow/state/active.md"
+        legacy.parent.mkdir(parents=True)
+        original = b"# Historical active pointer\n\nUnique user context.\n"
+        legacy.write_bytes(original)
+
+        self.assert_ok(self.adopt("install"))
+
+        self.assertFalse(legacy.exists())
+        self.assertEqual(retired.read_bytes(), retired_bytes)
+        preserved = self.project / ".ai-workflow-state/legacy-active.md"
+        self.assertEqual(preserved.read_bytes(), original)
+
+        for command in ("update", "remove", "install"):
+            with self.subTest(command=command):
+                self.assert_ok(self.adopt(command))
+                self.assertEqual(retired.read_bytes(), retired_bytes)
+                self.assertEqual(preserved.read_bytes(), original)
 
     def test_known_legacy_state_moves_and_conflict_preserves_both(self) -> None:
         self.assert_ok(self.adopt("install"))
@@ -313,17 +355,28 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(status.returncode, 0, status.stdout + status.stderr)
         self.assertIn("\\u96ea", status.stdout)
 
-    def test_stale_release_checksum_fails_verifier_but_not_runtime(self) -> None:
+    def test_payload_content_edits_need_no_manifest_refresh_but_mapping_changes_do(self) -> None:
         package_copy = Path(self.temporary.name) / "copy" / "agentic-workflow"
         shutil.copytree(PACKAGE_ROOT, package_copy)
-        manifest_path = package_copy / "payload/distribution/manifest.json"
-        manifest = json.loads(manifest_path.read_text())
-        first_source = next(iter(manifest["checksums"]))
-        manifest["checksums"][first_source] = "0" * 64
-        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+
+        source = package_copy / "payload/ai-workflow/README.md"
+        source.write_text(
+            source.read_text(encoding="utf-8") + "\nCurrent package bytes are authoritative.\n",
+            encoding="utf-8",
+        )
 
         runtime = run_script(package_copy / "scripts/adopt.py", "install", self.project)
         self.assertEqual(runtime.returncode, 0, runtime.stdout + runtime.stderr)
+        self.assertEqual(
+            (self.project / ".ai-workflow/README.md").read_bytes(),
+            source.read_bytes(),
+        )
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+        self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
+
+        unmapped = package_copy / "payload/ai-workflow/contracts/new-contract.md"
+        unmapped.write_text("# Newly packaged contract\n", encoding="utf-8")
         verify = run_script(package_copy / "scripts/verify_package.py")
         self.assertEqual(verify.returncode, 1)
         self.assertIn("manifest is stale", verify.stderr)

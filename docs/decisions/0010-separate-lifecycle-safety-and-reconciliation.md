@@ -40,8 +40,10 @@ Adopt current desired-state reconciliation with explicit ownership classes.
 5. Obsolete external paths come only from the previous local install manifest.
    Missing is a no-op; unchanged created content may be removed; uncertain
    content is preserved. Keep no global retirement history.
-6. Generated package checksums remain a strict maintainer/CI/release contract but
-   are not a runtime availability dependency.
+6. The distribution manifest records only the current framework version and
+   explicit source-to-target install map. The maintainer verifier compares that
+   map with the current payload inventory, but ordinary content edits use current
+   package bytes and require no generated checksum refresh.
 7. Optional providers have no framework ownership database. Install only missing
    skills on a best-effort basis, preserve every existing directory, and make
    cleanup manual. Provider failure never changes core success.
@@ -71,14 +73,19 @@ capability detection, telemetry normalization, provider provenance, or package
 integrity at runtime. Host sandboxing, approval, and instruction adherence remain
 the applicable controls.
 
-Release metadata can be stale in a locally modified package and runtime may
-still reconcile from its actual source bytes. The release verifier must catch
-that drift before publication.
+Ordinary payload content edits create no release-metadata churn. Adding,
+removing, or remapping a packaged file—or changing the framework version—makes
+the explicit distribution map stale until a maintainer reviews and refreshes
+it. Runtime reconciliation always uses the actual mapped source bytes.
 
 ## Rejected alternatives
 
 - Extend the checksum/origin model with more recovery states: rejected because
   it preserves the accidental package manager.
+- Keep generated payload checksums as CI-only release metadata: rejected because
+  Git and the validated immutable archive already identify package bytes, while
+  content-only staleness adds maintenance cost without protecting project data
+  or routing reliability.
 - Treat every target as replaceable: rejected because composite project regions,
   durable state, and unknown external paths contain or may contain user data.
 - Keep controller and telemetry code disabled: rejected because dormant public

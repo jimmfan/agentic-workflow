@@ -13,7 +13,7 @@ minimum lifecycle files. These checks prevent unsafe extraction and execution.
 
 The bootstrap does not run the full package verifier. Runtime reconciliation
 requires only the current source-to-target mapping and readable current source
-files. Generated source checksums are deliberately ignored at runtime.
+files. The distribution manifest does not duplicate payload content hashes.
 
 ## Maintainer and CI gate
 
@@ -27,12 +27,15 @@ python3 skills/agentic-workflow/scripts/verify_package.py --tests
 It checks:
 
 - Python syntax, package structure, regular-file modes, and synchronized versions;
-- the exact current generated mapping and source checksums;
+- the exact current source-to-target mapping and synchronized version;
 - absence of deferred controller, hook, and observability payloads;
 - routing, authorization, durable-state, and provider declaration contracts;
 - local Markdown links and scenario-catalog structure; and
 - lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and
-  stale-release-metadata tests.
+  stale-release-metadata tests;
+- human-authored behavioral scenario schema and fixture references; and
+- deterministic behavioral contract, evaluator, reset, and fixture lifecycle
+  tests.
 
 Success ends with:
 
@@ -40,8 +43,9 @@ Success ends with:
 OK: Agentic Workflow package verification passed.
 ```
 
-After an intentional payload or version change, first inspect the payload diff.
-Then run this persistent refresh from the **source repository root**:
+After intentionally adding, removing, or remapping a packaged payload file, or
+changing the framework version, first inspect the diff. Then run this persistent
+refresh from the **source repository root**:
 
 ```bash
 python3 skills/agentic-workflow/scripts/verify_package.py --refresh-manifest --tests
@@ -49,8 +53,9 @@ python3 skills/agentic-workflow/scripts/verify_package.py --refresh-manifest --t
 
 The refresh rewrites only
 `skills/agentic-workflow/payload/distribution/manifest.json`, then runs the same
-gate. Revert an unwanted refresh with version control. Do not refresh metadata
-to conceal an unexplained source difference.
+gate. Ordinary edits to an already mapped payload file do not require a refresh.
+Revert an unwanted refresh with version control. Do not refresh metadata to
+conceal an unexplained mapping or version difference.
 
 ## Acceptance boundary
 
@@ -61,6 +66,10 @@ The suite prioritizes behavior that matters before 1.0:
 - absent historical paths, including `.ai-workflow/state/README.md`, are normal;
 - arbitrary `.ai-workflow-state/` contents survive install, update, remove, and
   reinstall byte-for-byte;
+- no current active-index template is installed, while an old
+  `.ai-workflow/state/active.md` survives as inert `legacy-active.md` data;
+- canonical local Wayfinder maps and human-edited child Markdown survive the
+  same lifecycle sequence without schema validation or normalization;
 - named legacy durable state migrates only to an absent or identical destination,
   while conflicts preserve both sides and stop;
 - project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
@@ -69,20 +78,26 @@ The suite prioritizes behavior that matters before 1.0:
 - symlink/root/archive traversal boundaries remain enforced;
 - provider failure leaves a successful core install usable;
 - ASCII output remains writable on a cp1252 console; and
-- stale generated checksums fail this release gate while runtime uses the actual
-  safe package bytes.
+- mapped payload content changes require no metadata refresh, while an added,
+  removed, or remapped payload file fails the release gate until the explicit
+  install map is refreshed.
+
+Behavioral contracts separately cover creating the local Wayfinder map plus
+U#/D#/T# children, resuming only relevant map state, progressively excluding an
+unrelated child, and keeping an unrelated existing effort out of a direct route.
 
 The routing catalog separately covers direct work, local workflow selection,
-host-native fallback, explicit provider handoff, active-state conflict, external
-read scope, and provider-artifact ownership. It is an executable contract check,
-not proof that a live editor or provider service was exercised.
+host-native fallback, explicit provider handoff, record-based resume, external
+read scope, and provider-artifact ownership. It is an executable contract
+check, not proof that a live editor or provider service was exercised.
 
 ## Useful failure diagnostics
 
 If the gate fails:
 
 1. use the first reported error or failed test as the primary diagnostic;
-2. for stale metadata, inspect source and version changes before refreshing;
+2. for stale metadata, inspect payload inventory, mapping, and version changes
+   before refreshing;
 3. for a lifecycle fixture, rerun that named `unittest` from the source root;
 4. for a live provider issue, verify `gh skill install --help` and authentication
    in the environment that owns the target; and
@@ -91,3 +106,12 @@ If the gate fails:
 
 No live Windows, editor, provider-network, or host-extension validation should
 be claimed unless it was actually performed and reported separately.
+
+## Behavioral layers
+
+The same pre-merge command includes deterministic behavioral contract and
+fixture tests. Live model runs remain opt-in because they require credentials,
+may access external sources, consume quota, and are nondeterministic. Run and
+interpret them using [Behavioral testing](behavioral-testing.md); never represent
+their absence as a deterministic gate failure or a simulated fixture as live
+agent evidence.

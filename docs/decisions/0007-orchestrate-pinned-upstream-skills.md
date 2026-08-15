@@ -1,6 +1,6 @@
 # ADR-0007: Orchestrate pinned upstream skills
 
-- Status: partially superseded by ADR-0010
+- Status: partially superseded by ADR-0010, ADR-0011, and ADR-0012
 - Date: 2026-08-13
 
 ## Context
@@ -88,7 +88,8 @@ authorization.
 Allow one dominant workflow or activity plus zero or more capabilities. A
 capability can also be dominant when intent directly selects it; the declaration
 does not encode one mutually exclusive skill per task. Supporting activity does
-not itself transition the one durable active workflow.
+not itself create another durable record. ADR-0012 supersedes the former global
+active-workflow constraint.
 
 ## Consequences
 

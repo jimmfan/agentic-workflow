@@ -25,6 +25,11 @@
     "expected": "Every project-owned entry under .ai-workflow-state survives byte-for-byte."
   },
   {
+    "id": "retire-active-index-without-data-loss",
+    "operation": "install-update",
+    "expected": "No current active index or template is created; an old .ai-workflow/state/active.md is preserved as inert .ai-workflow-state/legacy-active.md, and any existing project-owned active.md remains untouched."
+  },
+  {
     "id": "preserve-composite-project-region",
     "operation": "install-update-remove",
     "expected": "Managed AGENTS.md and CLAUDE.md regions change while project bytes remain unchanged."
@@ -45,8 +50,8 @@
     "expected": "Unrepresentable path characters are escaped and do not crash the CLI."
   },
   {
-    "id": "release-metadata-is-ci-only",
+    "id": "release-map-tracks-install-scope-not-content-hashes",
     "operation": "verify-and-install",
-    "expected": "Stale generated checksums fail the verifier while runtime reconciliation uses actual package bytes."
+    "expected": "Mapped payload content changes install current bytes without metadata refresh, while an added or remapped payload file requires the explicit install map to be refreshed."
   }
 ]

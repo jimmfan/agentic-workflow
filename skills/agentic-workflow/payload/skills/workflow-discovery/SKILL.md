@@ -13,18 +13,21 @@ does not own huge-effort planning, teaching methodology, or implementation.
 1. Read the project profile only for relevant facts and commands.
 2. Establish the mutation boundary before touching workflow state. A read-only
    request, or any request without authorized repository writes, stays ephemeral:
-   inspect evidence and return the analysis without creating a `DEC`, changing
-   `active.md`, or persisting another artifact. A provisional choice is not
+   inspect evidence and return the analysis without creating or changing a
+   durable record or persisting another artifact. A provisional choice is not
    authorization to write.
 3. Only when the task requires durable decision state and repository writes are
    authorized, validate or create a `DEC-NNNN` record under the state contract.
    Resume only at its exact pending question; preserve and report invalid or
-   conflicting state. Never overwrite another active durable workflow.
+   conflicting state. Never overwrite or silently merge another durable record.
 4. If the effort is too foggy or large for one session, select the pinned
    upstream `wayfinder` provider and apply its declared host invocation policy.
    A user-only selection produces an exact Codex `$wayfinder` or GitHub Copilot
-   `/wayfinder` handoff, not a provider artifact or state write. Its map becomes
-   canonical only after the provider actually runs.
+   `/wayfinder` handoff when the user explicitly requires provider execution;
+   the handoff itself is not provider execution or a state write. When
+   authorized provider execution or truthful host-native fallback needs durable
+   local planning, follow `.ai-workflow/contracts/wayfinder-state.md`. Its local
+   map is the canonical configured representation and re-entry point.
 
 ## Resolve the decision
 
@@ -53,12 +56,12 @@ pointer before resuming the decision; never let teaching decide it.
 
 ## Provider identity boundary
 
-After Wayfinder actually runs, preserve its issue IDs, URLs, linked titles, and
-`wayfinder:*` labels unchanged. Do not allocate `DEC`, `TKT`, `UNK`, or another
-framework alias for Wayfinder-owned state. A framework return pointer stores the
-native reference and exact return target only when durable state is required and
-writes are authorized; Jira and GitHub issue identifiers remain external tracker
-identities.
+Local Wayfinder U#/D#/T# identifiers are canonical only inside their configured
+effort and must not be wrapped in `DEC`, `IMP`, `TKT`, `UNK`, or another alias.
+Preserve any referenced external issue IDs, URLs, linked titles, and
+`wayfinder:*` labels unchanged. Jira and GitHub identifiers remain external
+tracker identities; this framework neither synchronizes them nor creates a
+parallel local copy.
 
 Finish with the decision status, rationale, consequences, rejected alternatives,
 remaining uncertainty, and the appropriate provider or direct implementation

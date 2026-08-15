@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  hermetic-release-gate:
-    name: Python 3.11 / ${{ matrix.os }}
+  deterministic-pre-merge-gate:
+    name: Deterministic / Python 3.11 / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -29,5 +29,5 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run hermetic release gate
+      - name: Run deterministic behavior and release gate
         run: python skills/agentic-workflow/scripts/verify_package.py --tests

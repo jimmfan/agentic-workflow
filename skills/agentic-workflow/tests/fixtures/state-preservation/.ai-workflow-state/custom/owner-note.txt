@@ -1,0 +1,2 @@
+Owner-authored note with an unexpected nested path. Preserve exactly.
+

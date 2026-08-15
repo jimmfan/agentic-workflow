@@ -38,7 +38,7 @@ REVISION_PATTERN = re.compile(r"[0-9a-f]{40}")
 # every other historical path under .ai-workflow is disposable framework data.
 LEGACY_DURABLE = (
     (PurePosixPath(".ai-workflow/project-profile.md"), DURABLE_ROOT / "project-profile.md", "file"),
-    (PurePosixPath(".ai-workflow/state/active.md"), DURABLE_ROOT / "active.md", "file"),
+    (PurePosixPath(".ai-workflow/state/active.md"), DURABLE_ROOT / "legacy-active.md", "file"),
     (PurePosixPath(".ai-workflow/state/records"), DURABLE_ROOT / "records", "directory"),
     (PurePosixPath(".ai-workflow/state/archive"), DURABLE_ROOT / "archive", "directory"),
 )

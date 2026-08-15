@@ -24,10 +24,16 @@ explicitly requires that provider or a real configuration boundary prevents
 host-native progress. Never simulate provider execution.
 
 The dominant workflow owns any durable continuity under `.ai-workflow-state/`.
-Provider-native maps, tickets, specifications, research, reviews, and learning
-artifacts remain canonical; the framework does not mirror them. Diagnosis,
-review, explanation, and audit requests stay read-only unless the user separately
-authorizes mutation.
+Provider-native tickets, specifications, research, reviews, and learning
+artifacts remain canonical; the framework does not mirror them. Local Wayfinder
+uses the configured canonical tree under `.ai-workflow-state/wayfinder/` and its
+effort map as the re-entry point. Other durable workflows resume from their
+canonical DEC, IMP, or DBG record; there is no global active index. The router
+loads that dedicated contract only
+after Wayfinder is selected or a relevant effort is being resumed, then reads
+the map and only relevant U#/D#/T# children. An unrelated existing map never
+changes a request's route. Diagnosis, review, explanation, and audit requests
+stay read-only unless the user separately authorizes mutation.
 
 After meaningful implementation or a causal fix, gather acceptance evidence not
 already supplied by the selected provider. Do not repeat provider-owned TDD or

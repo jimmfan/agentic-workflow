@@ -28,7 +28,7 @@ usable even when every optional provider is unavailable.
   same-named directory and every provider directory on remove.
 
 Do not treat a missing historical file, old manifest detail, optional profile,
-active record, provider, or setup file as package corruption. Current desired
+durable record, provider, or setup file as package corruption. Current desired
 state is authoritative.
 
 ## Lifecycle commands
@@ -58,13 +58,15 @@ The only compatibility imports are:
 
 - `.ai-workflow/project-profile.md` ->
   `.ai-workflow-state/project-profile.md`
-- `.ai-workflow/state/active.md` -> `.ai-workflow-state/active.md`
+- `.ai-workflow/state/active.md` -> `.ai-workflow-state/legacy-active.md`
 - `.ai-workflow/state/records/` -> `.ai-workflow-state/records/`
 - `.ai-workflow/state/archive/` -> `.ai-workflow-state/archive/`
 
 Ignore a missing source. Move to an absent destination, accept an identical
 destination, and stop while preserving both sides on a differing or unsafe
-destination. Never recreate `.ai-workflow/state/README.md`.
+destination. `legacy-active.md` preserves historical bytes only; current
+workflows never create, read, or update it. Never recreate
+`.ai-workflow/state/README.md`.
 
 After core success, lifecycle makes a best-effort provider install for missing
 declared skills with `gh skill install`. GitHub CLI absence, authentication,
@@ -90,10 +92,11 @@ Maintainers run this read-only gate from the skill directory:
 python3 scripts/verify_package.py --tests
 ```
 
-It strictly checks generated mappings/checksums, synchronized versions, package
-safety, routing/provider contracts, documentation, and acceptance tests. Runtime
-does not depend on generated checksum metadata. After an intentional payload or
-version change, inspect the diff and then refresh only the generated manifest:
+It strictly checks the explicit source-to-target mapping, synchronized versions,
+package safety, routing/provider contracts, documentation, and acceptance tests.
+Ordinary edits to already mapped payload files require no metadata refresh.
+After adding, removing, or remapping a packaged file, or changing the framework
+version, inspect the diff and then refresh only the generated manifest:
 
 ```bash
 python3 scripts/verify_package.py --refresh-manifest --tests

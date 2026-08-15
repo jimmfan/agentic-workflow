@@ -1,0 +1,27 @@
+schema_version = 1
+id = "project-state-preservation"
+name = "Lifecycle preserves arbitrary project-owned state"
+fixture = "state-preservation"
+request = "Exercise install, update, repeated update, remove, and reinstall without changing project-owned workflow state."
+starting_state = [
+  "The consuming project contains arbitrary nested user content under .ai-workflow-state.",
+  "A human-edited Wayfinder map and unknown use nonstandard Markdown structure.",
+  "Optional standard state files are absent.",
+]
+expect = [
+  "lifecycle_state_preserved",
+  "project_state_preserved",
+]
+must_not = [
+  "overwrite_project_owned_state",
+]
+live = false
+verification_command = "The deterministic fixture layer performs lifecycle operations and compares state snapshots after every operation."
+preserve_paths = [
+  ".ai-workflow-state/custom/owner-note.txt",
+  ".ai-workflow-state/unexpected.json",
+  ".ai-workflow-state/wayfinder/human-edited/map.md",
+  ".ai-workflow-state/wayfinder/human-edited/unknowns/U7-custom-question.md",
+]
+forbid_created_globs = []
+route_must_not_include = []

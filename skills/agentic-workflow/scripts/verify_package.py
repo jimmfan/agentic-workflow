@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -22,7 +21,6 @@ MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
 MINIMUM_PYTHON = (3, 11)
 MANIFEST_SCHEMA = 6
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
-SHA256 = re.compile(r"[0-9a-f]{64}")
 MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 REQUIRED_PACKAGE_FILES = (
     "SKILL.md",
@@ -32,6 +30,7 @@ REQUIRED_PACKAGE_FILES = (
     "scripts/lifecycle.py",
     "scripts/providers.py",
     "scripts/verify_package.py",
+    "tests/behavior.py",
     "payload/VERSION",
     "payload/distribution/manifest.json",
     "payload/root/AGENTS.md.template",
@@ -40,6 +39,7 @@ REQUIRED_PACKAGE_FILES = (
     "payload/ai-workflow/providers.json",
     "payload/ai-workflow/contracts/durable-state.md",
     "payload/ai-workflow/contracts/project-profile.md",
+    "payload/ai-workflow/contracts/wayfinder-state.md",
 )
 REMOVED_RUNTIME_PATHS = (
     PAYLOAD_ROOT / "ai-workflow" / "runtime",
@@ -77,10 +77,6 @@ def safe_relative(value: str) -> PurePosixPath:
     return path
 
 
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def version() -> str:
     package_version = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
     payload_version = (PAYLOAD_ROOT / "VERSION").read_text(encoding="utf-8").strip()
@@ -112,15 +108,10 @@ def expected_mappings() -> list[dict[str, str]]:
 
 
 def generated_manifest() -> Mapping[str, object]:
-    mappings = expected_mappings()
     return {
         "schema_version": MANIFEST_SCHEMA,
         "framework_version": version(),
-        "framework_owned": mappings,
-        "checksums": {
-            item["source"]: sha256(PAYLOAD_ROOT / item["source"])
-            for item in sorted(mappings, key=lambda entry: entry["source"])
-        },
+        "framework_owned": expected_mappings(),
     }
 
 
@@ -145,6 +136,10 @@ def check_structure() -> None:
             ),
             f"deferred v0 subsystem remains packaged: {path}",
         )
+    require(
+        not (PAYLOAD_ROOT / "ai-workflow/templates/active-state.md").exists(),
+        "retired active-index template remains packaged",
+    )
     require(not (REPOSITORY_ROOT / "docs" / "enforcement.md").exists(), "obsolete controller documentation remains")
     require(not (REPOSITORY_ROOT / "docs" / "observability.md").exists(), "obsolete observability documentation remains")
 
@@ -168,8 +163,6 @@ def check_manifest() -> None:
         targets.append(target.as_posix())
     require(len(sources) == len(set(sources)), "manifest source paths are duplicated")
     require(len(targets) == len(set(targets)), "manifest target paths are duplicated")
-    for source, checksum in actual["checksums"].items():
-        require(SHA256.fullmatch(checksum) is not None, f"invalid generated checksum for {source}")
 
 
 def check_filesystem() -> None:
@@ -183,7 +176,7 @@ def check_filesystem() -> None:
             mode = stat.S_IMODE(path.stat().st_mode)
             if os.name != "nt":
                 require(mode == 0o644, f"package file mode must be 0644: {path.relative_to(PACKAGE_ROOT)}")
-    for script in (PACKAGE_ROOT / "scripts").glob("*.py"):
+    for script in PACKAGE_ROOT.rglob("*.py"):
         compile(script.read_text(encoding="utf-8"), str(script), "exec")
 
 
@@ -191,12 +184,30 @@ def check_router_contract() -> None:
     agents = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
     routing = (PAYLOAD_ROOT / "ai-workflow" / "routing.md").read_text(encoding="utf-8")
     durable = (PAYLOAD_ROOT / "ai-workflow" / "contracts" / "durable-state.md").read_text(encoding="utf-8")
+    wayfinder = (PAYLOAD_ROOT / "ai-workflow" / "contracts" / "wayfinder-state.md").read_text(encoding="utf-8")
     require("Every request MUST be evaluated" in agents, "root policy lacks mandatory routing")
     require("`direct`" in agents and "minimum useful process" in routing, "router lacks the minimum/direct contract")
     require("MUST NOT" in agents and "authority" in agents, "root policy lacks the authorization boundary")
     require(".ai-workflow-state/" in durable, "durable-state contract lacks the canonical state root")
-    require("one dominant" in durable, "durable-state contract lacks the single-owner rule")
-    combined = agents + routing + durable
+    require("no global active-workflow index" in durable, "durable-state contract retains a global active index")
+    require("legacy-active.md" in durable, "durable-state contract lacks legacy active-index preservation")
+    require(
+        "Multiple unrelated active or interrupted records may coexist" in durable,
+        "durable-state contract lacks independent record continuity",
+    )
+    require(
+        ".ai-workflow-state/wayfinder/" in agents and "unrelated map" in agents,
+        "root policy lacks minimal Wayfinder progressive-loading guidance",
+    )
+    for required in (
+        "unknowns/",
+        "decisions/",
+        "tickets/",
+        "Do not read every child file",
+        "Do not create or update `.ai-workflow-state/active.md`",
+    ):
+        require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")
+    combined = agents + routing + durable + wayfinder
     require(
         "runtime/README.md" not in combined and ".ai-workflow/runtime" not in combined,
         "router still depends on the removed controller payload",
@@ -238,6 +249,18 @@ def check_scenarios() -> None:
             require(isinstance(item, dict) and isinstance(item.get("id"), str), f"invalid scenario in {name}")
             ids.append(item["id"])
         require(len(ids) == len(set(ids)), f"duplicate scenario id in {name}")
+    behavior = subprocess.run(
+        [sys.executable, str(tests / "behavior.py"), "validate"],
+        cwd=REPOSITORY_ROOT,
+        capture_output=True,
+        text=True,
+        errors="backslashreplace",
+    )
+    require(
+        behavior.returncode == 0,
+        "behavioral scenario validation failed: "
+        + (behavior.stderr.strip() or behavior.stdout.strip()),
+    )
 
 
 def check_markdown_links() -> None:
@@ -259,9 +282,12 @@ def check_markdown_links() -> None:
 
 
 def run_tests() -> None:
+    environment = os.environ.copy()
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
     result = subprocess.run(
         [sys.executable, "-m", "unittest", "discover", "-s", str(PACKAGE_ROOT / "tests"), "-p", "test_*.py", "-v"],
         cwd=REPOSITORY_ROOT,
+        env=environment,
     )
     require(result.returncode == 0, "test suite failed")
 
