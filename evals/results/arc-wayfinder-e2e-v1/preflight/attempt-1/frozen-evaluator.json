@@ -1,0 +1,26 @@
+{
+  "campaign_id": "arc-wayfinder-e2e-v1",
+  "critical_sha256": {
+    "evals/arc_wayfinder.py": "bb06b702ac3bba55cb0069800c385c65bba8ef3014d5ce1ae9d0c3192888c5ce",
+    "evals/campaigns/arc-wayfinder-e2e-v1.json": "191b5dc19bec522ad6d1496ed15550292fb274af1243c3f00b1ece8083ce85e4",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/docs/platform-facts.md": "b3b8c85c741cb66a6e44f433b7586f74bb7b52713845c6ed40a8e4ce46ad4846",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/terraform/runners.tf": "67957eb0ecec286bcd2cd7c0657fd816e185cf5bed8d95238797b8caef0b724a",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "evals/scenarios/arc-wayfinder-e2e/fixture/tests/test_repository_safety.py": "c6f2376144b5b23ba93d2f18891ddb2907cbdd620709e49e3fd0a85a52550db9",
+    "evals/scenarios/arc-wayfinder-e2e/phase-2-mutation/delete.txt": "d975754b3985bd4e7fcab22dc2ff4eca3b4d72129a9b65cc4881000cfac1dc78",
+    "evals/scenarios/arc-wayfinder-e2e/phase-3-mutation/docs/benchmarks/runner-startup.md": "c9d0829cc1f4007a60f849189f887eff7fe88c8b6e9ffa86c1da63cd3e909bd8",
+    "evals/scenarios/arc-wayfinder-e2e/phase-3-mutation/docs/decisions/D1-runner-compute-architecture.md": "7d07c367f86be1e7cf11759437cc603d4aa4e5b3f9633d294129f4460d01bded"
+  },
+  "frozen_at": "2026-08-15T21:05:36.802918+00:00",
+  "rule": "Any critical-file mismatch invalidates execution. Do not refreeze after live evidence; create a new campaign.",
+  "schema_version": 1,
+  "source_git_sha": "34ee372dcd5d4f099625494a9ce71295e320bb4d"
+}

@@ -8,6 +8,26 @@ import unittest
 from evals import run
 
 
+HISTORICAL_RESULT_SHA256 = {
+    "2026-08-15-initial-spike/direct-baseline-1-b27e6dbd54.json": "15c2434185979d85266a8c1a35b42365bc282ac04e01894bf2071835af25d543",
+    "2026-08-15-initial-spike/direct-workflow-1-583922fcb9.json": "2dcb239da8b9d21bd7bc9a01fd8905a22586a6c6fba6b719c71d89a585a23fc5",
+    "2026-08-15-initial-spike/resume-baseline-1-3e01672ee1.json": "d6e325daf3097bf9e83204972e57188907fe41d4392d82e6bc56d547a60b0617",
+    "2026-08-15-initial-spike/resume-workflow-1-a7da21356d.json": "de8f7518d5d4e40622fb0dce91e4dee8befa3b5258cd3b6ed19fef1ab3ab5d15",
+    "2026-08-15-three-paired-trials/direct-baseline-1-17940cccb0.json": "b60dd118c7013f47f0d77e94d08a455137b4f302eebb9da077a59736386cb6fe",
+    "2026-08-15-three-paired-trials/direct-baseline-2-fd6c336414.json": "b7c6fdb675c39dd0f74938ec7a0debdf1a6aa01f5bacd8c74ef7d6d467443e22",
+    "2026-08-15-three-paired-trials/direct-baseline-3-16c2aa5c13.json": "4fef3bb5d60e1dd38c6c70f12c8d8976c4f2daccebe701e9e4c1ead932492e58",
+    "2026-08-15-three-paired-trials/direct-workflow-1-7c9f767d29.json": "ba1673c4103748d0fc57e968d312a8aee98ebbdb8503191627afeff7333043db",
+    "2026-08-15-three-paired-trials/direct-workflow-2-a82addaf44.json": "3920390ebf77a738528b3eb09e53916b33d9a589b2fa478ee9957fec21c67824",
+    "2026-08-15-three-paired-trials/direct-workflow-3-dff9d64823.json": "9bf76e8f3e043b14f383bb9f05d2806830fccfa92af6a6c6b23d0e40073b89b2",
+    "2026-08-15-three-paired-trials/resume-baseline-1-686c2905f1.json": "9859676f0ed340716e7e60578fff23fec3c8dda147bcac4806b2935fe78c0ce1",
+    "2026-08-15-three-paired-trials/resume-baseline-2-9da14bff94.json": "438b07cf39fb684ba34a9fc715e63684f88b77cbb2f179349b4f2e4ea153bd04",
+    "2026-08-15-three-paired-trials/resume-baseline-3-55ca646e53.json": "c5cc47595a29ff2d0420617785088d9c9f88bb4a8b94b4b85b28ace93c30f153",
+    "2026-08-15-three-paired-trials/resume-workflow-1-7f02e472ee.json": "238368ea000896f41ba1b5afe3330e46a93eca0e129fffa6874a234e9a23bde9",
+    "2026-08-15-three-paired-trials/resume-workflow-2-434f756aed.json": "051c206a270a6762fd33af7fda92e73c2db8142895701ff666cb6a2cfae1f549",
+    "2026-08-15-three-paired-trials/resume-workflow-3-1a01a370a5.json": "ab61a7d82df25e5d5d151b8db0ac0ad06abb27fe24e63f19c1fc7300aa1116f9",
+}
+
+
 def visible_text(root: Path) -> str:
     parts: list[str] = []
     for path in sorted(root.rglob("*")):
@@ -102,12 +122,38 @@ class MutationTests(unittest.TestCase):
 
 
 class ResultAndGraderTests(unittest.TestCase):
+    def test_historical_result_contents_are_unchanged(self) -> None:
+        for relative, expected_digest in HISTORICAL_RESULT_SHA256.items():
+            with self.subTest(result=relative):
+                self.assertEqual(run.file_digest(run.RESULTS_ROOT / relative), expected_digest)
+
     def test_result_json_round_trip(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             expected = {"scenario": "direct", "variant": "baseline", "tests_pass": True}
-            path = run.write_result(expected, "round-trip", root)
+            path = run.write_result(expected, "round-trip", root, "campaign-a")
+            self.assertEqual(path, root / "campaign-a" / "round-trip.json")
             self.assertEqual(run.read_result(path), expected)
+
+    def test_continuation_writes_into_the_prepared_campaign(self) -> None:
+        with tempfile.TemporaryDirectory() as run_temporary, tempfile.TemporaryDirectory() as result_temporary:
+            run_root = Path(run_temporary)
+            results_root = Path(result_temporary)
+            state = run.prepare_run(
+                "direct",
+                "baseline",
+                1,
+                campaign="campaign-a",
+                run_root=run_root,
+            )
+            status, path = run.continue_run(
+                state["run_id"],
+                run_root=run_root,
+                results_root=results_root,
+            )
+            self.assertEqual(status, "completed")
+            self.assertEqual(path, results_root / "campaign-a" / f"{state['run_id']}.json")
+            self.assertEqual(run.read_result(path)["campaign"], "campaign-a")
 
     def test_direct_grader_distinguishes_good_and_bad_implementations(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -129,10 +175,51 @@ class ResultAndGraderTests(unittest.TestCase):
                 "    return min(base_seconds * (2 ** attempt), max_seconds)\n",
                 encoding="utf-8",
             )
+            overflow_prone = run.grade_direct(workspace, before, "baseline", 1)
+            self.assertFalse(overflow_prone["tests_pass"])
+            self.assertFalse(overflow_prone["huge_attempt_semantic_test_passed"])
+            self.assertFalse(overflow_prone["successful"])
+
+            run.shutil.rmtree(workspace)
+            run.shutil.copytree(run.fixture_source("direct"), workspace)
+            before = run.snapshot(workspace)
+            (workspace / "src" / "retry.py").write_text(
+                "def retry_delay(\n"
+                "    attempt: int,\n"
+                "    base_seconds: float = 1.0,\n"
+                "    max_seconds: float = 30.0,\n"
+                ") -> float:\n"
+                "    if attempt < 0:\n"
+                "        raise ValueError(\"attempt must not be negative\")\n"
+                "    try:\n"
+                "        delay = base_seconds * (2 ** attempt)\n"
+                "    except OverflowError:\n"
+                "        return max_seconds\n"
+                "    return min(delay, max_seconds)\n",
+                encoding="utf-8",
+            )
             good = run.grade_direct(workspace, before, "baseline", 1)
             self.assertTrue(good["tests_pass"])
             self.assertTrue(good["expected_implementation_behavior_passes"])
+            self.assertTrue(good["huge_attempt_semantic_test_passed"])
+            self.assertTrue(good["successful"])
             self.assertEqual(good["files_changed"], ["src/retry.py"])
+
+    def test_os_metadata_does_not_contaminate_direct_artifact_grading(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary) / "fixture"
+            run.shutil.copytree(run.fixture_source("direct"), workspace)
+            before = run.snapshot(workspace)
+            (workspace / ".DS_Store").write_bytes(b"finder metadata")
+            (workspace / "nested").mkdir()
+            (workspace / "nested" / "Thumbs.db").write_bytes(b"windows metadata")
+
+            self.assertEqual(run.snapshot(workspace), before)
+
+            result = run.grade_direct(workspace, before, "baseline", 1)
+            self.assertNotIn(".DS_Store", result["files_changed"])
+            self.assertNotIn("nested/Thumbs.db", result["files_changed"])
+            self.assertFalse(result["extra_artifacts"])
 
     def test_phase_1_grader_detects_preservation_and_invention(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -195,7 +282,7 @@ class ResultAndGraderTests(unittest.TestCase):
             self.assertTrue(bad["guessed_missing_information"])
             self.assertFalse(bad["implementation_completed"])
 
-    def test_comparison_reports_behavior_without_a_synthetic_score(self) -> None:
+    def test_comparison_is_limited_to_one_campaign_without_a_synthetic_score(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             run.write_result(
@@ -204,12 +291,14 @@ class ResultAndGraderTests(unittest.TestCase):
                     "variant": "baseline",
                     "successful": True,
                     "tests_pass": True,
+                    "huge_attempt_semantic_test_passed": True,
                     "extra_artifacts": False,
                     "total_tokens": None,
                     "elapsed_seconds": None,
                 },
                 "direct-baseline",
                 root,
+                "campaign-a",
             )
             run.write_result(
                 {
@@ -217,18 +306,26 @@ class ResultAndGraderTests(unittest.TestCase):
                     "variant": "workflow",
                     "successful": False,
                     "tests_pass": False,
+                    "huge_attempt_semantic_test_passed": False,
                     "extra_artifacts": True,
                     "total_tokens": None,
                     "elapsed_seconds": None,
                 },
                 "direct-workflow",
                 root,
+                "campaign-b",
             )
-            comparison = run.comparison_text(root)
+            comparison = run.comparison_text(root, "campaign-a")
             self.assertIn("Scenario: direct", comparison)
             self.assertIn("successful", comparison)
+            self.assertIn("huge attempt semantic test passed", comparison)
             self.assertIn("extra artifacts", comparison)
+            self.assertIn("1/1", comparison)
+            self.assertIn("n/a", comparison)
             self.assertNotIn("score", comparison.lower())
+
+            with self.assertRaisesRegex(ValueError, "requires one campaign"):
+                run.comparison_text(root)
 
 
 if __name__ == "__main__":

@@ -24,6 +24,8 @@ SCENARIO_ROOT = EVAL_ROOT / "scenarios"
 RESULTS_ROOT = EVAL_ROOT / "results"
 RUN_ROOT = Path(tempfile.gettempdir()) / "agentic-workflow-evals"
 ADOPT_SCRIPT = SOURCE_ROOT / "skills" / "agentic-workflow" / "scripts" / "adopt.py"
+IGNORED_OS_METADATA_NAMES = {".DS_Store", "Thumbs.db"}
+CAMPAIGN_PATTERN = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?")
 
 AMI_PARAMETER = "/platform/eks/runner/ami/latest"
 DECISION_SOURCE = (
@@ -62,6 +64,8 @@ def snapshot(root: Path) -> dict[str, str]:
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root)
         if ".git" in relative.parts:
+            continue
+        if relative.name in IGNORED_OS_METADATA_NAMES:
             continue
         if path.is_symlink():
             result[relative.as_posix()] = f"symlink:{path.readlink()}"
@@ -172,17 +176,29 @@ def save_prompt(run_id: str, prompt: str, run_root: Path = RUN_ROOT) -> Path:
     return path
 
 
+def validate_campaign(campaign: str) -> str:
+    if not CAMPAIGN_PATTERN.fullmatch(campaign):
+        raise ValueError(
+            "campaign must contain only letters, numbers, dots, hyphens, or underscores "
+            "and must begin and end with a letter or number"
+        )
+    return campaign
+
+
 def prepare_run(
     scenario: str,
     variant: str,
     run_number: int,
     *,
+    campaign: str | None = None,
     run_root: Path = RUN_ROOT,
 ) -> dict[str, Any]:
     if scenario not in {"direct", "resume"}:
         raise ValueError(f"unknown scenario: {scenario}")
     if variant not in {"baseline", "workflow"}:
         raise ValueError(f"unknown variant: {variant}")
+    if campaign is not None:
+        campaign = validate_campaign(campaign)
 
     run_id = f"{scenario}-{variant}-{run_number}-{uuid.uuid4().hex[:10]}"
     root = run_root / run_id
@@ -203,6 +219,7 @@ def prepare_run(
         "scenario": scenario,
         "variant": variant,
         "run_number": run_number,
+        "campaign": campaign,
         "created_at": utc_now(),
         "workspace": str(workspace),
         "phase": "awaiting_direct" if scenario == "direct" else "awaiting_resume_phase_1",
@@ -262,11 +279,21 @@ else:
     return run_command([sys.executable, "-c", program], cwd=workspace, timeout=30)
 
 
+def direct_large_attempt_result(workspace: Path) -> subprocess.CompletedProcess[str]:
+    program = """
+from src.retry import retry_delay
+
+assert retry_delay(1_000_000) == 30.0
+"""
+    return run_command([sys.executable, "-c", program], cwd=workspace, timeout=30)
+
+
 def grade_direct(workspace: Path, before: dict[str, str], variant: str, run_number: int) -> dict[str, Any]:
     after = snapshot(workspace)
     changed = changed_files(before, after)
     tests = direct_test_result(workspace)
     behavior = direct_behavior_result(workspace)
+    large_attempt = direct_large_attempt_result(workspace)
     allowed_scope = {"src/retry.py", "tests/test_retry.py", "pyproject.toml"}
     outside_scope = sorted(set(changed) - allowed_scope)
     state_artifacts = [
@@ -278,9 +305,10 @@ def grade_direct(workspace: Path, before: dict[str, str], variant: str, run_numb
         "scenario": "direct",
         "variant": variant,
         "run_number": run_number,
-        "successful": tests.returncode == 0 and behavior.returncode == 0,
+        "successful": tests.returncode == 0 and behavior.returncode == 0 and large_attempt.returncode == 0,
         "tests_pass": tests.returncode == 0,
         "expected_implementation_behavior_passes": behavior.returncode == 0,
+        "huge_attempt_semantic_test_passed": large_attempt.returncode == 0,
         "number_of_files_changed": len(changed),
         "files_changed": changed,
         "files_outside_obvious_implementation_test_scope": outside_scope,
@@ -508,13 +536,23 @@ def grade_resume_phase_2(
     }
 
 
-def result_path(run_id: str, results_root: Path = RESULTS_ROOT) -> Path:
-    return results_root / f"{run_id}.json"
+def result_path(
+    run_id: str,
+    results_root: Path = RESULTS_ROOT,
+    campaign: str | None = None,
+) -> Path:
+    root = results_root if campaign is None else results_root / validate_campaign(campaign)
+    return root / f"{run_id}.json"
 
 
-def write_result(result: dict[str, Any], run_id: str, results_root: Path = RESULTS_ROOT) -> Path:
-    results_root.mkdir(parents=True, exist_ok=True)
-    path = result_path(run_id, results_root)
+def write_result(
+    result: dict[str, Any],
+    run_id: str,
+    results_root: Path = RESULTS_ROOT,
+    campaign: str | None = None,
+) -> Path:
+    path = result_path(run_id, results_root, campaign)
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return path
 
@@ -535,6 +573,7 @@ def continue_run(
 ) -> tuple[str, Path | None]:
     state = load_state(run_id, run_root)
     workspace = Path(state["workspace"])
+    campaign = state.get("campaign")
     if not workspace.is_dir():
         raise RuntimeError(f"run workspace no longer exists: {workspace}")
 
@@ -544,7 +583,9 @@ def continue_run(
         result["workspace"] = str(workspace)
         result["agent_interface"] = state["agent_interface"]
         result["completed_at"] = utc_now()
-        path = write_result(result, run_id, results_root)
+        if campaign is not None:
+            result["campaign"] = campaign
+        path = write_result(result, run_id, results_root, campaign)
         state["phase"] = "completed"
         state["result_path"] = str(path)
         save_state(state, run_root)
@@ -580,7 +621,9 @@ def continue_run(
             "phase_2": grade_resume_phase_2(workspace, state["phase_2_start_snapshot"]),
             "completed_at": utc_now(),
         }
-        path = write_result(result, run_id, results_root)
+        if campaign is not None:
+            result["campaign"] = campaign
+        path = write_result(result, run_id, results_root, campaign)
         state["phase"] = "completed"
         state["result_path"] = str(path)
         save_state(state, run_root)
@@ -622,8 +665,11 @@ def mean_summary(results: list[dict[str, Any]], paths: Iterable[str]) -> str:
     return f"{statistics.mean(known):.1f}" if known else "n/a"
 
 
-def comparison_text(results_root: Path = RESULTS_ROOT) -> str:
-    results = [read_result(path) for path in sorted(results_root.glob("*.json"))]
+def comparison_text(results_root: Path = RESULTS_ROOT, campaign: str | None = None) -> str:
+    if campaign is None:
+        raise ValueError("comparison requires one campaign")
+    campaign_root = results_root / validate_campaign(campaign)
+    results = [read_result(path) for path in sorted(campaign_root.glob("*.json"))]
     lines: list[str] = []
     for scenario in ("direct", "resume"):
         selected = [result for result in results if result.get("scenario") == scenario]
@@ -638,6 +684,7 @@ def comparison_text(results_root: Path = RESULTS_ROOT) -> str:
             rows = [
                 ("successful", "successful"),
                 ("tests passed", "tests_pass"),
+                ("huge attempt semantic test passed", "huge_attempt_semantic_test_passed"),
                 ("extra artifacts", "extra_artifacts"),
             ]
             token_paths = ["total_tokens"]
@@ -677,6 +724,8 @@ def comparison_text(results_root: Path = RESULTS_ROOT) -> str:
 
 def print_agent_instructions(state: dict[str, Any]) -> None:
     print(f"Prepared run: {state['run_id']}")
+    if state.get("campaign"):
+        print(f"Campaign: {state['campaign']}")
     print(f"Workspace: {state['workspace']}")
     print("\nStart a NEW coding-agent task rooted at that workspace and send exactly this prompt:")
     print("\n--- prompt begin ---")
@@ -692,6 +741,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scenario", choices=("direct", "resume"))
     parser.add_argument("--variant", choices=("baseline", "workflow"))
     parser.add_argument("--runs", type=int, default=1)
+    parser.add_argument("--campaign")
     parser.add_argument("--continue", dest="continue_run_id")
     parser.add_argument("--fresh-session-confirmed", action="store_true")
     parser.add_argument("--show-prompt", metavar="RUN_ID")
@@ -704,7 +754,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         if args.compare:
-            print(comparison_text())
+            if not args.campaign:
+                raise RuntimeError("--compare requires --campaign so unrelated campaigns are not mixed")
+            print(comparison_text(campaign=args.campaign))
             return 0
         if args.show_prompt:
             print(load_state(args.show_prompt)["prompt"])
@@ -738,10 +790,12 @@ def main(argv: Iterable[str] | None = None) -> int:
 
         if not args.scenario or not args.variant:
             raise RuntimeError("--scenario and --variant are required when preparing runs")
+        if not args.campaign:
+            raise RuntimeError("--campaign is required when preparing runs")
         if args.runs < 1:
             raise RuntimeError("--runs must be at least 1")
         for run_number in range(1, args.runs + 1):
-            state = prepare_run(args.scenario, args.variant, run_number)
+            state = prepare_run(args.scenario, args.variant, run_number, campaign=args.campaign)
             print_agent_instructions(state)
             if run_number != args.runs:
                 print()

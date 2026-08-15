@@ -1,0 +1,252 @@
+{
+  "audited_at": "2026-08-15T21:10:22.360215+00:00",
+  "baseline_workspace": {
+    "ancestry_instruction_files": [
+      "/private/tmp/codex-isolation-audit-lqushso_/parent/AGENTS.md"
+    ],
+    "checks": {
+      "no_agentic_or_wayfinder_global_match": true,
+      "no_agentic_workflow_directory": true,
+      "no_agentic_workflow_state_directory": true,
+      "no_project_agents_policy": true,
+      "no_project_wayfinder_skill": true,
+      "workspace_is_git_root": true,
+      "workspace_outside_agentic_workflow_source_tree": true
+    },
+    "probe_workspace": "/private/tmp/codex-isolation-audit-lqushso_/parent/repo",
+    "setup_commit": "fd25fe06255edfdd7b8884922c8ea233878bb418",
+    "source_root": "/Users/james/Desktop/projects/agentic-workflow-instructions"
+  },
+  "campaign_id": "arc-wayfinder-e2e-v1",
+  "codex_cli": {
+    "command": [
+      "codex",
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--strict-config",
+      "-m",
+      "gpt-5.6-terra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-s",
+      "read-only",
+      "-C",
+      "/private/tmp/codex-isolation-audit-lqushso_/parent/repo",
+      "--json",
+      "<probe-via-stdin>"
+    ],
+    "elapsed_seconds": 6.591,
+    "exit_status": 0
+  },
+  "codex_context_inventory": {
+    "agentic_workflow_or_wayfinder_matches": [],
+    "codex_home": "/Users/james/.codex",
+    "config_ignored_by_cli_flag": true,
+    "global_instruction_inventory_sha256": "2ebf89be76a23d689dda9903a1eea15eb18e47ec495c720ea3147d45e86c2087",
+    "instruction_and_skill_file_count": 41,
+    "instruction_and_skill_inventory_sha256": "5760592916e1c5fdab7d3add75d9aa225820f4cc5b6e14e318ffbf566a62e4a1",
+    "rules_ignored_by_cli_flag": true,
+    "scanned_instruction_and_skill_files": [
+      {
+        "path": "/Users/james/.codex/AGENTS.md",
+        "sha256": "b06161cedd93d5b3698ea5a5af732edde3bc2f4990631c001a592b47ec6286ee"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-bundled/browser/26.721.81911/skills/control-in-app-browser/SKILL.md",
+        "sha256": "80c5a591bb761f7242f480fc4fc6883860f303f3d5a91e5714230c7897ad8a8d"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-bundled/sites/0.1.31/skills/sites-building/SKILL.md",
+        "sha256": "8bc048658106af38808c6c91e23480b7b208203c4030328aa5a51365d6cbcd04"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-bundled/sites/0.1.31/skills/sites-hosting/SKILL.md",
+        "sha256": "e1cd0842e1426204dbfc856e7bd7f364ee671fe6df78c6458c9a4d5e49b496e3"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-bundled/visualize/1.0.15/skills/visualize/SKILL.md",
+        "sha256": "9ba56c003b4549402d924c820b6dc8d02febef7b0778b9b4d52d1e28f3549048"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/notion/0.1.7/skills/notion-knowledge-capture/SKILL.md",
+        "sha256": "ade7d8902823500f6af26bdf290f2a88e35b34ce9668739eb8807b773648e333"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/notion/0.1.7/skills/notion-meeting-intelligence/SKILL.md",
+        "sha256": "1a8647c46cdfab399a1e0199924e0aecb83034e9a1b0957db211a045145b7771"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/notion/0.1.7/skills/notion-research-documentation/SKILL.md",
+        "sha256": "8ca523535915c1b9016202fa24d120545c60caea5c5545d74bfdec195f0a039a"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/notion/0.1.7/skills/notion-spec-to-implementation/SKILL.md",
+        "sha256": "43b304aaff38fbd4fd5d81efcefb2fd92f5450649eba8b02a2371edb4599cf3f"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-analytics-dashboard/SKILL.md",
+        "sha256": "cf5360fd8b197673bb237c52c603c97fa319c875c3dfa2cd8efff52d4422f513"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-business-review/SKILL.md",
+        "sha256": "27721fc1d67d1b41949caa75ac8f94f81952ff124406878af6524047929e60d2"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-design-report/SKILL.md",
+        "sha256": "563722f53854e606f8a9f87e37e72d7ef70a22d46d5836b8e4d6abfb1b79e9e0"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-experiment-analysis/SKILL.md",
+        "sha256": "0b05effc47df0a14f8e0c3e3597e6722224747435546385d38a2cae279bd20b9"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-financial-budget/SKILL.md",
+        "sha256": "c0b6b7a62a15597aaf2b1ec679e21da48f533b756127f0aef957cdfe9f3da738"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-investment-committee-memo/SKILL.md",
+        "sha256": "68abd08cfe5e073e3c446a3f675f44c5bf98f57434dba679e8acd8a763379a8b"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-legal-memorandum/SKILL.md",
+        "sha256": "51fb9d21baf6119c4ccb1903638a6bac0e859210de63460fffa7025d52e997e0"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-market-trends-report/SKILL.md",
+        "sha256": "d58d019b89cb6f292ac3ab991d561489eef477ff53ce05fb024a0c936f5af26a"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-minimal-letterhead/SKILL.md",
+        "sha256": "880ef094d4d0c89a7bde5ce9bbe4086625c186651e9e6efc8ba8bdd7cc77f9d5"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-operating-calendar/SKILL.md",
+        "sha256": "33bb660791a0b9a21628a42c34934932220203b6aabd84e98cb1b45327d0384c"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-operating-review/SKILL.md",
+        "sha256": "6d63c5cd025ffe936e7bab5db3023672bbaec26af55c2bb8b057d38c202c9c32"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-project-kickoff/SKILL.md",
+        "sha256": "aa893ebd89e7c8d1db4261d01cc2b1add35d78d00785871ccaaa5fc8db783ec9"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-project-tracker/SKILL.md",
+        "sha256": "d97d5be20189b7f53dd269b6e1c5f694eaf53e5a72f6559fcb1578911b7cda82"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-sales-pipeline/SKILL.md",
+        "sha256": "15cfeeedf440021f16ed3f3ad8c7c1ef6d48898b9447741e223d2fb41cfc9800"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-simple-dark-mode/SKILL.md",
+        "sha256": "b7c8d0c05f75878b9bc21e56a57c41ec1aa29700aca0a24822be0f9f1bd53207"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-simple-light-mode/SKILL.md",
+        "sha256": "7c68430c6cf57b55b457d4735dbd1a46b889bef135a32222902dd0848b6e1752"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-strategy-memorandum/SKILL.md",
+        "sha256": "51d7882ac94e8e57b323394825728c33925af878806e37277217c2dc12a912e5"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-system-design/SKILL.md",
+        "sha256": "87f7b7ed1b0d8410f5e5971cd7f7db9a4165e2f37069e97e52dbfb469b75a57c"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-team-alignment/SKILL.md",
+        "sha256": "26d7cafdcd1899a937b325c5d02ac57c162d45002153be33a934d35f81eb6110"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills/artifact-template-three-statement-forecast/SKILL.md",
+        "sha256": "74f4a5cccec0107b861548b157e04c51d9b58ec13a990c86394b4c529b8ecf41"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-curated-remote/plugin-management/0.1.0/skills/plugin-management/SKILL.md",
+        "sha256": "653841cc21205269f08b0ce135891e1518dac616a766bcfb0b57d788d3f68b10"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-primary-runtime/documents/26.813.12317/skills/documents/SKILL.md",
+        "sha256": "2048085eadeacd5a819f75484b06c947acac9b08e01e35d29be5047aa4225158"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-primary-runtime/pdf/26.813.12317/skills/pdf/SKILL.md",
+        "sha256": "b1d67f4bad4e40adb0d068ba4632990eec128ad62bc5290aff4ce9f41b82fcc2"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-primary-runtime/presentations/26.813.12317/skills/presentations/SKILL.md",
+        "sha256": "931f87a4cfc020756a36ca864280d1a2adf2f5616cc69a245ad4dbdf4672b602"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.813.12317/skills/excel-live-control/SKILL.md",
+        "sha256": "994e33cf1d3352d3fb4ab9e3f24076b63ecd0a92dae450f2b4a27cd9a7f00e88"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.813.12317/skills/spreadsheets/SKILL.md",
+        "sha256": "22d7d30e5a6621d8724c14f660772e842c29f478a647e08b4bfbb76f1c18b507"
+      },
+      {
+        "path": "/Users/james/.codex/plugins/cache/openai-primary-runtime/template-creator/26.813.12317/skills/template-creator/SKILL.md",
+        "sha256": "f1d14fd2847a2e879611a8b8f872f5dc4676a0607958d015274d2dc61e812deb"
+      },
+      {
+        "path": "/Users/james/.codex/skills/.system/imagegen/SKILL.md",
+        "sha256": "59981d23519222bcecf1be48bb37730bbc50539ceb0e35ad09fcef98a3df19d3"
+      },
+      {
+        "path": "/Users/james/.codex/skills/.system/openai-docs/SKILL.md",
+        "sha256": "669a42ccf3323fe0ceda6e466730bcb05dddf1e0c220d6523ea504909fc49165"
+      },
+      {
+        "path": "/Users/james/.codex/skills/.system/plugin-creator/SKILL.md",
+        "sha256": "8fd56316b2c49cbdc657a5d197967a233018e1fada65b00a5dd030dce6499a6e"
+      },
+      {
+        "path": "/Users/james/.codex/skills/.system/skill-creator/SKILL.md",
+        "sha256": "da44c88f6b3845a8fa8c60792ec9a722110a55a9793c279757b48fefb11f819c"
+      },
+      {
+        "path": "/Users/james/.codex/skills/.system/skill-installer/SKILL.md",
+        "sha256": "d68b77e5bbb34dedab89d134da52855f140fc4b4299b80104f534e3b9e98f8ee"
+      }
+    ]
+  },
+  "conclusion": "Auto mode may be enabled: the disposable vanilla Git root was outside the source tree, contained no Agentic Workflow artifacts, the reviewed Codex-home instruction/skill inventory contained no Agentic Workflow or Wayfinder match, and the ephemeral probe did not inherit the parent AGENTS canary or report controller/router context.",
+  "frozen_evaluator_sha256": "fa54c65ad402f539a60b6d4a97aea53d38b9ad22c4fbf33c5b29d90322070d1f",
+  "limitations": [
+    "The probe is behavioral evidence plus static inventory, not a formal proof of every undocumented Codex context channel.",
+    "A CODEX_HOME change, global AGENTS.md/CLAUDE.md change, or newly detected Agentic Workflow/Wayfinder marker invalidates this audit and blocks auto mode; unrelated plugin-cache churn is recorded but does not cross the tested isolation boundary.",
+    "The evaluated repositories and prompts remain the authoritative isolation boundary; raw probe events are retained for review."
+  ],
+  "probe": {
+    "checks": {
+      "codex_exec_succeeded": true,
+      "controller_codex_environment_removed": true,
+      "controller_router_language_not_reported": true,
+      "ephemeral_flag_present": true,
+      "no_resume_subcommand": true,
+      "parent_agents_canary_not_inherited": true,
+      "probe_made_no_repository_change": true,
+      "shell_environment_inheritance_disabled": true,
+      "user_config_ignored": true,
+      "user_rules_ignored": true
+    },
+    "non_evaluated": true,
+    "parent_canary_path": "/private/tmp/codex-isolation-audit-lqushso_/parent/AGENTS.md",
+    "parent_canary_sha256": "602192f4eeea18c78149d8b05a48f3818bae3684c803465bf570bf247aa9ea71",
+    "prompt_sha256": "0c99e759a7861af1bd24cc98b78144f87ed47e8a1b1efac7a61753f981d6b4fb",
+    "raw_stderr_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v1/isolation-audit/probe.stderr.txt",
+    "raw_stdout_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v1/isolation-audit/probe.jsonl",
+    "response": "{\"project_instruction_paths\":null,\"available_skill_names\":[\"imagegen\",\"openai-docs\",\"plugin-creator\",\"skill-creator\",\"skill-installer\",\"notion:notion-knowledge-capture\",\"notion:notion-meeting-intelligence\",\"notion:notion-research-documentation\",\"notion:notion-spec-to-implementation\",\"plugin-management:plugin-management\"],\"controller_conversation_visible\":null,\"inherited_router_requirement\":null}"
+  },
+  "schema_version": 1,
+  "status": "passed"
+}

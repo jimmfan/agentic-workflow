@@ -14,6 +14,9 @@ class RetryDelayTests(unittest.TestCase):
     def test_custom_base_and_cap(self) -> None:
         self.assertEqual(retry_delay(2, base_seconds=0.5, max_seconds=10.0), 2.0)
 
+    def test_very_large_attempt_is_capped(self) -> None:
+        self.assertEqual(retry_delay(1_000_000), 30.0)
+
     def test_negative_attempt_is_invalid(self) -> None:
         with self.assertRaises(ValueError):
             retry_delay(-1)

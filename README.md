@@ -1,240 +1,387 @@
 # Agentic Workflow
 
-Agentic Workflow installs a compact project-level intent router for Codex,
-GitHub Copilot, and compatible instruction-driven agents. It solves the problem
-of applying heavyweight process to every request: clear, bounded work stays
-direct, while consequential work loads only the workflow or optional provider
-capability it needs.
+Agentic Workflow is an experimental stateful workflow layer for coding agents.
 
-This is a pre-1.0 experimental project. The router and workflows are the product;
-the surrounding lifecycle exists only to install them without destroying
-project-owned data.
+It is designed to keep clear, bounded work direct while giving longer-running engineering work a project-owned place to record and resume important state across sessions.
 
-The v0 design deliberately has no daemon, lifecycle controller, hook layer,
-telemetry pipeline, provider ownership database, or runtime package-integrity
-gate. The successful outcome is a small router that remains usable when optional
-providers are absent and an installer that can reconstruct framework files
-without risking project-owned state.
+The project started from a practical problem: engineering work rarely happens in one clean session. Questions get investigated, decisions depend on what was learned, implementation exposes new unknowns, work gets blocked, and the project gets picked up again later.
 
-## Runtime model
+Agentic Workflow explores whether explicitly recording that state can help an agent continue work without depending on the previous chat or session.
+
+This project is pre-1.0 and actively evolving.
+
+## The idea
+
+A lot of engineering work looks something like this:
+
+```text
+unknown
+   ↓
+investigate
+   ↓
+evidence
+   ↓
+decision
+   ↓
+implementation
+   ↓
+new information
+   ↓
+continue, reconsider, or create another unknown
+```
+
+An agent may handle each individual step in a separate interaction or session.
+
+The problem this project is focused on is preserving the useful connections between those steps.
+
+Agentic Workflow currently combines two mechanisms:
+
+* **Routing** — clear, bounded requests can remain direct; other work can be routed to a relevant workflow.
+* **Durable project state** — work that needs continuity can leave behind structured state for later sessions.
+
+The workflow handles the current activity.
+
+The state records what later work may need to know.
+
+## Architecture
 
 ```mermaid
 flowchart LR
-    request["User request"] --> router["Compact instruction router"]
+    request["User request"] --> router["Route request"]
+
     router --> direct["Direct work"]
-    router --> local["One local workflow"]
-    router --> optional["Optional provider capability"]
-    optional --> available{"Installed and invocable?"}
-    available -->|yes| execute["Provider-native execution"]
-    available -->|no| fallback["Truthful host-native fallback or exact handoff"]
-    local --> evidence["Acceptance evidence when needed"]
-    execute --> evidence
+    router --> discovery["Discovery"]
+    router --> wayfinder["Wayfinder"]
+    router --> implementation["Implementation"]
+    router --> debugging["Debugging"]
+    router --> provider["Optional provider"]
+
+    discovery --> result["Outcome / findings"]
+    wayfinder --> result
+    implementation --> result
+    debugging --> result
+    provider --> result
+
+    direct --> verify["Verification when useful"]
+    result --> verify
+
+    result --> durable{"Persist state?"}
+    durable -->|no| verify
+    durable -->|yes| state[".ai-workflow-state/"]
+
+    state --> resume["Later session"]
+    resume --> router
+
+    state -.-> wfstate["wayfinder/effort-name-placeholder/"]
+    wfstate -.-> map["map.md"]
+    wfstate -.-> unknowns["unknowns/U#.md"]
+    wfstate -.-> decisions["decisions/D#.md"]
+    wfstate -.-> tickets["tickets/T#.md"]
+
+    state -.-> records["records/"]
 ```
 
-Routing is instruction-driven. The root policy selects the minimum useful route,
-preserves the user's authorization boundary, and never claims an unavailable
-provider ran. Provider artifacts and identifiers remain canonical in their
-native locations. Durable workflows resume from their canonical record or map;
-there is no global active index. Local Wayfinder efforts use the canonical
-project-owned tree under `.ai-workflow-state/wayfinder/`, loaded only when
-relevant. A compact optional marker such as
-`[route: router -> implement -> verification]` is sufficient route visibility.
+The router is intentionally small.
 
-Codex and GitHub Copilot discover project skills in `.agents/skills`. Claude can
-use the root policy for classification and host-native work, but this release
-does not project skills into `.claude/skills`.
+Its job is to classify the request and select a direct route, a dominant workflow, or an optional provider capability.
+
+A clear, bounded task can remain direct and does not need to create durable state.
+
+Other work can use workflows such as Discovery, Wayfinder, Implementation, or Debugging, with supporting capabilities such as Research, TDD, Verification, or Code Review when relevant.
+
+Optional provider capabilities can be used when installed and available. If one is unavailable, the framework must not report that it ran.
+
+## Durable project state
+
+Durable state exists for work that needs to survive the current session.
+
+It is not intended to store:
+
+* complete chat transcripts;
+* hidden reasoning;
+* every command the agent tried;
+* every failed experiment;
+* a general memory of everything the agent has seen.
+
+Instead, project state can record information such as:
+
+* what is known;
+* what is still unknown;
+* what has been decided;
+* why a decision exists;
+* what work resulted from it;
+* what is blocked;
+* what remains actionable; and
+* where later work should resume.
+
+The intended source-of-truth order is explicit:
+
+* live source and observed behavior override stale workflow state;
+* accepted project artifacts override agent recollection;
+* relevant project-owned state provides workflow continuity;
+* chat history and private agent memory are not authoritative project state.
+
+## Wayfinder
+
+Wayfinder is the durable planning workflow for efforts where unknowns, decisions, dependencies, and resulting work need to remain connected over time.
+
+A Wayfinder effort can look like:
+
+```text
+.ai-workflow-state/
+└── wayfinder/
+    └── <effort>/
+        ├── map.md
+        ├── unknowns/
+        │   └── U1-example.md
+        ├── decisions/
+        │   └── D1-example.md
+        └── tickets/
+            └── T1-example.md
+```
+
+`map.md` stays intentionally low-resolution. It provides enough context to identify the current state of the effort and locate relevant detail.
+
+Child files are loaded only when needed.
+
+The basic relationship is:
+
+```text
+Unknown
+   ↓
+Investigation
+   ↓
+Decision
+   ↓
+Work
+   ↓
+New information
+   ├── continue
+   ├── create another unknown
+   └── reconsider an earlier decision
+```
+
+Wayfinder is not required for every task.
+
+An existing Wayfinder effort should not cause an unrelated, bounded request to enter the Wayfinder workflow.
+
+## Re-entry across sessions
+
+Cross-session continuation is one of the main behaviors this project is intended to test.
+
+A target case looks like this:
+
+```text
+Session A
+─────────
+U1: Can the proposed design meet the requirement?
+        ↓
+investigate
+        ↓
+U1 resolved
+        ↓
+D1 created
+        ↓
+T1 created
+        ↓
+state persisted
+
+
+Session B
+─────────
+new session
+        ↓
+reads relevant project state
+        ↓
+recognizes U1 as resolved
+        ↓
+reads D1
+        ↓
+continues T1
+```
+
+Another case occurs when implementation changes what the project knows:
+
+```text
+T1 implementation
+        ↓
+new constraint discovered
+        ↓
+U2 created
+        ↓
+T1 blocked or reconsidered
+        ↓
+project state updated
+        ↓
+later work sees U2 as unresolved
+```
+
+These are target behaviors, not assumptions that the framework already improves agent performance.
+
+They are part of what the project needs to evaluate.
 
 ## Ownership boundary
+
+Agentic Workflow separates reconstructable framework files from durable project-owned state.
 
 ```text
 target-project/
 ├── AGENTS.md                    # managed region + preserved project region
 ├── CLAUDE.md                    # managed region + preserved project region
-├── .agents/skills/              # required local skills; optional providers
-├── .ai-workflow/                # disposable, fully reconstructable framework
-│   ├── install-manifest.json    # version, revision, external/composite evidence
+├── .agents/skills/              # local workflows and optional providers
+│
+├── .ai-workflow/                # framework-owned and reconstructable
+│   ├── install-manifest.json
 │   ├── providers.json
 │   ├── routing.md
 │   ├── contracts/
 │   └── templates/
-└── .ai-workflow-state/          # durable project-owned state; never inventoried
-    ├── records/                 # optional DEC/IMP/DBG records with resume targets
-    ├── archive/                 # completed/superseded record history
-    └── wayfinder/<effort>/      # optional canonical map and U#/D#/T# children
+│
+└── .ai-workflow-state/          # durable project-owned state
+    ├── records/
+    ├── archive/
+    └── wayfinder/
+        └── <effort>/
+            ├── map.md
+            ├── unknowns/
+            ├── decisions/
+            └── tickets/
 ```
 
-`.ai-workflow/` is framework-owned. Install and update may replace the whole
-directory with the current desired files; a missing or edited framework file is
-repairable, not evidence of corruption. `.ai-workflow-state/` and everything
-under it are project-owned. Lifecycle operations create the directory when
-needed but never seed, checksum, enumerate, rewrite, or remove its contents.
+### `.ai-workflow/`
 
-Wayfinder state is created only for a genuinely relevant durable planning
-effort. Its map stays low resolution, child files load progressively, and an
-unrelated existing effort never turns a simple request into Wayfinder work.
+Framework-owned and reconstructable.
 
-`AGENTS.md` and `CLAUDE.md` are composite files. Only the unambiguous marked
-managed region is replaced; bytes outside it survive update and removal.
-Unknown content at another required external path is preserved and blocks the
-write. The install manifest keeps hashes only for external-file deletion safety.
+Its contents may be repaired or replaced by the framework.
 
-## Prerequisites
+### `.ai-workflow-state/`
 
-Run lifecycle commands in the environment that owns the project: the **macOS or
-Linux host Terminal**, a **VS Code terminal inside the Dev Container**, or
-**native Windows PowerShell**. Do not run a host command when the project lives
-only inside a container, or vice versa.
+Project-owned.
 
-Core installation requires Python 3.11 or newer and HTTPS access to GitHub for
-the public bootstrap. Optional curated providers additionally require a GitHub
-CLI build that exposes `gh skill install` and an authenticated GitHub session.
-Provider prerequisites never block the core router.
+Durable workflow state lives here and is kept separate from reconstructable framework files.
 
-These read-only checks verify the local tools. Run the matching block in the
-same environment that owns the target project:
+### `AGENTS.md` and `CLAUDE.md`
 
-```bash
-# macOS/Linux host Terminal or VS Code terminal inside a Dev Container
-python3 --version
-gh --version
-gh skill install --help
-gh auth status --hostname github.com
-```
+These are composite project files.
 
-```powershell
-# Native Windows PowerShell
-py -3 --version
-gh --version
-gh skill install --help
-gh auth status --hostname github.com
-```
+Agentic Workflow manages only its marked region and preserves project-owned content outside that region.
 
-If optional-provider authentication is missing and you want those skills, run
-this persistent login in that same environment:
+### Provider artifacts
 
-```bash
-gh auth login --hostname github.com --web
-```
+Provider-native artifacts and identifiers remain canonical in their native locations.
 
-The login stores a GitHub CLI credential. Reverse it with
-`gh auth logout --hostname github.com`; the core framework is unaffected.
+Agentic Workflow references those artifacts rather than creating parallel copies when the provider already owns the information.
+
+## Workflow model
+
+The framework separates **primary workflows** from **supporting capabilities**.
+
+Primary workflows represent the dominant activity for the current work, including:
+
+* Wayfinder
+* Discovery
+* Specification
+* Ticket decomposition
+* Implementation
+
+Supporting capabilities can assist those workflows without becoming the dominant workflow themselves, including:
+
+* Research
+* Debugging
+* Teaching
+* TDD
+* Verification
+* Code Review
+
+The router should select one dominant workflow rather than activating every potentially relevant capability.
+
+Direct work remains a valid route.
+
+## Progressive loading
+
+Agentic Workflow keeps root instructions small and loads detailed workflow guidance and project state only when relevant. Wayfinder follows the same pattern: start from the effort map and load child files as needed.
+
+## Scope
+
+Agentic Workflow is a project-level workflow and state layer, not a coding-agent runtime or general-purpose memory system. Framework files are replaceable; durable project state remains separate and understandable without the framework.
 
 ## Install
 
-The public bootstrap resolves an immutable Git commit, bounds and validates the
-downloaded archive, then runs current-state reconciliation. Run it from the
-**target project's root directory**. Installation persistently writes the paths
-shown above and then makes a best-effort attempt to install missing optional
-providers.
-
-On a macOS/Linux host Terminal or a VS Code terminal inside a Dev Container:
+From the root of the project where you want to use Agentic Workflow:
 
 ```bash
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
 ```
 
-On native Windows PowerShell:
+Then start a new coding-agent session from the project root so it can discover the installed project instructions and skills.
 
-```powershell
-py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
-```
+The current implementation supports Codex and GitHub Copilot project skills through `.agents/skills/`.
 
-A successful core install reports that current framework state was reconciled,
-durable project state was preserved, and core routing is ready. Optional-provider
-warnings may also appear; they do not change core success.
+Claude can use the installed root policy for classification and host-native work, but the current release does not project those skills into `.claude/skills/`.
 
-Open a fresh task from the project root so the host discovers the new policy and
-skills.
+Installation and lifecycle internals are documented separately.
 
-## Lifecycle operations
+## Experimental status
 
-These commands use the same validated bootstrap. Run them from the **target
-project root** in its owning environment. `update` and `remove` are persistent;
-`status` is read-only. `--dry-run` previews install, update, or remove without
-changing files.
+This project is still an experiment.
 
-```bash
-# macOS/Linux host Terminal or VS Code terminal inside a Dev Container
-python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
-python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" status
-python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" remove
-```
+The current hypothesis is:
 
-```powershell
-# Native Windows PowerShell
-py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
-py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" status
-py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" remove
-```
+> Can lightweight workflow routing plus durable, project-owned state help coding agents continue long-running engineering work correctly across independent sessions without making straightforward work worse?
 
-`update` replaces `.ai-workflow/`, repairs recorded external integrations, and
-attempts only missing providers. `remove` strips managed policy regions, deletes
-only unchanged external files recorded as framework-created, removes
-`.ai-workflow/`, and preserves all provider directories because v0 intentionally
-keeps no provider ownership database.
+The behavioral evaluation is focused on questions such as:
 
-To reverse the core installation, use `remove`. If you also want to delete an
-optional provider skill, inspect and remove its `.agents/skills/<name>` directory
-manually; automatic deletion would require ownership machinery that v0 declines
-to maintain. `.ai-workflow-state/` remains intentionally untouched and may be
-deleted only by the project owner after reviewing its contents.
+* Can a new session recover where previous work stopped?
+* Does it distinguish resolved questions from unresolved ones?
+* Does it avoid repeating completed investigation?
+* Can it connect decisions to the work they created?
+* Does new evidence change the recorded project state and subsequent work?
+* Does live repository reality override stale recorded state?
+* Do clear, bounded tasks continue to route directly?
+* What additional time, context, and token cost does the framework introduce?
+* Are any measured improvements large enough to justify that cost?
 
-## Migration behavior
+The architecture may change as those experiments produce evidence.
 
-Install and update recognize only four development-era durable locations:
+That is expected for v0.
 
-- `.ai-workflow/project-profile.md`
-- `.ai-workflow/state/active.md` -> `.ai-workflow-state/legacy-active.md`
-- `.ai-workflow/state/records/`
-- `.ai-workflow/state/archive/`
+## Design principles
 
-A missing source is normal. An absent canonical destination receives the bytes;
-an identical destination reconciles safely; conflicting content or an unsafe
-path stops before mutation and preserves both copies. `legacy-active.md` is
-preserved historical data and is not used for routing or resume. Historical framework files,
-including `.ai-workflow/state/README.md`, are irrelevant to current desired state
-and are never required or recreated.
+The current design follows these constraints:
 
-## Safety and verification
+1. **Allow bounded work to remain direct.**
+   Clear, bounded requests can route directly and do not require durable workflow state.
 
-The runtime keeps only safeguards tied to data loss or reliable routing:
+2. **Separate framework files from project state.**
+   Reconstructable framework files live separately from durable project-owned state.
 
-- reject filesystem-root targets, target-path symlinks, unsafe archive paths,
-  links, special entries, duplicates, corrupt archives, and excessive archives;
-- stage and replace reconstructable framework state, with rollback around
-  external/composite mutations;
-- preserve malformed composite policies and unknown external collisions;
-- migrate only named durable state and stop on a byte conflict; and
-- isolate optional provider failure from core lifecycle success.
+3. **Do not rely on conversation history for durable continuity.**
+   State that needs to survive a session should be represented in project-owned artifacts.
 
-The distribution manifest is an explicit source-to-target install map, not a
-payload checksum inventory. Maintainers verify that map from the **source
-repository root** with this read-only command:
+4. **Prefer current project reality over recorded state.**
+   Source code, observed behavior, and accepted project artifacts take precedence over stale workflow state.
 
-```bash
-python3 skills/agentic-workflow/scripts/verify_package.py --tests
-```
+5. **Persist project-relevant state, not execution history.**
+   Durable state should capture information needed to continue the work rather than every action that produced it.
 
-Success ends with `OK: Agentic Workflow package verification passed.` Ordinary
-edits to an already mapped payload file require no metadata refresh. If the gate
-reports a stale manifest after adding, removing, or remapping a packaged file—or
-after a version change—review the diff and then run this persistent map refresh
-from the same directory:
+6. **Load detailed instructions and state only when relevant.**
+   Root instructions stay compact, and deeper contracts or state files are read as the task requires them.
 
-```bash
-python3 skills/agentic-workflow/scripts/verify_package.py --refresh-manifest --tests
-```
+7. **Keep framework state reconstructable.**
+   Removing or rebuilding framework-owned files should not require deleting durable project-owned state.
 
-Revert an unwanted refresh with your version-control restore command for
-`skills/agentic-workflow/payload/distribution/manifest.json`. If verification
-still fails, the first useful diagnostic is the first reported failed test or
-contract, not a runtime reinstall.
+## More detail
 
-The current framework release is `0.11.1`; the optional provider declaration is
-pinned to `mattpocock/skills` `v1.2.3`.
+* [Architecture and ownership](docs/architecture.md)
+* [Workflow routing](docs/routing.md)
+* [Behavioral testing](docs/behavioral-testing.md)
+* [Verification](docs/verification.md)
+* [Provider research](docs/provider-research.md)
 
-See [Architecture and ownership](docs/architecture.md),
-[Workflow routing](docs/routing.md), [Verification](docs/verification.md),
-[Behavioral testing](docs/behavioral-testing.md), and
-[Provider research](docs/provider-research.md). Agentic Workflow is available
-under the [MIT License](LICENSE).
+## Acknowledgments
+
+Agentic Workflow uses [Matt Pocock's Skills for Real Engineers](https://github.com/mattpocock/skills) as an optional provider and has been influenced by its emphasis on small, composable agent skills that are loaded only when relevant.
+
+Agentic Workflow's routing, durable project state, Wayfinder model, and cross-session continuity are separate experiments and are not part of Matt's skills project.
+
+Agentic Workflow is available under the [MIT License](LICENSE).

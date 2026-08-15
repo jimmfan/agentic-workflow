@@ -1,0 +1,85 @@
+{
+  "audited_at": "2026-08-15T21:07:20.176668+00:00",
+  "baseline_workspace": {
+    "ancestry_instruction_files": [
+      "/private/tmp/codex-isolation-audit-m11ri69w/parent/AGENTS.md"
+    ],
+    "checks": {
+      "no_agentic_or_wayfinder_global_match": true,
+      "no_agentic_workflow_directory": true,
+      "no_agentic_workflow_state_directory": true,
+      "no_project_agents_policy": true,
+      "no_project_wayfinder_skill": true,
+      "workspace_is_git_root": true,
+      "workspace_outside_agentic_workflow_source_tree": true
+    },
+    "probe_workspace": "/private/tmp/codex-isolation-audit-m11ri69w/parent/repo",
+    "setup_commit": "9aaf18ae6cd61b864665c7db33f00fd9fcb834bf",
+    "source_root": "/Users/james/Desktop/projects/agentic-workflow-instructions"
+  },
+  "campaign_id": "arc-wayfinder-e2e-v1",
+  "codex_cli": {
+    "command": [
+      "codex",
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--strict-config",
+      "-m",
+      "gpt-5.6-terra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-s",
+      "read-only",
+      "-C",
+      "/private/tmp/codex-isolation-audit-m11ri69w/parent/repo",
+      "--json",
+      "<probe-via-stdin>"
+    ],
+    "elapsed_seconds": 6.294,
+    "exit_status": 0
+  },
+  "codex_context_inventory": {
+    "agentic_workflow_or_wayfinder_matches": [],
+    "codex_home": "/Users/james/.codex",
+    "config_ignored_by_cli_flag": true,
+    "instruction_and_skill_file_count": 42,
+    "instruction_and_skill_inventory_sha256": "a996002fceac34c75badf134ecfb915baec7fe934691d17a88a7b5629f65ed9b",
+    "rules_ignored_by_cli_flag": true
+  },
+  "conclusion": "Auto mode may be enabled: the disposable vanilla Git root was outside the source tree, contained no Agentic Workflow artifacts, the reviewed Codex-home instruction/skill inventory contained no Agentic Workflow or Wayfinder match, and the ephemeral probe did not inherit the parent AGENTS canary or report controller/router context.",
+  "frozen_evaluator_sha256": "ca2aadaf2e3a2679225e5a3aabf5fa8bdc18d5e4a55a06cd4ef26ed40b4c69d1",
+  "limitations": [
+    "The probe is behavioral evidence plus static inventory, not a formal proof of every undocumented Codex context channel.",
+    "Any change to the inventoried global instruction/skill files invalidates this audit and blocks auto mode.",
+    "The evaluated repositories and prompts remain the authoritative isolation boundary; raw probe events are retained for review."
+  ],
+  "probe": {
+    "checks": {
+      "codex_exec_succeeded": true,
+      "controller_codex_environment_removed": true,
+      "controller_router_language_not_reported": true,
+      "ephemeral_flag_present": true,
+      "no_resume_subcommand": true,
+      "parent_agents_canary_not_inherited": true,
+      "probe_made_no_repository_change": true,
+      "shell_environment_inheritance_disabled": true,
+      "user_config_ignored": true,
+      "user_rules_ignored": true
+    },
+    "non_evaluated": true,
+    "parent_canary_path": "/private/tmp/codex-isolation-audit-m11ri69w/parent/AGENTS.md",
+    "parent_canary_sha256": "2f73f18dee2a9b8c3b09efea5a4129311808f0c0db95db6fb7e3ae36d1a65df0",
+    "prompt_sha256": "0c99e759a7861af1bd24cc98b78144f87ed47e8a1b1efac7a61753f981d6b4fb",
+    "raw_stderr_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v1/preflight/attempt-2/isolation-audit/probe.stderr.txt",
+    "raw_stdout_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v1/preflight/attempt-2/isolation-audit/probe.jsonl",
+    "response": "{\"project_instruction_paths\":null,\"available_skill_names\":[\"imagegen\",\"openai-docs\",\"plugin-creator\",\"skill-creator\",\"skill-installer\",\"notion:notion-knowledge-capture\",\"notion:notion-meeting-intelligence\",\"notion:notion-research-documentation\",\"notion:notion-spec-to-implementation\",\"plugin-management:plugin-management\"],\"controller_conversation_visible\":null,\"inherited_router_requirement\":null}"
+  },
+  "schema_version": 1,
+  "status": "passed"
+}
