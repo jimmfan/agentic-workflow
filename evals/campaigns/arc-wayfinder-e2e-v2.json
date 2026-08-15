@@ -1,0 +1,102 @@
+{
+  "schema_version": 2,
+  "campaign_id": "arc-wayfinder-e2e-v2",
+  "research_question": "What incremental net value does explicit Wayfinder add beyond vanilla durable handoff and Agentic Workflow with the same neutral durable-handoff intent?",
+  "conditions": {
+    "A": {
+      "name": "vanilla-neutral-handoff",
+      "agentic_workflow": false,
+      "explicit_wayfinder_phases": []
+    },
+    "B": {
+      "name": "agentic-workflow-neutral-handoff",
+      "agentic_workflow": true,
+      "explicit_wayfinder_phases": []
+    },
+    "C": {
+      "name": "agentic-workflow-explicit-wayfinder",
+      "agentic_workflow": true,
+      "explicit_wayfinder_phases": [1, 3]
+    }
+  },
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "sandbox": "workspace-write",
+  "approval_policy": "never",
+  "network_policy": "all evaluated processes use the same Codex workspace-write sandbox and an empty inherited shell environment; prompts prohibit external infrastructure mutation and the evaluator never runs terraform init, plan, or apply",
+  "environment_policy": "a per-process minimal CODEX_HOME is created from the audited authentication material only; user config, rules, global skills, controller CODEX_* variables, cloud variables, and sibling/controller paths are not inherited by agent shells",
+  "execution_order": [
+    "A:1",
+    "B:1",
+    "C:1",
+    "A:2",
+    "B:2",
+    "C:2",
+    "A:3",
+    "B:3",
+    "C:3",
+    "A:4",
+    "B:4",
+    "C:4"
+  ],
+  "prompts": {
+    "A": {
+      "1": "Map this ARC runner migration as a durable multi-session effort.\n\nDetermine what is known, what is unresolved, what is stale or uncertain, what decisions block other work, and what useful work can proceed without those decisions.\n\nUse the repository as the source of project-specific truth. Do not implement the infrastructure in this phase.\n\nBefore finishing, leave durable repository-native notes containing the important facts, unresolved decisions, dependencies, actionable work, and exact continuation context a completely fresh engineer would need.",
+      "2": "Continue this ARC runner migration from the current repository state.\n\nMake the highest-value implementation progress that is currently justified. Do not assume unresolved project decisions.\n\nValidate the changes you make and leave the repository ready for another fresh agent to continue.",
+      "3": "Reconcile the current ARC migration with the new decisions, benchmark evidence, and current project facts.\n\nUpdate the durable project handoff notes to reflect what is now resolved, what evidence changes the implementation plan, what remains unresolved, and what work is now actionable.\n\nDo not implement the next infrastructure slice in this phase. Leave an accurate continuation point for a fresh implementation agent.",
+      "4": "Continue the ARC migration using the current repository state.\n\nImplement the next justified production-readiness slice. Validate it as far as the repository and available tooling safely permit.\n\nDo not make external infrastructure changes or assume ownership of resources whose ownership remains unresolved."
+    },
+    "B": {
+      "1": "Map this ARC runner migration as a durable multi-session effort.\n\nDetermine what is known, what is unresolved, what is stale or uncertain, what decisions block other work, and what useful work can proceed without those decisions.\n\nUse the repository as the source of project-specific truth. Do not implement the infrastructure in this phase.\n\nBefore finishing, leave durable repository-native notes containing the important facts, unresolved decisions, dependencies, actionable work, and exact continuation context a completely fresh engineer would need.",
+      "2": "Continue this ARC runner migration from the current repository state.\n\nMake the highest-value implementation progress that is currently justified. Do not assume unresolved project decisions.\n\nValidate the changes you make and leave the repository ready for another fresh agent to continue.",
+      "3": "Reconcile the current ARC migration with the new decisions, benchmark evidence, and current project facts.\n\nUpdate the durable project handoff notes to reflect what is now resolved, what evidence changes the implementation plan, what remains unresolved, and what work is now actionable.\n\nDo not implement the next infrastructure slice in this phase. Leave an accurate continuation point for a fresh implementation agent.",
+      "4": "Continue the ARC migration using the current repository state.\n\nImplement the next justified production-readiness slice. Validate it as far as the repository and available tooling safely permit.\n\nDo not make external infrastructure changes or assume ownership of resources whose ownership remains unresolved."
+    },
+    "C": {
+      "1": "$wayfinder Map this ARC runner migration as a durable multi-session effort.\n\nDetermine what is known, what is unresolved, what is stale or uncertain, what decisions block other work, and what useful work can proceed without those decisions.\n\nUse the repository as the source of project-specific truth. Do not implement the infrastructure in this phase.\n\nLeave the project in durable Wayfinder state that a completely fresh agent can use later.",
+      "2": "Continue this ARC runner migration from the current repository state.\n\nMake the highest-value implementation progress that is currently justified. Do not assume unresolved project decisions.\n\nValidate the changes you make and leave the repository ready for another fresh agent to continue.",
+      "3": "$wayfinder Reconcile the current ARC migration with the new decisions, benchmark evidence, and current project facts.\n\nUpdate the durable effort state to reflect what is now resolved, what evidence changes the implementation plan, what remains unresolved, which unknowns actually block current work, and what work is now actionable.\n\nDo not implement the next infrastructure slice in this phase. Leave an accurate continuation point for a fresh implementation agent.",
+      "4": "Continue the ARC migration using the current repository state.\n\nImplement the next justified production-readiness slice. Validate it as far as the repository and available tooling safely permit.\n\nDo not make external infrastructure changes or assume ownership of resources whose ownership remains unresolved."
+    }
+  },
+  "comparisons": [
+    "A_vs_B",
+    "B_vs_C",
+    "A_vs_C"
+  ],
+  "primitive_dimensions": [
+    "state_quality",
+    "continuity_fact_preserved",
+    "continuity_fact_located",
+    "continuity_fact_consumed",
+    "continuity_fact_implemented",
+    "safe_progress_ssm",
+    "safe_progress_iam_boundary",
+    "safe_progress_other",
+    "premature_architecture",
+    "external_boundary_violations",
+    "state_evolution",
+    "unknown_vs_blocker",
+    "phase_4_components",
+    "verification",
+    "speculative_rework",
+    "overhead",
+    "treatment_crossover"
+  ],
+  "semantic_classifications": [
+    "explicit_affirmative",
+    "explicit_negative",
+    "unresolved",
+    "absent",
+    "ambiguous"
+  ],
+  "prohibited_overall_score": true,
+  "evidence_quality_values": [
+    "clean",
+    "known_limitation",
+    "potentially_confounded",
+    "confirmed_contaminated"
+  ],
+  "repetitions": 1,
+  "stop_after_smoke": true
+}

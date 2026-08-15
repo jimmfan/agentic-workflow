@@ -15,7 +15,17 @@ If structured Wayfinder state proves useful, can Agentic Workflow recognize the 
 - The fixture was small relative to the documented “large, foggy, multi-session” threshold, so non-selection is evidence about this fixture, not proof that the router misses tasks that clearly meet the threshold.
 - Direct campaigns exist specifically to expose interference and unnecessary ceremony on bounded tasks; the refined three-paired Direct evidence found no agent-authored workflow state for the bounded retry task.
 - The explicit `arc-wayfinder-e2e-v1` smoke found a narrow continuity advantage but no final completion advantage, and it exposed a possible Wayfinder over-blocking failure. It did not test neutral automatic selection and is not sufficient evidence for a routing change.
+- In `arc-wayfinder-e2e-v2`, the neutral Agentic Workflow condition read the
+  Wayfinder skill and created Wayfinder state in phase 1, then used or modified
+  that state in all later fresh phases despite no `$wayfinder` invocation. This
+  is direct evidence that the durable multi-session mapping prompt crossed the
+  current automatic-selection boundary. Its engineering outcome matched both
+  vanilla durable notes and explicit Wayfinder, while its recorded overhead was
+  highest of the three one-run trajectories.
 
 ## Resolution
 
-Wait for evidence that explicit Wayfinder provides value and for neutral-prompt results from a larger fixture aligned with the documented threshold. Only then define candidate recognition signals or consider a product change.
+Keep open and make no routing change. V2 supplies a neutral-prompt selection
+observation but not evidence of incremental net value. A future design must
+separate automatic selection from an explicitly supported non-Wayfinder
+Agentic Workflow treatment before candidate recognition signals are changed.

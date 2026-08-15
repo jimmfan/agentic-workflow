@@ -1,0 +1,6 @@
+2026-08-15T23:18:27.271699Z ERROR codex_core::tools::router: error=apply_patch verification failed: invalid hunk at line 114, Expected update hunk to start with a @@ context marker, got: 'approval from consideration alone. Record the resulting approved choice as a'
+2026-08-15T23:19:08.115277Z ERROR codex_core::tools::router: error=apply_patch verification failed: invalid hunk at line 47, Expected update hunk to start with a @@ context marker, got: 'approval from consideration alone. Record the resulting approved choice as a'
+2026-08-15T23:19:50.444308Z ERROR codex_core::tools::router: error=exec_command failed for `/bin/zsh -lc 'rm -rf tests/__pycache__
+git status --short
+git diff --check
+git diff --stat'`: CreateProcess { message: "Rejected(\"`/bin/zsh -lc 'rm -rf tests/__pycache__\\ngit status --short\\ngit diff --check\\ngit diff --stat'` rejected: rm -f style commands are not permitted. Use a safer approach\")" }

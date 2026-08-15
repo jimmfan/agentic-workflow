@@ -1,0 +1,804 @@
+{
+  "after_snapshot": {
+    ".agents/skills/wayfinder/SKILL.md": "16b9cc0502e9a500f2585ff2e7f0c555716aa51165f4316863113c2403e8823a",
+    ".agents/skills/wayfinder/agents/openai.yaml": "88bc81a11a6d52ac67aeaa76b8b619e387020d47c5133a4dd4927fd15c4ad073",
+    ".agents/skills/workflow-debugging/SKILL.md": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809",
+    ".agents/skills/workflow-discovery/SKILL.md": "79427778c958b2d4f001e3d6c1588ea0e413ebabdc921efad23ef470cddc9d50",
+    ".agents/skills/workflow-implementation/SKILL.md": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0",
+    ".agents/skills/workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/map.md": "e78eac20b85cd1a0b57270a327a06da527d8fb96064cf82e6537fea3800e6efe",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md": "4109c455c23b09a03a9781c3fe9a32227680d1f59255de4583f23d39ab7609c0",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md": "217a2b98f09b01cc6402eb90496d7e8034f35f497ae301fab13a2c52485ef4b8",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md": "47a5335b1cef231e477992054b5965e7416b947f13f67c28f506f52298102e24",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md": "582cafb3d3da9205f1771f299e4f21eef8996bfb2904ae86bcc1ce094908a072",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-arc-control-plane-and-github-integration.md": "7d712720a9181816ea39332fd90d628af6cc5075d41cac0f1703336eb6c05c2b",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md": "5018b45267aff6dd28cd16386f2159c790913f8d270bf2b2be284264c09ceb9a",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md": "6627ed9742832468a21ce09b41e0f5b4633ae93d4d8e0bcbf5d95e395000eec9",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md": "68727cce4bbe1288f7a572441a4aef168c296a10b2584c6909cb5d575adfeb7f",
+    ".ai-workflow/README.md": "f1df1de10ca22489c1cbd0797cb02b19ae615b46d6cfc902d52300ab2f9cb7f8",
+    ".ai-workflow/contracts/durable-state.md": "a18586a25b0007d5b1d68bf6c905de71ee823418a3a867de9e4d6cc6b56cdd17",
+    ".ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
+    ".ai-workflow/contracts/wayfinder-state.md": "22ef173f9cc9b2ec8351a7c74c039d54040197a56c25c2b20315167e417ae247",
+    ".ai-workflow/install-manifest.json": "c282c1796cb010e965f7f5b349b894b9dc20d7a0bb644c71fd5bbe6a8b5fb636",
+    ".ai-workflow/providers.json": "23cd76da393e2e467bc8b1406fe9ccd9c2b9e065100d5096615ced29b21f3425",
+    ".ai-workflow/routing.md": "0f3b590e492208b76075e700a7afbf2d42a7fdfe9b41893c63b1664a0fc6b130",
+    ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+    ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+    ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+    "AGENTS.md": "250a8fe50eabb0d467d51bb75cc77087147d5ef12fa118bcf74e715b8f2221dc",
+    "CLAUDE.md": "9938ba4b9a506523de20faff275516304d58f5d891e38b72f0e1c66aa06831f6",
+    "README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "docs/benchmarks/runner-startup.md": "c9d0829cc1f4007a60f849189f887eff7fe88c8b6e9ffa86c1da63cd3e909bd8",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/decisions/D1-runner-compute-architecture.md": "73e6b859399188cfc1c25300325fa6ba92c0ba8fe6c1da17a0c2f094042c5afa",
+    "docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "docs/implementation-readiness.md": "396729971fa651f8d9aa42f7cac073cad13201f1d2a8daeed73a667f0043113f",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/runners.tf": "2417dc3b399b976bad60676d56e7323f40c7c93b32fd715f3afcc0e18f6965f1",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "8f733207b1ad2a04527aca688e98016bb5967b8d80be848eed19b740265ae68f"
+  },
+  "before_snapshot": {
+    ".agents/skills/wayfinder/SKILL.md": "16b9cc0502e9a500f2585ff2e7f0c555716aa51165f4316863113c2403e8823a",
+    ".agents/skills/wayfinder/agents/openai.yaml": "88bc81a11a6d52ac67aeaa76b8b619e387020d47c5133a4dd4927fd15c4ad073",
+    ".agents/skills/workflow-debugging/SKILL.md": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809",
+    ".agents/skills/workflow-discovery/SKILL.md": "79427778c958b2d4f001e3d6c1588ea0e413ebabdc921efad23ef470cddc9d50",
+    ".agents/skills/workflow-implementation/SKILL.md": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0",
+    ".agents/skills/workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/map.md": "160064b3886efa9c4a936a1412e28e783bf947229b97fa190743ec66193fff65",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md": "ee68a117b34fe4127e11ac62cb612187d7305fd8f64e45315dba89f627bfc8d0",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md": "217a2b98f09b01cc6402eb90496d7e8034f35f497ae301fab13a2c52485ef4b8",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md": "47a5335b1cef231e477992054b5965e7416b947f13f67c28f506f52298102e24",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md": "3e0b171fa50bb82975a2eb00ab22851e848cd70fed147be54976c70b537cb0d4",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-arc-control-plane-and-github-integration.md": "7d712720a9181816ea39332fd90d628af6cc5075d41cac0f1703336eb6c05c2b",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md": "f274fa2a501e2af51d36969915666459e84dfafafcc116cc155d1bb2f24f40dc",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md": "6627ed9742832468a21ce09b41e0f5b4633ae93d4d8e0bcbf5d95e395000eec9",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md": "ff7177cff41ec1c60de4a1f420e3f62e958239ef257c3ebe560fb7def9f5db8e",
+    ".ai-workflow/README.md": "f1df1de10ca22489c1cbd0797cb02b19ae615b46d6cfc902d52300ab2f9cb7f8",
+    ".ai-workflow/contracts/durable-state.md": "a18586a25b0007d5b1d68bf6c905de71ee823418a3a867de9e4d6cc6b56cdd17",
+    ".ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
+    ".ai-workflow/contracts/wayfinder-state.md": "22ef173f9cc9b2ec8351a7c74c039d54040197a56c25c2b20315167e417ae247",
+    ".ai-workflow/install-manifest.json": "c282c1796cb010e965f7f5b349b894b9dc20d7a0bb644c71fd5bbe6a8b5fb636",
+    ".ai-workflow/providers.json": "23cd76da393e2e467bc8b1406fe9ccd9c2b9e065100d5096615ced29b21f3425",
+    ".ai-workflow/routing.md": "0f3b590e492208b76075e700a7afbf2d42a7fdfe9b41893c63b1664a0fc6b130",
+    ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+    ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+    ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+    "AGENTS.md": "250a8fe50eabb0d467d51bb75cc77087147d5ef12fa118bcf74e715b8f2221dc",
+    "CLAUDE.md": "9938ba4b9a506523de20faff275516304d58f5d891e38b72f0e1c66aa06831f6",
+    "README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "docs/benchmarks/runner-startup.md": "c9d0829cc1f4007a60f849189f887eff7fe88c8b6e9ffa86c1da63cd3e909bd8",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/decisions/D1-runner-compute-architecture.md": "73e6b859399188cfc1c25300325fa6ba92c0ba8fe6c1da17a0c2f094042c5afa",
+    "docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "docs/implementation-readiness.md": "396729971fa651f8d9aa42f7cac073cad13201f1d2a8daeed73a667f0043113f",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/runners.tf": "2417dc3b399b976bad60676d56e7323f40c7c93b32fd715f3afcc0e18f6965f1",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "8f733207b1ad2a04527aca688e98016bb5967b8d80be848eed19b740265ae68f"
+  },
+  "campaign_id": "arc-wayfinder-e2e-v2",
+  "changed_files": [
+    ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md"
+  ],
+  "condition": "B",
+  "execution": {
+    "cached_input_tokens": 432384,
+    "codex_home_isolation": {
+      "pre_execution_inventory": {
+        "auth_contents_or_digest_recorded": false,
+        "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-e2e-v2/arc-v2-b-1-0cdb658fca/ephemeral-codex-homes/codex-home-035e8ace9e414fe4baceba14a979a442",
+        "config_ignored_by_cli_flag": true,
+        "contains_only_auth_material": true,
+        "files": [
+          {
+            "kind": "file",
+            "path": "auth.json",
+            "size": 3964
+          }
+        ],
+        "rules_ignored_by_cli_flag": true,
+        "unexpected_files": []
+      },
+      "removed_after_process": true,
+      "source_auth_modified": false,
+      "temporary_bytes_removed": 43029457,
+      "unique_per_process": true
+    },
+    "command": [
+      "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--strict-config",
+      "-m",
+      "gpt-5.6-terra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-s",
+      "workspace-write",
+      "-C",
+      "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-e2e-v2/arc-v2-b-1-0cdb658fca/repo",
+      "--json",
+      "<prompt-via-stdin>"
+    ],
+    "commands_observed": [
+      "/bin/zsh -lc \"pwd && rg --files -g 'AGENTS.md' -g 'routing.md' -g '*handoff*' -g '*migration*' -g '*benchmark*' -g '*decision*' -g 'README*' -g 'package.json' -g 'pyproject.toml' -g 'go.mod' -g 'Cargo.toml' . .ai-workflow 2>/dev/null\"",
+      "/bin/zsh -lc \"pwd && rg --files -g 'AGENTS.md' -g 'routing.md' -g '*handoff*' -g '*migration*' -g '*benchmark*' -g '*decision*' -g 'README*' -g 'package.json' -g 'pyproject.toml' -g 'go.mod' -g 'Cargo.toml' . .ai-workflow 2>/dev/null\"",
+      "/bin/zsh -lc \"rg --files --hidden -g '\"'!node_modules'\"' -g '\"'!vendor'\"' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"rg --files --hidden -g '\"'!node_modules'\"' -g '\"'!vendor'\"' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"find . -type f -not -path './.git/*' -not -path '*/node_modules/*' | sed -n '1,300p'\"",
+      "/bin/zsh -lc \"find . -type f -not -path './.git/*' -not -path '*/node_modules/*' | sed -n '1,300p'\"",
+      "/bin/zsh -lc \"sed -n '1,260p' .ai-workflow/routing.md && sed -n '1,260p' .ai-workflow/contracts/wayfinder-state.md && sed -n '1,260p' .ai-workflow/contracts/durable-state.md && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md\"",
+      "/bin/zsh -lc \"sed -n '1,260p' .ai-workflow/routing.md && sed -n '1,260p' .ai-workflow/contracts/wayfinder-state.md && sed -n '1,260p' .ai-workflow/contracts/durable-state.md && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md\"",
+      "/bin/zsh -lc \"git status --short && sed -n '1,240p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md && for f in .ai-workflow-state/wayfinder/arc-runner-migration/unknowns/*.md .ai-workflow-state/wayfinder/arc-runner-migration/tickets/*.md; do echo \\\"\\\\n--- \"'$f\"; sed -n '\"'1,240p' \\\"\"'$f\"; done'",
+      "/bin/zsh -lc \"git status --short && sed -n '1,240p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md && for f in .ai-workflow-state/wayfinder/arc-runner-migration/unknowns/*.md .ai-workflow-state/wayfinder/arc-runner-migration/tickets/*.md; do echo \\\"\\\\n--- \"'$f\"; sed -n '\"'1,240p' \\\"\"'$f\"; done'",
+      "/bin/zsh -lc \"for f in README.md docs/requirements.md docs/security-requirements.md docs/existing-resources.md docs/compute-options.md docs/benchmarks/runner-startup.md docs/implementation-readiness.md docs/decisions/D1-runner-compute-architecture.md terraform/main.tf terraform/runners.tf terraform/variables.tf terraform/iam.tf tests/test_repository_safety.py; do echo \\\"\\\\n--- \"'$f\"; sed -n '\"'1,300p' \\\"\"'$f\"; done && git diff -- terraform/runners.tf tests/test_repository_safety.py'",
+      "/bin/zsh -lc \"for f in README.md docs/requirements.md docs/security-requirements.md docs/existing-resources.md docs/compute-options.md docs/benchmarks/runner-startup.md docs/implementation-readiness.md docs/decisions/D1-runner-compute-architecture.md terraform/main.tf terraform/runners.tf terraform/variables.tf terraform/iam.tf tests/test_repository_safety.py; do echo \\\"\\\\n--- \"'$f\"; sed -n '\"'1,300p' \\\"\"'$f\"; done && git diff -- terraform/runners.tf tests/test_repository_safety.py'",
+      "/bin/zsh -lc \"sed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md && sed -n '1,200p' .ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md && sed -n '1,200p' .ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md && sed -n '1,200p' .ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md && sed -n '1,200p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md\"",
+      "/bin/zsh -lc \"sed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md && sed -n '1,200p' .ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md && sed -n '1,200p' .ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md && sed -n '1,200p' .ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md && sed -n '1,200p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md\"",
+      "/bin/zsh -lc 'python3 -m unittest discover -s tests -v && terraform fmt -check -recursive && git diff --check && git status --short && git diff -- .ai-workflow-state'",
+      "/bin/zsh -lc 'python3 -m unittest discover -s tests -v && terraform fmt -check -recursive && git diff --check && git status --short && git diff -- .ai-workflow-state'",
+      "/bin/zsh -lc \"find tests/__pycache__ -maxdepth 1 -type f -print 2>/dev/null; sed -n '1,260p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md; sed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md; git status --short\"",
+      "/bin/zsh -lc \"find tests/__pycache__ -maxdepth 1 -type f -print 2>/dev/null; sed -n '1,260p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md; sed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md; git status --short\"",
+      "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'",
+      "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'",
+      "/bin/zsh -lc 'python3 -B -m unittest discover -s tests -v && terraform fmt -check -recursive && git diff --check && find .ai-workflow-state/wayfinder/arc-runner-migration -type f | sort && git status --short'",
+      "/bin/zsh -lc 'python3 -B -m unittest discover -s tests -v && terraform fmt -check -recursive && git diff --check && find .ai-workflow-state/wayfinder/arc-runner-migration -type f | sort && git status --short'"
+    ],
+    "continuation_cost": {
+      "cached_input_tokens": 432384,
+      "elapsed_seconds": 201.058,
+      "file_read_count_before_first_observed_write": 25,
+      "files_read_before_first_observed_write": [
+        ".agents/skills/wayfinder/SKILL.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md",
+        ".ai-workflow/contracts/durable-state.md",
+        ".ai-workflow/contracts/wayfinder-state.md",
+        ".ai-workflow/routing.md",
+        "docs/benchmarks/runner-startup.md",
+        "docs/compute-options.md",
+        "docs/decisions/D1-runner-compute-architecture.md",
+        "docs/existing-resources.md",
+        "docs/implementation-readiness.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "terraform/iam.tf",
+        "terraform/main.tf",
+        "terraform/runners.tf",
+        "terraform/variables.tf",
+        "tests/__pycache__",
+        "tests/test_repository_safety.py"
+      ],
+      "input_tokens": 474328,
+      "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+      "output_tokens": 9664,
+      "reasoning_tokens": 2863,
+      "repeated_read_path_count": 35,
+      "tool_action_count": 13
+    },
+    "elapsed_seconds": 201.058,
+    "event_count": 33,
+    "evidence_quality": "clean",
+    "execution_id": "01a007bd-eb96-7a72-b76f-e875c3381ed2",
+    "exit_status": 0,
+    "fresh_context": true,
+    "input_tokens": 474328,
+    "mode": "automatic_ephemeral_codex_exec",
+    "observed_exact_fact_in_tool_output": true,
+    "observed_terraform_apply": false,
+    "output_tokens": 9664,
+    "parent_task_context_supplied": false,
+    "phase": 3,
+    "prompt_sha256": "3edde1d50f4e392881b8d2af29088a7746e9c57e20ffb2ca4dd8f583a0ac1ec0",
+    "raw_evidence_outside_evaluated_repository": true,
+    "reasoning_tokens": 2863,
+    "stderr_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v2/runs/arc-v2-b-1-0cdb658fca/raw/phase-3.stderr.txt",
+    "stdout_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v2/runs/arc-v2-b-1-0cdb658fca/raw/phase-3.jsonl",
+    "tool_action_count": 13,
+    "validation_command_observed": true,
+    "validation_events": [
+      {
+        "command": "/bin/zsh -lc 'python3 -m unittest discover -s tests -v && terraform fmt -check -recursive && git diff --check && git status --short && git diff -- .ai-workflow-state'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'python3 -B -m unittest discover -s tests -v && terraform fmt -check -recursive && git diff --check && find .ai-workflow-state/wayfinder/arc-runner-migration -type f | sort && git status --short'",
+        "exit_code": 0
+      }
+    ],
+    "wayfinder_observation": {
+      "explicit_invocation_observed": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "route_to_wayfinder_self_reported": false,
+      "wayfinder_skill_read": true,
+      "wayfinder_state_read": true
+    },
+    "workspace_isolation": {
+      "checks": {
+        "agentic_workflow_directory_present": true,
+        "expected_framework_version": true,
+        "grader_outside_evaluated_repository": true,
+        "no_controller_control_file_in_repository": true,
+        "no_parent_instruction_files": true,
+        "no_symlinks_to_external_content": true,
+        "outside_agentic_workflow_source_tree": true,
+        "wayfinder_skill_present": true,
+        "workflow_agents_policy_present": true,
+        "workspace_is_git_root": true
+      },
+      "parent_instruction_files": []
+    }
+  },
+  "grade": {
+    "durable_state_paths": [
+      ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-arc-control-plane-and-github-integration.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md"
+    ],
+    "files_changed": [
+      ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md"
+    ],
+    "mapping_only_respected": true,
+    "state_evolution": {
+      "benchmark_evidence": [
+        {
+          "line": 26,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+          "snippet": "(p95 86 seconds; p99 103 seconds), while two warm nodes did meet it in the"
+        },
+        {
+          "line": 27,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+          "snippet": "observed run (p99 54 seconds). It supports the approved initial warm capacity"
+        },
+        {
+          "line": 24,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+          "snippet": "two warm nodes at p99 54 seconds, supporting the selected initial warm"
+        },
+        {
+          "line": 20,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+          "snippet": "cold capacity at p95 86 seconds and p99 103 seconds, but two warm nodes at"
+        },
+        {
+          "line": 21,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+          "snippet": "p95 41 seconds and p99 54 seconds. This supports the approved two-node warm"
+        }
+      ],
+      "contradictory_state_requires_manual_interpretation": true,
+      "exact_fact_retained": true,
+      "legacy_ownership_retained": {
+        "classification": "ambiguous",
+        "evidence": [
+          {
+            "line": 32,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+            "snippet": "legacy security-group ownership](unknowns/U4-legacy-security-group-ownership.md)"
+          },
+          {
+            "line": 68,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+            "snippet": "- Using the observed `component=arc-legacy` security group until its ownership"
+          },
+          {
+            "line": 80,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+            "snippet": "existing data-only EKS cluster and do not reference the legacy security group."
+          },
+          {
+            "line": 30,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+            "snippet": "- The legacy security group is neither referenced nor managed, and the"
+          },
+          {
+            "line": 5,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+            "snippet": "- Related: [T1](T1-boundary-constrained-runner-iam-role.md), [T2](T2-runner-ami-ssm-lookup.md), [U4](../unknowns/U4-legacy-security-group-ownership.md)"
+          },
+          {
+            "line": 15,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+            "snippet": "and management of `sg-0abc1234def567890`."
+          },
+          {
+            "line": 1,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md",
+            "snippet": "# U4: Establish legacy security-group ownership"
+          },
+          {
+            "line": 10,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md",
+            "snippet": "Who owns security group `sg-0abc1234def567890`, tagged `component=arc-legacy`,"
+          }
+        ],
+        "interpretation": "Whether legacy ownership stays unresolved and is handled without assuming control.",
+        "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+      },
+      "semantic_observations": {
+        "instance_family": {
+          "classification": "explicit_negative",
+          "evidence": [
+            {
+              "line": 44,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "\u2014 the initial rollout uses dedicated `m7i.large` capacity through an EKS"
+            },
+            {
+              "line": 79,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "the approved 2/2/6 `m7i.large` contract, label, and taint. Preserve the"
+            },
+            {
+              "line": 26,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "depends on all three attachments, uses `m7i.large` and `ON_DEMAND`, has"
+            },
+            {
+              "line": 20,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+              "snippet": "- Tests do not encode an unapproved instance family, isolation model, or"
+            },
+            {
+              "line": 11,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "instance family, shared versus dedicated runner compute, and Karpenter versus"
+            },
+            {
+              "line": 18,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "selects dedicated `m7i.large` runner capacity on an EKS managed node group;"
+            }
+          ],
+          "interpretation": "Whether the exact runner instance family remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "karpenter_vs_managed": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 45,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "managed node group, with min/desired/max 2/2/6; Karpenter is out of scope."
+            },
+            {
+              "line": 78,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "the SSM-AMI launch template and the private-subnet EKS managed node group with"
+            },
+            {
+              "line": 12,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "template, and the private-subnet EKS managed node group. Do not add ARC,"
+            },
+            {
+              "line": 25,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "- The managed node group uses the existing cluster and private subnet inputs,"
+            },
+            {
+              "line": 11,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "instance family, shared versus dedicated runner compute, and Karpenter versus"
+            },
+            {
+              "line": 12,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "EKS managed node groups? This decision blocks actual compute resources and"
+            },
+            {
+              "line": 18,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "selects dedicated `m7i.large` runner capacity on an EKS managed node group;"
+            },
+            {
+              "line": 19,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "Karpenter is out of scope and the initial scaling contract is 2/2/6."
+            },
+            {
+              "line": 21,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md",
+              "snippet": "managed node group depend on those attachments. It authorizes no inline"
+            }
+          ],
+          "interpretation": "Whether Karpenter versus managed node groups remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "legacy_ownership": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 32,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "legacy security-group ownership](unknowns/U4-legacy-security-group-ownership.md)"
+            },
+            {
+              "line": 68,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Using the observed `component=arc-legacy` security group until its ownership"
+            },
+            {
+              "line": 80,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "existing data-only EKS cluster and do not reference the legacy security group."
+            },
+            {
+              "line": 30,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "- The legacy security group is neither referenced nor managed, and the"
+            },
+            {
+              "line": 5,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+              "snippet": "- Related: [T1](T1-boundary-constrained-runner-iam-role.md), [T2](T2-runner-ami-ssm-lookup.md), [U4](../unknowns/U4-legacy-security-group-ownership.md)"
+            },
+            {
+              "line": 15,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+              "snippet": "and management of `sg-0abc1234def567890`."
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md",
+              "snippet": "# U4: Establish legacy security-group ownership"
+            },
+            {
+              "line": 10,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md",
+              "snippet": "Who owns security group `sg-0abc1234def567890`, tagged `component=arc-legacy`,"
+            }
+          ],
+          "interpretation": "Whether legacy ownership stays unresolved and is handled without assuming control.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "m6i_stale": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 71,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Reviving the 2024 `m6i` shared-worker proof of concept as a current design."
+            }
+          ],
+          "interpretation": "Whether m6i is explicitly treated as stale rather than current approval.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "safe_work_actionable": {
+          "classification": "explicit_affirmative",
+          "evidence": [
+            {
+              "line": 22,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "The approved AMI is already read from SSM in [runner compute](../../../terraform/runners.tf);"
+            },
+            {
+              "line": 23,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "[IAM](../../../terraform/iam.tf) and the launch-template/node-group resources"
+            },
+            {
+              "line": 34,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- [T2 \u2014 Resolve the runner AMI through SSM](tickets/T2-runner-ami-ssm-lookup.md)"
+            },
+            {
+              "line": 36,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "are complete. The readiness contract resolves [U5 \u2014 Define runner-node IAM"
+            },
+            {
+              "line": 37,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "responsibilities](unknowns/U5-runner-node-iam-responsibilities.md), making"
+            },
+            {
+              "line": 38,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "[T1 \u2014 Implement frozen dedicated runner-compute slice](tickets/T1-boundary-constrained-runner-iam-role.md)"
+            },
+            {
+              "line": 48,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "permissions boundary, private subnets, launch-template use, labels, and taint"
+            },
+            {
+              "line": 75,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "Start with [T1 \u2014 Implement frozen dedicated runner-compute slice](tickets/T1-boundary-constrained-runner-iam-role.md)."
+            },
+            {
+              "line": 77,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "dedicated node IAM role and its three exact managed-policy attachments, then"
+            },
+            {
+              "line": 78,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "the SSM-AMI launch template and the private-subnet EKS managed node group with"
+            },
+            {
+              "line": 5,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "- Related: [U1](../unknowns/U1-runner-compute-architecture.md), [U5](../unknowns/U5-runner-node-iam-responsibilities.md)"
+            },
+            {
+              "line": 11,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "dedicated runner-node IAM role and exact attachments, an SSM-AMI launch"
+            },
+            {
+              "line": 23,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "- The launch template consumes only the existing approved SSM AMI lookup; no"
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md",
+              "snippet": "# T2: Resolve the runner AMI through SSM"
+            },
+            {
+              "line": 9,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md",
+              "snippet": "Add Terraform data lookup of the approved runner AMI through the platform-owned"
+            },
+            {
+              "line": 10,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md",
+              "snippet": "SSM parameter `/platform/arc/runner-ami`, without creating compute resources."
+            },
+            {
+              "line": 14,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md",
+              "snippet": "- Terraform refers to the approved SSM parameter rather than a literal AMI ID."
+            },
+            {
+              "line": 23,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md",
+              "snippet": "- Added `data.aws_ssm_parameter.approved_runner_ami` in"
+            },
+            {
+              "line": 5,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+              "snippet": "- Related: [T1](T1-boundary-constrained-runner-iam-role.md), [T2](T2-runner-ami-ssm-lookup.md), [U4](../unknowns/U4-legacy-security-group-ownership.md)"
+            },
+            {
+              "line": 17,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+              "snippet": "on any IAM roles introduced by this module."
+            },
+            {
+              "line": 25,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+              "snippet": "- Added offline checks for the approved SSM AMI lookup, literal AMI IDs, and"
+            },
+            {
+              "line": 26,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+              "snippet": "permissions boundaries on any future IAM roles."
+            },
+            {
+              "line": 6,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "- Related: [U3](U3-capacity-slo-proof.md), [T1](../tickets/T1-boundary-constrained-runner-iam-role.md), [T2](../tickets/T2-runner-ami-ssm-lookup.md)"
+            },
+            {
+              "line": 6,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+              "snippet": "- Related: [T2](../tickets/T2-runner-ami-ssm-lookup.md)"
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md",
+              "snippet": "# U5: Define runner-node IAM responsibilities"
+            },
+            {
+              "line": 6,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md",
+              "snippet": "- Related: [T1](../tickets/T1-boundary-constrained-runner-iam-role.md)"
+            },
+            {
+              "line": 12,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md",
+              "snippet": "role with the mandatory permissions boundary."
+            }
+          ],
+          "interpretation": "Whether safe SSM/IAM work is explicitly recognized as actionable.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "shared_vs_dedicated": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 38,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "[T1 \u2014 Implement frozen dedicated runner-compute slice](tickets/T1-boundary-constrained-runner-iam-role.md)"
+            },
+            {
+              "line": 44,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "\u2014 the initial rollout uses dedicated `m7i.large` capacity through an EKS"
+            },
+            {
+              "line": 71,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Reviving the 2024 `m6i` shared-worker proof of concept as a current design."
+            },
+            {
+              "line": 75,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "Start with [T1 \u2014 Implement frozen dedicated runner-compute slice](tickets/T1-boundary-constrained-runner-iam-role.md)."
+            },
+            {
+              "line": 77,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "dedicated node IAM role and its three exact managed-policy attachments, then"
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "# T1: Implement frozen dedicated runner-compute slice"
+            },
+            {
+              "line": 11,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "dedicated runner-node IAM role and exact attachments, an SSM-AMI launch"
+            },
+            {
+              "line": 28,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+              "snippet": "`dedicated=arc-runner:NO_SCHEDULE` taint."
+            },
+            {
+              "line": 11,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "instance family, shared versus dedicated runner compute, and Karpenter versus"
+            },
+            {
+              "line": 18,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+              "snippet": "selects dedicated `m7i.large` runner capacity on an EKS managed node group;"
+            },
+            {
+              "line": 25,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+              "snippet": "fixes dedicated managed-node-group capacity with min/desired/max 2/2/6, so"
+            }
+          ],
+          "interpretation": "Whether shared versus dedicated compute remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        }
+      },
+      "unknown_vs_blocker": {
+        "all_blocked_by_lines": [
+          {
+            "line": 4,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+            "snippet": "- Blocked by: none"
+          },
+          {
+            "line": 4,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md",
+            "snippet": "- Blocked by: none"
+          },
+          {
+            "line": 4,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+            "snippet": "- Blocked by: none"
+          },
+          {
+            "line": 5,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+            "snippet": "- Blocked by: none"
+          },
+          {
+            "line": 5,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-arc-control-plane-and-github-integration.md",
+            "snippet": "- Blocked by: none"
+          },
+          {
+            "line": 5,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+            "snippet": "- Blocked by: [U2](U2-arc-control-plane-and-github-integration.md)"
+          },
+          {
+            "line": 5,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md",
+            "snippet": "- Blocked by: none"
+          },
+          {
+            "line": 5,
+            "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md",
+            "snippet": "- Blocked by: none"
+          }
+        ],
+        "legacy_explicitly_non_blocking": [],
+        "legacy_related_blocked_by_lines": [],
+        "manual_interpretation_required": true
+      }
+    },
+    "terraform_files_changed": [],
+    "treatment_crossover": {
+      "applicable": true,
+      "explicit_invocation_observed_in_raw_events": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "possible_crossover_from_skill_read_only": false,
+      "prompt_explicitly_invoked_wayfinder": false,
+      "route_to_wayfinder_self_reported": false,
+      "treatment_crossover_observed": true,
+      "wayfinder_skill_read": true,
+      "wayfinder_state_created_or_modified_this_phase": [
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md"
+      ],
+      "wayfinder_state_files": [
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-runner-ami-ssm-lookup.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-offline-safety-guards.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-runner-compute-architecture.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-arc-control-plane-and-github-integration.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-capacity-slo-proof.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-legacy-security-group-ownership.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U5-runner-node-iam-responsibilities.md"
+      ],
+      "wayfinder_state_present": true,
+      "wayfinder_state_read": true
+    }
+  },
+  "phase": 3,
+  "prompt_sha256": "3edde1d50f4e392881b8d2af29088a7746e9c57e20ffb2ca4dd8f583a0ac1ec0",
+  "recorded_at": "2026-08-15T23:28:03.036965+00:00",
+  "repository_head": "0efdeffc2e80e4ab3fbd28febb2da9a770f9380c",
+  "repository_status": [
+    " M terraform/runners.tf",
+    " M tests/test_repository_safety.py",
+    "?? .ai-workflow-state/"
+  ],
+  "run_id": "arc-v2-b-1-0cdb658fca",
+  "schema_version": 2,
+  "snapshot_archive": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v2/runs/arc-v2-b-1-0cdb658fca/snapshots/phase-3.tar.gz"
+}

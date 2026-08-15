@@ -1,0 +1,418 @@
+{
+  "after_snapshot": {
+    ".agents/skills/wayfinder/SKILL.md": "16b9cc0502e9a500f2585ff2e7f0c555716aa51165f4316863113c2403e8823a",
+    ".agents/skills/wayfinder/agents/openai.yaml": "88bc81a11a6d52ac67aeaa76b8b619e387020d47c5133a4dd4927fd15c4ad073",
+    ".agents/skills/workflow-debugging/SKILL.md": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809",
+    ".agents/skills/workflow-discovery/SKILL.md": "79427778c958b2d4f001e3d6c1588ea0e413ebabdc921efad23ef470cddc9d50",
+    ".agents/skills/workflow-implementation/SKILL.md": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0",
+    ".agents/skills/workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-approve-dedicated-managed-runner-capacity.md": "9cd0004bcaa2e6d30f3735ae9ba1968df4a485a48759192a2bf27ab686e5a26b",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/map.md": "fba03f34d2ee4b5440c1d5bdd5b41a0aa823cad435f3c8986b3c0563ad7c9835",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md": "eff1d6f86b3138bda1257f1b06cf5469320b8756ba8506d6a28f4182adfe8f01",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md": "b26f54283c5683d534102b1c5c34f81e4f12575d1e30a0fa87ffc4f598efb67e",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-select-runner-capacity-model.md": "80b42c93681387d2c7610827ac7f4e3e91661f1679d47bcc54dac63bc18e6a46",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-identity-and-iam-policy.md": "76c483247df8120e2e14e183129b978551d6bbb25d56e66ca36016973685ef03",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-define-runner-network-policy-and-resource-ownership.md": "fe6367939813084a878eed7fc7b33f5f4446ae2982ca59eb384ba6671f7e85d8",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-define-arc-controller-and-github-integration.md": "ff9e14f8aef5dbfff3581838127de692a921d40df32d7d40e497d66bfd6b70c6",
+    ".ai-workflow/README.md": "f1df1de10ca22489c1cbd0797cb02b19ae615b46d6cfc902d52300ab2f9cb7f8",
+    ".ai-workflow/contracts/durable-state.md": "a18586a25b0007d5b1d68bf6c905de71ee823418a3a867de9e4d6cc6b56cdd17",
+    ".ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
+    ".ai-workflow/contracts/wayfinder-state.md": "22ef173f9cc9b2ec8351a7c74c039d54040197a56c25c2b20315167e417ae247",
+    ".ai-workflow/install-manifest.json": "c282c1796cb010e965f7f5b349b894b9dc20d7a0bb644c71fd5bbe6a8b5fb636",
+    ".ai-workflow/providers.json": "23cd76da393e2e467bc8b1406fe9ccd9c2b9e065100d5096615ced29b21f3425",
+    ".ai-workflow/routing.md": "0f3b590e492208b76075e700a7afbf2d42a7fdfe9b41893c63b1664a0fc6b130",
+    ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+    ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+    ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+    "AGENTS.md": "250a8fe50eabb0d467d51bb75cc77087147d5ef12fa118bcf74e715b8f2221dc",
+    "CLAUDE.md": "9938ba4b9a506523de20faff275516304d58f5d891e38b72f0e1c66aa06831f6",
+    "README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "docs/benchmarks/runner-startup.md": "c9d0829cc1f4007a60f849189f887eff7fe88c8b6e9ffa86c1da63cd3e909bd8",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/decisions/D1-runner-compute-architecture.md": "73e6b859399188cfc1c25300325fa6ba92c0ba8fe6c1da17a0c2f094042c5afa",
+    "docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "docs/implementation-readiness.md": "396729971fa651f8d9aa42f7cac073cad13201f1d2a8daeed73a667f0043113f",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "terraform/iam.tf": "6c052ebd60a919433a7e25fb2c6d43a9f65d96a43bb74a624cbc7e08d8879827",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/runners.tf": "db41570ea65746e4b01a1410c91896c6c805fe19f4cad50285ea9064e83383e8",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "1d0379c41734817f4b52e206d789deeec5afe790692e19b63c7ffe76932d1746"
+  },
+  "before_snapshot": {
+    ".agents/skills/wayfinder/SKILL.md": "16b9cc0502e9a500f2585ff2e7f0c555716aa51165f4316863113c2403e8823a",
+    ".agents/skills/wayfinder/agents/openai.yaml": "88bc81a11a6d52ac67aeaa76b8b619e387020d47c5133a4dd4927fd15c4ad073",
+    ".agents/skills/workflow-debugging/SKILL.md": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809",
+    ".agents/skills/workflow-discovery/SKILL.md": "79427778c958b2d4f001e3d6c1588ea0e413ebabdc921efad23ef470cddc9d50",
+    ".agents/skills/workflow-implementation/SKILL.md": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0",
+    ".agents/skills/workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-approve-dedicated-managed-runner-capacity.md": "9cd0004bcaa2e6d30f3735ae9ba1968df4a485a48759192a2bf27ab686e5a26b",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/map.md": "fba03f34d2ee4b5440c1d5bdd5b41a0aa823cad435f3c8986b3c0563ad7c9835",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md": "eff1d6f86b3138bda1257f1b06cf5469320b8756ba8506d6a28f4182adfe8f01",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md": "374db902264a8cbeca8e5c32d0a86ee249cc0474b08df3a8dd174e7149ec5c4a",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-select-runner-capacity-model.md": "80b42c93681387d2c7610827ac7f4e3e91661f1679d47bcc54dac63bc18e6a46",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-identity-and-iam-policy.md": "76c483247df8120e2e14e183129b978551d6bbb25d56e66ca36016973685ef03",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-define-runner-network-policy-and-resource-ownership.md": "fe6367939813084a878eed7fc7b33f5f4446ae2982ca59eb384ba6671f7e85d8",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-define-arc-controller-and-github-integration.md": "ff9e14f8aef5dbfff3581838127de692a921d40df32d7d40e497d66bfd6b70c6",
+    ".ai-workflow/README.md": "f1df1de10ca22489c1cbd0797cb02b19ae615b46d6cfc902d52300ab2f9cb7f8",
+    ".ai-workflow/contracts/durable-state.md": "a18586a25b0007d5b1d68bf6c905de71ee823418a3a867de9e4d6cc6b56cdd17",
+    ".ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
+    ".ai-workflow/contracts/wayfinder-state.md": "22ef173f9cc9b2ec8351a7c74c039d54040197a56c25c2b20315167e417ae247",
+    ".ai-workflow/install-manifest.json": "c282c1796cb010e965f7f5b349b894b9dc20d7a0bb644c71fd5bbe6a8b5fb636",
+    ".ai-workflow/providers.json": "23cd76da393e2e467bc8b1406fe9ccd9c2b9e065100d5096615ced29b21f3425",
+    ".ai-workflow/routing.md": "0f3b590e492208b76075e700a7afbf2d42a7fdfe9b41893c63b1664a0fc6b130",
+    ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+    ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+    ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+    "AGENTS.md": "250a8fe50eabb0d467d51bb75cc77087147d5ef12fa118bcf74e715b8f2221dc",
+    "CLAUDE.md": "9938ba4b9a506523de20faff275516304d58f5d891e38b72f0e1c66aa06831f6",
+    "README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "docs/benchmarks/runner-startup.md": "c9d0829cc1f4007a60f849189f887eff7fe88c8b6e9ffa86c1da63cd3e909bd8",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/decisions/D1-runner-compute-architecture.md": "73e6b859399188cfc1c25300325fa6ba92c0ba8fe6c1da17a0c2f094042c5afa",
+    "docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "docs/implementation-readiness.md": "396729971fa651f8d9aa42f7cac073cad13201f1d2a8daeed73a667f0043113f",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/runners.tf": "b66cebe5e830878c03ab6510407475c4317fa51ad9096fd4cf8ba3d38b7c275c",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "bf62aa7bdba8e05b149230d4a5a231d80c1fb18b627292201d333ff691deb907"
+  },
+  "campaign_id": "arc-wayfinder-e2e-v2",
+  "changed_files": [
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md",
+    "terraform/iam.tf",
+    "terraform/runners.tf",
+    "tests/test_repository_safety.py"
+  ],
+  "condition": "C",
+  "execution": {
+    "cached_input_tokens": 330496,
+    "codex_home_isolation": {
+      "pre_execution_inventory": {
+        "auth_contents_or_digest_recorded": false,
+        "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-e2e-v2/arc-v2-c-1-cde5e0d86f/ephemeral-codex-homes/codex-home-6b50d5d7964f440aba54b8d4af863f5e",
+        "config_ignored_by_cli_flag": true,
+        "contains_only_auth_material": true,
+        "files": [
+          {
+            "kind": "file",
+            "path": "auth.json",
+            "size": 3964
+          }
+        ],
+        "rules_ignored_by_cli_flag": true,
+        "unexpected_files": []
+      },
+      "removed_after_process": true,
+      "source_auth_modified": false,
+      "temporary_bytes_removed": 43264145,
+      "unique_per_process": true
+    },
+    "command": [
+      "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--strict-config",
+      "-m",
+      "gpt-5.6-terra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-s",
+      "workspace-write",
+      "-C",
+      "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-e2e-v2/arc-v2-c-1-cde5e0d86f/repo",
+      "--json",
+      "<prompt-via-stdin>"
+    ],
+    "commands_observed": [
+      "/bin/zsh -lc \"pwd && rg --files -g 'AGENTS.md' -g '.ai-workflow/**' -g '*ARC*' -g '*arc*' -g 'README*' -g 'package.json' -g 'pyproject.toml' -g 'go.mod' -g 'Cargo.toml' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"pwd && rg --files -g 'AGENTS.md' -g '.ai-workflow/**' -g '*ARC*' -g '*arc*' -g 'README*' -g 'package.json' -g 'pyproject.toml' -g 'go.mod' -g 'Cargo.toml' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"find . -path './.git' -prune -o \\\\( -name 'routing.md' -o -name 'AGENTS.md' -o -iname '*arc*' -o -name 'README*' -o -name 'package.json' -o -name 'pyproject.toml' -o -name 'go.mod' -o -name 'Cargo.toml' \\\\) -print | sed -n '1,240p'\nprintf '\\\\n--- routing ---\\\\n'\nsed -n '1,260p' .ai-workflow/routing.md\"",
+      "/bin/zsh -lc \"find . -path './.git' -prune -o \\\\( -name 'routing.md' -o -name 'AGENTS.md' -o -iname '*arc*' -o -name 'README*' -o -name 'package.json' -o -name 'pyproject.toml' -o -name 'go.mod' -o -name 'Cargo.toml' \\\\) -print | sed -n '1,240p'\nprintf '\\\\n--- routing ---\\\\n'\nsed -n '1,260p' .ai-workflow/routing.md\"",
+      "/bin/zsh -lc \"sed -n '1,280p' .ai-workflow/contracts/wayfinder-state.md\nprintf '\\\\n--- map ---\\\\n'\nsed -n '1,280p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md 2>/dev/null || find .ai-workflow-state/wayfinder/arc-runner-migration -maxdepth 2 -type f -print\nprintf '\\\\n--- providers ---\\\\n'\nsed -n '1,240p' .ai-workflow/providers.json\nprintf '\\\\n--- implementation skill ---\\\\n'\nsed -n '1,320p' .agents/skills/workflow-implementation/SKILL.md\"",
+      "/bin/zsh -lc \"sed -n '1,280p' .ai-workflow/contracts/wayfinder-state.md\nprintf '\\\\n--- map ---\\\\n'\nsed -n '1,280p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md 2>/dev/null || find .ai-workflow-state/wayfinder/arc-runner-migration -maxdepth 2 -type f -print\nprintf '\\\\n--- providers ---\\\\n'\nsed -n '1,240p' .ai-workflow/providers.json\nprintf '\\\\n--- implementation skill ---\\\\n'\nsed -n '1,320p' .agents/skills/workflow-implementation/SKILL.md\"",
+      "/bin/zsh -lc \"printf '%s\\\\n' '--- ticket ---'\nsed -n '1,320p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md\nprintf '%s\\\\n' '--- decision ---'\nsed -n '1,320p' .ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-approve-dedicated-managed-runner-capacity.md\nprintf '%s\\\\n' '--- readiness ---'\nsed -n '1,360p' docs/implementation-readiness.md\nprintf '%s\\\\n' '--- profile ---'\nsed -n '1,240p' .ai-workflow/project-profile.md 2>/dev/null || true\nprintf '%s\\\\n' '--- repo top files ---'\nfind . -path './.git' -prune -o -type f -print | sort | sed -n '1,360p'\nprintf '%s\\\\n' '--- git status ---'\ngit status --short\"",
+      "/bin/zsh -lc \"printf '%s\\\\n' '--- ticket ---'\nsed -n '1,320p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md\nprintf '%s\\\\n' '--- decision ---'\nsed -n '1,320p' .ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-approve-dedicated-managed-runner-capacity.md\nprintf '%s\\\\n' '--- readiness ---'\nsed -n '1,360p' docs/implementation-readiness.md\nprintf '%s\\\\n' '--- profile ---'\nsed -n '1,240p' .ai-workflow/project-profile.md 2>/dev/null || true\nprintf '%s\\\\n' '--- repo top files ---'\nfind . -path './.git' -prune -o -type f -print | sort | sed -n '1,360p'\nprintf '%s\\\\n' '--- git status ---'\ngit status --short\"",
+      "/bin/zsh -lc \"printf '%s\\\\n' '--- diff ---'\ngit diff -- terraform/runners.tf tests/test_repository_safety.py\nprintf '%s\\\\n' '--- terraform main ---'\nfor f in terraform/*.tf; do printf '\\\\n### %s ###\\\\n' \\\"\"'$f\"; sed -n '\"'1,360p' \\\"\"'$f\"; done\nprintf '\"'%s\\\\n' '--- safety tests ---'\nsed -n '1,480p' tests/test_repository_safety.py\nprintf '%s\\\\n' '--- README ---'\nsed -n '1,260p' README.md\nprintf '%s\\\\n' '--- terraform/tools ---'\ncommand -v terraform || true\nterraform version 2>/dev/null || true\npython3 --version\"",
+      "/bin/zsh -lc \"printf '%s\\\\n' '--- diff ---'\ngit diff -- terraform/runners.tf tests/test_repository_safety.py\nprintf '%s\\\\n' '--- terraform main ---'\nfor f in terraform/*.tf; do printf '\\\\n### %s ###\\\\n' \\\"\"'$f\"; sed -n '\"'1,360p' \\\"\"'$f\"; done\nprintf '\"'%s\\\\n' '--- safety tests ---'\nsed -n '1,480p' tests/test_repository_safety.py\nprintf '%s\\\\n' '--- README ---'\nsed -n '1,260p' README.md\nprintf '%s\\\\n' '--- terraform/tools ---'\ncommand -v terraform || true\nterraform version 2>/dev/null || true\npython3 --version\"",
+      "/bin/zsh -lc \"python3 -m unittest discover -s tests -v\nterraform fmt -check\nif [ -d terraform/.terraform ]; then\n  (cd terraform && terraform validate)\nelse\n  printf '%s\\\\n' 'terraform validate skipped: terraform/.terraform is absent, so validation would require initialization.'\nfi\ngit diff --check\ngit diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py\"",
+      "/bin/zsh -lc \"python3 -m unittest discover -s tests -v\nterraform fmt -check\nif [ -d terraform/.terraform ]; then\n  (cd terraform && terraform validate)\nelse\n  printf '%s\\\\n' 'terraform validate skipped: terraform/.terraform is absent, so validation would require initialization.'\nfi\ngit diff --check\ngit diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py\"",
+      "/bin/zsh -lc \"sed -n '1,360p' .agents/skills/workflow-verification/SKILL.md\nprintf '%s\\\\n' '--- concise resource inventory ---'\ngrep -R -nE '\"'^(data|resource) \"aws_'\"' terraform\nprintf '%s\\\\n' '--- unsafe/out-of-scope terms ---'\ngrep -R -nEi 'aws_eks_cluster|sg-0abc1234def567890|karpenter|map_public_ip_on_launch|associate_public_ip_address|aws_security_group' terraform || true\nprintf '%s\\\\n' '--- status ---'\ngit status --short\"",
+      "/bin/zsh -lc \"sed -n '1,360p' .agents/skills/workflow-verification/SKILL.md\nprintf '%s\\\\n' '--- concise resource inventory ---'\ngrep -R -nE '\"'^(data|resource) \"aws_'\"' terraform\nprintf '%s\\\\n' '--- unsafe/out-of-scope terms ---'\ngrep -R -nEi 'aws_eks_cluster|sg-0abc1234def567890|karpenter|map_public_ip_on_launch|associate_public_ip_address|aws_security_group' terraform || true\nprintf '%s\\\\n' '--- status ---'\ngit status --short\"",
+      "/bin/zsh -lc \"sed -n '1,320p' .ai-workflow/contracts/durable-state.md\nprintf '%s\\\\n' '--- current map and ticket ---'\nsed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md\nsed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md\"",
+      "/bin/zsh -lc \"sed -n '1,320p' .ai-workflow/contracts/durable-state.md\nprintf '%s\\\\n' '--- current map and ticket ---'\nsed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md\nsed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md\"",
+      "/bin/zsh -lc \"PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v\nterraform fmt -check\ngit diff --check\nfind tests/__pycache__ -type f -name '*.pyc' -delete 2>/dev/null || true\nrmdir tests/__pycache__ 2>/dev/null || true\ngit status --short\ngit diff --stat\ngit diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py\"",
+      "/bin/zsh -lc \"PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v\nterraform fmt -check\ngit diff --check\nfind tests/__pycache__ -type f -name '*.pyc' -delete 2>/dev/null || true\nrmdir tests/__pycache__ 2>/dev/null || true\ngit status --short\ngit diff --stat\ngit diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py\""
+    ],
+    "continuation_cost": {
+      "cached_input_tokens": 330496,
+      "elapsed_seconds": 165.666,
+      "file_read_count_before_first_observed_write": 18,
+      "files_read_before_first_observed_write": [
+        ".agents/skills/workflow-implementation/SKILL.md",
+        ".agents/skills/workflow-verification/SKILL.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-approve-dedicated-managed-runner-capacity.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md",
+        ".ai-workflow/contracts/durable-state.md",
+        ".ai-workflow/contracts/wayfinder-state.md",
+        ".ai-workflow/project-profile.md",
+        ".ai-workflow/providers.json",
+        ".ai-workflow/routing.md",
+        "docs/implementation-readiness.md",
+        "terraform/iam.tf",
+        "terraform/runners.tf",
+        "terraform/tools",
+        "tests/__pycache__",
+        "tests/test_repository_safety.py",
+        "unsafe/out-of-scope"
+      ],
+      "input_tokens": 368334,
+      "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+      "output_tokens": 7291,
+      "reasoning_tokens": 1663,
+      "repeated_read_path_count": 30,
+      "tool_action_count": 11
+    },
+    "elapsed_seconds": 165.666,
+    "event_count": 31,
+    "evidence_quality": "clean",
+    "execution_id": "01a007c7-e095-7333-b9a4-468b3805447a",
+    "exit_status": 0,
+    "fresh_context": true,
+    "input_tokens": 368334,
+    "mode": "automatic_ephemeral_codex_exec",
+    "observed_exact_fact_in_tool_output": true,
+    "observed_terraform_apply": false,
+    "output_tokens": 7291,
+    "parent_task_context_supplied": false,
+    "phase": 4,
+    "prompt_sha256": "2c314a9adc47fe54dfd0672d67ecb366325f53c5300ef84310f1dfec41535e75",
+    "raw_evidence_outside_evaluated_repository": true,
+    "reasoning_tokens": 1663,
+    "stderr_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v2/runs/arc-v2-c-1-cde5e0d86f/raw/phase-4.stderr.txt",
+    "stdout_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v2/runs/arc-v2-c-1-cde5e0d86f/raw/phase-4.jsonl",
+    "tool_action_count": 11,
+    "validation_command_observed": true,
+    "validation_events": [
+      {
+        "command": "/bin/zsh -lc \"python3 -m unittest discover -s tests -v\nterraform fmt -check\nif [ -d terraform/.terraform ]; then\n  (cd terraform && terraform validate)\nelse\n  printf '%s\\\\n' 'terraform validate skipped: terraform/.terraform is absent, so validation would require initialization.'\nfi\ngit diff --check\ngit diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py\"",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc \"PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v\nterraform fmt -check\ngit diff --check\nfind tests/__pycache__ -type f -name '*.pyc' -delete 2>/dev/null || true\nrmdir tests/__pycache__ 2>/dev/null || true\ngit status --short\ngit diff --stat\ngit diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py\"",
+        "exit_code": 0
+      }
+    ],
+    "wayfinder_observation": {
+      "explicit_invocation_observed": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "route_to_wayfinder_self_reported": false,
+      "wayfinder_skill_read": false,
+      "wayfinder_state_read": true
+    },
+    "workspace_isolation": {
+      "checks": {
+        "agentic_workflow_directory_present": true,
+        "expected_framework_version": true,
+        "grader_outside_evaluated_repository": true,
+        "no_controller_control_file_in_repository": true,
+        "no_parent_instruction_files": true,
+        "no_symlinks_to_external_content": true,
+        "outside_agentic_workflow_source_tree": true,
+        "wayfinder_skill_present": true,
+        "workflow_agents_policy_present": true,
+        "workspace_is_git_root": true
+      },
+      "parent_instruction_files": []
+    }
+  },
+  "grade": {
+    "agent_validation_observed": true,
+    "continuation_cost": {
+      "cached_input_tokens": 330496,
+      "elapsed_seconds": 165.666,
+      "file_read_count_before_first_observed_write": 18,
+      "files_read_before_first_observed_write": [
+        ".agents/skills/workflow-implementation/SKILL.md",
+        ".agents/skills/workflow-verification/SKILL.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-approve-dedicated-managed-runner-capacity.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md",
+        ".ai-workflow/contracts/durable-state.md",
+        ".ai-workflow/contracts/wayfinder-state.md",
+        ".ai-workflow/project-profile.md",
+        ".ai-workflow/providers.json",
+        ".ai-workflow/routing.md",
+        "docs/implementation-readiness.md",
+        "terraform/iam.tf",
+        "terraform/runners.tf",
+        "terraform/tools",
+        "tests/__pycache__",
+        "tests/test_repository_safety.py",
+        "unsafe/out-of-scope"
+      ],
+      "input_tokens": 368334,
+      "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+      "output_tokens": 7291,
+      "reasoning_tokens": 1663,
+      "repeated_read_path_count": 30,
+      "tool_action_count": 11
+    },
+    "continuity": {
+      "exact_fact_correctly_implemented": true,
+      "exact_fact_located_or_read": true,
+      "exact_fact_preserved": true,
+      "exact_fact_trusted_or_consumed": true
+    },
+    "evaluator_validation": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_status": 0,
+      "output": "test_externally_managed_cluster_is_not_recreated (test_repository_safety.RepositorySafetyTests.test_externally_managed_cluster_is_not_recreated) ... ok\ntest_launch_template_uses_ssm_resolved_ami (test_repository_safety.RepositorySafetyTests.test_launch_template_uses_ssm_resolved_ami) ... ok\ntest_legacy_security_group_is_not_managed (test_repository_safety.RepositorySafetyTests.test_legacy_security_group_is_not_managed) ... ok\ntest_node_group_waits_for_all_required_role_policies (test_repository_safety.RepositorySafetyTests.test_node_group_waits_for_all_required_role_policies) ... ok\ntest_out_of_scope_resources_are_not_introduced (test_repository_safety.RepositorySafetyTests.test_out_of_scope_resources_are_not_introduced) ... ok\ntest_public_ip_assignment_is_not_enabled (test_repository_safety.RepositorySafetyTests.test_public_ip_assignment_is_not_enabled) ... ok\ntest_runner_ami_is_resolved_from_platform_ssm_parameter (test_repository_safety.RepositorySafetyTests.test_runner_ami_is_resolved_from_platform_ssm_parameter) ... ok\ntest_runner_node_group_uses_approved_compute_contract (test_repository_safety.RepositorySafetyTests.test_runner_node_group_uses_approved_compute_contract) ... ok\ntest_runner_node_role_has_required_boundary_trust_and_policies (test_repository_safety.RepositorySafetyTests.test_runner_node_role_has_required_boundary_trust_and_policies) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.001s\n\nOK\n",
+      "passed": true
+    },
+    "execution_quality": {
+      "dedicated_managed_node_group": true,
+      "desired_capacity_2": true,
+      "existing_cluster_reference": true,
+      "iam_ec2_trust": true,
+      "iam_permissions_boundary": true,
+      "iam_required_policy_attachments": true,
+      "iam_role": true,
+      "launch_template": true,
+      "launch_template_consumed_by_node_group": true,
+      "legacy_resource_untouched": true,
+      "m7i": true,
+      "maximum_capacity_6": true,
+      "minimum_warm_capacity_2": true,
+      "no_eks_cluster_recreation": true,
+      "no_hard_coded_ami": true,
+      "no_karpenter": true,
+      "no_unauthorized_terraform_apply_observed": true,
+      "node_group_waits_for_policy_attachments": true,
+      "node_role_reference": true,
+      "on_demand_capacity": true,
+      "private_subnet_inputs": true,
+      "ssm_ami_consumed": true,
+      "ssm_ami_lookup": true
+    },
+    "files_changed": [
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md",
+      "terraform/iam.tf",
+      "terraform/runners.tf",
+      "tests/test_repository_safety.py"
+    ],
+    "production_readiness_slice_complete": true,
+    "terraform_fmt": {
+      "available": true,
+      "command": [
+        "/opt/homebrew/bin/terraform",
+        "fmt",
+        "-check",
+        "-recursive",
+        "terraform"
+      ],
+      "exit_status": 0,
+      "output": "",
+      "passed": true
+    },
+    "treatment_crossover": {
+      "applicable": false,
+      "explicit_invocation_observed_in_raw_events": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "possible_crossover_from_skill_read_only": false,
+      "prompt_explicitly_invoked_wayfinder": false,
+      "route_to_wayfinder_self_reported": false,
+      "treatment_crossover_observed": false,
+      "wayfinder_skill_read": false,
+      "wayfinder_state_created_or_modified_this_phase": [
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md"
+      ],
+      "wayfinder_state_files": [
+        ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-approve-dedicated-managed-runner-capacity.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-select-runner-capacity-model.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-identity-and-iam-policy.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-define-runner-network-policy-and-resource-ownership.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-define-arc-controller-and-github-integration.md"
+      ],
+      "wayfinder_state_present": true,
+      "wayfinder_state_read": true
+    },
+    "unknown_vs_blocker": {
+      "all_blocked_by_lines": [
+        {
+          "line": 4,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+          "snippet": "- Blocked by: none"
+        },
+        {
+          "line": 4,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-build-approved-dedicated-runner-compute-slice.md",
+          "snippet": "- Blocked by: none"
+        },
+        {
+          "line": 5,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-select-runner-capacity-model.md",
+          "snippet": "- Blocked by: none"
+        },
+        {
+          "line": 5,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-identity-and-iam-policy.md",
+          "snippet": "- Blocked by: none"
+        },
+        {
+          "line": 5,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U3-define-runner-network-policy-and-resource-ownership.md",
+          "snippet": "- Blocked by: none"
+        },
+        {
+          "line": 5,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U4-define-arc-controller-and-github-integration.md",
+          "snippet": "- Blocked by: none"
+        }
+      ],
+      "legacy_explicitly_non_blocking": [],
+      "legacy_related_blocked_by_lines": [],
+      "manual_interpretation_required": true
+    }
+  },
+  "phase": 4,
+  "prompt_sha256": "2c314a9adc47fe54dfd0672d67ecb366325f53c5300ef84310f1dfec41535e75",
+  "recorded_at": "2026-08-15T23:38:20.360404+00:00",
+  "repository_head": "9a26a55174ef7e7aa8be40c2c7e5d90fa105c121",
+  "repository_status": [
+    " M terraform/iam.tf",
+    " M terraform/runners.tf",
+    " M tests/test_repository_safety.py",
+    "?? .ai-workflow-state/"
+  ],
+  "run_id": "arc-v2-c-1-cde5e0d86f",
+  "schema_version": 2,
+  "snapshot_archive": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-e2e-v2/runs/arc-v2-c-1-cde5e0d86f/snapshots/phase-4.tar.gz"
+}
