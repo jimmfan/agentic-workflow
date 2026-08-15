@@ -42,6 +42,13 @@ def provider_attempt(command: str, target: Path, dry_run: bool) -> None:
         arguments.append("--dry-run")
     result = run(PROVIDERS, arguments)
     if result.returncode != 0 and not dry_run:
+        if command == "remove":
+            print(
+                "WARNING: Optional provider removal check did not complete. "
+                "Core removal will continue; provider directories remain preserved.",
+                file=sys.stderr,
+            )
+            return
         print(
             "WARNING: Optional provider setup did not complete. The core router and local workflows remain usable.",
             file=sys.stderr,

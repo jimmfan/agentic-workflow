@@ -30,10 +30,11 @@ It checks:
 - the exact current source-to-target mapping and synchronized version;
 - absence of deferred controller, hook, and observability payloads;
 - routing, authorization, durable-state, and provider declaration contracts;
-- local Markdown links and scenario-catalog structure; and
+- local Markdown links plus the lifecycle-acceptance and routing-decision JSON
+  catalog schemas;
 - lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and
   stale-release-metadata tests;
-- human-authored behavioral scenario schema and fixture references; and
+- human-authored TOML behavioral scenario schema and fixture references; and
 - deterministic behavioral contract, evaluator, reset, and fixture lifecycle
   tests.
 

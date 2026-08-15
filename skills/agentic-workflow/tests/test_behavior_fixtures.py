@@ -43,6 +43,20 @@ class BehaviorFixtureTests(unittest.TestCase):
             self.assertEqual(behavior.snapshot(workspace_two), source)
         self.assertEqual(behavior.snapshot(behavior.FIXTURE_ROOT / scenario.fixture), source)
 
+    def test_wayfinder_state_is_not_seeded_by_install(self) -> None:
+        scenario = next(
+            item for item in behavior.load_scenarios() if item.id == "wayfinder-new-effort"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            install = behavior.run_adopt("install", workspace)
+            self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
+            state_root = workspace / ".ai-workflow-state"
+            self.assertTrue(state_root.is_dir())
+            self.assertFalse((state_root / "wayfinder").exists())
+            self.assertFalse((state_root / "active.md").exists())
+            self.assertFalse((workspace / ".scratch").exists())
+
     def test_state_preservation_oracle_detects_destructive_change(self) -> None:
         scenario = next(
             item

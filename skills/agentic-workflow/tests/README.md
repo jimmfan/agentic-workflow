@@ -6,24 +6,31 @@ Tests are separated by determinism and product boundary.
 
 - `test_behavior_contract.py` validates the TOML scenario contract, behavior
   vocabulary, fixture size, observable evaluator, route-marker optionality,
-  progressive Wayfinder state inputs, and live command protocol using a
-  deterministic fake agent.
+  demand-driven Wayfinder creation and provider claims, progressive Wayfinder
+  state inputs, and live command protocol using a deterministic fake agent.
 - `test_routing.py` validates representative selection, invocation,
   authorization, record-based resume, and durable-effect decisions without
   requiring one exact trace.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
+## Static product catalogs
+
+- `acceptance-scenarios.json` indexes lifecycle product acceptance cases.
+- `decision-contract-scenarios.json` supplies representative routing decisions
+  to `test_routing.py`.
+
+These JSON catalogs are validated directly by `verify_package.py`. They are not
+`behavior.py` scenarios and do not use the fixture-backed TOML schema.
+
 ## Deterministic fixture and lifecycle integration
 
 - `test_behavior_fixtures.py` copies fixtures to temporary workspaces, checks
-  reset behavior, verifies implementation fixtures begin red, detects a
-  destructive state mutation, and runs install/update/repeated-update/remove/
-  reinstall against every fixture.
+  reset behavior, proves install leaves Wayfinder state unseeded, verifies
+  implementation fixtures begin red, detects a destructive state mutation, and
+  runs install/update/repeated-update/remove/reinstall against every fixture.
 - `test_lifecycle.py` retains focused archive, composite, collision, migration,
   provider-isolation, cp1252, and current-state reconciliation coverage.
-- `acceptance-scenarios.json` lists lifecycle product acceptance cases.
-- `decision-contract-scenarios.json` keeps representative routing decisions.
 
 ## Human behavioral contracts and live smoke tests
 

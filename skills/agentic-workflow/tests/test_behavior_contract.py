@@ -207,6 +207,112 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertFalse(progressive.passed)
         self.assertIn("U1-name-telemetry-metric.md", progressive.detail)
 
+    def test_wayfinder_new_effort_is_demand_driven_and_rejects_provider_execution_claim(self) -> None:
+        scenario = next(
+            item for item in behavior.load_scenarios() if item.id == "wayfinder-new-effort"
+        )
+        request = scenario.request.lower()
+        self.assertNotIn("$wayfinder", request)
+        self.assertNotIn("/wayfinder", request)
+        self.assertNotIn("create a wayfinder map", request)
+        self.assertIn("claim_unexecuted_provider", scenario.must_not)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=before,
+                after=before,
+                stdout="",
+                stderr="",
+                returncode=0,
+                report={"status": "success", "providers_executed": ["wayfinder"]},
+                verification=(),
+                route_components=(),
+            )
+            results = behavior.evaluate(evidence)
+        provider_claim = next(
+            result for result in results if result.name == "must-not:claim_unexecuted_provider"
+        )
+        self.assertFalse(provider_claim.passed)
+        self.assertIn("wayfinder", provider_claim.detail)
+
+    def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(self) -> None:
+        scenario = next(
+            item for item in behavior.load_scenarios() if item.id == "wayfinder-new-effort"
+        )
+        count_assertion = next(
+            item
+            for item in scenario.assertions
+            if item.kind == "glob_count" and "unknowns/U" in item.path.as_posix()
+        )
+        content_assertion = next(
+            item
+            for item in scenario.assertions
+            if item.kind == "glob_contains" and "unknowns/U" in item.path.as_posix()
+        )
+        self.assertTrue(content_assertion.path.name.startswith("U1-"))
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            unknowns = workspace / ".ai-workflow-state/wayfinder/platform-migration/unknowns"
+            unknowns.mkdir(parents=True)
+            stable_unknown = unknowns / "U1-any-clear-slug-is-valid.md"
+            stable_unknown.write_text(
+                "# U1: Determine the safe migration order\n",
+                encoding="utf-8",
+            )
+            after_one = behavior.snapshot(workspace)
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before={},
+                after=after_one,
+                stdout="",
+                stderr="",
+                returncode=0,
+                report={},
+                verification=(),
+                route_components=(),
+            )
+            self.assertTrue(behavior.evaluate_assertion(evidence, count_assertion).passed)
+            self.assertTrue(behavior.evaluate_assertion(evidence, content_assertion).passed)
+
+            (unknowns / "U2-unjustified-extra.md").write_text(
+                "# U2: Unjustified extra unknown\n",
+                encoding="utf-8",
+            )
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before={},
+                after=behavior.snapshot(workspace),
+                stdout="",
+                stderr="",
+                returncode=0,
+                report={},
+                verification=(),
+                route_components=(),
+            )
+            self.assertFalse(behavior.evaluate_assertion(evidence, count_assertion).passed)
+
+            stable_unknown.unlink()
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before={},
+                after=behavior.snapshot(workspace),
+                stdout="",
+                stderr="",
+                returncode=0,
+                report={},
+                verification=(),
+                route_components=(),
+            )
+            self.assertTrue(behavior.evaluate_assertion(evidence, count_assertion).passed)
+            self.assertFalse(behavior.evaluate_assertion(evidence, content_assertion).passed)
+
 
 if __name__ == "__main__":
     unittest.main()

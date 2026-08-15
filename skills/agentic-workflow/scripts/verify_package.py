@@ -22,6 +22,7 @@ MINIMUM_PYTHON = (3, 11)
 MANIFEST_SCHEMA = 6
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
 MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
+INVOCATION_POLICIES = frozenset({"implicit", "user-only", "unavailable"})
 REQUIRED_PACKAGE_FILES = (
     "SKILL.md",
     "VERSION",
@@ -132,7 +133,10 @@ def check_structure() -> None:
             not path.is_symlink()
             and (
                 not path.exists()
-                or not any(child.is_file() or child.is_symlink() for child in path.rglob("*"))
+                or (
+                    path.is_dir()
+                    and not any(child.is_file() or child.is_symlink() for child in path.rglob("*"))
+                )
             ),
             f"deferred v0 subsystem remains packaged: {path}",
         )
@@ -220,35 +224,109 @@ def check_provider_declaration() -> None:
     require(isinstance(raw, dict) and raw.get("schema_version") == 4, "unsupported provider declaration")
     provider = raw.get("provider")
     capabilities = raw.get("capabilities")
-    require(isinstance(provider, dict) and isinstance(capabilities, dict), "provider declaration is incomplete")
-    require(re.fullmatch(r"[^/]+/[^/]+", str(provider.get("repository"))) is not None, "invalid provider repository")
-    require(re.fullmatch(r"v\d+\.\d+\.\d+", str(provider.get("version"))) is not None, "provider version must be pinned")
+    hosts = raw.get("hosts")
+    require(
+        isinstance(provider, dict) and isinstance(capabilities, dict) and isinstance(hosts, dict) and hosts,
+        "provider declaration is incomplete",
+    )
+    repository = provider.get("repository")
+    provider_version = provider.get("version")
+    require(
+        isinstance(repository, str) and re.fullmatch(r"[^/]+/[^/]+", repository) is not None,
+        "invalid provider repository",
+    )
+    require(
+        isinstance(provider_version, str) and re.fullmatch(r"v\d+\.\d+\.\d+", provider_version) is not None,
+        "provider version must be pinned",
+    )
+    host_names = set(hosts)
+    require(all(isinstance(name, str) and name for name in host_names), "invalid provider host name")
     skills = provider.get("skills")
     require(isinstance(skills, list) and skills, "provider skills must be a non-empty array")
     names: set[str] = set()
     for item in skills:
         require(isinstance(item, dict), "provider skill entries must be objects")
         name = item.get("name")
-        require(isinstance(name, str) and PurePosixPath(name).name == name, "invalid provider skill name")
+        require(isinstance(name, str) and bool(name) and PurePosixPath(name).name == name, "invalid provider skill name")
         require(name not in names, f"duplicate provider skill: {name}")
         names.add(name)
-        safe_relative(str(item.get("path")))
+        provider_path = item.get("path")
+        require(isinstance(provider_path, str), f"provider skill {name} needs a path")
+        safe_relative(provider_path)
         invocation = item.get("invocation")
         require(isinstance(invocation, dict), f"provider skill {name} lacks invocation policy")
-        require(set(invocation.values()) <= {"implicit", "user-only", "unavailable"}, f"invalid invocation policy for {name}")
+        require(set(invocation) == host_names, f"provider skill {name} invocation hosts differ from declaration")
+        require(
+            all(isinstance(policy, str) and policy in INVOCATION_POLICIES for policy in invocation.values()),
+            f"invalid invocation policy for {name}",
+        )
     require(set(capabilities.values()) <= names, "capability points to an undeclared provider skill")
 
 
-def check_scenarios() -> None:
+def check_scenario_catalogs() -> None:
     tests = PACKAGE_ROOT / "tests"
-    for name in ("acceptance-scenarios.json", "decision-contract-scenarios.json"):
-        raw = json.loads((tests / name).read_text(encoding="utf-8"))
-        require(isinstance(raw, list) and raw, f"{name} must contain scenarios")
-        ids = []
-        for item in raw:
-            require(isinstance(item, dict) and isinstance(item.get("id"), str), f"invalid scenario in {name}")
-            ids.append(item["id"])
-        require(len(ids) == len(set(ids)), f"duplicate scenario id in {name}")
+
+    acceptance_name = "acceptance-scenarios.json"
+    acceptance = json.loads((tests / acceptance_name).read_text(encoding="utf-8"))
+    require(isinstance(acceptance, list) and acceptance, f"{acceptance_name} must contain cases")
+    acceptance_ids: list[str] = []
+    for item in acceptance:
+        require(isinstance(item, dict), f"invalid case in {acceptance_name}")
+        for field in ("id", "operation", "expected"):
+            require(
+                isinstance(item.get(field), str) and bool(item[field].strip()),
+                f"{acceptance_name} case needs a non-empty {field}",
+            )
+        acceptance_ids.append(item["id"])
+    require(len(acceptance_ids) == len(set(acceptance_ids)), f"duplicate case id in {acceptance_name}")
+
+    decision_name = "decision-contract-scenarios.json"
+    decisions = json.loads((tests / decision_name).read_text(encoding="utf-8"))
+    require(isinstance(decisions, list) and decisions, f"{decision_name} must contain decisions")
+    required_strings = (
+        "id",
+        "category",
+        "prompt",
+        "setup",
+        "dominant_activity",
+        "host",
+        "route_result",
+        "repository_state_effect",
+        "external_scope",
+        "expected_behavior",
+    )
+    decision_ids: list[str] = []
+    for item in decisions:
+        require(isinstance(item, dict), f"invalid decision in {decision_name}")
+        for field in required_strings:
+            require(
+                isinstance(item.get(field), str) and bool(item[field].strip()),
+                f"{decision_name} decision needs a non-empty {field}",
+            )
+        require(
+            isinstance(item.get("capabilities"), list)
+            and all(isinstance(value, str) and value for value in item["capabilities"]),
+            f"{decision_name} decision needs a capabilities array",
+        )
+        invocations = item.get("provider_invocations")
+        require(isinstance(invocations, list), f"{decision_name} decision needs provider_invocations")
+        for invocation in invocations:
+            require(isinstance(invocation, dict), f"invalid provider invocation in {decision_name}")
+            require(
+                all(
+                    isinstance(invocation.get(field), str) and bool(invocation[field].strip())
+                    for field in ("name", "policy", "invocation")
+                )
+                and isinstance(invocation.get("executed"), bool),
+                f"invalid provider invocation in {decision_name}",
+            )
+        require(isinstance(item.get("executed"), bool), f"{decision_name} decision needs executed")
+        decision_ids.append(item["id"])
+    require(len(decision_ids) == len(set(decision_ids)), f"duplicate decision id in {decision_name}")
+
+
+def check_behavior_scenarios() -> None:
+    tests = PACKAGE_ROOT / "tests"
     behavior = subprocess.run(
         [sys.executable, str(tests / "behavior.py"), "validate"],
         cwd=REPOSITORY_ROOT,
@@ -314,7 +392,8 @@ def main(argv: Iterable[str] | None = None) -> int:
             check_filesystem,
             check_router_contract,
             check_provider_declaration,
-            check_scenarios,
+            check_scenario_catalogs,
+            check_behavior_scenarios,
             check_markdown_links,
         ):
             check()

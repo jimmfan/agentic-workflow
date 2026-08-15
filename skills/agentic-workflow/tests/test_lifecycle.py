@@ -79,6 +79,11 @@ class LifecycleAcceptanceTests(unittest.TestCase):
     def assert_ok(self, result: subprocess.CompletedProcess[str]) -> None:
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def copy_package(self, name: str) -> Path:
+        package_copy = Path(self.temporary.name) / name / "agentic-workflow"
+        shutil.copytree(PACKAGE_ROOT, package_copy)
+        return package_copy
+
     def test_install_creates_only_current_framework_and_empty_state_root(self) -> None:
         self.assert_ok(self.adopt("install"))
         self.assertTrue((self.project / ".ai-workflow/routing.md").is_file())
@@ -329,6 +334,23 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertTrue((self.project / ".ai-workflow/routing.md").is_file())
         self.assertIn("Optional provider setup did not complete", result.stderr)
 
+    def test_optional_provider_failure_during_remove_reports_truthfully(self) -> None:
+        self.assert_ok(self.adopt("install"))
+        provider_file = self.project / ".agents/skills/wayfinder/personal.txt"
+        provider_file.parent.mkdir(parents=True)
+        provider_file.write_text("preserve provider bytes\n")
+
+        package_copy = self.copy_package("remove-provider-failure")
+        declaration = package_copy / "payload/ai-workflow/providers.json"
+        declaration.write_text("{}\n", encoding="utf-8")
+        result = run_script(package_copy / "scripts/lifecycle.py", "remove", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Core removal will continue; provider directories remain preserved", result.stderr)
+        self.assertNotIn("core router and local workflows remain usable", result.stderr)
+        self.assertFalse((self.project / ".ai-workflow").exists())
+        self.assertEqual(provider_file.read_text(), "preserve provider bytes\n")
+
     def test_existing_provider_content_is_preserved(self) -> None:
         directory = self.project / ".agents/skills/wayfinder"
         directory.mkdir(parents=True)
@@ -356,8 +378,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("\\u96ea", status.stdout)
 
     def test_payload_content_edits_need_no_manifest_refresh_but_mapping_changes_do(self) -> None:
-        package_copy = Path(self.temporary.name) / "copy" / "agentic-workflow"
-        shutil.copytree(PACKAGE_ROOT, package_copy)
+        package_copy = self.copy_package("mapping-change")
 
         source = package_copy / "payload/ai-workflow/README.md"
         source.write_text(
@@ -380,6 +401,64 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         verify = run_script(package_copy / "scripts/verify_package.py")
         self.assertEqual(verify.returncode, 1)
         self.assertIn("manifest is stale", verify.stderr)
+
+    def test_verifier_rejects_incomplete_provider_declarations(self) -> None:
+        package_copy = self.copy_package("provider-declaration")
+        declaration = package_copy / "payload/ai-workflow/providers.json"
+        valid = json.loads(declaration.read_text(encoding="utf-8"))
+
+        cases = (
+            ("empty skill name", "name", "", "invalid provider skill name"),
+            ("missing skill path", "path", None, "needs a path"),
+            ("incomplete invocation hosts", "invocation", {}, "invocation hosts differ"),
+        )
+        for label, field, value, expected in cases:
+            with self.subTest(label=label):
+                candidate = json.loads(json.dumps(valid))
+                skill = candidate["provider"]["skills"][0]
+                if value is None:
+                    skill.pop(field)
+                else:
+                    skill[field] = value
+                declaration.write_text(json.dumps(candidate), encoding="utf-8")
+                verify = run_script(package_copy / "scripts/verify_package.py")
+                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+                self.assertIn(expected, verify.stderr)
+
+    def test_verifier_rejects_removed_subsystem_recreated_as_a_file(self) -> None:
+        package_copy = self.copy_package("removed-runtime")
+        removed_path = package_copy / "payload/hosts"
+        removed_path.rmdir()
+        removed_path.write_text("retired runtime payload\n", encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("deferred v0 subsystem remains packaged", verify.stderr)
+
+    def test_verifier_distinguishes_json_catalogs_from_toml_scenarios(self) -> None:
+        package_copy = self.copy_package("scenario-layers")
+        acceptance_path = package_copy / "tests/acceptance-scenarios.json"
+        acceptance = json.loads(acceptance_path.read_text(encoding="utf-8"))
+        acceptance[0].pop("operation")
+        acceptance_path.write_text(json.dumps(acceptance), encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("acceptance-scenarios.json case needs a non-empty operation", verify.stderr)
+
+        acceptance_path.write_bytes((PACKAGE_ROOT / "tests/acceptance-scenarios.json").read_bytes())
+        scenario_path = package_copy / "tests/scenarios/simple-bounded-task.toml"
+        scenario_path.write_text(
+            'unknown_contract_field = "unexpected"\n' + scenario_path.read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("behavioral scenario validation failed", verify.stderr)
 
 
 class BootstrapSafetyTests(unittest.TestCase):

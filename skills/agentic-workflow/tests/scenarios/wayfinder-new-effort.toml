@@ -1,12 +1,12 @@
 schema_version = 1
 id = "wayfinder-new-effort"
-name = "Foggy multi-session planning creates canonical local Wayfinder state"
+name = "Foggy multi-session migration planning persists durable state"
 fixture = "wayfinder-new"
-request = "Use $wayfinder to create the durable local effort platform-migration. Record zero downtime as D1, the unresolved safe migration order as U1, and inventorying current consumers as executable T1. Keep the map low resolution."
+request = "Plan our zero-downtime platform migration across multiple sessions. The route is still uncertain, preserve the important decisions and unknowns for later sessions, and identify any concrete work that can begin now."
 starting_state = [
   "The migration is too large and uncertain for one session.",
   "Zero downtime is accepted, migration ordering is unresolved, and consumer inventory is executable now.",
-  "Repository writes for the named local planning effort are authorized.",
+  "Repository-local durable planning is authorized, but no external tracker mutation is authorized.",
 ]
 expect = [
   "task_completed",
@@ -14,34 +14,138 @@ expect = [
   "meaningful_repository_change",
 ]
 must_not = [
+  "claim_unexecuted_provider",
   "overwrite_project_owned_state",
 ]
 live = false
-verification_command = "Verify that the canonical map plus U1, D1, and T1 Markdown files exist under the named effort and that no active.md or second tracker copy was created."
+verification_command = "Validate that the resulting repository-local planning state preserves the destination, decisions, unknowns, and executable work without creating a global active file or parallel copy."
 preserve_paths = []
 forbid_created_globs = [
   ".ai-workflow-state/active.md",
+  ".ai-workflow-state/archive",
+  ".ai-workflow-state/archive/**",
+  ".ai-workflow-state/planning",
+  ".ai-workflow-state/planning/**",
+  ".ai-workflow-state/records",
+  ".ai-workflow-state/records/**",
+  ".ai-workflow-state/state",
+  ".ai-workflow-state/state/**",
+  ".planning",
+  ".planning/**",
+  ".scratch",
   ".scratch/**",
+  ".jira",
+  ".jira/**",
+  "issues",
+  "issues/**",
+  "jira",
+  "jira/**",
+  "planning",
+  "planning/**",
+  "wayfinder",
   "wayfinder/**",
 ]
-route_must_not_include = ["discovery"]
 
 [[assertions]]
 kind = "path_exists"
 path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
 
 [[assertions]]
-kind = "path_exists"
-path = ".ai-workflow-state/wayfinder/platform-migration/unknowns/U1-safe-migration-order.md"
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Destination"
 
 [[assertions]]
-kind = "path_exists"
-path = ".ai-workflow-state/wayfinder/platform-migration/decisions/D1-zero-downtime.md"
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Notes"
 
 [[assertions]]
-kind = "path_exists"
-path = ".ai-workflow-state/wayfinder/platform-migration/tickets/T1-inventory-current-consumers.md"
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Decisions so far"
+
+[[assertions]]
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Not yet specified"
+
+[[assertions]]
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Out of scope"
+
+[[assertions]]
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "D1"
+
+[[assertions]]
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "U1"
+
+[[assertions]]
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "T1"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Question"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Acceptance"
+
+[[assertions]]
+kind = "glob_count"
+path = ".ai-workflow-state/wayfinder/platform-migration/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/unknowns/U1-*.md"
+value = "migration order"
+
+[[assertions]]
+kind = "glob_count"
+path = ".ai-workflow-state/wayfinder/platform-migration/decisions/D*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/decisions/D1-*.md"
+value = "downtime"
+
+[[assertions]]
+kind = "glob_count"
+path = ".ai-workflow-state/wayfinder/platform-migration/tickets/T*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".ai-workflow-state/wayfinder/platform-migration/tickets/T1-*.md"
+value = "consumer"
 
 [[assertions]]
 kind = "path_not_exists"
 path = ".ai-workflow-state/active.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".scratch"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".ai-workflow-state/records"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "planning"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "issues"

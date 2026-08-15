@@ -33,6 +33,21 @@ pre-merge gate. Live smoke tests are manual or suitable for a separately
 credentialed scheduled/release job; they are not required on ordinary pull
 requests.
 
+## Related deterministic catalogs
+
+The TOML files described below are the only scenarios loaded by `behavior.py`.
+Two separate JSON catalogs live directly under `skills/agentic-workflow/tests/`:
+
+- `acceptance-scenarios.json` is a concise index of lifecycle product acceptance
+  cases exercised by the lifecycle suite; and
+- `decision-contract-scenarios.json` supplies representative routing decisions
+  to `test_routing.py`.
+
+These JSON files are deterministic product catalogs, not fixture-backed or live
+behavioral scenarios, so they do not use the TOML schema. The package verifier
+checks their catalog schemas directly, then invokes `behavior.py validate` to
+validate every TOML scenario and fixture reference.
+
 ## Human-authored scenario format
 
 Scenarios are TOML files under
@@ -70,12 +85,26 @@ state_must_not_include = [".ai-workflow-state/wayfinder/example/unknowns/U9-unre
 kind = "path_contains"
 path = "app.py"
 value = "observable result"
+
+[[assertions]]
+kind = "glob_count"
+path = ".ai-workflow-state/wayfinder/example/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".ai-workflow-state/wayfinder/example/unknowns/U1-*.md"
+value = "known unresolved question"
 ```
 
 `expect` and `must_not` use a deliberately small vocabulary implemented in
-`tests/behavior.py`. Case-specific assertions support only path existence and
-UTF-8 substring presence/absence. This keeps contracts focused on outcomes and
-prevents the harness from becoming a second router.
+`tests/behavior.py`. Case-specific assertions support path existence, UTF-8
+substring presence/absence, and case-insensitive substring checks or exact
+regular-file counts for a safe relative glob. A broad count can reject extra
+children while a stable-ID content glob such as `U1-*.md` requires the intended
+identity and meaning without fixing the descriptive filename slug. This keeps
+contracts focused on outcomes and prevents the harness from becoming a second
+router.
 
 The optional `state_must_include` and `state_must_not_include` arrays constrain
 the public `state_used` report. They make progressive-loading behavior observable
@@ -111,7 +140,7 @@ The evaluator uses public artifacts only:
   `.behavior-evidence/verification.jsonl`, including exit codes and ordering;
 - a concise agent-written `.behavior-evidence/report.json` containing status,
   commands/exit codes, cited research URLs, state paths actually consumed,
-  blockers, and an optional route marker; and
+  selected/executed provider claims, blockers, and an optional route marker; and
 - case-specific path assertions.
 
 Route markers are useful evidence when present but remain optional. No evaluator
