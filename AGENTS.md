@@ -1,3 +1,62 @@
+<!-- ai-workflow:managed-begin -->
+# Agentic Workflow
+
+Agentic Workflow is a small intent router over host tools and replaceable skills.
+Use host-native sandboxing and approvals. This policy and the progressively
+loaded routing contract are the runtime; there is no separate controller.
+
+## Universal invariants
+
+- Every request MUST be evaluated through the Agentic Workflow router. `direct`
+  is a first-class route.
+- Routing, skills, state, specifications, tickets, and providers MUST NOT
+  expand the authority granted by the user's request.
+- Execution and completion claims MUST be truthful: do not report an operation,
+  command, check, review, or workflow as executed or passed when it was not.
+- Selection, invocation capability, authorization, and execution are distinct.
+  Provider execution MUST NOT be simulated; when a preferred provider cannot run,
+  continue with truthful host-native capability unless the user required that
+  provider or authorization/safety blocks the work.
+- Unrelated user work, canonical identifiers/artifacts, and relevant active
+  durable state MUST be preserved; live source and accepted canonical artifacts
+  outrank profiles, memory, and chat.
+- Material completion claims MUST reflect actual evidence and distinguish failed,
+  blocked, skipped, and unavailable checks.
+
+## Routing defaults
+
+- Choose the minimum useful process. Keep clear, bounded, low-risk work direct.
+- Choose one dominant workflow or activity and add only supporting capabilities
+  that materially help; availability alone is not a reason to invoke one.
+- Honor explicitly named installed skills, subject to authorization and host
+  compatibility.
+- Reuse trustworthy evidence and prefer provider-owned methodology over repeated
+  framework stages.
+- Load detailed policy and context only after it becomes relevant to the route.
+
+## Load only when relevant
+
+- For a named skill, resume, uncertain route, or any route not confidently
+  direct, read `.ai-workflow/routing.md` before substantive execution.
+- After selection, read only the selected skill and the needed provider metadata;
+  do not load unrelated skills merely because they are installed.
+- When Wayfinder is selected or a request may continue a relevant effort under
+  `.ai-workflow-state/wayfinder/`, read
+  `.ai-workflow/contracts/wayfinder-state.md` before its map. An unrelated map's
+  existence never selects Wayfinder.
+- Before durable workflow mutation, read `.ai-workflow/contracts/durable-state.md`. Before
+  profile mutation, read `.ai-workflow/contracts/project-profile.md`.
+- Project-profile maintenance is opportunistic: prefer a small update only when
+  verified durable knowledge emerges naturally and writes are authorized.
+
+## Route visibility
+
+When route diagnostics are useful, a response may include a truthful
+`[route: router → <executed path>]` marker. Its absence is not an error. Follow
+`.ai-workflow/routing.md` for labels, and do no extra work merely to produce it.
+<!-- ai-workflow:managed-end -->
+
+<!-- ai-workflow:project-instructions -->
 # AGENTS.md
 
 ## Pre-1.0 engineering priority

@@ -1,0 +1,133 @@
+# Agentic Workflow evaluation spike
+
+These evaluations answer two narrow questions about Agentic Workflow, not general coding-agent intelligence:
+
+1. Does installing the workflow avoid interfering with a simple, bounded retry-helper task?
+2. Does repository-owned workflow state improve continuity when useful evidence disappears between completely fresh agent sessions?
+
+Failure is useful evidence. The harness does not alter framework behavior, prompt the workflow variant to use Wayfinder, prohibit baseline notes, or collapse the observations into a synthetic score.
+
+## Why the scenarios exist
+
+`direct` is the counterweight to the continuity case. It makes unnecessary ceremony, extra files, mistakes, and obvious regressions visible when durable state has no value.
+
+`resume` presents an exact approved AMI parameter during Phase 1 alongside two unresolved architecture decisions. After Phase 1 ends, the harness deletes that transient source and separately commits the approved architecture decision. Phase 2 runs in a fresh task. A variant can therefore recover the AMI path only if its Phase 1 agent independently preserved it in the repository. Forgetting safely is a continuity failure; guessing is additionally an unsafe-behavior failure.
+
+## Fair setup boundary
+
+Every run copies the same scenario fixture into a newly allocated directory under the host temporary directory, initializes a normal Git repository, commits the starting state, and records a content snapshot outside the agent-visible repository.
+
+The `baseline` variant receives only the fixture and `.git`; it receives no Agentic Workflow policy, skill, installation, or state artifact.
+
+The `workflow` variant is prepared from the same fixture, then the harness invokes this checkout's real `adopt.py install` core-adoption path with the `unreleased-local-package` revision before making the setup commit. This installs the local source under evaluation. It intentionally does not invoke the higher-level provider installer, because optional provider downloads would introduce network and availability differences merely to prepare a fixture. Framework-created setup files are in the setup snapshot and are excluded from post-setup agent-change counts.
+
+Control state, prompts, and result metadata live outside the temporary repository. The Phase 2 mutation is copied only from `evals/scenarios/resume/phase-2-mutation`, and that source does not contain the AMI parameter.
+
+## Current execution boundary
+
+This host has no callable `codex` executable, so coding-agent execution is manual in v0. Fixture preparation, local workflow adoption, Git setup, prompts, snapshots, phase mutation, static grading, fixture test execution, JSON results, and comparison output are automated. Agent exit status, elapsed time, tokens, action counts, conversational claims, and validation commands run by the agent remain `null` when they cannot be observed reliably.
+
+For each prepared workspace, start a new Codex task rooted at the printed absolute path and paste only the printed prompt. Do not paste harness commentary. For `resume`, the harness will refuse to grade Phase 2 unless `--fresh-session-confirmed` is supplied; this is an explicit operator guard, not technical proof that the old task was closed. Start Phase 2 in a completely new task and inject no summary from Phase 1.
+
+For every paired baseline/workflow comparison, manually select the same coding agent, model, model settings, sandbox, approvals, and execution permissions. The harness cannot inspect or enforce those desktop settings, so record any deviation alongside the result. Do not change this source checkout's framework or grader between preparing and grading a paired run. Baseline agents may create ordinary repository notes; those files are preserved and graded by the same rules as workflow state.
+
+## Run one direct trial
+
+The purpose of these commands is to create a pristine fixture, let one fresh agent work on it, and then grade only post-setup changes. Run them in the **macOS host Terminal from this source repository root** (`/Users/james/Desktop/projects/agentic-workflow-instructions`). Preparation and grading persist temporary workspaces and result JSON; they do not modify the framework.
+
+Prepare baseline:
+
+```bash
+python3 -m evals.run --scenario direct --variant baseline --runs 1
+```
+
+Prepare workflow:
+
+```bash
+python3 -m evals.run --scenario direct --variant workflow --runs 1
+```
+
+Each command prints a run ID, workspace, exact agent prompt, and a continuation command. After the fresh agent task stops, run the printed command, which has this form:
+
+```bash
+python3 -m evals.run --continue RUN_ID
+```
+
+Success writes `evals/results/RUN_ID.json`. The direct fixture uses standard-library `unittest` syntax that pytest can also collect; this keeps grading offline on hosts without pytest.
+
+## Run one resume trial
+
+These commands prepare Phase 1. Run them in the **macOS host Terminal from the source repository root**. They persist isolated temporary repositories but do not change the source framework.
+
+```bash
+python3 -m evals.run --scenario resume --variant baseline --runs 1
+python3 -m evals.run --scenario resume --variant workflow --runs 1
+```
+
+After the Phase 1 agent stops, run the printed `--continue RUN_ID` command. That persistent step captures Phase 1, deletes the transient input, adds D1, and commits only those two external mutation paths. It then prints the exact Phase 2 prompt.
+
+Close the Phase 1 task. Start a completely new Codex task rooted at the same workspace, paste only the Phase 2 prompt, and let it stop. Then run this from the **macOS host Terminal at the source repository root**:
+
+```bash
+python3 -m evals.run --continue RUN_ID --fresh-session-confirmed
+```
+
+The flag records the operator's confirmation that Phase 2 used a fresh task. It does not carry Phase 1 context into the fixture.
+
+To prepare repeated independent runs, change `--runs 1` to (for example) `--runs 3`. Each run receives a unique pristine workspace and run ID.
+
+## Inspect and compare results
+
+Showing a prompt is read-only. Run this in the **macOS host Terminal from the source repository root** when a prompt needs to be copied again:
+
+```bash
+python3 -m evals.run --show-prompt RUN_ID
+```
+
+The comparison command is also read-only. It reports behavioral counts and means from all completed JSON files without creating a combined score:
+
+```bash
+python3 -m evals.run --compare
+```
+
+If workflow runs use more tokens but recover the AMI and complete more often, interpret that as an explicit continuity/overhead tradeoff. If direct runs acquire extra state or regress, that is evidence of interference. Unknown observations remain `n/a` rather than being guessed by the grader.
+
+## Verify the harness
+
+The harness tests are deterministic and need no network or pytest. Run this read-only verification in the **macOS host Terminal from the source repository root**:
+
+```bash
+python3 -m unittest discover -s evals/tests -v
+```
+
+Expected success ends with `OK`. If it fails, the first failing test is the most useful next diagnostic.
+
+The repository's full maintainer gate is also read-only and runs from the same location:
+
+```bash
+python3 skills/agentic-workflow/scripts/verify_package.py --tests
+```
+
+Expected success ends with `OK: Agentic Workflow package verification passed.`
+
+## Results, side effects, and cleanup
+
+Completed result JSON is stored under `evals/results/`. Temporary run repositories and control files remain under the host path printed by the harness (normally `/tmp/agentic-workflow-evals/RUN_ID`) so manual sessions can resume safely.
+
+After reviewing a completed run, remove its temporary workspace with this persistent cleanup command from the **macOS host Terminal at the source repository root**:
+
+```bash
+python3 -m evals.run --cleanup RUN_ID
+```
+
+Cleanup permanently removes only the guarded temporary run directory; the result JSON remains. A deleted temporary run cannot be continued. Reverse unwanted source changes with version control; remove an unwanted generated result by deleting only its named JSON file after reviewing it.
+
+## Known limitations
+
+- Manual agent execution prevents reliable capture of exit status, timing, token use, action count, and agent stdout/stderr.
+- Matching model configuration and execution permissions across manual runs is an operator-controlled fairness condition rather than a harness-enforced invariant.
+- The fresh-session flag is an auditable confirmation, not enforcement by a coding-agent API.
+- Static Terraform grading intentionally accepts reasonable layouts, so it proves the requested observable properties rather than full provider-schema validity. If `terraform` is installed, the grader additionally runs offline `terraform fmt -check`; it does not download providers for `terraform validate`.
+- Phase 1 inspection and completion claims cannot be inferred safely from repository keywords, so those observations remain `null` without execution metadata.
+- The workflow variant evaluates the local core router and bundled local workflows. Optional upstream provider installation is excluded equally from setup to avoid network-dependent contamination.
+- These targeted cases favor Agentic Workflow in the narrow sense that continuity is a claimed framework capability. The direct case deliberately disadvantages unnecessary workflow ceremony to expose its cost. Neither case establishes general model quality or statistical significance.

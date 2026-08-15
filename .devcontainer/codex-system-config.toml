@@ -1,0 +1,3 @@
+# Keep the Dev Container login cache in its persistent, project-specific CODEX_HOME volume.
+# auth.json contains access tokens and must never be copied into the image or repository.
+cli_auth_credentials_store = "file"

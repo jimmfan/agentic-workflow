@@ -1,5 +1,5 @@
 {
-  "name": "Agentic Workflow (Python 3.14 + uv)",
+  "name": "Agentic Workflow (Python 3.14 + uv + Codex)",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".",
@@ -13,15 +13,28 @@
       "version": "2.97.0"
     }
   },
+  "mounts": [
+    "source=agentic-workflow-instructions-codex-home,target=/home/vscode/.codex,type=volume"
+  ],
+  "remoteEnv": {
+    "CODEX_HOME": "/home/vscode/.codex"
+  },
+  "runArgs": [
+    "--security-opt=seccomp=unconfined"
+  ],
+  "init": true,
   "remoteUser": "vscode",
-  "postCreateCommand": "python3 .devcontainer/check_environment.py",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "waitFor": "postCreateCommand",
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylance"
+        "ms-python.vscode-pylance",
+        "openai.chatgpt@26.715.31925"
       ],
       "settings": {
+        "extensions.supportNodeGlobalNavigator": true,
         "python.defaultInterpreterPath": "/usr/local/bin/python3",
         "python.testing.pytestEnabled": false,
         "python.testing.unittestEnabled": true,

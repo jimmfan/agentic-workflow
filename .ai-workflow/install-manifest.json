@@ -1,0 +1,31 @@
+{
+  "composites": {
+    "AGENTS.md": {
+      "created": false
+    },
+    "CLAUDE.md": {
+      "created": true
+    }
+  },
+  "external_files": {
+    ".agents/skills/workflow-debugging/SKILL.md": {
+      "created": true,
+      "sha256": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809"
+    },
+    ".agents/skills/workflow-discovery/SKILL.md": {
+      "created": true,
+      "sha256": "79427778c958b2d4f001e3d6c1588ea0e413ebabdc921efad23ef470cddc9d50"
+    },
+    ".agents/skills/workflow-implementation/SKILL.md": {
+      "created": true,
+      "sha256": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0"
+    },
+    ".agents/skills/workflow-verification/SKILL.md": {
+      "created": true,
+      "sha256": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185"
+    }
+  },
+  "framework_version": "0.11.1",
+  "schema_version": 1,
+  "source_revision": "unreleased-local-package"
+}

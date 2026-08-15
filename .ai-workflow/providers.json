@@ -1,0 +1,214 @@
+{
+  "capabilities": {
+    "code-review": "code-review",
+    "implementation": "implement",
+    "learning": "teach",
+    "planning": "wayfinder",
+    "research": "research",
+    "specification": "to-spec",
+    "test-driven-development": "tdd",
+    "tickets": "to-tickets"
+  },
+  "configuration": {
+    "domain": {
+      "path": "docs/agents/domain.md",
+      "provisioned_by": "setup-matt-pocock-skills"
+    },
+    "issue-tracker": {
+      "path": "docs/agents/issue-tracker.md",
+      "provisioned_by": "setup-matt-pocock-skills"
+    },
+    "triage-labels": {
+      "enabled_by": "triage",
+      "path": "docs/agents/triage-labels.md",
+      "provisioned_by": "setup-matt-pocock-skills"
+    }
+  },
+  "hosts": {
+    "claude-code": {
+      "availability": "unavailable",
+      "discovery": ".claude/skills",
+      "explicit_prefix": "/",
+      "invocation_source": "SKILL.md:disable-model-invocation"
+    },
+    "codex": {
+      "availability": "available",
+      "discovery": ".agents/skills",
+      "explicit_prefix": "$",
+      "invocation_source": "agents/openai.yaml:policy.allow_implicit_invocation"
+    },
+    "github-copilot": {
+      "availability": "available",
+      "discovery": ".agents/skills",
+      "explicit_prefix": "/",
+      "invocation_source": "SKILL.md:disable-model-invocation"
+    }
+  },
+  "provider": {
+    "name": "matt-pocock-skills",
+    "repository": "mattpocock/skills",
+    "skills": [
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "user-only",
+          "github-copilot": "user-only"
+        },
+        "name": "setup-matt-pocock-skills",
+        "path": "skills/engineering/setup-matt-pocock-skills",
+        "requires_configuration": []
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "user-only",
+          "github-copilot": "user-only"
+        },
+        "name": "wayfinder",
+        "path": "skills/engineering/wayfinder",
+        "requires_configuration": [
+          "domain",
+          "issue-tracker"
+        ]
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "user-only",
+          "github-copilot": "user-only"
+        },
+        "name": "teach",
+        "path": "skills/productivity/teach",
+        "requires_configuration": []
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "name": "research",
+        "path": "skills/engineering/research",
+        "requires_configuration": []
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "user-only",
+          "github-copilot": "user-only"
+        },
+        "name": "to-spec",
+        "path": "skills/engineering/to-spec",
+        "requires_configuration": [
+          "domain",
+          "issue-tracker",
+          "triage-labels"
+        ]
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "user-only",
+          "github-copilot": "user-only"
+        },
+        "name": "to-tickets",
+        "path": "skills/engineering/to-tickets",
+        "requires_configuration": [
+          "domain",
+          "issue-tracker",
+          "triage-labels"
+        ]
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "user-only",
+          "github-copilot": "user-only"
+        },
+        "name": "implement",
+        "path": "skills/engineering/implement",
+        "requires_configuration": [
+          "issue-tracker"
+        ]
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "name": "tdd",
+        "path": "skills/engineering/tdd",
+        "requires_configuration": []
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "name": "code-review",
+        "path": "skills/engineering/code-review",
+        "requires_configuration": [
+          "issue-tracker"
+        ]
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "name": "grilling",
+        "path": "skills/productivity/grilling",
+        "requires_configuration": []
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "name": "domain-modeling",
+        "path": "skills/engineering/domain-modeling",
+        "requires_configuration": []
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "name": "prototype",
+        "path": "skills/engineering/prototype",
+        "requires_configuration": []
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "name": "codebase-design",
+        "path": "skills/engineering/codebase-design",
+        "requires_configuration": []
+      },
+      {
+        "invocation": {
+          "claude-code": "unavailable",
+          "codex": "user-only",
+          "github-copilot": "user-only"
+        },
+        "name": "triage",
+        "path": "skills/engineering/triage",
+        "requires_configuration": [
+          "domain",
+          "issue-tracker",
+          "triage-labels"
+        ]
+      }
+    ],
+    "version": "v1.2.3"
+  },
+  "schema_version": 4
+}
