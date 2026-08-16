@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a00742-d8fd-7e21-ba38-ff476e53185e"}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"project_instruction_paths\":null,\"available_skill_names\":[\"imagegen\",\"openai-docs\",\"plugin-creator\",\"skill-creator\",\"skill-installer\",\"notion:notion-knowledge-capture\",\"notion:notion-meeting-intelligence\",\"notion:notion-research-documentation\",\"notion:notion-spec-to-implementation\",\"plugin-management:plugin-management\"],\"controller_conversation_visible\":null,\"inherited_router_requirement\":null}"}}
-{"type":"turn.completed","usage":{"input_tokens":14068,"cached_input_tokens":9984,"output_tokens":156,"reasoning_output_tokens":62}}

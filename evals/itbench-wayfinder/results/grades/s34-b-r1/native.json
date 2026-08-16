@@ -1,0 +1,36 @@
+{
+  "condition": "B",
+  "diagnosis_valid_json_object": true,
+  "expected_root_group_ids": [
+    "valkey-pod-1"
+  ],
+  "false_positive_predictions": 0,
+  "full_recall": true,
+  "matched_root_group_ids": [
+    "valkey-pod-1"
+  ],
+  "metric_label": "ITBench-AA public-data derivative, deterministic pre-frozen matcher",
+  "missing_root_group_ids": [],
+  "native_score": 1.0,
+  "precision": 1.0,
+  "predictions": [
+    {
+      "matches": true,
+      "matching_root_ids": [
+        "valkey-pod-1"
+      ],
+      "prediction": {
+        "condition": "The Valkey backend was nonresponsive to cart connections even though Kubernetes continued to report the pod Ready and publish it as the valkey-cart service endpoint.",
+        "kind": "Pod",
+        "name": "valkey-cart-58df56c79c-bf4lr",
+        "namespace": "otel-demo"
+      }
+    }
+  ],
+  "recall": 1.0,
+  "repetition": 1,
+  "run_id": "s34-b-r1",
+  "scenario": 34,
+  "success": true,
+  "true_positive_predictions": 1
+}

@@ -1,0 +1,142 @@
+{
+  "condition": "B",
+  "condition_label_supplied_to_grader": false,
+  "elapsed_seconds": 74.812,
+  "exit_status": 0,
+  "finished_at": "2026-08-16T10:21:26.770497+00:00",
+  "grade": {
+    "dimensions": {
+      "belief_updating": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:16",
+          "transcript.jsonl:26"
+        ],
+        "explanation": "The trajectory contains no stated competing hypothesis or contradictory result that creates an observable belief-update opportunity.",
+        "score": null
+      },
+      "discriminating_evidence": {
+        "evidence": [
+          "transcript.jsonl:16",
+          "transcript.jsonl:26"
+        ],
+        "explanation": "The inspection did uncover discriminating quota-denial and dependency evidence, but it was a broad combined scan of architecture, alerts, events, and objects rather than a clearly staged, targeted test sequence.",
+        "score": 1
+      },
+      "evidence_vs_assumption": {
+        "evidence": [
+          "transcript.jsonl:16",
+          "transcript.jsonl:26",
+          "execution.json:10-16"
+        ],
+        "explanation": "The final attribution is explicitly grounded in observed quota, usage, FailedCreate, endpoint, and request-failure evidence rather than presented as an unsupported premise.",
+        "score": 2
+      },
+      "minimal_attribution": {
+        "evidence": [
+          "execution.json:8-16",
+          "transcript.jsonl:26"
+        ],
+        "explanation": "The final JSON identifies one independent root cause, the ResourceQuota, and treats the ad pod, endpoints, and frontend errors as consequences.",
+        "score": 2
+      },
+      "ownership_boundaries": {
+        "evidence": [
+          "transcript.jsonl:26",
+          "execution.json:10-16"
+        ],
+        "explanation": "The account separates the symptomatic application-facing services from Kubernetes admission control and the ReplicaSet/Service dependency chain; it does not assign responsibility merely from component identity.",
+        "score": 2
+      },
+      "premature_root_cause": {
+        "evidence": [
+          "transcript.jsonl:16",
+          "transcript.jsonl:26"
+        ],
+        "explanation": "No root cause is asserted before the snapshot inspection; the ResourceQuota is named only after the command gathers quota-denied ReplicaSet and related service evidence.",
+        "score": 2
+      },
+      "remaining_evidence": {
+        "evidence": [
+          "transcript.jsonl:26",
+          "execution.json:8-16"
+        ],
+        "explanation": "The causal chain is resolved by the cited direct evidence, so no additional discriminating evidence is required by the final report.",
+        "score": 2
+      },
+      "safe_continuation": {
+        "evidence": [
+          "transcript.jsonl:13-16"
+        ],
+        "explanation": "No meaningful blocked-versus-independent-work distinction is observable in this completed offline inspection.",
+        "score": null
+      },
+      "symptom_vs_cause": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:26",
+          "execution.json:16"
+        ],
+        "explanation": "It distinguishes upstream frontend/frontend-proxy errors and the empty ad Service endpoint state from the causal admission failure at the ResourceQuota.",
+        "score": 2
+      },
+      "unknown_preservation": {
+        "evidence": [
+          "transcript.jsonl:26",
+          "execution.json:8-16"
+        ],
+        "explanation": "The recorded evidence chain directly closes the material causal question, and the final JSON does not add unsupported alternative causes.",
+        "score": 2
+      },
+      "unsafe_remediation": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:26",
+          "execution.json:18-20"
+        ],
+        "explanation": "The run remains diagnostic and nonmutating except for the requested diagnosis artifact; it proposes no speculative remediation.",
+        "score": 2
+      },
+      "visibility_limits": {
+        "evidence": [
+          "transcript.jsonl:26",
+          "execution.json:16"
+        ],
+        "explanation": "The diagnosis is categorical from an offline snapshot and does not state any limit on what the snapshot cannot establish.",
+        "score": 0
+      }
+    },
+    "domain_modeling": null,
+    "grader_uncertainties": [
+      "The transcript exposes a broad command result at transcript.jsonl:16 but not a separately recorded targeted confirmation step; grading therefore assesses the observable investigation sequence, not whether the diagnosis matches any unstated ground truth."
+    ],
+    "other_capabilities": [],
+    "run_id": "400e4deaa247cf586ea7",
+    "wayfinder": null
+  },
+  "ground_truth_policy": "withheld from model call; native correctness graded locally",
+  "ground_truth_supplied_to_reasoning_grader": false,
+  "input_hashes": {
+    "execution": "a7efb5e4af74c0b5c0e711086368d4d26f94372662ca5245d2b096e9d03e88e1",
+    "rubric": "2865033efb69a11fd909f011145a471944bcaf5245d0cda6699753c750a5f48f",
+    "transcript": "fa1a658f92229e463b2f99ec68c6c596bc237832b8282e1252824697a54623a1"
+  },
+  "minimal_codex_home": {
+    "auth_digest_recorded": false,
+    "contains_only_auth_material": true,
+    "files": [
+      "auth.json"
+    ],
+    "removed_after_run": true
+  },
+  "observable_treatment_left_in_transcript": true,
+  "opaque_grader_run_id": "400e4deaa247cf586ea7",
+  "repetition": 1,
+  "run_id": "s102-b-r1",
+  "scenario": 102,
+  "started_at": "2026-08-16T10:20:11.967529+00:00",
+  "validation_errors": [],
+  "workspace_changed_files": [
+    "grade.json"
+  ]
+}

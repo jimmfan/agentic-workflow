@@ -1,0 +1,138 @@
+{
+  "condition": "A",
+  "condition_label_supplied_to_grader": false,
+  "elapsed_seconds": 73.279,
+  "exit_status": 0,
+  "finished_at": "2026-08-16T10:21:25.259007+00:00",
+  "grade": {
+    "dimensions": {
+      "belief_updating": {
+        "evidence": [
+          "transcript contains no explicitly stated competing hypothesis or later contradictory observation"
+        ],
+        "explanation": "No observable hypothesis-update opportunity is present.",
+        "score": null
+      },
+      "discriminating_evidence": {
+        "evidence": [
+          "transcript item_4 (line 11) jointly checks active alerts and Kubernetes warning events",
+          "transcript item_9 (line 20) specifically searches checkout/Kafka, failed recovery, NetworkChaos, and Schedule events"
+        ],
+        "explanation": "The event queries efficiently distinguish a controller-recovery failure from the observed service alerts and identify the earliest supported causal divergence.",
+        "score": 2
+      },
+      "evidence_vs_assumption": {
+        "evidence": [
+          "transcript item_4 (line 11) reports a Chaos Mesh recovery failure and unable-to-flush-ip-sets error for checkout",
+          "transcript item_9 (line 20) confirms the same warning event and NetworkChaos object",
+          "execution.json diagnosis.root_causes[0].condition and diagnosis.summary"
+        ],
+        "explanation": "The causal object and failed recovery are grounded in controller-event evidence, but the final summary states that the partition blocked checkout communication and that downstream timeouts produced 504s without a cited command output showing those particular links.",
+        "score": 1
+      },
+      "minimal_attribution": {
+        "evidence": [
+          "execution.json diagnosis.root_causes contains one entity: NetworkChaos/otel-demo-checkout-kafka-network-partition-wrbzf",
+          "transcript item_9 (line 20) directly ties that named object to the failed recovery"
+        ],
+        "explanation": "Only the controller object supported by the warning event is counted as a root cause; alerted service components are not added as independent causes.",
+        "score": 2
+      },
+      "ownership_boundaries": {
+        "evidence": [
+          "transcript item_4 (line 11) identifies alerts in namespace otel-demo and a controller event in chaos-mesh",
+          "execution.json diagnosis.root_causes[0] records the causal NetworkChaos in chaos-mesh and the affected checkout pod in otel-demo"
+        ],
+        "explanation": "The result separates the affected application path from the Chaos Mesh control object and records their distinct namespaces.",
+        "score": 2
+      },
+      "premature_root_cause": {
+        "evidence": [
+          "transcript item_8 (line 18) states the partition is being validated for exact object and scope",
+          "transcript item_9 (line 20) then retrieves the failed-recovery event before diagnosis.json is written in item_10 (line 22)"
+        ],
+        "explanation": "The only explicit causal statement is preceded by alert/event inspection and is followed by a targeted validation of the named NetworkChaos object.",
+        "score": 2
+      },
+      "remaining_evidence": {
+        "evidence": [
+          "execution.json diagnosis includes no confirmation step, remaining uncertainty, or next evidence requirement",
+          "transcript item_25 (line 25) only reports that the diagnosis was saved"
+        ],
+        "explanation": "Although the direct event is strong evidence, the final categorical claims beyond that event are not accompanied by proportionate confirmation or a discriminating next check.",
+        "score": 0
+      },
+      "safe_continuation": {
+        "evidence": [
+          "transcript item_5 (line 6) and item_7 (line 8) show failed shell filters, followed by successful independent queries in items_3, 4, and 9"
+        ],
+        "explanation": "There is no meaningful diagnostic dependency that blocks continuation; the command failures were operationally bypassed.",
+        "score": null
+      },
+      "symptom_vs_cause": {
+        "evidence": [
+          "transcript item_4 (line 11) observes frontend and frontend-proxy RequestErrorRate alerts alongside a Chaos Mesh recovery failure",
+          "execution.json diagnosis.root_causes lists only the NetworkChaos object while diagnosis.summary describes frontend and proxy timeouts downstream"
+        ],
+        "explanation": "The run treats alerting frontend components as downstream symptoms and names the failed NetworkChaos recovery as the causal entity.",
+        "score": 2
+      },
+      "unknown_preservation": {
+        "evidence": [
+          "transcript item_8 (line 18) says scope is still being validated",
+          "execution.json diagnosis.summary states the complete downstream timeout/504 chain categorically"
+        ],
+        "explanation": "The investigator temporarily kept object scope open, but the final diagnosis does not preserve the unsupported portions of the downstream causal chain.",
+        "score": 1
+      },
+      "unsafe_remediation": {
+        "evidence": [
+          "transcript items_1 through_9 (lines 4-20) are read-only inspections",
+          "execution.json contains only root_causes and summary, with no remediation action"
+        ],
+        "explanation": "The trajectory is diagnostic and nonmutating; it does not propose unsupported corrective changes.",
+        "score": 2
+      },
+      "visibility_limits": {
+        "evidence": [
+          "transcript item_3 (line 9) shows the investigation uses an offline snapshot",
+          "execution.json diagnosis.root_causes[0].condition states that the partition was left active; diagnosis.summary states categorical downstream effects"
+        ],
+        "explanation": "The trajectory does not state what the snapshot cannot confirm, while its final wording asserts ongoing partition state and a detailed downstream chain beyond the displayed controller warning and alert output.",
+        "score": 0
+      }
+    },
+    "domain_modeling": null,
+    "grader_uncertainties": [
+      "The transcript command outputs are partially truncated in the record, so this assessment does not treat unseen portions of item_5, item_6, or item_7 as evidence."
+    ],
+    "other_capabilities": [],
+    "run_id": "f258233d3924bc964fb8",
+    "wayfinder": null
+  },
+  "ground_truth_policy": "withheld from model call; native correctness graded locally",
+  "ground_truth_supplied_to_reasoning_grader": false,
+  "input_hashes": {
+    "execution": "f4eb55a94745bd72f02d3eda6c1270465f5f2afd089232674e44fde9e36b9069",
+    "rubric": "2865033efb69a11fd909f011145a471944bcaf5245d0cda6699753c750a5f48f",
+    "transcript": "25caab0ecc64cd4711941353bbfe7dbb2958d7a908cbd3660de5041ad9699a67"
+  },
+  "minimal_codex_home": {
+    "auth_digest_recorded": false,
+    "contains_only_auth_material": true,
+    "files": [
+      "auth.json"
+    ],
+    "removed_after_run": true
+  },
+  "observable_treatment_left_in_transcript": true,
+  "opaque_grader_run_id": "f258233d3924bc964fb8",
+  "repetition": 1,
+  "run_id": "s80-a-r1",
+  "scenario": 80,
+  "started_at": "2026-08-16T10:20:11.987596+00:00",
+  "validation_errors": [],
+  "workspace_changed_files": [
+    "grade.json"
+  ]
+}

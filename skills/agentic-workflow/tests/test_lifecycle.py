@@ -15,6 +15,7 @@ import unittest
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 ADOPT = PACKAGE_ROOT / "scripts" / "adopt.py"
 BOOTSTRAP = PACKAGE_ROOT / "scripts" / "bootstrap.py"
 LIFECYCLE = PACKAGE_ROOT / "scripts" / "lifecycle.py"
@@ -23,6 +24,8 @@ VERIFIER = PACKAGE_ROOT / "scripts" / "verify_package.py"
 MANAGED_BEGIN = b"<!-- ai-workflow:managed-begin -->\n"
 MANAGED_END = b"<!-- ai-workflow:managed-end -->\n"
 PROJECT_BEGIN = b"\n<!-- ai-workflow:project-instructions -->\n"
+WAYFINDER_ADAPTER_BEGIN = "<!-- agentic-workflow:wayfinder-local-state-v1:begin -->\n"
+WAYFINDER_ADAPTER_END = "<!-- agentic-workflow:wayfinder-local-state-v1:end -->\n\n"
 
 
 def run_script(
@@ -83,6 +86,117 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         package_copy = Path(self.temporary.name) / name / "agentic-workflow"
         shutil.copytree(PACKAGE_ROOT, package_copy)
         return package_copy
+
+    def keep_only_wayfinder_provider(self, package_copy: Path) -> None:
+        declaration = package_copy / "payload/ai-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        raw["provider"]["skills"] = [
+            item for item in raw["provider"]["skills"] if item["name"] == "wayfinder"
+        ]
+        raw["capabilities"] = {"planning": "wayfinder"}
+        declaration.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+
+    def declared_provider_names(self, package_root: Path = PACKAGE_ROOT) -> set[str]:
+        declaration = package_root / "payload/ai-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        return {item["name"] for item in raw["provider"]["skills"]}
+
+    def upstream_wayfinder_files(self) -> tuple[str, str]:
+        directory = REPOSITORY_ROOT / ".agents/skills/wayfinder"
+        skill_text = (directory / "SKILL.md").read_text(encoding="utf-8")
+        if WAYFINDER_ADAPTER_BEGIN in skill_text:
+            begin = skill_text.index(WAYFINDER_ADAPTER_BEGIN)
+            end = skill_text.index(WAYFINDER_ADAPTER_END, begin) + len(WAYFINDER_ADAPTER_END)
+            skill_text = skill_text[:begin] + skill_text[end:]
+        skill_text = skill_text.replace(
+            "description: Keep a lightweight structured map when important unknowns, decisions, "
+            "dependencies, blockers, or conflicting facts are becoming unreliable to hold in "
+            "ordinary context.\n",
+            "description: Plan a huge chunk of work — more than one agent session can hold — "
+            "as a shared map of decision tickets on your issue tracker, and resolve them one at "
+            "a time until the way to the destination is clear.\n",
+            1,
+        ).replace("disable-model-invocation: false\n", "disable-model-invocation: true\n", 1)
+        openai_text = (directory / "agents/openai.yaml").read_text(encoding="utf-8")
+        openai_text = openai_text.replace(
+            '  short_description: "Keep a lightweight map of complicated work"\n',
+            '  short_description: "Map a large effort as decision tickets"\n',
+            1,
+        ).replace("  allow_implicit_invocation: true\n", "  allow_implicit_invocation: false\n", 1)
+        return skill_text, openai_text
+
+    def write_fake_provider_skill(self, project: Path, name: str) -> None:
+        if name == "wayfinder":
+            self.write_upstream_wayfinder_metadata(project)
+            return
+        directory = project / ".agents/skills" / name
+        directory.mkdir(parents=True)
+        (directory / "SKILL.md").write_text(
+            "---\n"
+            f"description: Fake {name} provider skill.\n"
+            f"name: {name}\n"
+            "---\n"
+            "\n"
+            "Fake provider method.\n",
+            encoding="utf-8",
+        )
+
+    def fake_gh_provider_installer(
+        self,
+        name: str,
+        *,
+        fail_skill: str | None = None,
+        omit_skill: str | None = None,
+    ) -> Path:
+        wayfinder_skill, wayfinder_openai = self.upstream_wayfinder_files()
+        fake_bin = Path(self.temporary.name) / name
+        fake_bin.mkdir()
+        gh = fake_bin / "gh"
+        gh.write_text(
+            f"#!{sys.executable}\n"
+            "from pathlib import Path\n"
+            "import sys\n"
+            f"fail_skill = {fail_skill!r}\n"
+            f"omit_skill = {omit_skill!r}\n"
+            f"wayfinder_skill = {wayfinder_skill!r}\n"
+            f"wayfinder_openai = {wayfinder_openai!r}\n"
+            "skill_path = sys.argv[4]\n"
+            "skill_name = Path(skill_path).name\n"
+            "if skill_name == fail_skill:\n"
+            "    print(f'failed {skill_name}', file=sys.stderr)\n"
+            "    raise SystemExit(23)\n"
+            "if '--dir' not in sys.argv:\n"
+            "    print('missing staged --dir', file=sys.stderr)\n"
+            "    raise SystemExit(24)\n"
+            "if skill_name == omit_skill:\n"
+            "    raise SystemExit(0)\n"
+            "destination = Path(sys.argv[sys.argv.index('--dir') + 1]) / skill_name\n"
+            "(destination / 'agents').mkdir(parents=True)\n"
+            "repository = sys.argv[3]\n"
+            "version = sys.argv[sys.argv.index('--pin') + 1]\n"
+            "source_metadata = f\"metadata:\\n    github-path: {skill_path}\\n    github-pinned: {version}\\n    github-ref: refs/tags/{version}\\n    github-repo: https://github.com/{repository}\\n\"\n"
+            "if skill_name == 'wayfinder':\n"
+            "    skill_text = wayfinder_skill\n"
+            "    openai_text = wayfinder_openai\n"
+            "else:\n"
+            "    user_only = skill_name in {'setup-matt-pocock-skills', 'teach', 'to-spec', 'to-tickets', 'implement', 'triage'}\n"
+            "    disable = \"disable-model-invocation: true\\n\" if user_only else \"\"\n"
+            "    skill_text = f\"---\\ndescription: Fake {skill_name} provider skill.\\n{disable}\" + source_metadata + f\"name: {skill_name}\\n---\\n\\nFake provider method.\\n\"\n"
+            "    policy = \"policy:\\n  allow_implicit_invocation: false\\n\" if user_only else \"\"\n"
+            "    openai_text = f\"interface:\\n  display_name: \\\"{skill_name}\\\"\\n{policy}\"\n"
+            "(destination / 'SKILL.md').write_text(skill_text, encoding='utf-8')\n"
+            "(destination / 'agents/openai.yaml').write_text(openai_text, encoding='utf-8')\n",
+            encoding="utf-8",
+        )
+        gh.chmod(0o755)
+        return fake_bin
+
+    def write_upstream_wayfinder_metadata(self, project: Path) -> None:
+        directory = project / ".agents/skills/wayfinder"
+        (directory / "agents").mkdir(parents=True)
+        skill_text, openai_text = self.upstream_wayfinder_files()
+        (directory / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        (directory / "agents/openai.yaml").write_text(openai_text, encoding="utf-8")
 
     def test_install_creates_only_current_framework_and_empty_state_root(self) -> None:
         self.assert_ok(self.adopt("install"))
@@ -366,6 +480,218 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual((directory / "personal.txt").read_text(), "do not touch\n")
 
+    def test_fresh_lifecycle_projects_every_declared_provider_skill(self) -> None:
+        fake_bin = self.fake_gh_provider_installer("complete-provider-bin")
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}{os.pathsep}{env.get('PATH', '')}"
+
+        result = run_script(LIFECYCLE, "install", self.project, env=env)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        for name in self.declared_provider_names():
+            with self.subTest(skill=name):
+                self.assertTrue((self.project / ".agents/skills" / name / "SKILL.md").is_file())
+
+    def test_update_completes_an_existing_partial_provider_projection(self) -> None:
+        for name in {"setup-matt-pocock-skills", "wayfinder", "teach", "research"}:
+            self.write_fake_provider_skill(self.project, name)
+        fake_bin = self.fake_gh_provider_installer("partial-update-bin")
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}{os.pathsep}{env.get('PATH', '')}"
+
+        result = run_script(LIFECYCLE, "update", self.project, env=env)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        for name in self.declared_provider_names():
+            with self.subTest(skill=name):
+                self.assertTrue((self.project / ".agents/skills" / name / "SKILL.md").is_file())
+
+    def test_failed_provider_staging_does_not_commit_a_partial_prefix(self) -> None:
+        fake_bin = self.fake_gh_provider_installer("failed-stage-bin", fail_skill="grilling")
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}{os.pathsep}{env.get('PATH', '')}"
+
+        result = run_script(PROVIDERS, "install", self.project, env=env)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        for name in self.declared_provider_names():
+            self.assertFalse((self.project / ".agents/skills" / name).exists())
+
+    def test_provider_staging_rejects_a_successful_command_that_omits_a_declared_skill(self) -> None:
+        fake_bin = self.fake_gh_provider_installer("omitted-skill-bin", omit_skill="codebase-design")
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}{os.pathsep}{env.get('PATH', '')}"
+
+        result = run_script(PROVIDERS, "install", self.project, env=env)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("codebase-design", result.stderr)
+        for name in self.declared_provider_names():
+            self.assertFalse((self.project / ".agents/skills" / name).exists())
+
+    def test_provider_status_is_nonzero_while_declared_projection_is_incomplete(self) -> None:
+        result = run_script(PROVIDERS, "status", self.project)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("14 missing", result.stdout)
+
+    def test_lifecycle_status_reports_incomplete_provider_projection_without_failing_core(self) -> None:
+        self.assert_ok(self.adopt("install"))
+
+        result = run_script(LIFECYCLE, "status", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Agentic Workflow: healthy", result.stdout)
+        self.assertIn("Optional provider projection is incomplete", result.stderr)
+
+    def test_wayfinder_adapter_applies_after_fresh_provider_install(self) -> None:
+        package_copy = self.copy_package("fresh-wayfinder-adapter")
+        self.keep_only_wayfinder_provider(package_copy)
+        fake_bin = self.fake_gh_provider_installer("fresh-provider-bin")
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}{os.pathsep}{env.get('PATH', '')}"
+
+        result = run_script(package_copy / "scripts/providers.py", "install", self.project, env=env)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("verified Agentic Workflow adapter for wayfinder", result.stdout)
+        skill_text = (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8")
+        self.assertEqual(skill_text.count(WAYFINDER_ADAPTER_BEGIN), 1)
+        self.assertEqual(skill_text.count(WAYFINDER_ADAPTER_END), 1)
+        self.assertIn("The only canonical local representation", skill_text)
+        self.assertIn("Never force U# -> D# -> T# as ceremony", skill_text)
+        self.assertIn(
+            "disable-model-invocation: false",
+            (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8"),
+        )
+        self.assertIn(
+            "description: Keep a lightweight structured map",
+            (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8"),
+        )
+        self.assertIn(
+            "allow_implicit_invocation: true",
+            (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(encoding="utf-8"),
+        )
+        self.assertIn(
+            "short_description: \"Keep a lightweight map of complicated work\"",
+            (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(encoding="utf-8"),
+        )
+
+    def test_wayfinder_adapter_updates_existing_provider_idempotently_and_preserves_other_bytes(self) -> None:
+        package_copy = self.copy_package("existing-wayfinder-adapter")
+        self.keep_only_wayfinder_provider(package_copy)
+        self.write_upstream_wayfinder_metadata(self.project)
+        personal = self.project / ".agents/skills/wayfinder/personal.txt"
+        personal.write_text("preserve this project file\n", encoding="utf-8")
+
+        first = run_script(package_copy / "scripts/providers.py", "install", self.project)
+        second = run_script(package_copy / "scripts/providers.py", "install", self.project)
+
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
+        self.assertIn("applied Agentic Workflow adapter for wayfinder", first.stdout)
+        self.assertIn("verified Agentic Workflow adapter for wayfinder", second.stdout)
+        self.assertEqual(personal.read_text(encoding="utf-8"), "preserve this project file\n")
+        adapted = (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8")
+        self.assertEqual(adapted.count(WAYFINDER_ADAPTER_BEGIN), 1)
+        self.assertEqual(adapted.count(WAYFINDER_ADAPTER_END), 1)
+
+    def test_wayfinder_adapter_upgrades_the_recognized_read_only_loading_rule(self) -> None:
+        package_copy = self.copy_package("wayfinder-adapter-loading-upgrade")
+        self.keep_only_wayfinder_provider(package_copy)
+        self.write_upstream_wayfinder_metadata(self.project)
+        first = run_script(package_copy / "scripts/providers.py", "install", self.project)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+
+        skill = self.project / ".agents/skills/wayfinder/SKILL.md"
+        current = (
+            "that contract when Wayfinder is selected. Before an authorized durable-state\n"
+            "write, also read `.ai-workflow/contracts/durable-state.md`. These rules override\n"
+            "incompatible tracker-specific mechanics below. If the local contract is absent,\n"
+            "ignore this section and use the unchanged upstream method normally.\n"
+        )
+        legacy = (
+            "that contract and `.ai-workflow/contracts/durable-state.md` before local state\n"
+            "work. These rules override incompatible tracker-specific mechanics below. If\n"
+            "the local contract is absent, ignore this section and use the unchanged\n"
+            "upstream method normally.\n"
+        )
+        skill.write_text(skill.read_text(encoding="utf-8").replace(current, legacy, 1), encoding="utf-8")
+
+        status = run_script(package_copy / "scripts/providers.py", "status", self.project)
+        upgrade = run_script(package_copy / "scripts/providers.py", "install", self.project)
+
+        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
+        self.assertIn("0 ready, 1 pending, 0 incompatible", status.stdout)
+        self.assertEqual(upgrade.returncode, 0, upgrade.stdout + upgrade.stderr)
+        self.assertIn("applied Agentic Workflow adapter for wayfinder", upgrade.stdout)
+        upgraded = skill.read_text(encoding="utf-8")
+        self.assertIn(current, upgraded)
+        self.assertNotIn(legacy, upgraded)
+
+    def test_wayfinder_adapter_rejects_unexpected_metadata_without_partial_write(self) -> None:
+        package_copy = self.copy_package("incompatible-wayfinder-adapter")
+        self.keep_only_wayfinder_provider(package_copy)
+        self.write_upstream_wayfinder_metadata(self.project)
+        skill = self.project / ".agents/skills/wayfinder/SKILL.md"
+        openai = self.project / ".agents/skills/wayfinder/agents/openai.yaml"
+        openai.write_text("policy:\n  allow_implicit_invocation: ask\n", encoding="utf-8")
+        before_skill = skill.read_bytes()
+        before_openai = openai.read_bytes()
+
+        result = run_script(package_copy / "scripts/providers.py", "install", self.project)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("unexpected invocation metadata", result.stderr)
+        self.assertEqual(skill.read_bytes(), before_skill)
+        self.assertEqual(openai.read_bytes(), before_openai)
+
+    def test_wayfinder_adapter_rejects_a_modified_method_body_without_partial_write(self) -> None:
+        package_copy = self.copy_package("modified-wayfinder-method")
+        self.keep_only_wayfinder_provider(package_copy)
+        self.write_upstream_wayfinder_metadata(self.project)
+        skill = self.project / ".agents/skills/wayfinder/SKILL.md"
+        openai = self.project / ".agents/skills/wayfinder/agents/openai.yaml"
+        skill.write_text(
+            skill.read_text(encoding="utf-8").replace("A loose idea has arrived", "A changed idea has arrived", 1),
+            encoding="utf-8",
+        )
+        before_skill = skill.read_bytes()
+        before_openai = openai.read_bytes()
+
+        result = run_script(package_copy / "scripts/providers.py", "install", self.project)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("unexpected pinned method body", result.stderr)
+        self.assertEqual(skill.read_bytes(), before_skill)
+        self.assertEqual(openai.read_bytes(), before_openai)
+
+    def test_provider_status_reports_pending_wayfinder_adapter_without_writing(self) -> None:
+        package_copy = self.copy_package("pending-wayfinder-adapter")
+        self.keep_only_wayfinder_provider(package_copy)
+        self.write_upstream_wayfinder_metadata(self.project)
+        before = tree_snapshot(self.project / ".agents/skills/wayfinder")
+
+        result = run_script(package_copy / "scripts/providers.py", "status", self.project)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("0 ready, 1 pending, 0 incompatible", result.stdout)
+        self.assertEqual(tree_snapshot(self.project / ".agents/skills/wayfinder"), before)
+
+    def test_provider_remove_distinguishes_and_preserves_adapted_wayfinder(self) -> None:
+        package_copy = self.copy_package("remove-wayfinder-adapter")
+        self.keep_only_wayfinder_provider(package_copy)
+        self.write_upstream_wayfinder_metadata(self.project)
+        install = run_script(package_copy / "scripts/providers.py", "install", self.project)
+        self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
+        before = tree_snapshot(self.project / ".agents/skills/wayfinder")
+
+        result = run_script(package_copy / "scripts/providers.py", "remove", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("wayfinder (ready)", result.stdout)
+        self.assertEqual(tree_snapshot(self.project / ".agents/skills/wayfinder"), before)
+
     def test_cp1252_console_escapes_unrepresentable_project_path(self) -> None:
         project = Path(self.temporary.name) / "project-snow-\u96ea"
         project.mkdir()
@@ -425,10 +751,26 @@ class LifecycleAcceptanceTests(unittest.TestCase):
                 self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
                 self.assertIn(expected, verify.stderr)
 
+    def test_verifier_requires_the_wayfinder_local_state_adapter(self) -> None:
+        package_copy = self.copy_package("wayfinder-adapter-declaration")
+        declaration = package_copy / "payload/ai-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        wayfinder = next(item for item in raw["provider"]["skills"] if item["name"] == "wayfinder")
+        wayfinder.pop("agentic_workflow_adapter")
+        wayfinder["invocation"]["codex"] = "user-only"
+        wayfinder["invocation"]["github-copilot"] = "user-only"
+        declaration.write_text(json.dumps(raw), encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("Wayfinder must declare", verify.stderr)
+
     def test_verifier_rejects_removed_subsystem_recreated_as_a_file(self) -> None:
         package_copy = self.copy_package("removed-runtime")
         removed_path = package_copy / "payload/hosts"
-        removed_path.rmdir()
+        if removed_path.exists():
+            removed_path.rmdir()
         removed_path.write_text("retired runtime payload\n", encoding="utf-8")
 
         verify = run_script(package_copy / "scripts/verify_package.py")

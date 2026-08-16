@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "exactly_one_attempt_started_model": true,
+    "historical_evidence_unchanged": true,
+    "no_extra_workspace_files": true,
+    "only_diagnosis_changed": true,
+    "protocol_unchanged": true,
+    "runner_unchanged": true,
+    "scenario_17_only": true,
+    "snapshot_unchanged": true
+  },
+  "created_at": "2026-08-16T22:06:23.303308+00:00",
+  "status": "passed"
+}

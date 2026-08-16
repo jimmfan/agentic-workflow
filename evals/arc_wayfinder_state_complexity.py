@@ -31,6 +31,7 @@ PHASE_2_MUTATION_ROOT = SCENARIO_ROOT / "phase-2-mutation"
 PHASE_3_MUTATION_ROOT = SCENARIO_ROOT / "phase-3-mutation"
 PHASE_5_MUTATION_ROOT = SCENARIO_ROOT / "phase-5-mutation"
 RESULTS_ROOT = EVAL_ROOT / "results" / CAMPAIGN_ID
+ARTIFACTS_ROOT = EVAL_ROOT / "artifacts" / CAMPAIGN_ID
 FREEZE_PATH = RESULTS_ROOT / "frozen-evaluator.json"
 ISOLATION_AUDIT_PATH = RESULTS_ROOT / "context-isolation-audit.json"
 RUN_ROOT = Path(tempfile.gettempdir()) / "agentic-workflow-arc-wayfinder-state-complexity-v1"
@@ -1160,6 +1161,10 @@ def directory_size(root: Path) -> int:
     return sum(path.stat().st_size for path in root.rglob("*") if path.is_file())
 
 
+def artifact_root_for(results_root: Path) -> Path:
+    return ARTIFACTS_ROOT if results_root == RESULTS_ROOT else results_root / ".artifacts"
+
+
 def run_codex_phase(
     state: dict[str, Any],
     *,
@@ -1211,7 +1216,7 @@ def run_codex_phase(
     finally:
         shutil.rmtree(codex_home, ignore_errors=True)
     elapsed = time.monotonic() - started
-    execution_root = result_run_root(str(state["run_id"]), results_root) / "raw"
+    execution_root = artifact_root_for(results_root) / "runs" / str(state["run_id"]) / "raw"
     execution_root.mkdir(parents=True, exist_ok=True)
     stdout_path = execution_root / f"phase-{phase}.jsonl"
     stderr_path = execution_root / f"phase-{phase}.stderr.txt"
@@ -1336,7 +1341,7 @@ def audit_auto_isolation(
     verify_frozen_evaluator()
     manifest = campaign()
     probe_root = Path(tempfile.mkdtemp(prefix="arc-wayfinder-state-isolation-", dir="/private/tmp"))
-    raw_root = RESULTS_ROOT / "isolation-audit"
+    raw_root = ARTIFACTS_ROOT / "isolation-audit"
     raw_root.mkdir(parents=True, exist_ok=True)
     sibling_sentinels = {condition: f"SIBLING_{condition}_{uuid.uuid4().hex.upper()}" for condition in CONDITIONS}
     condition_records: dict[str, Any] = {}
@@ -1753,7 +1758,13 @@ def record_phase(
         )
 
     artifact_root = result_run_root(run_id, results_root)
-    archive_path = artifact_root / "snapshots" / f"phase-{phase}.tar.gz"
+    archive_path = (
+        artifact_root_for(results_root)
+        / "runs"
+        / run_id
+        / "snapshots"
+        / f"phase-{phase}.tar.gz"
+    )
     snapshot_archive(workspace, archive_path)
     evidence = {
         "schema_version": 2,

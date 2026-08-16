@@ -1,0 +1,18 @@
+job_name: 2026-08-15-harbor-infra-smoke-b
+jobs_dir: evals/harbor/jobs
+n_concurrent_trials: 1
+retry:
+  max_retries: 0
+environment:
+  type: docker
+agents:
+  - import_path: harbor_agents:AgenticWorkflowCodex
+    model_name: gpt-5.6-sol
+    kwargs:
+      version: 0.144.6
+      reasoning_effort: high
+      source_revision: 37e35b0be95b1b835f460af15187c91d915ca4dc
+datasets:
+  - name: harbor/hello-world
+    ref: sha256:d10e96e201d6816b22553504e06e7de0153a26381e808d11404cbca530b9d388
+

@@ -78,6 +78,13 @@ The suite prioritizes behavior that matters before 1.0:
   partial mutation;
 - symlink/root/archive traversal boundaries remain enforced;
 - provider failure leaves a successful core install usable;
+- fresh install projects every declared provider skill, update completes an
+  existing partial projection, and a failed or incomplete staging attempt
+  commits none of the missing declared set;
+- the Wayfinder local-mode adapter applies after fresh provider installation,
+  updates exact upstream content idempotently, preserves unrelated provider
+  bytes, rejects changed method bodies or metadata without a partial write,
+  distinguishes adapted content during remove, and keeps status read-only;
 - ASCII output remains writable on a cp1252 console; and
 - mapped payload content changes require no metadata refresh, while an added,
   removed, or remapped payload file fails the release gate until the explicit

@@ -27,8 +27,14 @@ loaded routing contract are the runtime; there is no separate controller.
 - Choose the minimum useful process. Keep clear, bounded, low-risk work direct.
 - Choose one dominant workflow or activity and add only supporting capabilities
   that materially help; availability alone is not a reason to invoke one.
+- Re-evaluate the route as work unfolds. When several important unknowns,
+  decisions, dependencies, blockers, or conflicting facts are becoming unsafe
+  to hold only in conversational context, Wayfinder may start or resume
+  automatically if durable project notes are authorized. Do not wait for the
+  user to notice the transition, and do not use Wayfinder for ordinary bounded
+  complexity.
 - Honor explicitly named installed skills, subject to authorization and host
-  compatibility.
+  compatibility. Honor an explicit instruction not to use Wayfinder.
 - Reuse trustworthy evidence and prefer provider-owned methodology over repeated
   framework stages.
 - Load detailed policy and context only after it becomes relevant to the route.

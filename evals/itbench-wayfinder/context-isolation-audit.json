@@ -1,0 +1,113 @@
+{
+  "conditions": {
+    "A": {
+      "checks": {
+        "a_has_no_workflow_context": true,
+        "codex_succeeded": true,
+        "controller_conversation_not_reported": true,
+        "probe_made_no_workspace_change": true,
+        "response_json_object": true,
+        "sibling_sentinel_not_reported": true,
+        "unique_minimal_codex_home_removed": true
+      },
+      "execution_id": "01a00933-fe95-7630-b6d7-7adfcdfc71da",
+      "response": {
+        "available_skill_names": [
+          "imagegen",
+          "openai-docs",
+          "plugin-creator",
+          "skill-creator",
+          "skill-installer"
+        ],
+        "controller_conversation_excerpt": null,
+        "inherited_cloud_credentials": null,
+        "project_instruction_paths": null,
+        "sibling_sentinel": null
+      }
+    },
+    "B": {
+      "checks": {
+        "codex_succeeded": true,
+        "controller_conversation_not_reported": true,
+        "probe_made_no_workspace_change": true,
+        "response_json_object": true,
+        "sibling_sentinel_not_reported": true,
+        "unique_minimal_codex_home_removed": true,
+        "workflow_installation_present": true
+      },
+      "execution_id": "01a00934-160c-7923-a88b-0f089ef00aed",
+      "response": {
+        "available_skill_names": [
+          "imagegen",
+          "openai-docs",
+          "plugin-creator",
+          "skill-creator",
+          "skill-installer",
+          "code-review",
+          "codebase-design",
+          "domain-modeling",
+          "grilling",
+          "prototype",
+          "research",
+          "tdd",
+          "wayfinder",
+          "workflow-debugging",
+          "workflow-discovery",
+          "workflow-implementation",
+          "workflow-verification"
+        ],
+        "controller_conversation_excerpt": null,
+        "inherited_cloud_credentials": null,
+        "project_instruction_paths": [
+          "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/.itbench-wayfinder-v1-controller-76df38a82288/isolation-f0a13cba3df942cc86d9cbc41211e15b/B/workspace/AGENTS.md"
+        ],
+        "sibling_sentinel": null
+      }
+    },
+    "C": {
+      "checks": {
+        "codex_succeeded": true,
+        "controller_conversation_not_reported": true,
+        "probe_made_no_workspace_change": true,
+        "response_json_object": true,
+        "sibling_sentinel_not_reported": true,
+        "unique_minimal_codex_home_removed": true,
+        "workflow_installation_present": true
+      },
+      "execution_id": "01a00934-373f-7132-9529-c996241bcd6c",
+      "response": {
+        "available_skill_names": [
+          "imagegen",
+          "openai-docs",
+          "plugin-creator",
+          "skill-creator",
+          "skill-installer",
+          "code-review",
+          "codebase-design",
+          "domain-modeling",
+          "grilling",
+          "prototype",
+          "research",
+          "tdd",
+          "wayfinder",
+          "workflow-debugging",
+          "workflow-discovery",
+          "workflow-implementation",
+          "workflow-verification"
+        ],
+        "controller_conversation_excerpt": null,
+        "inherited_cloud_credentials": null,
+        "project_instruction_paths": [
+          "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/.itbench-wayfinder-v1-controller-76df38a82288/isolation-f0a13cba3df942cc86d9cbc41211e15b/C/workspace/AGENTS.md"
+        ],
+        "sibling_sentinel": null
+      }
+    }
+  },
+  "created_at": "2026-08-16T06:13:40.981086+00:00",
+  "cross_checks": {
+    "all_condition_checks_pass": true,
+    "all_execution_ids_unique": true
+  },
+  "status": "passed"
+}

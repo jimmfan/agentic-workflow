@@ -207,7 +207,7 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertFalse(progressive.passed)
         self.assertIn("U1-name-telemetry-metric.md", progressive.detail)
 
-    def test_wayfinder_new_effort_is_demand_driven_and_rejects_provider_execution_claim(self) -> None:
+    def test_wayfinder_new_effort_is_demand_driven_and_allows_implicit_provider_execution(self) -> None:
         scenario = next(
             item for item in behavior.load_scenarios() if item.id == "wayfinder-new-effort"
         )
@@ -215,29 +215,9 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertNotIn("$wayfinder", request)
         self.assertNotIn("/wayfinder", request)
         self.assertNotIn("create a wayfinder map", request)
-        self.assertIn("claim_unexecuted_provider", scenario.must_not)
-
-        with tempfile.TemporaryDirectory() as temporary:
-            workspace = behavior.copy_fixture(scenario, Path(temporary))
-            before = behavior.snapshot(workspace)
-            evidence = behavior.RunEvidence(
-                scenario=scenario,
-                workspace=workspace,
-                before=before,
-                after=before,
-                stdout="",
-                stderr="",
-                returncode=0,
-                report={"status": "success", "providers_executed": ["wayfinder"]},
-                verification=(),
-                route_components=(),
-            )
-            results = behavior.evaluate(evidence)
-        provider_claim = next(
-            result for result in results if result.name == "must-not:claim_unexecuted_provider"
-        )
-        self.assertFalse(provider_claim.passed)
-        self.assertIn("wayfinder", provider_claim.detail)
+        self.assertNotIn("claim_unexecuted_provider", scenario.must_not)
+        self.assertIn("unresolved ordering", request)
+        self.assertIn("while part of the plan is blocked", request)
 
     def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(self) -> None:
         scenario = next(

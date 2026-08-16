@@ -1,4 +1,0 @@
-2026-08-15T23:14:53.236133Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-e2e-v2/arc-v2-a-1-f3d63c2258/repo/terraform/main.tf:
-# TODO: resolve the approved runner AMI through SSM. The compute resources must
-# wait for approved instance-family, isolation, and provisioning decisions.
-2026-08-15T23:15:45.966331Z ERROR codex_core::tools::router: error=exec_command failed for `/bin/zsh -lc "grep -n 'platform-facts\\|3 tests\\|6 tests\\|passed on' docs/arc-runner-migration-handoff.md; rm -rf tests/__pycache__; git status --short"`: CreateProcess { message: "Rejected(\"`/bin/zsh -lc \\\"grep -n 'platform-facts\\\\\\\\|3 tests\\\\\\\\|6 tests\\\\\\\\|passed on' docs/arc-runner-migration-handoff.md; rm -rf tests/__pycache__; git status --short\\\"` rejected: rm -f style commands are not permitted. Use a safer approach\")" }

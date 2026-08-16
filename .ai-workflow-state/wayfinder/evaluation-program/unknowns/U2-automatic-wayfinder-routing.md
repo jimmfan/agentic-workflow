@@ -27,9 +27,18 @@ If structured Wayfinder state proves useful, can Agentic Workflow recognize the 
   intentionally omitted a neutral Agentic Workflow arm. It adds no automatic
   selection evidence and must not be used to change routing.
 
+- `itbench-wayfinder-v1` supplies 18 repeatable neutral-routing observations on
+  bounded offline SRE diagnosis. B selected Workflow Debugging in 18/18 and
+  Wayfinder in 0/18. Explicit Wayfinder C did not improve strict correctness or
+  reasoning over B and added token/process overhead without durable state. This
+  supports non-selection for this bounded task class; it does not identify the
+  threshold for genuinely long-lived work.
+
 ## Resolution
 
 Keep open and make no routing change. V2 supplies a neutral-prompt selection
-observation but not evidence of incremental net value. A future design must
-separate automatic selection from an explicitly supported non-Wayfinder
-Agentic Workflow treatment before candidate recognition signals are changed.
+observation but not evidence of incremental net value. The controlled ITBench
+campaign supports the current non-selection behavior for bounded incident
+diagnosis. A future long-lived design must still separate automatic selection
+from an explicitly supported non-Wayfinder Agentic Workflow treatment before
+candidate recognition signals are changed.

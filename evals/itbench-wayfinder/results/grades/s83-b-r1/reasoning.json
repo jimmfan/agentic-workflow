@@ -1,0 +1,148 @@
+{
+  "condition": "B",
+  "condition_label_supplied_to_grader": false,
+  "elapsed_seconds": 93.86,
+  "exit_status": 0,
+  "finished_at": "2026-08-16T10:26:07.961247+00:00",
+  "grade": {
+    "dimensions": {
+      "belief_updating": {
+        "evidence": [
+          "transcript.jsonl:17",
+          "transcript.jsonl:42",
+          "transcript.jsonl:45"
+        ],
+        "explanation": "The trajectory narrows candidates, but no explicit hypothesis is contradicted and revised, so a belief-update opportunity is not observable.",
+        "score": null
+      },
+      "discriminating_evidence": {
+        "evidence": [
+          "transcript.jsonl:15-16",
+          "transcript.jsonl:18-44",
+          "transcript.jsonl:42"
+        ],
+        "explanation": "It gathers alert, architecture, event/object, log, and trace evidence, then directly tests the plausible network-policy/Chaos Mesh boundary rather than stopping at workload errors.",
+        "score": 2
+      },
+      "evidence_vs_assumption": {
+        "evidence": [
+          "transcript.jsonl:17",
+          "transcript.jsonl:42",
+          "transcript.jsonl:43-45",
+          "execution.json:8-16"
+        ],
+        "explanation": "The trajectory first frames the suspected alert/dependency relationship, then reports the observed TCP failure boundary and inspects the relevant policy/chaos objects before making the final attribution.",
+        "score": 2
+      },
+      "minimal_attribution": {
+        "evidence": [
+          "transcript.jsonl:45",
+          "execution.json:8-16"
+        ],
+        "explanation": "The final JSON names one root-cause entity, the recurring Schedule, while retaining downstream NetworkChaos and application timeout effects in the causal chain rather than as independent causes.",
+        "score": 2
+      },
+      "ownership_boundaries": {
+        "evidence": [
+          "transcript.jsonl:42",
+          "execution.json:10-16"
+        ],
+        "explanation": "The final attribution distinguishes application symptoms from the Chaos Mesh Schedule in the chaos-mesh namespace that imposed the network isolation.",
+        "score": 2
+      },
+      "premature_root_cause": {
+        "evidence": [
+          "transcript.jsonl:17",
+          "transcript.jsonl:42",
+          "transcript.jsonl:45"
+        ],
+        "explanation": "Before declaring a cause, it keeps the chaos timing distinction open and explicitly seeks the entity imposing isolation; root-cause language follows the discriminating inspection.",
+        "score": 2
+      },
+      "remaining_evidence": {
+        "evidence": [
+          "transcript.jsonl:42",
+          "transcript.jsonl:45-50",
+          "execution.json:16"
+        ],
+        "explanation": "The evidence supports a resolved snapshot diagnosis, but the final response supplies no proportionate confirmation step for the inferred repeated schedule-to-partition relationship.",
+        "score": 1
+      },
+      "safe_continuation": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:45-50"
+        ],
+        "explanation": "No meaningful blocked-versus-independently-continuable work distinction is observable in this completed read-only trajectory.",
+        "score": null
+      },
+      "symptom_vs_cause": {
+        "evidence": [
+          "transcript.jsonl:42",
+          "transcript.jsonl:45",
+          "execution.json:10-16"
+        ],
+        "explanation": "It treats checkout/email and frontend-proxy failures as timeout propagation, and identifies the Schedule rather than the affected workloads as the independent cause.",
+        "score": 2
+      },
+      "unknown_preservation": {
+        "evidence": [
+          "transcript.jsonl:17",
+          "transcript.jsonl:42"
+        ],
+        "explanation": "The agent explicitly separates a prior completed experiment from conditions during the alert window and leaves the policy-versus-chaos mechanism open until inspected.",
+        "score": 2
+      },
+      "unsafe_remediation": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:45-50",
+          "execution.json:18-20"
+        ],
+        "explanation": "The run is explicitly read-only, makes no remediation recommendation, and records only diagnosis.json as a workspace change.",
+        "score": 2
+      },
+      "visibility_limits": {
+        "evidence": [
+          "transcript.jsonl:17",
+          "transcript.jsonl:36-41",
+          "execution.json:16"
+        ],
+        "explanation": "The investigation limits its temporal claims to the alert-window snapshot and distinguishes earlier activity, but it does not explicitly state the residual limits of snapshot-only evidence in the final diagnosis.",
+        "score": 1
+      }
+    },
+    "domain_modeling": null,
+    "grader_uncertainties": [
+      "Transcript event 43's command output establishes the relevant object inspection, but the transcript excerpt does not preserve a compact standalone rendering of all matching object fields; the assessment relies only on the reported boundary and the final diagnosis fields."
+    ],
+    "other_capabilities": [],
+    "run_id": "fe7087a89ccd94a466d2",
+    "wayfinder": null
+  },
+  "ground_truth_policy": "withheld from model call; native correctness graded locally",
+  "ground_truth_supplied_to_reasoning_grader": false,
+  "input_hashes": {
+    "execution": "3c627b4f8cabaf4c808f97f08bf2ad07275b9a014ddd30759ab938da02684fdd",
+    "rubric": "2865033efb69a11fd909f011145a471944bcaf5245d0cda6699753c750a5f48f",
+    "transcript": "96042e73c82aee5f2e34be44b9fcf39c5b1ddefa35225aae53f422cd71f2d834"
+  },
+  "minimal_codex_home": {
+    "auth_digest_recorded": false,
+    "contains_only_auth_material": true,
+    "files": [
+      "auth.json"
+    ],
+    "removed_after_run": true
+  },
+  "observable_treatment_left_in_transcript": true,
+  "opaque_grader_run_id": "fe7087a89ccd94a466d2",
+  "repetition": 1,
+  "run_id": "s83-b-r1",
+  "scenario": 83,
+  "started_at": "2026-08-16T10:24:34.100496+00:00",
+  "validation_errors": [],
+  "workspace_changed_files": [
+    "grade.json"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "condition": "A",
+  "diagnosis_valid_json_object": true,
+  "expected_root_group_ids": [
+    "otel-demo-namespace-1"
+  ],
+  "false_positive_predictions": 1,
+  "full_recall": false,
+  "matched_root_group_ids": [],
+  "metric_label": "ITBench-AA public-data derivative, deterministic pre-frozen matcher",
+  "missing_root_group_ids": [
+    "otel-demo-namespace-1"
+  ],
+  "native_score": 0.0,
+  "precision": 0.0,
+  "predictions": [
+    {
+      "matches": false,
+      "matching_root_ids": [],
+      "prediction": {
+        "condition": "Its hard memory quota is 1503238553600m (about 1.4 GiB), already below the namespace's 1901Mi requested-memory usage, so it rejects the ad Pod's additional 225Mi request.",
+        "kind": "ResourceQuota",
+        "name": "otel-demo-memory",
+        "namespace": "otel-demo"
+      }
+    }
+  ],
+  "recall": 0.0,
+  "repetition": 3,
+  "run_id": "s102-a-r3",
+  "scenario": 102,
+  "success": false,
+  "true_positive_predictions": 0
+}

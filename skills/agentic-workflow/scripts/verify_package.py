@@ -209,6 +209,9 @@ def check_router_contract() -> None:
         "tickets/",
         "Do not read every child file",
         "Do not create or update `.ai-workflow-state/active.md`",
+        "force every U# to produce a D# or every D# to produce a T#",
+        "Wayfinder owns durable coordination, not an execution monopoly",
+        "either capability ceremonially",
     ):
         require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")
     combined = agents + routing + durable + wayfinder
@@ -221,7 +224,7 @@ def check_router_contract() -> None:
 def check_provider_declaration() -> None:
     path = PAYLOAD_ROOT / "ai-workflow" / "providers.json"
     raw = json.loads(path.read_text(encoding="utf-8"))
-    require(isinstance(raw, dict) and raw.get("schema_version") == 4, "unsupported provider declaration")
+    require(isinstance(raw, dict) and raw.get("schema_version") == 5, "unsupported provider declaration")
     provider = raw.get("provider")
     capabilities = raw.get("capabilities")
     hosts = raw.get("hosts")
@@ -260,7 +263,33 @@ def check_provider_declaration() -> None:
             all(isinstance(policy, str) and policy in INVOCATION_POLICIES for policy in invocation.values()),
             f"invalid invocation policy for {name}",
         )
+        adapter = item.get("agentic_workflow_adapter")
+        require(
+            adapter is None or isinstance(adapter, dict),
+            f"provider skill {name} agentic_workflow_adapter must be an object",
+        )
+        if isinstance(adapter, dict):
+            require(
+                set(adapter) == {"name", "upstream_body_sha256"}
+                and adapter.get("name") == "wayfinder-local-state-v1"
+                and isinstance(adapter.get("upstream_body_sha256"), str)
+                and re.fullmatch(r"[0-9a-f]{64}", adapter["upstream_body_sha256"]) is not None
+                and name == "wayfinder"
+                and
+                invocation.get("codex") == "implicit"
+                and invocation.get("github-copilot") == "implicit"
+                and invocation.get("claude-code") == "unavailable",
+                f"provider skill {name} adapter does not match supported host policies",
+            )
     require(set(capabilities.values()) <= names, "capability points to an undeclared provider skill")
+    wayfinder = next((item for item in skills if item.get("name") == "wayfinder"), None)
+    require(
+        isinstance(wayfinder, dict)
+        and wayfinder.get("agentic_workflow_adapter", {}).get("name") == "wayfinder-local-state-v1"
+        and wayfinder.get("invocation", {}).get("codex") == "implicit"
+        and wayfinder.get("invocation", {}).get("github-copilot") == "implicit",
+        "Wayfinder must declare the Agentic Workflow local-state adapter",
+    )
 
 
 def check_scenario_catalogs() -> None:

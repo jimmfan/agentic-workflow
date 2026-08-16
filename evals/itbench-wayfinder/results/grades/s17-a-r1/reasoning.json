@@ -1,0 +1,142 @@
+{
+  "condition": "A",
+  "condition_label_supplied_to_grader": false,
+  "elapsed_seconds": 69.003,
+  "exit_status": 0,
+  "finished_at": "2026-08-16T10:27:36.340115+00:00",
+  "grade": {
+    "dimensions": {
+      "belief_updating": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:42"
+        ],
+        "explanation": "The transcript contains no explicit earlier causal hypothesis that later evidence could confirm, reject, or revise.",
+        "score": null
+      },
+      "discriminating_evidence": {
+        "evidence": [
+          "transcript.jsonl:10-12",
+          "transcript.jsonl:26-40",
+          "transcript.jsonl:14-19"
+        ],
+        "explanation": "The agent obtains useful discriminating evidence across the failure path and Chaos resources, but repeats closely related object searches and spends several commands on unavailable command discovery, creating meaningful process overhead.",
+        "score": 1
+      },
+      "evidence_vs_assumption": {
+        "evidence": [
+          "transcript.jsonl:12-40",
+          "transcript.jsonl:42",
+          "execution.json:8-16"
+        ],
+        "explanation": "The diagnosis follows targeted inspections of events, objects, logs, alerts, architecture, and Chaos/Schedule references. The final causal claims align with the recorded single root-cause object and summary rather than an earlier unsupported assertion.",
+        "score": 2
+      },
+      "minimal_attribution": {
+        "evidence": [
+          "transcript.jsonl:42",
+          "execution.json:8-16"
+        ],
+        "explanation": "The final JSON names one independent causal entity\u2014the Schedule\u2014and explicitly excludes the proxy and dependent services from the root-cause set.",
+        "score": 2
+      },
+      "ownership_boundaries": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:42",
+          "execution.json:10-16"
+        ],
+        "explanation": "It distinguishes the causal Chaos Mesh Schedule from the targeted product-catalog workload and the downstream proxy/dependent services.",
+        "score": 2
+      },
+      "premature_root_cause": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:10-40",
+          "transcript.jsonl:42"
+        ],
+        "explanation": "The opening states an investigation plan, not a cause. Root-cause language appears only after the agent inspects timeout evidence and Chaos/Schedule relationships.",
+        "score": 2
+      },
+      "remaining_evidence": {
+        "evidence": [
+          "transcript.jsonl:42-47",
+          "execution.json:8-16"
+        ],
+        "explanation": "The case is presented as resolved, but the final update and JSON do not identify proportionate confirmation evidence for the asserted schedule-to-timeout linkage.",
+        "score": 1
+      },
+      "safe_continuation": {
+        "evidence": [
+          "transcript.jsonl:3-47"
+        ],
+        "explanation": "No meaningful blocked-versus-independent-work distinction is observable in this offline, completed investigation.",
+        "score": null
+      },
+      "symptom_vs_cause": {
+        "evidence": [
+          "transcript.jsonl:26-40",
+          "transcript.jsonl:42",
+          "execution.json:16"
+        ],
+        "explanation": "The agent investigates product-catalog timeout evidence and the injecting resources, then explicitly classifies proxy and dependent-service failures as downstream symptoms.",
+        "score": 2
+      },
+      "unknown_preservation": {
+        "evidence": [
+          "transcript.jsonl:12-40",
+          "execution.json:8-16"
+        ],
+        "explanation": "The trajectory gathers direct schedule, NetworkChaos, event, and timeout evidence before closing on one cause; no remaining material alternative is observable in the final causal set.",
+        "score": 2
+      },
+      "unsafe_remediation": {
+        "evidence": [
+          "transcript.jsonl:3-42",
+          "execution.json:18-20"
+        ],
+        "explanation": "The run is diagnostic and nonmutating apart from writing its diagnosis artifact; it makes no speculative operational remediation recommendation.",
+        "score": 2
+      },
+      "visibility_limits": {
+        "evidence": [
+          "transcript.jsonl:3",
+          "transcript.jsonl:42",
+          "execution.json:16"
+        ],
+        "explanation": "The agent explicitly scopes itself to the offline capture, but neither the progress update nor final summary explains what that snapshot cannot establish or offers calibrated confirmation.",
+        "score": 1
+      }
+    },
+    "domain_modeling": null,
+    "grader_uncertainties": [],
+    "other_capabilities": [],
+    "run_id": "9fc0908bb100845427ea",
+    "wayfinder": null
+  },
+  "ground_truth_policy": "withheld from model call; native correctness graded locally",
+  "ground_truth_supplied_to_reasoning_grader": false,
+  "input_hashes": {
+    "execution": "ac8ae4573568bff7a07ed1b7ebbdf9586334268770b1275b8457f5cd42e64b22",
+    "rubric": "2865033efb69a11fd909f011145a471944bcaf5245d0cda6699753c750a5f48f",
+    "transcript": "c7f6be8d1c662919c47acee68c265325f11e431560c72861f45c81b8f3d41741"
+  },
+  "minimal_codex_home": {
+    "auth_digest_recorded": false,
+    "contains_only_auth_material": true,
+    "files": [
+      "auth.json"
+    ],
+    "removed_after_run": true
+  },
+  "observable_treatment_left_in_transcript": true,
+  "opaque_grader_run_id": "9fc0908bb100845427ea",
+  "repetition": 1,
+  "run_id": "s17-a-r1",
+  "scenario": 17,
+  "started_at": "2026-08-16T10:26:27.335570+00:00",
+  "validation_errors": [],
+  "workspace_changed_files": [
+    "grade.json"
+  ]
+}

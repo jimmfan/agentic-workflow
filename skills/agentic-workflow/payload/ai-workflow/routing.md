@@ -23,7 +23,7 @@ Keep four decisions separate:
 |---|---|---|
 | User explicitly names an installed skill | Named skill | Honor it unless authorization, safety, or host compatibility blocks execution |
 | Explicit sustained learning intent | `teach` | Dedicated learning workspace; ordinary questions stay direct |
-| Huge, foggy effort that will not fit one agent session | `wayfinder` | Use the configured local state contract when durable repository planning is authorized |
+| Several consequential unknowns, decisions, dependencies, blockers, ownership boundaries, or conflicting facts are becoming unreliable to hold in ordinary context | `wayfinder` | Start or resume a lightweight map when structured durable notes materially reduce the risk of losing or conflating state and repository writes are authorized |
 | Bounded consequential architecture, security, cost, dependency, or visible-behavior choice | local Discovery | Analyze ephemerally unless durable state is useful and writes are authorized |
 | Existing unexplained failure or regression | local Debugging | Diagnosis alone does not authorize a fix |
 | Explicit substantive research or external facts needing primary sources | `research` | May be dominant or composed; simple lookups stay direct |
@@ -38,6 +38,37 @@ Keep four decisions separate:
 A capability may support another dominant workflow or be dominant when it
 directly matches intent. Supporting use does not automatically create a durable
 workflow transition.
+
+## Dynamic Wayfinder escalation
+
+Routing is not frozen at the first prompt. Re-evaluate it when inspection or
+execution reveals substantially more uncertainty, scope, coordination, or
+conflict than the current workflow can safely carry. Escalate into Wayfinder
+when a careful engineer would reasonably start structured notes now because
+losing distinctions among important state could cause a later mistake.
+
+Use qualitative judgment, not a numeric complexity score. Relevant combinations
+include unresolved technical unknowns; proposed versus accepted decisions;
+dependencies or ownership boundaries; missing permissions or observability;
+contradictory or incomplete evidence; blockers alongside work that can still
+proceed; multiple plausible paths with different implications; assumptions
+that must not silently become facts; likely cross-session continuation; and
+enough moving pieces that conversational context is becoming unreliable. A task
+need not be huge or guaranteed to span multiple sessions. One isolated unknown,
+a normal implementation detail, or a bounded decision that fits Discovery does
+not justify a map.
+
+An explicit Wayfinder request selects it subject to authorization and host
+compatibility. An explicit instruction not to use Wayfinder prevents automatic
+selection. Resume an existing effort only when it is relevant; an unrelated map
+never captures the route. During a read-only analysis, audit, diagnosis, review,
+or `do not change files` request, do not create or update Wayfinder state. Keep
+the work ephemeral or continue the current read-only workflow instead.
+
+Starting Wayfinder should be cheap. Record only the useful known state, sharp
+unknowns, decisions, blockers, and work that can proceed; create child detail
+only as the problem demands. Follow the dedicated state contract rather than
+inventing a second notebook format.
 
 ## Invocation and provider gate
 
@@ -96,12 +127,23 @@ needed; it does not mirror provider bodies or allocate shadow identifiers.
 Local Wayfinder is the narrow exception to the general pointer rule: its
 configured canonical representation lives at
 `.ai-workflow-state/wayfinder/<effort>/` under
-`contracts/wayfinder-state.md`. The framework supplies only that storage and
-re-entry contract; the provider retains its reasoning method. A selected
-user-only provider that did not execute must not be claimed as executed, but
-authorized host-native planning may still use the framework's local
-representation when durable continuity is genuinely useful. Do not create a
-second `.scratch/` or external-tracker copy.
+`contracts/wayfinder-state.md`. The framework supplies that storage and re-entry
+contract plus a narrow local-mode provider adapter; the provider retains its
+reasoning method. The adapter has authority over incompatible tracker setup,
+issue lifecycle, and single-ticket storage mechanics in the loaded provider
+body. Agentic Workflow permits implicit Wayfinder invocation on hosts whose
+provider metadata supports it because the framework owns workflow routing. Do
+not create a second `.scratch/` or external-tracker copy.
+
+Wayfinder owns durable coordination when selected; it does not erase the
+specialized workflow or capability already doing useful work. Debugging may
+investigate a U#, Research may establish external evidence, Prototype may test
+behavior, Grilling or human clarification may settle a preference, Domain
+Modeling may sharpen genuinely ambiguous terms or boundaries, and
+Implementation may consume a settled D#/T#. These supporting activities do not
+create a competing durable owner. Invoke Grilling and Domain Modeling when the
+actual question justifies them, not as mandatory ceremony on every escalation
+or resume.
 
 The existence of a Wayfinder effort does not select Wayfinder for every request.
 For an explicit or likely resume, read the relevant low-resolution map and only

@@ -1,0 +1,5 @@
+{"type":"thread.started","thread_id":"incomplete"}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"command-1","type":"command_execution","command":"rg --files .","status":"in_progress","aggregated_output":"","exit_code":null}}
+{"type":"turn.completed"}
+this is not json

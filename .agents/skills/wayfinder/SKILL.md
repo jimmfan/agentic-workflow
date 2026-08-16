@@ -1,6 +1,6 @@
 ---
-description: Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.
-disable-model-invocation: true
+description: Keep a lightweight structured map when important unknowns, decisions, dependencies, blockers, or conflicting facts are becoming unreliable to hold in ordinary context.
+disable-model-invocation: false
 metadata:
     github-path: skills/engineering/wayfinder
     github-pinned: v1.2.3
@@ -9,6 +9,53 @@ metadata:
     github-tree-sha: 48c3a8b0a9705d6310d37f7f9b53bcb2c55955c7
 name: wayfinder
 ---
+<!-- agentic-workflow:wayfinder-local-state-v1:begin -->
+## Agentic Workflow local mode (authoritative)
+
+Use this section when `.ai-workflow/contracts/wayfinder-state.md` exists. Read
+that contract when Wayfinder is selected. Before an authorized durable-state
+write, also read `.ai-workflow/contracts/durable-state.md`. These rules override
+incompatible tracker-specific mechanics below. If the local contract is absent,
+ignore this section and use the unchanged upstream method normally.
+
+- Agentic Workflow decides when local Wayfinder is selected. Explicit use is
+  still allowed; an explicit opt-out prevents automatic selection. Bounded
+  debugging, one isolated unknown, and unrelated work keep their normal route.
+- The only canonical local representation is
+  `.ai-workflow-state/wayfinder/<effort>/`: `map.md`, `unknowns/U#`,
+  `decisions/D#`, and `tickets/T#`. Never create `.scratch/`, an external issue
+  tracker copy, or `.ai-workflow-state/active.md`; do not run setup to provision
+  a tracker for this mode.
+- Preserve the upstream reasoning method: orient around a destination, keep the
+  map low resolution, represent fog honestly, resolve consequential uncertainty
+  incrementally, progressively load detail, and derive the frontier from current
+  status and dependencies.
+- Map a sharp decision, investigation, research, prototype, grilling, or human
+  clarification question to U#. Update that U# with evidence and resolution.
+  Create or update D# only when the answer is a durable project decision. Create
+  T# only for concrete executable work when decomposition adds value. An
+  upstream `task` ticket becomes T# only when it is truly executable work, often
+  linked to the U# it unblocks. Never force U# -> D# -> T# as ceremony.
+- Wayfinder owns durable coordination, not every action. Debugging, Research,
+  Prototype, Grilling, Domain Modeling, human clarification, and Implementation
+  may resolve or consume an item while the map remains canonical. Mid-task
+  escalation does not erase a useful specialized workflow, and charting does
+  not require stopping when authorized, bounded work can safely continue.
+- Use Grilling and Domain Modeling when destination or domain ambiguity actually
+  needs live human clarification or a sharper domain model. Do not invoke them
+  ceremonially for a clear mid-task escalation or resume. Grilling is human in
+  the loop; never invent the human side of it.
+- Read-only analysis, audit, diagnosis, or review may use Wayfinder reasoning
+  but must not create or update state. On resume, load the relevant `map.md`
+  first and only the needed U/D/T children. Live/source evidence wins over stale
+  state; preserve history and reconcile affected files explicitly.
+- Tracker labels, assignment/claiming, issue comments/closing, and tracker-native
+  blocking below do not apply in local mode. Before a write, reread the target
+  and map, allocate the next unused per-type ID, and never overwrite a concurrent
+  file or silently merge conflicting evidence.
+
+<!-- agentic-workflow:wayfinder-local-state-v1:end -->
+
 A loose idea has arrived — too big for one agent session, and wrapped in fog: the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **shared map** on the repo's issue tracker, then works its **decision tickets** — questions whose resolution is a decision, not slices of a build to execute — one at a time until the route is clear.
 
 The destination varies per effort, and naming it is the first act of charting — it shapes every ticket. It might be a spec to hand off and iterate on, a decision to lock before planning starts, or a change made in place like a data-structure migration. The map is domain-agnostic — engineering work, course content, whatever fits the shape.

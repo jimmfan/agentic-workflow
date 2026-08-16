@@ -43,7 +43,12 @@ installation instead of being overwritten.
 
 Optional upstream providers may also live under `.agents/skills`, but they are
 not framework-owned. Existing directories are preserved, provider failure does
-not affect the core, and provider removal is manual.
+not affect the core, and provider removal is manual. Missing declared provider
+skills are staged and projected as a complete set; status remains incomplete
+until every declared skill is usable. The declared Wayfinder adapter may insert
+the authoritative local-mode instructions and update activation metadata only
+when the pinned method body and exact expected values are recognized. Unknown
+or modified provider content remains untouched and is reported.
 
 Local Wayfinder data is a configured project-owned representation under
 `.ai-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned

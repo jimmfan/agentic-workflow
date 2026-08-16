@@ -1,0 +1,49 @@
+{
+  "checks": {
+    "codex_succeeded": true,
+    "controller_conversation_not_reported": true,
+    "probe_made_no_workspace_change": true,
+    "response_json_object": true,
+    "sibling_sentinel_not_reported": true,
+    "unique_minimal_codex_home_removed": true,
+    "workflow_installation_present": true
+  },
+  "created_at": "2026-08-16T17:08:55.688218+00:00",
+  "elapsed_seconds": 7.729,
+  "execution_id": "01a00b8c-2321-71a3-8fc8-df9ced9d6064",
+  "response": {
+    "available_skill_names": [
+      "imagegen",
+      "openai-docs",
+      "plugin-creator",
+      "skill-creator",
+      "skill-installer",
+      "code-review",
+      "codebase-design",
+      "domain-modeling",
+      "grilling",
+      "prototype",
+      "research",
+      "tdd",
+      "wayfinder",
+      "workflow-debugging",
+      "workflow-discovery",
+      "workflow-implementation",
+      "workflow-verification"
+    ],
+    "controller_conversation_excerpt": null,
+    "inherited_cloud_credentials": null,
+    "project_instruction_paths": [
+      "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/.k8s-sre-regression-runs-76df38a82288/isolation-469248782dbd444b8eb85dcbea8b7a6d/workspace/AGENTS.md"
+    ],
+    "sibling_sentinel": null
+  },
+  "scored_run": false,
+  "status": "passed",
+  "usage": {
+    "cached_input_tokens": 9984,
+    "input_tokens": 15227,
+    "output_tokens": 218,
+    "reasoning_output_tokens": 47
+  }
+}

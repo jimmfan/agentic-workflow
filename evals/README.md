@@ -8,6 +8,37 @@ These evaluations answer narrow questions about Agentic Workflow, not general co
 
 Failure is useful evidence. The harness does not alter framework behavior, prompt the workflow variant to use Wayfinder, prohibit baseline notes, or collapse the observations into a synthetic score.
 
+## Storage contract
+
+Git stores the material needed to understand and reproduce an evaluation:
+harnesses, frozen manifests and prompts, scenario fixtures, protocol/rubric,
+compact per-run results, adjudication, token-forensics summaries, and reports.
+
+Raw execution exhaust is generated under [`evals/artifacts/`](artifacts/README.md)
+or a suite's documented ignored external job directory. This includes full
+Codex JSONL, process logs, copied workspaces, temporary Codex homes, grader
+transcripts, caches, and other regenerable intermediates. Harnesses must not
+write those files into durable result directories. Compact reports must render
+without reopening raw artifacts.
+
+For a retained run, the frozen manifest plus compact result/report should answer
+the benchmark, scenario/condition, dataset and product revisions, model and
+reasoning settings, sandbox/approval policy, scoring method, outcome, route,
+elapsed time, token/tool totals, known grader limitations, and rerun procedure.
+Benchmark-specific outcome fields remain benchmark-specific; no universal
+score is imposed.
+
+Analyze an ignored Codex trace without running Codex:
+
+```bash
+python3 -m token_forensics evals/artifacts/<campaign>/<run>/raw/codex.jsonl \
+  --json-out evals/<suite>/reports/<run>-token-forensics.json \
+  --text-out evals/<suite>/reports/<run>-token-forensics.md
+```
+
+The analyzer and its evidence limitations are documented in
+[`token_forensics/README.md`](../token_forensics/README.md).
+
 Evaluator criteria may be refined between experiments when a concrete gap is found. Historical result JSON files remain evidence for the evaluator version used when they were recorded and are not retroactively regraded or rewritten.
 
 ## Evaluation campaign index

@@ -1,6 +1,6 @@
 # ADR-0007: Orchestrate pinned upstream skills
 
-- Status: partially superseded by ADR-0010, ADR-0011, and ADR-0012
+- Status: partially superseded by ADR-0010, ADR-0011, ADR-0012, and ADR-0013
 - Date: 2026-08-13
 
 ## Context
@@ -129,6 +129,19 @@ but is not tamper-evident. Deliberate coordinated state forgery can reclassify a
 directory or its bytes. This accepted local-trust boundary keeps ordinary local
 edits, extra files, and undeclared directories outside automatic replacement or
 deletion without turning provider installation into source-file auditing.
+
+## Later amendment
+
+ADR-0013 supersedes this ADR's Wayfinder invocation-policy conclusion while
+leaving the pinned provider, methodology ownership, other skill policies, and
+host compatibility boundaries intact. Agentic Workflow now declares Wayfinder
+implicit on Codex and GitHub Copilot and applies a narrow metadata overlay
+during provider installation/update because the framework owns routing.
+
+ADR-0015 later extends this into a fingerprinted local-mode adapter because
+Codex loads the full provider body after selection. The upstream reasoning
+method remains unchanged; the inserted adapter makes the accepted local storage
+and U#/D#/T# lifecycle authoritative over incompatible tracker mechanics.
 
 ## Alternatives considered
 

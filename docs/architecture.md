@@ -35,6 +35,12 @@ remain authoritative. The router separates selection, provider invocation,
 authorization, execution, and completion evidence; none of those decisions
 expands another.
 
+The router may reclassify work after it starts. Wayfinder becomes appropriate
+when several important state distinctions would be unsafe to leave only in
+ordinary conversational context, not only when a prompt announces a huge
+multi-session effort. Bounded work remains direct or in its existing local
+workflow, and read-only work does not gain durable state authority.
+
 Durable workflows resume from their canonical record or map when persistence is
 useful. Supporting Research, TDD, Verification, or Code Review does not create a
 second continuity record. Provider-native tickets, specifications, research,
@@ -97,7 +103,7 @@ profile, record, archive, and Wayfinder files are normal. An existing
 `.ai-workflow-state/active.md` is preserved as opaque legacy project data but is
 not a current routing or re-entry artifact.
 
-When Wayfinder needs Git-native multi-session state, its dedicated progressively
+When Wayfinder needs Git-native structured state, its dedicated progressively
 loaded contract configures `.ai-workflow-state/wayfinder/<effort>/` as the
 canonical local representation. It creates no global index, shadow `.scratch/`
 tree, persisted frontier, lifecycle schema, or external-tracker sync. The map
@@ -144,22 +150,37 @@ is sufficient for v0 and avoids a historical retirement database.
 
 `.ai-workflow/providers.json` maps routed capabilities to a reviewed upstream
 repository and pin. The framework may offer installation of a missing declared
-skill through `gh skill install`. Existing same-named content is always
-preserved. A missing GitHub CLI, authentication failure, unavailable network, or
-provider installer error produces a warning and never invalidates a successful
-core operation.
+skill through `gh skill install`. All currently missing declared skills are
+installed into a temporary same-filesystem staging root, validated as the exact
+declared inventory, and projected together. A failure commits none of that
+missing set. Existing same-named content is preserved except for a narrowly
+declared Wayfinder adapter whose exact pinned method body, source metadata,
+activation values, and already-adapted form can be validated. Unexpected
+content is preserved and reported instead of being guessed at. A missing GitHub CLI, authentication
+failure, unavailable network, or provider installer error produces a warning
+and never invalidates a successful core operation.
 
-The pinned Wayfinder provider retains its reasoning method and terminology. The
-framework's local state contract adapts only its configured storage and re-entry
-boundary: low-resolution maps, fog of war, named links, and dependency-derived
-frontier semantics remain provider-aligned, while local persistence moves from
-the provider's default `.scratch/` tracker to project-owned workflow state.
+The pinned Wayfinder provider retains its reasoning method and terminology. A
+clearly delimited local-mode section precedes the unchanged provider method and
+adapts its configured storage, re-entry, and item lifecycle: low-resolution
+maps, fog of war, named links, and dependency-derived frontier semantics remain
+provider-aligned, while local persistence moves from the provider's default
+`.scratch/` tracker to project-owned U#/D#/T# state. The same adapter changes
+Wayfinder's host invocation flags and discovery descriptions so Codex and
+GitHub Copilot may select it implicitly at the framework's notebook threshold.
+This remains a narrow integration boundary because Agentic Workflow owns
+routing and local storage; it does not rewrite the upstream method below the
+adapter. Claude remains unavailable because no native skill projection exists
+for that host.
 
 The framework keeps no provider state, installed-file hashes, provenance chain,
 quarantine store, staged upgrade engine, or automatic deletion behavior.
-Updates attempt only missing providers. Removal preserves provider directories
-and tells the user that provider cleanup is manual. These constraints make
-providers optional capabilities instead of a second package manager.
+Updates stage only the missing declared provider bodies as one projection set
+and reconcile the declared Wayfinder adapter when its exact provider shape is
+safe. Provider status is incomplete until every declared skill is
+usable. Removal preserves provider directories and tells the user that provider
+cleanup is manual. These constraints make providers optional capabilities
+instead of a second package manager.
 
 Capability routing and invocation policy remain distinct. An absent or
 user-only provider normally falls back to truthful host-native work. An exact
@@ -237,5 +258,7 @@ memory and chat recollection.
 
 See [Workflow routing](routing.md), [Verification](verification.md), and
 [ADR-0010](decisions/0010-separate-lifecycle-safety-and-reconciliation.md) plus
-[ADR-0011](decisions/0011-use-project-owned-wayfinder-state.md) and
-[ADR-0012](decisions/0012-remove-global-active-index.md).
+[ADR-0011](decisions/0011-use-project-owned-wayfinder-state.md),
+[ADR-0012](decisions/0012-remove-global-active-index.md),
+[ADR-0013](decisions/0013-enable-automatic-wayfinder-routing.md), and
+[ADR-0015](decisions/0015-adapt-wayfinder-effective-local-mode.md).

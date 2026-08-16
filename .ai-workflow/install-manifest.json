@@ -14,7 +14,7 @@
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "79427778c958b2d4f001e3d6c1588ea0e413ebabdc921efad23ef470cddc9d50"
+      "sha256": "6f2bf050979720965678b4db7bdc37f978c175f6ec7b7988c81d0b5c99c48d08"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
@@ -25,7 +25,7 @@
       "sha256": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185"
     }
   },
-  "framework_version": "0.11.1",
+  "framework_version": "0.12.0",
   "schema_version": 1,
   "source_revision": "unreleased-local-package"
 }

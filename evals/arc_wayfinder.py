@@ -30,6 +30,7 @@ FIXTURE_ROOT = SCENARIO_ROOT / "fixture"
 PHASE_2_MUTATION_ROOT = SCENARIO_ROOT / "phase-2-mutation"
 PHASE_3_MUTATION_ROOT = SCENARIO_ROOT / "phase-3-mutation"
 RESULTS_ROOT = EVAL_ROOT / "results" / CAMPAIGN_ID
+ARTIFACTS_ROOT = EVAL_ROOT / "artifacts" / CAMPAIGN_ID
 FREEZE_PATH = RESULTS_ROOT / "frozen-evaluator.json"
 ISOLATION_AUDIT_PATH = RESULTS_ROOT / "context-isolation-audit.json"
 RUN_ROOT = Path(tempfile.gettempdir()) / "agentic-workflow-arc-wayfinder-evals"
@@ -371,6 +372,10 @@ def save_state(state: dict[str, Any], run_root: Path = RUN_ROOT) -> None:
 
 def result_run_root(run_id: str, results_root: Path = RESULTS_ROOT) -> Path:
     return results_root / "runs" / run_id
+
+
+def artifact_root_for(results_root: Path) -> Path:
+    return ARTIFACTS_ROOT if results_root == RESULTS_ROOT else results_root / ".artifacts"
 
 
 def prompt_for(variant: str, phase: int) -> str:
@@ -1091,7 +1096,7 @@ def audit_auto_isolation(
         elapsed = time.monotonic() - started
         messages = agent_messages(result.stdout)
         response = "\n".join(messages)
-        raw_root = RESULTS_ROOT / "isolation-audit"
+        raw_root = ARTIFACTS_ROOT / "isolation-audit"
         raw_root.mkdir(parents=True, exist_ok=True)
         stdout_path = raw_root / "probe.jsonl"
         stderr_path = raw_root / "probe.stderr.txt"
@@ -1336,7 +1341,8 @@ def record_phase(
         )
 
     artifact_root = result_run_root(run_id, results_root)
-    archive_path = artifact_root / "snapshots" / f"phase-{phase}.tar.gz"
+    generated_root = artifact_root_for(results_root)
+    archive_path = generated_root / "runs" / run_id / "snapshots" / f"phase-{phase}.tar.gz"
     snapshot_archive(workspace, archive_path)
     evidence = {
         "schema_version": 1,

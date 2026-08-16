@@ -1,0 +1,36 @@
+{
+  "condition": "B",
+  "diagnosis_valid_json_object": true,
+  "expected_root_group_ids": [
+    "checkout-deployment"
+  ],
+  "false_positive_predictions": 0,
+  "full_recall": true,
+  "matched_root_group_ids": [
+    "checkout-deployment"
+  ],
+  "metric_label": "ITBench-AA public-data derivative, deterministic pre-frozen matcher",
+  "missing_root_group_ids": [],
+  "native_score": 1.0,
+  "precision": 1.0,
+  "predictions": [
+    {
+      "matches": true,
+      "matching_root_ids": [
+        "checkout-deployment"
+      ],
+      "prediction": {
+        "condition": "Its revision 2 pod template sets KAFKA_ADDR to kafka:9999, but the kafka Service exposes only ports 9092 and 9093.",
+        "kind": "Deployment",
+        "name": "checkout",
+        "namespace": "otel-demo"
+      }
+    }
+  ],
+  "recall": 1.0,
+  "repetition": 3,
+  "run_id": "s24-b-r3",
+  "scenario": 24,
+  "success": true,
+  "true_positive_predictions": 1
+}

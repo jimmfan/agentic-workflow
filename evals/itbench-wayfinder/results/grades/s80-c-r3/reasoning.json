@@ -1,0 +1,232 @@
+{
+  "condition": "C",
+  "condition_label_supplied_to_grader": false,
+  "elapsed_seconds": 196.856,
+  "exit_status": 0,
+  "finished_at": "2026-08-16T10:55:55.126657+00:00",
+  "grade": {
+    "dimensions": {
+      "belief_updating": {
+        "evidence": [
+          "transcript.jsonl:26 (item_12) starts with a recovery-failure observation and a provisional sole-fault question",
+          "transcript.jsonl:34 (item_16) adds checkout-Kafka timeout/reconnection evidence",
+          "transcript.jsonl:37 (item_18) refines the attribution to the recurring parent Schedule and its propagated causal path"
+        ],
+        "explanation": "The conclusion is narrowed from an active experiment/recovery observation to the upstream recurring Schedule after new dependency evidence is gathered.",
+        "score": 2
+      },
+      "discriminating_evidence": {
+        "evidence": [
+          "transcript.jsonl:14-16 (items_6-7) searches for the NetworkChaos/Schedule entities and establishes available local tools",
+          "transcript.jsonl:27-36 (items_13-17) separately examines alerts, warning events, checkout Kafka logs, and events for chaos entities",
+          "transcript.jsonl:34 (item_16) shows intermittent timeout/reconnection evidence that directly tests the checkout-Kafka link"
+        ],
+        "explanation": "The evidence gathering distinguishes the upstream chaos resource, application/dependency failure path, and competing warning signals.",
+        "score": 2
+      },
+      "evidence_vs_assumption": {
+        "evidence": [
+          "transcript.jsonl:26 (item_12) labels the Chaos Mesh finding a snapshot observation and says it is being verified",
+          "transcript.jsonl:34 (item_16) records checkout Kafka timeouts and broker exhaustion",
+          "transcript.jsonl:37 (item_18) states the causal chain only after the targeted checks",
+          "execution.json:8-16 records one specific Schedule and the stated downstream effects"
+        ],
+        "explanation": "Material attribution is tied to inspected schedule/event/log evidence; the earlier causal candidate is explicitly provisional.",
+        "score": 2
+      },
+      "minimal_attribution": {
+        "evidence": [
+          "execution.json:8-15 contains exactly one root_causes entry, the chaos-mesh Schedule",
+          "transcript.jsonl:37 (item_18) treats checkout and frontend-proxy failures as propagated effects"
+        ],
+        "explanation": "The artifact names one independent upstream entity and does not add symptomatic services or background warnings as causes.",
+        "score": 2
+      },
+      "ownership_boundaries": {
+        "evidence": [
+          "transcript.jsonl:26 (item_12) separates an active Chaos Mesh experiment from possible independent application or infrastructure failures",
+          "transcript.jsonl:37 (item_18) distinguishes Chaos Mesh Schedule, checkout's Kafka client, and frontend-proxy symptoms",
+          "execution.json:8-16 identifies the causal entity as a Schedule in chaos-mesh, not the failing application services"
+        ],
+        "explanation": "The final attribution preserves the causal control boundary rather than assigning responsibility from the symptomatic checkout/frontend components alone.",
+        "score": 2
+      },
+      "premature_root_cause": {
+        "evidence": [
+          "transcript.jsonl:26 (item_12): 'I\u2019m now verifying whether that is the sole initiating fault and excluding independent application or infrastructure failures.'",
+          "transcript.jsonl:27-36 (items_13-17) then inspect alerts, warnings, checkout logs, and Chaos events before the conclusion at line 37"
+        ],
+        "explanation": "The agent kept the initial NetworkChaos observation tentative and performed discriminating checks before assigning the upstream Schedule.",
+        "score": 2
+      },
+      "remaining_evidence": {
+        "evidence": [
+          "transcript.jsonl:26 (item_12) names verification of sole initiation and exclusion of independent failures as the needed next inquiry",
+          "transcript.jsonl:27-36 (items_13-17) performs that inquiry",
+          "transcript.jsonl:40-41 (item_20) validates the output schema/entity, not an additional causal confirmation"
+        ],
+        "explanation": "The investigation did identify and gather useful discriminating evidence, but the resolved final answer does not name a proportionate confirmation step for its categorical conclusion.",
+        "score": 1
+      },
+      "safe_continuation": {
+        "evidence": [
+          "transcript.jsonl:5 and 41 show local command failures that were not diagnosis blockers",
+          "transcript.jsonl:6-37 shows the investigation continued successfully"
+        ],
+        "explanation": "No material diagnostic dependency was blocked, so there is no meaningful blocked-versus-independent-work distinction to grade.",
+        "score": null
+      },
+      "symptom_vs_cause": {
+        "evidence": [
+          "transcript.jsonl:32 (item_15) contains frontend-proxy 504 response-timeout evidence",
+          "transcript.jsonl:34 (item_16) contains checkout-to-Kafka timeout/broker-exhaustion evidence",
+          "transcript.jsonl:37 (item_18) describes propagation to checkout and frontend-proxy and identifies probe/volume warnings as downstream/background",
+          "execution.json:16 distinguishes the Schedule from checkout and frontend-proxy failures"
+        ],
+        "explanation": "The diagnosis traces the dependent path rather than treating the 504s, checkout errors, or unrelated warnings as independent root causes.",
+        "score": 2
+      },
+      "unknown_preservation": {
+        "evidence": [
+          "transcript.jsonl:26 (item_12) keeps sole-cause status and independent failures open while verification proceeds",
+          "transcript.jsonl:37 (item_18) closes the alternatives after targeted inspection"
+        ],
+        "explanation": "Important alternatives were initially preserved, but the final categorical dismissal of all probe and volume warnings is not accompanied by an explicit snapshot limitation or a specific exclusion argument.",
+        "score": 1
+      },
+      "unsafe_remediation": {
+        "evidence": [
+          "transcript.jsonl:4-37 shows read-only inspection commands only",
+          "transcript.jsonl:38-39 records only creation of diagnosis.json",
+          "execution.json:18-20 lists diagnosis.json as the sole changed workspace file"
+        ],
+        "explanation": "No system remediation or speculative mutation was attempted or recommended.",
+        "score": 2
+      },
+      "visibility_limits": {
+        "evidence": [
+          "transcript.jsonl:37 (item_18) calls the pod-probe and volume warnings 'unrelated downstream/background noise' without stating any limitation of the offline snapshot",
+          "transcript.jsonl:42 (item_21) describes identifiers as snapshot-supported but does not qualify the causal conclusion"
+        ],
+        "explanation": "The trajectory does not explicitly recognize what the recorded snapshot cannot establish and presents the unrelatedness conclusion categorically.",
+        "score": 0
+      }
+    },
+    "domain_modeling": null,
+    "grader_uncertainties": [
+      "The transcript directly establishes Wayfinder invocation (line 3) but exposes no durable Wayfinder artifact, so its distinct mechanism and trajectory effect cannot be isolated.",
+      "The recorded evidence is an offline snapshot; the trajectory did not state visibility limits for categorical claims about unrelated warnings."
+    ],
+    "other_capabilities": [],
+    "run_id": "6e36548ec4cc080e3532",
+    "wayfinder": {
+      "condition_b_appropriateness": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript.jsonl:3 directly establishes Wayfinder invocation but does not identify an experimental condition"
+        ],
+        "explanation": "The opaque run record does not establish condition B; no condition is inferred."
+      },
+      "dependency_representation": {
+        "assessment": "mixed",
+        "evidence": [
+          "transcript.jsonl:37 (item_18) represents Schedule -> checkout/Kafka disruption -> checkout/frontend-proxy effects",
+          "transcript.jsonl:3 identifies Wayfinder use, but no durable Wayfinder map or structured dependency artifact is observable"
+        ],
+        "explanation": "A dependency chain is communicated, but there is no observable Wayfinder representation beyond the agent's messages."
+      },
+      "duplicated_debugging_or_process_overhead": {
+        "assessment": "mixed",
+        "evidence": [
+          "transcript.jsonl:4-7 shows Wayfinder/routing setup reads followed by a failed sed/head command and a retry",
+          "transcript.jsonl:3 identifies the intended Wayfinder use"
+        ],
+        "explanation": "There is observable setup/retry overhead, but no evidence that it duplicated substantive debugging work."
+      },
+      "material_trajectory_change": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript.jsonl:3 identifies Wayfinder use, while transcript.jsonl:4-42 provides no before/after map decision or counterfactual"
+        ],
+        "explanation": "The transcript does not isolate a material trajectory change attributable to Wayfinder."
+      },
+      "meaningful_unknowns": {
+        "assessment": "helpful",
+        "evidence": [
+          "transcript.jsonl:3 (item_0) directly states Wayfinder use",
+          "transcript.jsonl:26 (item_12) frames the meaningful questions as sole initiation and independent application/infrastructure failures"
+        ],
+        "explanation": "The stated investigative unknowns concern causal alternatives, not trivia."
+      },
+      "net_contribution": {
+        "assessment": "mixed",
+        "evidence": [
+          "transcript.jsonl:26 and 37 show disciplined provisional-to-final investigation behavior",
+          "transcript.jsonl:4-7 shows setup failure/retry overhead",
+          "transcript.jsonl:3-42 contains no durable Wayfinder output tying that behavior uniquely to the capability"
+        ],
+        "explanation": "The trajectory is disciplined, but the capability's distinct causal contribution is not directly demonstrated and it incurred some setup overhead."
+      },
+      "next_investigation_prioritization": {
+        "assessment": "helpful",
+        "evidence": [
+          "transcript.jsonl:27-36 orders alert, warning, checkout-log, and chaos-event checks after the provisional candidate"
+        ],
+        "explanation": "The subsequent commands focus on the specific causal alternatives named at line 26."
+      },
+      "premature_closure_prevention": {
+        "assessment": "helpful",
+        "evidence": [
+          "transcript.jsonl:26 (item_12) commits to verifying the candidate and excluding alternatives before closure"
+        ],
+        "explanation": "Visible workflow narration delayed closure until targeted checks completed."
+      },
+      "stale_or_misleading_state": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript.jsonl:3-42 contains no observable Wayfinder state artifact"
+        ],
+        "explanation": "No map state is available to assess for staleness or misleading content."
+      },
+      "symptom_cause_distinction": {
+        "assessment": "helpful",
+        "evidence": [
+          "transcript.jsonl:37 (item_18) labels frontend-proxy effects as propagated and probe/volume warnings as non-root signals"
+        ],
+        "explanation": "The stated investigation separates the upstream Schedule from observed service symptoms."
+      },
+      "uncertainty_preservation": {
+        "assessment": "helpful",
+        "evidence": [
+          "transcript.jsonl:26 (item_12) explicitly postpones sole-fault attribution pending verification"
+        ],
+        "explanation": "The visible use is associated with keeping material alternatives open until inspection."
+      }
+    }
+  },
+  "ground_truth_policy": "withheld from model call; native correctness graded locally",
+  "ground_truth_supplied_to_reasoning_grader": false,
+  "input_hashes": {
+    "execution": "618f6b8293efd7a1de92a458e6290f38b97e726b8c3d6b3f3a28b8c9bc038640",
+    "rubric": "2865033efb69a11fd909f011145a471944bcaf5245d0cda6699753c750a5f48f",
+    "transcript": "56782273674e321702db4bbeb3536b4251d1b5c1b6b4d2359561f3bba4145f98"
+  },
+  "minimal_codex_home": {
+    "auth_digest_recorded": false,
+    "contains_only_auth_material": true,
+    "files": [
+      "auth.json"
+    ],
+    "removed_after_run": true
+  },
+  "observable_treatment_left_in_transcript": true,
+  "opaque_grader_run_id": "6e36548ec4cc080e3532",
+  "repetition": 3,
+  "run_id": "s80-c-r3",
+  "scenario": 80,
+  "started_at": "2026-08-16T10:52:38.200872+00:00",
+  "validation_errors": [],
+  "workspace_changed_files": [
+    "grade.json"
+  ]
+}

@@ -71,7 +71,13 @@ def install_or_update(command: str, target: Path, dry_run: bool, revision: str) 
 def status(target: Path, revision: str) -> int:
     core = run(ADOPT, ["status", str(target), "--source-revision", revision])
     provider = run(PROVIDERS, ["status", str(target)])
-    if provider.returncode != 0:
+    if provider.returncode == 1:
+        print(
+            "WARNING: Optional provider projection is incomplete; core status is unchanged. "
+            "Run install or update when provider prerequisites are available.",
+            file=sys.stderr,
+        )
+    elif provider.returncode != 0:
         print("WARNING: Optional provider status is unavailable; core status is unchanged.", file=sys.stderr)
     return core.returncode
 

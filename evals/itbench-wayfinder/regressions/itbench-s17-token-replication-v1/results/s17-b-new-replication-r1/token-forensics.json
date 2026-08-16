@@ -1,0 +1,397 @@
+{
+  "derived": {
+    "tokens": {
+      "cached_input_ratio": 0.864195363313515,
+      "largest_input_increases": [],
+      "token_trajectory": [
+        {
+          "cached_input_tokens": 758016,
+          "input_tokens": 877135,
+          "line": 35,
+          "observation": 1,
+          "output_tokens": 3827
+        }
+      ],
+      "uncached_input": 119119
+    },
+    "tools": {
+      "near_identical_commands": [],
+      "near_identical_failed_commands": [],
+      "repeated_commands": [],
+      "repeated_failed_commands": []
+    }
+  },
+  "heuristic": {
+    "framework": {
+      "byte_note": "bytes are tool-output bytes associated with commands that name these paths, not token counts or exact per-file bytes",
+      "instruction_files_observed": [
+        ".ai-workflow/routing.md"
+      ],
+      "instruction_output_bytes_observed": 18317,
+      "other_durable_state_read": [],
+      "other_durable_state_written": [],
+      "route_markers": [
+        "[route: router \u2192 debugging]"
+      ],
+      "skill_files_observed": [
+        ".agents/skills/workflow-debugging/SKILL.md"
+      ],
+      "skill_names_observed": [
+        "workflow-debugging"
+      ],
+      "skill_output_bytes_observed": 18317,
+      "skills_materially_invoked": [
+        "workflow-debugging"
+      ],
+      "wayfinder_files_read": [],
+      "wayfinder_files_written": [],
+      "wayfinder_output_bytes_observed": 0
+    },
+    "potential_context_pressure": [
+      {
+        "command": "/bin/zsh -lc 'rg -n -i \"PodNetworkChaos|NetworkChaos|HTTPChaos|IOChaos|StressChaos|TimeChaos|DNSChaos|chaos-mesh\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n -i \"error|timeout|deadline|unavailable|refused|product-catalog|checkout|shipping\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Sc\u2026",
+        "interpretation": "plausible sustained-context contributor; exact token attribution is unavailable",
+        "invocation_id": "item_8",
+        "kind": "large_tool_output_with_later_activity",
+        "later_tool_calls": 7,
+        "output_bytes": 1048576
+      },
+      {
+        "command": "/bin/zsh -lc \"rg -n '\\\"\\\"kind\\\"\\\":\\\"\\\"PodNetworkChaos\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '\\\"\\\"kind\\\"\\\":\\\"\\\"[A-Za-z]+Chaos\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv\"",
+        "interpretation": "plausible sustained-context contributor; exact token attribution is unavailable",
+        "invocation_id": "item_9",
+        "kind": "large_tool_output_with_later_activity",
+        "later_tool_calls": 6,
+        "output_bytes": 1048576
+      },
+      {
+        "command": "/bin/zsh -lc \"rg -n '25f936ce-6582-4075-b6e7-978488358232|1903119|\\\"\\\"action\\\"\\\"|\\\"\\\"delay\\\"\\\"|\\\"\\\"loss\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '2025-12-15 17:5[2-4]:.*(product-catalog|ProductCatalog|product catalog|deadline|timeout|Unavailable)' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public\u2026",
+        "interpretation": "plausible sustained-context contributor; exact token attribution is unavailable",
+        "invocation_id": "item_13",
+        "kind": "large_tool_output_with_later_activity",
+        "later_tool_calls": 2,
+        "output_bytes": 1048576
+      }
+    ],
+    "repository": {
+      "broad_searches": [
+        {
+          "command": "/bin/zsh -lc \"rg --files .ai-workflow .agents/skills/workflow-debugging | rg '(routing\\\\.md|SKILL\\\\.md)\"'$'\"' && awk 'NR<=260 {print}' .ai-workflow/routing.md && awk 'NR<=320 {print}' .agents/skills/workflow-debugging/SKILL.md\"",
+          "invocation_id": "item_3",
+          "output_bytes": 97
+        },
+        {
+          "command": "/bin/zsh -lc 'rg --files /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17 | head -n 240'",
+          "invocation_id": "item_5",
+          "output_bytes": 31
+        },
+        {
+          "command": "/bin/zsh -lc 'rg --files /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17'",
+          "invocation_id": "item_6",
+          "output_bytes": 10882
+        }
+      ],
+      "file_detection_note": "best-effort inference from command text; not a complete filesystem access trace",
+      "large_reads": [
+        {
+          "associated_tool_output_bytes": 1048576,
+          "note": "tool output is associated with this command, not attributed exactly to this file",
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 1048576,
+          "note": "tool output is associated with this command, not attributed exactly to this file",
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv"
+        }
+      ],
+      "likely_unbounded_searches": [
+        {
+          "command": "/bin/zsh -lc 'rg -n -i \"PodNetworkChaos|NetworkChaos|HTTPChaos|IOChaos|StressChaos|TimeChaos|DNSChaos|chaos-mesh\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n -i \"error|timeout|deadline|unavailable|refused|product-catalog|checkout|shipping\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Sc\u2026",
+          "invocation_id": "item_8",
+          "output_bytes": 1048576
+        },
+        {
+          "command": "/bin/zsh -lc \"rg -n '\\\"\\\"kind\\\"\\\":\\\"\\\"PodNetworkChaos\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '\\\"\\\"kind\\\"\\\":\\\"\\\"[A-Za-z]+Chaos\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv\"",
+          "invocation_id": "item_9",
+          "output_bytes": 1048576
+        },
+        {
+          "command": "/bin/zsh -lc \"rg -n '25f936ce-6582-4075-b6e7-978488358232|1903119|\\\"\\\"action\\\"\\\"|\\\"\\\"delay\\\"\\\"|\\\"\\\"loss\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '2025-12-15 17:5[2-4]:.*(product-catalog|ProductCatalog|product catalog|deadline|timeout|Unavailable)' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public\u2026",
+          "invocation_id": "item_13",
+          "output_bytes": 1048576
+        }
+      ],
+      "paths_observed": [
+        ".agents/skills/workflow-debugging",
+        ".agents/skills/workflow-debugging/SKILL.md",
+        ".ai-workflow/routing.md",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/alerts/alerts_in_alerting_state_2025-12-15T175718.646747Z.json",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/architecture.json",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv",
+        "chaos-mesh.org/v1alpha1",
+        "diagnosis.json"
+      ],
+      "repeated_reads": [
+        {
+          "associated_tool_output_bytes": 3207945,
+          "observations": 5,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 18317,
+          "observations": 3,
+          "path": ".agents/skills/workflow-debugging/SKILL.md"
+        },
+        {
+          "associated_tool_output_bytes": 18317,
+          "observations": 3,
+          "path": ".ai-workflow/routing.md"
+        },
+        {
+          "associated_tool_output_bytes": 10913,
+          "observations": 2,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17"
+        },
+        {
+          "associated_tool_output_bytes": 225741,
+          "observations": 2,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 2097152,
+          "observations": 2,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv"
+        }
+      ],
+      "unique_paths_observed": 11
+    }
+  },
+  "measured": {
+    "tokens": {
+      "accounting": "sum of per-turn usage observations",
+      "cache_write_input": null,
+      "cached_input": 758016,
+      "input": 877135,
+      "output": 3827,
+      "raw_usage_observations": 1,
+      "reasoning_output": 940,
+      "usage_observations": 1
+    },
+    "tools": {
+      "calls": 14,
+      "combined_output_bytes": 3463651,
+      "duration_ms": {
+        "available_calls": 0,
+        "total": null
+      },
+      "failed_calls": [
+        {
+          "command": "/bin/zsh -lc \"pwd && sed -n '1,240p' .ai-workflow/routing.md && sed -n '1,260p' .agents/skills/workflow-debugging/SKILL.md\"",
+          "exit_code": 127,
+          "invocation_id": "item_1",
+          "output_bytes": 131,
+          "status": "failed",
+          "tool_type": "command_execution"
+        },
+        {
+          "command": "/bin/zsh -lc \"rg --files .ai-workflow .agents/skills/workflow-debugging | rg '(routing\\\\.md|SKILL\\\\.md)\"'$'\"' && awk 'NR<=260 {print}' .ai-workflow/routing.md && awk 'NR<=320 {print}' .agents/skills/workflow-debugging/SKILL.md\"",
+          "exit_code": 127,
+          "invocation_id": "item_3",
+          "output_bytes": 97,
+          "status": "failed",
+          "tool_type": "command_execution"
+        },
+        {
+          "command": "/bin/zsh -lc 'rg --files /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17 | head -n 240'",
+          "exit_code": 127,
+          "invocation_id": "item_5",
+          "output_bytes": 31,
+          "status": "failed",
+          "tool_type": "command_execution"
+        },
+        {
+          "command": "/bin/zsh -lc \"rg -n '\\\"\\\"apiVersion\\\"\\\":\\\"\\\"chaos-mesh.org/v1alpha1\\\"\\\",\\\"\\\"kind\\\"\\\":\\\"\\\"PodNetworkChaos\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '\\\"\\\"apiVersion\\\"\\\":\\\"\\\"chaos-mesh.org/v1alpha1\\\"\\\",\\\"\\\"kind\\\"\\\":\\\"\\\"(NetworkChaos|StressChaos|PodChaos|HTTPChaos|DNSChaos|TimeChaos|IOChaos)\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv\"",
+          "exit_code": 1,
+          "invocation_id": "item_10",
+          "output_bytes": 0,
+          "status": "failed",
+          "tool_type": "command_execution"
+        },
+        {
+          "command": "/bin/zsh -lc \"rg -n '\"'^'\"' diagnosis.json && git diff --check -- diagnosis.json && git status --short -- diagnosis.json\"",
+          "exit_code": 127,
+          "invocation_id": "item_16",
+          "output_bytes": 735,
+          "status": "failed",
+          "tool_type": "command_execution"
+        }
+      ],
+      "largest_outputs": [
+        {
+          "combined_output_bytes": 1048576,
+          "command": "/bin/zsh -lc 'rg -n -i \"PodNetworkChaos|NetworkChaos|HTTPChaos|IOChaos|StressChaos|TimeChaos|DNSChaos|chaos-mesh\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n -i \"error|timeout|deadline|unavailable|refused|product-catalog|checkout|shipping\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv'",
+          "invocation_id": "item_8",
+          "output_bytes": 1048576,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 1048576,
+          "command": "/bin/zsh -lc \"rg -n '\\\"\\\"kind\\\"\\\":\\\"\\\"PodNetworkChaos\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '\\\"\\\"kind\\\"\\\":\\\"\\\"[A-Za-z]+Chaos\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv\"",
+          "invocation_id": "item_9",
+          "output_bytes": 1048576,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 1048576,
+          "command": "/bin/zsh -lc \"rg -n '25f936ce-6582-4075-b6e7-978488358232|1903119|\\\"\\\"action\\\"\\\"|\\\"\\\"delay\\\"\\\"|\\\"\\\"loss\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '2025-12-15 17:5[2-4]:.*(product-catalog|ProductCatalog|product catalog|deadline|timeout|Unavailable)' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv\"",
+          "invocation_id": "item_13",
+          "output_bytes": 1048576,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 164592,
+          "command": "/bin/zsh -lc 'rg -n \"''^\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/architecture.json && rg -n \"''^\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/alerts/alerts_in_alerting_state_2025-12-15T175718.646747Z.json && rg -n -i \"warning|failed|error|backoff|unhealthy|oom|evict|unschedul|denied|notready\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_r\u2026",
+          "invocation_id": "item_7",
+          "output_bytes": 164592,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 62217,
+          "command": "/bin/zsh -lc \"rg -n 'product-catalog-7c7f8b68dc-7rqh9' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv\"",
+          "invocation_id": "item_11",
+          "output_bytes": 62217,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 61149,
+          "command": "/bin/zsh -lc \"rg -n 'PodNetworkChaos|podnetworkchaos' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv\"",
+          "invocation_id": "item_12",
+          "output_bytes": 61149,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 18089,
+          "command": "/bin/zsh -lc 'rg -n \"''^\" .ai-workflow/routing.md && rg -n \"''^\" .agents/skills/workflow-debugging/SKILL.md'",
+          "invocation_id": "item_4",
+          "output_bytes": 18089,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 10882,
+          "command": "/bin/zsh -lc 'rg --files /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17'",
+          "invocation_id": "item_6",
+          "output_bytes": 10882,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 735,
+          "command": "/bin/zsh -lc \"rg -n '\"'^'\"' diagnosis.json && git diff --check -- diagnosis.json && git status --short -- diagnosis.json\"",
+          "invocation_id": "item_16",
+          "output_bytes": 735,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 131,
+          "command": "/bin/zsh -lc \"pwd && sed -n '1,240p' .ai-workflow/routing.md && sed -n '1,260p' .agents/skills/workflow-debugging/SKILL.md\"",
+          "invocation_id": "item_1",
+          "output_bytes": 131,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        }
+      ],
+      "output_bytes": 3463651,
+      "output_channel_note": "Codex command_execution reports combined aggregated_output; stdout/stderr split unavailable",
+      "stderr_bytes": null,
+      "stdout_bytes": null,
+      "type_counts": {
+        "command_execution": 13,
+        "file_change": 1
+      }
+    },
+    "trajectory": {
+      "codex_turns_completed": 1,
+      "codex_turns_started": 1,
+      "compaction_events": [],
+      "compaction_observability": "unavailable",
+      "context_compactions": null,
+      "internal_model_calls": null
+    }
+  },
+  "schema_version": "token-forensics/v1",
+  "source": {
+    "bytes": 3902995,
+    "event_type_counts": {
+      "item.completed": 18,
+      "item.started": 14,
+      "thread.started": 1,
+      "turn.completed": 1,
+      "turn.started": 1
+    },
+    "format": "codex-exec-jsonl",
+    "limitations": [
+      "Tool-output bytes are bytes in trace payloads, not token counts.",
+      "Individual tool outputs cannot be assigned exact later input-token costs from these events.",
+      "Repository reads and framework activity are inferred from commands and file-change events, not a complete filesystem audit.",
+      "turn.completed usage is per Codex turn and aggregates internal model calls; internal model-call count is unavailable.",
+      "command_execution exposes aggregated_output, so tool stdout and stderr cannot be separated.",
+      "context compaction is not exposed by this exec event stream unless an explicit compaction event appears."
+    ],
+    "path": "evals/artifacts/itbench-s17-token-replication-v1/runs/s17-b-new-replication-r1/raw/codex.jsonl",
+    "thread_id": "01a00c9b-16c9-7632-a747-0f5ffdceae76"
+  },
+  "warnings": [
+    {
+      "category": "measured",
+      "code": "large_tool_output",
+      "command": "/bin/zsh -lc 'rg -n -i \"PodNetworkChaos|NetworkChaos|HTTPChaos|IOChaos|StressChaos|TimeChaos|DNSChaos|chaos-mesh\" /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n -i \"\u2026",
+      "invocation_id": "item_8",
+      "message": "Tool output was 1048576 bytes."
+    },
+    {
+      "category": "measured",
+      "code": "large_tool_output",
+      "command": "/bin/zsh -lc \"rg -n '\\\"\\\"kind\\\"\\\":\\\"\\\"PodNetworkChaos\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '\\\"\\\"kind\\\"\\\":\\\"\\\"[A-Za-z]+Chaos\\\"\\\"' /var/folders/qt/4kz3_\u2026",
+      "invocation_id": "item_9",
+      "message": "Tool output was 1048576 bytes."
+    },
+    {
+      "category": "measured",
+      "code": "large_tool_output",
+      "command": "/bin/zsh -lc \"rg -n '25f936ce-6582-4075-b6e7-978488358232|1903119|\\\"\\\"action\\\"\\\"|\\\"\\\"delay\\\"\\\"|\\\"\\\"loss\\\"\\\"' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv && rg -n '2025-12-\u2026",
+      "invocation_id": "item_13",
+      "message": "Tool output was 1048576 bytes."
+    },
+    {
+      "category": "heuristic",
+      "code": "repeated_resource_observation",
+      "message": "The same resource path was observed repeatedly."
+    },
+    {
+      "category": "heuristic",
+      "code": "large_unbounded_search",
+      "message": "A broad search emitted a large result without an observable output bound."
+    }
+  ]
+}

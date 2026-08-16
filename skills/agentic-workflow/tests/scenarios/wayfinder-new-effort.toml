@@ -1,10 +1,10 @@
 schema_version = 1
 id = "wayfinder-new-effort"
-name = "Foggy multi-session migration planning persists durable state"
+name = "Complicated migration planning starts lightweight durable state"
 fixture = "wayfinder-new"
-request = "Plan our zero-downtime platform migration across multiple sessions. The route is still uncertain, preserve the important decisions and unknowns for later sessions, and identify any concrete work that can begin now."
+request = "Plan our zero-downtime platform migration. The route has unresolved ordering, dependencies, and assumptions that must remain distinct, and we also need to identify concrete work that can begin while part of the plan is blocked."
 starting_state = [
-  "The migration is too large and uncertain for one session.",
+  "Several important pieces of migration state are becoming unreliable to hold only in conversational context.",
   "Zero downtime is accepted, migration ordering is unresolved, and consumer inventory is executable now.",
   "Repository-local durable planning is authorized, but no external tracker mutation is authorized.",
 ]
@@ -14,7 +14,6 @@ expect = [
   "meaningful_repository_change",
 ]
 must_not = [
-  "claim_unexecuted_provider",
   "overwrite_project_owned_state",
 ]
 live = false

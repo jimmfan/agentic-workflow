@@ -15,26 +15,161 @@
     "expected_behavior": "Answer directly without checking setup, reporting package corruption, loading a provider, or changing repository state."
   },
   {
-    "id": "wayfinder-user-only-codex",
-    "category": "wayfinder-handoff",
+    "id": "wayfinder-implicit-codex",
+    "category": "wayfinder-automatic-selection",
     "prompt": "Map this foggy multi-quarter platform migration.",
-    "setup": "Wayfinder is compatible but its Codex policy requires user invocation.",
-    "dominant_activity": "host-native-planning",
+    "setup": "Several consequential unknowns, ownership boundaries, dependencies, and blockers need durable distinction; Wayfinder is compatible and implicitly invocable in Codex.",
+    "dominant_activity": "wayfinder",
     "capabilities": [],
     "provider_invocations": [
       {
         "name": "wayfinder",
-        "policy": "user-only",
-        "invocation": "not-invoked",
-        "executed": false
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
       }
     ],
     "host": "codex",
-    "route_result": "host-native-fallback",
+    "route_result": "executed",
     "executed": true,
     "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "none",
-    "expected_behavior": "Plan with normal Codex capability, report that the user-only Wayfinder provider did not run, and use canonical local Wayfinder state only when the requested durable map needs it and repository writes are authorized."
+    "expected_behavior": "Select and execute Wayfinder without requiring exact user invocation, then start a lightweight canonical local map because durable structured notes materially reduce the risk of losing or conflating important state."
+  },
+  {
+    "id": "wayfinder-mid-task-escalation",
+    "category": "wayfinder-dynamic-escalation",
+    "prompt": "Implement the queue migration; it initially appears bounded.",
+    "setup": "During implementation, repository evidence reveals conflicting ownership, two blocked dependencies, an unverified data-retention assumption, and independent work that can safely proceed. Wayfinder is implicitly invocable in Codex and repository writes are authorized.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
+    "external_scope": "none",
+    "expected_behavior": "Re-evaluate the initial route, escalate into Wayfinder without waiting for another user prompt, and capture only the known conflicts, blockers, assumption, and work that can proceed before adding detail as needed."
+  },
+  {
+    "id": "wayfinder-one-isolated-unknown-stays-discovery",
+    "category": "wayfinder-threshold-negative",
+    "prompt": "Decide whether this one internal API should return null or an empty list.",
+    "setup": "One bounded consequential choice is unresolved, it fits one session, and no other dependencies, ownership boundaries, or conflicting facts need durable coordination.",
+    "dominant_activity": "discovery",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "codex",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Use bounded Discovery without invoking Wayfinder or creating a Wayfinder effort merely because one important question exists."
+  },
+  {
+    "id": "wayfinder-explicit-codex",
+    "category": "wayfinder-explicit-selection",
+    "prompt": "$wayfinder Map this interruption-heavy platform ownership migration.",
+    "setup": "Wayfinder is installed and adapted for local mode, the user explicitly invoked it, and repository-local planning writes are authorized.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "explicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
+    "external_scope": "none",
+    "expected_behavior": "Honor explicit Wayfinder, use the adapted local map and U/D/T ontology, and create no tracker issue, setup output, .scratch copy, or global active index."
+  },
+  {
+    "id": "wayfinder-with-debugging-evidence",
+    "category": "wayfinder-specialized-capability-composition",
+    "prompt": "Continue the named migration map and diagnose the failing cutover check that blocks U2.",
+    "setup": "The relevant map is already selected; U2 needs causal evidence from an unexplained local failure, and diagnosis plus authorized map reconciliation fit the current scope.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [
+      "debugging"
+    ],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
+    "external_scope": "none",
+    "expected_behavior": "Load map.md before U2, use Debugging to establish evidence without creating a DBG or competing notebook, then update U2 and any justified D# while preserving Wayfinder as the durable owner."
+  },
+  {
+    "id": "wayfinder-reconcile-stale-state",
+    "category": "wayfinder-live-evidence-precedence",
+    "prompt": "Resume the named Wayfinder effort after the deployment configuration changed.",
+    "setup": "The map and D1 assume the old configuration, but current source is authoritative and contradicts that assumption; the relevant files are writable and no concurrent conflict exists.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
+    "external_scope": "none",
+    "expected_behavior": "Load the relevant map first, verify current source, preserve history, reconcile the stale U#/D#/T#/map claims explicitly, and never follow or silently overwrite stale state."
+  },
+  {
+    "id": "wayfinder-read-only-boundary",
+    "category": "wayfinder-read-only-no-state",
+    "prompt": "Audit this complicated platform migration, but do not change files.",
+    "setup": "The audit contains enough moving state that structured notes would otherwise help, but the user explicitly prohibited repository writes.",
+    "dominant_activity": "host-native-analysis",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "codex",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "none",
+    "expected_behavior": "Keep structured reasoning ephemeral or continue the current read-only workflow; do not create or update Wayfinder state merely because durable notes would be useful."
+  },
+  {
+    "id": "wayfinder-explicit-opt-out",
+    "category": "wayfinder-opt-out",
+    "prompt": "Plan this complicated migration, but do not use Wayfinder.",
+    "setup": "The work would otherwise cross the automatic Wayfinder threshold and normal read-only planning can still proceed.",
+    "dominant_activity": "host-native-planning",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "codex",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "none",
+    "expected_behavior": "Respect the explicit opt-out, do not invoke Wayfinder or create its state, and continue with proportional host-native planning."
   },
   {
     "id": "wayfinder-with-research",
@@ -48,7 +183,7 @@
     "provider_invocations": [
       {
         "name": "wayfinder",
-        "policy": "user-only",
+        "policy": "implicit",
         "invocation": "explicit",
         "executed": true
       },

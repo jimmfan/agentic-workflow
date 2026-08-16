@@ -1,4 +1,0 @@
-2026-08-15T23:27:10.093237Z ERROR codex_core::tools::router: error=exec_command failed for `/bin/zsh -lc "rm -rf tests/__pycache__
-sed -n '1,260p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md
-sed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md
-git status --short"`: CreateProcess { message: "Rejected(\"`/bin/zsh -lc \\\"rm -rf tests/__pycache__\\nsed -n '1,260p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md\\nsed -n '1,220p' .ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-boundary-constrained-runner-iam-role.md\\ngit status --short\\\"` rejected: rm -f style commands are not permitted. Use a safer approach\")" }

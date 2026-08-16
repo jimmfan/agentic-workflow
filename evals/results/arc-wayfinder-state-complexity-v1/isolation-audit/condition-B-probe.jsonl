@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a007ec-893d-78b0-9b75-aa307429794f"}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"project_instruction_paths\":[\"/private/tmp/arc-wayfinder-state-isolation-g3uihyg9/isolated-b-97a37adb41724d069ced6aabb5d6b33a/parent/repo/AGENTS.md\"],\"available_skill_names\":[\"imagegen\",\"openai-docs\",\"plugin-creator\",\"skill-creator\",\"skill-installer\",\"workflow-debugging\",\"workflow-discovery\",\"workflow-implementation\",\"workflow-verification\"],\"controller_conversation_excerpt\":null,\"parent_canary_visible\":null,\"sibling_condition_visible\":null,\"inherited_router_requirement\":\"Every request MUST be evaluated through the Agentic Workflow router.\",\"inherited_cloud_credentials\":null}"}}
-{"type":"turn.completed","usage":{"input_tokens":14514,"cached_input_tokens":9984,"cache_write_input_tokens":0,"output_tokens":209,"reasoning_output_tokens":63}}

@@ -1,0 +1,12 @@
+{"type":"thread.started","thread_id":"fixture-thread"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"message-1","type":"agent_message","text":"Inspecting evidence."}}
+{"type":"item.started","item":{"id":"command-1","type":"command_execution","command":"sed -n '1,80p' evidence.json","status":"in_progress","stdout":"","stderr":"","exit_code":null}}
+{"type":"item.completed","item":{"id":"command-1","type":"command_execution","command":"sed -n '1,80p' evidence.json","status":"failed","stdout":"out\n","stderr":"err\n","exit_code":2}}
+{"type":"item.started","item":{"id":"command-2","type":"command_execution","command":"sed -n '1,80p' evidence.json","status":"in_progress","aggregated_output":"","exit_code":null}}
+{"type":"item.completed","item":{"id":"command-2","type":"command_execution","command":"sed -n '1,80p' evidence.json","status":"completed","aggregated_output":"second\n","exit_code":0}}
+{"type":"turn.completed","usage":{"input_tokens":100,"cached_input_tokens":80,"output_tokens":10,"reasoning_output_tokens":4}}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"change-1","type":"file_change","changes":[{"path":"diagnosis.json","kind":"add"}],"status":"completed"}}
+{"type":"item.completed","item":{"id":"message-2","type":"agent_message","text":"Done. [route: router → debugging]"}}
+{"type":"turn.completed","usage":{"input_tokens":150,"cached_input_tokens":120,"output_tokens":20,"reasoning_output_tokens":5}}

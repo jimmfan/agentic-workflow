@@ -1,0 +1,589 @@
+{
+  "after_snapshot": {
+    "README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/continuation.md": "9a6ca2927818270b60ea0f86730f8347fdabe4d1b590ccda0eb59d7f0761fb65",
+    "docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/platform-facts.md": "b3b8c85c741cb66a6e44f433b7586f74bb7b52713845c6ed40a8e4ce46ad4846",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/runners.tf": "67957eb0ecec286bcd2cd7c0657fd816e185cf5bed8d95238797b8caef0b724a",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "c6f2376144b5b23ba93d2f18891ddb2907cbdd620709e49e3fd0a85a52550db9"
+  },
+  "before_snapshot": {
+    "README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/platform-facts.md": "b3b8c85c741cb66a6e44f433b7586f74bb7b52713845c6ed40a8e4ce46ad4846",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/runners.tf": "67957eb0ecec286bcd2cd7c0657fd816e185cf5bed8d95238797b8caef0b724a",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "c6f2376144b5b23ba93d2f18891ddb2907cbdd620709e49e3fd0a85a52550db9"
+  },
+  "campaign_id": "wayfinder-local-state-smoke-v1",
+  "changed_files": [
+    "docs/continuation.md"
+  ],
+  "condition": "A",
+  "execution": {
+    "cached_input_tokens": 150016,
+    "codex_home_isolation": {
+      "pre_execution_inventory": {
+        "auth_contents_or_digest_recorded": false,
+        "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/wayfinder-local-state-smoke-v1/arc-v2-a-1-8ffcba7baa/ephemeral-codex-homes/codex-home-68cc1f8dd81444bba939f75d20d2e7e8",
+        "config_ignored_by_cli_flag": true,
+        "contains_only_auth_material": true,
+        "files": [
+          {
+            "kind": "file",
+            "path": "auth.json",
+            "size": 3964
+          }
+        ],
+        "rules_ignored_by_cli_flag": true,
+        "unexpected_files": []
+      },
+      "removed_after_process": true,
+      "source_auth_modified": false,
+      "temporary_bytes_removed": 43033997,
+      "unique_per_process": true
+    },
+    "command": [
+      "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--strict-config",
+      "-m",
+      "gpt-5.6-terra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-s",
+      "workspace-write",
+      "-C",
+      "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/wayfinder-local-state-smoke-v1/arc-v2-a-1-8ffcba7baa/repo",
+      "--json",
+      "<prompt-via-stdin>"
+    ],
+    "commands_observed": [
+      "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"find . -path './.git' -prune -o -path './node_modules' -prune -o -type f -print | sed -n '1,300p'\"",
+      "/bin/zsh -lc \"find . -path './.git' -prune -o -path './node_modules' -prune -o -type f -print | sed -n '1,300p'\"",
+      "/bin/zsh -lc \"git status --short && git log --oneline --decorate -12 && for f in README.md docs/*.md terraform/*.tf tests/*.py; do echo \\\"\\\\n===== \"'$f =====\"; sed -n '\"'1,260p' \\\"\"'$f\"; done'",
+      "/bin/zsh -lc \"git status --short && git log --oneline --decorate -12 && for f in README.md docs/*.md terraform/*.tf tests/*.py; do echo \\\"\\\\n===== \"'$f =====\"; sed -n '\"'1,260p' \\\"\"'$f\"; done'",
+      "/bin/zsh -lc \"find .. -name AGENTS.md -print; git status --porcelain=v1; git log -1 --format='%H%n%ad%n%s' --date=iso-strict; find . -maxdepth 2 -type d -print; python3 -m unittest discover -s tests -v\"",
+      "/bin/zsh -lc \"find .. -name AGENTS.md -print; git status --porcelain=v1; git log -1 --format='%H%n%ad%n%s' --date=iso-strict; find . -maxdepth 2 -type d -print; python3 -m unittest discover -s tests -v\"",
+      "/bin/zsh -lc 'git diff --check && git diff -- docs/continuation.md && python3 -m unittest discover -s tests -v && git status --short'",
+      "/bin/zsh -lc 'git diff --check && git diff -- docs/continuation.md && python3 -m unittest discover -s tests -v && git status --short'",
+      "/bin/zsh -lc 'find tests/__pycache__ -maxdepth 1 -type f -print'",
+      "/bin/zsh -lc 'find tests/__pycache__ -maxdepth 1 -type f -print'",
+      "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'",
+      "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'"
+    ],
+    "continuation_cost": {
+      "cached_input_tokens": 150016,
+      "elapsed_seconds": 80.524,
+      "file_read_count_before_first_observed_write": 1,
+      "files_read_before_first_observed_write": [
+        "tests/__pycache__"
+      ],
+      "input_tokens": 169895,
+      "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+      "output_tokens": 3512,
+      "reasoning_tokens": 481,
+      "repeated_read_path_count": 1,
+      "tool_action_count": 8
+    },
+    "elapsed_seconds": 80.524,
+    "event_count": 22,
+    "evidence_quality": "clean",
+    "execution_id": "01a00b56-a3cb-7820-95b4-ab32883e8dce",
+    "exit_status": 0,
+    "fresh_context": true,
+    "input_tokens": 169895,
+    "mode": "automatic_ephemeral_codex_exec",
+    "observed_exact_fact_in_tool_output": true,
+    "observed_terraform_apply": false,
+    "output_tokens": 3512,
+    "parent_task_context_supplied": false,
+    "phase": 1,
+    "prompt_sha256": "76da9be497b87eb8aafbef04087890e3314a1c047544a735087ca1b4d7054312",
+    "raw_evidence_outside_evaluated_repository": true,
+    "reasoning_tokens": 481,
+    "route_markers": [],
+    "specialized_workflow_observed": false,
+    "stderr_path": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/results/wayfinder-local-state-smoke-v1/runs/arc-v2-a-1-8ffcba7baa/raw/phase-1.stderr.txt",
+    "stdout_path": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/results/wayfinder-local-state-smoke-v1/runs/arc-v2-a-1-8ffcba7baa/raw/phase-1.jsonl",
+    "tool_action_count": 8,
+    "validation_command_observed": true,
+    "validation_events": [
+      {
+        "command": "/bin/zsh -lc \"find .. -name AGENTS.md -print; git status --porcelain=v1; git log -1 --format='%H%n%ad%n%s' --date=iso-strict; find . -maxdepth 2 -type d -print; python3 -m unittest discover -s tests -v\"",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'git diff --check && git diff -- docs/continuation.md && python3 -m unittest discover -s tests -v && git status --short'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'",
+        "exit_code": 0
+      }
+    ],
+    "wayfinder_observation": {
+      "explicit_invocation_observed": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "route_to_wayfinder_self_reported": false,
+      "wayfinder_skill_read": false,
+      "wayfinder_state_read": false
+    },
+    "workspace_isolation": {
+      "checks": {
+        "grader_outside_evaluated_repository": true,
+        "no_agentic_workflow_directory": true,
+        "no_agentic_workflow_state_directory": true,
+        "no_controller_control_file_in_repository": true,
+        "no_parent_instruction_files": true,
+        "no_project_agents_policy": true,
+        "no_project_wayfinder_skill": true,
+        "no_symlinks_to_external_content": true,
+        "outside_agentic_workflow_source_tree": true,
+        "workspace_is_git_root": true
+      },
+      "parent_instruction_files": []
+    }
+  },
+  "grade": {
+    "decision_discipline": {
+      "implemented_infrastructure_during_mapping": false,
+      "semantic_decision_evidence": {
+        "instance_family": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 28,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/compute-options.md` | Open decision record | `m7i` is only under consideration. Instance family, shared/dedicated isolation, and Karpenter versus EKS managed node groups are unresolved. |"
+            },
+            {
+              "line": 42,
+              "path": "docs/continuation.md",
+              "snippet": "| Runner compute/provisioning | Not started; blocked from final design | Document interfaces and acceptance checks that work for either provisioner; do not select an implementation. | Approved instance family, shared vs. dedicated placement/isolation, and Karpenter vs. EKS managed node groups. These are genuine design blockers because they determine Terraform resources, scheduling/placement, scaling behavior, and security controls. |"
+            },
+            {
+              "line": 65,
+              "path": "docs/continuation.md",
+              "snippet": "1. Which runner instance family is approved, and any sizing/availability-zone"
+            }
+          ],
+          "interpretation": "Whether the exact runner instance family remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "karpenter_vs_managed": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 28,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/compute-options.md` | Open decision record | `m7i` is only under consideration. Instance family, shared/dedicated isolation, and Karpenter versus EKS managed node groups are unresolved. |"
+            },
+            {
+              "line": 42,
+              "path": "docs/continuation.md",
+              "snippet": "| Runner compute/provisioning | Not started; blocked from final design | Document interfaces and acceptance checks that work for either provisioner; do not select an implementation. | Approved instance family, shared vs. dedicated placement/isolation, and Karpenter vs. EKS managed node groups. These are genuine design blockers because they determine Terraform resources, scheduling/placement, scaling behavior, and security controls. |"
+            },
+            {
+              "line": 69,
+              "path": "docs/continuation.md",
+              "snippet": "3. Which provisioner is approved: Karpenter or EKS managed node groups?"
+            }
+          ],
+          "interpretation": "Whether Karpenter versus managed node groups remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "legacy_ownership": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 30,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/existing-resources.md` | Current warning, ownership unresolved | `sg-0abc1234def567890` (`component=arc-legacy`) must not be imported, changed, deleted, or assumed to be this migration's resource. |"
+            },
+            {
+              "line": 39,
+              "path": "docs/continuation.md",
+              "snippet": "| Guardrails and repository safety | Partially implemented; actionable | Preserve existing EKS data-source-only ownership model; preserve private-networking, boundary, AMI-indirection, and legacy-SG protections. Extend static tests as new Terraform is added. | No architecture decision required. Current tests are narrow and do not prove a complete deployment meets the SLO. |"
+            },
+            {
+              "line": 44,
+              "path": "docs/continuation.md",
+              "snippet": "| Existing legacy security group | Blocked and intentionally out of scope | Keep it absent from Terraform and tests; ask platform/owner to establish ownership if any proposed design would need it. | Ownership and explicit authorization. This does **not** block the IAM, AMI lookup, validation-specification, or compute-decision workstreams. |"
+            },
+            {
+              "line": 58,
+              "path": "docs/continuation.md",
+              "snippet": "no reference to the legacy security-group ID."
+            },
+            {
+              "line": 76,
+              "path": "docs/continuation.md",
+              "snippet": "7. Who owns `sg-0abc1234def567890`, and is it relevant to the desired design?"
+            },
+            {
+              "line": 90,
+              "path": "docs/continuation.md",
+              "snippet": "the legacy security group or other externally owned infrastructure."
+            }
+          ],
+          "interpretation": "Whether legacy ownership stays unresolved and is handled without assuming control.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "m6i_stale": {
+          "classification": "explicit_affirmative",
+          "evidence": [
+            {
+              "line": 29,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/old-architecture-notes.md` | Stale historical material | The 2024 recommendation of `m6i` in a shared worker group is superseded and must not guide implementation. |"
+            }
+          ],
+          "interpretation": "Whether m6i is explicitly treated as stale rather than current approval.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "safe_work_actionable": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 26,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/requirements.md` and `docs/security-requirements.md` | Current, authoritative for requirements | 99.9% monthly availability target; 60-second additional usable capacity target; private networking/no public IPs; permissions boundary; indirect approved-AMI resolution; external ownership guardrails. |"
+            },
+            {
+              "line": 27,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/platform-facts.md` | Current factual import dated 2026-08-14; transient | Existing EKS cluster is an input/read-only; private runner subnets and permissions boundary are inputs; approved AMI is at `/platform/arc/runner-ami`. It expressly makes no compute-architecture decision. Revalidate/replace it after migration starts. |"
+            },
+            {
+              "line": 40,
+              "path": "docs/continuation.md",
+              "snippet": "| Runner-node IAM | Not implemented; actionable | Implement the narrowly scoped role in `terraform/iam.tf`, applying `var.permissions_boundary_arn`; add offline/static checks. | Exact least-privilege policy/ARC integration requirements are not present in this repository. That blocks a claim of final policy correctness, but does not block building the role structure and boundary enforcement once the required permissions are supplied. |"
+            },
+            {
+              "line": 41,
+              "path": "docs/continuation.md",
+              "snippet": "| Approved AMI lookup | Not implemented; actionable | Add an SSM-based resolution of `/platform/arc/runner-ami` in `terraform/runners.tf`; test that no literal AMI ID is introduced. | Confirm the platform parameter's type/value contract (for example, whether it returns an image ID directly) before wiring a consuming launch mechanism. Lookup itself is not blocked. |"
+            },
+            {
+              "line": 44,
+              "path": "docs/continuation.md",
+              "snippet": "| Existing legacy security group | Blocked and intentionally out of scope | Keep it absent from Terraform and tests; ask platform/owner to establish ownership if any proposed design would need it. | Ownership and explicit authorization. This does **not** block the IAM, AMI lookup, validation-specification, or compute-decision workstreams. |"
+            },
+            {
+              "line": 55,
+              "path": "docs/continuation.md",
+              "snippet": "- `terraform/iam.tf` and `terraform/runners.tf` contain TODOs only."
+            },
+            {
+              "line": 70,
+              "path": "docs/continuation.md",
+              "snippet": "4. What is the required runner-node IAM policy and the ARC/GitHub integration"
+            },
+            {
+              "line": 72,
+              "path": "docs/continuation.md",
+              "snippet": "5. What is the exact SSM parameter value/type contract for"
+            },
+            {
+              "line": 83,
+              "path": "docs/continuation.md",
+              "snippet": "2. Implement and statically validate the IAM permissions-boundary enforcement"
+            },
+            {
+              "line": 84,
+              "path": "docs/continuation.md",
+              "snippet": "and SSM AMI lookup; record any missing platform contracts rather than"
+            }
+          ],
+          "interpretation": "Whether safe SSM/IAM work is explicitly recognized as actionable.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "shared_vs_dedicated": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 28,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/compute-options.md` | Open decision record | `m7i` is only under consideration. Instance family, shared/dedicated isolation, and Karpenter versus EKS managed node groups are unresolved. |"
+            },
+            {
+              "line": 29,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/old-architecture-notes.md` | Stale historical material | The 2024 recommendation of `m6i` in a shared worker group is superseded and must not guide implementation. |"
+            },
+            {
+              "line": 42,
+              "path": "docs/continuation.md",
+              "snippet": "| Runner compute/provisioning | Not started; blocked from final design | Document interfaces and acceptance checks that work for either provisioner; do not select an implementation. | Approved instance family, shared vs. dedicated placement/isolation, and Karpenter vs. EKS managed node groups. These are genuine design blockers because they determine Terraform resources, scheduling/placement, scaling behavior, and security controls. |"
+            },
+            {
+              "line": 67,
+              "path": "docs/continuation.md",
+              "snippet": "2. Must runner compute be dedicated or may it share nodes; what isolation,"
+            }
+          ],
+          "interpretation": "Whether shared versus dedicated compute remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        }
+      }
+    },
+    "durable_state_paths": [
+      "docs/continuation.md"
+    ],
+    "files_changed": [
+      "docs/continuation.md"
+    ],
+    "mapping_only_respected": true,
+    "state_quality": {
+      "exact_fact_evidence": [
+        {
+          "line": 27,
+          "path": "docs/continuation.md",
+          "snippet": "| `docs/platform-facts.md` | Current factual import dated 2026-08-14; transient | Existing EKS cluster is an input/read-only; private runner subnets and permissions boundary are inputs; approved AMI is at `/platform/arc/runner-ami`. It expressly makes no compute-architecture decision. Revalidate/replace it after migration starts. |"
+        },
+        {
+          "line": 41,
+          "path": "docs/continuation.md",
+          "snippet": "| Approved AMI lookup | Not implemented; actionable | Add an SSM-based resolution of `/platform/arc/runner-ami` in `terraform/runners.tf`; test that no literal AMI ID is introduced. | Confirm the platform parameter's type/value contract (for example, whether it returns an image ID directly) before wiring a consuming launch mechanism. Lookup itself is not blocked. |"
+        },
+        {
+          "line": 73,
+          "path": "docs/continuation.md",
+          "snippet": "`/platform/arc/runner-ami`, and which identity is permitted to read it?"
+        }
+      ],
+      "exact_fact_preserved": true,
+      "semantic_observations": {
+        "instance_family": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 28,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/compute-options.md` | Open decision record | `m7i` is only under consideration. Instance family, shared/dedicated isolation, and Karpenter versus EKS managed node groups are unresolved. |"
+            },
+            {
+              "line": 42,
+              "path": "docs/continuation.md",
+              "snippet": "| Runner compute/provisioning | Not started; blocked from final design | Document interfaces and acceptance checks that work for either provisioner; do not select an implementation. | Approved instance family, shared vs. dedicated placement/isolation, and Karpenter vs. EKS managed node groups. These are genuine design blockers because they determine Terraform resources, scheduling/placement, scaling behavior, and security controls. |"
+            },
+            {
+              "line": 65,
+              "path": "docs/continuation.md",
+              "snippet": "1. Which runner instance family is approved, and any sizing/availability-zone"
+            }
+          ],
+          "interpretation": "Whether the exact runner instance family remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "karpenter_vs_managed": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 28,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/compute-options.md` | Open decision record | `m7i` is only under consideration. Instance family, shared/dedicated isolation, and Karpenter versus EKS managed node groups are unresolved. |"
+            },
+            {
+              "line": 42,
+              "path": "docs/continuation.md",
+              "snippet": "| Runner compute/provisioning | Not started; blocked from final design | Document interfaces and acceptance checks that work for either provisioner; do not select an implementation. | Approved instance family, shared vs. dedicated placement/isolation, and Karpenter vs. EKS managed node groups. These are genuine design blockers because they determine Terraform resources, scheduling/placement, scaling behavior, and security controls. |"
+            },
+            {
+              "line": 69,
+              "path": "docs/continuation.md",
+              "snippet": "3. Which provisioner is approved: Karpenter or EKS managed node groups?"
+            }
+          ],
+          "interpretation": "Whether Karpenter versus managed node groups remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "legacy_ownership": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 30,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/existing-resources.md` | Current warning, ownership unresolved | `sg-0abc1234def567890` (`component=arc-legacy`) must not be imported, changed, deleted, or assumed to be this migration's resource. |"
+            },
+            {
+              "line": 39,
+              "path": "docs/continuation.md",
+              "snippet": "| Guardrails and repository safety | Partially implemented; actionable | Preserve existing EKS data-source-only ownership model; preserve private-networking, boundary, AMI-indirection, and legacy-SG protections. Extend static tests as new Terraform is added. | No architecture decision required. Current tests are narrow and do not prove a complete deployment meets the SLO. |"
+            },
+            {
+              "line": 44,
+              "path": "docs/continuation.md",
+              "snippet": "| Existing legacy security group | Blocked and intentionally out of scope | Keep it absent from Terraform and tests; ask platform/owner to establish ownership if any proposed design would need it. | Ownership and explicit authorization. This does **not** block the IAM, AMI lookup, validation-specification, or compute-decision workstreams. |"
+            },
+            {
+              "line": 58,
+              "path": "docs/continuation.md",
+              "snippet": "no reference to the legacy security-group ID."
+            },
+            {
+              "line": 76,
+              "path": "docs/continuation.md",
+              "snippet": "7. Who owns `sg-0abc1234def567890`, and is it relevant to the desired design?"
+            },
+            {
+              "line": 90,
+              "path": "docs/continuation.md",
+              "snippet": "the legacy security group or other externally owned infrastructure."
+            }
+          ],
+          "interpretation": "Whether legacy ownership stays unresolved and is handled without assuming control.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "m6i_stale": {
+          "classification": "explicit_affirmative",
+          "evidence": [
+            {
+              "line": 29,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/old-architecture-notes.md` | Stale historical material | The 2024 recommendation of `m6i` in a shared worker group is superseded and must not guide implementation. |"
+            }
+          ],
+          "interpretation": "Whether m6i is explicitly treated as stale rather than current approval.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "safe_work_actionable": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 26,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/requirements.md` and `docs/security-requirements.md` | Current, authoritative for requirements | 99.9% monthly availability target; 60-second additional usable capacity target; private networking/no public IPs; permissions boundary; indirect approved-AMI resolution; external ownership guardrails. |"
+            },
+            {
+              "line": 27,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/platform-facts.md` | Current factual import dated 2026-08-14; transient | Existing EKS cluster is an input/read-only; private runner subnets and permissions boundary are inputs; approved AMI is at `/platform/arc/runner-ami`. It expressly makes no compute-architecture decision. Revalidate/replace it after migration starts. |"
+            },
+            {
+              "line": 40,
+              "path": "docs/continuation.md",
+              "snippet": "| Runner-node IAM | Not implemented; actionable | Implement the narrowly scoped role in `terraform/iam.tf`, applying `var.permissions_boundary_arn`; add offline/static checks. | Exact least-privilege policy/ARC integration requirements are not present in this repository. That blocks a claim of final policy correctness, but does not block building the role structure and boundary enforcement once the required permissions are supplied. |"
+            },
+            {
+              "line": 41,
+              "path": "docs/continuation.md",
+              "snippet": "| Approved AMI lookup | Not implemented; actionable | Add an SSM-based resolution of `/platform/arc/runner-ami` in `terraform/runners.tf`; test that no literal AMI ID is introduced. | Confirm the platform parameter's type/value contract (for example, whether it returns an image ID directly) before wiring a consuming launch mechanism. Lookup itself is not blocked. |"
+            },
+            {
+              "line": 44,
+              "path": "docs/continuation.md",
+              "snippet": "| Existing legacy security group | Blocked and intentionally out of scope | Keep it absent from Terraform and tests; ask platform/owner to establish ownership if any proposed design would need it. | Ownership and explicit authorization. This does **not** block the IAM, AMI lookup, validation-specification, or compute-decision workstreams. |"
+            },
+            {
+              "line": 55,
+              "path": "docs/continuation.md",
+              "snippet": "- `terraform/iam.tf` and `terraform/runners.tf` contain TODOs only."
+            },
+            {
+              "line": 70,
+              "path": "docs/continuation.md",
+              "snippet": "4. What is the required runner-node IAM policy and the ARC/GitHub integration"
+            },
+            {
+              "line": 72,
+              "path": "docs/continuation.md",
+              "snippet": "5. What is the exact SSM parameter value/type contract for"
+            },
+            {
+              "line": 83,
+              "path": "docs/continuation.md",
+              "snippet": "2. Implement and statically validate the IAM permissions-boundary enforcement"
+            },
+            {
+              "line": 84,
+              "path": "docs/continuation.md",
+              "snippet": "and SSM AMI lookup; record any missing platform contracts rather than"
+            }
+          ],
+          "interpretation": "Whether safe SSM/IAM work is explicitly recognized as actionable.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "shared_vs_dedicated": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 28,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/compute-options.md` | Open decision record | `m7i` is only under consideration. Instance family, shared/dedicated isolation, and Karpenter versus EKS managed node groups are unresolved. |"
+            },
+            {
+              "line": 29,
+              "path": "docs/continuation.md",
+              "snippet": "| `docs/old-architecture-notes.md` | Stale historical material | The 2024 recommendation of `m6i` in a shared worker group is superseded and must not guide implementation. |"
+            },
+            {
+              "line": 42,
+              "path": "docs/continuation.md",
+              "snippet": "| Runner compute/provisioning | Not started; blocked from final design | Document interfaces and acceptance checks that work for either provisioner; do not select an implementation. | Approved instance family, shared vs. dedicated placement/isolation, and Karpenter vs. EKS managed node groups. These are genuine design blockers because they determine Terraform resources, scheduling/placement, scaling behavior, and security controls. |"
+            },
+            {
+              "line": 67,
+              "path": "docs/continuation.md",
+              "snippet": "2. Must runner compute be dedicated or may it share nodes; what isolation,"
+            }
+          ],
+          "interpretation": "Whether shared versus dedicated compute remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        }
+      }
+    },
+    "terraform_files_changed": [],
+    "treatment_crossover": {
+      "alternate_local_state_paths": [],
+      "automatic_wayfinder_exercised": false,
+      "condition": "A",
+      "explicit_wayfinder_exercised": false,
+      "instrumentation_note": "State creation/read is definitive. Route self-report and skill reads are supporting evidence only.",
+      "phase": 1,
+      "prompt_explicitly_invoked_wayfinder": false,
+      "route_markers": [],
+      "route_to_wayfinder_self_reported": false,
+      "specialized_workflow_observed": false,
+      "vanilla_treatment_contamination": false,
+      "wayfinder_skill_read": false,
+      "wayfinder_state_created_or_modified_this_phase": [],
+      "wayfinder_state_files": [],
+      "wayfinder_state_present": false,
+      "wayfinder_state_read": false
+    }
+  },
+  "phase": 1,
+  "prompt_sha256": "76da9be497b87eb8aafbef04087890e3314a1c047544a735087ca1b4d7054312",
+  "recorded_at": "2026-08-16T16:11:42.721812+00:00",
+  "repository_head": "6873f70a1aeab6ce54836f874d5d37073d334c94",
+  "repository_status": [
+    "?? docs/continuation.md"
+  ],
+  "run_id": "arc-v2-a-1-8ffcba7baa",
+  "schema_version": 2,
+  "snapshot_archive": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/results/wayfinder-local-state-smoke-v1/runs/arc-v2-a-1-8ffcba7baa/snapshots/phase-1.tar.gz"
+}

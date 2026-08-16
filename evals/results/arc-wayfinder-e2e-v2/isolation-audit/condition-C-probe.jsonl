@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a007ac-e4ca-7ee3-94cb-ce30dd3aabe1"}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"project_instruction_paths\":[\"/private/tmp/arc-wayfinder-v2-isolation-0kz2wwmb/isolated-c-73528eef5a97448abc1f10f812ebcc79/parent/repo/AGENTS.md\"],\"available_skill_names\":[\"imagegen\",\"openai-docs\",\"plugin-creator\",\"skill-creator\",\"skill-installer\",\"workflow-debugging\",\"workflow-discovery\",\"workflow-implementation\",\"workflow-verification\"],\"controller_conversation_excerpt\":null,\"parent_canary_visible\":null,\"sibling_condition_visible\":null,\"inherited_router_requirement\":true,\"inherited_cloud_credentials\":null}"}}
-{"type":"turn.completed","usage":{"input_tokens":14524,"cached_input_tokens":9984,"cache_write_input_tokens":0,"output_tokens":221,"reasoning_output_tokens":85}}

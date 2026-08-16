@@ -61,15 +61,16 @@
       {
         "invocation": {
           "claude-code": "unavailable",
-          "codex": "user-only",
-          "github-copilot": "user-only"
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "agentic_workflow_adapter": {
+          "name": "wayfinder-local-state-v1",
+          "upstream_body_sha256": "d13834a052804c9465c5a422585df99ee2664ec6940beb2ae1d961fd06ff4aff"
         },
         "name": "wayfinder",
         "path": "skills/engineering/wayfinder",
-        "requires_configuration": [
-          "domain",
-          "issue-tracker"
-        ]
+        "requires_configuration": []
       },
       {
         "invocation": {
@@ -210,5 +211,5 @@
     ],
     "version": "v1.2.3"
   },
-  "schema_version": 4
+  "schema_version": 5
 }

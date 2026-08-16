@@ -1,0 +1,1037 @@
+{
+  "campaign_id": "itbench-s17-token-replication-v1",
+  "dataset": {
+    "agent_visible_files": [
+      {
+        "bytes": 6602,
+        "path": "Scenario-17/architecture.json",
+        "reused": false,
+        "sha256": "fe3ce2c715e1c3bf6db9b237b0fd3a404f33183a2cf350d262098b0310e6c58f",
+        "source_url": "https://raw.githubusercontent.com/itbench-hub/ITBench-CISO-SRE-FinOps-Agent/30673b23a7166fc53162b2e6c23a364e7c5f0197/metadata/otel_demo_astronomy_shop/architecture.json",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 3951,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-35-08.215274.json",
+        "reused": true,
+        "sha256": "aca25a8ac3b1dd259512b830dd6a8d87e1fb36b01ffc26d0266c55c3be4e7a2a",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 3447,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-36-08.209168.json",
+        "reused": true,
+        "sha256": "30890798c7be5fb0d07899c5c6c68b3a30e3e8929f82a26df203d7239ef708d7",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 3449,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-37-08.209249.json",
+        "reused": true,
+        "sha256": "18ef9f8c5daff6c5b185153323f826c929fcb1b01785d2f9f4ca71f166b6798d",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4459,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-38-08.209447.json",
+        "reused": true,
+        "sha256": "ef0a276fedf1b1849b4eabf94fc46916618bc22658a85ac2034eaa600ef57c19",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4457,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-39-08.209492.json",
+        "reused": true,
+        "sha256": "4f90dbf63f9a7e0568278a515886f59cc3fce3f80cfa9ac19b08cd406720f564",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4457,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-40-08.209514.json",
+        "reused": true,
+        "sha256": "7663da410758408bc7be9c12402963b73483ccef5aced68c88a48e369424c253",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5619,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-41-08.209910.json",
+        "reused": true,
+        "sha256": "ede94f6d671c6406efd5ee69a47f6a5a6d3a410582fb04419ea34bf07c33b445",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6167,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-42-08.210111.json",
+        "reused": true,
+        "sha256": "aca62f7c884edd8b6c968be9a39973af00252a8d2fef00b2239149900e0a6c69",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6739,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-43-08.210262.json",
+        "reused": true,
+        "sha256": "fef5c3746c8c5947557b7390bb8a1e72af8e9e13b7d9e6637ef8b3649a72a3fa",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6728,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-44-08.211260.json",
+        "reused": true,
+        "sha256": "7ff7721fe6d0b930c1fc77ab38fdd94e15f8c95ea8649618dd2d7c6ed1454ca5",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5319,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-45-08.210851.json",
+        "reused": true,
+        "sha256": "f9563e10ac6da880a63f52f1a40b876271be5db34e9f2d76bdc7e85e3694d8dd",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4157,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-46-08.210775.json",
+        "reused": true,
+        "sha256": "75e32341d5928491244f1fcf5d5615cd39b76b8efa91746a7e1ec635bebfef27",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4661,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-47-08.210772.json",
+        "reused": true,
+        "sha256": "9771682fd93657c0f509b3bbbbae12ed736d25a4280ad9ddcae386e8f81edbac",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 2986,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-48-08.211051.json",
+        "reused": true,
+        "sha256": "951b4757d057516b10471e2d459a8c1fd084c362b126f484b186e998422bca3c",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 2986,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-49-08.210982.json",
+        "reused": true,
+        "sha256": "951b4757d057516b10471e2d459a8c1fd084c362b126f484b186e998422bca3c",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4169,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-50-08.211649.json",
+        "reused": true,
+        "sha256": "e2ad55488826d7900455393c2c0aaef16d716b913747dad1b6b992e8fedd8367",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5767,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-51-08.212078.json",
+        "reused": true,
+        "sha256": "08097d3e02cc3eb33576eb96aee8cbe8c860f99b843f0be6eb8eff4ae805fbff",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4605,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-52-08.211848.json",
+        "reused": true,
+        "sha256": "11459d587686f1951d6678962c5d9a82ac9ad1c63561166cfc9da8376ceeed1e",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4605,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-53-08.211942.json",
+        "reused": true,
+        "sha256": "5c9d11b0ed3bb15624157b4331738aa249fe077427a1537bb171890b3d3b0375",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 4605,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-54-08.212152.json",
+        "reused": true,
+        "sha256": "29b2cc94c6d75233d60527d66afbfb34e904e14ec3de6be0b31571f8071d1ade",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6056,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-55-08.212864.json",
+        "reused": true,
+        "sha256": "816f0ddd3c7dacea191851abbc7d94d49b057215b6b686777d0464c81f9f1df3",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6258,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-56-08.212404.json",
+        "reused": true,
+        "sha256": "c9c53971f904778eb380400b68c5b2d215ca4ca3b9885f4cfdd515dee9b0366b",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6256,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-57-08.212358.json",
+        "reused": true,
+        "sha256": "acc66be50928e1e95daa4a9e5695c2e896c74c585f169642e65616a7ae12c287",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6280,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-58-08.212781.json",
+        "reused": true,
+        "sha256": "9dfd9a7e31690b4ee10f13c791bcc833c2fd7948cb8c87d5acd2e0712d5cc6db",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5363,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T17-59-08.212730.json",
+        "reused": true,
+        "sha256": "6c75f4efc9f8dd3e24bd71a2f0593030cf4579be209f0543d39b5e13f2c0d8cf",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5314,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-00-08.212926.json",
+        "reused": true,
+        "sha256": "a68ec5690a2a93f05b04a36d7d12493029434f93d77b89f7cb332e25ab0a85ee",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6041,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-01-08.221547.json",
+        "reused": true,
+        "sha256": "8af8f74beb3bfa554fa1ed153f2950bdb6a7e26f0ed6e98015c4ee42e1e4b47c",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6041,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-02-08.213246.json",
+        "reused": true,
+        "sha256": "89e6eddfd43c853804b135dff77e97804edee9d5a6412e028d19cfcefa51f48f",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6041,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-03-08.213493.json",
+        "reused": true,
+        "sha256": "bc4f47ebaf573f0a278894392fe3ffa03f46892daae9bd537acdd8295b943257",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6498,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-04-08.213759.json",
+        "reused": true,
+        "sha256": "3faecfe79cf7b10d877ef5a281a8ab9c74e907047362ce7716ae01f167463012",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 7863,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-05-08.213920.json",
+        "reused": true,
+        "sha256": "4cc19c94f48c34a6af8d090429c9612d84e2cb8642975b663bf1a9abfdfa5d90",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 7450,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-06-08.214025.json",
+        "reused": true,
+        "sha256": "df788eb96c011a3345d39ae77fade13ecb768047b487dedd311c63394beb2aa9",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 8871,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-07-08.214575.json",
+        "reused": true,
+        "sha256": "a4c7254bfc5094ae1a795139ee142a210d89e130d49c66c889997beee3898f71",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 8915,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-08-08.214242.json",
+        "reused": true,
+        "sha256": "bbb254d387da6277015737bf38d8e94292d4ba6e6cd963cc1f41cd8bf4a235f5",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 7217,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-09-08.214259.json",
+        "reused": true,
+        "sha256": "7729fc89e60a146d4427fbe7501e3f7f3f449ae5ef7acaeba10f6d6b7f336a5a",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5314,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-10-08.214445.json",
+        "reused": true,
+        "sha256": "f32db147819a3e08b920974760b2aa428d9164f7690688c54b98453af60329eb",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6155,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-11-08.215041.json",
+        "reused": true,
+        "sha256": "ba5fa7360aa58b80413173ca46c1004679ea4d2c58ba119c68f87af796f40845",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6142,
+        "path": "sre/Scenario-17/alerts/alerts_at_2025-12-15T18-12-08.214886.json",
+        "reused": true,
+        "sha256": "f72ee3685de8eac351512689bca563b704f86876378bc8609561da7e60ff853b",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 2452,
+        "path": "sre/Scenario-17/alerts/alerts_in_alerting_state_2025-12-15T175718.646747Z.json",
+        "reused": true,
+        "sha256": "2d31b37d56a9e045cfb9fc6fb930115fb86fe9d70afd422a54f56656c5930018",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 2980379,
+        "path": "sre/Scenario-17/k8s_events_raw.tsv",
+        "reused": true,
+        "sha256": "18648528c1c160ee94508cbf93a24d864a555ed796c3bf2e3e5d2a79060072a2",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 48683915,
+        "path": "sre/Scenario-17/k8s_objects_raw.tsv",
+        "reused": true,
+        "sha256": "39f7716bb415bb076d3ad480c4f8cf4fc49b013e24ab499c69c81e665ab77bdb",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 18903474,
+        "path": "sre/Scenario-17/metrics/pod_accounting-58d4b6c958-wl7md_raw.tsv",
+        "reused": true,
+        "sha256": "c81e99749d520a7d8c88c1007521dfb7de50dbf24d8b3cb92d678ecd1e0b29a5",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 18873250,
+        "path": "sre/Scenario-17/metrics/pod_ad-554b849958-zs8ds_raw.tsv",
+        "reused": true,
+        "sha256": "1b0c15688339258e43bf90a066ed4a23ae232e10c33c092d6693fbe02de4df7c",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 18503070,
+        "path": "sre/Scenario-17/metrics/pod_cart-755465879b-nndqm_raw.tsv",
+        "reused": true,
+        "sha256": "2c5554ee345738f47710f5f2c5bc2bf252aac0bc7f3aa5a5b12805ec5c6782e9",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 18759632,
+        "path": "sre/Scenario-17/metrics/pod_checkout-5dccddf8bb-rvrr6_raw.tsv",
+        "reused": true,
+        "sha256": "581e06ffc7cba7065ab4bd58f13182887d999c9e7de8f54ecfcb84a38aaaf36c",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19249740,
+        "path": "sre/Scenario-17/metrics/pod_currency-5d455cf6f7-qljmj_raw.tsv",
+        "reused": true,
+        "sha256": "8241879df01bcbaf91a6f8e9e354be0750d7720714bd60a04ecb6531eac62e2d",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19006492,
+        "path": "sre/Scenario-17/metrics/pod_email-59f69bc6cf-gg8rv_raw.tsv",
+        "reused": true,
+        "sha256": "b1ec8ad1fb7a5e6c87917a27749c17bb66204b496e485491d440c75dd6afa491",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 25232026,
+        "path": "sre/Scenario-17/metrics/pod_flagd-68c5978978-bcfnm_raw.tsv",
+        "reused": true,
+        "sha256": "cbbf44e561b01c6de36bfa24b3f4d057bd58a7a6da6528870792d870da225e3d",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 16546341,
+        "path": "sre/Scenario-17/metrics/pod_fraud-detection-9fb7d885b-n7vmf_raw.tsv",
+        "reused": true,
+        "sha256": "29668fd861b56707b2d51a7c77c7664452b1d265bb6823769a22cb6afc3277f5",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19204732,
+        "path": "sre/Scenario-17/metrics/pod_frontend-675fd7b5c5-64blr_raw.tsv",
+        "reused": true,
+        "sha256": "4e60289dc52ec22985738dd9ee142f2d1a7b4b99d0ab3e2ba4017e763b8aca33",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19659962,
+        "path": "sre/Scenario-17/metrics/pod_frontend-proxy-6b4d584985-xh66d_raw.tsv",
+        "reused": true,
+        "sha256": "e201a97757b81c44423364ae911b4e185d204cac2951503b7e63058146688870",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19656248,
+        "path": "sre/Scenario-17/metrics/pod_image-provider-55cfd9d7d6-cqqbh_raw.tsv",
+        "reused": true,
+        "sha256": "49424bf28488d309101d376f168308de519988b26f11ed35395bb8e0553cac92",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19031162,
+        "path": "sre/Scenario-17/metrics/pod_kafka-ff7884766-mvbkb_raw.tsv",
+        "reused": true,
+        "sha256": "117c7f80170585f1333a82a2f6282c7f5099820f268c5850219ef5c5c1ac0aee",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19618008,
+        "path": "sre/Scenario-17/metrics/pod_load-generator-57ffcd644-4jmc9_raw.tsv",
+        "reused": true,
+        "sha256": "5664fd678909e56f6e9729711ca2c6a2823ccf0fc368c2e1125e9f0b7e3c0216",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 47138858,
+        "path": "sre/Scenario-17/metrics/pod_otel-collector-564d9c7987-rhgn4_raw.tsv",
+        "reused": true,
+        "sha256": "edc77792e87e8c9224ac499140bb180b419b93d22149b94c01141c144c685d19",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19197587,
+        "path": "sre/Scenario-17/metrics/pod_payment-55766d76b9-jxz54_raw.tsv",
+        "reused": true,
+        "sha256": "f4639cacf64f5d52d23115056d14463aa794c98eb50e3e1e1c7947045e009c90",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19347879,
+        "path": "sre/Scenario-17/metrics/pod_postgresql-c7fd45b87-hs65s_raw.tsv",
+        "reused": true,
+        "sha256": "86635f2329549e3f0929f8a7872847e21a81c215a2346d47725095bb85a4bdd0",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19715976,
+        "path": "sre/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv",
+        "reused": true,
+        "sha256": "b4b36a94311ebef47ad6d0ea237000d16b08043727831ec1a3e6c89f41c625f8",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19055976,
+        "path": "sre/Scenario-17/metrics/pod_quote-6b5877698d-t4z7s_raw.tsv",
+        "reused": true,
+        "sha256": "46e93751ed6dc7f12d84dab99bd439d2979c958f3ac75ed522da355fd440bc0f",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19672772,
+        "path": "sre/Scenario-17/metrics/pod_recommendation-5f45f75855-tvqbl_raw.tsv",
+        "reused": true,
+        "sha256": "1755c93e4a6ed8c437719269b2738350183b36d91aff23a99fc92d6e3e4a2897",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19240700,
+        "path": "sre/Scenario-17/metrics/pod_shipping-75d58f5d84-75p94_raw.tsv",
+        "reused": true,
+        "sha256": "21f5edc0f9a6d4ef6b228cb3486145f70f8a49e4b4cafbd1665c5892bc8345fa",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 19365810,
+        "path": "sre/Scenario-17/metrics/pod_valkey-cart-58df56c79c-w6xtf_raw.tsv",
+        "reused": true,
+        "sha256": "2c61028b84b81d7947035502aadc48fa87849c6f50f926ac6e24a2ea96885776",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 6974662,
+        "path": "sre/Scenario-17/metrics/service_accounting_raw.tsv",
+        "reused": true,
+        "sha256": "33f55b5ffd478a27c3a226cd4a6cc0e2717c18506e7e6c4bcde372f69a2863ef",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 12723760,
+        "path": "sre/Scenario-17/metrics/service_ad_raw.tsv",
+        "reused": true,
+        "sha256": "6b639f7ce1fe2d062790023ad5a69cb70ce5e7bb36cc45485f57e905afe169ac",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 15444594,
+        "path": "sre/Scenario-17/metrics/service_cart_raw.tsv",
+        "reused": true,
+        "sha256": "2cad270430878bc82ef78b393bba93265c54a96a26e4c49b04827c9c25e53860",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 15728134,
+        "path": "sre/Scenario-17/metrics/service_checkout_raw.tsv",
+        "reused": true,
+        "sha256": "ff1cc47a453b40ea6f6e09065a0f51d42b1853e568647e21700280fc70cdc1a4",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 1711042,
+        "path": "sre/Scenario-17/metrics/service_currency_raw.tsv",
+        "reused": true,
+        "sha256": "ddb7aa7663f7fe3f516b8296234e8baaa7f536c070fbcabeb05743dff2b612ee",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5129992,
+        "path": "sre/Scenario-17/metrics/service_email_raw.tsv",
+        "reused": true,
+        "sha256": "9cdb422f319456b622bd179c0f5b152365d716c5d926ec5257a0745155c2f504",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 22029116,
+        "path": "sre/Scenario-17/metrics/service_fraud-detection_raw.tsv",
+        "reused": true,
+        "sha256": "0c91c868a60173ef2b1e30d0d6bc1984ea9635ced9fbabf5055bc35881863c40",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 7207402,
+        "path": "sre/Scenario-17/metrics/service_frontend-proxy_raw.tsv",
+        "reused": true,
+        "sha256": "3f39b1de5045bd2613ab61de563248081272f970cb24c83b38b034e7fd6c7637",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 71249332,
+        "path": "sre/Scenario-17/metrics/service_frontend_raw.tsv",
+        "reused": true,
+        "sha256": "f2c18600873dc9ddcd2735f8156bfc7ba720d10cd4a7afc6e02e995fbd952a4a",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 1708696,
+        "path": "sre/Scenario-17/metrics/service_image-provider_raw.tsv",
+        "reused": true,
+        "sha256": "cd725ce34f81fbcf8c3f8c42c1de063a2abee9ab3f1ef899b01f3d3a00d6b4ba",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 13956586,
+        "path": "sre/Scenario-17/metrics/service_payment_raw.tsv",
+        "reused": true,
+        "sha256": "50ed5d8e2c569fe5087c03f56d477ed73e82cd837a1273f49be723803f69dbc6",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 3634256,
+        "path": "sre/Scenario-17/metrics/service_product-catalog_raw.tsv",
+        "reused": true,
+        "sha256": "edff971437f2c7f93a1364352cb44041e2919aa85036b1fdee183f08ea94cf2e",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5379614,
+        "path": "sre/Scenario-17/metrics/service_quote_raw.tsv",
+        "reused": true,
+        "sha256": "10bccc92f54b55aec8391de6202637b275f59c9a0a754aae1cf017a560a2d942",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 9109990,
+        "path": "sre/Scenario-17/metrics/service_recommendation_raw.tsv",
+        "reused": true,
+        "sha256": "9bcd0291187f178a6f9971ec9e07acc03f427fc9080046525a64f26fe341ac58",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 5525028,
+        "path": "sre/Scenario-17/metrics/service_shipping_raw.tsv",
+        "reused": true,
+        "sha256": "3ba86da5cdf4d3f8107b5a5e6df3f4cb43e0cc926b8f78e7f4f3eb9518827586",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 91592870,
+        "path": "sre/Scenario-17/otel_logs_raw.tsv",
+        "reused": true,
+        "sha256": "6be1f9197e1761a405f28458f34346e0c31b27a3c6162ed91c2d5f50469e6c49",
+        "visibility": "agent"
+      },
+      {
+        "bytes": 336040260,
+        "path": "sre/Scenario-17/otel_traces_raw.tsv",
+        "reused": true,
+        "sha256": "2996393ca03ce4b736430f0ec21542069802b62d56deaa140de60ee346a12e8a",
+        "visibility": "agent"
+      }
+    ],
+    "controller_ground_truth_files": [
+      {
+        "bytes": 3587,
+        "path": "sre/Scenario-17/ground_truth.yaml",
+        "reused": true,
+        "sha256": "e94521eec5425ad3fbd4e4f98e97c0a5a59b5cf37fcf8e323e03617d33dc7bfd",
+        "visibility": "controller"
+      }
+    ],
+    "deterministic_matcher_spec": {
+      "aliases": [
+        [
+          "frontend-service-1",
+          "frontend-pod-1"
+        ],
+        [
+          "productcatalog-service-1",
+          "productcatalog-pod-1"
+        ],
+        [
+          "checkout-service-1",
+          "checkout-pod-1"
+        ],
+        [
+          "recommendation-service-1",
+          "recommendation-pod-1"
+        ]
+      ],
+      "groups": [
+        {
+          "filter": [],
+          "id": "delay-otel-demo-product-catalog-1",
+          "kind": "NetworkChaos",
+          "namespace": "chaos-mesh",
+          "root_cause": true
+        },
+        {
+          "filter": [],
+          "id": "productcatalog-service-1",
+          "kind": "Service",
+          "namespace": "otel-demo"
+        },
+        {
+          "filter": [],
+          "id": "checkout-service-1",
+          "kind": "Service",
+          "namespace": "otel-demo"
+        },
+        {
+          "filter": [],
+          "id": "recommendation-service-1",
+          "kind": "Service",
+          "namespace": "otel-demo"
+        },
+        {
+          "filter": [],
+          "id": "frontend-service-1",
+          "kind": "Service",
+          "namespace": "otel-demo"
+        },
+        {
+          "filter": [],
+          "id": "frontendproxy-service-1",
+          "kind": "Service",
+          "namespace": "otel-demo"
+        },
+        {
+          "filter": [],
+          "id": "frontend-pod-1",
+          "kind": "Pod",
+          "namespace": "otel-demo"
+        },
+        {
+          "filter": [],
+          "id": "productcatalog-pod-1",
+          "kind": "Pod",
+          "namespace": "otel-demo"
+        },
+        {
+          "filter": [],
+          "id": "checkout-pod-1",
+          "kind": "Pod",
+          "namespace": "otel-demo"
+        },
+        {
+          "filter": [],
+          "id": "recommendation-pod-1",
+          "kind": "Pod",
+          "namespace": "otel-demo"
+        }
+      ],
+      "roots": [
+        {
+          "accepted_group_ids": [
+            "delay-otel-demo-product-catalog-1"
+          ],
+          "accepted_groups": [
+            {
+              "filter": [],
+              "id": "delay-otel-demo-product-catalog-1",
+              "kind": "NetworkChaos",
+              "namespace": "chaos-mesh",
+              "root_cause": true
+            }
+          ],
+          "root_group_id": "delay-otel-demo-product-catalog-1"
+        }
+      ]
+    },
+    "public_root": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288",
+    "repo": "ArtificialAnalysis/ITBench-AA",
+    "revision": "76df38a82288f75ba9e41dc8c515033332497473",
+    "scenario": 17,
+    "snapshot_execution_mode": "shared read-only offline files"
+  },
+  "frozen_at": "2026-08-16T22:03:49.670882+00:00",
+  "historical_comparison": {
+    "cached_input_tokens": 5766144,
+    "diagnosis": {
+      "root_causes": [
+        {
+          "condition": "Repeatedly spawned NetworkChaos experiments that applied network delay to pod otel-demo/product-catalog-7c7f8b68dc-7rqh9 for 55 seconds of each minute.",
+          "kind": "Schedule",
+          "name": "otel-demo-product-catalog-network-delay",
+          "namespace": "chaos-mesh"
+        }
+      ],
+      "summary": "The Chaos Mesh Schedule began a product-catalog network-delay experiment at 17:52:00 and re-created it every minute. Delayed product-catalog RPCs accumulated in frontend request handling, so frontend-proxy reached its 15-second upstream timeout and produced the frontend, checkout, product-catalog, and recommendation availability/latency symptoms."
+    },
+    "elapsed_seconds": 402.068,
+    "execution_sha256": "834859e4e315dc4c681d5fd066103a0f7149af18d34c6b73616e27213f6ba70b",
+    "failed_commands": [
+      {
+        "command": "/bin/zsh -lc \"pwd && sed -n '1,240p' .ai-workflow/routing.md && sed -n '1,260p' .agents/skills/workflow-debugging/SKILL.md\"",
+        "exit_code": 127,
+        "invocation_id": "item_1",
+        "output_bytes": 146,
+        "status": "failed",
+        "tool_type": "command_execution"
+      },
+      {
+        "command": "/bin/zsh -lc \"command -v rg; command -v awk; command -v /usr/bin/sed; rg --files -g 'routing.md' -g 'SKILL.md' .ai-workflow .agents/skills/workflow-debugging && awk 'NR<=260 {print}' .ai-workflow/routing.md && awk 'NR<=320 {print}' .agents/skills/workflow-debugging/SKILL.md\"",
+        "exit_code": 127,
+        "invocation_id": "item_2",
+        "output_bytes": 202,
+        "status": "failed",
+        "tool_type": "command_execution"
+      },
+      {
+        "command": "/bin/zsh -lc 'rg --files /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17 | head -200'",
+        "exit_code": 127,
+        "invocation_id": "item_4",
+        "output_bytes": 31,
+        "status": "failed",
+        "tool_type": "command_execution"
+      },
+      {
+        "command": "/bin/zsh -lc \"command -v node; command -v ruby; command -v perl; command -v /usr/bin/plutil; rg -n -i 'error|fail|timeout|unavailable|refused|oom|crash|back-off|imagepull|dns|deadline|exception|panic' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv | tail -200\"",
+        "exit_code": 127,
+        "invocation_id": "item_8",
+        "output_bytes": 0,
+        "status": "failed",
+        "tool_type": "command_execution"
+      },
+      {
+        "command": "/bin/zsh -lc \"/usr/bin/perl -MJSON::PP -e 'open(F,\\\"<\\\",\"'$ARGV[0])or die$!;<F>;while(<F>){chomp;@f=split(/'\"\\\\t/,\"'$_,17);next unless@f>=9;$s=$f[8];$s=~s/''^\"//;$s=~s/\"$//;$s=~s/\"\"/\"/g;eval{$o=decode_json($s)};next if$@;next unless($o->{kind}//q())eq\"Node\";$n=$o->{metadata}{name};$rv=$o->{metadata}{resourceVersion};next if$seen{\"$n/$rv\"}++;$cond=$o->{status}{conditions}//[];print \"$f[1] Node $n rv=$rv'\"\\\\n\\\";for(@\"'$cond){print \"  $_->{type}=$_->{status} reason=$_->{reason} msg=$_->{message} a\u2026",
+        "exit_code": 1,
+        "invocation_id": "item_26",
+        "output_bytes": 18120,
+        "status": "failed",
+        "tool_type": "command_execution"
+      }
+    ],
+    "input_tokens": 6012435,
+    "largest_tool_outputs": [
+      {
+        "combined_output_bytes": 1048576,
+        "command": "/bin/zsh -lc \"rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv; rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_postgre\u2026",
+        "invocation_id": "item_14",
+        "output_bytes": 1048576,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 1048576,
+        "command": "/bin/zsh -lc \"rg -n -i 'chaos|stress-ng|network delay|latency|tc qdisc|bandwidth|packet loss|fault' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17\"",
+        "invocation_id": "item_33",
+        "output_bytes": 1048576,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 289259,
+        "command": "/bin/zsh -lc \"rg -n -C 2 'CPUThrottlingHigh|OOM|CrashLoop|FailedScheduling|BackOff|Unhealthy|Evicted|Killing|FailedMount|Insufficient|quota|memory|cpu' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv\"",
+        "invocation_id": "item_10",
+        "output_bytes": 289259,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 245567,
+        "command": "/bin/zsh -lc \"rg -n -i -m 160 'fraud|17:48|17:49|17:50|17:51|17:52' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv | rg -i -m 160 'fraud|error|fail|timeout|exception|checkout|postgres|kafka'\"",
+        "invocation_id": "item_19",
+        "output_bytes": 245567,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 150640,
+        "command": "/bin/zsh -lc \"rg -n -m 80 '2025-12-15 17:4[8-9]|2025-12-15 17:5[0-9]' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv; rg -n -m 80 '2025-12-15 17:4[8-9]|2025-12-15 17:5[0-9]' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_recommendation-5f45f75855-tvqbl_raw.tsv; rg -n -m 80 '2025-12-15 17:4[8-9]|2025-12-15 17:5[0-9]' /var/folders/qt/4kz3_8fn6h\u2026",
+        "invocation_id": "item_13",
+        "output_bytes": 150640,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 111261,
+        "command": "/bin/zsh -lc \"rg -n -i -m 120 'product-catalog|recommendation|postgresql' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv\"",
+        "invocation_id": "item_12",
+        "output_bytes": 111261,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 75616,
+        "command": "/bin/zsh -lc \"rg -n -i -m 160 'error|fail|timeout|unavailable|refused|oom|crash|back-off|imagepull|dns|deadline|exception|panic' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv; /usr/bin/sed -n '1,120p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/alerts/alerts_at_2025-12-15T18-12-08.214886.json\"",
+        "invocation_id": "item_9",
+        "output_bytes": 75616,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 64953,
+        "command": "/bin/zsh -lc \"/usr/bin/perl -MJSON::PP -e 'open(F,\\\"<\\\",\"'$ARGV[0])or die$!;<F>;while(<F>){chomp;@f=split(/'\"\\\\t/,\"'$_,17);next unless@f>=9;$s=$f[8];$s=~s/''^\"//;$s=~s/\"$//;$s=~s/\"\"/\"/g;eval{$w=decode_json($s)};next if$@;$o=$w->{object}//{};next unless($o->{involvedObject}{kind}//q())eq\"NetworkChaos\";next if$seen{$o->{metadata}{uid}}++;$i=$o->{involvedObject};print \"obs=$f[1] first=$o->{firstTimestamp} last=$o->{lastTimestamp} name=$i->{name} ns=$i->{namespace} reason=$o->{reason} msg=$o->{mess\u2026",
+        "invocation_id": "item_34",
+        "output_bytes": 64953,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 62634,
+        "command": "/bin/zsh -lc \"/usr/bin/sed -n '1,20p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv; /usr/bin/sed -n '1,10p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv; /usr/bin/sed -n '1,160p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/architecture.json; /usr/bin/sed -n '1,160p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/it\u2026",
+        "invocation_id": "item_6",
+        "output_bytes": 62634,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      },
+      {
+        "combined_output_bytes": 25926,
+        "command": "/bin/zsh -lc \"/usr/bin/perl -MJSON::PP -e 'open(F,\\\"<\\\",\"'$ARGV[0])or die$!;<F>;while(<F>){chomp;@f=split(/'\"\\\\t/,\"'$_,17);next unless@f>=9;$s=$f[8];$s=~s/''^\"//;$s=~s/\"$//;$s=~s/\"\"/\"/g;eval{$w=decode_json($s)};next if$@;$o=$w->{object}//{};$i=$o->{involvedObject}//{};next unless($i->{kind}//q())=~/Schedule|Workflow|NetworkChaos/ && ($i->{name}//q())=~/product-catalog/;next unless($o->{firstTimestamp}//q())ge\"2025-12-15T17:45:00Z\";print \"$o->{firstTimestamp} kind=$i->{kind} name=$i->{name} ns=$\u2026",
+        "invocation_id": "item_36",
+        "output_bytes": 25926,
+        "stderr_bytes": null,
+        "stdout_bytes": null,
+        "tool_type": "command_execution"
+      }
+    ],
+    "native_grade_sha256": "573cf32013b08af3af2502ca5fb891fbbcbac18a891a65929ce8cb56c769956b",
+    "native_score": 0.0,
+    "native_success": false,
+    "output_tokens": 14435,
+    "route_markers": [
+      "[route: router \u2192 debugging]"
+    ],
+    "token_forensics_sha256": "67878f08245b1201e36d65ba1635501236f195ab3035ee0512db244bb01d1551",
+    "tool_actions": 37,
+    "tool_output_bytes": 3256648,
+    "uncached_input_tokens": 246291
+  },
+  "native_scoring": "ITBench-AA public-data derivative: 0 if any GT root cause is missing, otherwise TP/(TP+FP)",
+  "product": {
+    "capability_names": [
+      "code-review",
+      "codebase-design",
+      "domain-modeling",
+      "grilling",
+      "implement",
+      "prototype",
+      "research",
+      "setup-matt-pocock-skills",
+      "tdd",
+      "teach",
+      "to-spec",
+      "to-tickets",
+      "triage",
+      "wayfinder",
+      "workflow-debugging",
+      "workflow-discovery",
+      "workflow-implementation",
+      "workflow-verification"
+    ],
+    "contract_observations": {
+      "adapter": {
+        "name": "wayfinder-local-state-v1",
+        "upstream_body_sha256": "d13834a052804c9465c5a422585df99ee2664ec6940beb2ae1d961fd06ff4aff"
+      },
+      "checks": {
+        "automatic_routing_owned_by_framework": true,
+        "bounded_debugging_stays_lightweight": true,
+        "canonical_local_state_named": true,
+        "complete_declared_provider_inventory_projected": true,
+        "incompatible_tracker_mechanics_disabled": true,
+        "read_only_state_writes_forbidden": true,
+        "source_and_payload_provider_declarations_equal": true,
+        "wayfinder_adapter_declared": true,
+        "wayfinder_claude_unavailable": true,
+        "wayfinder_codex_implicit": true,
+        "wayfinder_codex_metadata_implicit": true,
+        "wayfinder_github_copilot_implicit": true,
+        "wayfinder_has_no_setup_prerequisites": true,
+        "wayfinder_local_adapter_present_once": true,
+        "wayfinder_model_invocation_enabled": true
+      },
+      "declared_provider_skills": [
+        "code-review",
+        "codebase-design",
+        "domain-modeling",
+        "grilling",
+        "implement",
+        "prototype",
+        "research",
+        "setup-matt-pocock-skills",
+        "tdd",
+        "teach",
+        "to-spec",
+        "to-tickets",
+        "triage",
+        "wayfinder"
+      ],
+      "projected_provider_skills": [
+        "code-review",
+        "codebase-design",
+        "domain-modeling",
+        "grilling",
+        "implement",
+        "prototype",
+        "research",
+        "setup-matt-pocock-skills",
+        "tdd",
+        "teach",
+        "to-spec",
+        "to-tickets",
+        "triage",
+        "wayfinder"
+      ],
+      "provider_version": "v1.2.3"
+    },
+    "controller_artifact_note": "The source Git status may list this regression namespace; product identity is locked by HEAD plus payload and projected-skill tree hashes.",
+    "domain_modeling_present": true,
+    "framework_version": "0.12.0",
+    "payload_file_sha256": {
+      "VERSION": "8a932413d42f95082f8323447652379a4885e328329efca3a67ec9c793c09940",
+      "ai-workflow/README.md": "aa3684f3ce49a7e77574175e636d6d9673f81dcee31d5c65eaa3d7edf8d1db0f",
+      "ai-workflow/contracts/durable-state.md": "a18586a25b0007d5b1d68bf6c905de71ee823418a3a867de9e4d6cc6b56cdd17",
+      "ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
+      "ai-workflow/contracts/wayfinder-state.md": "2a7a1b0196adb8aacc8c67331e91be1112e7a4584c6356308c956f82e1b933a5",
+      "ai-workflow/providers.json": "70766ee0917c535760e30ade267f15fa2b757625fccb5771619fdfd03a7b99da",
+      "ai-workflow/routing.md": "69f37bd3425b635d99abe41ab8adbc195ca37897a21a1f15968d73e2233ffb95",
+      "ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+      "ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+      "ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+      "distribution/manifest.json": "f9586086ce385163c4d6cdd9525b584111afdc053292f4a05b592aa0d154459a",
+      "root/AGENTS.md.template": "14e6bee82a80fa6c813013a48604eff07ef9abd7df99b3eebd1bd0f92b77bc71",
+      "root/CLAUDE.md.template": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+      "skills/workflow-debugging/SKILL.md": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809",
+      "skills/workflow-discovery/SKILL.md": "6f2bf050979720965678b4db7bdc37f978c175f6ec7b7988c81d0b5c99c48d08",
+      "skills/workflow-implementation/SKILL.md": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0",
+      "skills/workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185"
+    },
+    "payload_tree_sha256": "9d31f94dea7d53b83af13d254ce524b4ac74d916c91d469d9df7708e472473c2",
+    "projected_skill_file_sha256": {
+      "code-review/SKILL.md": "0587a7a2df76a02adfa69fec1a4eb98f3cc7a99baa5301e6e7f050938183504a",
+      "code-review/agents/openai.yaml": "8229ca854e11dc8e6aef2131ee03f31fb1561cf905fab9ccc325180cf3331352",
+      "codebase-design/DEEPENING.md": "125e6b77413ad2bc7cf7a772bc74336d580a50f9e797db2178ed133d62333d06",
+      "codebase-design/DESIGN-IT-TWICE.md": "09f9948ea7636a4d3704c5ab909762e876c0b39849eefb14d2e03a398cc9c7e7",
+      "codebase-design/SKILL.md": "ce0e9c199fd99e101192764587232cce64aacfab2a75a0d4a56df8dbab13ec41",
+      "codebase-design/agents/openai.yaml": "edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f",
+      "domain-modeling/ADR-FORMAT.md": "f1f36cd3f8d3b6474ddd5855da4e233bfc4ae1a1c5024909ccf11871819a41b2",
+      "domain-modeling/CONTEXT-FORMAT.md": "b8cc318f2a4285b530e908b6bc43901c3c5cd11100362636bbc4216639bef597",
+      "domain-modeling/SKILL.md": "481dc806729fc8da631e683597d5d6d3d94bf2cb180b1cb81e5249af9d3d9df9",
+      "domain-modeling/agents/openai.yaml": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
+      "grilling/SKILL.md": "4f24209d0fa1c51e8670fb5456d4dd930b1c796a98b1c32a6e3178cfb325b23e",
+      "grilling/agents/openai.yaml": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
+      "implement/SKILL.md": "98d7456d20cc27dc8c60ffd2968cbe5a0843c7d75b86a07b3eae369de587876d",
+      "implement/agents/openai.yaml": "8970a8596ade0c28ab427f41a4ea242d6bdf6186c59ebf55e1238dbecaab79dc",
+      "prototype/LOGIC.md": "5aef84c2ef514dd2a7268433abd3ee8e47b35f42b60e0b5f7430ec4937f4f06a",
+      "prototype/SKILL.md": "74e15e9be880964333ed38ce06e985ef64d5896f4823341dccf43bf4fa4a2293",
+      "prototype/UI.md": "e2ca04434be54acdee2f5df582ef8038fadf582bbcc99be0d2e27737ff8ed096",
+      "prototype/agents/openai.yaml": "5af65e43ab41a350436697b81e27b7f848d36782043b73c322bb2c9fa9cc55dc",
+      "research/SKILL.md": "f16627f2fe8958b8dbc71b0c9f1207b71cfd0dc6ebf51f6ac3263234d8438cc3",
+      "research/agents/openai.yaml": "9b4c470d63221c1f68f22df70b83e2f12401b317babe0d1b7b5f24a974474d0d",
+      "setup-matt-pocock-skills/SKILL.md": "eb8baefdd41773054909d0dd7fd08ad6af3e5a51d0f6e5261a4294747dec9440",
+      "setup-matt-pocock-skills/agents/openai.yaml": "9527de0110541c45712319025155aeab8dc7d77c6ed6e5e83271bab1851ab939",
+      "setup-matt-pocock-skills/domain.md": "25be404b58798b3cb2d51c93dba2ab052fc3a425632185726ac3f5fcff193b99",
+      "setup-matt-pocock-skills/issue-tracker-github.md": "ec8332bb69e7e79e349989e940be481a0c79b552be3acc613e718278bcc5e03d",
+      "setup-matt-pocock-skills/issue-tracker-gitlab.md": "16ea4a727803876cbc763e1f6b00992b3b393ba5e0cd394382dccc0f8d83c564",
+      "setup-matt-pocock-skills/issue-tracker-local.md": "6f38f66f9ffce2fdc26c43608d06b527f60e45c6f43003d0ea77d4e2641c9de3",
+      "setup-matt-pocock-skills/triage-labels.md": "4f53c9b40ce2651e3611aa090eaedbd6dbc9b71ef8c5f7e65eac0d8263190d0d",
+      "tdd/SKILL.md": "39344830dfc38606c0087400db9498dc2398d92f603534287bdc34d60986910d",
+      "tdd/agents/openai.yaml": "ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b",
+      "tdd/mocking.md": "3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef",
+      "tdd/tests.md": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a",
+      "teach/GLOSSARY-FORMAT.md": "d177def491519d97873291f2e860d8f1d60ead78feecb82eee022177958069c6",
+      "teach/LEARNING-RECORD-FORMAT.md": "855f81017625256584bbf62bd5edb9b0c86605c4cc1139c56acc36b802595d17",
+      "teach/MISSION-FORMAT.md": "8da6d3ac84eb2eb19f17c260b6acf01c560d3ac7a4501c415eea0e985602f4d7",
+      "teach/RESOURCES-FORMAT.md": "2bc634a64b0d0daa10904f9222e7aa0d361420dfacabbf092fbe3a72222edc08",
+      "teach/SKILL.md": "5e1f7e5a9d8d143e8b0eccebb413a09413e2d9c4a5f44618dde3514dd90463a8",
+      "teach/agents/openai.yaml": "5856f3ae8aec742f1499c640aecdd5f1d6af5fa210a7c6ec794de8263a6f733f",
+      "to-spec/SKILL.md": "02d6a1345fa56471dedf3d9f1d00d01bc09dd113ce031cc5b84a176273449cdd",
+      "to-spec/agents/openai.yaml": "1c5b4d1e3d8e52287ef19cc2742fdbbfae1914ac75d33af3e4c8174f08cc55bb",
+      "to-tickets/SKILL.md": "0b4c63431e5eac5222bb30448592405020213e4769da0495bdf1305c947fa817",
+      "to-tickets/agents/openai.yaml": "21bc6215fffcd7614e9f772bb1760e87cc5fc7dcc707e7d282bc9414267a6090",
+      "triage/AGENT-BRIEF.md": "5b78d347cc53f6bcf7b875106005ccf5315055fa4cf75eb28d41e96ee426d27b",
+      "triage/OUT-OF-SCOPE.md": "2526f998fd7ca5e956d3f6f234bcc2431a5971ee769f1148ddc60b92f04d5914",
+      "triage/SKILL.md": "e24a08703b53a74117344f68519f7271a0ff99706c47a022803e6ef74592ceaa",
+      "triage/agents/openai.yaml": "2e683717720cf456d165d0bb1a68bb600d0b6a8ccb61841c172e50d26f95351c",
+      "wayfinder/SKILL.md": "ec76e15b2476574241f35fe0bd65ebd44142a134a05103129cc5ed5301478342",
+      "wayfinder/agents/openai.yaml": "57f261c4bb8943d4dee108a2b8b47fd6c5f8a6b7db8568b7caab02881224ee6d",
+      "workflow-debugging/SKILL.md": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809",
+      "workflow-discovery/SKILL.md": "6f2bf050979720965678b4db7bdc37f978c175f6ec7b7988c81d0b5c99c48d08",
+      "workflow-implementation/SKILL.md": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0",
+      "workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185"
+    },
+    "projected_skills_tree_sha256": "9577120f9243650f37c81e8c0b04880b1a303c3e9095b3686b7fd69c061d2eb6",
+    "source_git_describe": "7a6bfaa",
+    "source_git_sha": "7a6bfaaae859ec0b16f4cee4807cd0021d7da76f",
+    "source_git_status": [
+      "?? evals/itbench-wayfinder/regressions/itbench-s17-token-replication-v1/"
+    ],
+    "tested_branch": "feature/wayfinder-auto",
+    "wayfinder_present": true
+  },
+  "prompts": {
+    "explicit_prefix": null,
+    "neutral_sha256": "90f32af8b24a5e41757753e11cfac36af66c4cd73aa4863e4f3f81c064976a85",
+    "neutral_template": "Diagnose the Kubernetes SRE incident represented by the read-only offline\nsnapshot at:\n\n{snapshot_path}\n\nUse local shell and file-inspection tools to investigate the snapshot. It is a\nrecording, not a live cluster: do not use the network, alter the snapshot, or\nattempt remediation.\n\nIdentify the smallest set of independent root-cause Kubernetes entities that\nexplains the incident. Write the final diagnosis as valid JSON to:\n\n{output_path}\n\nUse this schema:\n{{\n  \"root_causes\": [\n    {{\n      \"kind\": \"Kubernetes kind\",\n      \"name\": \"observed entity name\",\n      \"namespace\": \"observed namespace or null\",\n      \"condition\": \"concise explanation of the causal fault\"\n    }}\n  ],\n  \"summary\": \"concise diagnosis and causal propagation explanation\"\n}}\n\nUse entity kind, name, and namespace exactly as supported by the snapshot.\nDo not include a downstream symptom merely because it is unhealthy.\n"
+  },
+  "protocol_sha256": "78613645a7ee9cb98387b311b911aafdecffe1a1e369b62ca2758052ae328146",
+  "runner_sha256": "5dde27cc6de16725fbf538915cbaab55a5399a8a9ae423040f5b3778d5709d4c",
+  "runtime": {
+    "approval_policy": "never",
+    "codex_cli": "codex-cli 0.144.6",
+    "context_policy": "fresh codex exec --ephemeral and unique minimal CODEX_HOME",
+    "historical_codex_cli": "codex-cli 0.144.6",
+    "model": "gpt-5.6-terra",
+    "network_policy": "prohibited by task contract and no network credentials inherited",
+    "reasoning_effort": "medium",
+    "retry_policy": "one retry only for failure before thread.started; never retry a completed or timed-out model run",
+    "sandbox": "workspace-write",
+    "shell_environment_policy": "inherit PATH/TMPDIR/LANG/LC_ALL/TERM only",
+    "timeout_seconds": 1800
+  },
+  "schema_version": 1,
+  "status": "frozen_before_single_scored_run",
+  "treatment": {
+    "agentic_workflow": true,
+    "condition": "B-new replication",
+    "explicit_wayfinder": false,
+    "scenario": 17,
+    "scored_runs": 1
+  }
+}

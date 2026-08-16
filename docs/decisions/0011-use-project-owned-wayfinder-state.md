@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-14
 - Supersedes: local Wayfinder artifact and pointer portions of ADR-0007
-- Amended by: ADR-0012
+- Amended by: ADR-0012, ADR-0013, and ADR-0015
 
 ## Context
 
@@ -29,7 +29,8 @@ and `T#` Markdown files. Keep the map low resolution, derive frontier work from
 current item status and dependencies, and load child bodies only when relevant.
 
 The upstream provider continues to own Wayfinder reasoning. Agentic Workflow
-owns only this local storage and re-entry contract. The local tree is the native
+owns this local storage and re-entry contract plus the narrow effective-
+instruction adapter later accepted by ADR-0015. The local tree is the native
 configured representation, not a mirror of `.scratch/` or an external tracker.
 The relevant effort map is the re-entry point. ADR-0012 later removes the global
 active index for non-Wayfinder workflows as well; those workflows resume from

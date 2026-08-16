@@ -25,7 +25,9 @@ usable even when every optional provider is unavailable.
   exactly matching, and blocked when unknown content differs. The small install
   manifest records only evidence needed for safe external deletion.
 - Provider directories are optional and independent. Preserve every existing
-  same-named directory and every provider directory on remove.
+  same-named directory and every provider directory on remove. A narrowly
+  declared Wayfinder adapter may update only a recognized pinned method body and
+  exact activation metadata; unknown or modified content is never rewritten.
 
 Do not treat a missing historical file, old manifest detail, optional profile,
 durable record, provider, or setup file as package corruption. Current desired
@@ -71,8 +73,15 @@ workflows never create, read, or update it. Never recreate
 After core success, lifecycle makes a best-effort provider install for missing
 declared skills with `gh skill install`. GitHub CLI absence, authentication,
 network, or provider failure is a warning and never rolls back or invalidates
-the core. Update does not replace existing provider directories. Remove explains
-that provider cleanup is manual because v0 keeps no provider ownership database.
+the core. The complete missing declared set is staged, validated, and projected
+together, so a failed attempt exposes none of that set. Update does not replace
+existing provider directories. It may apply the declared Wayfinder local-mode
+adapter only when pinned source metadata, the method-body fingerprint, adapter
+markers, and exact activation metadata are recognized; unexpected bytes are
+preserved and reported without a partial write.
+Provider status is incomplete until every declared skill is usable. Remove
+explains that provider cleanup is manual because v0 keeps no provider ownership
+database.
 
 `status` is read-only and reports core `healthy`, `repairable`, or
 `unsafe/conflict`. Missing optional state files and providers are normal. A

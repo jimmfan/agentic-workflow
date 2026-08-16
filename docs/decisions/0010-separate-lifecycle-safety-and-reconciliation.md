@@ -3,6 +3,7 @@
 - Status: accepted
 - Date: 2026-08-14
 - Supersedes: ADR-0002, provider lifecycle portions of ADR-0007, ADR-0009
+- Amended by: ADR-0014
 
 ## Context
 
@@ -100,3 +101,8 @@ it. Runtime reconciliation always uses the actual mapped source bytes.
 Revisit a deferred subsystem only after a concrete current failure shows it is
 needed to protect project data or make core routing reliable, and after simpler
 host or provider mechanisms prove insufficient.
+
+ADR-0014 records that concrete failure and amends item 7: the missing declared
+provider set is now staged and projected completely or not at all, while the
+no-ownership, preserve-existing, manual-cleanup, and core-success boundaries
+remain unchanged.

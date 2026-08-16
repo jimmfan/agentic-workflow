@@ -89,11 +89,15 @@ A clear, bounded task can remain direct and does not need to create durable stat
 
 Other work can use workflows such as Discovery, Wayfinder, Implementation, or Debugging, with supporting capabilities such as Research, TDD, Verification, or Code Review when relevant.
 
+Routing can change as work unfolds. If investigation reveals enough consequential unknowns, decisions, dependencies, blockers, or conflicting facts that ordinary conversational context is becoming unreliable, Agentic Workflow may open or resume a lightweight Wayfinder map automatically. No numeric complexity score or explicit user invocation is required.
+
 Optional provider capabilities can be used when installed and available. If one is unavailable, the framework must not report that it ran.
 
 ## Durable project state
 
-Durable state exists for work that needs to survive the current session.
+Durable state exists when important project context must remain distinguishable
+outside ordinary conversational memory, including work likely to continue in a
+later session.
 
 It is not intended to store:
 
@@ -125,6 +129,8 @@ The intended source-of-truth order is explicit:
 
 Wayfinder is the durable planning workflow for efforts where unknowns, decisions, dependencies, and resulting work need to remain connected over time.
 
+The practical threshold is whether a careful engineer would start structured notes now because losing or conflating important state could cause a later mistake. The effort does not have to be huge or certainly multi-session. Explicit Wayfinder requests still select it, explicit opt-outs are respected, and read-only work never creates or updates its state.
+
 A Wayfinder effort can look like:
 
 ```text
@@ -144,7 +150,12 @@ A Wayfinder effort can look like:
 
 Child files are loaded only when needed.
 
-The basic relationship is:
+The pinned upstream skill supplies the destination/map/fog methodology. A
+narrow, fingerprinted provider adapter makes this Git-native tree authoritative
+over upstream tracker mechanics when Agentic Workflow local mode is active. In
+that mode no issue tracker or `.scratch/` copy is required.
+
+The common relationship is:
 
 ```text
 Unknown
@@ -161,9 +172,18 @@ New information
    └── reconsider an earlier decision
 ```
 
+This is not a mandatory pipeline. A sharp investigation or decision question is
+U#, its evidence may resolve without a durable D#, a D# may require no T#, and
+T# exists only for concrete executable work when decomposition is useful.
+Debugging, Research, Prototype, Grilling, Domain Modeling, human clarification,
+or Implementation may resolve or consume an item without taking ownership of
+the map.
+
 Wayfinder is not required for every task.
 
 An existing Wayfinder effort should not cause an unrelated, bounded request to enter the Wayfinder workflow.
+
+Starting a map is intentionally cheap: record only what is known, unknown, decided, blocked, and able to proceed, then add detail as the problem develops.
 
 ## Re-entry across sessions
 
@@ -271,6 +291,13 @@ Agentic Workflow manages only its marked region and preserves project-owned cont
 Provider-native artifacts and identifiers remain canonical in their native locations.
 
 Agentic Workflow references those artifacts rather than creating parallel copies when the provider already owns the information.
+
+For supported hosts, the declared Matt Pocock provider inventory is projected
+as a complete set under `.agents/skills/`. Fresh install stages every declared
+skill before projection, and update completes a partial projection without
+replacing directories that are already present. A failed provider attempt leaves
+the independently installed core usable but reports provider status as
+incomplete.
 
 ## Workflow model
 

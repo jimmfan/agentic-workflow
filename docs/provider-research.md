@@ -21,6 +21,12 @@ Some are user-only and require exact `$skill-name` or `/skill-name` invocation.
 Claude does not receive a `.claude/skills` projection in this release, so the
 router uses host-native fallback there.
 
+Wayfinder is the intentional exception to its upstream v1.2.3 invocation
+policy. Agentic Workflow preserves the provider's planning methodology but
+permits implicit invocation because Agentic Workflow owns workflow routing. The
+declaration marks Wayfinder implicit for Codex and GitHub Copilot and unavailable
+for Claude.
+
 The local framework retains only materially distinct boundaries:
 
 - bounded Discovery for local consequential decisions;
@@ -32,26 +38,52 @@ The local framework retains only materially distinct boundaries:
 The provider `implement` skill owns its TDD and closing Code Review stages. The
 framework does not mechanically repeat them.
 
+The declared inventory also includes the provider's reviewed composition
+dependencies. In particular, Wayfinder may delegate to `grilling`,
+`domain-modeling`, and `prototype`; implementation composition uses `tdd`,
+`code-review`, and `codebase-design`; and `triage` supports setup, specification,
+and ticket workflows. A supported-host projection is complete only when every
+declared directory is usable in `.agents/skills/`.
+
 Wayfinder v1.2.3 defines a low-resolution map with Destination, Notes, Decisions
 so far, Not yet specified, and Out of scope; it loads child decision tickets on
 demand and derives the frontier from open, unblocked, unclaimed children. Its
 default local-Markdown tracker stores those artifacts below `.scratch/`.
 Agentic Workflow deliberately configures its canonical local representation
 under `.ai-workflow-state/wayfinder/` instead, with stable U#/D#/T# children and
-the map itself as the re-entry point. This is a storage and re-entry adaptation,
-not a copied planning method or a provider fork; see ADR-0011.
+the map itself as the re-entry point. Decision and investigation questions map
+to U#, durable project choices map to D#, and concrete executable work maps to
+T# only when it exists. This is a storage, re-entry, and item-lifecycle
+adaptation, not a copied planning method or provider fork; see ADR-0011 and
+ADR-0015.
+
+The pinned upstream metadata disables model invocation in `SKILL.md` and
+`agents/openai.yaml`, while its discovery descriptions retain the upstream
+“huge, more than one session” threshold. After a fresh install or during a later
+lifecycle update, `providers.py` applies the declared Wayfinder adapter. It
+inserts an authoritative local-mode section before the unchanged method body
+and changes the four known invocation/selection scalars. It requires the pinned
+method-body fingerprint, source metadata, and exact upstream or already-adapted
+values; unknown or modified content is preserved without a partial write. This
+makes the policy and configured local mechanics durable without vendoring or
+rewriting the upstream method.
 
 ## Installation policy
 
 After core reconciliation succeeds, `providers.py` inspects declared destination
-names. Missing directories may be offered to `gh skill install` with the reviewed
-repository and pin. Existing same-named directories, including incompatible or
-partially installed ones, are preserved.
+names. It stages every currently missing exact path with `gh skill install` at
+the reviewed repository pin, validates the complete missing inventory and host
+metadata, applies declared adapters, then projects the staged directories
+together. Existing same-named directories, including incompatible or partially
+installed ones, are preserved.
 
 Provider installation is best-effort. Missing GitHub CLI support, authentication,
 network access, or an upstream install failure yields a warning while the core
-router and local workflows remain ready. Update attempts only missing provider
-directories.
+router and local workflows remain ready. A failed attempt commits none of the
+missing set. Update retries the missing set and safely reconciles declared
+provider adapters on present directories. Status returns an incomplete provider
+result while any declared skill is missing, incompatible, or awaiting an
+adapter; lifecycle continues to report core health separately.
 
 The framework records no provider hashes, provenance history, origin states,
 quarantine copies, or update transaction. Remove never deletes provider

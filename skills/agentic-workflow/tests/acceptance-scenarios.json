@@ -45,6 +45,26 @@
     "expected": "A missing GitHub CLI or provider failure warns while core installation succeeds."
   },
   {
+    "id": "project-complete-provider-inventory",
+    "operation": "install-update",
+    "expected": "Fresh install and update project every missing declared provider skill into the supported shared discovery location as one validated set."
+  },
+  {
+    "id": "reject-partial-provider-projection",
+    "operation": "install-update",
+    "expected": "A failed command or omitted declared skill commits none of the currently missing staged provider set."
+  },
+  {
+    "id": "adapt-wayfinder-effective-local-mode",
+    "operation": "install-update-status-remove",
+    "expected": "Recognized pinned Wayfinder content receives the local-mode adapter and activation metadata idempotently; status and remove distinguish the adapted form while preserving the provider directory."
+  },
+  {
+    "id": "reject-unknown-wayfinder-method-body",
+    "operation": "install-update",
+    "expected": "A changed pinned method body, source metadata, adapter marker, or activation value is preserved and reported without partially writing either provider file."
+  },
+  {
     "id": "support-cp1252-console",
     "operation": "status",
     "expected": "Unrepresentable path characters are escaped and do not crash the CLI."

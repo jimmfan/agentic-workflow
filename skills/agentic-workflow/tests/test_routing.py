@@ -41,7 +41,41 @@ class RoutingContractTests(unittest.TestCase):
         routing = (PACKAGE_ROOT / "payload/ai-workflow/routing.md").read_text()
         self.assertIn("marker is optional instruction-level diagnostics", routing)
         self.assertNotIn("runtime/capabilities.json", routing)
-        self.assertNotIn("observability", routing.lower())
+        self.assertNotIn(".ai-workflow/runtime", routing)
+
+    def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(self) -> None:
+        scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
+        by_id = {item["id"]: item for item in scenarios}
+        self.assertTrue(
+            {
+                "wayfinder-implicit-codex",
+                "wayfinder-mid-task-escalation",
+                "wayfinder-one-isolated-unknown-stays-discovery",
+                "wayfinder-explicit-codex",
+                "wayfinder-with-debugging-evidence",
+                "wayfinder-reconcile-stale-state",
+                "wayfinder-read-only-boundary",
+                "wayfinder-explicit-opt-out",
+                "wayfinder-with-research",
+            }
+            <= set(by_id)
+        )
+        for scenario_id in ("wayfinder-implicit-codex", "wayfinder-mid-task-escalation"):
+            provider = by_id[scenario_id]["provider_invocations"][0]
+            self.assertEqual(provider["policy"], "implicit")
+            self.assertEqual(provider["invocation"], "implicit")
+            self.assertTrue(provider["executed"])
+        self.assertEqual(by_id["wayfinder-with-research"]["provider_invocations"][0]["invocation"], "explicit")
+        self.assertEqual(by_id["wayfinder-explicit-codex"]["provider_invocations"][0]["invocation"], "explicit")
+        self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["dominant_activity"], "discovery")
+        self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["provider_invocations"], [])
+        self.assertEqual(by_id["wayfinder-with-debugging-evidence"]["capabilities"], ["debugging"])
+        self.assertEqual(
+            by_id["wayfinder-reconcile-stale-state"]["repository_state_effect"],
+            "project-owned-wayfinder-state",
+        )
+        self.assertEqual(by_id["wayfinder-read-only-boundary"]["repository_state_effect"], "read-only")
+        self.assertEqual(by_id["wayfinder-explicit-opt-out"]["provider_invocations"], [])
 
 
 if __name__ == "__main__":

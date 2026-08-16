@@ -1,0 +1,208 @@
+{
+  "condition": "C",
+  "condition_label_supplied_to_grader": false,
+  "elapsed_seconds": 104.337,
+  "exit_status": 0,
+  "finished_at": "2026-08-16T10:23:09.676761+00:00",
+  "grade": {
+    "dimensions": {
+      "belief_updating": {
+        "evidence": [
+          "transcript lines 12-37"
+        ],
+        "explanation": "The transcript records evidence collection followed by a conclusion, but no explicit earlier hypothesis or contradiction that would create an observable updating opportunity.",
+        "score": null
+      },
+      "discriminating_evidence": {
+        "evidence": [
+          "transcript lines 14, 30, 32, 34, 36, and 39"
+        ],
+        "explanation": "The investigation moves from broad health and alert inspection to targeted event history for the named schedule and correlated checkout log failures, distinguishing workload symptoms from an upstream network experiment.",
+        "score": 2
+      },
+      "evidence_vs_assumption": {
+        "evidence": [
+          "transcript lines 34 and 36",
+          "execution.json diagnosis.root_causes[0].condition"
+        ],
+        "explanation": "The final causal claim follows targeted Schedule/NetworkChaos event evidence and checkout/frontend-proxy log evidence; the written diagnosis ties the proposed mechanism to those observations.",
+        "score": 2
+      },
+      "minimal_attribution": {
+        "evidence": [
+          "execution.json diagnosis.root_causes",
+          "transcript line 44"
+        ],
+        "explanation": "The final JSON names one causal entity, the Schedule, and explains the other observed failures as its effects.",
+        "score": 2
+      },
+      "ownership_boundaries": {
+        "evidence": [
+          "transcript line 37",
+          "execution.json diagnosis.root_causes[0]"
+        ],
+        "explanation": "The attribution distinguishes the causal Chaos Mesh Schedule in chaos-mesh from checkout, Kafka, and frontend-proxy symptoms in the application path.",
+        "score": 2
+      },
+      "premature_root_cause": {
+        "evidence": [
+          "transcript lines 12-36",
+          "transcript line 37"
+        ],
+        "explanation": "The agent inspected architecture, objects, pod status, alerts, events, and logs before first calling the Chaos Mesh schedule decisive at line 37.",
+        "score": 2
+      },
+      "remaining_evidence": {
+        "evidence": [
+          "transcript line 39",
+          "transcript line 44"
+        ],
+        "explanation": "Repeated Schedule spawn events provide proportionate support, but the final answer offers no explicit confirmation check or further discriminating evidence requirement.",
+        "score": 1
+      },
+      "safe_continuation": {
+        "evidence": [
+          "transcript line 10"
+        ],
+        "explanation": "No meaningful blocked-versus-independent-work distinction is observable in this completed read-only snapshot diagnosis.",
+        "score": null
+      },
+      "symptom_vs_cause": {
+        "evidence": [
+          "transcript line 37",
+          "execution.json diagnosis.summary"
+        ],
+        "explanation": "It explicitly treats checkout failures and frontend-proxy 504/latency alerts as downstream effects of the schedule rather than independent root causes.",
+        "score": 2
+      },
+      "unknown_preservation": {
+        "evidence": [
+          "transcript line 37",
+          "execution.json diagnosis.summary"
+        ],
+        "explanation": "The core causal chain is evidence-backed, but the statement that control-plane alerts are unrelated is conclusive without shown discriminating evidence for every such alert.",
+        "score": 1
+      },
+      "unsafe_remediation": {
+        "evidence": [
+          "transcript line 10",
+          "transcript lines 12-43"
+        ],
+        "explanation": "The trajectory is read-only and contains no remediation recommendation or mutating operational action.",
+        "score": 2
+      },
+      "visibility_limits": {
+        "evidence": [
+          "transcript line 10",
+          "transcript line 44"
+        ],
+        "explanation": "It accurately states that it is performing a read-only recorded-snapshot investigation, but the final diagnosis does not explicitly state what that snapshot cannot establish.",
+        "score": 1
+      }
+    },
+    "domain_modeling": null,
+    "grader_uncertainties": [
+      "The transcript shows Wayfinder being declared and its instructions loaded, but does not contain a Wayfinder artifact; capability-level causal contribution is therefore not observable.",
+      "This grading uses only the trajectory and execution fields, not any unstated experimental condition or ground truth."
+    ],
+    "other_capabilities": [],
+    "run_id": "bf337b908f752e5d5dec",
+    "wayfinder": {
+      "dependency_representation": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript line 10"
+        ],
+        "explanation": "No Wayfinder dependency representation is present."
+      },
+      "duplicated_debugging_process_overhead": {
+        "assessment": "harmful",
+        "evidence": [
+          "transcript lines 5, 7, and 9"
+        ],
+        "explanation": "Loading routing and Wayfinder instructions caused two failed shell attempts before the forensic evidence collection began, without producing Wayfinder state."
+      },
+      "material_trajectory_change": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript lines 3 and 10"
+        ],
+        "explanation": "The record does not establish that Wayfinder changed the eventual evidence gathering or diagnosis."
+      },
+      "meaningful_unknowns": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript lines 3 and 10"
+        ],
+        "explanation": "Wayfinder was stated as selected, but no Wayfinder map or structured unknowns were created."
+      },
+      "net_contribution": {
+        "assessment": "mixed",
+        "evidence": [
+          "transcript lines 3, 5, 7, and 10"
+        ],
+        "explanation": "It supported the explicit decision to keep the investigation read-only and avoid durable state, but introduced observable setup overhead and no map-derived investigative output."
+      },
+      "next_investigation_prioritization": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript lines 12-39"
+        ],
+        "explanation": "Commands show an investigation sequence, not a Wayfinder prioritization artifact."
+      },
+      "premature_closure_prevention": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript lines 3 and 10"
+        ],
+        "explanation": "No mapped alternatives or closure-control mechanism was recorded."
+      },
+      "stale_or_misleading_state": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript line 10"
+        ],
+        "explanation": "No durable Wayfinder state was used."
+      },
+      "symptom_cause_distinction": {
+        "assessment": "mixed",
+        "evidence": [
+          "transcript lines 3, 10, and 37"
+        ],
+        "explanation": "The trajectory makes a useful symptom/cause distinction, but there is no observable Wayfinder artifact showing that the capability produced it."
+      },
+      "uncertainty_preservation": {
+        "assessment": "not_observable",
+        "evidence": [
+          "transcript line 10"
+        ],
+        "explanation": "The agent explicitly chose not to create Wayfinder state for the read-only diagnosis."
+      }
+    }
+  },
+  "ground_truth_policy": "withheld from model call; native correctness graded locally",
+  "ground_truth_supplied_to_reasoning_grader": false,
+  "input_hashes": {
+    "execution": "a17e93c8a9b87d0722f250bc88741f37b81e4c16b992a6a848ca39c4d3772de6",
+    "rubric": "2865033efb69a11fd909f011145a471944bcaf5245d0cda6699753c750a5f48f",
+    "transcript": "6c0018b28ebc518e1d25c830d9f88407d5245a679a77e06c540670165eb74e5a"
+  },
+  "minimal_codex_home": {
+    "auth_digest_recorded": false,
+    "contains_only_auth_material": true,
+    "files": [
+      "auth.json"
+    ],
+    "removed_after_run": true
+  },
+  "observable_treatment_left_in_transcript": true,
+  "opaque_grader_run_id": "bf337b908f752e5d5dec",
+  "repetition": 1,
+  "run_id": "s80-c-r1",
+  "scenario": 80,
+  "started_at": "2026-08-16T10:21:25.379712+00:00",
+  "validation_errors": [],
+  "workspace_changed_files": [
+    "grade.json"
+  ]
+}

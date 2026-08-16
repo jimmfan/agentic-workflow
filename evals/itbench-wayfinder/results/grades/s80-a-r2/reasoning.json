@@ -1,0 +1,139 @@
+{
+  "condition": "A",
+  "condition_label_supplied_to_grader": false,
+  "elapsed_seconds": 107.957,
+  "exit_status": 0,
+  "finished_at": "2026-08-16T10:37:56.778705+00:00",
+  "grade": {
+    "dimensions": {
+      "belief_updating": {
+        "evidence": [
+          "transcript.jsonl:14 states a working causal path, and later evidence supports it, but no competing hypothesis or revision is recorded."
+        ],
+        "explanation": "There is no observable hypothesis-update opportunity with contradictory evidence.",
+        "score": null
+      },
+      "discriminating_evidence": {
+        "evidence": [
+          "transcript.jsonl:13 first gathers symptom logs; transcript.jsonl:15-16 then searches specifically for NetworkChaos, schedule, and failed-recovery evidence.",
+          "transcript.jsonl:18 shows the first object-parsing attempt failed on CSV field size, and transcript.jsonl:20 has no output.",
+          "transcript.jsonl:22-24 recover useful event counts and detailed Schedule/NetworkChaos lifecycle records."
+        ],
+        "explanation": "The later targeted event inspection usefully distinguishes a control-plane cause from workload symptoms, though early log collection was broad and the failed object-inspection attempts left useful configuration evidence unexamined.",
+        "score": 1
+      },
+      "evidence_vs_assumption": {
+        "evidence": [
+          "transcript.jsonl:13 reports checkout Kafka-write errors and frontend-proxy 504 response-timeout logs.",
+          "transcript.jsonl:24 reports repeated Schedule spawns, NetworkChaos application to checkout and both Kafka pods, and recovery 55 seconds later.",
+          "execution.json:10 asserts that five-second recovery windows were insufficient to restore Kafka service, but the recorded outputs show recovery events rather than a measurement of restoration sufficiency."
+        ],
+        "explanation": "The causal chain is largely anchored to observed logs and events, but the final condition adds an unmeasured recovery-effect claim as fact.",
+        "score": 1
+      },
+      "minimal_attribution": {
+        "evidence": [
+          "execution.json:8-15 names one root-cause entity: the chaos-mesh Schedule otel-demo-checkout-kafka-network-partition.",
+          "execution.json:16 excludes frontend, checkout, and Kafka errors as independent causes."
+        ],
+        "explanation": "The reported causal set is a single upstream scheduling entity rather than a collection of unhealthy workloads.",
+        "score": 2
+      },
+      "ownership_boundaries": {
+        "evidence": [
+          "transcript.jsonl:14 explicitly moves from checkout/proxy symptoms to the Kubernetes control-plane entity.",
+          "execution.json:11-13 attributes the cause to a Schedule in the chaos-mesh namespace, while execution.json:16 treats application components as downstream effects."
+        ],
+        "explanation": "It distinguishes the application symptoms from the Chaos Mesh scheduling boundary using the observed resource identity.",
+        "score": 2
+      },
+      "premature_root_cause": {
+        "evidence": [
+          "transcript.jsonl:14 calls the incident path clear and refers to a Kubernetes control-plane entity that caused Kafka failure before the targeted control-plane search at transcript.jsonl:15-16.",
+          "transcript.jsonl:16 and :24 subsequently provide direct NetworkChaos/Schedule evidence."
+        ],
+        "explanation": "The early causal wording preceded the discriminating control-plane evidence, but the agent then gathered that evidence before making the final attribution.",
+        "score": 1
+      },
+      "remaining_evidence": {
+        "evidence": [
+          "execution.json:7-16 provides a resolved diagnosis but names no proportionate confirmation check.",
+          "transcript.jsonl:24 provides lifecycle evidence but not an explicit correlation or post-recovery service confirmation."
+        ],
+        "explanation": "The conclusion is presented as resolved, but it omits a concrete confirmation step for the unmeasured timing and recovery assertions.",
+        "score": 1
+      },
+      "safe_continuation": {
+        "evidence": [
+          "The recorded investigation shows no external block or decision that separates blocked work from independently safe checks."
+        ],
+        "explanation": "No meaningful blocked-versus-independent continuation distinction is observable.",
+        "score": null
+      },
+      "symptom_vs_cause": {
+        "evidence": [
+          "transcript.jsonl:14 explicitly says it will not report proxy or checkout symptoms as root causes.",
+          "execution.json:16 explicitly identifies frontend, checkout, and Kafka errors as downstream effects rather than independent root causes."
+        ],
+        "explanation": "The final diagnosis distinguishes the request-timeout symptoms and affected workloads from the Schedule.",
+        "score": 2
+      },
+      "unknown_preservation": {
+        "evidence": [
+          "transcript.jsonl:24 establishes repeated application and recovery events, but its displayed interval begins at 17:54 while the initially displayed frontend and checkout logs in transcript.jsonl:13 are at 17:33.",
+          "execution.json:10 and :16 state the complete causal chain without qualifying that missing displayed time correlation or the recovery-effect inference."
+        ],
+        "explanation": "The trajectory narrows to a plausible, evidenced cause, but the final certainty collapses material unverified linkage and recovery behavior.",
+        "score": 1
+      },
+      "unsafe_remediation": {
+        "evidence": [
+          "transcript.jsonl:4-24 contains inspection commands only; no mutating command is recorded.",
+          "execution.json:7-16 contains diagnosis fields only and recommends no change."
+        ],
+        "explanation": "The trajectory remains nonmutating and does not propose speculative remediation.",
+        "score": 2
+      },
+      "visibility_limits": {
+        "evidence": [
+          "execution.json:10 presents recovery insufficiency as known although transcript.jsonl:24 records only apply/recover lifecycle events.",
+          "No transcript agent message or final JSON field identifies the limits of this snapshot evidence."
+        ],
+        "explanation": "The diagnosis claims an unobserved restoration outcome without recognizing the snapshot's visibility limit.",
+        "score": 0
+      }
+    },
+    "domain_modeling": null,
+    "grader_uncertainties": [
+      "The transcript records direct Schedule and NetworkChaos lifecycle evidence, but the displayed event interval does not itself demonstrate alignment with the initially displayed 17:33 workload logs."
+    ],
+    "other_capabilities": [],
+    "run_id": "62e9cc4500dddae24db9",
+    "wayfinder": null
+  },
+  "ground_truth_policy": "withheld from model call; native correctness graded locally",
+  "ground_truth_supplied_to_reasoning_grader": false,
+  "input_hashes": {
+    "execution": "fca83b69c5a946ae21a5e454244af589eb3635590d7ab2b87457a9d0aaa4ae51",
+    "rubric": "2865033efb69a11fd909f011145a471944bcaf5245d0cda6699753c750a5f48f",
+    "transcript": "851c36c31ec9c5dc91199bf2a489d29bba5735dee2c151b1b1946e24eef22434"
+  },
+  "minimal_codex_home": {
+    "auth_digest_recorded": false,
+    "contains_only_auth_material": true,
+    "files": [
+      "auth.json"
+    ],
+    "removed_after_run": true
+  },
+  "observable_treatment_left_in_transcript": true,
+  "opaque_grader_run_id": "62e9cc4500dddae24db9",
+  "repetition": 2,
+  "run_id": "s80-a-r2",
+  "scenario": 80,
+  "started_at": "2026-08-16T10:36:08.816937+00:00",
+  "validation_errors": [],
+  "workspace_changed_files": [
+    "grade.json"
+  ]
+}

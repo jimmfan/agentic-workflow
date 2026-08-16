@@ -32,10 +32,19 @@ Across uncertainty, decision changes, interruptions, and fresh-agent continuatio
   observations. Its frozen Phase 6 completion advantage is confounded by an
   under-specified W4 fixture and incomplete acceptance check.
 
+- The controlled `itbench-wayfinder-v1` campaign completed 54 bounded offline
+  SRE diagnoses. It found no reliable correctness or reasoning gain for normal
+  Agentic Workflow or explicit Wayfinder, while B used 58% more elapsed time
+  and 42% more input tokens than vanilla and C used 43% more time and 51% more
+  input tokens. Native entity matching has material ontology/condition defects,
+  and these single-shot tasks did not exercise durable continuation, so this is
+  repeatable bounded-task cost evidence rather than an answer about long-lived
+  engineering work.
+
 ## Resolution
 
-Keep open. T4 adds contrary single-trajectory evidence under harder state, but
-its intended W4 discriminator is invalid and no campaign supplies a repeatable
-distribution or general product conclusion. No next run is authorized. Any
-future conclusion must preserve campaign defects, state its task domain and
-uncertainty, and account for observed overhead.
+Keep open. T4 adds contrary single-trajectory evidence under harder state, and
+T5 adds repeatable evidence of overhead without benefit on bounded incident
+diagnosis, but neither resolves net value on long-lived work. No next run is
+authorized. Any future conclusion must preserve campaign defects, state its
+task domain and uncertainty, and account for observed overhead.

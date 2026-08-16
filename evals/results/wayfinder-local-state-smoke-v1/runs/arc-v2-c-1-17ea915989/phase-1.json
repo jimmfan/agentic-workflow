@@ -1,0 +1,800 @@
+{
+  "after_snapshot": {
+    ".agents/skills/wayfinder/SKILL.md": "ec76e15b2476574241f35fe0bd65ebd44142a134a05103129cc5ed5301478342",
+    ".agents/skills/wayfinder/agents/openai.yaml": "57f261c4bb8943d4dee108a2b8b47fd6c5f8a6b7db8568b7caab02881224ee6d",
+    ".agents/skills/workflow-debugging/SKILL.md": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809",
+    ".agents/skills/workflow-discovery/SKILL.md": "6f2bf050979720965678b4db7bdc37f978c175f6ec7b7988c81d0b5c99c48d08",
+    ".agents/skills/workflow-implementation/SKILL.md": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0",
+    ".agents/skills/workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md": "5acc74a9a4012e89fe42c0af057f2c582af6ee9632bf7c265795b06a8843fd90",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/map.md": "b74408e77d082f768a8f937fef5627db30e32c25cdfcc53dcb7079fbe86a6bb8",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md": "66c23f1c04c887e6d9095098617e8211a1ba53cfb1665d1f1aa851c49a23b244",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md": "57387eab8434256c513d23446f5681c04a92bd51ff226f6ca1d402e6eb8a42cf",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md": "c2a265253f9a0fdba09b21ac107d2651e81a919743569201e2b61f3fa706f112",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md": "c10aa4eb76ba4efe798805b5447c8b0dca854bafbd0588f464143c9c53a70011",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md": "56af7a731d276b46b9f47ad58dcfe6c481f65ec500d1bafbaa5821558d1655f0",
+    ".ai-workflow/README.md": "aa3684f3ce49a7e77574175e636d6d9673f81dcee31d5c65eaa3d7edf8d1db0f",
+    ".ai-workflow/contracts/durable-state.md": "a18586a25b0007d5b1d68bf6c905de71ee823418a3a867de9e4d6cc6b56cdd17",
+    ".ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
+    ".ai-workflow/contracts/wayfinder-state.md": "2a7a1b0196adb8aacc8c67331e91be1112e7a4584c6356308c956f82e1b933a5",
+    ".ai-workflow/install-manifest.json": "f0d346d7fe6123b085e8c19a3ae32ec55c02ed31f5a4cb5f185413ddb333b2d8",
+    ".ai-workflow/providers.json": "70766ee0917c535760e30ade267f15fa2b757625fccb5771619fdfd03a7b99da",
+    ".ai-workflow/routing.md": "69f37bd3425b635d99abe41ab8adbc195ca37897a21a1f15968d73e2233ffb95",
+    ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+    ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+    ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+    "AGENTS.md": "52e7248de4f1c3394a429a23344b2aeb7caa001e3d343f6f0da82010ffb0a5e3",
+    "CLAUDE.md": "9938ba4b9a506523de20faff275516304d58f5d891e38b72f0e1c66aa06831f6",
+    "README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/platform-facts.md": "b3b8c85c741cb66a6e44f433b7586f74bb7b52713845c6ed40a8e4ce46ad4846",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/runners.tf": "67957eb0ecec286bcd2cd7c0657fd816e185cf5bed8d95238797b8caef0b724a",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "c6f2376144b5b23ba93d2f18891ddb2907cbdd620709e49e3fd0a85a52550db9"
+  },
+  "before_snapshot": {
+    ".agents/skills/wayfinder/SKILL.md": "ec76e15b2476574241f35fe0bd65ebd44142a134a05103129cc5ed5301478342",
+    ".agents/skills/wayfinder/agents/openai.yaml": "57f261c4bb8943d4dee108a2b8b47fd6c5f8a6b7db8568b7caab02881224ee6d",
+    ".agents/skills/workflow-debugging/SKILL.md": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809",
+    ".agents/skills/workflow-discovery/SKILL.md": "6f2bf050979720965678b4db7bdc37f978c175f6ec7b7988c81d0b5c99c48d08",
+    ".agents/skills/workflow-implementation/SKILL.md": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0",
+    ".agents/skills/workflow-verification/SKILL.md": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185",
+    ".ai-workflow/README.md": "aa3684f3ce49a7e77574175e636d6d9673f81dcee31d5c65eaa3d7edf8d1db0f",
+    ".ai-workflow/contracts/durable-state.md": "a18586a25b0007d5b1d68bf6c905de71ee823418a3a867de9e4d6cc6b56cdd17",
+    ".ai-workflow/contracts/project-profile.md": "5b2a6a759b48403d21a62cbbcc21b8ced954a01cd451bd3d6ef4d1e65b61feaa",
+    ".ai-workflow/contracts/wayfinder-state.md": "2a7a1b0196adb8aacc8c67331e91be1112e7a4584c6356308c956f82e1b933a5",
+    ".ai-workflow/install-manifest.json": "f0d346d7fe6123b085e8c19a3ae32ec55c02ed31f5a4cb5f185413ddb333b2d8",
+    ".ai-workflow/providers.json": "70766ee0917c535760e30ade267f15fa2b757625fccb5771619fdfd03a7b99da",
+    ".ai-workflow/routing.md": "69f37bd3425b635d99abe41ab8adbc195ca37897a21a1f15968d73e2233ffb95",
+    ".ai-workflow/templates/decision-record.md": "3000eb96e46d161988fc17ff0de96f3e59c83cc24dd70617ce48404488c61128",
+    ".ai-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+    ".ai-workflow/templates/work-item.md": "e63571243375b8994020504914cfe05ca1c416bd346291b88e5d817d4bcaf2e3",
+    "AGENTS.md": "52e7248de4f1c3394a429a23344b2aeb7caa001e3d343f6f0da82010ffb0a5e3",
+    "CLAUDE.md": "9938ba4b9a506523de20faff275516304d58f5d891e38b72f0e1c66aa06831f6",
+    "README.md": "6b3264738d0e7a6b8ab7e9f34cadf7eca42dd11391a6357d1576db8b02d9127c",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/existing-resources.md": "3c8897c19d9dfa08b1c56071f6256d921ba74ca32b988b7b0afa0e942d9b4536",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/platform-facts.md": "b3b8c85c741cb66a6e44f433b7586f74bb7b52713845c6ed40a8e4ce46ad4846",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "bc50a924479e2c460f23654c10e953a2d9cb40ed208d1f554a7c6a670e6d44b7",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/runners.tf": "67957eb0ecec286bcd2cd7c0657fd816e185cf5bed8d95238797b8caef0b724a",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "c6f2376144b5b23ba93d2f18891ddb2907cbdd620709e49e3fd0a85a52550db9"
+  },
+  "campaign_id": "wayfinder-local-state-smoke-v1",
+  "changed_files": [
+    ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+    ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md"
+  ],
+  "condition": "C",
+  "execution": {
+    "cached_input_tokens": 369664,
+    "codex_home_isolation": {
+      "pre_execution_inventory": {
+        "auth_contents_or_digest_recorded": false,
+        "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/wayfinder-local-state-smoke-v1/arc-v2-c-1-17ea915989/ephemeral-codex-homes/codex-home-feb9781d3f44427ba1dacd1b151b9e36",
+        "config_ignored_by_cli_flag": true,
+        "contains_only_auth_material": true,
+        "files": [
+          {
+            "kind": "file",
+            "path": "auth.json",
+            "size": 3964
+          }
+        ],
+        "rules_ignored_by_cli_flag": true,
+        "unexpected_files": []
+      },
+      "removed_after_process": true,
+      "source_auth_modified": false,
+      "temporary_bytes_removed": 43116405,
+      "unique_per_process": true
+    },
+    "command": [
+      "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--strict-config",
+      "-m",
+      "gpt-5.6-terra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-s",
+      "workspace-write",
+      "-C",
+      "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/wayfinder-local-state-smoke-v1/arc-v2-c-1-17ea915989/repo",
+      "--json",
+      "<prompt-via-stdin>"
+    ],
+    "commands_observed": [
+      "/bin/zsh -lc \"pwd && sed -n '1,240p' .ai-workflow/routing.md && sed -n '1,240p' .ai-workflow/contracts/wayfinder-state.md && sed -n '1,240p' .ai-workflow/contracts/durable-state.md && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md\"",
+      "/bin/zsh -lc \"pwd && sed -n '1,240p' .ai-workflow/routing.md && sed -n '1,240p' .ai-workflow/contracts/wayfinder-state.md && sed -n '1,240p' .ai-workflow/contracts/durable-state.md && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md\"",
+      "/bin/zsh -lc \"sed -n '120,330p' .ai-workflow/contracts/wayfinder-state.md && find . -maxdepth 4 -type f -not -path './.git/*' -not -path './node_modules/*' | sort && git status --short && git log --oneline -12\"",
+      "/bin/zsh -lc \"sed -n '120,330p' .ai-workflow/contracts/wayfinder-state.md && find . -maxdepth 4 -type f -not -path './.git/*' -not -path './node_modules/*' | sort && git status --short && git log --oneline -12\"",
+      "/bin/zsh -lc \"for f in README.md docs/*.md terraform/*.tf tests/test_repository_safety.py .ai-workflow/providers.json; do echo \\\"\\\\n### \"'$f\"; sed -n '\"'1,280p' \\\"\"'$f\"; done'",
+      "/bin/zsh -lc \"for f in README.md docs/*.md terraform/*.tf tests/test_repository_safety.py .ai-workflow/providers.json; do echo \\\"\\\\n### \"'$f\"; sed -n '\"'1,280p' \\\"\"'$f\"; done'",
+      "/bin/zsh -lc \"if [ -d .ai-workflow-state ]; then find .ai-workflow-state -maxdepth 5 -type f -print | sort; else echo 'NO_DURABLE_STATE'; fi\npython3 -m unittest discover -s tests -v\nterraform fmt -check -recursive\"",
+      "/bin/zsh -lc \"if [ -d .ai-workflow-state ]; then find .ai-workflow-state -maxdepth 5 -type f -print | sort; else echo 'NO_DURABLE_STATE'; fi\npython3 -m unittest discover -s tests -v\nterraform fmt -check -recursive\"",
+      "/bin/zsh -lc 'find .ai-workflow-state/wayfinder -maxdepth 3 -type f -print 2>/dev/null | sort || true\nmkdir -p .ai-workflow-state/wayfinder/arc-runner-migration/{unknowns,decisions,tickets}'",
+      "/bin/zsh -lc 'find .ai-workflow-state/wayfinder -maxdepth 3 -type f -print 2>/dev/null | sort || true\nmkdir -p .ai-workflow-state/wayfinder/arc-runner-migration/{unknowns,decisions,tickets}'",
+      "/bin/zsh -lc \"git diff --check && find .ai-workflow-state/wayfinder/arc-runner-migration -type f -print | sort && sed -n '1,240p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md && git status --short\"",
+      "/bin/zsh -lc \"git diff --check && find .ai-workflow-state/wayfinder/arc-runner-migration -type f -print | sort && sed -n '1,240p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md && git status --short\"",
+      "/bin/zsh -lc 'find tests/__pycache__ -maxdepth 1 -type f -print 2>/dev/null || true'",
+      "/bin/zsh -lc 'find tests/__pycache__ -maxdepth 1 -type f -print 2>/dev/null || true'",
+      "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'",
+      "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'"
+    ],
+    "continuation_cost": {
+      "cached_input_tokens": 369664,
+      "elapsed_seconds": 148.317,
+      "file_read_count_before_first_observed_write": 10,
+      "files_read_before_first_observed_write": [
+        ".agents/skills/wayfinder/SKILL.md",
+        ".ai-workflow-state/wayfinder",
+        ".ai-workflow-state/wayfinder/arc-runner-migration",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow/contracts/durable-state.md",
+        ".ai-workflow/contracts/wayfinder-state.md",
+        ".ai-workflow/providers.json",
+        ".ai-workflow/routing.md",
+        "tests/__pycache__",
+        "tests/test_repository_safety.py"
+      ],
+      "input_tokens": 406964,
+      "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+      "output_tokens": 7297,
+      "reasoning_tokens": 2740,
+      "repeated_read_path_count": 14,
+      "tool_action_count": 9
+    },
+    "elapsed_seconds": 148.317,
+    "event_count": 26,
+    "evidence_quality": "clean",
+    "execution_id": "01a00b56-aa95-75e0-afb2-3d019bff8c67",
+    "exit_status": 0,
+    "fresh_context": true,
+    "input_tokens": 406964,
+    "mode": "automatic_ephemeral_codex_exec",
+    "observed_exact_fact_in_tool_output": true,
+    "observed_terraform_apply": false,
+    "output_tokens": 7297,
+    "parent_task_context_supplied": false,
+    "phase": 1,
+    "prompt_sha256": "3bf224e46144c159b51d664399e588d229a059374038e29ac43610412bb01ecb",
+    "raw_evidence_outside_evaluated_repository": true,
+    "reasoning_tokens": 2740,
+    "route_markers": [
+      "[route: router \u2192 wayfinder]"
+    ],
+    "specialized_workflow_observed": false,
+    "stderr_path": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/results/wayfinder-local-state-smoke-v1/runs/arc-v2-c-1-17ea915989/raw/phase-1.stderr.txt",
+    "stdout_path": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/results/wayfinder-local-state-smoke-v1/runs/arc-v2-c-1-17ea915989/raw/phase-1.jsonl",
+    "tool_action_count": 9,
+    "validation_command_observed": true,
+    "validation_events": [
+      {
+        "command": "/bin/zsh -lc \"if [ -d .ai-workflow-state ]; then find .ai-workflow-state -maxdepth 5 -type f -print | sort; else echo 'NO_DURABLE_STATE'; fi\npython3 -m unittest discover -s tests -v\nterraform fmt -check -recursive\"",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc \"git diff --check && find .ai-workflow-state/wayfinder/arc-runner-migration -type f -print | sort && sed -n '1,240p' .ai-workflow-state/wayfinder/arc-runner-migration/map.md && git status --short\"",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'unlink tests/__pycache__/test_repository_safety.cpython-314.pyc && rmdir tests/__pycache__ && git status --short && git diff --check'",
+        "exit_code": 0
+      }
+    ],
+    "wayfinder_observation": {
+      "explicit_invocation_observed": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "route_to_wayfinder_self_reported": true,
+      "wayfinder_skill_read": true,
+      "wayfinder_state_read": true
+    },
+    "workspace_isolation": {
+      "checks": {
+        "agentic_workflow_directory_present": true,
+        "expected_framework_version": true,
+        "grader_outside_evaluated_repository": true,
+        "no_controller_control_file_in_repository": true,
+        "no_parent_instruction_files": true,
+        "no_symlinks_to_external_content": true,
+        "outside_agentic_workflow_source_tree": true,
+        "wayfinder_skill_present": true,
+        "workflow_agents_policy_present": true,
+        "workspace_is_git_root": true
+      },
+      "parent_instruction_files": []
+    }
+  },
+  "grade": {
+    "decision_discipline": {
+      "implemented_infrastructure_during_mapping": false,
+      "semantic_decision_evidence": {
+        "instance_family": {
+          "classification": "explicit_negative",
+          "evidence": [
+            {
+              "line": 15,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+              "snippet": "- The selected instance family, isolation model, and provisioning mechanism"
+            }
+          ],
+          "interpretation": "Whether the exact runner instance family remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "karpenter_vs_managed": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 42,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "and whether it uses Karpenter or managed node groups."
+            },
+            {
+              "line": 12,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "family, shared versus dedicated runner compute, and Karpenter versus EKS managed"
+            }
+          ],
+          "interpretation": "Whether Karpenter versus managed node groups remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "legacy_ownership": {
+          "classification": "unresolved",
+          "evidence": [
+            {
+              "line": 19,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "legacy security group's ownership is unresolved, so it cannot safely be"
+            },
+            {
+              "line": 28,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "- Static safety checks must continue to prevent public-IP enablement and legacy"
+            },
+            {
+              "line": 28,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- The observed `component=arc-legacy` security group (`sg-0abc1234def567890`)"
+            },
+            {
+              "line": 55,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "the legacy ARC security group."
+            },
+            {
+              "line": 18,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+              "snippet": "- It does not create, import, modify, or adopt the EKS cluster or legacy"
+            }
+          ],
+          "interpretation": "Whether legacy ownership stays unresolved and is handled without assuming control.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "m6i_stale": {
+          "classification": "explicit_affirmative",
+          "evidence": [
+            {
+              "line": 56,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Treating the 2024 `m6i` shared-worker proof of concept as current approval."
+            },
+            {
+              "line": 21,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "- The older `m6i` shared-worker recommendation is explicitly stale and cannot"
+            }
+          ],
+          "interpretation": "Whether m6i is explicitly treated as stale rather than current approval.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "safe_work_actionable": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 3,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "- Related: [T1 \u2014 Resolve the approved runner AMI through SSM](../tickets/T1-resolve-approved-runner-ami-through-ssm.md), [T2 \u2014 Create the runner-node IAM role with the required boundary](../tickets/T2-create-runner-node-iam-role-with-required-boundary.md), [T3 \u2014 Provision runner compute capacity on the approved topology](../tickets/T3-provision-runner-compute-capacity.md)"
+            },
+            {
+              "line": 10,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "private networking, apply `var.permissions_boundary_arn` to every created IAM"
+            },
+            {
+              "line": 11,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "role, and resolve the runner AMI through `/platform/arc/runner-ami` rather than"
+            },
+            {
+              "line": 30,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "coverage for the IAM-boundary and indirect-AMI constraints."
+            },
+            {
+              "line": 23,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "and [U2 \u2014 Define runner-node IAM trust and least-privilege permissions](unknowns/U2-define-runner-node-iam-trust-and-permissions.md)."
+            },
+            {
+              "line": 24,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Executable frontier: [T1 \u2014 Resolve the approved runner AMI through SSM](tickets/T1-resolve-approved-runner-ami-through-ssm.md)."
+            },
+            {
+              "line": 25,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "[T2 \u2014 Create the runner-node IAM role with the required boundary](tickets/T2-create-runner-node-iam-role-with-required-boundary.md)"
+            },
+            {
+              "line": 35,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- [D1 \u2014 Preserve external ownership and required security controls](decisions/D1-preserve-external-ownership-and-security-controls.md) \u2014 use the existing EKS cluster and supplied inputs without adoption; enforce private networking, the supplied IAM boundary, and indirect AMI resolution."
+            },
+            {
+              "line": 43,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- After runner-node responsibilities are defined, specify the IAM policy,"
+            },
+            {
+              "line": 47,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "or implementation; its EKS name, private subnets, SSM parameter path, and"
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+              "snippet": "# T1: Resolve the approved runner AMI through SSM"
+            },
+            {
+              "line": 9,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+              "snippet": "Add Terraform configuration that obtains the runner AMI through the approved"
+            },
+            {
+              "line": 10,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+              "snippet": "platform-owned SSM parameter, without hard-coding an AMI ID or creating"
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+              "snippet": "# T2: Create the runner-node IAM role with the required boundary"
+            },
+            {
+              "line": 4,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+              "snippet": "- Blocked by: [U2 \u2014 Define runner-node IAM trust and least-privilege permissions](../unknowns/U2-define-runner-node-iam-trust-and-permissions.md)"
+            },
+            {
+              "line": 9,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+              "snippet": "Create only the approved, narrowly scoped runner-node IAM role and attach the"
+            },
+            {
+              "line": 10,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+              "snippet": "supplied permissions boundary, using the trust and permissions specified by"
+            },
+            {
+              "line": 5,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+              "snippet": "- Related: [D1 \u2014 Preserve external ownership and required security controls](../decisions/D1-preserve-external-ownership-and-security-controls.md), [T1 \u2014 Resolve the approved runner AMI through SSM](T1-resolve-approved-runner-ami-through-ssm.md)"
+            },
+            {
+              "line": 9,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+              "snippet": "Implement the approved runner compute topology using the SSM-resolved AMI and"
+            },
+            {
+              "line": 28,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "it does not block the AMI workstream or fact-finding for IAM."
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md",
+              "snippet": "# U2: Define runner-node IAM trust and least-privilege permissions"
+            },
+            {
+              "line": 6,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md",
+              "snippet": "- Related: [T2 \u2014 Create the runner-node IAM role with the required boundary](../tickets/T2-create-runner-node-iam-role-with-required-boundary.md)"
+            },
+            {
+              "line": 17,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md",
+              "snippet": "- `terraform/iam.tf` asks for a narrowly scoped runner-node role with the"
+            },
+            {
+              "line": 18,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md",
+              "snippet": "required permissions boundary but provides no trust relationship or policy."
+            }
+          ],
+          "interpretation": "Whether safe SSM/IAM work is explicitly recognized as actionable.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "shared_vs_dedicated": {
+          "classification": "explicit_negative",
+          "evidence": [
+            {
+              "line": 41,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "exact questions depend on whether the selected model is shared or dedicated"
+            },
+            {
+              "line": 56,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Treating the 2024 `m6i` shared-worker proof of concept as current approval."
+            },
+            {
+              "line": 12,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "family, shared versus dedicated runner compute, and Karpenter versus EKS managed"
+            },
+            {
+              "line": 21,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "- The older `m6i` shared-worker recommendation is explicitly stale and cannot"
+            }
+          ],
+          "interpretation": "Whether shared versus dedicated compute remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        }
+      }
+    },
+    "durable_state_paths": [
+      ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md"
+    ],
+    "files_changed": [
+      ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+      ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md"
+    ],
+    "mapping_only_respected": true,
+    "state_quality": {
+      "exact_fact_evidence": [
+        {
+          "line": 11,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+          "snippet": "role, and resolve the runner AMI through `/platform/arc/runner-ami` rather than"
+        },
+        {
+          "line": 16,
+          "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+          "snippet": "- The configuration uses the approved `/platform/arc/runner-ami` indirection,"
+        }
+      ],
+      "exact_fact_preserved": true,
+      "semantic_observations": {
+        "instance_family": {
+          "classification": "explicit_negative",
+          "evidence": [
+            {
+              "line": 15,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+              "snippet": "- The selected instance family, isolation model, and provisioning mechanism"
+            }
+          ],
+          "interpretation": "Whether the exact runner instance family remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "karpenter_vs_managed": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 42,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "and whether it uses Karpenter or managed node groups."
+            },
+            {
+              "line": 12,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "family, shared versus dedicated runner compute, and Karpenter versus EKS managed"
+            }
+          ],
+          "interpretation": "Whether Karpenter versus managed node groups remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "legacy_ownership": {
+          "classification": "unresolved",
+          "evidence": [
+            {
+              "line": 19,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "legacy security group's ownership is unresolved, so it cannot safely be"
+            },
+            {
+              "line": 28,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "- Static safety checks must continue to prevent public-IP enablement and legacy"
+            },
+            {
+              "line": 28,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- The observed `component=arc-legacy` security group (`sg-0abc1234def567890`)"
+            },
+            {
+              "line": 55,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "the legacy ARC security group."
+            },
+            {
+              "line": 18,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+              "snippet": "- It does not create, import, modify, or adopt the EKS cluster or legacy"
+            }
+          ],
+          "interpretation": "Whether legacy ownership stays unresolved and is handled without assuming control.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "m6i_stale": {
+          "classification": "explicit_affirmative",
+          "evidence": [
+            {
+              "line": 56,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Treating the 2024 `m6i` shared-worker proof of concept as current approval."
+            },
+            {
+              "line": 21,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "- The older `m6i` shared-worker recommendation is explicitly stale and cannot"
+            }
+          ],
+          "interpretation": "Whether m6i is explicitly treated as stale rather than current approval.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "safe_work_actionable": {
+          "classification": "ambiguous",
+          "evidence": [
+            {
+              "line": 3,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "- Related: [T1 \u2014 Resolve the approved runner AMI through SSM](../tickets/T1-resolve-approved-runner-ami-through-ssm.md), [T2 \u2014 Create the runner-node IAM role with the required boundary](../tickets/T2-create-runner-node-iam-role-with-required-boundary.md), [T3 \u2014 Provision runner compute capacity on the approved topology](../tickets/T3-provision-runner-compute-capacity.md)"
+            },
+            {
+              "line": 10,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "private networking, apply `var.permissions_boundary_arn` to every created IAM"
+            },
+            {
+              "line": 11,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "role, and resolve the runner AMI through `/platform/arc/runner-ami` rather than"
+            },
+            {
+              "line": 30,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+              "snippet": "coverage for the IAM-boundary and indirect-AMI constraints."
+            },
+            {
+              "line": 23,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "and [U2 \u2014 Define runner-node IAM trust and least-privilege permissions](unknowns/U2-define-runner-node-iam-trust-and-permissions.md)."
+            },
+            {
+              "line": 24,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Executable frontier: [T1 \u2014 Resolve the approved runner AMI through SSM](tickets/T1-resolve-approved-runner-ami-through-ssm.md)."
+            },
+            {
+              "line": 25,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "[T2 \u2014 Create the runner-node IAM role with the required boundary](tickets/T2-create-runner-node-iam-role-with-required-boundary.md)"
+            },
+            {
+              "line": 35,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- [D1 \u2014 Preserve external ownership and required security controls](decisions/D1-preserve-external-ownership-and-security-controls.md) \u2014 use the existing EKS cluster and supplied inputs without adoption; enforce private networking, the supplied IAM boundary, and indirect AMI resolution."
+            },
+            {
+              "line": 43,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- After runner-node responsibilities are defined, specify the IAM policy,"
+            },
+            {
+              "line": 47,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "or implementation; its EKS name, private subnets, SSM parameter path, and"
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+              "snippet": "# T1: Resolve the approved runner AMI through SSM"
+            },
+            {
+              "line": 9,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+              "snippet": "Add Terraform configuration that obtains the runner AMI through the approved"
+            },
+            {
+              "line": 10,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+              "snippet": "platform-owned SSM parameter, without hard-coding an AMI ID or creating"
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+              "snippet": "# T2: Create the runner-node IAM role with the required boundary"
+            },
+            {
+              "line": 4,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+              "snippet": "- Blocked by: [U2 \u2014 Define runner-node IAM trust and least-privilege permissions](../unknowns/U2-define-runner-node-iam-trust-and-permissions.md)"
+            },
+            {
+              "line": 9,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+              "snippet": "Create only the approved, narrowly scoped runner-node IAM role and attach the"
+            },
+            {
+              "line": 10,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+              "snippet": "supplied permissions boundary, using the trust and permissions specified by"
+            },
+            {
+              "line": 5,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+              "snippet": "- Related: [D1 \u2014 Preserve external ownership and required security controls](../decisions/D1-preserve-external-ownership-and-security-controls.md), [T1 \u2014 Resolve the approved runner AMI through SSM](T1-resolve-approved-runner-ami-through-ssm.md)"
+            },
+            {
+              "line": 9,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+              "snippet": "Implement the approved runner compute topology using the SSM-resolved AMI and"
+            },
+            {
+              "line": 28,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "it does not block the AMI workstream or fact-finding for IAM."
+            },
+            {
+              "line": 1,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md",
+              "snippet": "# U2: Define runner-node IAM trust and least-privilege permissions"
+            },
+            {
+              "line": 6,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md",
+              "snippet": "- Related: [T2 \u2014 Create the runner-node IAM role with the required boundary](../tickets/T2-create-runner-node-iam-role-with-required-boundary.md)"
+            },
+            {
+              "line": 17,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md",
+              "snippet": "- `terraform/iam.tf` asks for a narrowly scoped runner-node role with the"
+            },
+            {
+              "line": 18,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md",
+              "snippet": "required permissions boundary but provides no trust relationship or policy."
+            }
+          ],
+          "interpretation": "Whether safe SSM/IAM work is explicitly recognized as actionable.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        },
+        "shared_vs_dedicated": {
+          "classification": "explicit_negative",
+          "evidence": [
+            {
+              "line": 41,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "exact questions depend on whether the selected model is shared or dedicated"
+            },
+            {
+              "line": 56,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+              "snippet": "- Treating the 2024 `m6i` shared-worker proof of concept as current approval."
+            },
+            {
+              "line": 12,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "family, shared versus dedicated runner compute, and Karpenter versus EKS managed"
+            },
+            {
+              "line": 21,
+              "path": ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+              "snippet": "- The older `m6i` shared-worker recommendation is explicitly stale and cannot"
+            }
+          ],
+          "interpretation": "Whether shared versus dedicated compute remains unresolved or is explicitly resolved.",
+          "method": "line-level explicit-language classification; ambiguous cases require manual interpretation"
+        }
+      }
+    },
+    "terraform_files_changed": [],
+    "treatment_crossover": {
+      "alternate_local_state_paths": [],
+      "automatic_wayfinder_exercised": false,
+      "condition": "C",
+      "explicit_wayfinder_exercised": true,
+      "instrumentation_note": "State creation/read is definitive. Route self-report and skill reads are supporting evidence only.",
+      "phase": 1,
+      "prompt_explicitly_invoked_wayfinder": true,
+      "route_markers": [
+        "[route: router \u2192 wayfinder]"
+      ],
+      "route_to_wayfinder_self_reported": true,
+      "specialized_workflow_observed": false,
+      "vanilla_treatment_contamination": false,
+      "wayfinder_skill_read": true,
+      "wayfinder_state_created_or_modified_this_phase": [
+        ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md"
+      ],
+      "wayfinder_state_files": [
+        ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md"
+      ],
+      "wayfinder_state_present": true,
+      "wayfinder_state_read": true
+    },
+    "wayfinder": {
+      "exercised": true,
+      "map_files": [
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md"
+      ],
+      "state_files": [
+        ".ai-workflow-state/wayfinder/arc-runner-migration/decisions/D1-preserve-external-ownership-and-security-controls.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/map.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T1-resolve-approved-runner-ami-through-ssm.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T2-create-runner-node-iam-role-with-required-boundary.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/tickets/T3-provision-runner-compute-capacity.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U1-approve-runner-compute-topology.md",
+        ".ai-workflow-state/wayfinder/arc-runner-migration/unknowns/U2-define-runner-node-iam-trust-and-permissions.md"
+      ]
+    }
+  },
+  "phase": 1,
+  "prompt_sha256": "3bf224e46144c159b51d664399e588d229a059374038e29ac43610412bb01ecb",
+  "recorded_at": "2026-08-16T16:12:52.217335+00:00",
+  "repository_head": "aac69718f71560457a3f88634f02c03092b32a1c",
+  "repository_status": [
+    "?? .ai-workflow-state/"
+  ],
+  "run_id": "arc-v2-c-1-17ea915989",
+  "schema_version": 2,
+  "snapshot_archive": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/results/wayfinder-local-state-smoke-v1/runs/arc-v2-c-1-17ea915989/snapshots/phase-1.tar.gz"
+}

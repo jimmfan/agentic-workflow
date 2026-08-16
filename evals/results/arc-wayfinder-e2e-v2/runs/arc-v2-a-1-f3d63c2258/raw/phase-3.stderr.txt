@@ -1,4 +1,0 @@
-2026-08-15T23:23:36.497795Z ERROR codex_core::tools::router: error=apply_patch verification failed: invalid hunk at line 59, 'the initial two-node warm floor is an SLO-control measure, not merely a' is not a valid hunk header. Valid hunk headers: '*** Add File: {path}', '*** Delete File: {path}', '*** Update File: {path}'
-2026-08-15T23:24:28.093400Z ERROR codex_core::tools::router: error=exec_command failed for `/bin/zsh -lc 'rm -rf tests/__pycache__
-git status --short
-git diff --check'`: CreateProcess { message: "Rejected(\"`/bin/zsh -lc 'rm -rf tests/__pycache__\\ngit status --short\\ngit diff --check'` rejected: rm -f style commands are not permitted. Use a safer approach\")" }

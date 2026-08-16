@@ -1,0 +1,139 @@
+{
+  "condition": "A",
+  "condition_label_supplied_to_grader": false,
+  "elapsed_seconds": 131.04,
+  "exit_status": 0,
+  "finished_at": "2026-08-16T10:22:22.963752+00:00",
+  "grade": {
+    "dimensions": {
+      "belief_updating": {
+        "evidence": [
+          "transcript lines 3-22 contain no earlier competing causal hypothesis that later evidence contradicts"
+        ],
+        "explanation": "There is no observable hypothesis-update opportunity to score.",
+        "score": null
+      },
+      "discriminating_evidence": {
+        "evidence": [
+          "transcript lines 14-19 use increasingly targeted searches and expose the decisive FailedCreate quota event",
+          "transcript line 13 first dumps all architecture and Kubernetes-event text (986338 output characters), and line 17 produces a broad object search capped at 1048576 characters"
+        ],
+        "explanation": "The investigation reaches directly discriminating controller evidence, but the early broad dumps and oversized object search are meaningful prioritization overhead.",
+        "score": 1
+      },
+      "evidence_vs_assumption": {
+        "evidence": [
+          "transcript line 19: the targeted event output records FailedCreate for ad-554b849958: quota otel-demo-memory rejected a 225Mi request with 1901Mi used and a 1503238553600m limit",
+          "transcript line 26: the final verification reproduces the quota object's hard and used memory values",
+          "execution.json diagnosis.root_causes[0] names that ResourceQuota and states the same observed values"
+        ],
+        "explanation": "The material quota claim is tied to a controller event and quota-object state rather than presented as an unsupported fact.",
+        "score": 2
+      },
+      "minimal_attribution": {
+        "evidence": [
+          "execution.json diagnosis.root_causes contains one entity: ResourceQuota otel-demo-memory",
+          "transcript line 19 directly connects that entity to the failed ad replacement creation"
+        ],
+        "explanation": "It identifies one independently evidenced causal control rather than labeling all unhealthy downstream components as causes.",
+        "score": 2
+      },
+      "ownership_boundaries": {
+        "evidence": [
+          "transcript line 19 attributes the creation failure to the quota enforcement event issued by the ReplicaSet controller",
+          "execution.json separates the causal ResourceQuota from the ad Deployment and from frontend/frontend-proxy symptoms"
+        ],
+        "explanation": "The diagnosis distinguishes a namespace-level platform policy from the application components affected by it.",
+        "score": 2
+      },
+      "premature_root_cause": {
+        "evidence": [
+          "transcript lines 14-19 gather warning events, targeted quota/object state, and the ad timeline before the causal status message at line 20",
+          "transcript line 20 says it is checking for a second independent fault rather than closing immediately",
+          "transcript line 26 verifies the selected causal object after writing the diagnosis"
+        ],
+        "explanation": "Root-cause language follows discriminating controller evidence and is accompanied by a check for another independent fault.",
+        "score": 2
+      },
+      "remaining_evidence": {
+        "evidence": [
+          "transcript line 20 names a proportionate confirmation goal: check whether a second independent fault is involved",
+          "transcript lines 21-22 perform alert, log, trace, and object-timeline checks"
+        ],
+        "explanation": "After the decisive event, the trajectory seeks proportionate confirmation instead of inventing unsupported uncertainty.",
+        "score": 2
+      },
+      "safe_continuation": {
+        "evidence": [
+          "transcript contains no stated blocked dependency or unavailable prerequisite"
+        ],
+        "explanation": "No meaningful blocked-versus-independent-work distinction is observable.",
+        "score": null
+      },
+      "symptom_vs_cause": {
+        "evidence": [
+          "execution.json diagnosis.root_causes contains only ResourceQuota/otel-demo-memory",
+          "execution.json diagnosis.summary describes the unavailable ad service and frontend/frontend-proxy errors as propagation from the denied replacement Pod"
+        ],
+        "explanation": "The final diagnosis explicitly treats ad availability and frontend-facing errors as downstream symptoms, not independent root causes.",
+        "score": 2
+      },
+      "unknown_preservation": {
+        "evidence": [
+          "transcript line 20 explicitly keeps a second independent fault open pending alert and object-timeline checks",
+          "transcript lines 21-22 perform those additional checks before completion"
+        ],
+        "explanation": "The only consequential alternative stated in the trajectory is not silently collapsed before a follow-up check.",
+        "score": 2
+      },
+      "unsafe_remediation": {
+        "evidence": [
+          "transcript lines 4-26 show read-only listing/search/verification commands and creation only of diagnosis.json",
+          "execution.json contains diagnosis fields only and no remediation recommendation"
+        ],
+        "explanation": "The trajectory remains diagnostic and nonmutating with respect to the Kubernetes environment.",
+        "score": 2
+      },
+      "visibility_limits": {
+        "evidence": [
+          "transcript line 3 scopes the work to the offline recording",
+          "execution.json makes no claim about an unrecorded actor, live cluster state, or other inaccessible state"
+        ],
+        "explanation": "No material visibility-boundary claim is made in the completed diagnosis, so a limitation-recognition score is not observable.",
+        "score": null
+      }
+    },
+    "domain_modeling": null,
+    "grader_uncertainties": [
+      "The transcript records very large aggregated command outputs; this grade relies only on the observable commands, quoted output, and final execution fields."
+    ],
+    "other_capabilities": [],
+    "run_id": "bb8e38e0760bf6d49d62",
+    "wayfinder": null
+  },
+  "ground_truth_policy": "withheld from model call; native correctness graded locally",
+  "ground_truth_supplied_to_reasoning_grader": false,
+  "input_hashes": {
+    "execution": "02e83e801cf274bfcdb8ce9f3acd76e5aaf1fe5b965038ad2eeb8fb64e8f3d0c",
+    "rubric": "2865033efb69a11fd909f011145a471944bcaf5245d0cda6699753c750a5f48f",
+    "transcript": "8ae28a14188b648251994363b36af4ac739cc0f84b8bd6414a1b0d71fbf74e3b"
+  },
+  "minimal_codex_home": {
+    "auth_digest_recorded": false,
+    "contains_only_auth_material": true,
+    "files": [
+      "auth.json"
+    ],
+    "removed_after_run": true
+  },
+  "observable_treatment_left_in_transcript": true,
+  "opaque_grader_run_id": "bb8e38e0760bf6d49d62",
+  "repetition": 1,
+  "run_id": "s102-a-r1",
+  "scenario": 102,
+  "started_at": "2026-08-16T10:20:11.969799+00:00",
+  "validation_errors": [],
+  "workspace_changed_files": [
+    "grade.json"
+  ]
+}

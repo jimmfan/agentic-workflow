@@ -1,0 +1,428 @@
+{
+  "derived": {
+    "tokens": {
+      "cached_input_ratio": 0.9590363970670784,
+      "largest_input_increases": [],
+      "token_trajectory": [
+        {
+          "cached_input_tokens": 5766144,
+          "input_tokens": 6012435,
+          "line": 81,
+          "observation": 1,
+          "output_tokens": 14435
+        }
+      ],
+      "uncached_input": 246291
+    },
+    "tools": {
+      "near_identical_commands": [
+        {
+          "commands": [
+            "/bin/zsh -lc \"/usr/bin/perl -e 'open(F,\\\"<\\\",\"'$ARGV[0])or die$!;<F>;while(<F>){chomp;@f=split(/'\"\\\\t/,\"'$_,20);next unless$f[6]eq\"frontend\"&&$f[5]=~/ProductCatalogService'\"\\\\/GetProduct/&&\"'$f[0]ge\"2025-12-15 17:44:00\";$m=substr($f[0],0,16);$d=$f[12]+0;$h{$m}{n}++;$h{$m}{sum}+=$d;$h{$m}{max}=$d if\u2026",
+            "/bin/zsh -lc \"/usr/bin/perl -e 'open(F,\\\"<\\\",\"'$ARGV[0])or die$!;<F>;while(<F>){chomp;@f=split(/'\"\\\\t/,\"'$_,23);next unless$f[7]eq\"frontend\"&&$f[5]=~/ProductCatalogService'\"\\\\/GetProduct/&&\"'$f[0]ge\"2025-12-15 17:44:00\";$m=substr($f[0],0,16);$d=$f[12]+0;$h{$m}{n}++;$h{$m}{sum}+=$d;$h{$m}{max}=$d if\u2026"
+          ],
+          "count": 2
+        }
+      ],
+      "near_identical_failed_commands": [],
+      "repeated_commands": [],
+      "repeated_failed_commands": []
+    }
+  },
+  "heuristic": {
+    "framework": {
+      "byte_note": "bytes are tool-output bytes associated with commands that name these paths, not token counts or exact per-file bytes",
+      "instruction_files_observed": [
+        ".ai-workflow/routing.md"
+      ],
+      "instruction_output_bytes_observed": 17451,
+      "other_durable_state_read": [],
+      "other_durable_state_written": [],
+      "route_markers": [
+        "[route: router \u2192 debugging]"
+      ],
+      "skill_files_observed": [
+        ".agents/skills/workflow-debugging/SKILL.md"
+      ],
+      "skill_names_observed": [
+        "workflow-debugging"
+      ],
+      "skill_output_bytes_observed": 17451,
+      "skills_materially_invoked": [
+        "workflow-debugging"
+      ],
+      "wayfinder_files_read": [],
+      "wayfinder_files_written": [],
+      "wayfinder_output_bytes_observed": 0
+    },
+    "potential_context_pressure": [
+      {
+        "command": "/bin/zsh -lc \"rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv; rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folder\u2026",
+        "interpretation": "plausible sustained-context contributor; exact token attribution is unavailable",
+        "invocation_id": "item_14",
+        "kind": "large_tool_output_with_later_activity",
+        "later_tool_calls": 24,
+        "output_bytes": 1048576
+      },
+      {
+        "command": "/bin/zsh -lc \"rg -n -i 'chaos|stress-ng|network delay|latency|tc qdisc|bandwidth|packet loss|fault' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17\"",
+        "interpretation": "plausible sustained-context contributor; exact token attribution is unavailable",
+        "invocation_id": "item_33",
+        "kind": "large_tool_output_with_later_activity",
+        "later_tool_calls": 5,
+        "output_bytes": 1048576
+      }
+    ],
+    "repository": {
+      "broad_searches": [
+        {
+          "command": "/bin/zsh -lc \"command -v rg; command -v awk; command -v /usr/bin/sed; rg --files -g 'routing.md' -g 'SKILL.md' .ai-workflow .agents/skills/workflow-debugging && awk 'NR<=260 {print}' .ai-workflow/routing.md && awk 'NR<=320 {print}' .agents/skills/workflow-debugging/SKILL.md\"",
+          "invocation_id": "item_2",
+          "output_bytes": 202
+        },
+        {
+          "command": "/bin/zsh -lc 'rg --files /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17 | head -200'",
+          "invocation_id": "item_4",
+          "output_bytes": 31
+        },
+        {
+          "command": "/bin/zsh -lc 'rg --files /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17'",
+          "invocation_id": "item_5",
+          "output_bytes": 10882
+        },
+        {
+          "command": "/bin/zsh -lc \"rg -n -i 'chaos|stress-ng|network delay|latency|tc qdisc|bandwidth|packet loss|fault' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17\"",
+          "invocation_id": "item_33",
+          "output_bytes": 1048576
+        }
+      ],
+      "file_detection_note": "best-effort inference from command text; not a complete filesystem access trace",
+      "large_reads": [
+        {
+          "associated_tool_output_bytes": 1048576,
+          "note": "tool output is associated with this command, not attributed exactly to this file",
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17"
+        },
+        {
+          "associated_tool_output_bytes": 1048576,
+          "note": "tool output is associated with this command, not attributed exactly to this file",
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 1048576,
+          "note": "tool output is associated with this command, not attributed exactly to this file",
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_recommendation-5f45f75855-tvqbl_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 1048576,
+          "note": "tool output is associated with this command, not attributed exactly to this file",
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_postgresql-c7fd45b87-hs65s_raw.tsv"
+        }
+      ],
+      "likely_unbounded_searches": [
+        {
+          "command": "/bin/zsh -lc \"rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv; rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folder\u2026",
+          "invocation_id": "item_14",
+          "output_bytes": 1048576
+        },
+        {
+          "command": "/bin/zsh -lc \"rg -n -i 'chaos|stress-ng|network delay|latency|tc qdisc|bandwidth|packet loss|fault' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17\"",
+          "invocation_id": "item_33",
+          "output_bytes": 1048576
+        }
+      ],
+      "paths_observed": [
+        ".agents/skills/workflow-debugging",
+        ".agents/skills/workflow-debugging/SKILL.md",
+        ".ai-workflow/routing.md",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/alerts/alerts_at_2025-12-15T18-12-08.214886.json",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/alerts/alerts_in_alerting_state_2025-12-15T175718.646747Z.json",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/architecture.json",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_frontend-675fd7b5c5-64blr_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_postgresql-c7fd45b87-hs65s_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_recommendation-5f45f75855-tvqbl_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/service_frontend_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_traces_raw.tsv",
+        "SKILL.md",
+        "diagnosis.json",
+        "routing.md"
+      ],
+      "repeated_reads": [
+        {
+          "associated_tool_output_bytes": 145543,
+          "observations": 9,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 465570,
+          "observations": 7,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 434490,
+          "observations": 6,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 1209343,
+          "observations": 5,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 17808,
+          "observations": 5,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_traces_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 17451,
+          "observations": 3,
+          "path": ".agents/skills/workflow-debugging/SKILL.md"
+        },
+        {
+          "associated_tool_output_bytes": 17451,
+          "observations": 3,
+          "path": ".ai-workflow/routing.md"
+        },
+        {
+          "associated_tool_output_bytes": 1059489,
+          "observations": 3,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17"
+        },
+        {
+          "associated_tool_output_bytes": 1199216,
+          "observations": 2,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_postgresql-c7fd45b87-hs65s_raw.tsv"
+        },
+        {
+          "associated_tool_output_bytes": 1199216,
+          "observations": 2,
+          "path": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_recommendation-5f45f75855-tvqbl_raw.tsv"
+        }
+      ],
+      "unique_paths_observed": 19
+    }
+  },
+  "measured": {
+    "tokens": {
+      "accounting": "sum of per-turn usage observations",
+      "cache_write_input": null,
+      "cached_input": 5766144,
+      "input": 6012435,
+      "output": 14435,
+      "raw_usage_observations": 1,
+      "reasoning_output": 2771,
+      "usage_observations": 1
+    },
+    "tools": {
+      "calls": 37,
+      "combined_output_bytes": 3256648,
+      "duration_ms": {
+        "available_calls": 0,
+        "total": null
+      },
+      "failed_calls": [
+        {
+          "command": "/bin/zsh -lc \"pwd && sed -n '1,240p' .ai-workflow/routing.md && sed -n '1,260p' .agents/skills/workflow-debugging/SKILL.md\"",
+          "exit_code": 127,
+          "invocation_id": "item_1",
+          "output_bytes": 146,
+          "status": "failed",
+          "tool_type": "command_execution"
+        },
+        {
+          "command": "/bin/zsh -lc \"command -v rg; command -v awk; command -v /usr/bin/sed; rg --files -g 'routing.md' -g 'SKILL.md' .ai-workflow .agents/skills/workflow-debugging && awk 'NR<=260 {print}' .ai-workflow/routing.md && awk 'NR<=320 {print}' .agents/skills/workflow-debugging/SKILL.md\"",
+          "exit_code": 127,
+          "invocation_id": "item_2",
+          "output_bytes": 202,
+          "status": "failed",
+          "tool_type": "command_execution"
+        },
+        {
+          "command": "/bin/zsh -lc 'rg --files /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17 | head -200'",
+          "exit_code": 127,
+          "invocation_id": "item_4",
+          "output_bytes": 31,
+          "status": "failed",
+          "tool_type": "command_execution"
+        },
+        {
+          "command": "/bin/zsh -lc \"command -v node; command -v ruby; command -v perl; command -v /usr/bin/plutil; rg -n -i 'error|fail|timeout|unavailable|refused|oom|crash|back-off|imagepull|dns|deadline|exception|panic' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv | tail -200\"",
+          "exit_code": 127,
+          "invocation_id": "item_8",
+          "output_bytes": 0,
+          "status": "failed",
+          "tool_type": "command_execution"
+        },
+        {
+          "command": "/bin/zsh -lc \"/usr/bin/perl -MJSON::PP -e 'open(F,\\\"<\\\",\"'$ARGV[0])or die$!;<F>;while(<F>){chomp;@f=split(/'\"\\\\t/,\"'$_,17);next unless@f>=9;$s=$f[8];$s=~s/''^\"//;$s=~s/\"$//;$s=~s/\"\"/\"/g;eval{$o=decode_json($s)};next if$@;next unless($o->{kind}//q())eq\"Node\";$n=$o->{metadata}{name};$rv=$o->{metadata}{resourceVersion};next if$seen{\"$n/$rv\"}++;$cond=$o->{status}{conditions}//[];print \"$f[1] Node $n rv=$rv'\"\\\\n\\\";for(@\"'$cond){print \"  $_->{type}=$_->{status} reason=$_->{reason} msg=$_->{message} a\u2026",
+          "exit_code": 1,
+          "invocation_id": "item_26",
+          "output_bytes": 18120,
+          "status": "failed",
+          "tool_type": "command_execution"
+        }
+      ],
+      "largest_outputs": [
+        {
+          "combined_output_bytes": 1048576,
+          "command": "/bin/zsh -lc \"rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv; rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_postgre\u2026",
+          "invocation_id": "item_14",
+          "output_bytes": 1048576,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 1048576,
+          "command": "/bin/zsh -lc \"rg -n -i 'chaos|stress-ng|network delay|latency|tc qdisc|bandwidth|packet loss|fault' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17\"",
+          "invocation_id": "item_33",
+          "output_bytes": 1048576,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 289259,
+          "command": "/bin/zsh -lc \"rg -n -C 2 'CPUThrottlingHigh|OOM|CrashLoop|FailedScheduling|BackOff|Unhealthy|Evicted|Killing|FailedMount|Insufficient|quota|memory|cpu' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv\"",
+          "invocation_id": "item_10",
+          "output_bytes": 289259,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 245567,
+          "command": "/bin/zsh -lc \"rg -n -i -m 160 'fraud|17:48|17:49|17:50|17:51|17:52' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv | rg -i -m 160 'fraud|error|fail|timeout|exception|checkout|postgres|kafka'\"",
+          "invocation_id": "item_19",
+          "output_bytes": 245567,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 150640,
+          "command": "/bin/zsh -lc \"rg -n -m 80 '2025-12-15 17:4[8-9]|2025-12-15 17:5[0-9]' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product-catalog-7c7f8b68dc-7rqh9_raw.tsv; rg -n -m 80 '2025-12-15 17:4[8-9]|2025-12-15 17:5[0-9]' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_recommendation-5f45f75855-tvqbl_raw.tsv; rg -n -m 80 '2025-12-15 17:4[8-9]|2025-12-15 17:5[0-9]' /var/folders/qt/4kz3_8fn6h\u2026",
+          "invocation_id": "item_13",
+          "output_bytes": 150640,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 111261,
+          "command": "/bin/zsh -lc \"rg -n -i -m 120 'product-catalog|recommendation|postgresql' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv\"",
+          "invocation_id": "item_12",
+          "output_bytes": 111261,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 75616,
+          "command": "/bin/zsh -lc \"rg -n -i -m 160 'error|fail|timeout|unavailable|refused|oom|crash|back-off|imagepull|dns|deadline|exception|panic' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/otel_logs_raw.tsv; /usr/bin/sed -n '1,120p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/alerts/alerts_at_2025-12-15T18-12-08.214886.json\"",
+          "invocation_id": "item_9",
+          "output_bytes": 75616,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 64953,
+          "command": "/bin/zsh -lc \"/usr/bin/perl -MJSON::PP -e 'open(F,\\\"<\\\",\"'$ARGV[0])or die$!;<F>;while(<F>){chomp;@f=split(/'\"\\\\t/,\"'$_,17);next unless@f>=9;$s=$f[8];$s=~s/''^\"//;$s=~s/\"$//;$s=~s/\"\"/\"/g;eval{$w=decode_json($s)};next if$@;$o=$w->{object}//{};next unless($o->{involvedObject}{kind}//q())eq\"NetworkChaos\";next if$seen{$o->{metadata}{uid}}++;$i=$o->{involvedObject};print \"obs=$f[1] first=$o->{firstTimestamp} last=$o->{lastTimestamp} name=$i->{name} ns=$i->{namespace} reason=$o->{reason} msg=$o->{mess\u2026",
+          "invocation_id": "item_34",
+          "output_bytes": 64953,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 62634,
+          "command": "/bin/zsh -lc \"/usr/bin/sed -n '1,20p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_events_raw.tsv; /usr/bin/sed -n '1,10p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/k8s_objects_raw.tsv; /usr/bin/sed -n '1,160p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/architecture.json; /usr/bin/sed -n '1,160p' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/it\u2026",
+          "invocation_id": "item_6",
+          "output_bytes": 62634,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        },
+        {
+          "combined_output_bytes": 25926,
+          "command": "/bin/zsh -lc \"/usr/bin/perl -MJSON::PP -e 'open(F,\\\"<\\\",\"'$ARGV[0])or die$!;<F>;while(<F>){chomp;@f=split(/'\"\\\\t/,\"'$_,17);next unless@f>=9;$s=$f[8];$s=~s/''^\"//;$s=~s/\"$//;$s=~s/\"\"/\"/g;eval{$w=decode_json($s)};next if$@;$o=$w->{object}//{};$i=$o->{involvedObject}//{};next unless($i->{kind}//q())=~/Schedule|Workflow|NetworkChaos/ && ($i->{name}//q())=~/product-catalog/;next unless($o->{firstTimestamp}//q())ge\"2025-12-15T17:45:00Z\";print \"$o->{firstTimestamp} kind=$i->{kind} name=$i->{name} ns=$\u2026",
+          "invocation_id": "item_36",
+          "output_bytes": 25926,
+          "stderr_bytes": null,
+          "stdout_bytes": null,
+          "tool_type": "command_execution"
+        }
+      ],
+      "output_bytes": 3256648,
+      "output_channel_note": "Codex command_execution reports combined aggregated_output; stdout/stderr split unavailable",
+      "stderr_bytes": null,
+      "stdout_bytes": null,
+      "type_counts": {
+        "command_execution": 36,
+        "file_change": 1
+      }
+    },
+    "trajectory": {
+      "codex_turns_completed": 1,
+      "codex_turns_started": 1,
+      "compaction_events": [],
+      "compaction_observability": "unavailable",
+      "context_compactions": null,
+      "internal_model_calls": null
+    }
+  },
+  "schema_version": "token-forensics/v1",
+  "source": {
+    "bytes": 3411352,
+    "event_type_counts": {
+      "item.completed": 41,
+      "item.started": 37,
+      "thread.started": 1,
+      "turn.completed": 1,
+      "turn.started": 1
+    },
+    "format": "codex-exec-jsonl",
+    "limitations": [
+      "Tool-output bytes are bytes in trace payloads, not token counts.",
+      "Individual tool outputs cannot be assigned exact later input-token costs from these events.",
+      "Repository reads and framework activity are inferred from commands and file-change events, not a complete filesystem audit.",
+      "turn.completed usage is per Codex turn and aggregates internal model calls; internal model-call count is unavailable.",
+      "command_execution exposes aggregated_output, so tool stdout and stderr cannot be separated.",
+      "context compaction is not exposed by this exec event stream unless an explicit compaction event appears."
+    ],
+    "path": "evals/itbench-wayfinder/regressions/itbench-wayfinder-auto-regression-v1/results/runs/s17-b-new-r1/raw/codex.jsonl",
+    "thread_id": "01a00b96-73ad-7d51-a018-631454bace10"
+  },
+  "warnings": [
+    {
+      "category": "measured",
+      "code": "large_tool_output",
+      "command": "/bin/zsh -lc \"rg -n -i 'thrott|container_cpu_usage|container_memory_working|kube_pod_container_status|restarts|last_terminated' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17/metrics/pod_product\u2026",
+      "invocation_id": "item_14",
+      "message": "Tool output was 1048576 bytes."
+    },
+    {
+      "category": "measured",
+      "code": "large_tool_output",
+      "command": "/bin/zsh -lc \"rg -n -i 'chaos|stress-ng|network delay|latency|tc qdisc|bandwidth|packet loss|fault' /var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/itbench-aa-public-76df38a82288/Scenario-17\"",
+      "invocation_id": "item_33",
+      "message": "Tool output was 1048576 bytes."
+    },
+    {
+      "category": "heuristic",
+      "code": "repeated_resource_observation",
+      "message": "The same resource path was observed repeatedly."
+    },
+    {
+      "category": "heuristic",
+      "code": "large_unbounded_search",
+      "message": "A broad search emitted a large result without an observable output bound."
+    }
+  ]
+}

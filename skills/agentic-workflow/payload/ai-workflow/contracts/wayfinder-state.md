@@ -1,16 +1,18 @@
 # Local Wayfinder state contract
 
-Use this contract only when Wayfinder is selected or a request continues a
-relevant local Wayfinder effort. The existence of any effort under
+Use this contract only when Wayfinder is selected, including a justified
+mid-task escalation, or a request continues a relevant local Wayfinder effort.
+The existence of any effort under
 `.ai-workflow-state/wayfinder/` is not itself a routing signal. Clear, bounded,
 or unrelated work stays on its minimum useful route and does not read or create
 Wayfinder state.
 
 Upstream Wayfinder supplies the planning method: orient around a destination,
-keep the map low resolution, represent fog honestly, resolve one consequential
-question at a time, and zoom into detail only when needed. Agentic Workflow
-supplies the configured Git-native representation below. This representation is
-canonical local Wayfinder data, not a framework mirror of an issue tracker.
+keep the map low resolution, represent fog honestly, resolve consequential
+uncertainty incrementally, and zoom into detail only when needed. Agentic
+Workflow supplies an authoritative local-mode adapter plus the configured
+Git-native representation below. This representation is canonical local
+Wayfinder data, not a framework mirror of an issue tracker.
 Do not create a second copy under `.scratch/`, another planning directory, or an
 external tracker. Do not create or update `.ai-workflow-state/active.md` for a
 Wayfinder effort.
@@ -32,11 +34,17 @@ All paths below are project-owned durable data:
             └── T1-<slug>.md
 ```
 
-Create an effort only when repository writes are authorized and durable
-multi-session planning is useful. Create child directories lazily with their
-first item; Git does not preserve empty directories. Install, update, status,
-remove, and reinstall never seed, inventory, checksum, validate, migrate,
-rewrite, or remove this state.
+Create an effort only when repository writes are authorized and structured
+durable notes materially reduce the risk of losing or conflating important
+state. Ordinary authorized project work may create or update this selected
+workflow's project-owned state without a second request for permission. A
+read-only analysis, audit, diagnosis, review, `do not change files` instruction,
+or equivalent restriction never authorizes a Wayfinder state write.
+
+A task need not already be multi-session. Create child directories lazily with
+their first item; Git does not preserve empty directories. Install, update,
+status, remove, and reinstall never seed, inventory, checksum, validate,
+migrate, rewrite, or remove this state.
 
 The effort directory name is a short stable slug. Do not silently merge two
 efforts, rename an effort that another session may reference, or reuse an old
@@ -69,6 +77,14 @@ ordinary implementation detail stays in the implementation route.
 - `U#` is an unresolved question that materially affects the destination.
 - `D#` is a durable project decision.
 - `T#` is concrete executable work.
+- An upstream decision, investigation, research, prototype, grilling, or human
+  clarification ticket normally becomes a U# with an appropriate resolution
+  mode. An upstream `task` ticket becomes a T# only when it is genuinely
+  executable work, often linked to the U# it unblocks.
+- Resolving a U# updates its evidence, resolution, and status. Create or update
+  a D# only when the result is a durable project decision. Create a T# only when
+  a concrete executable outcome exists and decomposition adds value. Never
+  force every U# to produce a D# or every D# to produce a T#.
 - Assign the next unused positive number for that type within the effort. Never
   reuse an ID, and never change it when a title or slug changes.
 - Use repository-relative Markdown links and concise `Related` or `Blocked by`
@@ -111,6 +127,12 @@ Keep these Wayfinder headings, adding only concise links and gists:
 <Explicit boundaries beyond this destination.>
 ```
 
+Keep a new map lightweight. Its initial Notes may contain only concise known
+facts, unknowns, blockers, assumptions, and work that can proceed, while empty
+or still-foggy sections remain short. Add U#/D#/T# children only when a sharp
+question, durable decision, or executable outcome actually exists; the map
+grows with the problem rather than anticipating ceremony.
+
 Link details instead of restating them. A precise material question belongs in
 an unknown file, not in `Not yet specified`; fog stays on the map until the
 question can be stated sharply. Out-of-scope work does not graduate into the
@@ -127,7 +149,7 @@ An unknown records the question, useful evidence, and how it may be resolved:
 ```markdown
 # U1: <Question title>
 
-- Status: open
+- Status: open | resolved
 - Resolution mode: research | prototype | grilling | human clarification | direct
 - Blocked by: none
 - Related: none
@@ -170,7 +192,9 @@ A decision records the durable choice and its consequences:
 ```
 
 When a decision changes, update the same D# and add one brief change note. Do
-not create a competing D# merely to version the old answer.
+not create a competing D# merely to version the old answer. A resolved U# may
+link no D# when the answer is a fact, eliminates a path, or otherwise creates no
+durable choice worth preserving.
 
 A ticket records one concrete executable outcome after the route is sufficiently
 clear:
@@ -198,6 +222,19 @@ T# -> implementation`, but it is not a rigid pipeline. One unknown may inform
 many decisions, a decision may need no ticket, and an unknown may resolve
 without creating a decision. Research, prototype, debugging, grilling, or human
 clarification may supply evidence without taking ownership of the map.
+
+Wayfinder owns durable coordination, not an execution monopoly. A task may
+escalate from Debugging, Discovery, or another useful workflow into Wayfinder
+state while that specialized capability continues to resolve the relevant U#.
+Research and Prototype may create their own native evidence artifacts, but they
+link back rather than becoming a competing map. Implementation may consume a
+settled D# or T# without reopening the whole effort.
+
+Use Grilling and Domain Modeling while charting only when the destination,
+human preferences, domain language, or ownership boundaries genuinely require
+them. Grilling is human-in-the-loop and never answers for the user. Do not run
+either capability ceremonially for a clear mid-task escalation, a straightforward
+resume, or to make an evaluation observe a skill invocation.
 
 Use `to-tickets` when clear work benefits from dependency-ordered or separately
 deliverable sessions. For this configured local representation, its canonical

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "campaign_id": "wayfinder-local-state-smoke-v1",
+  "research_question": "After the local-state integration fix, what incremental value do automatic and explicit Wayfinder add over fair vanilla durable notes on one interruption-heavy infrastructure effort?",
+  "conditions": {
+    "A": {
+      "name": "vanilla-durable-notes",
+      "agentic_workflow": false,
+      "explicit_wayfinder_phases": []
+    },
+    "B": {
+      "name": "agentic-workflow-automatic-wayfinder",
+      "agentic_workflow": true,
+      "explicit_wayfinder_phases": []
+    },
+    "C": {
+      "name": "agentic-workflow-explicit-wayfinder",
+      "agentic_workflow": true,
+      "explicit_wayfinder_phases": [1, 3]
+    }
+  },
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "sandbox": "workspace-write",
+  "approval_policy": "never",
+  "network_policy": "all conditions use the same workspace-write sandbox and empty inherited shell environment; prompts prohibit external infrastructure mutation and the evaluator never runs terraform init, plan, or apply",
+  "environment_policy": "every phase is a new ephemeral Codex process with a unique auth-only CODEX_HOME; user config, rules, global skills, controller variables, cloud credentials, sibling paths, and controller conversation are not inherited",
+  "execution_order": [
+    "A:1",
+    "B:1",
+    "C:1",
+    "A:2",
+    "B:2",
+    "C:2",
+    "A:3",
+    "B:3",
+    "C:3",
+    "A:4",
+    "B:4",
+    "C:4"
+  ],
+  "prompts": {
+    "A": {
+      "1": "Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams. Distinguish uncertainty that truly prevents a workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth. Do not implement infrastructure in this phase.\n\nBefore finishing, leave durable repository-native continuation notes containing the facts, unresolved questions, dependencies, actionable work, and exact context a completely fresh engineer would need.",
+      "2": "Continue this ARC migration from the current repository state.\n\nDetermine why the current repository does not yet deliver a safe runner-compute slice, then make the highest-value implementation progress that is justified now. Do not assume unresolved architecture decisions or resource ownership.\n\nValidate the changes and leave the repository ready for a completely fresh engineer to continue. Do not make external infrastructure changes.",
+      "3": "Reconcile the durable ARC project state with the new authoritative compute decision, benchmark evidence, and current repository facts.\n\nSome earlier material is stale, several questions are now resolved, one previously blocked workstream is actionable, and legacy-resource ownership remains unresolved but non-blocking. Update the durable handoff accurately for a fresh implementation engineer.\n\nDo not implement the next infrastructure slice in this phase.",
+      "4": "Continue the ARC migration from the current repository state.\n\nImplement the next justified production-readiness slice while preserving work that remains valid. Consume the new authoritative evidence, complete newly unblocked work, respect the remaining ownership boundary, and validate the result.\n\nDo not make external infrastructure changes."
+    },
+    "B": {
+      "1": "Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams. Distinguish uncertainty that truly prevents a workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth. Do not implement infrastructure in this phase.\n\nBefore finishing, leave durable repository-native continuation notes containing the facts, unresolved questions, dependencies, actionable work, and exact context a completely fresh engineer would need.",
+      "2": "Continue this ARC migration from the current repository state.\n\nDetermine why the current repository does not yet deliver a safe runner-compute slice, then make the highest-value implementation progress that is justified now. Do not assume unresolved architecture decisions or resource ownership.\n\nValidate the changes and leave the repository ready for a completely fresh engineer to continue. Do not make external infrastructure changes.",
+      "3": "Reconcile the durable ARC project state with the new authoritative compute decision, benchmark evidence, and current repository facts.\n\nSome earlier material is stale, several questions are now resolved, one previously blocked workstream is actionable, and legacy-resource ownership remains unresolved but non-blocking. Update the durable handoff accurately for a fresh implementation engineer.\n\nDo not implement the next infrastructure slice in this phase.",
+      "4": "Continue the ARC migration from the current repository state.\n\nImplement the next justified production-readiness slice while preserving work that remains valid. Consume the new authoritative evidence, complete newly unblocked work, respect the remaining ownership boundary, and validate the result.\n\nDo not make external infrastructure changes."
+    },
+    "C": {
+      "1": "$wayfinder Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams. Distinguish uncertainty that truly prevents a workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth. Do not implement infrastructure in this phase.\n\nLeave accurate durable local Wayfinder state for a completely fresh engineer.",
+      "2": "Continue this ARC migration from the current repository state.\n\nDetermine why the current repository does not yet deliver a safe runner-compute slice, then make the highest-value implementation progress that is justified now. Do not assume unresolved architecture decisions or resource ownership.\n\nValidate the changes and leave the repository ready for a completely fresh engineer to continue. Do not make external infrastructure changes.",
+      "3": "$wayfinder Reconcile the durable ARC project state with the new authoritative compute decision, benchmark evidence, and current repository facts.\n\nSome earlier material is stale, several questions are now resolved, one previously blocked workstream is actionable, and legacy-resource ownership remains unresolved but non-blocking. Update the local effort accurately for a fresh implementation engineer.\n\nDo not implement the next infrastructure slice in this phase.",
+      "4": "Continue the ARC migration from the current repository state.\n\nImplement the next justified production-readiness slice while preserving work that remains valid. Consume the new authoritative evidence, complete newly unblocked work, respect the remaining ownership boundary, and validate the result.\n\nDo not make external infrastructure changes."
+    }
+  },
+  "dimensions": [
+    "engineering_correctness",
+    "epistemic_quality",
+    "fresh_process_continuity",
+    "wayfinder_local_state_mechanics",
+    "specialized_workflow_composition",
+    "stale_evidence_reconciliation",
+    "safety_boundaries",
+    "overhead"
+  ],
+  "prohibited_overall_score": true,
+  "repetitions": 1,
+  "stop_after_smoke": true
+}

@@ -1,6 +1,6 @@
 ---
 name: workflow-discovery
-description: Resolve one bounded consequential project decision before implementation. Use when viable alternatives materially affect architecture, security, cost, dependencies, or visible behavior; use upstream Wayfinder instead for huge multi-session fog.
+description: Resolve one bounded consequential project decision before implementation. Use when viable alternatives materially affect architecture, security, cost, dependencies, or visible behavior; use Wayfinder when several important state distinctions need durable structured tracking.
 ---
 
 # Bounded decision discovery
@@ -20,14 +20,15 @@ does not own huge-effort planning, teaching methodology, or implementation.
    authorized, validate or create a `DEC-NNNN` record under the state contract.
    Resume only at its exact pending question; preserve and report invalid or
    conflicting state. Never overwrite or silently merge another durable record.
-4. If the effort is too foggy or large for one session, select the pinned
-   upstream `wayfinder` provider and apply its declared host invocation policy.
-   A user-only selection produces an exact Codex `$wayfinder` or GitHub Copilot
-   `/wayfinder` handoff when the user explicitly requires provider execution;
-   the handoff itself is not provider execution or a state write. When
-   authorized provider execution or truthful host-native fallback needs durable
-   local planning, follow `.ai-workflow/contracts/wayfinder-state.md`. Its local
-   map is the canonical configured representation and re-entry point.
+4. If several consequential unknowns, decisions, dependencies, blockers, or
+   conflicting facts become unreliable to hold in the bounded record, select
+   the pinned `wayfinder` provider and apply its declared host invocation
+   policy. This may happen after Discovery has started; do not wait for a new
+   user prompt. Respect an explicit Wayfinder opt-out. When authorized provider
+   execution or truthful host-native fallback needs durable local planning,
+   follow `.ai-workflow/contracts/wayfinder-state.md`. Its local map is the
+   canonical configured representation and re-entry point. Read-only work stays
+   ephemeral and creates no map.
 
 ## Resolve the decision
 
