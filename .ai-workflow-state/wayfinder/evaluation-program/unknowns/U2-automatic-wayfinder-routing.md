@@ -23,6 +23,10 @@ If structured Wayfinder state proves useful, can Agentic Workflow recognize the 
   vanilla durable notes and explicit Wayfinder, while its recorded overhead was
   highest of the three one-run trajectories.
 
+- `arc-wayfinder-state-complexity-v1` explicitly invoked Wayfinder and
+  intentionally omitted a neutral Agentic Workflow arm. It adds no automatic
+  selection evidence and must not be used to change routing.
+
 ## Resolution
 
 Keep open and make no routing change. V2 supplies a neutral-prompt selection

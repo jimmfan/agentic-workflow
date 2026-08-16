@@ -3,7 +3,7 @@
 - Status: open
 - Resolution mode: prototype
 - Blocked by: U1, U2, T2
-- Related: D1, D2, D3, D4
+- Related: D1, D2, D3, D4, T4, U4
 
 ## Question
 
@@ -24,6 +24,18 @@ Across uncertainty, decision changes, interruptions, and fresh-agent continuatio
   gain in this fixture, not a repeatable distribution. Neutral treatment
   crossover and semantic-grader defects prevent a general product conclusion.
 
+- In the harder six-phase `arc-wayfinder-state-complexity-v1` trajectory,
+  vanilla matched explicit Wayfinder on every valid continuity, blocker,
+  state-evolution, safe-progress, W1 supersession, and verification dimension.
+  Wayfinder used 1,336.394 versus 816.844 seconds, 3,086,063 versus 1,281,425
+  input tokens, 85 versus 51 tool actions, and 127 versus 62 pre-write file
+  observations. Its frozen Phase 6 completion advantage is confounded by an
+  under-specified W4 fixture and incomplete acceptance check.
+
 ## Resolution
 
-Keep open until harder, isolated, multi-phase comparisons yield repeatable distributions across the distinct D2 behavior layers. Any final conclusion must state its task domain and uncertainty rather than generalizing beyond observed fixtures.
+Keep open. T4 adds contrary single-trajectory evidence under harder state, but
+its intended W4 discriminator is invalid and no campaign supplies a repeatable
+distribution or general product conclusion. No next run is authorized. Any
+future conclusion must preserve campaign defects, state its task domain and
+uncertainty, and account for observed overhead.

@@ -3,7 +3,7 @@
 - Status: open
 - Resolution mode: prototype
 - Blocked by: T2
-- Related: D2, D3
+- Related: D2, D3, T4, U4
 
 ## Question
 
@@ -25,9 +25,20 @@ On genuinely long-lived work with uncertainty, changing decisions, and interrupt
   the incremental effect of explicit invocation; the frozen semantic classifier
   also retains material known limitations.
 
+- The six-phase `arc-wayfinder-state-complexity-v1` smoke materially increased
+  branching and state evolution. Both arms preserved and consumed the exact
+  fact, isolated W3, reconciled D1, completed W1/W2, reconciled D2 as a partial
+  supersession, and minimally changed W1. Vanilla used one handoff and
+  materially less observed time, tokens, tools, and pre-write reading. The
+  frozen result credits B alone for W4, but that difference is invalid: the
+  fixture omitted required alarm semantics, A safely refused to invent them,
+  and B invented them after its state dropped an earlier missing-input concern.
+
 ## Resolution
 
-Keep open. Preserve v1 and v2. Before repetitions or the full four-arm T2
-campaign, repair treatment separation and semantic grading in a new
-preregistered campaign. Resolve only from matched, repeatable evidence that
-controls persistence instructions while varying the representation.
+Keep open. Preserve v1, v2, and the qualified T4 result. T4 found no valid
+Wayfinder outcome advantage and shows that one strong handoff remained
+sufficient in one harder trajectory, but its W4 defect prevents the intended
+final comparison and one pair is not repeatable evidence. No repetition is
+authorized. If human review continues the question, first use a new,
+fully-specified W4 smoke; resolve only from matched, repeatable evidence.

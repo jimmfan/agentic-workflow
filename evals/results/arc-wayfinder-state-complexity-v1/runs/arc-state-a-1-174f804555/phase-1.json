@@ -1,0 +1,586 @@
+{
+  "after_snapshot": {
+    "README.md": "1bed09669c97058a70c3d2628019cd4bc3ea3c4367437ee003893b2430e2f525",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/existing-resources.md": "6290b926f4e56cde1fd288de95d74d97c345c15c9db65b5ed32a4534df7724de",
+    "docs/migration-continuation.md": "069463c4fd51f363e1c50a4120fd5df86e28fc74aabb3cd0274813a0a6fd7f60",
+    "docs/observability-requirements.md": "ee6dd6545854960593b71aaafe36a5943cbf15dacf9f4f0764456f8650ce052b",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/platform-facts.md": "b3b8c85c741cb66a6e44f433b7586f74bb7b52713845c6ed40a8e4ce46ad4846",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "e64692041f0a9a41a6f3a4d7641be3eeddeed07f4a9dde0e3af03bda4abd9622",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/observability.tf": "b450fcf2d8d6b67a6b91af24a20b881f9feedad3532d41675b720d46ebde383e",
+    "terraform/runners.tf": "67957eb0ecec286bcd2cd7c0657fd816e185cf5bed8d95238797b8caef0b724a",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "5eb60fe0e2a59f72332cf7750ad633c9a1f7d762e7953807b0691c8837616309"
+  },
+  "before_snapshot": {
+    "README.md": "1bed09669c97058a70c3d2628019cd4bc3ea3c4367437ee003893b2430e2f525",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/existing-resources.md": "6290b926f4e56cde1fd288de95d74d97c345c15c9db65b5ed32a4534df7724de",
+    "docs/observability-requirements.md": "ee6dd6545854960593b71aaafe36a5943cbf15dacf9f4f0764456f8650ce052b",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/platform-facts.md": "b3b8c85c741cb66a6e44f433b7586f74bb7b52713845c6ed40a8e4ce46ad4846",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "e64692041f0a9a41a6f3a4d7641be3eeddeed07f4a9dde0e3af03bda4abd9622",
+    "terraform/iam.tf": "ff0a6a0871e6922242fd557ab00834a95e75d4cb440213311c1e695c23b2eea8",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/observability.tf": "b450fcf2d8d6b67a6b91af24a20b881f9feedad3532d41675b720d46ebde383e",
+    "terraform/runners.tf": "67957eb0ecec286bcd2cd7c0657fd816e185cf5bed8d95238797b8caef0b724a",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/test_repository_safety.py": "5eb60fe0e2a59f72332cf7750ad633c9a1f7d762e7953807b0691c8837616309"
+  },
+  "campaign_id": "arc-wayfinder-state-complexity-v1",
+  "changed_files": [
+    "docs/migration-continuation.md"
+  ],
+  "condition": "A",
+  "execution": {
+    "cached_input_tokens": 140032,
+    "codex_home_isolation": {
+      "pre_execution_inventory": {
+        "auth_contents_or_digest_recorded": false,
+        "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-state-complexity-v1/arc-state-a-1-174f804555/ephemeral-codex-homes/codex-home-03d2b1af296740b59e49d40756c77e8b",
+        "config_ignored_by_cli_flag": true,
+        "contains_only_auth_material": true,
+        "files": [
+          {
+            "kind": "file",
+            "path": "auth.json",
+            "size": 3964
+          }
+        ],
+        "rules_ignored_by_cli_flag": true,
+        "unexpected_files": []
+      },
+      "removed_after_process": true,
+      "source_auth_modified": false,
+      "temporary_bytes_removed": 43029473,
+      "unique_per_process": true
+    },
+    "command": [
+      "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--strict-config",
+      "-m",
+      "gpt-5.6-terra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-s",
+      "workspace-write",
+      "-C",
+      "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-state-complexity-v1/arc-state-a-1-174f804555/repo",
+      "--json",
+      "<prompt-via-stdin>"
+    ],
+    "commands_observed": [
+      "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"find . -path './.git' -prune -o -path '*/node_modules' -prune -o -type f -print | sort | sed -n '1,320p'\"",
+      "/bin/zsh -lc \"find . -path './.git' -prune -o -path '*/node_modules' -prune -o -type f -print | sort | sed -n '1,320p'\"",
+      "/bin/zsh -lc \"git status --short && git log --oneline --decorate -12 && for f in README.md docs/*.md terraform/*.tf tests/*.py; do echo \\\"\\\\n===== \"'$f =====\"; sed -n '\"'1,260p' \\\"\"'$f\"; done'",
+      "/bin/zsh -lc \"git status --short && git log --oneline --decorate -12 && for f in README.md docs/*.md terraform/*.tf tests/*.py; do echo \\\"\\\\n===== \"'$f =====\"; sed -n '\"'1,260p' \\\"\"'$f\"; done'",
+      "/bin/zsh -lc 'python3 -m unittest discover -s tests -v; command -v terraform || true; git branch -a; git status --short'",
+      "/bin/zsh -lc 'python3 -m unittest discover -s tests -v; command -v terraform || true; git branch -a; git status --short'",
+      "/bin/zsh -lc 'mv tests/__pycache__ /private/tmp/arc-runner-tests-pycache-20260815\ngit diff --check\ngit status --short\ngit diff -- docs/migration-continuation.md'",
+      "/bin/zsh -lc 'mv tests/__pycache__ /private/tmp/arc-runner-tests-pycache-20260815\ngit diff --check\ngit status --short\ngit diff -- docs/migration-continuation.md'",
+      "/bin/zsh -lc \"terraform fmt -check -recursive\ngit diff --check\ngit status --short\nsed -n '1,300p' docs/migration-continuation.md\"",
+      "/bin/zsh -lc \"terraform fmt -check -recursive\ngit diff --check\ngit status --short\nsed -n '1,300p' docs/migration-continuation.md\""
+    ],
+    "continuation_cost": {
+      "cached_input_tokens": 140032,
+      "elapsed_seconds": 83.842,
+      "file_read_count_before_first_observed_write": 0,
+      "files_read_before_first_observed_write": [],
+      "input_tokens": 156223,
+      "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+      "output_tokens": 3937,
+      "reasoning_tokens": 767,
+      "repeated_read_path_count": 0,
+      "tool_action_count": 7
+    },
+    "elapsed_seconds": 83.842,
+    "event_count": 21,
+    "evidence_quality": "clean",
+    "execution_id": "01a007ed-2d80-7533-b32d-bf84f481a5de",
+    "exit_status": 0,
+    "fresh_context": true,
+    "input_tokens": 156223,
+    "mode": "automatic_ephemeral_codex_exec",
+    "observed_exact_fact_in_tool_output": true,
+    "observed_terraform_apply": false,
+    "output_tokens": 3937,
+    "parent_task_context_supplied": false,
+    "phase": 1,
+    "prompt_sha256": "9a060c0e56cbed83661ec073fcf6cfb54da01e89766766e12bd7868e4938d40b",
+    "raw_evidence_outside_evaluated_repository": true,
+    "reasoning_tokens": 767,
+    "stderr_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-state-complexity-v1/runs/arc-state-a-1-174f804555/raw/phase-1.stderr.txt",
+    "stdout_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-state-complexity-v1/runs/arc-state-a-1-174f804555/raw/phase-1.jsonl",
+    "tool_action_count": 7,
+    "validation_command_observed": true,
+    "validation_events": [
+      {
+        "command": "/bin/zsh -lc 'python3 -m unittest discover -s tests -v; command -v terraform || true; git branch -a; git status --short'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'mv tests/__pycache__ /private/tmp/arc-runner-tests-pycache-20260815\ngit diff --check\ngit status --short\ngit diff -- docs/migration-continuation.md'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc \"terraform fmt -check -recursive\ngit diff --check\ngit status --short\nsed -n '1,300p' docs/migration-continuation.md\"",
+        "exit_code": 0
+      }
+    ],
+    "wayfinder_observation": {
+      "explicit_invocation_observed": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "route_to_wayfinder_self_reported": false,
+      "wayfinder_skill_read": false,
+      "wayfinder_state_read": false
+    },
+    "workspace_isolation": {
+      "checks": {
+        "grader_outside_evaluated_repository": true,
+        "no_agentic_workflow_directory": true,
+        "no_agentic_workflow_state_directory": true,
+        "no_controller_control_file_in_repository": true,
+        "no_parent_instruction_files": true,
+        "no_project_agents_policy": true,
+        "no_project_wayfinder_skill": true,
+        "no_symlinks_to_external_content": true,
+        "outside_agentic_workflow_source_tree": true,
+        "workspace_is_git_root": true
+      },
+      "parent_instruction_files": []
+    }
+  },
+  "grade": {
+    "decision_discipline": {
+      "implemented_infrastructure_during_mapping": false,
+      "semantic_evidence": {
+        "m6i_stale": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 39,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| `docs/old-architecture-notes.md` | Stale historical material | Do not use its 2024 `m6i`/shared-worker recommendation as a decision. |"
+            },
+            {
+              "line": 73,
+              "path": "docs/migration-continuation.md",
+              "snippet": "of `m7i` nor the historical `m6i` suggestion resolves any of them."
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Is the older m6i recommendation represented as stale rather than current truth?"
+        },
+        "structured_wayfinder_fields": [],
+        "w1_compute_state": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 38,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| `docs/compute-options.md` | Open proposal | `m7i` is under consideration only; it is not approval. |"
+            },
+            {
+              "line": 39,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| `docs/old-architecture-notes.md` | Stale historical material | Do not use its 2024 `m6i`/shared-worker recommendation as a decision. |"
+            },
+            {
+              "line": 46,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| W1 \u2014 runner compute | Not started; intentionally deferred in `terraform/runners.tf`. | Requires an approved runner instance family, a shared-versus-dedicated compute decision, and a Karpenter-versus-EKS-managed-node-groups decision. The 60-second capacity requirement must be shown compatible with the selected design. | Document/prepare acceptance and implementation shape without selecting a compute design. Do **not** introduce Karpenter or compute resources until all three decisions are explic"
+            },
+            {
+              "line": 65,
+              "path": "docs/migration-continuation.md",
+              "snippet": "This slice is intentionally independent of instance family, compute isolation,"
+            },
+            {
+              "line": 70,
+              "path": "docs/migration-continuation.md",
+              "snippet": "1. **W1 architecture approval:** exact instance family; shared or dedicated"
+            },
+            {
+              "line": 71,
+              "path": "docs/migration-continuation.md",
+              "snippet": "runner compute; and Karpenter or EKS managed node groups. These three are"
+            },
+            {
+              "line": 73,
+              "path": "docs/migration-continuation.md",
+              "snippet": "of `m7i` nor the historical `m6i` suggestion resolves any of them."
+            },
+            {
+              "line": 93,
+              "path": "docs/migration-continuation.md",
+              "snippet": "managing the unknown legacy security group, adding Karpenter, and hard-coded"
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Which W1 compute choices are current, unresolved, or superseded?"
+        },
+        "w2_identity_state": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 18,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- Every IAM role created by this module must use"
+            },
+            {
+              "line": 19,
+              "path": "docs/migration-continuation.md",
+              "snippet": "`var.permissions_boundary_arn` as its permissions boundary."
+            },
+            {
+              "line": 20,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- The runner AMI must be resolved indirectly from the platform-owned SSM"
+            },
+            {
+              "line": 47,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| W2 \u2014 runner identity/image | Actionable; no implementation yet (`terraform/iam.tf` and AMI portion of `terraform/runners.tf` are TODOs). | No W1 decision is a dependency. Requires only the settled node-role contract and existing module inputs. External apply remains out of scope. | Implement repository-local IAM role and SSM AMI lookup, then run local/offline checks. |"
+            },
+            {
+              "line": 58,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- `arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy`"
+            },
+            {
+              "line": 59,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- `arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly`"
+            },
+            {
+              "line": 60,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- `arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy`"
+            },
+            {
+              "line": 62,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- Resolve the AMI from `/platform/arc/runner-ami` through SSM rather than a"
+            },
+            {
+              "line": 86,
+              "path": "docs/migration-continuation.md",
+              "snippet": "data source; `iam.tf`, `runners.tf`, and `observability.tf` contain deliberate"
+            },
+            {
+              "line": 101,
+              "path": "docs/migration-continuation.md",
+              "snippet": "1. Take W2 first: implement the settled IAM/SSM slice without choosing W1"
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Is the settled W2 IAM/SSM slice preserved and actionable?"
+        },
+        "w3_legacy_state": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 48,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| W3 \u2014 legacy-resource cleanup | Blocked. | Ownership of security group `sg-0abc1234def567890` (tagged `component=arc-legacy`) is unknown. Establishing ownership and obtaining owner authorization are both required before any import, modification, or deletion. | Preserve the exclusion. Gather ownership evidence or obtain a written owner decision outside this module; no Terraform resource/import/adoption work is authorized meanwhile. |"
+            },
+            {
+              "line": 75,
+              "path": "docs/migration-continuation.md",
+              "snippet": "of `sg-0abc1234def567890`, then obtain authorization before cleanup. This is"
+            },
+            {
+              "line": 93,
+              "path": "docs/migration-continuation.md",
+              "snippet": "managing the unknown legacy security group, adding Karpenter, and hard-coded"
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Is W3 still blocked without blocking independent fixture-owned resources?"
+        },
+        "w4_observability_state": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 49,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| W4 \u2014 observability/integration | Blocked. | The project-approved CloudWatch alarm notification destination ARN is absent. The required failed-runner-job alarm cannot be completed without it. | Define no destination and do not invent an ARN. Once supplied, add the alarm wired to that ARN and validate it locally. This blocker is independent of W1 and W2. |"
+            },
+            {
+              "line": 77,
+              "path": "docs/migration-continuation.md",
+              "snippet": "3. **W4 alarm destination:** provide the approved notification destination ARN."
+            },
+            {
+              "line": 86,
+              "path": "docs/migration-continuation.md",
+              "snippet": "data source; `iam.tf`, `runners.tf`, and `observability.tf` contain deliberate"
+            },
+            {
+              "line": 106,
+              "path": "docs/migration-continuation.md",
+              "snippet": "ownership/authorization, and W4 destination ARN. Keep their effects scoped"
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Is W4 blocked or actionable under the latest supplied destination truth?"
+        }
+      }
+    },
+    "durable_state_metrics": {
+      "file_count": 1,
+      "files_reconciled_count": 1,
+      "files_reconciled_this_phase": [
+        "docs/migration-continuation.md"
+      ],
+      "line_count": 109,
+      "paths": [
+        "docs/migration-continuation.md"
+      ]
+    },
+    "durable_state_paths": [
+      "docs/migration-continuation.md"
+    ],
+    "files_changed": [
+      "docs/migration-continuation.md"
+    ],
+    "mapping_only_respected": true,
+    "state_quality": {
+      "exact_fact_evidence": [
+        {
+          "line": 21,
+          "path": "docs/migration-continuation.md",
+          "snippet": "parameter `/platform/arc/runner-ami`; no literal AMI ID is permitted."
+        },
+        {
+          "line": 62,
+          "path": "docs/migration-continuation.md",
+          "snippet": "- Resolve the AMI from `/platform/arc/runner-ami` through SSM rather than a"
+        }
+      ],
+      "exact_fact_preserved": true,
+      "semantic_evidence": {
+        "m6i_stale": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 39,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| `docs/old-architecture-notes.md` | Stale historical material | Do not use its 2024 `m6i`/shared-worker recommendation as a decision. |"
+            },
+            {
+              "line": 73,
+              "path": "docs/migration-continuation.md",
+              "snippet": "of `m7i` nor the historical `m6i` suggestion resolves any of them."
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Is the older m6i recommendation represented as stale rather than current truth?"
+        },
+        "structured_wayfinder_fields": [],
+        "w1_compute_state": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 38,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| `docs/compute-options.md` | Open proposal | `m7i` is under consideration only; it is not approval. |"
+            },
+            {
+              "line": 39,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| `docs/old-architecture-notes.md` | Stale historical material | Do not use its 2024 `m6i`/shared-worker recommendation as a decision. |"
+            },
+            {
+              "line": 46,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| W1 \u2014 runner compute | Not started; intentionally deferred in `terraform/runners.tf`. | Requires an approved runner instance family, a shared-versus-dedicated compute decision, and a Karpenter-versus-EKS-managed-node-groups decision. The 60-second capacity requirement must be shown compatible with the selected design. | Document/prepare acceptance and implementation shape without selecting a compute design. Do **not** introduce Karpenter or compute resources until all three decisions are explic"
+            },
+            {
+              "line": 65,
+              "path": "docs/migration-continuation.md",
+              "snippet": "This slice is intentionally independent of instance family, compute isolation,"
+            },
+            {
+              "line": 70,
+              "path": "docs/migration-continuation.md",
+              "snippet": "1. **W1 architecture approval:** exact instance family; shared or dedicated"
+            },
+            {
+              "line": 71,
+              "path": "docs/migration-continuation.md",
+              "snippet": "runner compute; and Karpenter or EKS managed node groups. These three are"
+            },
+            {
+              "line": 73,
+              "path": "docs/migration-continuation.md",
+              "snippet": "of `m7i` nor the historical `m6i` suggestion resolves any of them."
+            },
+            {
+              "line": 93,
+              "path": "docs/migration-continuation.md",
+              "snippet": "managing the unknown legacy security group, adding Karpenter, and hard-coded"
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Which W1 compute choices are current, unresolved, or superseded?"
+        },
+        "w2_identity_state": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 18,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- Every IAM role created by this module must use"
+            },
+            {
+              "line": 19,
+              "path": "docs/migration-continuation.md",
+              "snippet": "`var.permissions_boundary_arn` as its permissions boundary."
+            },
+            {
+              "line": 20,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- The runner AMI must be resolved indirectly from the platform-owned SSM"
+            },
+            {
+              "line": 47,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| W2 \u2014 runner identity/image | Actionable; no implementation yet (`terraform/iam.tf` and AMI portion of `terraform/runners.tf` are TODOs). | No W1 decision is a dependency. Requires only the settled node-role contract and existing module inputs. External apply remains out of scope. | Implement repository-local IAM role and SSM AMI lookup, then run local/offline checks. |"
+            },
+            {
+              "line": 58,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- `arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy`"
+            },
+            {
+              "line": 59,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- `arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly`"
+            },
+            {
+              "line": 60,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- `arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy`"
+            },
+            {
+              "line": 62,
+              "path": "docs/migration-continuation.md",
+              "snippet": "- Resolve the AMI from `/platform/arc/runner-ami` through SSM rather than a"
+            },
+            {
+              "line": 86,
+              "path": "docs/migration-continuation.md",
+              "snippet": "data source; `iam.tf`, `runners.tf`, and `observability.tf` contain deliberate"
+            },
+            {
+              "line": 101,
+              "path": "docs/migration-continuation.md",
+              "snippet": "1. Take W2 first: implement the settled IAM/SSM slice without choosing W1"
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Is the settled W2 IAM/SSM slice preserved and actionable?"
+        },
+        "w3_legacy_state": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 48,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| W3 \u2014 legacy-resource cleanup | Blocked. | Ownership of security group `sg-0abc1234def567890` (tagged `component=arc-legacy`) is unknown. Establishing ownership and obtaining owner authorization are both required before any import, modification, or deletion. | Preserve the exclusion. Gather ownership evidence or obtain a written owner decision outside this module; no Terraform resource/import/adoption work is authorized meanwhile. |"
+            },
+            {
+              "line": 75,
+              "path": "docs/migration-continuation.md",
+              "snippet": "of `sg-0abc1234def567890`, then obtain authorization before cleanup. This is"
+            },
+            {
+              "line": 93,
+              "path": "docs/migration-continuation.md",
+              "snippet": "managing the unknown legacy security group, adding Karpenter, and hard-coded"
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Is W3 still blocked without blocking independent fixture-owned resources?"
+        },
+        "w4_observability_state": {
+          "deterministic_structured_value": null,
+          "evidence": [
+            {
+              "line": 49,
+              "path": "docs/migration-continuation.md",
+              "snippet": "| W4 \u2014 observability/integration | Blocked. | The project-approved CloudWatch alarm notification destination ARN is absent. The required failed-runner-job alarm cannot be completed without it. | Define no destination and do not invent an ARN. Once supplied, add the alarm wired to that ARN and validate it locally. This blocker is independent of W1 and W2. |"
+            },
+            {
+              "line": 77,
+              "path": "docs/migration-continuation.md",
+              "snippet": "3. **W4 alarm destination:** provide the approved notification destination ARN."
+            },
+            {
+              "line": 86,
+              "path": "docs/migration-continuation.md",
+              "snippet": "data source; `iam.tf`, `runners.tf`, and `observability.tf` contain deliberate"
+            },
+            {
+              "line": 106,
+              "path": "docs/migration-continuation.md",
+              "snippet": "ownership/authorization, and W4 destination ARN. Keep their effects scoped"
+            }
+          ],
+          "manual_review_required": true,
+          "method": "Exact path/line/snippet extraction only; no prose keyword-window classification.",
+          "semantic_question": "Is W4 blocked or actionable under the latest supplied destination truth?"
+        }
+      }
+    },
+    "terraform_files_changed": [],
+    "treatment_adherence": {
+      "applicable": false,
+      "explicit_invocation_observed_in_raw_events": false,
+      "explicit_wayfinder_state_observed": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "prompt_explicitly_invoked_wayfinder": false,
+      "route_to_wayfinder_self_reported": false,
+      "wayfinder_skill_read": false,
+      "wayfinder_state_created_or_modified_this_phase": [],
+      "wayfinder_state_files": [],
+      "wayfinder_state_present": false,
+      "wayfinder_state_read": false
+    }
+  },
+  "phase": 1,
+  "prompt_sha256": "9a060c0e56cbed83661ec073fcf6cfb54da01e89766766e12bd7868e4938d40b",
+  "recorded_at": "2026-08-16T00:17:42.839498+00:00",
+  "repository_head": "b72bee6cc6ef9c5a7b162b91c5e1642559ba645c",
+  "repository_status": [
+    "?? docs/migration-continuation.md"
+  ],
+  "run_id": "arc-state-a-1-174f804555",
+  "schema_version": 2,
+  "snapshot_archive": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-state-complexity-v1/runs/arc-state-a-1-174f804555/snapshots/phase-1.tar.gz"
+}

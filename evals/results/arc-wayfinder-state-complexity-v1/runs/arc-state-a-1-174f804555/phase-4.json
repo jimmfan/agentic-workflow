@@ -1,0 +1,316 @@
+{
+  "after_snapshot": {
+    ".gitignore": "6feaded4e28ea86e001a6751b4e3d960e8b7c31b9616ff9936b79297086e809b",
+    "README.md": "0d8ab8ace0cf562d47fc9ff7570e6ab17adf16aa8b19cb30ee43eac37a384bc3",
+    "docs/benchmarks/runner-startup.md": "c9d0829cc1f4007a60f849189f887eff7fe88c8b6e9ffa86c1da63cd3e909bd8",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/decisions/D1-runner-compute-architecture.md": "73e6b859399188cfc1c25300325fa6ba92c0ba8fe6c1da17a0c2f094042c5afa",
+    "docs/existing-resources.md": "6290b926f4e56cde1fd288de95d74d97c345c15c9db65b5ed32a4534df7724de",
+    "docs/implementation-readiness.md": "659d63ac5dd6ec9793ff92bddcaef75741ddc79f68c211abed27c0bc673ec25c",
+    "docs/migration-continuation.md": "9d9db2b1a32a03195a1a4ebe57bddef40e4ad1aef39bea845d197e87c54873e7",
+    "docs/observability-requirements.md": "ee6dd6545854960593b71aaafe36a5943cbf15dacf9f4f0764456f8650ce052b",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "e64692041f0a9a41a6f3a4d7641be3eeddeed07f4a9dde0e3af03bda4abd9622",
+    "terraform/iam.tf": "9c698da40cbae0497454a3b533cc02bfe0745a54521c7c352e4e911621c38419",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/observability.tf": "b450fcf2d8d6b67a6b91af24a20b881f9feedad3532d41675b720d46ebde383e",
+    "terraform/runners.tf": "976e5003545e0424d3e32a61d650e1cacf99115b630949914e40bf499018db10",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/__pycache__/test_repository_safety.cpython-314.pyc": "1b20f5a2203791e49d4a0fc38862b3cde8803e44d8eb729d1e372678b9236848",
+    "tests/test_repository_safety.py": "4ef3cb2aa1cb19aaeb79da4b2faf95c191991f7910b0ce81fe6dd65a01ba5ecb"
+  },
+  "before_snapshot": {
+    ".gitignore": "6feaded4e28ea86e001a6751b4e3d960e8b7c31b9616ff9936b79297086e809b",
+    "README.md": "1bed09669c97058a70c3d2628019cd4bc3ea3c4367437ee003893b2430e2f525",
+    "docs/benchmarks/runner-startup.md": "c9d0829cc1f4007a60f849189f887eff7fe88c8b6e9ffa86c1da63cd3e909bd8",
+    "docs/compute-options.md": "1bffc1db21631d6926743c36d1983fc5ca2abe6fa1c19ae5b46b70f3472799e9",
+    "docs/decisions/D1-runner-compute-architecture.md": "73e6b859399188cfc1c25300325fa6ba92c0ba8fe6c1da17a0c2f094042c5afa",
+    "docs/existing-resources.md": "6290b926f4e56cde1fd288de95d74d97c345c15c9db65b5ed32a4534df7724de",
+    "docs/implementation-readiness.md": "659d63ac5dd6ec9793ff92bddcaef75741ddc79f68c211abed27c0bc673ec25c",
+    "docs/migration-continuation.md": "1484d8583dd3b09a1768765a7cc7f90c9ef5ab6cf15aa9ad606f819b66d8fe62",
+    "docs/observability-requirements.md": "ee6dd6545854960593b71aaafe36a5943cbf15dacf9f4f0764456f8650ce052b",
+    "docs/old-architecture-notes.md": "87f6a8c9677ae2a8d0c80e35502e307e017b4a7d544bba6792dcb451bcbe28c8",
+    "docs/requirements.md": "4ea81a796e6d3f23314d2f76cd9182c7d285aeb27f1c47a706429e3817db49a0",
+    "docs/security-requirements.md": "e64692041f0a9a41a6f3a4d7641be3eeddeed07f4a9dde0e3af03bda4abd9622",
+    "terraform/iam.tf": "d9b2ee1c923332801a0a26d18c0d41ce6653a32962596f06680cc2af4cc9cc8b",
+    "terraform/main.tf": "5fb6b41a48ba3f7873124403f4d7953a60d00d3de50b22bdfdf2eb0961195556",
+    "terraform/observability.tf": "b450fcf2d8d6b67a6b91af24a20b881f9feedad3532d41675b720d46ebde383e",
+    "terraform/runners.tf": "e778dea4bf58942b894b3d06d0d7b83b4404fd9d697c1b7fd2593118440eb303",
+    "terraform/variables.tf": "5fd5fd7daa973b1ac33d2f3b085aa49f1e9f64c773d22c2b2a53cf6f98c2d054",
+    "tests/__pycache__/test_repository_safety.cpython-314.pyc": "62fa77ce8c941cca4fa33b085b4789d6b1840cd8a38d4b0538c6157522eae91b",
+    "tests/test_repository_safety.py": "7003c53b9e6fd191356de6ae57142834816aa0944aab1b109f5e2b1034322dcb"
+  },
+  "campaign_id": "arc-wayfinder-state-complexity-v1",
+  "changed_files": [
+    "README.md",
+    "docs/migration-continuation.md",
+    "terraform/iam.tf",
+    "terraform/runners.tf",
+    "tests/__pycache__/test_repository_safety.cpython-314.pyc",
+    "tests/test_repository_safety.py"
+  ],
+  "condition": "A",
+  "execution": {
+    "cached_input_tokens": 179712,
+    "codex_home_isolation": {
+      "pre_execution_inventory": {
+        "auth_contents_or_digest_recorded": false,
+        "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-state-complexity-v1/arc-state-a-1-174f804555/ephemeral-codex-homes/codex-home-a72ea04f954043b7a7d5aacfed0063d6",
+        "config_ignored_by_cli_flag": true,
+        "contains_only_auth_material": true,
+        "files": [
+          {
+            "kind": "file",
+            "path": "auth.json",
+            "size": 3964
+          }
+        ],
+        "rules_ignored_by_cli_flag": true,
+        "unexpected_files": []
+      },
+      "removed_after_process": true,
+      "source_auth_modified": false,
+      "temporary_bytes_removed": 43264161,
+      "unique_per_process": true
+    },
+    "command": [
+      "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--strict-config",
+      "-m",
+      "gpt-5.6-terra",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-s",
+      "workspace-write",
+      "-C",
+      "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agentic-workflow-arc-wayfinder-state-complexity-v1/arc-state-a-1-174f804555/repo",
+      "--json",
+      "<prompt-via-stdin>"
+    ],
+    "commands_observed": [
+      "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+      "/bin/zsh -lc \"find . -path './node_modules' -prune -o -path './.git' -prune -o -type f -print | sed -n '1,260p'\"",
+      "/bin/zsh -lc \"find . -path './node_modules' -prune -o -path './.git' -prune -o -type f -print | sed -n '1,260p'\"",
+      "/bin/zsh -lc \"git status --short && sed -n '1,240p' docs/migration-continuation.md && sed -n '1,260p' docs/implementation-readiness.md && sed -n '1,260p' tests/test_repository_safety.py\"",
+      "/bin/zsh -lc \"git status --short && sed -n '1,240p' docs/migration-continuation.md && sed -n '1,260p' docs/implementation-readiness.md && sed -n '1,260p' tests/test_repository_safety.py\"",
+      "/bin/zsh -lc 'for file in terraform/*.tf README.md docs/requirements.md docs/security-requirements.md docs/decisions/D1-runner-compute-architecture.md; do echo \"### $file\"; sed -n '\"'1,320p' \\\"\"'$file\"; done && command -v terraform || true && terraform version 2>/dev/null || true && command -v python3 || true'",
+      "/bin/zsh -lc 'for file in terraform/*.tf README.md docs/requirements.md docs/security-requirements.md docs/decisions/D1-runner-compute-architecture.md; do echo \"### $file\"; sed -n '\"'1,320p' \\\"\"'$file\"; done && command -v terraform || true && terraform version 2>/dev/null || true && command -v python3 || true'",
+      "/bin/zsh -lc 'terraform fmt -check -recursive && python3 -m unittest discover -s tests -v && terraform validate'",
+      "/bin/zsh -lc 'terraform fmt -check -recursive && python3 -m unittest discover -s tests -v && terraform validate'",
+      "/bin/zsh -lc 'git diff --check && git diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py README.md && git status --short'",
+      "/bin/zsh -lc 'git diff --check && git diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py README.md && git status --short'",
+      "/bin/zsh -lc 'terraform fmt -check -recursive && python3 -m unittest discover -s tests -v && terraform validate && git diff --check && git status --short'",
+      "/bin/zsh -lc 'terraform fmt -check -recursive && python3 -m unittest discover -s tests -v && terraform validate && git diff --check && git status --short'"
+    ],
+    "continuation_cost": {
+      "cached_input_tokens": 179712,
+      "elapsed_seconds": 113.44,
+      "file_read_count_before_first_observed_write": 6,
+      "files_read_before_first_observed_write": [
+        "docs/decisions/D1-runner-compute-architecture.md",
+        "docs/implementation-readiness.md",
+        "docs/migration-continuation.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "tests/test_repository_safety.py"
+      ],
+      "input_tokens": 201400,
+      "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+      "output_tokens": 5268,
+      "reasoning_tokens": 1073,
+      "repeated_read_path_count": 6,
+      "tool_action_count": 9
+    },
+    "elapsed_seconds": 113.44,
+    "event_count": 25,
+    "evidence_quality": "clean",
+    "execution_id": "01a007f4-c157-7fe3-9463-49c0afea2975",
+    "exit_status": 0,
+    "fresh_context": true,
+    "input_tokens": 201400,
+    "mode": "automatic_ephemeral_codex_exec",
+    "observed_exact_fact_in_tool_output": true,
+    "observed_terraform_apply": false,
+    "output_tokens": 5268,
+    "parent_task_context_supplied": false,
+    "phase": 4,
+    "prompt_sha256": "288692b9704a3474b4240e970b391608ef08677c666dfb8ce1a23c99e96b9565",
+    "raw_evidence_outside_evaluated_repository": true,
+    "reasoning_tokens": 1073,
+    "stderr_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-state-complexity-v1/runs/arc-state-a-1-174f804555/raw/phase-4.stderr.txt",
+    "stdout_path": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-state-complexity-v1/runs/arc-state-a-1-174f804555/raw/phase-4.jsonl",
+    "tool_action_count": 9,
+    "validation_command_observed": true,
+    "validation_events": [
+      {
+        "command": "/bin/zsh -lc 'terraform fmt -check -recursive && python3 -m unittest discover -s tests -v && terraform validate'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'git diff --check && git diff -- terraform/iam.tf terraform/runners.tf tests/test_repository_safety.py README.md && git status --short'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'terraform fmt -check -recursive && python3 -m unittest discover -s tests -v && terraform validate && git diff --check && git status --short'",
+        "exit_code": 0
+      }
+    ],
+    "wayfinder_observation": {
+      "explicit_invocation_observed": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "route_to_wayfinder_self_reported": false,
+      "wayfinder_skill_read": false,
+      "wayfinder_state_read": false
+    },
+    "workspace_isolation": {
+      "checks": {
+        "grader_outside_evaluated_repository": true,
+        "no_agentic_workflow_directory": true,
+        "no_agentic_workflow_state_directory": true,
+        "no_controller_control_file_in_repository": true,
+        "no_parent_instruction_files": true,
+        "no_project_agents_policy": true,
+        "no_project_wayfinder_skill": true,
+        "no_symlinks_to_external_content": true,
+        "outside_agentic_workflow_source_tree": true,
+        "workspace_is_git_root": true
+      },
+      "parent_instruction_files": []
+    }
+  },
+  "grade": {
+    "agent_validation_observed": true,
+    "continuation_cost": {
+      "cached_input_tokens": 179712,
+      "elapsed_seconds": 113.44,
+      "file_read_count_before_first_observed_write": 6,
+      "files_read_before_first_observed_write": [
+        "docs/decisions/D1-runner-compute-architecture.md",
+        "docs/implementation-readiness.md",
+        "docs/migration-continuation.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "tests/test_repository_safety.py"
+      ],
+      "input_tokens": 201400,
+      "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+      "output_tokens": 5268,
+      "reasoning_tokens": 1073,
+      "repeated_read_path_count": 6,
+      "tool_action_count": 9
+    },
+    "continuity": {
+      "exact_fact_correctly_implemented": true,
+      "exact_fact_located_or_read": true,
+      "exact_fact_preserved": true,
+      "exact_fact_trusted_or_consumed": true
+    },
+    "evaluator_validation": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_status": 0,
+      "output": "test_ami_is_not_hard_coded (test_repository_safety.RepositorySafetyTests.test_ami_is_not_hard_coded) ... ok\ntest_dedicated_runner_launch_template_uses_the_resolved_ami (test_repository_safety.RepositorySafetyTests.test_dedicated_runner_launch_template_uses_the_resolved_ami) ... ok\ntest_externally_managed_cluster_is_not_recreated (test_repository_safety.RepositorySafetyTests.test_externally_managed_cluster_is_not_recreated) ... ok\ntest_karpenter_is_not_introduced (test_repository_safety.RepositorySafetyTests.test_karpenter_is_not_introduced) ... ok\ntest_legacy_security_group_is_not_managed (test_repository_safety.RepositorySafetyTests.test_legacy_security_group_is_not_managed) ... ok\ntest_node_group_uses_the_dedicated_launch_template (test_repository_safety.RepositorySafetyTests.test_node_group_uses_the_dedicated_launch_template) ... ok\ntest_node_group_waits_for_node_role_policies (test_repository_safety.RepositorySafetyTests.test_node_group_waits_for_node_role_policies) ... ok\ntest_public_ip_assignment_is_not_enabled (test_repository_safety.RepositorySafetyTests.test_public_ip_assignment_is_not_enabled) ... ok\ntest_runner_ami_uses_the_platform_ssm_parameter (test_repository_safety.RepositorySafetyTests.test_runner_ami_uses_the_platform_ssm_parameter) ... ok\ntest_runner_node_group_uses_the_frozen_compute_contract (test_repository_safety.RepositorySafetyTests.test_runner_node_group_uses_the_frozen_compute_contract) ... ok\ntest_runner_node_role_has_required_managed_policies (test_repository_safety.RepositorySafetyTests.test_runner_node_role_has_required_managed_policies) ... ok\ntest_runner_node_role_uses_the_required_boundary_and_ec2_trust (test_repository_safety.RepositorySafetyTests.test_runner_node_role_uses_the_required_boundary_and_ec2_trust) ... ok\ntest_runner_nodes_require_imdsv2 (test_repository_safety.RepositorySafetyTests.test_runner_nodes_require_imdsv2) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.002s\n\nOK\n",
+      "passed": true
+    },
+    "execution_quality": {
+      "dedicated_managed_node_group": true,
+      "desired_capacity_2": true,
+      "existing_cluster_reference": true,
+      "iam_ec2_trust": true,
+      "iam_permissions_boundary": true,
+      "iam_required_policy_attachments": true,
+      "iam_role": true,
+      "launch_template": true,
+      "launch_template_consumed_by_node_group": true,
+      "legacy_resource_untouched": true,
+      "m7i_large": true,
+      "maximum_capacity_6": true,
+      "minimum_warm_capacity_2": true,
+      "no_eks_cluster_recreation": true,
+      "no_hard_coded_ami": true,
+      "no_karpenter": true,
+      "no_unauthorized_terraform_apply_observed": true,
+      "node_group_waits_for_policy_attachments": true,
+      "node_role_reference": true,
+      "observability_still_unimplemented": true,
+      "on_demand_capacity": true,
+      "private_subnet_inputs": true,
+      "ssm_ami_consumed": true,
+      "ssm_ami_lookup": true
+    },
+    "files_changed": [
+      "README.md",
+      "docs/migration-continuation.md",
+      "terraform/iam.tf",
+      "terraform/runners.tf",
+      "tests/__pycache__/test_repository_safety.cpython-314.pyc",
+      "tests/test_repository_safety.py"
+    ],
+    "production_readiness_slice_complete": true,
+    "terraform_fmt": {
+      "available": true,
+      "command": [
+        "/opt/homebrew/bin/terraform",
+        "fmt",
+        "-check",
+        "-recursive",
+        "terraform"
+      ],
+      "exit_status": 0,
+      "output": "",
+      "passed": true
+    },
+    "treatment_adherence": {
+      "applicable": false,
+      "explicit_invocation_observed_in_raw_events": false,
+      "explicit_wayfinder_state_observed": false,
+      "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+      "prompt_explicitly_invoked_wayfinder": false,
+      "route_to_wayfinder_self_reported": false,
+      "wayfinder_skill_read": false,
+      "wayfinder_state_created_or_modified_this_phase": [],
+      "wayfinder_state_files": [],
+      "wayfinder_state_present": false,
+      "wayfinder_state_read": false
+    },
+    "unknown_vs_blocker": {
+      "all_blocked_by_lines": [],
+      "manual_review_required": false,
+      "method": "Wayfinder Status/Blocked by/Related/Resolves fields are parsed only because the product contract defines them explicitly.",
+      "structured_records": []
+    }
+  },
+  "phase": 4,
+  "prompt_sha256": "288692b9704a3474b4240e970b391608ef08677c666dfb8ce1a23c99e96b9565",
+  "recorded_at": "2026-08-16T00:26:29.062002+00:00",
+  "repository_head": "563e9f0e981f024494c45b1160b3955c2907ff40",
+  "repository_status": [
+    " M README.md",
+    " M terraform/iam.tf",
+    " M terraform/runners.tf",
+    " M tests/test_repository_safety.py",
+    "?? .gitignore",
+    "?? docs/migration-continuation.md"
+  ],
+  "run_id": "arc-state-a-1-174f804555",
+  "schema_version": 2,
+  "snapshot_archive": "/Users/james/Desktop/projects/agentic-workflow-instructions/evals/results/arc-wayfinder-state-complexity-v1/runs/arc-state-a-1-174f804555/snapshots/phase-4.tar.gz"
+}

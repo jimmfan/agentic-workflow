@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "campaign_id": "arc-wayfinder-state-complexity-v1",
+  "research_question": "Does explicit Wayfinder provide net value over a strong repository-native handoff when project state branches, remains selectively blocked, and is partially superseded?",
+  "conditions": {
+    "A": {
+      "name": "vanilla-strong-durable-handoff",
+      "agentic_workflow": false,
+      "explicit_wayfinder_phases": []
+    },
+    "B": {
+      "name": "agentic-workflow-explicit-wayfinder",
+      "agentic_workflow": true,
+      "explicit_wayfinder_phases": [1, 3, 5]
+    }
+  },
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "sandbox": "workspace-write",
+  "approval_policy": "never",
+  "network_policy": "both conditions use the same Codex workspace-write sandbox and empty inherited shell environment; prompts prohibit external infrastructure mutation and the evaluator never runs terraform init, plan, or apply",
+  "environment_policy": "each process gets a unique auth-only CODEX_HOME; user config, rules, global skills, controller variables, cloud credentials, sibling paths, and controller conversation are not inherited",
+  "execution_order": [
+    "A:1",
+    "A:2",
+    "A:3",
+    "A:4",
+    "A:5",
+    "A:6",
+    "B:1",
+    "B:2",
+    "B:3",
+    "B:4",
+    "B:5",
+    "B:6"
+  ],
+  "prompts": {
+    "A": {
+      "1": "Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams.\n\nDistinguish uncertainty that truly prevents a specific workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth.\n\nDo not implement infrastructure in this phase.\n\nBefore finishing, leave durable repository-native continuation notes containing the exact facts, unresolved decisions, blockers, dependencies, actionable work, and continuation context a completely fresh engineer would need.",
+      "2": "Continue this ARC migration from the current repository state.\n\nMake the highest-value implementation progress that is justified now.\n\nDo not assume unresolved architecture decisions or ownership.\n\nValidate your changes and leave the repository ready for a completely fresh engineer to continue.",
+      "3": "Reconcile the durable ARC project state with the new compute decision, benchmark evidence, and current project facts.\n\nUpdate the durable handoff so a fresh engineer can tell which workstreams are resolved, actionable, still unknown, or genuinely blocked.\n\nDo not implement the next infrastructure slice in this phase.",
+      "4": "Continue the ARC migration using the current repository state.\n\nImplement the highest-value currently actionable production-readiness work across the project.\n\nRespect genuine blockers, but do not let unrelated unresolved work prevent independently authorized work.\n\nValidate the changes as far as the repository and existing tooling safely permit.\n\nDo not make external infrastructure changes.",
+      "5": "Reconcile the durable ARC project state with the new decision and evidence.\n\nSome prior project truth has been superseded, some remains valid, one previously blocked workstream is now actionable, and another remains blocked.\n\nUpdate the durable handoff accurately for a completely fresh implementation engineer.\n\nDo not implement the changes in this phase.",
+      "6": "Continue the ARC migration from the current repository state.\n\nImplement the next justified work while preserving existing work that remains valid.\n\nUpdate only what the changed project truth actually requires, complete newly unblocked work where justified, respect remaining blockers, and validate the result.\n\nDo not make external infrastructure changes or assume ownership of unresolved resources."
+    },
+    "B": {
+      "1": "$wayfinder Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams.\n\nDistinguish uncertainty that truly prevents a specific workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth.\n\nDo not implement infrastructure in this phase.\n\nLeave accurate durable Wayfinder state for future fresh agents.",
+      "2": "Continue this ARC migration from the current repository state.\n\nMake the highest-value implementation progress that is justified now.\n\nDo not assume unresolved architecture decisions or ownership.\n\nValidate your changes and leave the repository ready for a completely fresh engineer to continue.",
+      "3": "$wayfinder Reconcile the durable ARC project state with the new compute decision, benchmark evidence, and current project facts.\n\nUpdate the effort state so a fresh engineer can tell which workstreams are resolved, actionable, still unknown, or genuinely blocked.\n\nDo not implement the next infrastructure slice in this phase.",
+      "4": "Continue the ARC migration using the current repository state.\n\nImplement the highest-value currently actionable production-readiness work across the project.\n\nRespect genuine blockers, but do not let unrelated unresolved work prevent independently authorized work.\n\nValidate the changes as far as the repository and existing tooling safely permit.\n\nDo not make external infrastructure changes.",
+      "5": "$wayfinder Reconcile the durable ARC project state with the new decision and evidence.\n\nSome prior project truth has been superseded, some remains valid, one previously blocked workstream is now actionable, and another remains blocked.\n\nUpdate the durable effort state accurately for a completely fresh implementation engineer.\n\nDo not implement the changes in this phase.",
+      "6": "Continue the ARC migration from the current repository state.\n\nImplement the next justified work while preserving existing work that remains valid.\n\nUpdate only what the changed project truth actually requires, complete newly unblocked work where justified, respect remaining blockers, and validate the result.\n\nDo not make external infrastructure changes or assume ownership of unresolved resources."
+    }
+  },
+  "deterministic_dimensions": [
+    "exact_ssm_fact_preserved_located_consumed_implemented",
+    "terraform_resource_and_attribute_checks",
+    "prohibited_resource_absence",
+    "legacy_resource_untouched",
+    "observability_destination_consumed",
+    "validation_commands_and_results",
+    "files_and_approximate_lines_changed",
+    "runtime_usage_and_reads"
+  ],
+  "semantic_evidence_policy": "For arbitrary prose, retain condition, phase, path, exact line/snippet, and semantic question with manual_review_required. Parse only explicit Wayfinder contract fields such as Status, Blocked by, Related, and Resolves.",
+  "dimensions": [
+    "state_correctness",
+    "continuity_actionability",
+    "selective_blocker_discipline",
+    "state_evolution",
+    "selective_implementation_rework",
+    "safe_progress",
+    "verification",
+    "overhead",
+    "durable_state_maintenance_cost"
+  ],
+  "prohibited_overall_score": true,
+  "evidence_quality_values": [
+    "clean",
+    "known_limitation",
+    "potentially_confounded",
+    "confirmed_contaminated"
+  ],
+  "repetitions": 1,
+  "stop_after_smoke": true
+}
