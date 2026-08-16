@@ -1,0 +1,22 @@
+job_name: 2026-08-15-slopcodebench-b
+jobs_dir: evals/harbor/jobs
+n_concurrent_trials: 1
+retry:
+  max_retries: 0
+environment:
+  type: docker
+agents:
+  - import_path: harbor_agents:AgenticWorkflowCodex
+    model_name: gpt-5.6-sol
+    kwargs:
+      version: 0.144.6
+      reasoning_effort: high
+      source_revision: 37e35b0be95b1b835f460af15187c91d915ca4dc
+datasets:
+  - name: gabeorlanski/slopcodebench
+    ref: sha256:73a17cda817d37ce3352d18c272c40a3f6b623061023bee365b4df74adcd11b5
+    download_dir: evals/harbor/cache/packages
+    task_names:
+      - gabeorlanski/circuit_eval
+      - gabeorlanski/database_migration
+      - gabeorlanski/trajectory_api
