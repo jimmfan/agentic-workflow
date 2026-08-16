@@ -7,7 +7,9 @@ the checked-in product's supported lifecycle installer in the task workspace.
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import shlex
 from pathlib import Path
 
@@ -18,6 +20,13 @@ from harbor.environments.base import BaseEnvironment, ExecResult
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_PACKAGE = REPOSITORY_ROOT / "skills" / "agentic-workflow"
 REMOTE_PACKAGE = "/tmp/agentic-workflow-package"
+GH_CLI = (
+    REPOSITORY_ROOT
+    / "evals/harbor/cache/tools/gh_2.97.0_linux_arm64/bin/gh"
+)
+GH_CLI_SHA256 = "ccbb0f14178faefac1cb0f336a853071fa63a1d0df23ef5ab7a304fe3859e082"
+REMOTE_TOOL_DIR = "/tmp/agentic-workflow-tools"
+REMOTE_GH_CLI = f"{REMOTE_TOOL_DIR}/gh"
 WORKSPACE = "/app"
 MANAGED_MARKER = "<!-- ai-workflow:managed-begin -->"
 
@@ -109,20 +118,72 @@ class AgenticWorkflowCodex(_EvaluationCodex):
 
         if not WORKFLOW_PACKAGE.is_dir():
             raise RuntimeError(f"missing workflow package: {WORKFLOW_PACKAGE}")
+        if not GH_CLI.is_file():
+            raise RuntimeError(
+                f"missing pinned Linux/arm64 GitHub CLI evaluation tool: {GH_CLI}"
+            )
+        gh_digest = hashlib.sha256(GH_CLI.read_bytes()).hexdigest()
+        if gh_digest != GH_CLI_SHA256:
+            raise RuntimeError(
+                "pinned Linux/arm64 GitHub CLI checksum does not match the "
+                "evaluation manifest"
+            )
+        gh_token = os.environ.get("HARBOR_EVAL_GH_TOKEN", "").strip()
+        if not gh_token:
+            raise RuntimeError(
+                "condition B requires authenticated GitHub CLI access for the "
+                "normal provider lifecycle"
+            )
 
         await environment.upload_dir(WORKFLOW_PACKAGE, REMOTE_PACKAGE)
-        lifecycle = f"{REMOTE_PACKAGE}/scripts/lifecycle.py"
-        install = await self.exec_as_agent(
+        await self.exec_as_root(
             environment,
-            command=(
-                f"python3 {shlex.quote(lifecycle)} "
-                f"--source-revision {shlex.quote(self.source_revision)} "
-                f"install {shlex.quote(WORKSPACE)}"
-            ),
+            command=f"install -d -m 0755 {shlex.quote(REMOTE_TOOL_DIR)}",
         )
+        await environment.upload_file(GH_CLI, REMOTE_GH_CLI)
+        await self.exec_as_root(
+            environment,
+            command=f"chmod 0755 {shlex.quote(REMOTE_GH_CLI)}",
+        )
+        gh_version = await self.exec_as_agent(
+            environment,
+            command=f"{shlex.quote(REMOTE_GH_CLI)} --version",
+        )
+        lifecycle = f"{REMOTE_PACKAGE}/scripts/lifecycle.py"
+        try:
+            install = await self.exec_as_agent(
+                environment,
+                command=(
+                    f"PATH={shlex.quote(REMOTE_TOOL_DIR)}:$PATH "
+                    f"python3 {shlex.quote(lifecycle)} "
+                    f"--source-revision {shlex.quote(self.source_revision)} "
+                    f"install {shlex.quote(WORKSPACE)}"
+                ),
+                env={"GH_TOKEN": gh_token},
+            )
+        finally:
+            cleanup = await self.exec_as_root(
+                environment,
+                command=(
+                    f"rm -f {shlex.quote(REMOTE_GH_CLI)}\n"
+                    f"rmdir {shlex.quote(REMOTE_TOOL_DIR)}"
+                ),
+            )
         status = await self.exec_as_agent(
             environment,
             command=f"python3 {shlex.quote(lifecycle)} status {shlex.quote(WORKSPACE)}",
+        )
+        source_cleanup = await self.exec_as_root(
+            environment,
+            command=f"rm -rf {shlex.quote(REMOTE_PACKAGE)}",
+        )
+        self._write_setup_proof(
+            _render_result("before Codex setup", before),
+            _render_result("transient GitHub CLI", gh_version),
+            _render_result("workflow install", install),
+            _render_result("workflow status", status),
+            _render_result("transient GitHub CLI cleanup", cleanup),
+            _render_result("transient workflow source cleanup", source_cleanup),
         )
         proof = await self.exec_as_agent(
             environment,
@@ -134,6 +195,8 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "test -f /app/.agents/skills/workflow-discovery/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-implementation/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-verification/SKILL.md\n"
+                f"test ! -e {shlex.quote(REMOTE_GH_CLI)}\n"
+                f"test ! -e {shlex.quote(REMOTE_PACKAGE)}\n"
                 "python3 -c 'import json; p=json.load(open(\"/app/.ai-workflow/install-manifest.json\")); "
                 "print(json.dumps({\"source_revision\": p.get(\"source_revision\"), "
                 "\"framework_version\": p.get(\"framework_version\")}, sort_keys=True))'\n"
@@ -146,6 +209,8 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "    (workspace / '.ai-workflow/providers.json').read_text(encoding='utf-8')\n"
                 ")\n"
                 "provider_names = [item['name'] for item in declaration['provider']['skills']]\n"
+                "provider_repository = declaration['provider']['repository']\n"
+                "provider_version = declaration['provider']['version']\n"
                 "missing = [\n"
                 "    name\n"
                 "    for name in provider_names\n"
@@ -154,6 +219,26 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "if missing:\n"
                 "    raise SystemExit(\n"
                 "        'condition B rejected: missing declared providers: ' + ', '.join(missing)\n"
+                "    )\n"
+                "pin_errors = []\n"
+                "for item in declaration['provider']['skills']:\n"
+                "    skill_text = (\n"
+                "        workspace / '.agents/skills' / item['name'] / 'SKILL.md'\n"
+                "    ).read_text(encoding='utf-8')\n"
+                "    expected_metadata = (\n"
+                "        f'github-path: {item[\"path\"]}',\n"
+                "        f'github-pinned: {provider_version}',\n"
+                "        f'github-ref: refs/tags/{provider_version}',\n"
+                "        f'github-repo: https://github.com/{provider_repository}',\n"
+                "    )\n"
+                "    absent_metadata = [\n"
+                "        value for value in expected_metadata if value not in skill_text\n"
+                "    ]\n"
+                "    if absent_metadata:\n"
+                "        pin_errors.append(f'{item[\"name\"]}: {absent_metadata}')\n"
+                "if pin_errors:\n"
+                "    raise SystemExit(\n"
+                "        'condition B rejected: provider pin mismatch: ' + '; '.join(pin_errors)\n"
                 "    )\n"
                 "\n"
                 "installed_roots = [workspace / '.ai-workflow']\n"
@@ -183,6 +268,7 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "print(json.dumps({\n"
                 "    'declared_providers_present': len(provider_names),\n"
                 "    'declared_providers_missing': 0,\n"
+                "    'provider_pin': f'{provider_repository}@{provider_version}',\n"
                 "    'workflow_python_files': python_files,\n"
                 "}, sort_keys=True))\n"
                 "PY"
@@ -193,6 +279,9 @@ class AgenticWorkflowCodex(_EvaluationCodex):
             ("workflow install", install),
             ("workflow status", status),
             ("workflow presence and contamination proof", proof),
+            ("transient GitHub CLI cleanup", cleanup),
+            ("transient workflow source cleanup", source_cleanup),
+            ("transient GitHub CLI version", gh_version),
         ):
             if result.return_code != 0:
                 raise RuntimeError(
@@ -213,7 +302,10 @@ class AgenticWorkflowCodex(_EvaluationCodex):
 
         self._write_setup_proof(
             _render_result("before Codex setup", before),
+            _render_result("transient GitHub CLI", gh_version),
             _render_result("workflow install", install),
             _render_result("workflow status", status),
             _render_result("workflow presence proof", proof),
+            _render_result("transient GitHub CLI cleanup", cleanup),
+            _render_result("transient workflow source cleanup", source_cleanup),
         )

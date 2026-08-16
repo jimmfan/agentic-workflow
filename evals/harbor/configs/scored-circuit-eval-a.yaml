@@ -1,4 +1,4 @@
-job_name: 2026-08-15-harbor-infra-smoke-a-validated
+job_name: 2026-08-15-slopcodebench-circuit-eval-a-validated
 jobs_dir: evals/harbor/jobs
 n_concurrent_trials: 1
 n_attempts: 1
@@ -14,5 +14,8 @@ agents:
       version: 0.144.6
       reasoning_effort: high
 datasets:
-  - name: harbor/hello-world
-    ref: sha256:d10e96e201d6816b22553504e06e7de0153a26381e808d11404cbca530b9d388
+  - name: gabeorlanski/slopcodebench
+    ref: sha256:73a17cda817d37ce3352d18c272c40a3f6b623061023bee365b4df74adcd11b5
+    download_dir: evals/harbor/cache/packages
+    task_names:
+      - gabeorlanski/circuit_eval

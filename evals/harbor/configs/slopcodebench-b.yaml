@@ -1,6 +1,8 @@
-job_name: 2026-08-15-slopcodebench-b
+job_name: 2026-08-15-slopcodebench-b-validated
 jobs_dir: evals/harbor/jobs
 n_concurrent_trials: 1
+n_attempts: 1
+timeout_multiplier: 1.0
 retry:
   max_retries: 0
 environment:

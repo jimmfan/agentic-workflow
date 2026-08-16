@@ -1,4 +1,4 @@
-job_name: 2026-08-15-slopcodebench-a-validated
+job_name: 2026-08-16-slopcodebench-database-migration-b-validated-envfix
 jobs_dir: evals/harbor/jobs
 n_concurrent_trials: 1
 n_attempts: 1
@@ -7,17 +7,21 @@ retry:
   max_retries: 0
 environment:
   type: docker
+  import_path: harbor_environments:PinnedImageDockerEnvironment
+  kwargs:
+    pinned_image: agentic-workflow-harbor/database-migration-env:v5-npm11.16.0-arm64
+    source_dockerfile_sha256: 2222a0ab6392d0ab835c2a34064faef80819339d803d076783faed9a21c0f9d9
+    npm_version: 11.16.0
 agents:
-  - import_path: harbor_agents:VanillaCodex
+  - import_path: harbor_agents:AgenticWorkflowCodex
     model_name: gpt-5.6-sol
     kwargs:
       version: 0.144.6
       reasoning_effort: high
+      source_revision: 37e35b0be95b1b835f460af15187c91d915ca4dc
 datasets:
   - name: gabeorlanski/slopcodebench
     ref: sha256:73a17cda817d37ce3352d18c272c40a3f6b623061023bee365b4df74adcd11b5
     download_dir: evals/harbor/cache/packages
     task_names:
-      - gabeorlanski/circuit_eval
       - gabeorlanski/database_migration
-      - gabeorlanski/trajectory_api
