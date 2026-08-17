@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Best-effort installation and inspection of optional upstream skills."""
+"""Offline projection and inspection of bundled optional provider skills."""
 
 from __future__ import annotations
 
@@ -7,13 +7,13 @@ import argparse
 from dataclasses import dataclass
 from hashlib import sha256
 import json
-import os
 from pathlib import Path, PurePosixPath
 import shutil
-import subprocess
 import sys
 import tempfile
 from typing import Iterable
+
+from provider_snapshot import SnapshotTreeError, tree_digest, validate_local_references
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
@@ -32,6 +32,18 @@ class ProviderSkill:
     invocation: dict[str, str]
     adapter: str | None
     upstream_body_sha256: str | None
+
+
+@dataclass(frozen=True)
+class Provider:
+    repository: str
+    version: str
+    resolved_commit: str
+    snapshot_root: Path
+    snapshot_sha256: str
+    license_path: Path
+    license_sha256: str
+    skills: tuple[ProviderSkill, ...]
 
 
 WAYFINDER_ADAPTER = "wayfinder-local-state-v1"
@@ -83,19 +95,6 @@ ignore this section and use the unchanged upstream method normally.
   file or silently merge conflicting evidence.
 
 """ + WAYFINDER_ADAPTER_END
-WAYFINDER_LOCAL_MODE_LEGACY = WAYFINDER_LOCAL_MODE.replace(
-    b"that contract when Wayfinder is selected. Before an authorized durable-state\n"
-    b"write, also read `.ai-workflow/contracts/durable-state.md`. These rules override\n"
-    b"incompatible tracker-specific mechanics below. If the local contract is absent,\n"
-    b"ignore this section and use the unchanged upstream method normally.\n",
-    b"that contract and `.ai-workflow/contracts/durable-state.md` before local state\n"
-    b"work. These rules override incompatible tracker-specific mechanics below. If\n"
-    b"the local contract is absent, ignore this section and use the unchanged\n"
-    b"upstream method normally.\n",
-    1,
-)
-
-
 def configure_console() -> None:
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
@@ -112,7 +111,24 @@ def safe_component(value: object, label: str) -> str:
     return value
 
 
-def load_provider() -> tuple[str, str, list[ProviderSkill]]:
+def package_path(value: object, label: str) -> Path:
+    if not isinstance(value, str) or not value or "\\" in value:
+        raise ProviderError(f"invalid {label}: {value!r}")
+    relative = PurePosixPath(value)
+    if relative.is_absolute() or any(part in {"", ".", ".."} for part in relative.parts):
+        raise ProviderError(f"invalid {label}: {value!r}")
+    return PACKAGE_ROOT.joinpath(*relative.parts)
+
+
+def is_sha(value: object, length: int) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == length
+        and not any(character not in "0123456789abcdef" for character in value)
+    )
+
+
+def load_provider() -> Provider:
     if DECLARATION.is_symlink() or not DECLARATION.is_file():
         raise ProviderError("provider declaration is missing or unsafe")
     try:
@@ -120,15 +136,40 @@ def load_provider() -> tuple[str, str, list[ProviderSkill]]:
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise ProviderError(f"cannot read provider declaration: {exc}") from exc
     provider = raw.get("provider") if isinstance(raw, dict) else None
+    if not isinstance(raw, dict) or raw.get("schema_version") != 6:
+        raise ProviderError("unsupported provider declaration")
     if not isinstance(provider, dict):
         raise ProviderError("provider declaration needs a provider object")
     repository = provider.get("repository")
     version = provider.get("version")
+    resolved_commit = provider.get("resolved_commit")
+    tag_object = provider.get("tag_object")
+    upstream_tree = provider.get("upstream_tree")
+    snapshot = provider.get("snapshot")
+    license_info = provider.get("license")
     skills = provider.get("skills")
     if not isinstance(repository, str) or repository.count("/") != 1:
         raise ProviderError("provider repository must use owner/name form")
     if not isinstance(version, str) or not version:
-        raise ProviderError("provider version must be a non-empty immutable ref")
+        raise ProviderError("provider version must be a non-empty pinned tag")
+    if not is_sha(resolved_commit, 40):
+        raise ProviderError("provider resolved commit must be a 40-character Git object ID")
+    if not is_sha(tag_object, 40) or not is_sha(upstream_tree, 40):
+        raise ProviderError("provider tag and tree provenance must use 40-character Git object IDs")
+    if not isinstance(snapshot, dict) or set(snapshot) != {"path", "sha256"}:
+        raise ProviderError("provider snapshot declaration is incomplete")
+    snapshot_root = package_path(snapshot.get("path"), "provider snapshot path")
+    snapshot_sha256 = snapshot.get("sha256")
+    if not is_sha(snapshot_sha256, 64):
+        raise ProviderError("provider snapshot checksum must be a SHA-256 digest")
+    if not isinstance(license_info, dict) or set(license_info) != {"name", "path", "sha256"}:
+        raise ProviderError("provider license declaration is incomplete")
+    if license_info.get("name") != "MIT":
+        raise ProviderError("provider snapshot must declare its MIT license")
+    license_path = package_path(license_info.get("path"), "provider license path")
+    license_sha256 = license_info.get("sha256")
+    if not is_sha(license_sha256, 64):
+        raise ProviderError("provider license checksum must be a SHA-256 digest")
     if not isinstance(skills, list):
         raise ProviderError("provider skills must be an array")
     hosts = raw.get("hosts")
@@ -190,7 +231,16 @@ def load_provider() -> tuple[str, str, list[ProviderSkill]]:
         result.append(ProviderSkill(name, path, invocation, adapter_name, upstream_body_sha256))
     if len({skill.name for skill in result}) != len(result):
         raise ProviderError("provider skill names must be unique")
-    return repository, version, result
+    return Provider(
+        repository,
+        version,
+        resolved_commit,
+        snapshot_root,
+        snapshot_sha256,
+        license_path,
+        license_sha256,
+        tuple(result),
+    )
 
 
 def validate_root(raw: Path) -> Path:
@@ -301,25 +351,13 @@ def adapter_plan(
     if any(frontmatter.count(line) != 1 for line in required_source):
         raise ProviderError(f"provider skill {skill.name} has incompatible source metadata")
 
-    body = original_skill[body_start:]
-    recognized_adapter = next(
-        (candidate for candidate in (WAYFINDER_LOCAL_MODE, WAYFINDER_LOCAL_MODE_LEGACY) if body.startswith(candidate)),
-        None,
-    )
-    if recognized_adapter is not None:
-        upstream_body = body[len(recognized_adapter) :]
-        desired_body = body
-        if recognized_adapter != WAYFINDER_LOCAL_MODE:
-            desired_body = WAYFINDER_LOCAL_MODE + upstream_body
-    else:
-        if WAYFINDER_ADAPTER_BEGIN in body or WAYFINDER_ADAPTER_END in body:
-            raise ProviderError(f"provider skill {skill.name} has unexpected local-mode adapter markers")
-        upstream_body = body
-        desired_body = WAYFINDER_LOCAL_MODE + body
+    upstream_body = original_skill[body_start:]
+    if WAYFINDER_ADAPTER_BEGIN in upstream_body or WAYFINDER_ADAPTER_END in upstream_body:
+        raise ProviderError(f"provider skill {skill.name} has unexpected local-mode adapter markers")
     if sha256(upstream_body).hexdigest() != skill.upstream_body_sha256:
         raise ProviderError(f"provider skill {skill.name} has an unexpected pinned method body")
 
-    desired_skill = original_skill[:body_start] + desired_body
+    desired_skill = original_skill[:body_start] + WAYFINDER_LOCAL_MODE + upstream_body
     replacements = (
         (
             skill_path,
@@ -366,17 +404,12 @@ def adapter_plan(
         original = path.read_bytes()
         desired = desired_skill if path == skill_path else original
         for upstream_line, adapted_line in rules:
-            upstream_count = desired.count(upstream_line)
-            adapted_count = desired.count(adapted_line)
-            if adapted_count == 1 and upstream_count == 0:
-                continue
-            if upstream_count == 1 and adapted_count == 0:
-                desired = desired.replace(upstream_line, adapted_line, 1)
-                continue
-            raise ProviderError(
-                f"provider skill {skill.name} has unexpected invocation metadata in "
-                f"{path.relative_to(directory)}"
-            )
+            if desired.count(upstream_line) != 1 or adapted_line in desired:
+                raise ProviderError(
+                    f"provider skill {skill.name} has unexpected invocation metadata in "
+                    f"{path.relative_to(directory)}"
+                )
+            desired = desired.replace(upstream_line, adapted_line, 1)
         plan.append((path, original, desired))
     return plan
 
@@ -429,46 +462,14 @@ def implicit_invocation_adapter_plan(
     )
     for path, upstream_line, adapted_line in replacements:
         original = path.read_bytes()
-        upstream_count = original.count(upstream_line)
-        adapted_count = original.count(adapted_line)
-        if adapted_count == 1 and upstream_count == 0:
-            desired = original
-        elif upstream_count == 1 and adapted_count == 0:
-            desired = original.replace(upstream_line, adapted_line, 1)
-        else:
+        if original.count(upstream_line) != 1 or adapted_line in original:
             raise ProviderError(
                 f"provider skill {skill.name} has unexpected invocation metadata in "
                 f"{path.relative_to(directory)}"
             )
+        desired = original.replace(upstream_line, adapted_line, 1)
         plan.append((path, original, desired))
     return plan
-
-
-def adapter_state(root: Path, skill: ProviderSkill, repository: str, version: str) -> str:
-    if not skill.adapter:
-        return "not-declared"
-    try:
-        plan = adapter_plan(root, skill, repository, version)
-    except (OSError, ProviderError):
-        return "incompatible"
-    return "ready" if all(original == desired for _path, original, desired in plan) else "needed"
-
-
-def atomic_write(path: Path, data: bytes, mode: int) -> None:
-    temporary_name: str | None = None
-    try:
-        with tempfile.NamedTemporaryFile(dir=path.parent, prefix=f".{path.name}.", delete=False) as handle:
-            temporary_name = handle.name
-            handle.write(data)
-            handle.flush()
-            os.fsync(handle.fileno())
-        temporary = Path(temporary_name)
-        temporary.chmod(mode)
-        os.replace(temporary, path)
-        temporary_name = None
-    finally:
-        if temporary_name is not None:
-            Path(temporary_name).unlink(missing_ok=True)
 
 
 def apply_adapter(
@@ -476,213 +477,180 @@ def apply_adapter(
     skill: ProviderSkill,
     repository: str,
     version: str,
-    dry_run: bool = False,
 ) -> bool:
     plan = adapter_plan(root, skill, repository, version)
     changed = [(path, original, desired) for path, original, desired in plan if original != desired]
-    if not changed or dry_run:
-        return bool(changed)
-
-    written: list[tuple[Path, bytes, int]] = []
+    if not changed:
+        return False
     try:
-        for path, original, desired in changed:
-            mode = path.stat().st_mode & 0o777
-            atomic_write(path, desired, mode)
-            written.append((path, original, mode))
+        for path, _original, desired in changed:
+            path.write_bytes(desired)
     except OSError as exc:
-        rollback_errors: list[str] = []
-        for path, original, mode in reversed(written):
-            try:
-                atomic_write(path, original, mode)
-            except OSError as rollback_exc:
-                rollback_errors.append(f"{path}: {rollback_exc}")
-        detail = f": rollback failed for {', '.join(rollback_errors)}" if rollback_errors else ""
-        raise ProviderError(f"cannot apply Agentic Workflow adapter for {skill.name}: {exc}{detail}") from exc
+        raise ProviderError(f"cannot apply Agentic Workflow adapter for {skill.name}: {exc}") from exc
     return True
 
 
-def stage_and_project_missing(
-    root: Path,
-    repository: str,
-    version: str,
-    missing: list[ProviderSkill],
-    gh: str,
-) -> None:
-    with tempfile.TemporaryDirectory(prefix=".ai-workflow-providers-", dir=root) as temporary:
-        staging_root = Path(temporary)
-        staged_skills = staging_root / ".agents" / "skills"
-        staged_skills.mkdir(parents=True)
+def validate_snapshot(provider: Provider) -> None:
+    if provider.license_path.is_symlink() or not provider.license_path.is_file():
+        raise ProviderError("bundled provider license is missing or unsafe")
+    license_bytes = provider.license_path.read_bytes()
+    if sha256(license_bytes).hexdigest() != provider.license_sha256 or b"MIT License" not in license_bytes:
+        raise ProviderError("bundled provider license differs from the declaration")
+    expected = {skill.name for skill in provider.skills}
+    if provider.snapshot_root.is_symlink() or not provider.snapshot_root.is_dir():
+        raise ProviderError("bundled provider snapshot is missing or unsafe")
+    actual = {path.name for path in provider.snapshot_root.iterdir()}
+    if actual != expected:
+        raise ProviderError("bundled provider inventory differs from the declaration")
+    try:
+        digest = tree_digest(provider.snapshot_root)
+        for skill in provider.skills:
+            validate_local_references(provider.snapshot_root / skill.name)
+    except SnapshotTreeError as exc:
+        raise ProviderError(str(exc)) from exc
+    if digest != provider.snapshot_sha256:
+        raise ProviderError("bundled provider snapshot checksum differs from the declaration")
 
+
+def prepare_staged_projection(staging_root: Path, provider: Provider) -> Path:
+    validate_snapshot(provider)
+    staged_skills = staging_root / ".agents" / "skills"
+    staged_skills.mkdir(parents=True)
+    for skill in provider.skills:
+        shutil.copytree(provider.snapshot_root / skill.name, staged_skills / skill.name)
+    for skill in provider.skills:
+        if skill.adapter:
+            apply_adapter(
+                staging_root,
+                skill,
+                provider.repository,
+                provider.version,
+            )
+        validate_staged_skill(
+            staging_root,
+            skill,
+            provider.repository,
+            provider.version,
+        )
+    return staged_skills
+
+
+def projection_state(root: Path, staged_skills: Path, skill: ProviderSkill) -> str:
+    state = destination_state(root, skill.name)
+    if state == "missing":
+        return "missing"
+    if state != "present":
+        return "conflict"
+    try:
+        matches = tree_digest(root / ".agents" / "skills" / skill.name) == tree_digest(
+            staged_skills / skill.name
+        )
+    except (OSError, SnapshotTreeError):
+        return "conflict"
+    return "ready" if matches else "conflict"
+
+
+def project_missing(root: Path, staged_skills: Path, missing: list[ProviderSkill]) -> None:
+    destinations = root / ".agents" / "skills"
+    if destinations.is_symlink() or (destinations.exists() and not destinations.is_dir()):
+        raise ProviderError("optional provider destination became unsafe during staging")
+    for skill in missing:
+        if destination_state(root, skill.name) != "missing":
+            raise ProviderError(f"provider destination appeared during staging: {skill.name}")
+    destinations.mkdir(parents=True, exist_ok=True)
+
+    moved: list[tuple[Path, Path]] = []
+    try:
         for skill in missing:
-            command = [
-                gh,
-                "skill",
-                "install",
-                repository,
-                skill.path,
-                "--pin",
-                version,
-                "--dir",
-                str(staged_skills),
-            ]
-            result = subprocess.run(command, cwd=root, text=True, capture_output=True, errors="backslashreplace")
-            if result.returncode != 0:
-                detail = " ".join(part.strip() for part in (result.stdout, result.stderr) if part.strip())
-                raise ProviderError(f"gh skill install failed for {skill.name}: {detail}")
-            if destination_state(staging_root, skill.name) != "present":
-                raise ProviderError(f"gh skill install omitted declared provider skill {skill.name}")
-
-        expected = {skill.name for skill in missing}
-        actual = {path.name for path in staged_skills.iterdir()}
-        if actual != expected:
-            missing_names = sorted(expected - actual)
-            extra_names = sorted(actual - expected)
-            detail = []
-            if missing_names:
-                detail.append(f"missing {', '.join(missing_names)}")
-            if extra_names:
-                detail.append(f"unexpected {', '.join(extra_names)}")
-            raise ProviderError("staged provider inventory differs from the declaration: " + "; ".join(detail))
-
-        for skill in missing:
-            if skill.adapter:
-                apply_adapter(staging_root, skill, repository, version)
-            validate_staged_skill(staging_root, skill, repository, version)
-
-        destinations = root / ".agents" / "skills"
-        if destinations.is_symlink() or (destinations.exists() and not destinations.is_dir()):
-            raise ProviderError("optional provider destination became unsafe during staging")
-        for skill in missing:
-            if destination_state(root, skill.name) != "missing":
-                raise ProviderError(f"provider destination appeared during staging: {skill.name}")
-        destinations.mkdir(parents=True, exist_ok=True)
-
-        moved: list[tuple[Path, Path]] = []
-        try:
-            for skill in missing:
-                source = staged_skills / skill.name
-                destination = destinations / skill.name
-                source.replace(destination)
-                moved.append((source, destination))
-        except OSError as exc:
-            rollback_errors: list[str] = []
-            for source, destination in reversed(moved):
-                try:
-                    destination.replace(source)
-                except OSError as rollback_exc:
-                    rollback_errors.append(f"{destination}: {rollback_exc}")
-            detail = f"; rollback failed for {', '.join(rollback_errors)}" if rollback_errors else ""
-            raise ProviderError(f"cannot project staged provider skills: {exc}{detail}") from exc
-
-        for skill in missing:
-            print(f"installed optional provider skill {skill.name} from {repository}@{version}")
+            source = staged_skills / skill.name
+            destination = destinations / skill.name
+            source.replace(destination)
+            moved.append((source, destination))
+    except OSError as exc:
+        rollback_errors: list[str] = []
+        for source, destination in reversed(moved):
+            try:
+                destination.replace(source)
+            except OSError as rollback_exc:
+                rollback_errors.append(f"{destination}: {rollback_exc}")
+        detail = f"; rollback failed for {', '.join(rollback_errors)}" if rollback_errors else ""
+        raise ProviderError(f"cannot project bundled provider skills: {exc}{detail}") from exc
 
 
 def status(root: Path) -> int:
-    repository, version, skills = load_provider()
-    present = 0
-    missing = 0
-    incompatible = 0
-    adapter_ready = 0
-    adapter_needed = 0
-    adapter_incompatible = 0
-    for skill in skills:
-        state = destination_state(root, skill.name)
-        if state == "present":
-            present += 1
-        elif state == "missing":
-            missing += 1
-        else:
-            incompatible += 1
-        if skill.adapter and state == "present":
-            adaptation = adapter_state(root, skill, repository, version)
-            if adaptation == "ready":
-                adapter_ready += 1
-            elif adaptation == "needed":
-                adapter_needed += 1
-            else:
-                adapter_incompatible += 1
-    print(f"Optional provider: {repository}@{version}")
-    print(f"Optional provider skills: {present} present, {missing} missing, {incompatible} preserved incompatible")
+    provider = load_provider()
+    with tempfile.TemporaryDirectory(prefix="ai-workflow-provider-status-") as temporary:
+        staged_skills = prepare_staged_projection(Path(temporary), provider)
+        states = {
+            skill.name: projection_state(root, staged_skills, skill)
+            for skill in provider.skills
+        }
+    ready = sum(state == "ready" for state in states.values())
+    missing = sum(state == "missing" for state in states.values())
+    conflicts = sum(state == "conflict" for state in states.values())
+    print(
+        f"Optional provider: {provider.repository}@{provider.version} "
+        f"({provider.resolved_commit})"
+    )
+    print(f"Optional provider skills: {ready} ready, {missing} missing, {conflicts} conflicts")
     if missing:
-        print("INFO: Missing provider skills do not block core routing; rerun install to offer installation.")
-    if incompatible:
-        print("WARNING: Same-named unknown provider content was preserved.")
-    if adapter_ready or adapter_needed or adapter_incompatible:
-        print(
-            "Optional provider Agentic Workflow adapters: "
-            f"{adapter_ready} ready, {adapter_needed} pending, {adapter_incompatible} incompatible"
-        )
-    if adapter_needed:
-        print("INFO: Rerun install or update to apply pending provider adapters.")
-    if adapter_incompatible:
-        print("WARNING: Unexpected provider content prevents a declared Agentic Workflow adapter.")
-    return 1 if missing or incompatible or adapter_needed or adapter_incompatible else 0
+        print("INFO: Rerun install or update to project missing skills from the bundled snapshot.")
+    if conflicts:
+        names = ", ".join(name for name, state in states.items() if state == "conflict")
+        print(f"WARNING: Differing same-named provider content was preserved: {names}")
+    return 1 if missing or conflicts else 0
 
 
 def install(root: Path, dry_run: bool) -> int:
-    repository, version, skills = load_provider()
-    missing: list[ProviderSkill] = []
-    for skill in skills:
-        state = destination_state(root, skill.name)
-        if state == "missing":
-            missing.append(skill)
-        else:
-            print(f"preserve optional provider skill {skill.name}: {state}")
-    if dry_run:
+    provider = load_provider()
+    temporary_arguments = {"prefix": ".ai-workflow-providers-"}
+    if not dry_run:
+        temporary_arguments["dir"] = root
+    with tempfile.TemporaryDirectory(**temporary_arguments) as temporary:
+        staged_skills = prepare_staged_projection(Path(temporary), provider)
+        states = {
+            skill.name: projection_state(root, staged_skills, skill)
+            for skill in provider.skills
+        }
+        conflicts = [skill for skill in provider.skills if states[skill.name] == "conflict"]
+        missing = [skill for skill in provider.skills if states[skill.name] == "missing"]
+        ready = [skill for skill in provider.skills if states[skill.name] == "ready"]
+
+        for skill in ready:
+            print(f"reuse exact optional provider skill {skill.name}")
+        for skill in conflicts:
+            print(f"preserve differing optional provider skill {skill.name}: conflict", file=sys.stderr)
+        if conflicts:
+            if missing:
+                print(
+                    "WARNING: No bundled provider skills were installed because the declared set "
+                    "contains conflicts.",
+                    file=sys.stderr,
+                )
+            return 1
+        if dry_run:
+            for skill in missing:
+                print(f"would install bundled optional provider skill {skill.name}")
+            return 0
+
+        project_missing(root, staged_skills, missing)
         for skill in missing:
-            print(f"would offer optional provider installation: {skill.name}")
-        for skill in skills:
-            if skill.adapter and destination_state(root, skill.name) == "present":
-                state = adapter_state(root, skill, repository, version)
-                if state == "needed":
-                    print(f"would apply Agentic Workflow adapter: {skill.name}")
-                elif state == "incompatible":
-                    print(f"WARNING: Agentic Workflow adapter is incompatible: {skill.name}", file=sys.stderr)
-        return 0
-
-    failed = False
-    if missing:
-        gh = shutil.which("gh")
-        if gh is None:
             print(
-                "WARNING: GitHub CLI with `gh skill` is unavailable; optional providers were skipped.",
-                file=sys.stderr,
+                f"installed optional provider skill {skill.name} from bundled "
+                f"{provider.repository}@{provider.version} ({provider.resolved_commit})"
             )
-            failed = True
-        else:
-            try:
-                stage_and_project_missing(root, repository, version, missing, gh)
-            except ProviderError as exc:
-                print(f"WARNING: optional provider projection failed: {exc}", file=sys.stderr)
-                failed = True
 
-    for skill in skills:
-        if not skill.adapter or destination_state(root, skill.name) != "present":
-            continue
-        try:
-            changed = apply_adapter(root, skill, repository, version)
-        except (OSError, ProviderError) as exc:
-            print(f"WARNING: optional provider adapter failed for {skill.name}: {exc}", file=sys.stderr)
-            failed = True
-        else:
-            action = "applied" if changed else "verified"
-            print(f"{action} Agentic Workflow adapter for {skill.name}")
-
-    if not failed:
-        print("OK: Optional provider skills are ready or conservatively preserved.")
-    return 1 if failed else 0
+    print("OK: Optional provider skills match the bundled projection.")
+    return 0
 
 
 def remove(root: Path, dry_run: bool) -> int:
-    repository, version, skills = load_provider()
+    provider = load_provider()
     present: list[str] = []
-    for skill in skills:
+    for skill in provider.skills:
         state = destination_state(root, skill.name)
         if state == "missing":
             continue
-        if state == "present" and skill.adapter:
-            state = adapter_state(root, skill, repository, version)
         present.append(f"{skill.name} ({state})")
     prefix = "would preserve" if dry_run else "preserved"
     if present:

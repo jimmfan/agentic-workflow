@@ -1,6 +1,6 @@
 # 0008: Require supported runtime and tool floors
 
-- Status: accepted
+- Status: accepted; provider-tool prerequisite superseded by ADR-0018
 - Date: 2026-08-13
 
 ## Context
@@ -33,15 +33,14 @@ Require Python 3.11 or newer for every executable framework entry point. Treat
 not an exact pin; development and use may run on newer supported Python 3
 releases.
 
-Treat a GitHub CLI that exposes the declared `gh skill install` interface as an
-optional provider prerequisite. Its absence never blocks the core.
+Treat GitHub CLI as a maintainer-only provider snapshot refresh prerequisite,
+not a runtime or target-adoption prerequisite. Runtime provider projection is
+offline under ADR-0018.
 
 Every entry point must perform the Python version check before network or target
 filesystem work and return an actionable ASCII error. User documentation must
 distinguish interpreter installation from framework installation and explain
-how to verify which interpreter a host or container selects. Provider tooling is
-feature-detected by the best-effort install attempt rather than maintained as a
-second numeric compatibility gate.
+how to verify which interpreter a host or container selects.
 
 ## Consequences
 

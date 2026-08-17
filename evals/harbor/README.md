@@ -68,9 +68,11 @@ Both infrastructure smokes passed. The B smoke proved that the task image lacks
 the new provider gate after `circuit_eval` checkpoint 1 completed; its raw
 artifacts remain under the ignored `evals/harbor/jobs/` tree.
 
-Do not run `slopcodebench-b.yaml` in the current environment. The B agent now
-fails closed unless all 14 declared provider skills are present and the
-Agentic Workflow core/provider trees contain no `*.py` files. Before resuming,
-provide the documented `gh skill` capability inside the Harbor task environment
-and confirm this gate with an install-only run. The host also needs `uv` for the
-SlopCodeBench dataset aggregate metric.
+That result is historical evidence for the runtime dependency removed by
+ADR-0018. New package archives carry the exact 14-skill projection, so Harbor no
+longer needs `gh skill`, GitHub authentication, or provider-network access for
+task setup. Before resuming `slopcodebench-b.yaml`, run a new install-only smoke
+to verify the archive reaches `14 ready, 0 missing, 0 conflicts` and records
+`network_provider_install_attempted=false`. The host still needs `uv` for the
+SlopCodeBench dataset aggregate metric. No benchmark was rerun as part of the
+vendoring implementation.

@@ -25,8 +25,8 @@ external issue-state-machine operations and are not normal automatic routes.
 Declare To Spec, To Tickets, and Implement implicit on Codex and GitHub Copilot
 and unavailable on Claude Code. Keep Setup, Teach, and Triage user-only.
 
-Apply a narrow `implicit-invocation-v1` adapter on every fresh provider download
-and later install or update reconciliation. For each declared skill, require
+Apply a narrow `implicit-invocation-v1` adapter to every release-local staged
+projection. For each declared skill, require
 pinned source metadata and exactly one recognized upstream or already-adapted
 activation value in both host metadata files. Rewrite
 `disable-model-invocation: true` to `false` and
@@ -43,8 +43,9 @@ publication, commits, external mutation, or destructive work.
 
 Users can request a specification, tickets, or implementation in ordinary
 language and receive the configured provider method without a manual command or
-post-download edit. Re-running installation or update is idempotent and repairs
-an exact upstream activation state after providers are downloaded again.
+post-install edit. Re-running installation or update is idempotent for an exact
+effective projection; differing target bytes are preserved as conflicts under
+ADR-0018.
 
 The lifecycle now supports a second intentionally narrow adapter shape in
 addition to Wayfinder's local-state adapter. This is justified by three concrete

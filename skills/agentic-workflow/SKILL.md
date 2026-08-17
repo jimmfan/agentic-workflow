@@ -70,18 +70,19 @@ destination. `legacy-active.md` preserves historical bytes only; current
 workflows never create, read, or update it. Never recreate
 `.ai-workflow/state/README.md`.
 
-After core success, lifecycle makes a best-effort provider install for missing
-declared skills with `gh skill install`. GitHub CLI absence, authentication,
-network, or provider failure is a warning and never rolls back or invalidates
-the core. The complete missing declared set is staged, validated, and projected
-together, so a failed attempt exposes none of that set. Update does not replace
-existing provider directories. It may apply the declared Wayfinder local-mode
-adapter only when pinned source metadata, the method-body fingerprint, adapter
-markers, and exact activation metadata are recognized; unexpected bytes are
-preserved and reported without a partial write.
-Provider status is incomplete until every declared skill is usable. Remove
-explains that provider cleanup is manual because v0 keeps no provider ownership
-database.
+After core success, lifecycle makes a best-effort offline projection from the
+release's bundled, checksummed provider snapshot. It stages all 14 declared
+skills, applies the Wayfinder local-mode and routed implicit-invocation adapters,
+validates the effective projection, and installs missing directories together.
+Runtime provider setup needs no GitHub CLI, Git, npm, npx, authentication, or
+network access.
+
+An exact existing directory is reused. Any differing or unsafe same-named
+directory is preserved as a conflict and blocks all missing provider writes;
+update never overwrites or automatically upgrades it. Provider failure remains
+a warning and never rolls back or invalidates the core. Status is incomplete
+until all 14 effective directories match. Remove preserves every provider
+directory because v0 keeps no provider ownership database.
 
 `status` is read-only and reports core `healthy`, `repairable`, or
 `unsafe/conflict`. Missing optional state files and providers are normal. A

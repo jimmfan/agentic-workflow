@@ -76,6 +76,9 @@ failure does not invalidate the framework installation. Normal runtime and inner
 status checks remain repository-local; the public bootstrap uses HTTPS to fetch
 the requested framework package.
 
+ADR-0018 supersedes the first sentence above: provider projection is now sourced
+from the framework release and needs no GitHub CLI or network access at runtime.
+
 Provider origin and installed-hash history is repository-local ownership
 evidence, not a tamper-evident authority. A deliberate coordinated state forgery
 can reclassify a provider directory or its bytes. In ordinary operation,

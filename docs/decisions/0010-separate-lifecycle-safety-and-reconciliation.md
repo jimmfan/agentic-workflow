@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-14
 - Supersedes: ADR-0002, provider lifecycle portions of ADR-0007, ADR-0009
-- Amended by: ADR-0014
+- Amended by: ADR-0014 and ADR-0018
 
 ## Context
 
@@ -107,3 +107,8 @@ ADR-0014 records that concrete failure and amends item 7: the missing declared
 provider set is now staged and projected completely or not at all, while the
 no-ownership, preserve-existing, manual-cleanup, and core-success boundaries
 remain unchanged.
+
+ADR-0018 further amends item 7 by sourcing the exact projection from the release
+instead of the network. Exact effective directories are reused; any differing
+directory is preserved as a conflict and blocks the missing set. No target
+ownership database or automatic removal is introduced.

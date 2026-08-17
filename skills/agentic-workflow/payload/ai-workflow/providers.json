@@ -45,8 +45,18 @@
     }
   },
   "provider": {
+    "license": {
+      "name": "MIT",
+      "path": "provider-snapshots/matt-pocock-skills/LICENSE",
+      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+    },
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
+    "resolved_commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "snapshot": {
+      "path": "provider-snapshots/matt-pocock-skills/skills",
+      "sha256": "42d7a91dbb898c92fa81354a0aa4547e33e3adf5136c2e3ea0c5a46e74aafcbc"
+    },
     "skills": [
       {
         "invocation": {
@@ -218,7 +228,9 @@
         ]
       }
     ],
+    "tag_object": "835450ef244ab7335f75d95b83e7d979eae22a6d",
+    "upstream_tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
     "version": "v1.2.3"
   },
-  "schema_version": 5
+  "schema_version": 6
 }

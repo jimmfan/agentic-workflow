@@ -78,15 +78,21 @@ The suite prioritizes behavior that matters before 1.0:
   partial mutation;
 - symlink/root/archive traversal boundaries remain enforced;
 - provider failure leaves a successful core install usable;
-- fresh install projects every declared provider skill, update completes an
-  existing partial projection, and a failed or incomplete staging attempt
-  commits none of the missing declared set;
-- the Wayfinder local-mode adapter applies after fresh provider installation,
-  updates exact upstream content idempotently, preserves unrelated provider
-  bytes, rejects changed method bodies or metadata without a partial write,
-  distinguishes adapted content during remove, and keeps status read-only;
+- a fresh bootstrap archive projects all 14 declared provider skills with an
+  empty `PATH`, proving runtime setup does not require GitHub CLI, Git, npm,
+  npx, authentication, or network access;
+- the bundled provider checksum, exact inventory, resolved commit provenance,
+  per-skill source metadata, local-reference closure, and MIT license are bound
+  to the exact reviewed release identity;
+- the installed source-checkout provider declaration must match the packaged
+  declaration, while the maintainer refresh command refuses package-local output;
+- update completes an exact partial projection, exact existing directories are
+  reused, and any modified, extra-file, malformed, or older same-named
+  directory is preserved as a conflict that blocks every missing provider write;
+- the Wayfinder local-mode adapter applies in release-local staging, while
+  changed target bytes are preserved and status remains read-only;
 - the implicit-invocation adapter automatically exposes To Spec, To Tickets,
-  and Implement after fresh download and later reconciliation, is idempotent,
+  and Implement from the bundled projection, is idempotent,
   keeps Setup, Teach, and Triage user-only, and rejects unexpected activation
   metadata without a partial provider projection;
 - ASCII output remains writable on a cp1252 console; and
@@ -114,8 +120,9 @@ If the gate fails:
 2. for stale metadata, inspect payload inventory, mapping, and version changes
    before refreshing;
 3. for a lifecycle fixture, rerun that named `unittest` from the source root;
-4. for a live provider issue, verify `gh skill install --help` and authentication
-   in the environment that owns the target; and
+4. for a release snapshot refresh issue, run the maintainer command in a
+   networked environment with GitHub CLI authentication; ordinary target
+   install/update must remain fully offline; and
 5. never delete `.ai-workflow-state/` or unknown external content to make a test
    pass.
 

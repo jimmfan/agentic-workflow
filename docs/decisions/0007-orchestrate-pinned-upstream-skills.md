@@ -1,6 +1,6 @@
 # ADR-0007: Orchestrate pinned upstream skills
 
-- Status: partially superseded by ADR-0010, ADR-0011, ADR-0012, and ADR-0013
+- Status: partially superseded by ADR-0010, ADR-0011, ADR-0012, ADR-0013, ADR-0017, and ADR-0018
 - Date: 2026-08-13
 
 ## Context
@@ -146,6 +146,10 @@ and U#/D#/T# lifecycle authoritative over incompatible tracker mechanics.
 ADR-0017 further supersedes this ADR's invocation-policy conclusion for To Spec,
 To Tickets, and Implement. They are now implicitly invocable because the router
 selects them from normal intent; Setup, Teach, and Triage remain user-only.
+
+ADR-0018 supersedes this ADR's runtime acquisition conclusion. Releases now
+bundle the exact 14-skill projection at the resolved commit; target lifecycle is
+offline and preserves every differing same-named directory as a conflict.
 
 ## Alternatives considered
 

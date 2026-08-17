@@ -156,16 +156,19 @@ is sufficient for v0 and avoids a historical retirement database.
 ## Optional providers
 
 `.ai-workflow/providers.json` maps routed capabilities to a reviewed upstream
-repository and pin. The framework may offer installation of a missing declared
-skill through `gh skill install`. All currently missing declared skills are
-installed into a temporary same-filesystem staging root, validated as the exact
-declared inventory, and projected together. A failure commits none of that
-missing set. Existing same-named content is preserved except for a narrowly
-declared Wayfinder adapter whose exact pinned method body, source metadata,
-activation values, and already-adapted form can be validated. Unexpected
-content is preserved and reported instead of being guessed at. A missing GitHub CLI, authentication
-failure, unavailable network, or provider installer error produces a warning
-and never invalidates a successful core operation.
+tag, resolved commit, tag object, upstream tree, MIT license, and checksummed
+snapshot. The release contains only the 14 declared skill directories, not the
+upstream repository. Runtime installation copies that snapshot into a temporary
+same-filesystem staging root, applies the declared adapters there, validates the
+complete effective projection, and moves all missing directories together. It
+does not require GitHub CLI, Git, npm, npx, authentication, or network access.
+
+An exact existing effective directory is reused without claiming ownership. A
+differing, malformed, older, independently installed, or locally modified
+same-named directory is preserved as a conflict. Any conflict blocks every
+missing directory in the declared set, so the router never receives a newly
+partial dependency graph. A projection or validation failure still never
+invalidates a successful core operation.
 
 The pinned Wayfinder provider retains its reasoning method and terminology. A
 clearly delimited local-mode section precedes the unchanged provider method and
@@ -180,14 +183,15 @@ routing and local storage; it does not rewrite the upstream method below the
 adapter. Claude remains unavailable because no native skill projection exists
 for that host.
 
-The framework keeps no provider state, installed-file hashes, provenance chain,
-quarantine store, staged upgrade engine, or automatic deletion behavior.
-Updates stage only the missing declared provider bodies as one projection set
-and reconcile the declared Wayfinder adapter when its exact provider shape is
-safe. Provider status is incomplete until every declared skill is
-usable. Removal preserves provider directories and tells the user that provider
-cleanup is manual. These constraints make providers optional capabilities
-instead of a second package manager.
+The framework keeps no target ownership database, installed-file history,
+quarantine store, automatic upgrade engine, or automatic deletion behavior.
+The snapshot checksum protects the release artifact; exact effective-tree
+comparison protects project-owned target bytes. Updates fill missing directories
+only when all present declarations match the current release. A release with a
+new provider snapshot therefore reports an old or modified target as a conflict
+instead of replacing it. Removal preserves provider directories and keeps
+cleanup manual. These constraints make providers optional capabilities instead
+of a second package manager.
 
 Capability routing and invocation policy remain distinct. An absent or
 user-only provider normally falls back to truthful host-native work. An exact

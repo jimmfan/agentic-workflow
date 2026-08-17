@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from hashlib import sha256
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -12,6 +13,8 @@ import stat
 import subprocess
 import sys
 from typing import Iterable, Mapping
+
+from provider_snapshot import SnapshotTreeError, tree_digest, validate_local_references
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
@@ -23,6 +26,16 @@ MANIFEST_SCHEMA = 6
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
 MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 INVOCATION_POLICIES = frozenset({"implicit", "user-only", "unavailable"})
+REVIEWED_PROVIDER = {
+    "name": "matt-pocock-skills",
+    "repository": "mattpocock/skills",
+    "version": "v1.2.3",
+    "resolved_commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "tag_object": "835450ef244ab7335f75d95b83e7d979eae22a6d",
+    "upstream_tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+    "snapshot_sha256": "42d7a91dbb898c92fa81354a0aa4547e33e3adf5136c2e3ea0c5a46e74aafcbc",
+    "license_sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5",
+}
 REQUIRED_PACKAGE_FILES = (
     "SKILL.md",
     "VERSION",
@@ -30,6 +43,8 @@ REQUIRED_PACKAGE_FILES = (
     "scripts/bootstrap.py",
     "scripts/lifecycle.py",
     "scripts/providers.py",
+    "scripts/provider_snapshot.py",
+    "scripts/refresh_provider_snapshot.py",
     "scripts/verify_package.py",
     "tests/behavior.py",
     "payload/VERSION",
@@ -76,6 +91,11 @@ def safe_relative(value: str) -> PurePosixPath:
         f"unsafe manifest path: {value!r}",
     )
     return path
+
+
+def package_path(value: object, label: str) -> Path:
+    require(isinstance(value, str), f"{label} must be a relative path")
+    return PACKAGE_ROOT.joinpath(*safe_relative(value).parts)
 
 
 def version() -> str:
@@ -224,7 +244,7 @@ def check_router_contract() -> None:
 def check_provider_declaration() -> None:
     path = PAYLOAD_ROOT / "ai-workflow" / "providers.json"
     raw = json.loads(path.read_text(encoding="utf-8"))
-    require(isinstance(raw, dict) and raw.get("schema_version") == 5, "unsupported provider declaration")
+    require(isinstance(raw, dict) and raw.get("schema_version") == 6, "unsupported provider declaration")
     provider = raw.get("provider")
     capabilities = raw.get("capabilities")
     hosts = raw.get("hosts")
@@ -241,6 +261,56 @@ def check_provider_declaration() -> None:
     require(
         isinstance(provider_version, str) and re.fullmatch(r"v\d+\.\d+\.\d+", provider_version) is not None,
         "provider version must be pinned",
+    )
+    for field in ("name", "repository", "version", "resolved_commit", "tag_object", "upstream_tree"):
+        require(
+            provider.get(field) == REVIEWED_PROVIDER[field],
+            f"provider {field} differs from the reviewed release identity",
+        )
+    for field in ("resolved_commit", "tag_object", "upstream_tree"):
+        require(
+            isinstance(provider.get(field), str)
+            and re.fullmatch(r"[0-9a-f]{40}", provider[field]) is not None,
+            f"provider {field} must be a full Git object ID",
+        )
+    snapshot = provider.get("snapshot")
+    require(
+        isinstance(snapshot, dict) and set(snapshot) == {"path", "sha256"},
+        "provider snapshot declaration is incomplete",
+    )
+    snapshot_root = package_path(snapshot.get("path"), "provider snapshot path")
+    require(
+        isinstance(snapshot.get("sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}", snapshot["sha256"]) is not None,
+        "provider snapshot checksum must be a SHA-256 digest",
+    )
+    require(
+        snapshot["sha256"] == REVIEWED_PROVIDER["snapshot_sha256"],
+        "provider snapshot checksum differs from the reviewed release identity",
+    )
+    license_info = provider.get("license")
+    require(
+        isinstance(license_info, dict)
+        and set(license_info) == {"name", "path", "sha256"}
+        and license_info.get("name") == "MIT",
+        "provider license declaration must identify MIT text",
+    )
+    license_path = package_path(license_info.get("path"), "provider license path")
+    require(license_path.is_file() and not license_path.is_symlink(), "bundled provider license is missing or unsafe")
+    license_text = license_path.read_text(encoding="utf-8")
+    require(
+        isinstance(license_info.get("sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}", license_info["sha256"]) is not None
+        and sha256(license_path.read_bytes()).hexdigest() == license_info["sha256"],
+        "bundled provider license checksum differs from the declaration",
+    )
+    require(
+        license_info["sha256"] == REVIEWED_PROVIDER["license_sha256"],
+        "provider license checksum differs from the reviewed release identity",
+    )
+    require(
+        "MIT License" in license_text and "Copyright (c) 2026 Matt Pocock" in license_text,
+        "bundled provider license text is incomplete",
     )
     host_names = set(hosts)
     require(all(isinstance(name, str) and name for name in host_names), "invalid provider host name")
@@ -292,6 +362,46 @@ def check_provider_declaration() -> None:
                 f"provider skill {name} adapter does not match supported host policies",
             )
     require(set(capabilities.values()) <= names, "capability points to an undeclared provider skill")
+    require(
+        snapshot_root.is_dir() and not snapshot_root.is_symlink(),
+        "bundled provider snapshot is missing or unsafe",
+    )
+    require(
+        {path.name for path in snapshot_root.iterdir()} == names,
+        "bundled provider inventory differs from the declaration",
+    )
+    require(
+        tree_digest(snapshot_root) == snapshot["sha256"],
+        "bundled provider snapshot checksum differs from the declaration",
+    )
+    for item in skills:
+        name = item["name"]
+        validate_local_references(snapshot_root / name)
+        skill_file = snapshot_root / name / "SKILL.md"
+        openai_file = snapshot_root / name / "agents" / "openai.yaml"
+        require(skill_file.is_file() and not skill_file.is_symlink(), f"bundled provider skill is missing: {name}")
+        require(openai_file.is_file() and not openai_file.is_symlink(), f"bundled Codex metadata is missing: {name}")
+        frontmatter = skill_file.read_text(encoding="utf-8").split("\n---\n", 1)[0]
+        for expected in (
+            f"name: {name}",
+            f"    github-path: {item['path']}",
+            f"    github-pinned: {provider_version}",
+            f"    github-ref: refs/tags/{provider_version}",
+            f"    github-repo: https://github.com/{repository}",
+        ):
+            require(expected in frontmatter.splitlines(), f"bundled provider metadata differs for {name}: {expected}")
+        require(
+            re.search(r"^    github-tree-sha: [0-9a-f]{40}$", frontmatter, re.MULTILINE) is not None,
+            f"bundled provider tree provenance is missing for {name}",
+        )
+    installed_declaration = REPOSITORY_ROOT / ".ai-workflow" / "providers.json"
+    if installed_declaration.exists():
+        require(
+            installed_declaration.is_file()
+            and not installed_declaration.is_symlink()
+            and installed_declaration.read_bytes() == path.read_bytes(),
+            "source and packaged provider declarations differ",
+        )
     wayfinder = next((item for item in skills if item.get("name") == "wayfinder"), None)
     require(
         isinstance(wayfinder, dict)
@@ -450,7 +560,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             run_tests()
         print("OK: Agentic Workflow package verification passed.")
         return 0
-    except (VerificationError, OSError, UnicodeError, json.JSONDecodeError) as exc:
+    except (VerificationError, SnapshotTreeError, OSError, UnicodeError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 

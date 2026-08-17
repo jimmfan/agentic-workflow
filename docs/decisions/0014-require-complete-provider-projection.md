@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-16
 - Amends: ADR-0010
-- Amended by: ADR-0015
+- Amended by: ADR-0015 and ADR-0018
 
 ## Context
 
@@ -71,3 +71,10 @@ or delete them on removal.
   methodology and duplicate provider ownership.
 - Restore the former checksum/provenance database: rejected because complete
   projection needs a staging boundary, not package-manager lifecycle state.
+
+## Later amendment
+
+ADR-0018 replaces network acquisition with a checksummed release-bundled
+snapshot and strengthens the complete-set preflight: every present declaration
+must exactly match the effective staged tree before any missing directory is
+added. The no-target-ownership and manual-removal boundaries remain unchanged.

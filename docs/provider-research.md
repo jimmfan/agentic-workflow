@@ -11,7 +11,8 @@ package manager.
 
 The declaration in
 `skills/agentic-workflow/payload/ai-workflow/providers.json` currently names
-`mattpocock/skills` at immutable tag `v1.2.3`. It maps planning, learning,
+`mattpocock/skills` at tag `v1.2.3`, resolved and recorded as commit
+`6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`. It maps planning, learning,
 research, specification, tickets, implementation, TDD, and Code Review
 capabilities to upstream skills while retaining provider-native names,
 invocation policies, and configuration requirements.
@@ -106,17 +107,17 @@ ADR-0015.
 
 The pinned upstream Wayfinder metadata disables model invocation in `SKILL.md`
 and `agents/openai.yaml`, while its discovery descriptions retain the upstream
-“huge, more than one session” threshold. After a fresh install or during a later
-lifecycle update, `providers.py` applies the declared Wayfinder adapter. It
+“huge, more than one session” threshold. During release-local staging,
+`providers.py` applies the declared Wayfinder adapter. It
 inserts an authoritative local-mode section before the unchanged method body
 and changes the four known invocation/selection scalars. It requires the pinned
 method-body fingerprint, source metadata, and exact upstream or already-adapted
 values; unknown or modified content is preserved without a partial write. This
-makes the policy and configured local mechanics durable without vendoring or
-rewriting the upstream method.
+makes the policy and configured local mechanics durable without rewriting the
+upstream method.
 
 To Spec, To Tickets, and Implement use the narrower
-`implicit-invocation-v1` adapter. Fresh installation and later updates accept
+`implicit-invocation-v1` adapter. Release-local staging accepts
 exactly one upstream or already-adapted activation scalar in each host metadata
 file, rewrite upstream user-only values to implicit values, and reject missing,
 duplicated, or unexpected values before projecting a partial provider set. The
@@ -125,26 +126,26 @@ body. Setup, Teach, and Triage retain their upstream user-only metadata.
 
 ## Installation policy
 
-After core reconciliation succeeds, `providers.py` inspects declared destination
-names. It stages every currently missing exact path with `gh skill install` at
-the reviewed repository pin, validates the complete missing inventory and host
-metadata, applies declared adapters, then projects the staged directories
-together. Existing same-named directories, including incompatible or partially
-installed ones, are preserved.
+After core reconciliation succeeds, `providers.py` stages the bundled 14-skill
+snapshot, validates its declared checksum, inventory, source metadata, and MIT
+license, applies the declared adapters, and compares each effective directory
+with the target. The snapshot records the annotated tag object, resolved commit,
+upstream root tree, and GitHub-injected per-skill tree metadata. Runtime setup is
+fully offline and requires no provider installer or package manager.
 
-Provider installation is best-effort. Missing GitHub CLI support, authentication,
-network access, or an upstream install failure yields a warning while the core
-router and local workflows remain ready. A failed attempt commits none of the
-missing set. Update retries the missing set and safely reconciles declared
-provider adapters on present directories. Status returns an incomplete provider
-result while any declared skill is missing, incompatible, or awaiting an
-adapter; lifecycle continues to report core health separately.
+Exact existing directories are reused without an ownership claim. A differing,
+malformed, independently installed, locally modified, or older directory is
+preserved as a conflict. If any conflict exists, no missing provider directory
+is added. Otherwise all missing directories move from same-filesystem staging as
+one small transaction. Status performs the same comparison without target
+writes; lifecycle continues to report core health separately.
 
-The framework records no provider hashes, provenance history, origin states,
-quarantine copies, or update transaction. Remove never deletes provider
-directories automatically. A user who wants provider cleanup inspects and
-removes the corresponding `.agents/skills/<name>` path manually. This deliberate
-limitation prevents v0 lifecycle code from claiming ownership it cannot prove.
+The framework records no target origin states, installed-file history,
+quarantine copies, or automatic upgrade/removal transaction. Remove never
+deletes provider directories automatically. A user who wants provider cleanup
+inspects and removes the corresponding `.agents/skills/<name>` path manually.
+This deliberate limitation prevents v0 lifecycle code from claiming ownership
+it cannot prove.
 
 ## Selection and fallback
 
@@ -167,21 +168,30 @@ broader external scope.
 ## Upgrade evaluation
 
 A provider pin change is a source release decision, not an automatic target
-upgrade. Before changing it:
+upgrade. Generate a candidate outside the package with
+`python3 skills/agentic-workflow/scripts/refresh_provider_snapshot.py <output>`;
+the maintainer-only command verifies that the annotated tag still resolves to
+the declared commit, that the root and each installed skill tree belong to that
+commit, and that referenced local resources stay within each selected skill
+directory. It refuses to write a candidate inside the package.
+Before replacing the checked-in snapshot:
 
 1. inspect the maintained upstream release and native metadata;
 2. compare the declared capability, invocation, and configuration contract;
 3. verify that framework routing does not duplicate provider-owned stages;
-4. run the repository release gate and temporary-project provider smoke tests;
-5. document any user-visible compatibility change; and
-6. keep existing provider directories preserved during target updates.
+4. review the generated inventory, license, checksum, and adapter compatibility;
+5. update the declaration provenance, reviewed verifier identity, license hash,
+   and snapshot checksum together;
+6. run the repository release gate and temporary-project provider smoke tests;
+7. document any user-visible compatibility change; and
+8. keep existing provider directories preserved during target updates.
 
 Live upstream/network validation must be reported as live evidence. Hermetic
 fixtures prove only the local command and fallback boundaries.
 
 ## Deferred capabilities
 
-Automatic provider upgrades, integrity inventories, rollback, removal, and
-multi-provider resolution are deferred. Add one only after a concrete failure
+Automatic target upgrades, ownership tracking, removal, and multi-provider
+resolution are deferred. Add one only after a concrete failure
 shows it is necessary for project data safety or reliable routing and simpler
 host/provider mechanisms are insufficient.
