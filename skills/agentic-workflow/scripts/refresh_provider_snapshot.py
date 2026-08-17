@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import argparse
 import base64
-from hashlib import sha256
+from hashlib import sha1, sha256
 import json
 from pathlib import Path, PurePosixPath
 import re
@@ -26,6 +26,16 @@ GIT_OBJECT = re.compile(r"[0-9a-f]{40}")
 
 class RefreshError(RuntimeError):
     pass
+
+
+def configure_console() -> None:
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(errors="backslashreplace")
+            except (AttributeError, OSError, ValueError):
+                pass
 
 
 def run_gh(gh: str, arguments: list[str]) -> str:
@@ -106,6 +116,110 @@ def verify_tag(gh: str, repository: str, version: str, commit: str, tag_object: 
         raise RefreshError("upstream tag object no longer resolves to the declared commit")
 
 
+def git_blob_sha(content: bytes) -> str:
+    """Return the Git object ID for file bytes in this SHA-1 repository."""
+    header = f"blob {len(content)}\0".encode("ascii")
+    return sha1(header + content).hexdigest()
+
+
+def installer_metadata(
+    repository: str,
+    version: str,
+    skill_path: str,
+    skill_tree: str,
+) -> bytes:
+    return (
+        "metadata:\n"
+        f"    github-path: {skill_path}\n"
+        f"    github-pinned: {version}\n"
+        f"    github-ref: refs/tags/{version}\n"
+        f"    github-repo: https://github.com/{repository}\n"
+        f"    github-tree-sha: {skill_tree}\n"
+    ).encode("utf-8")
+
+
+def expected_skill_files(
+    skill_path: str,
+    tree_entries: list[object],
+) -> tuple[str, set[str], dict[str, str]]:
+    prefix = f"{skill_path}/"
+    skill_tree: str | None = None
+    directories: set[str] = set()
+    files: dict[str, str] = {}
+    for raw in tree_entries:
+        if not isinstance(raw, dict) or not isinstance(raw.get("path"), str):
+            continue
+        path = raw["path"]
+        if path == skill_path:
+            if (
+                skill_tree is not None
+                or raw.get("type") != "tree"
+                or raw.get("mode") != "040000"
+                or not isinstance(raw.get("sha"), str)
+                or GIT_OBJECT.fullmatch(raw["sha"]) is None
+            ):
+                raise RefreshError(f"upstream skill tree is invalid: {skill_path}")
+            skill_tree = raw["sha"]
+            continue
+        if not path.startswith(prefix):
+            continue
+        relative = safe_path(path[len(prefix) :], f"upstream entry for {skill_path}").as_posix()
+        entry_type = raw.get("type")
+        mode = raw.get("mode")
+        if entry_type == "tree":
+            if mode != "040000" or relative in directories:
+                raise RefreshError(f"upstream skill tree has an unsupported directory: {path}")
+            directories.add(relative)
+            continue
+        sha = raw.get("sha")
+        if (
+            entry_type != "blob"
+            or mode != "100644"
+            or not isinstance(sha, str)
+            or GIT_OBJECT.fullmatch(sha) is None
+            or relative in files
+        ):
+            raise RefreshError(f"upstream skill tree has an unsupported file: {path}")
+        files[relative] = sha
+    if skill_tree is None or "SKILL.md" not in files:
+        raise RefreshError(f"upstream skill tree is incomplete: {skill_path}")
+    return skill_tree, directories, files
+
+
+def validate_installed_skill_against_tree(
+    skill_root: Path,
+    skill_path: str,
+    repository: str,
+    version: str,
+    tree_entries: list[object],
+) -> None:
+    skill_tree, expected_directories, expected_files = expected_skill_files(skill_path, tree_entries)
+    actual_directories: set[str] = set()
+    actual_files: dict[str, Path] = {}
+    for path in sorted(skill_root.rglob("*")):
+        relative = path.relative_to(skill_root).as_posix()
+        if path.is_symlink():
+            raise RefreshError(f"installed skill contains a symlink: {skill_path}/{relative}")
+        if path.is_dir():
+            actual_directories.add(relative)
+            continue
+        if not path.is_file() or relative in actual_files:
+            raise RefreshError(f"installed skill contains an unsupported entry: {skill_path}/{relative}")
+        actual_files[relative] = path
+    if actual_directories != expected_directories or set(actual_files) != set(expected_files):
+        raise RefreshError(f"installed skill differs from the pinned commit tree: {skill_path}")
+
+    metadata = installer_metadata(repository, version, skill_path, skill_tree)
+    for relative, expected_sha in expected_files.items():
+        content = actual_files[relative].read_bytes()
+        if relative == "SKILL.md":
+            if content.count(metadata) != 1:
+                raise RefreshError(f"installed skill has unexpected provenance metadata: {skill_path}")
+            content = content.replace(metadata, b"", 1)
+        if git_blob_sha(content) != expected_sha:
+            raise RefreshError(f"installed skill differs from the pinned commit tree: {skill_path}/{relative}")
+
+
 def generate(output: Path) -> None:
     if output == PACKAGE_ROOT or PACKAGE_ROOT in output.parents:
         raise RefreshError("output must be outside the Agentic Workflow package")
@@ -126,15 +240,6 @@ def generate(output: Path) -> None:
     tree_entries = tree_response.get("tree")
     if not isinstance(tree_entries, list) or tree_response.get("truncated") is True:
         raise RefreshError("upstream recursive tree is missing or truncated")
-    tree_shas = {
-        item["path"]: item["sha"]
-        for item in tree_entries
-        if isinstance(item, dict)
-        and item.get("type") == "tree"
-        and isinstance(item.get("path"), str)
-        and isinstance(item.get("sha"), str)
-    }
-
     with tempfile.TemporaryDirectory(prefix="agentic-workflow-provider-refresh-", dir=output.parent) as temporary:
         generated = Path(temporary) / "snapshot"
         skills_root = generated / "skills"
@@ -147,10 +252,13 @@ def generate(output: Path) -> None:
             installed = skills_root / name / "SKILL.md"
             if installed.is_symlink() or not installed.is_file():
                 raise RefreshError(f"gh skill install omitted {name}")
-            tree_sha = tree_shas.get(path)
-            text = installed.read_text(encoding="utf-8")
-            if not isinstance(tree_sha, str) or f"    github-tree-sha: {tree_sha}" not in text:
-                raise RefreshError(f"installed {name} did not come from the declared commit")
+            validate_installed_skill_against_tree(
+                skills_root / name,
+                path,
+                repository,
+                version,
+                tree_entries,
+            )
             validate_local_references(skills_root / name)
 
         expected = {name for name, _path in skills}
@@ -186,6 +294,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Iterable[str] | None = None) -> int:
+    configure_console()
     if sys.version_info < MINIMUM_PYTHON:
         print("ERROR: Agentic Workflow requires Python 3.11 or newer", file=sys.stderr)
         return 2

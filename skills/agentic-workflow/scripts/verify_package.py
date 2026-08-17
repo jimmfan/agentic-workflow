@@ -14,6 +14,10 @@ import subprocess
 import sys
 from typing import Iterable, Mapping
 
+# This verifier rejects generated package caches. Prevent this process from
+# creating one when it imports the shared provider validation module below.
+sys.dont_write_bytecode = True
+
 from provider_snapshot import SnapshotTreeError, tree_digest, validate_local_references
 
 

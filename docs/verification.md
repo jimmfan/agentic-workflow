@@ -7,9 +7,12 @@ reconciliation.
 
 `bootstrap.py` is the public download boundary. Before executing package code it
 resolves mutable refs to an immutable commit and rejects corrupt or oversized
-archives, excessive entries, absolute/traversing/duplicate paths, links, special
-entries, unreviewed modes, filesystem-root targets, and packages missing the
-minimum lifecycle files. These checks prevent unsafe extraction and execution.
+archives, excessive package contents, excessive whole-archive parsing,
+absolute/traversing/duplicate paths, links, special entries, unreviewed modes,
+filesystem-root targets, and packages missing the minimum lifecycle files.
+The archive is streamed, and unrelated repository entries do not consume the
+tighter distributable-package member allowance. These checks prevent unsafe
+extraction and execution.
 
 The bootstrap does not run the full package verifier. Runtime reconciliation
 requires only the current source-to-target mapping and readable current source
@@ -77,6 +80,9 @@ The suite prioritizes behavior that matters before 1.0:
 - malformed composite markers and unknown external collisions stop before
   partial mutation;
 - symlink/root/archive traversal boundaries remain enforced;
+- a source archive with more than 500 unrelated entries still installs when the
+  package is within bounds, while excessive package contents and the separate
+  whole-archive ceiling still fail closed;
 - provider failure leaves a successful core install usable;
 - a fresh bootstrap archive projects all 14 declared provider skills with an
   empty `PATH`, proving runtime setup does not require GitHub CLI, Git, npm,

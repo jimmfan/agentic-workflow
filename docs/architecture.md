@@ -204,7 +204,9 @@ permission to commit, publish, mutate a tracker, or broaden an external scope.
 The public bootstrap owns only consumer download safety:
 
 - immutable revision resolution;
-- bounded archive bytes, members, and member sizes;
+- bounded compressed archive bytes and streamed whole-archive parsing;
+- a tighter member limit for the distributable package plus per-file and
+  aggregate package-size limits;
 - rejection of corrupt archives, traversal, absolute paths, duplicates, links,
   special entries, and unreviewed modes; and
 - presence of the minimum lifecycle entrypoints and mapping metadata.

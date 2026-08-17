@@ -24,7 +24,8 @@ LOCAL_SOURCE_REVISION = "unreleased-local-package"
 PACKAGE_MARKER = ("skills", "agentic-workflow")
 MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
-MAX_MEMBERS = 500
+MAX_PACKAGE_MEMBERS = 500
+MAX_ARCHIVE_MEMBERS = 10_000
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 MINIMUM_PYTHON = (3, 11)
 RUNTIME_PACKAGE_REQUIREMENTS = (
@@ -128,50 +129,59 @@ def extract_package(archive: bytes, destination: Path) -> Path:
     ensure_directory(package, package)
     seen = set()
     total = 0
+    archive_members = 0
+    package_members = 0
     try:
-        opened = tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz")
+        opened = tarfile.open(fileobj=io.BytesIO(archive), mode="r|gz")
+        with opened:
+            for member in opened:
+                archive_members += 1
+                if archive_members > MAX_ARCHIVE_MEMBERS:
+                    raise BootstrapError(
+                        f"source archive contains more than {MAX_ARCHIVE_MEMBERS} entries"
+                    )
+                relative = package_relative(member.name)
+                if relative is None:
+                    continue
+                package_members += 1
+                if package_members > MAX_PACKAGE_MEMBERS:
+                    raise BootstrapError(
+                        f"package contains more than {MAX_PACKAGE_MEMBERS} entries"
+                    )
+                archive_path = PurePosixPath(member.name)
+                if (
+                    archive_path.is_absolute()
+                    or ".." in archive_path.parts
+                    or "." in archive_path.parts
+                    or relative.is_absolute()
+                    or ".." in relative.parts
+                    or "." in relative.parts
+                ):
+                    raise BootstrapError(f"archive contains an unsafe package path: {member.name}")
+                if member.issym() or member.islnk() or not (member.isdir() or member.isfile()):
+                    raise BootstrapError(f"archive contains an unsupported package entry: {member.name}")
+                mode = reviewed_archive_mode(member, relative)
+                target = package.joinpath(*relative.parts)
+                if target in seen:
+                    raise BootstrapError(f"archive contains duplicate package path: {relative}")
+                seen.add(target)
+                if member.isdir():
+                    ensure_directory(target, package)
+                    continue
+                if member.size > MAX_MEMBER_BYTES or total + member.size > MAX_ARCHIVE_BYTES:
+                    raise BootstrapError(f"archive package content is too large: {relative}")
+                source = opened.extractfile(member)
+                if source is None:
+                    raise BootstrapError(f"cannot read archive member: {relative}")
+                data = source.read(MAX_MEMBER_BYTES + 1)
+                if len(data) != member.size:
+                    raise BootstrapError(f"archive member size changed while reading: {relative}")
+                total += len(data)
+                ensure_directory(target.parent, package)
+                target.write_bytes(data)
+                target.chmod(mode)
     except tarfile.TarError as exc:
         raise BootstrapError(f"download is not a valid gzip tar archive: {exc}") from exc
-    with opened:
-        members = opened.getmembers()
-        if len(members) > MAX_MEMBERS:
-            raise BootstrapError(f"archive contains more than {MAX_MEMBERS} entries")
-        for member in members:
-            archive_path = PurePosixPath(member.name)
-            relative = package_relative(member.name)
-            if relative is None:
-                continue
-            if (
-                archive_path.is_absolute()
-                or ".." in archive_path.parts
-                or "." in archive_path.parts
-                or relative.is_absolute()
-                or ".." in relative.parts
-                or "." in relative.parts
-            ):
-                raise BootstrapError(f"archive contains an unsafe package path: {member.name}")
-            if member.issym() or member.islnk() or not (member.isdir() or member.isfile()):
-                raise BootstrapError(f"archive contains an unsupported package entry: {member.name}")
-            mode = reviewed_archive_mode(member, relative)
-            target = package.joinpath(*relative.parts)
-            if target in seen:
-                raise BootstrapError(f"archive contains duplicate package path: {relative}")
-            seen.add(target)
-            if member.isdir():
-                ensure_directory(target, package)
-                continue
-            if member.size > MAX_MEMBER_BYTES or total + member.size > MAX_ARCHIVE_BYTES:
-                raise BootstrapError(f"archive package content is too large: {relative}")
-            source = opened.extractfile(member)
-            if source is None:
-                raise BootstrapError(f"cannot read archive member: {relative}")
-            data = source.read(MAX_MEMBER_BYTES + 1)
-            if len(data) != member.size:
-                raise BootstrapError(f"archive member size changed while reading: {relative}")
-            total += len(data)
-            ensure_directory(target.parent, package)
-            target.write_bytes(data)
-            target.chmod(mode)
     if not seen:
         raise BootstrapError("archive does not contain skills/agentic-workflow")
     return package

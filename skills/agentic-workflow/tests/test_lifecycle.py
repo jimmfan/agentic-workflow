@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import importlib.util
 import io
@@ -89,6 +90,111 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         package_copy = Path(self.temporary.name) / name / "agentic-workflow"
         shutil.copytree(PACKAGE_ROOT, package_copy)
         return package_copy
+
+    def run_fake_provider_refresh(
+        self,
+        name: str,
+        *,
+        mutation: str | None = None,
+    ) -> tuple[object, Path]:
+        package_copy = self.copy_package(name)
+        declaration = package_copy / "payload/ai-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        provider = raw["provider"]
+        skill_name = "demo"
+        skill_path = "skills/engineering/demo"
+        skill_tree = "1" * 40
+        provider["skills"] = [{"name": skill_name, "path": skill_path}]
+        declaration.write_text(json.dumps(raw), encoding="utf-8")
+
+        upstream_skill = b"---\ndescription: Demo skill.\nname: demo\n---\n\nDemo body.\n"
+        upstream_openai = b'interface:\n  display_name: "Demo"\n'
+        metadata = (
+            "metadata:\n"
+            f"    github-path: {skill_path}\n"
+            f"    github-pinned: {provider['version']}\n"
+            f"    github-ref: refs/tags/{provider['version']}\n"
+            f"    github-repo: https://github.com/{provider['repository']}\n"
+            f"    github-tree-sha: {skill_tree}\n"
+        ).encode("utf-8")
+        installed_skill = upstream_skill.replace(b"name: demo\n", metadata + b"name: demo\n")
+
+        def git_blob_sha(content: bytes) -> str:
+            header = f"blob {len(content)}\0".encode("ascii")
+            return hashlib.sha1(header + content).hexdigest()
+
+        tree_entries = [
+            {"path": skill_path, "mode": "040000", "type": "tree", "sha": skill_tree},
+            {
+                "path": f"{skill_path}/SKILL.md",
+                "mode": "100644",
+                "type": "blob",
+                "sha": git_blob_sha(upstream_skill),
+            },
+            {
+                "path": f"{skill_path}/agents",
+                "mode": "040000",
+                "type": "tree",
+                "sha": "2" * 40,
+            },
+            {
+                "path": f"{skill_path}/agents/openai.yaml",
+                "mode": "100644",
+                "type": "blob",
+                "sha": git_blob_sha(upstream_openai),
+            },
+        ]
+
+        scripts = package_copy / "scripts"
+        sys.path.insert(0, str(scripts))
+        try:
+            refresh = load_module(
+                f"agentic_workflow_refresh_{name}",
+                scripts / "refresh_provider_snapshot.py",
+            )
+        finally:
+            sys.path.pop(0)
+        refresh.shutil.which = lambda _command: "/fake/gh"
+
+        def fake_run_gh(_gh: str, arguments: list[str]) -> str:
+            if arguments[0] == "api":
+                endpoint = arguments[1]
+                responses = {
+                    f"repos/{provider['repository']}/git/ref/tags/{provider['version']}": {
+                        "object": {"type": "tag", "sha": provider["tag_object"]}
+                    },
+                    f"repos/{provider['repository']}/git/tags/{provider['tag_object']}": {
+                        "object": {"type": "commit", "sha": provider["resolved_commit"]}
+                    },
+                    f"repos/{provider['repository']}/git/commits/{provider['resolved_commit']}": {
+                        "tree": {"sha": provider["upstream_tree"]}
+                    },
+                    f"repos/{provider['repository']}/git/trees/{provider['upstream_tree']}?recursive=1": {
+                        "tree": tree_entries,
+                        "truncated": False,
+                    },
+                    f"repos/{provider['repository']}/contents/LICENSE?ref={provider['resolved_commit']}": {
+                        "content": base64.b64encode(b"MIT License\n").decode("ascii")
+                    },
+                }
+                return json.dumps(responses[endpoint])
+            self.assertEqual(arguments[:2], ["skill", "install"])
+            target = Path(arguments[arguments.index("--dir") + 1]) / skill_name
+            (target / "agents").mkdir(parents=True)
+            (target / "SKILL.md").write_bytes(installed_skill)
+            installed_openai = upstream_openai
+            if mutation == "modified":
+                installed_openai += b"changed: true\n"
+            (target / "agents/openai.yaml").write_bytes(installed_openai)
+            if mutation == "extra":
+                (target / "extra.md").write_text("unexpected\n", encoding="utf-8")
+            if mutation == "extra-directory":
+                (target / "empty").mkdir()
+            return ""
+
+        refresh.run_gh = fake_run_gh
+        output = Path(self.temporary.name) / f"{name}-candidate"
+        return refresh, output
 
     def declared_provider_names(self, package_root: Path = PACKAGE_ROOT) -> set[str]:
         declaration = package_root / "payload/ai-workflow/providers.json"
@@ -699,6 +805,60 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("outside the Agentic Workflow package", result.stderr)
         self.assertFalse(candidate.exists())
 
+    def test_provider_refresh_verifies_every_installed_byte_against_the_commit_tree(self) -> None:
+        refresh, output = self.run_fake_provider_refresh("exact-provider-refresh")
+
+        refresh.generate(output)
+
+        self.assertTrue((output / "skills/demo/SKILL.md").is_file())
+
+    def test_provider_refresh_rejects_modified_or_extra_installed_files(self) -> None:
+        for mutation in ("modified", "extra", "extra-directory"):
+            with self.subTest(mutation=mutation):
+                refresh, output = self.run_fake_provider_refresh(
+                    f"{mutation}-provider-refresh",
+                    mutation=mutation,
+                )
+
+                with self.assertRaisesRegex(refresh.RefreshError, "pinned commit tree"):
+                    refresh.generate(output)
+
+                self.assertFalse(output.exists())
+
+    def test_provider_refresh_console_escapes_unrepresentable_output_path(self) -> None:
+        package_copy = self.copy_package("refresh-console")
+        driver = Path(self.temporary.name) / "refresh-console-driver.py"
+        driver.write_text(
+            "import importlib.util\n"
+            "import sys\n"
+            f"path = {str(package_copy / 'scripts/refresh_provider_snapshot.py')!r}\n"
+            "sys.path.insert(0, str(__import__('pathlib').Path(path).parent))\n"
+            "spec = importlib.util.spec_from_file_location('refresh_console', path)\n"
+            "module = importlib.util.module_from_spec(spec)\n"
+            "spec.loader.exec_module(module)\n"
+            "module.generate = lambda output: print(f'Generated {output}')\n"
+            "raise SystemExit(module.main(['/tmp/provider-snow-\\u96ea']))\n",
+            encoding="utf-8",
+        )
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "cp1252"
+
+        result = run_script(driver, env=env, encoding="cp1252")
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("\\u96ea", result.stdout)
+
+    def test_verifier_does_not_create_the_cache_it_rejects(self) -> None:
+        package_copy = self.copy_package("verifier-bytecode")
+        cache = package_copy / "scripts/__pycache__"
+        if cache.exists():
+            shutil.rmtree(cache)
+
+        result = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse(cache.exists())
+
     def test_provider_reference_validation_rejects_external_resources(self) -> None:
         snapshot_module = load_module(
             "agentic_workflow_provider_snapshot",
@@ -771,9 +931,15 @@ class BootstrapSafetyTests(unittest.TestCase):
                     archive.addfile(member, io.BytesIO(data))
         return output.getvalue()
 
-    def package_archive(self) -> bytes:
+    def package_archive(self, unrelated_entries: int = 0) -> bytes:
         output = io.BytesIO()
         with tarfile.open(fileobj=output, mode="w:gz") as archive:
+            for index in range(unrelated_entries):
+                data = b"{}"
+                member = tarfile.TarInfo(f"source/evaluations/case-{index}.json")
+                member.mode = 0o644
+                member.size = len(data)
+                archive.addfile(member, io.BytesIO(data))
             for path in sorted(PACKAGE_ROOT.rglob("*")):
                 if not path.is_file() or path.is_symlink() or "__pycache__" in path.parts:
                     continue
@@ -800,6 +966,53 @@ class BootstrapSafetyTests(unittest.TestCase):
             with self.subTest(entries=entries), tempfile.TemporaryDirectory() as temporary:
                 with self.assertRaises(self.bootstrap.BootstrapError):
                     self.bootstrap.extract_package(self.archive(entries), Path(temporary))
+
+    def test_unrelated_repository_entries_do_not_exhaust_package_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            project = root / "project"
+            project.mkdir()
+            archive = root / "repository.tar.gz"
+            archive.write_bytes(
+                self.package_archive(self.bootstrap.MAX_PACKAGE_MEMBERS + 1)
+            )
+            result = run_script(
+                BOOTSTRAP,
+                "install",
+                project,
+                "--archive-url",
+                archive.as_uri(),
+                "--dry-run",
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertFalse((project / ".ai-workflow").exists())
+
+    def test_excessive_package_entries_are_rejected(self) -> None:
+        entries = [
+            (f"root/skills/agentic-workflow/data/item-{index}.txt", b"x", "file")
+            for index in range(self.bootstrap.MAX_PACKAGE_MEMBERS + 1)
+        ]
+
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(
+                self.bootstrap.BootstrapError,
+                f"package contains more than {self.bootstrap.MAX_PACKAGE_MEMBERS} entries",
+            ):
+                self.bootstrap.extract_package(self.archive(entries), Path(temporary))
+
+    def test_whole_archive_parsing_ceiling_is_retained(self) -> None:
+        entries = [
+            (f"root/unrelated/item-{index}.txt", b"", "file")
+            for index in range(self.bootstrap.MAX_ARCHIVE_MEMBERS + 1)
+        ]
+
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(
+                self.bootstrap.BootstrapError,
+                f"source archive contains more than {self.bootstrap.MAX_ARCHIVE_MEMBERS} entries",
+            ):
+                self.bootstrap.extract_package(self.archive(entries), Path(temporary))
 
     def test_bootstrap_rejects_a_symlink_project_root_before_download(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

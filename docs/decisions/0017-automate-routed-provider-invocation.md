@@ -26,9 +26,10 @@ Declare To Spec, To Tickets, and Implement implicit on Codex and GitHub Copilot
 and unavailable on Claude Code. Keep Setup, Teach, and Triage user-only.
 
 Apply a narrow `implicit-invocation-v1` adapter to every release-local staged
-projection. For each declared skill, require
-pinned source metadata and exactly one recognized upstream or already-adapted
-activation value in both host metadata files. Rewrite
+projection. The bundled input is the exact upstream projection required by
+ADR-0018, before Agentic Workflow adapters. For each declared skill, require
+pinned source metadata and exactly one recognized upstream activation value in
+both host metadata files. Rewrite
 `disable-model-invocation: true` to `false` and
 `allow_implicit_invocation: false` to `true`. Preserve the provider method body
 and all unrelated bytes. Apply the two-file update transactionally and fail
@@ -43,9 +44,9 @@ publication, commits, external mutation, or destructive work.
 
 Users can request a specification, tickets, or implementation in ordinary
 language and receive the configured provider method without a manual command or
-post-install edit. Re-running installation or update is idempotent for an exact
-effective projection; differing target bytes are preserved as conflicts under
-ADR-0018.
+post-install edit. Re-running installation or update stages and adapts a fresh
+copy of the upstream bundle, then reuses an exact installed effective projection;
+differing target bytes are preserved as conflicts under ADR-0018.
 
 The lifecycle now supports a second intentionally narrow adapter shape in
 addition to Wayfinder's local-state adapter. This is justified by three concrete
