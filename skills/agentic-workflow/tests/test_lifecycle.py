@@ -147,6 +147,8 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         *,
         fail_skill: str | None = None,
         omit_skill: str | None = None,
+        missing_copilot_policy_skill: str | None = None,
+        missing_codex_policy_skill: str | None = None,
     ) -> Path:
         wayfinder_skill, wayfinder_openai = self.upstream_wayfinder_files()
         fake_bin = Path(self.temporary.name) / name
@@ -158,6 +160,8 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             "import sys\n"
             f"fail_skill = {fail_skill!r}\n"
             f"omit_skill = {omit_skill!r}\n"
+            f"missing_copilot_policy_skill = {missing_copilot_policy_skill!r}\n"
+            f"missing_codex_policy_skill = {missing_codex_policy_skill!r}\n"
             f"wayfinder_skill = {wayfinder_skill!r}\n"
             f"wayfinder_openai = {wayfinder_openai!r}\n"
             "skill_path = sys.argv[4]\n"
@@ -180,9 +184,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             "    openai_text = wayfinder_openai\n"
             "else:\n"
             "    user_only = skill_name in {'setup-matt-pocock-skills', 'teach', 'to-spec', 'to-tickets', 'implement', 'triage'}\n"
-            "    disable = \"disable-model-invocation: true\\n\" if user_only else \"\"\n"
+            "    disable = \"disable-model-invocation: true\\n\" if user_only and skill_name != missing_copilot_policy_skill else \"\"\n"
             "    skill_text = f\"---\\ndescription: Fake {skill_name} provider skill.\\n{disable}\" + source_metadata + f\"name: {skill_name}\\n---\\n\\nFake provider method.\\n\"\n"
-            "    policy = \"policy:\\n  allow_implicit_invocation: false\\n\" if user_only else \"\"\n"
+            "    policy = \"policy:\\n  allow_implicit_invocation: false\\n\" if user_only and skill_name != missing_codex_policy_skill else \"\"\n"
             "    openai_text = f\"interface:\\n  display_name: \\\"{skill_name}\\\"\\n{policy}\"\n"
             "(destination / 'SKILL.md').write_text(skill_text, encoding='utf-8')\n"
             "(destination / 'agents/openai.yaml').write_text(openai_text, encoding='utf-8')\n",
@@ -190,6 +194,17 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         )
         gh.chmod(0o755)
         return fake_bin
+
+    def assert_provider_staging_rejected(self, fake_bin: Path, expected: str) -> None:
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}{os.pathsep}{env.get('PATH', '')}"
+
+        result = run_script(PROVIDERS, "install", self.project, env=env)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn(expected, result.stderr)
+        for name in self.declared_provider_names():
+            self.assertFalse((self.project / ".agents/skills" / name).exists())
 
     def write_upstream_wayfinder_metadata(self, project: Path) -> None:
         directory = project / ".agents/skills/wayfinder"
@@ -528,6 +543,26 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("codebase-design", result.stderr)
         for name in self.declared_provider_names():
             self.assertFalse((self.project / ".agents/skills" / name).exists())
+
+    def test_provider_staging_rejects_missing_copilot_user_only_metadata(self) -> None:
+        fake_bin = self.fake_gh_provider_installer(
+            "missing-copilot-policy-bin",
+            missing_copilot_policy_skill="teach",
+        )
+        self.assert_provider_staging_rejected(
+            fake_bin,
+            "teach lacks GitHub Copilot user-only metadata",
+        )
+
+    def test_provider_staging_rejects_missing_codex_user_only_metadata(self) -> None:
+        fake_bin = self.fake_gh_provider_installer(
+            "missing-codex-policy-bin",
+            missing_codex_policy_skill="teach",
+        )
+        self.assert_provider_staging_rejected(
+            fake_bin,
+            "teach lacks Codex user-only metadata",
+        )
 
     def test_provider_status_is_nonzero_while_declared_projection_is_incomplete(self) -> None:
         result = run_script(PROVIDERS, "status", self.project)

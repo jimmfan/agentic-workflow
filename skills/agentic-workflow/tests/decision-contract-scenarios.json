@@ -145,7 +145,7 @@
     "id": "wayfinder-read-only-boundary",
     "category": "wayfinder-read-only-no-state",
     "prompt": "Audit this complicated platform migration, but do not change files.",
-    "setup": "The audit contains enough moving state that structured notes would otherwise help, but the user explicitly prohibited repository writes.",
+    "setup": "The audit contains enough moving state that structured notes would otherwise help, an existing relevant map contains a claim contradicted by current source, and the user explicitly prohibited repository writes.",
     "dominant_activity": "host-native-analysis",
     "capabilities": [],
     "provider_invocations": [],
@@ -154,7 +154,7 @@
     "executed": true,
     "repository_state_effect": "read-only",
     "external_scope": "none",
-    "expected_behavior": "Keep structured reasoning ephemeral or continue the current read-only workflow; do not create or update Wayfinder state merely because durable notes would be useful."
+    "expected_behavior": "Keep structured reasoning ephemeral or continue the current read-only workflow; report the exact stale claim and authoritative source without creating or updating Wayfinder state."
   },
   {
     "id": "wayfinder-explicit-opt-out",

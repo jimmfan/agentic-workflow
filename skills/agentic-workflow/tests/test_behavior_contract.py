@@ -26,10 +26,10 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_initial_catalog_has_eleven_contracts_and_five_live_smokes(self) -> None:
+    def test_catalog_has_thirteen_contracts_and_seven_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 11)
-        self.assertEqual(sum(scenario.live for scenario in scenarios), 5)
+        self.assertEqual(len(scenarios), 13)
+        self.assertEqual(sum(scenario.live for scenario in scenarios), 7)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
             {
@@ -42,10 +42,16 @@ class BehaviorContractTests(unittest.TestCase):
                 "verification-failure-recovery",
                 "blocked-project",
                 "project-state-preservation",
+                "wayfinder-read-only-stale-state",
+                "wayfinder-reconciliation-conflict",
                 "wayfinder-new-effort",
                 "unrelated-wayfinder-state",
             },
         )
+        read_only = next(
+            scenario for scenario in scenarios if scenario.id == "wayfinder-read-only-stale-state"
+        )
+        self.assertIn("unresolved", read_only.report_must_include)
 
     def test_scenarios_reject_unknown_behavior_vocabulary(self) -> None:
         source = (behavior.SCENARIO_ROOT / "simple-bounded-task.toml").read_text(encoding="utf-8")
@@ -65,7 +71,7 @@ class BehaviorContractTests(unittest.TestCase):
                 self.assertLessEqual(len(files), 8)
                 self.assertTrue(all(path.stat().st_size < 12_000 for path in files))
 
-    def test_live_runner_evaluates_observable_success_without_route_trace(self) -> None:
+    def test_live_runner_requires_one_valid_marker_at_end_of_final_response(self) -> None:
         scenario = next(
             item for item in behavior.load_scenarios() if item.id == "simple-bounded-task"
         )
@@ -80,7 +86,11 @@ class BehaviorContractTests(unittest.TestCase):
                 'def greeting() -> str:\\n    return "hello, world!"\\n',
                 encoding="utf-8",
             )
-            check = subprocess.run([sys.executable, "verify.py"])
+            check = subprocess.run(
+                [sys.executable, "verify.py"],
+                capture_output=True,
+                text=True,
+            )
             report = {
                 "schema_version": 1,
                 "status": "success" if check.returncode == 0 else "failed",
@@ -89,9 +99,9 @@ class BehaviorContractTests(unittest.TestCase):
                 "research_sources": [],
                 "state_used": [],
                 "blockers": [],
-                "route_marker": "",
             }
             Path(".behavior-evidence/report.json").write_text(json.dumps(report), encoding="utf-8")
+            print("Implemented and verified.\\n\\n[route: router → direct]")
             raise SystemExit(check.returncode)
             """
         )
@@ -105,8 +115,42 @@ class BehaviorContractTests(unittest.TestCase):
                 root,
                 30,
             )
-        self.assertEqual(evidence.route_components, ())
+        self.assertEqual(evidence.route_components, ("direct",))
         self.assertTrue(all(result.passed for result in results), results)
+
+    def test_route_visibility_rejects_missing_duplicate_malformed_and_nonfinal_markers(self) -> None:
+        scenario = next(
+            item for item in behavior.load_scenarios() if item.id == "simple-bounded-task"
+        )
+        cases = {
+            "missing": "done",
+            "duplicate": "[route: router → direct]\n[route: router → direct]",
+            "malformed": "[route: direct]",
+            "nonfinal": "[route: router → direct]\nmore text",
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            snapshot = behavior.snapshot(workspace)
+            for label, stdout in cases.items():
+                with self.subTest(label=label):
+                    evidence = behavior.RunEvidence(
+                        scenario=scenario,
+                        workspace=workspace,
+                        before=snapshot,
+                        after=snapshot,
+                        stdout=stdout,
+                        stderr="[route: router → direct]",
+                        returncode=0,
+                        report={"route_marker": "[route: router → direct]"},
+                        verification=(),
+                        route_components=behavior.route_components(stdout),
+                    )
+                    result = next(
+                        item
+                        for item in behavior.evaluate(evidence)
+                        if item.name == "route-marker:exactly-one-valid-final"
+                    )
+                    self.assertFalse(result.passed)
 
     def test_success_report_without_failure_recovery_fails_the_contract(self) -> None:
         scenario = next(
@@ -131,7 +175,6 @@ class BehaviorContractTests(unittest.TestCase):
                 "research_sources": [],
                 "state_used": [],
                 "blockers": [],
-                "route_marker": "",
             }
             Path(".behavior-evidence/report.json").write_text(json.dumps(report), encoding="utf-8")
             """

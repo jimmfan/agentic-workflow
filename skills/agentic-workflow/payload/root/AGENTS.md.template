@@ -19,6 +19,10 @@ loaded routing contract are the runtime; there is no separate controller.
 - Unrelated user work, canonical identifiers/artifacts, and relevant active
   durable state MUST be preserved; live source and accepted canonical artifacts
   outrank profiles, memory, and chat.
+- Authorized mutating work is complete only after materially affected relevant
+  Wayfinder state is reconciled; read-only work reports staleness without
+  mutating it. Follow the dedicated state contract and do not inspect unrelated
+  efforts.
 - Material completion claims MUST reflect actual evidence and distinguish failed,
   blocked, skipped, and unavailable checks.
 
@@ -54,8 +58,16 @@ loaded routing contract are the runtime; there is no separate controller.
 - Project-profile maintenance is opportunistic: prefer a small update only when
   verified durable knowledge emerges naturally and writes are authorized.
 
-## Route visibility
+## Required final-response route marker
 
-When route diagnostics are useful, a response may include a truthful
-`[route: router → <executed path>]` marker. Its absence is not an error. Follow
-`.ai-workflow/routing.md` for labels, and do no extra work merely to produce it.
+Every user-facing final response MUST end with exactly one route marker as its
+final line. Verify this immediately before sending:
+
+`[route: router → <executed path or terminal outcome>]`
+
+Use `[route: router → direct]` when the request was handled directly. Include
+only workflows and capabilities that actually executed, in execution order. If
+selection did not become execution, report the applicable terminal outcome.
+
+The marker is mandatory for every final response and must not trigger additional
+work. Follow `.ai-workflow/routing.md` for labels, syntax, and edge cases.

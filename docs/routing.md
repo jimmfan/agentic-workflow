@@ -60,11 +60,13 @@ After meaningful implementation or a causal fix, gather acceptance evidence not
 already supplied by the selected provider. Do not repeat provider-owned TDD or
 Code Review merely to add a framework stage.
 
-When route visibility materially helps debugging, emit at most one truthful
-instruction-level marker such as:
+Every user-facing final response ends with exactly one truthful instruction-level
+marker such as:
 
 ```text
 [route: router -> implement -> verification]
 ```
 
-The marker is optional metadata, not telemetry or proof that work ran.
+The marker is required observability, not telemetry or proof that work ran, and
+must not trigger additional workflow work. Detailed syntax and terminal outcomes
+remain owned by the installed routing contract.

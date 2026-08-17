@@ -5,7 +5,7 @@ Tests are separated by determinism and product boundary.
 ## Deterministic contract and unit tests
 
 - `test_behavior_contract.py` validates the TOML scenario contract, behavior
-  vocabulary, fixture size, observable evaluator, route-marker optionality,
+  vocabulary, fixture size, observable evaluator, required route-marker syntax,
   demand-driven Wayfinder creation and provider claims, progressive Wayfinder
   state inputs, and live command protocol using a deterministic fake agent.
 - `test_routing.py` validates representative selection, invocation,
@@ -41,14 +41,18 @@ These JSON catalogs are validated directly by `verify_package.py`. They are not
   a caller-supplied agent command, captures public evidence, and evaluates the
   scenario without asking for hidden reasoning.
 
-Five live cases are enabled by default: simple bounded work, external research,
-existing Wayfinder state, verification failure/recovery, and a blocked project.
-They are opt-in and not part of ordinary pull requests.
+Seven live cases are enabled by default: simple bounded work, external research,
+existing Wayfinder state, read-only stale-state reporting, reconciliation
+conflict handling, verification failure/recovery, and a blocked project. They
+are opt-in and not part of ordinary pull requests.
 
 The broader deterministic catalog also covers creating the canonical local
 Wayfinder U#/D#/T# layout and ensuring that an unrelated existing effort neither
-captures a simple route nor gets loaded. Non-Wayfinder durable work resumes from
-its named DEC/IMP/DBG record without a global active index.
+captures a simple route nor gets loaded. The live Wayfinder contracts preserve
+an unrelated effort during reconciliation, keep stale-state audits read-only,
+and require conflicting reconciliation to stop without guessing. Non-Wayfinder
+durable work resumes from its named DEC/IMP/DBG record without a global active
+index.
 
 See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema,
 evidence model, commands, side effects, cleanup, and limitations.

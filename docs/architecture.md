@@ -48,7 +48,7 @@ and learning artifacts remain canonical; framework records store only concise
 orchestration pointers. Local Wayfinder maps and U#/D#/T# children live under
 `.ai-workflow-state/wayfinder/` and use the effort map for re-entry.
 
-An optional response marker such as
+A required response marker such as
 `[route: router -> discovery -> research]` provides sufficient v0 route
 visibility. It is not telemetry, execution evidence, or a routing prerequisite.
 
@@ -261,4 +261,5 @@ See [Workflow routing](routing.md), [Verification](verification.md), and
 [ADR-0011](decisions/0011-use-project-owned-wayfinder-state.md),
 [ADR-0012](decisions/0012-remove-global-active-index.md),
 [ADR-0013](decisions/0013-enable-automatic-wayfinder-routing.md), and
-[ADR-0015](decisions/0015-adapt-wayfinder-effective-local-mode.md).
+[ADR-0015](decisions/0015-adapt-wayfinder-effective-local-mode.md), plus
+[ADR-0016](decisions/0016-reconcile-relevant-wayfinder-state-at-completion.md).

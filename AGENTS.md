@@ -20,6 +20,10 @@ loaded routing contract are the runtime; there is no separate controller.
 - Unrelated user work, canonical identifiers/artifacts, and relevant active
   durable state MUST be preserved; live source and accepted canonical artifacts
   outrank profiles, memory, and chat.
+- Authorized mutating work is complete only after materially affected relevant
+  Wayfinder state is reconciled; read-only work reports staleness without
+  mutating it. Follow the dedicated state contract and do not inspect unrelated
+  efforts.
 - Material completion claims MUST reflect actual evidence and distinguish failed,
   blocked, skipped, and unavailable checks.
 
@@ -55,11 +59,19 @@ loaded routing contract are the runtime; there is no separate controller.
 - Project-profile maintenance is opportunistic: prefer a small update only when
   verified durable knowledge emerges naturally and writes are authorized.
 
-## Route visibility
+## Required final-response route marker
 
-When route diagnostics are useful, a response may include a truthful
-`[route: router → <executed path>]` marker. Its absence is not an error. Follow
-`.ai-workflow/routing.md` for labels, and do no extra work merely to produce it.
+Every user-facing final response MUST end with exactly one route marker as its
+final line. Verify this immediately before sending:
+
+`[route: router → <executed path or terminal outcome>]`
+
+Use `[route: router → direct]` when the request was handled directly. Include
+only workflows and capabilities that actually executed, in execution order. If
+selection did not become execution, report the applicable terminal outcome.
+
+The marker is mandatory for every final response and must not trigger additional
+work. Follow `.ai-workflow/routing.md` for labels, syntax, and edge cases.
 <!-- ai-workflow:managed-end -->
 
 <!-- ai-workflow:project-instructions -->
@@ -148,6 +160,12 @@ Treat accepted architectural decisions and documented public or integration cont
 * Keep a local workflow only when it provides a materially distinct contract or boundary.
 * Missing or incompatible declared providers must fail clearly. Do not silently fall back to retired local copies.
 * Avoid speculative abstractions. Do not build a generic plugin or provider framework until multiple real implementations demonstrate the need.
+
+When modifying `skills/agentic-workflow/payload/root/AGENTS.md.template`, add an
+always-loaded rule only when agents need it before or while deciding what
+workflow or context to load, or when violating it could cause a cross-cutting
+authorization, data-preservation, or truthfulness failure. Prefer progressively
+loaded guidance otherwise.
 
 Keep always-loaded instructions compact. Detailed provider behavior belongs in the provider skill or relevant documentation, not in root agent context.
 
@@ -342,23 +360,3 @@ Before finishing a substantial change, confirm that:
 * documentation describes the resulting product rather than the entire investigation.
 
 Simplify when these checks reveal unnecessary complexity.
-
-## Optional route visibility
-
-When useful for debugging or observability, a final response may include one
-truthful route marker:
-
-`[route: router → <path>]`
-
-`direct` is a valid route. The marker's absence is normal and does not invalidate
-completed work.
-
-Examples:
-
-`[route: router → direct]`
-
-`[route: router → discovery → research]`
-
-`[route: router → implementation → verification]`
-
-Do not perform extra work merely to produce a marker.

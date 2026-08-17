@@ -15,7 +15,7 @@ hidden reasoning trace.
 ## Three layers
 
 1. **Contract/unit tests** validate TOML schema, supported behavior vocabulary,
-   fixture size, evaluator failure modes, route-marker optionality, and the
+   fixture size, evaluator failure modes, required route-marker syntax, and the
    command-runner protocol.
 2. **Fixture/integration tests** copy every consuming-project fixture into a new
    temporary directory. They exercise install, update, repeated update, remove,
@@ -140,12 +140,16 @@ The evaluator uses public artifacts only:
   `.behavior-evidence/verification.jsonl`, including exit codes and ordering;
 - a concise agent-written `.behavior-evidence/report.json` containing status,
   commands/exit codes, cited research URLs, state paths actually consumed,
-  selected/executed provider claims, blockers, and an optional route marker; and
+  selected/executed provider claims, and blockers;
+- exactly one syntactically valid route marker ending the agent's stdout final
+  response; and
 - case-specific path assertions.
 
-Route markers are useful evidence when present but remain optional. No evaluator
-asks for chain-of-thought, private model reasoning, exact prose, a fixed stage
-count, or one exact workflow sequence.
+Route-marker presence is a required visibility contract. General scenarios do
+not require one exact workflow sequence: route-specific exclusions and scenario
+evidence evaluate truthfulness only where the scenario establishes it. No
+evaluator asks for chain-of-thought, private model reasoning, exact prose, or a
+fixed stage count.
 
 The report is a claim, so important outcomes are cross-checked against repository
 diffs, fixture verification logs, state preservation, and scenario assertions.
@@ -185,8 +189,12 @@ python3 skills/agentic-workflow/scripts/verify_package.py --tests
 For a live run, use an environment with the chosen agent executable, model
 credentials, and any research/network permission required by the selected
 scenarios. This can consume model quota and contact external services. The
-command must read the prompt from standard input and operate in its current
-working directory. Run:
+command must read the prompt from standard input, operate in its current
+working directory, and write only the final user-facing response to standard
+output. Progress, tool, transport, and diagnostic output belongs on standard
+error. This output boundary lets the evaluator verify that the final response
+ends with exactly one route marker without depending on a host-specific event
+stream. Run:
 
 ```bash
 python3 skills/agentic-workflow/tests/behavior.py live \
@@ -220,8 +228,9 @@ cleans workspaces automatically.
   system file-access tracing.
 - External research checks cited public URLs and observable output, but changing
   facts may still require human or domain-specific adjudication.
-- Optional route markers cannot prove execution and are never the sole pass
-  condition.
+- Required route markers remain agent claims rather than proof of execution;
+  scenario evidence and route-specific checks establish truthfulness where
+  observable.
 - Provider-native tracker interactions and live editor-host behavior need a
   separately credentialed environment and are not represented as deterministic
   success.

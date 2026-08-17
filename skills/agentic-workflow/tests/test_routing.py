@@ -37,11 +37,29 @@ class RoutingContractTests(unittest.TestCase):
                 for provider in scenario["provider_invocations"]:
                     self.assertTrue({"name", "policy", "invocation", "executed"} <= set(provider))
 
-    def test_route_marker_is_optional_metadata_not_runtime_telemetry(self) -> None:
+    def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
         routing = (PACKAGE_ROOT / "payload/ai-workflow/routing.md").read_text()
-        self.assertIn("marker is optional instruction-level diagnostics", routing)
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        self.assertIn("Every user-facing final response MUST end with exactly one", root_policy)
+        self.assertIn("Every user-facing final response must end with exactly one", routing)
+        self.assertIn("[route: router → debugging → wayfinder]", routing)
+        self.assertIn("[route: router → research-handoff]", routing)
+        self.assertIn("unexecuted selection do not count as execution", routing)
+        self.assertIn("Do not reroute, load skills, execute workflows", routing)
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".ai-workflow/runtime", routing)
+
+    def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        contract = (
+            PACKAGE_ROOT / "payload/ai-workflow/contracts/wayfinder-state.md"
+        ).read_text()
+        self.assertIn("Authorized mutating work is complete only after", root_policy)
+        self.assertIn("do not inspect unrelated\n  efforts", root_policy)
+        self.assertIn("Do not globally scan Wayfinder state", contract)
+        self.assertIn("Canonical artifacts keep ownership of their content", contract)
+        self.assertIn("never performs\nreconciliation writes", contract)
+        self.assertIn("No\nhook, background process, global index", contract)
 
     def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())

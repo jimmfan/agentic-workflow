@@ -70,6 +70,7 @@ class BehaviorFixtureTests(unittest.TestCase):
             before = behavior.snapshot(workspace)
             target = workspace / ".ai-workflow-state/custom/owner-note.txt"
             target.write_text("destructive replacement\n", encoding="utf-8")
+            (workspace / "AGENTS.md").write_text("unauthorized policy replacement\n", encoding="utf-8")
             after = behavior.snapshot(workspace)
             evidence = behavior.RunEvidence(
                 scenario=scenario,
@@ -84,7 +85,9 @@ class BehaviorFixtureTests(unittest.TestCase):
                 route_components=(),
             )
             results = behavior.evaluate(evidence)
+            repository_changes = behavior.repository_changes(evidence)
         failed = {result.name for result in results if not result.passed}
+        self.assertIn("AGENTS.md", repository_changes)
         self.assertIn("expect:project_state_preserved", failed)
         self.assertIn("must-not:overwrite_project_owned_state", failed)
 

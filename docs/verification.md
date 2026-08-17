@@ -91,8 +91,11 @@ The suite prioritizes behavior that matters before 1.0:
   install map is refreshed.
 
 Behavioral contracts separately cover creating the local Wayfinder map plus
-U#/D#/T# children, resuming only relevant map state, progressively excluding an
-unrelated child, and keeping an unrelated existing effort out of a direct route.
+U#/D#/T# children, resuming only relevant map state, reconciling the affected
+map and ticket after implementation, progressively excluding an unrelated child
+and effort, reporting stale state without mutation during read-only work,
+stopping on an unresolved reconciliation conflict, and keeping an unrelated
+existing effort out of a direct route.
 
 The routing catalog separately covers direct work, local workflow selection,
 host-native fallback, explicit provider handoff, record-based resume, external

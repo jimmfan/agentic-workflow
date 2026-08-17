@@ -50,6 +50,39 @@ The effort directory name is a short stable slug. Do not silently merge two
 efforts, rename an effort that another session may reference, or reuse an old
 effort directory for a different destination.
 
+## Scoped reconciliation at completion
+
+During authorized mutating work, an existing effort is relevant when the
+request or progressively loaded context connects the work to that effort. If
+the work materially changes a fact, decision, dependency, status, result, or
+next action represented there, reconciling the affected map and U/D/T files is
+part of completing the work. It needs no separate user request. Merely changing
+files does not require creating a new effort or discovering whether an
+unmentioned effort might exist.
+
+Do not globally scan Wayfinder state to look for possible relationships. Use
+the normal routing and progressive-loading rules to identify the relevant
+effort, then reread its map and only the directly affected children before the
+completion claim. Compare them with authoritative code, ADRs, documentation,
+tests, and evaluation results. Update only stale coordination facts such as an
+affected item status or result, a concise evidence pointer or gist, a dependency,
+or the map's next-work summary. Do not normalize unchanged files, resolve
+unaffected questions, or rewrite another effort.
+
+Canonical artifacts keep ownership of their content. Wayfinder records a
+concise link and the minimum coordination consequence instead of copying an
+implementation, decision rationale, test result, report, or specification. No
+hook, background process, global index, synchronization service, or lifecycle
+machinery is implied by this completion rule; the acting agent performs the
+bounded reconciliation as part of the authorized work.
+
+Read-only analysis, audit, diagnosis, review, or status work never performs
+reconciliation writes. It reports the exact stale file or claim and points to
+the authoritative evidence instead. If conflicting edits or insufficient
+evidence prevent truthful reconciliation during mutating work, preserve the
+state, report the specific blocker, and do not claim the affected work fully
+complete.
+
 ## Progressive loading
 
 1. Route from the request first. Do not scan Wayfinder state for confidently

@@ -1,6 +1,6 @@
 schema_version = 1
 id = "existing-wayfinder-state"
-name = "Existing Wayfinder decisions are consumed without reopening"
+name = "Existing Wayfinder decisions are consumed and affected state is reconciled"
 fixture = "wayfinder-existing"
 request = "Implement the next actionable slice from the existing Wayfinder map and verify it. Preserve unresolved non-blocking unknowns."
 starting_state = [
@@ -25,6 +25,7 @@ verification_command = "Run python verify.py after implementing serialize_payloa
 preserve_paths = [
   ".ai-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
   ".ai-workflow-state/wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
+  ".ai-workflow-state/wayfinder/unrelated-billing-migration/map.md",
 ]
 forbid_created_globs = [
   "docs/decisions/**",
@@ -42,9 +43,20 @@ state_must_include = [
 ]
 state_must_not_include = [
   ".ai-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".ai-workflow-state/wayfinder/unrelated-billing-migration/map.md",
 ]
 
 [[assertions]]
 kind = "path_not_contains"
 path = "service.py"
 value = "NotImplementedError"
+
+[[assertions]]
+kind = "path_contains"
+path = ".ai-workflow-state/wayfinder/response-serialization/tickets/T1-serialize-public-responses.md"
+value = "- Status: done"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".ai-workflow-state/wayfinder/response-serialization/map.md"
+value = "Next executable work: [T1"

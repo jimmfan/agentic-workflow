@@ -49,8 +49,9 @@ Adopt current desired-state reconciliation with explicit ownership classes.
    skills on a best-effort basis, preserve every existing directory, and make
    cleanup manual. Provider failure never changes core success.
 8. Remove the shared lifecycle controller, host hook adapters, and observability
-   analyzer. The root policy and detailed routing document are the runtime; an
-   optional route marker is enough v0 visibility.
+   analyzer. The root policy and detailed routing document are the runtime; one
+   required response marker provides v0 route visibility without triggering
+   additional workflow work.
 9. Keep archive/path/link/special-entry/root/symlink safety, narrow durable-state
    conflict checks, rollback around external/composite mutation, Python 3.11+,
    and ASCII/cp1252-safe CLI presentation.

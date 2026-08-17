@@ -27,6 +27,53 @@ permits implicit invocation because Agentic Workflow owns workflow routing. The
 declaration marks Wayfinder implicit for Codex and GitHub Copilot and unavailable
 for Claude.
 
+### Invocation portability boundary
+
+The portable [Agent Skills specification](https://agentskills.io/specification)
+standardizes the `SKILL.md` directory, required `name` and `description`, and a
+small set of optional fields. It does not standardize whether a model may select
+a skill automatically. Its client implementation guide mentions filtering a
+skill that opts out of model-driven activation only as an implementation
+example. Invocation ownership is therefore a host contract, not a portable
+Agent Skills guarantee.
+
+The reviewed provider carries both host controls needed by the currently
+available projections:
+
+- Codex reads `agents/openai.yaml` as product-specific machine/harness metadata.
+  `policy.allow_implicit_invocation: false` keeps the skill out of implicit
+  model context while preserving explicit `$skill-name` invocation. The other
+  current `interface` fields are presentation metadata, while `dependencies`
+  can declare MCP requirements. See the
+  [Codex source reference](https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/skill-creator/references/openai_yaml.md)
+  and [Codex skill documentation](https://developers.openai.com/codex/skills).
+- GitHub Copilot in VS Code reads `disable-model-invocation` from `SKILL.md`.
+  `true` keeps the slash command available but sets automatic loading to no.
+  The [VS Code Agent Skills documentation](https://code.visualstudio.com/docs/agent-customization/agent-skills)
+  documents `.agents/skills`, this field, and explicit `/skill-name` invocation;
+  the [Copilot CLI reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference)
+  documents the same field and default independently.
+- Claude Code documents the same `disable-model-invocation` spelling as a
+  Claude Code extension that hides a user-only skill from Claude until explicit
+  `/skill-name` invocation. Agentic Workflow does not currently project provider
+  skills to `.claude/skills`, so this release still marks provider execution
+  unavailable there rather than claiming that retained frontmatter alone makes
+  the provider available. See the
+  [Claude Code skills documentation](https://code.claude.com/docs/en/skills).
+
+This evidence establishes the required explicit-only behavior for Codex and
+GitHub Copilot VS Code/CLI at the documented host boundary. It does not prove a
+live editor/model run, and the GitHub cloud-agent and code-review documentation
+does not separately state how `disable-model-invocation` is enforced for skills.
+Do not generalize the VS Code/CLI evidence into a live claim for every Copilot
+surface. Changing the model selected inside Copilot does not change the
+documented host metadata contract; treating that as identical live behavior
+across models remains an inference until the matrix is exercised.
+
+The detailed evidence, artifact inventory, compatibility table, and manual
+matrix procedure live in
+[Host invocation portability research](host-invocation-portability-research.md).
+
 The local framework retains only materially distinct boundaries:
 
 - bounded Discovery for local consequential decisions;

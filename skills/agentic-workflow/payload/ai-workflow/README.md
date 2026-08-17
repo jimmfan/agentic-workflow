@@ -13,7 +13,7 @@ contents, or remove it.
 ## Contents
 
 - `routing.md`: detailed minimum-workflow selection, composition, invocation,
-  fallback, authorization, evidence, and optional route-marker rules.
+  fallback, authorization, evidence, and required route-marker rules.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/durable-state.md`: durable continuity, canonical artifact, conflict,
   and re-entry rules.
@@ -82,10 +82,11 @@ path. `.ai-workflow-state/` must remain in place. On removal, project state,
 provider directories, pre-existing external files, and locally changed external
 files are preserved.
 
-Optional route visibility uses one compact response marker such as:
+Every user-facing final response ends with one compact route marker such as:
 
 ```text
 [route: router -> debugging]
 ```
 
-It is instruction-level metadata, not telemetry or proof of execution.
+It is instruction-level observability, not telemetry or proof of execution, and
+must not trigger additional workflow work.

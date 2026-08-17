@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-14
 - Supersedes: local Wayfinder artifact and pointer portions of ADR-0007
-- Amended by: ADR-0012, ADR-0013, and ADR-0015
+- Amended by: ADR-0012, ADR-0013, ADR-0015, and ADR-0016
 
 ## Context
 

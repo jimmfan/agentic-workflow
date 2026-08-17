@@ -184,11 +184,11 @@ Project-profile behavior is intentionally soft. Read
 relevant. Do not scan the repository or update the profile merely to complete a
 route.
 
-## Optional route diagnostics
+## Required route marker
 
-When useful for debugging or evaluation, include one compact marker containing
-router-selected stages and explicitly composed capabilities that actually
-executed, in effective-use order:
+Every user-facing final response must end with exactly one compact, truthful
+marker containing router-selected stages and explicitly composed capabilities
+that actually executed, in effective-use order:
 
 ```text
 [route: router → implement → verification]
@@ -204,12 +204,23 @@ Use truthful terminal suffixes when selection did not become execution:
 - `<skill>-unavailable`: the active host cannot invoke it;
 - `<skill>-blocked`: authorization, state, prerequisite, or integrity stopped it.
 
-Direct handling may use `[route: router → direct]`. Availability, catalog lookup,
+Examples:
+
+```text
+[route: router → direct]
+[route: router → debugging → wayfinder]
+[route: router → implement → verification]
+[route: router → research-handoff]
+```
+
+The ASCII `->` separator is equivalent when Unicode output is unavailable.
+
+Direct handling uses `[route: router → direct]`. Availability, catalog lookup,
 configuration checks, and unexecuted selection do not count as execution.
 Provider-owned internal TDD and Code Review stay represented by `implement`
 unless separately selected; independently executed framework Verification stays
 visible.
 
-The marker is optional instruction-level diagnostics, not host telemetry or a
-completion requirement. Do not reroute, load skills, execute workflows, explain
+The marker is required instruction-level observability, not host telemetry or
+proof of execution. Do not reroute, load skills, execute workflows, explain
 rejected routes, or write state merely to produce it.

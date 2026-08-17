@@ -29,11 +29,17 @@ VERIFICATION_LOG = PurePosixPath(".behavior-evidence/verification.jsonl")
 SCHEMA_VERSION = 1
 MINIMUM_PYTHON = (3, 11)
 ID_PATTERN = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
-ROUTE_PATTERN = re.compile(r"\[route:\s*router\s*(.*?)\]", re.IGNORECASE)
+ROUTE_CANDIDATE_PATTERN = re.compile(r"\[route:", re.IGNORECASE)
+ROUTE_PATTERN = re.compile(
+    r"\[route:\s*router\s*(?:→|->)\s*"
+    r"([a-z0-9]+(?:-[a-z0-9]+)*(?:\s*(?:→|->)\s*[a-z0-9]+(?:-[a-z0-9]+)*)*)\s*\]",
+    re.IGNORECASE,
+)
 URL_PATTERN = re.compile(r"https?://", re.IGNORECASE)
 
 EXPECTATIONS = {
     "task_completed",
+    "repository_unchanged",
     "appropriate_validation",
     "external_fact_researched",
     "uncertainty_recorded_or_blocked",
@@ -88,6 +94,7 @@ SCENARIO_FIELDS = {
     "route_must_not_include",
     "state_must_include",
     "state_must_not_include",
+    "report_must_include",
     "assertions",
 }
 
@@ -128,6 +135,7 @@ class Scenario:
     route_must_not_include: tuple[str, ...]
     state_must_include: tuple[PurePosixPath, ...]
     state_must_not_include: tuple[PurePosixPath, ...]
+    report_must_include: tuple[str, ...]
     assertions: tuple[Assertion, ...]
 
 
@@ -309,6 +317,11 @@ def load_scenario(path: Path) -> Scenario:
             f"scenario {path.name} both requires and prohibits state inputs: "
             + ", ".join(sorted(item.as_posix() for item in overlap))
         )
+    report_must_include = string_list(
+        raw.get("report_must_include", []),
+        f"{path.name}.report_must_include",
+        allow_empty=True,
+    )
     verification_command = raw.get("verification_command", "")
     if not isinstance(verification_command, str):
         raise BehaviorError(f"scenario {path.name} verification_command must be a string")
@@ -330,6 +343,7 @@ def load_scenario(path: Path) -> Scenario:
         route_must_not_include=tuple(item.lower() for item in route_exclusions),
         state_must_include=state_must_include,
         state_must_not_include=state_must_not_include,
+        report_must_include=report_must_include,
         assertions=assertions,
     )
 
@@ -377,6 +391,15 @@ def meaningful_changes(evidence: RunEvidence) -> set[str]:
         for path in result
         if path not in FRAMEWORK_CHANGE_PATHS
         and not any(path == prefix.rstrip("/") or path.startswith(prefix) for prefix in FRAMEWORK_CHANGE_PREFIXES)
+    }
+
+
+def repository_changes(evidence: RunEvidence) -> set[str]:
+    created, modified, deleted = changed_paths(evidence.before, evidence.after)
+    return {
+        path
+        for path in created | modified | deleted
+        if path != ".behavior-evidence" and not path.startswith(".behavior-evidence/")
     }
 
 
@@ -442,9 +465,18 @@ def route_excluded(evidence: RunEvidence) -> tuple[bool, str]:
     matches = sorted(component for component in evidence.route_components if component.lower() in excluded)
     if matches:
         return False, "reported route contains prohibited components: " + ", ".join(matches)
-    if not evidence.route_components:
-        return True, "no route marker was emitted; route evidence is optional"
     return True, "reported route does not contain prohibited components"
+
+
+def route_visible(evidence: RunEvidence) -> tuple[bool, str]:
+    candidates = tuple(ROUTE_CANDIDATE_PATTERN.finditer(evidence.stdout))
+    valid = tuple(ROUTE_PATTERN.finditer(evidence.stdout))
+    ends_response = bool(valid) and evidence.stdout.rstrip().endswith(valid[-1].group(0))
+    passed = len(candidates) == 1 and len(valid) == 1 and ends_response
+    return (
+        passed,
+        f"route candidates={len(candidates)}, valid markers={len(valid)}, ends response={ends_response}",
+    )
 
 
 def state_or_decision_changed(evidence: RunEvidence) -> bool:
@@ -512,6 +544,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     preserved_ok, preserved_detail = preserved(evidence)
     forbidden_ok, forbidden_detail = forbidden_created(evidence)
     route_ok, route_detail = route_excluded(evidence)
+    visible, visibility_detail = route_visible(evidence)
+    results.append(CheckResult("route-marker:exactly-one-valid-final", visible, visibility_detail))
     status = evidence.report.get("status")
     blockers = tuple(item for item in report_list(evidence.report, "blockers") if isinstance(item, str) and item)
     providers_executed_raw = evidence.report.get("providers_executed")
@@ -537,14 +571,41 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
                 f"missing required state={missing_state}; loaded excluded state={excessive_state}",
             )
         )
+    if evidence.scenario.report_must_include:
+        summary = evidence.report.get("summary")
+        report_text = "\n".join(
+            item
+            for item in (
+                summary if isinstance(summary, str) else "",
+                *blockers,
+            )
+            if item
+        ).casefold()
+        missing_report_details = [
+            item
+            for item in evidence.scenario.report_must_include
+            if item.casefold() not in report_text
+        ]
+        results.append(
+            CheckResult(
+                "report-details:required",
+                not missing_report_details,
+                f"missing required report details={missing_report_details}",
+            )
+        )
     sources = tuple(item for item in report_list(evidence.report, "research_sources") if isinstance(item, str) and URL_PATTERN.match(item))
     observed_codes = observed_verification_exit_codes(evidence)
     reported_codes = reported_verification_exit_codes(evidence)
     verification_detail = f"observed exits={list(observed_codes)}, reported exits={list(reported_codes)}"
     changes = meaningful_changes(evidence)
+    all_repository_changes = repository_changes(evidence)
 
     expected_checks: dict[str, tuple[bool, str]] = {
         "task_completed": (status == "success" and evidence.returncode == 0, f"agent status={status!r}, exit={evidence.returncode}"),
+        "repository_unchanged": (
+            not all_repository_changes,
+            f"repository changed paths={sorted(all_repository_changes)}",
+        ),
         "appropriate_validation": (bool(observed_codes) and observed_codes[-1] == 0, verification_detail),
         "external_fact_researched": (bool(sources), f"research sources={len(sources)}"),
         "uncertainty_recorded_or_blocked": (
@@ -561,8 +622,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
             verification_detail,
         ),
         "blocked_cleanly": (
-            status == "blocked" and bool(blockers) and not changes,
-            f"status={status!r}, blockers={len(blockers)}, meaningful changes={sorted(changes)}",
+            status == "blocked" and bool(blockers) and not all_repository_changes,
+            f"status={status!r}, blockers={len(blockers)}, repository changes={sorted(all_repository_changes)}",
         ),
         "project_state_preserved": (preserved_ok, preserved_detail),
         "unresolved_unknowns_preserved": (preserved_ok, preserved_detail),
@@ -645,6 +706,7 @@ def build_prompt(scenario: Scenario) -> str:
     prohibited = "\n".join(f"- {item}" for item in scenario.must_not) or "- none beyond the project policy"
     required_state = "\n".join(f"- {item}" for item in scenario.state_must_include) or "- none"
     excluded_state = "\n".join(f"- {item}" for item in scenario.state_must_not_include) or "- none"
+    required_report = "\n".join(f"- {item}" for item in scenario.report_must_include) or "- none beyond the scenario request"
     validation = scenario.verification_command or "Use the smallest validation supported by repository evidence."
     return f"""You are running an opt-in Agentic Workflow behavioral smoke test in a disposable repository.
 
@@ -668,6 +730,9 @@ State paths that must be consulted for this scenario:
 State paths that must not be loaded for this scenario:
 {excluded_state}
 
+Details that must appear in the report summary or blockers:
+{required_report}
+
 Repository validation guidance:
 {validation}
 
@@ -681,10 +746,10 @@ Work normally within this repository. Do not expose hidden reasoning or chain-of
   "state_used": ["repository-relative state or decision path actually used"],
   "providers_selected": ["provider selected by routing, if any"],
   "providers_executed": ["provider actually invoked, if any"],
-  "blockers": ["specific unresolved blocker when blocked"],
-  "route_marker": "optional truthful route marker"
+  "blockers": ["specific unresolved blocker when blocked"]
 }}
 Use empty arrays when a category is not applicable. This report is public test evidence, not private reasoning.
+End your user-facing final response with exactly one truthful route marker.
 """
 
 
@@ -745,11 +810,10 @@ def load_verification(path: Path) -> tuple[Mapping[str, object], ...]:
     return tuple(events)
 
 
-def route_components(stdout: str, stderr: str, report: Mapping[str, object]) -> tuple[str, ...]:
-    text = "\n".join((stdout, stderr, str(report.get("route_marker", ""))))
+def route_components(stdout: str) -> tuple[str, ...]:
     result: list[str] = []
-    for match in ROUTE_PATTERN.finditer(text):
-        body = match.group(1).strip()
+    for match in ROUTE_PATTERN.finditer(stdout):
+        body = match.group(1)
         for component in re.split(r"\s*(?:->|→)\s*", body):
             cleaned = component.strip().lower()
             if cleaned:
@@ -803,7 +867,7 @@ def run_live_scenario(
         returncode=result.returncode,
         report=report,
         verification=verification,
-        route_components=route_components(result.stdout, result.stderr, report),
+        route_components=route_components(result.stdout),
     )
     return evidence, evaluate(evidence)
 
