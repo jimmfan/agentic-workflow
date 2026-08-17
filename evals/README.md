@@ -71,7 +71,7 @@ The `baseline` variant receives only the fixture and `.git`; it receives no Agen
 The `workflow` variant is prepared from the same fixture, then the harness invokes this checkout's real `adopt.py install` core-adoption path with the `unreleased-local-package` revision before making the setup commit. This installs the local source under evaluation. It intentionally does not invoke the higher-level provider installer, because optional provider downloads would introduce network and availability differences merely to prepare a fixture. Framework-created setup files are in the setup snapshot and are excluded from post-setup agent-change counts.
 
 That exclusion remains part of these historical neutral Direct/Resume conditions;
-do not silently turn them into provider-enabled trials. ADR-0018 removes the
+do not silently turn them into provider-enabled trials. ADR-0020 removes the
 former network confounder for new provider-focused campaigns: a future harness
 may invoke the normal lifecycle fully offline, but it must declare that condition
 explicitly and record the Agentic Workflow revision, upstream commit, effective

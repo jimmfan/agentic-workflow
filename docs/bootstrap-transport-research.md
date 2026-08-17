@@ -46,7 +46,7 @@ installed the core and four local workflow skills, then correctly warned that
 the optional provider projection could not be installed because
 `bundled provider snapshot checksum differs from the declaration`. The package
 therefore cannot currently preserve the complete routed provider behavior required by
-[ADR-0018](decisions/0018-bundle-pinned-provider-snapshot.md).
+[ADR-0020](decisions/0020-own-the-declared-provider-projection.md).
 
 Do not replace bootstrap with `gh skill` unless either GitHub CLI gains a mode
 that injects metadata only into the selected skill's root manifest, or Agentic
@@ -298,7 +298,7 @@ syntax), and it still lacks an automatic, full immutable commit value for
 
 **Repository-observed and live GitHub query.** `git tag --list` is empty, and
 `gh release list --repo jimmfan/agentic-workflow` returned no Releases. The
-package declares version `0.12.0`, but no tag or release currently publishes
+package declares version `0.13.0`, but no tag or release currently publishes
 that version. The sole workflow is `.github/workflows/verify.yml`; it runs
 `verify_package.py --tests` on Ubuntu and Windows for pull requests and pushes
 to `main`, with `contents: read`. There is no package builder, release trigger,

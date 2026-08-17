@@ -22,9 +22,10 @@ loaded routing contract are the runtime; there is no separate controller.
   outrank profiles, memory, and chat.
 - Use `docs/decisions/` as the default Architecture Decision Record (ADR)
   namespace for accepted, lasting architecture or contract decisions unless
-  project instructions name another canonical location. Workflow decision
-  records do not replace ADRs; promote a lasting decision by creating or
-  updating the canonical ADR and linking the records.
+  project instructions name another canonical location. Current ADRs are
+  authoritative; superseded ADRs are history. Workflow decision records do not
+  replace ADRs; promote a lasting decision by creating or updating the canonical
+  ADR and linking the records.
 - Authorized mutating work is complete only after materially affected relevant
   Wayfinder state is reconciled; read-only work reports staleness without
   mutating it. Follow the dedicated state contract and do not inspect unrelated
@@ -47,6 +48,8 @@ loaded routing contract are the runtime; there is no separate controller.
   compatibility. Honor an explicit instruction not to use Wayfinder.
 - Reuse trustworthy evidence and prefer provider-owned methodology over repeated
   framework stages.
+- Treat a choice the user explicitly resolves as settled. Reopen it only for new
+  conflicting evidence, an authorization or safety issue, or the user's request.
 - Load detailed policy and context only after it becomes relevant to the route.
 
 ## Load only when relevant

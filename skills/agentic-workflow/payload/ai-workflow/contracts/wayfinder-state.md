@@ -17,6 +17,13 @@ Do not create a second copy under `.scratch/`, another planning directory, or an
 external tracker. Do not create or update `.ai-workflow-state/active.md` for a
 Wayfinder effort.
 
+Keep `map.md` self-contained as the effort's coordination and re-entry point.
+Do not point it at a large external planning document that holds the effort's
+questions, evidence, decisions, or frontier; that document would be acting as a
+second map. Canonical specifications, research, ADRs, source, tests, and other
+evidence stay in their owning locations and are linked from the map rather than
+copied into Wayfinder.
+
 ## Ownership and locations
 
 All paths below are project-owned durable data:
@@ -110,16 +117,18 @@ ordinary implementation detail stays in the implementation route.
 - `U#` is an unresolved question that materially affects the destination.
 - `D#` is a durable project decision.
 - `T#` is concrete executable work.
-- An upstream decision, investigation, research, prototype, grilling, or human
-  clarification ticket normally becomes a U# with an appropriate resolution
-  mode. An upstream `task` ticket becomes a T# only when it is genuinely
-  executable work, often linked to the U# it unblocks.
+- Upstream Wayfinder tickets are decision or investigation questions unless
+  their resolution is concrete executable work. Map the former to U# even when
+  upstream calls them tasks. Use T# only for executable work, often linked to
+  the U# it unblocks.
 - Resolving a U# updates its evidence, resolution, and status. Create or update
   a D# only when the result is a durable project decision. Create a T# only when
   a concrete executable outcome exists and decomposition adds value. Never
   force every U# to produce a D# or every D# to produce a T#.
-- Assign the next unused positive number for that type within the effort. Never
-  reuse an ID, and never change it when a title or slug changes.
+- The U#/T# distinction governs newly created local items; it is not a reason to
+  renumber an existing item. Assign the next unused positive number for that
+  type within the effort. Never reuse an ID, and never change it when a title,
+  slug, or classification changes.
 - Use repository-relative Markdown links and concise `Related` or `Blocked by`
   lines for many-to-many relationships. Refer to an item with both its stable ID
   and readable title, for example `D2 — Keep compact JSON` linked to
@@ -165,6 +174,11 @@ facts, unknowns, blockers, assumptions, and work that can proceed, while empty
 or still-foggy sections remain short. Add U#/D#/T# children only when a sharp
 question, durable decision, or executable outcome actually exists; the map
 grows with the problem rather than anticipating ceremony.
+
+A new map may legitimately have zero children while its fog is still being
+sharpened. A mature map that points to an external planning document and still
+has no U# or T# children is unfinished, not minimal: the decomposition has not
+actually happened.
 
 Link details instead of restating them. A precise material question belongs in
 an unknown file, not in `Not yet specified`; fog stays on the map until the

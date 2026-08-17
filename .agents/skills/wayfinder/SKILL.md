@@ -31,11 +31,20 @@ ignore this section and use the unchanged upstream method normally.
   incrementally, progressively load detail, and derive the frontier from current
   status and dependencies.
 - Map a sharp decision, investigation, research, prototype, grilling, or human
-  clarification question to U#. Update that U# with evidence and resolution.
-  Create or update D# only when the answer is a durable project decision. Create
-  T# only for concrete executable work when decomposition adds value. An
-  upstream `task` ticket becomes T# only when it is truly executable work, often
-  linked to the U# it unblocks. Never force U# -> D# -> T# as ceremony.
+  clarification question to U#. Upstream Wayfinder decision or investigation
+  tickets are U# items in local mode, even when upstream calls them tasks. Update
+  that U# with evidence and resolution. Create or update D# only when the answer
+  is a durable project decision. Create T# only for concrete executable work
+  when decomposition adds value. The U#/T# split applies when creating local
+  items; never renumber an existing ID to remap it, and never force
+  U# -> D# -> T# as ceremony.
+- Keep the map self-contained as the effort's coordination and re-entry point.
+  Do not outsource its questions, evidence, decisions, or frontier to a large
+  external planning document. Canonical specifications, research, ADRs, source,
+  tests, and other evidence remain in their owning locations and are linked from
+  the map rather than copied into it. A new map may have no U#/T# children while
+  its fog is still being sharpened; zero children in a mature map is a sign that
+  decomposition has not happened.
 - Wayfinder owns durable coordination, not every action. Debugging, Research,
   Prototype, Grilling, Domain Modeling, human clarification, and Implementation
   may resolve or consume an item while the map remains canonical. Mid-task

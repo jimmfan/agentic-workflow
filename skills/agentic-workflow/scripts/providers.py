@@ -71,11 +71,20 @@ ignore this section and use the unchanged upstream method normally.
   incrementally, progressively load detail, and derive the frontier from current
   status and dependencies.
 - Map a sharp decision, investigation, research, prototype, grilling, or human
-  clarification question to U#. Update that U# with evidence and resolution.
-  Create or update D# only when the answer is a durable project decision. Create
-  T# only for concrete executable work when decomposition adds value. An
-  upstream `task` ticket becomes T# only when it is truly executable work, often
-  linked to the U# it unblocks. Never force U# -> D# -> T# as ceremony.
+  clarification question to U#. Upstream Wayfinder decision or investigation
+  tickets are U# items in local mode, even when upstream calls them tasks. Update
+  that U# with evidence and resolution. Create or update D# only when the answer
+  is a durable project decision. Create T# only for concrete executable work
+  when decomposition adds value. The U#/T# split applies when creating local
+  items; never renumber an existing ID to remap it, and never force
+  U# -> D# -> T# as ceremony.
+- Keep the map self-contained as the effort's coordination and re-entry point.
+  Do not outsource its questions, evidence, decisions, or frontier to a large
+  external planning document. Canonical specifications, research, ADRs, source,
+  tests, and other evidence remain in their owning locations and are linked from
+  the map rather than copied into it. A new map may have no U#/T# children while
+  its fog is still being sharpened; zero children in a mature map is a sign that
+  decomposition has not happened.
 - Wayfinder owns durable coordination, not every action. Debugging, Research,
   Prototype, Grilling, Domain Modeling, human clarification, and Implementation
   may resolve or consume an item while the map remains canonical. Mid-task
@@ -175,6 +184,10 @@ def load_provider() -> Provider:
     hosts = raw.get("hosts")
     if not isinstance(hosts, dict) or not hosts:
         raise ProviderError("provider declaration needs hosts")
+    configuration = raw.get("configuration")
+    if not isinstance(configuration, dict):
+        raise ProviderError("provider declaration needs configuration definitions")
+    configuration_names = set(configuration)
     result: list[ProviderSkill] = []
     for item in skills:
         if not isinstance(item, dict):
@@ -194,6 +207,14 @@ def load_provider() -> Provider:
             for policy in invocation.values()
         ):
             raise ProviderError(f"provider skill {name} has an invalid invocation policy")
+        requirements = item.get("requires_configuration")
+        if (
+            not isinstance(requirements, list)
+            or not all(isinstance(requirement, str) for requirement in requirements)
+            or len(requirements) != len(set(requirements))
+            or not all(requirement in configuration_names for requirement in requirements)
+        ):
+            raise ProviderError(f"provider skill {name} has invalid configuration requirements")
         adapter = item.get("agentic_workflow_adapter")
         adapter_name: str | None = None
         upstream_body_sha256: str | None = None
@@ -228,7 +249,15 @@ def load_provider() -> Provider:
             raise ProviderError(
                 f"provider skill {name} adapter does not match supported host policies"
             )
-        result.append(ProviderSkill(name, path, invocation, adapter_name, upstream_body_sha256))
+        result.append(
+            ProviderSkill(
+                name,
+                path,
+                invocation,
+                adapter_name,
+                upstream_body_sha256,
+            )
+        )
     if len({skill.name for skill in result}) != len(result):
         raise ProviderError("provider skill names must be unique")
     return Provider(
@@ -536,45 +565,142 @@ def prepare_staged_projection(staging_root: Path, provider: Provider) -> Path:
 
 
 def projection_state(root: Path, staged_skills: Path, skill: ProviderSkill) -> str:
-    state = destination_state(root, skill.name)
-    if state == "missing":
-        return "missing"
-    if state != "present":
-        return "conflict"
+    directory = root / ".agents" / "skills" / skill.name
+    if not directory.exists() and not directory.is_symlink():
+        return "repairable"
+    if directory.is_symlink() or not directory.is_dir():
+        return "blocked"
     try:
-        matches = tree_digest(root / ".agents" / "skills" / skill.name) == tree_digest(
-            staged_skills / skill.name
-        )
+        matches = tree_digest(directory) == tree_digest(staged_skills / skill.name)
     except (OSError, SnapshotTreeError):
-        return "conflict"
-    return "ready" if matches else "conflict"
+        return "blocked"
+    return "ready" if matches else "repairable"
 
 
-def project_missing(root: Path, staged_skills: Path, missing: list[ProviderSkill]) -> None:
+def move_path(source: Path, destination: Path) -> None:
+    """Rename one path; kept separate so rollback behavior can be fault-tested."""
+    source.replace(destination)
+
+
+def rollback_moves(moves: list[tuple[Path, Path]]) -> list[str]:
+    """Restore `(current, original)` paths in reverse transaction order."""
+    errors: list[str] = []
+    for current, original in reversed(moves):
+        if original.exists() or original.is_symlink():
+            errors.append(f"{original}: rollback destination is occupied")
+            continue
+        try:
+            move_path(current, original)
+        except OSError as exc:
+            errors.append(f"{original}: {exc}")
+    return errors
+
+
+def cleanup_recovery_directory(path: Path) -> str | None:
+    try:
+        shutil.rmtree(path)
+    except OSError as exc:
+        return f"recovery cleanup failed at {path}: {exc}"
+    return None
+
+
+def replace_projection(
+    root: Path,
+    staged_skills: Path,
+    skills: list[ProviderSkill],
+) -> list[ProviderSkill]:
     destinations = root / ".agents" / "skills"
     if destinations.is_symlink() or (destinations.exists() and not destinations.is_dir()):
         raise ProviderError("optional provider destination became unsafe during staging")
-    for skill in missing:
-        if destination_state(root, skill.name) != "missing":
-            raise ProviderError(f"provider destination appeared during staging: {skill.name}")
+    states = {skill.name: projection_state(root, staged_skills, skill) for skill in skills}
+    blocked = [skill.name for skill in skills if states[skill.name] == "blocked"]
+    if blocked:
+        raise ProviderError(
+            "provider destinations became unsafe during staging: " + ", ".join(blocked)
+        )
+    changed = [skill for skill in skills if states[skill.name] == "repairable"]
+    if not changed:
+        return []
     destinations.mkdir(parents=True, exist_ok=True)
 
-    moved: list[tuple[Path, Path]] = []
+    rollback_root = Path(
+        tempfile.mkdtemp(prefix=".ai-workflow-provider-rollback-", dir=root)
+    )
+    backed_up: list[tuple[Path, Path]] = []
+    installed: list[tuple[Path, Path]] = []
     try:
-        for skill in missing:
+        for skill in changed:
+            destination = destinations / skill.name
+            if destination.exists():
+                backup = rollback_root / skill.name
+                move_path(destination, backup)
+                backed_up.append((backup, destination))
+        for skill in changed:
             source = staged_skills / skill.name
             destination = destinations / skill.name
-            source.replace(destination)
-            moved.append((source, destination))
+            move_path(source, destination)
+            installed.append((destination, source))
     except OSError as exc:
-        rollback_errors: list[str] = []
-        for source, destination in reversed(moved):
-            try:
-                destination.replace(source)
-            except OSError as rollback_exc:
-                rollback_errors.append(f"{destination}: {rollback_exc}")
-        detail = f"; rollback failed for {', '.join(rollback_errors)}" if rollback_errors else ""
-        raise ProviderError(f"cannot project bundled provider skills: {exc}{detail}") from exc
+        rollback_errors = rollback_moves(installed)
+        rollback_errors.extend(rollback_moves(backed_up))
+        if rollback_errors:
+            detail = f"; rollback incomplete; preserved recovery data at {rollback_root}: " + ", ".join(
+                rollback_errors
+            )
+        else:
+            detail = "; prior projection restored"
+            cleanup_error = cleanup_recovery_directory(rollback_root)
+            if cleanup_error:
+                detail += f"; {cleanup_error}"
+        raise ProviderError(f"cannot replace bundled provider skills: {exc}{detail}") from exc
+    cleanup_error = cleanup_recovery_directory(rollback_root)
+    if cleanup_error:
+        print(
+            f"WARNING: Provider replacement committed; {cleanup_error}",
+            file=sys.stderr,
+        )
+    return changed
+
+
+def remove_projection(root: Path, skills: list[ProviderSkill]) -> list[ProviderSkill]:
+    destinations = root / ".agents" / "skills"
+    if destinations.is_symlink() or (destinations.exists() and not destinations.is_dir()):
+        raise ProviderError("optional provider destination is unsafe")
+    present: list[ProviderSkill] = []
+    for skill in skills:
+        destination = destinations / skill.name
+        if not destination.exists() and not destination.is_symlink():
+            continue
+        if destination.is_symlink() or not destination.is_dir():
+            raise ProviderError(f"provider destination is unsafe: {skill.name}")
+        present.append(skill)
+    if not present:
+        return []
+
+    removal_root = Path(tempfile.mkdtemp(prefix=".ai-workflow-provider-remove-", dir=root))
+    moved: list[tuple[Path, Path]] = []
+    try:
+        for skill in present:
+            source = destinations / skill.name
+            backup = removal_root / skill.name
+            move_path(source, backup)
+            moved.append((backup, source))
+    except OSError as exc:
+        rollback_errors = rollback_moves(moved)
+        if rollback_errors:
+            detail = f"; rollback incomplete; preserved recovery data at {removal_root}: " + ", ".join(
+                rollback_errors
+            )
+        else:
+            detail = "; prior projection restored"
+            cleanup_error = cleanup_recovery_directory(removal_root)
+            if cleanup_error:
+                detail += f"; {cleanup_error}"
+        raise ProviderError(f"cannot remove bundled provider skills: {exc}{detail}") from exc
+    cleanup_error = cleanup_recovery_directory(removal_root)
+    if cleanup_error:
+        print(f"WARNING: Provider removal committed; {cleanup_error}", file=sys.stderr)
+    return present
 
 
 def status(root: Path) -> int:
@@ -586,19 +712,21 @@ def status(root: Path) -> int:
             for skill in provider.skills
         }
     ready = sum(state == "ready" for state in states.values())
-    missing = sum(state == "missing" for state in states.values())
-    conflicts = sum(state == "conflict" for state in states.values())
+    repairable = sum(state == "repairable" for state in states.values())
+    blocked = sum(state == "blocked" for state in states.values())
     print(
         f"Optional provider: {provider.repository}@{provider.version} "
         f"({provider.resolved_commit})"
     )
-    print(f"Optional provider skills: {ready} ready, {missing} missing, {conflicts} conflicts")
-    if missing:
-        print("INFO: Rerun install or update to project missing skills from the bundled snapshot.")
-    if conflicts:
-        names = ", ".join(name for name, state in states.items() if state == "conflict")
-        print(f"WARNING: Differing same-named provider content was preserved: {names}")
-    return 1 if missing or conflicts else 0
+    print(
+        f"Optional provider skills: {ready} ready, {repairable} repairable, {blocked} blocked"
+    )
+    if repairable:
+        print("INFO: Rerun install or update to restore the complete bundled projection.")
+    if blocked:
+        names = ", ".join(name for name, state in states.items() if state == "blocked")
+        print(f"WARNING: Unsafe provider destinations block lifecycle changes: {names}")
+    return 1 if repairable or blocked else 0
 
 
 def install(root: Path, dry_run: bool) -> int:
@@ -612,31 +740,30 @@ def install(root: Path, dry_run: bool) -> int:
             skill.name: projection_state(root, staged_skills, skill)
             for skill in provider.skills
         }
-        conflicts = [skill for skill in provider.skills if states[skill.name] == "conflict"]
-        missing = [skill for skill in provider.skills if states[skill.name] == "missing"]
+        blocked = [skill for skill in provider.skills if states[skill.name] == "blocked"]
+        repairable = [skill for skill in provider.skills if states[skill.name] == "repairable"]
         ready = [skill for skill in provider.skills if states[skill.name] == "ready"]
 
-        for skill in ready:
-            print(f"reuse exact optional provider skill {skill.name}")
-        for skill in conflicts:
-            print(f"preserve differing optional provider skill {skill.name}: conflict", file=sys.stderr)
-        if conflicts:
-            if missing:
-                print(
-                    "WARNING: No bundled provider skills were installed because the declared set "
-                    "contains conflicts.",
-                    file=sys.stderr,
-                )
+        for skill in blocked:
+            print(f"blocked unsafe optional provider skill {skill.name}", file=sys.stderr)
+        if blocked:
+            print("WARNING: No provider changes were made because the projection is blocked.", file=sys.stderr)
             return 1
         if dry_run:
-            for skill in missing:
-                print(f"would install bundled optional provider skill {skill.name}")
+            for skill in repairable:
+                print(f"would reconcile bundled optional provider skill {skill.name}")
+            for skill in ready:
+                print(f"would reuse exact optional provider skill {skill.name}")
             return 0
 
-        project_missing(root, staged_skills, missing)
-        for skill in missing:
+        changed = replace_projection(root, staged_skills, list(provider.skills))
+        changed_names = {skill.name for skill in changed}
+        for skill in provider.skills:
+            if skill.name not in changed_names:
+                print(f"reuse exact optional provider skill {skill.name}")
+                continue
             print(
-                f"installed optional provider skill {skill.name} from bundled "
+                f"reconciled optional provider skill {skill.name} from bundled "
                 f"{provider.repository}@{provider.version} ({provider.resolved_commit})"
             )
 
@@ -646,16 +773,28 @@ def install(root: Path, dry_run: bool) -> int:
 
 def remove(root: Path, dry_run: bool) -> int:
     provider = load_provider()
-    present: list[str] = []
-    for skill in provider.skills:
-        state = destination_state(root, skill.name)
-        if state == "missing":
-            continue
-        present.append(f"{skill.name} ({state})")
-    prefix = "would preserve" if dry_run else "preserved"
-    if present:
-        print(f"{prefix} optional provider directories: {', '.join(present)}")
-    print("INFO: Provider removal is intentionally manual because v0 keeps no ownership database.")
+    if dry_run:
+        present: list[ProviderSkill] = []
+        for skill in provider.skills:
+            destination = root / ".agents" / "skills" / skill.name
+            if not destination.exists() and not destination.is_symlink():
+                continue
+            if destination.is_symlink() or not destination.is_dir():
+                raise ProviderError(f"provider destination is unsafe: {skill.name}")
+            present.append(skill)
+        if present:
+            print(
+                "would remove declared optional provider directories: "
+                + ", ".join(skill.name for skill in present)
+            )
+    else:
+        removed = remove_projection(root, list(provider.skills))
+        if removed:
+            print(
+                "removed declared optional provider directories: "
+                + ", ".join(skill.name for skill in removed)
+            )
+    print("OK: Unrelated .agents/skills directories were preserved.")
     return 0
 
 

@@ -42,27 +42,37 @@
   {
     "id": "isolate-provider-failure",
     "operation": "install",
-    "expected": "A missing GitHub CLI or provider failure warns while core installation succeeds."
+    "expected": "A bundled-provider validation or projection failure warns while core installation succeeds."
   },
   {
     "id": "project-complete-provider-inventory",
     "operation": "install-update",
-    "expected": "Fresh install and update project every missing declared provider skill into the supported shared discovery location as one validated set."
+    "expected": "Fresh install and update reconcile every repairable declared provider skill into the supported shared discovery location as one validated set."
   },
   {
     "id": "reject-partial-provider-projection",
     "operation": "install-update",
-    "expected": "A failed command or omitted declared skill commits none of the currently missing staged provider set."
+    "expected": "A failed move or blocked declaration commits none of the repairable staged provider set, and a move failure restores the prior projection."
+  },
+  {
+    "id": "report-provider-recovery-cleanup-truthfully",
+    "operation": "install-update-remove",
+    "expected": "Failure to delete obsolete recovery data after the target transaction commits reports a warning and exact recovery path without falsely reporting that replacement or removal failed."
+  },
+  {
+    "id": "rollback-provider-removal",
+    "operation": "remove",
+    "expected": "A provider move failure restores every already-moved declared directory, while an incomplete rollback reports the retained recovery path without claiming all directories were preserved."
   },
   {
     "id": "adapt-wayfinder-effective-local-mode",
     "operation": "install-update-status-remove",
-    "expected": "Recognized pinned Wayfinder content receives the local-mode adapter and activation metadata idempotently; status and remove distinguish the adapted form while preserving the provider directory."
+    "expected": "Recognized pinned Wayfinder content receives the local-mode adapter and activation metadata idempotently; raw, older, or modified declared content is repairable and remove deletes the declared directory."
   },
   {
     "id": "reject-unknown-wayfinder-method-body",
     "operation": "install-update",
-    "expected": "A changed pinned method body, source metadata, adapter marker, or activation value is preserved and reported without partially writing either provider file."
+    "expected": "A changed bundled method body, source metadata, adapter marker, or activation value is rejected before any target provider directory is mutated."
   },
   {
     "id": "support-cp1252-console",

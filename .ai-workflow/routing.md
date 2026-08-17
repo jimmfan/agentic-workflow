@@ -99,9 +99,11 @@ user asks to enable that provider behavior; never run it automatically. Do not
 check setup for unrelated direct work.
 
 Codex and GitHub Copilot discover project skills under `.agents/skills`.
-Claude currently has no `.claude/skills` projection, so skill-backed routes are
-unavailable there while direct host-native work remains available. This is an
-instruction contract, not a background runtime or enforcement controller.
+Native Claude Code currently has no `.claude/skills` projection, so skill-backed
+routes are unavailable there while direct host-native work remains available.
+A Claude model selected inside GitHub Copilot still follows the GitHub Copilot
+host declaration. This is an instruction contract, not a background runtime or
+enforcement controller.
 
 ## Composition and workflow ownership
 

@@ -34,7 +34,7 @@ evidence, not the reason for this verdict.
 
 | Concern | Effective behavior after the fix | Evidence/path | Pass/fail |
 | --- | --- | --- | --- |
-| Instruction precedence | A leading, delimited local-mode block says that it and the local contracts override incompatible tracker mechanics in the untouched upstream body. When the contract is absent, upstream behavior is restored. | `.agents/skills/wayfinder/SKILL.md`; `docs/decisions/0015-adapt-wayfinder-effective-local-mode.md` | Pass |
+| Instruction precedence | A leading, delimited local-mode block says that it and the local contracts override incompatible tracker mechanics in the untouched upstream body. When the contract is absent, upstream behavior is restored. | `.agents/skills/wayfinder/SKILL.md`; `docs/decisions/0020-own-the-declared-provider-projection.md` | Pass |
 | Canonical storage | The only local Wayfinder representation is `.ai-workflow-state/wayfinder/<effort>/`; `.scratch/`, external tracker copies, and a global active file are forbidden. | Root policy; routing contract; Wayfinder state contract; adapter block | Pass |
 | U/D/T ontology | Sharp questions use U#, durable choices use D#, and concrete executable outcomes use T#. Resolution does not force a U# -> D# -> T# pipeline. | Wayfinder state contract, `Identifiers and relationships`; adapter block; routing scenarios | Pass |
 | Method versus mechanics | Destination, low-resolution orientation, fog, incremental uncertainty reduction, progressive detail, and a dependency-derived frontier remain upstream-owned. Tracker setup, assignment, comments, closing, and tracker-native blocking are inactive only in local mode. | Adapter block followed by byte-preserved upstream method; provider declaration body fingerprint | Pass |

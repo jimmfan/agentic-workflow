@@ -6,6 +6,7 @@ import unittest
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 
 
 class RoutingContractTests(unittest.TestCase):
@@ -63,6 +64,41 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("do not create a parallel ADR namespace", normalized_contract)
         self.assertIn("Do not promote every workflow choice", normalized_contract)
         self.assertIn("link the workflow record", normalized_contract)
+        self.assertIn("maintained set of current decisions", normalized_contract)
+        self.assertIn("recoverable version-control history", normalized_contract)
+
+    def test_adr_index_separates_current_records_from_superseded_history(self) -> None:
+        index = (REPOSITORY_ROOT / "docs/decisions/README.md").read_text()
+        current, superseded = index.split("## Superseded tombstones", 1)
+        for identifier in ("ADR-0002", "ADR-0003", "ADR-0005", "ADR-0009"):
+            self.assertNotIn(identifier, current)
+            self.assertIn(identifier, superseded)
+        governance = (
+            REPOSITORY_ROOT
+            / "docs/decisions/0021-maintain-compact-current-decision-context.md"
+        ).read_text()
+        self.assertIn("- Status: accepted", governance)
+        self.assertIn("Treat a choice the user explicitly resolves as settled", governance)
+        self.assertIn("maintained set of current decisions", governance)
+
+    def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(self) -> None:
+        scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
+        scenario = next(item for item in scenarios if item["id"] == "selected-provider-cannot-execute")
+        provider = scenario["provider_invocations"][0]
+        self.assertEqual(scenario["host"], "github-copilot")
+        self.assertEqual(scenario["route_result"], "host-native-fallback")
+        self.assertFalse(provider["executed"])
+        self.assertIn("omit Wayfinder from the executed route marker", scenario["expected_behavior"])
+
+    def test_implementation_and_review_do_not_require_tracker_configuration(self) -> None:
+        declaration = json.loads(
+            (PACKAGE_ROOT / "payload/ai-workflow/providers.json").read_text()
+        )
+        skills = {item["name"]: item for item in declaration["provider"]["skills"]}
+        self.assertEqual(skills["implement"]["requires_configuration"], [])
+        self.assertEqual(skills["code-review"]["requires_configuration"], [])
+        self.assertIn("issue-tracker", skills["to-spec"]["requires_configuration"])
+        self.assertIn("issue-tracker", skills["to-tickets"]["requires_configuration"])
 
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -75,6 +111,16 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Canonical artifacts keep ownership of their content", contract)
         self.assertIn("never performs\nreconciliation writes", contract)
         self.assertIn("No\nhook, background process, global index", contract)
+
+    def test_resolved_preferences_and_wayfinder_smells_are_explicit(self) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        contract = (PACKAGE_ROOT / "payload/ai-workflow/contracts/wayfinder-state.md").read_text()
+        normalized_root = " ".join(root_policy.split())
+        normalized_contract = " ".join(contract.split())
+        self.assertIn("choice the user explicitly resolves as settled", normalized_root)
+        self.assertIn("not a reason to renumber an existing item", normalized_contract)
+        self.assertIn("large external planning document", normalized_contract)
+        self.assertIn("zero children", normalized_contract)
 
     def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())

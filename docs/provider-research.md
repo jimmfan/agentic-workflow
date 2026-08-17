@@ -103,7 +103,7 @@ the map itself as the re-entry point. Decision and investigation questions map
 to U#, durable project choices map to D#, and concrete executable work maps to
 T# only when it exists. This is a storage, re-entry, and item-lifecycle
 adaptation, not a copied planning method or provider fork; see ADR-0011 and
-ADR-0015.
+ADR-0020.
 
 The pinned upstream Wayfinder metadata disables model invocation in `SKILL.md`
 and `agents/openai.yaml`, while its discovery descriptions retain the upstream
@@ -112,7 +112,7 @@ and `agents/openai.yaml`, while its discovery descriptions retain the upstream
 inserts an authoritative local-mode section before the unchanged method body
 and changes the four known invocation/selection scalars. It requires the pinned
 method-body fingerprint, source metadata, and exact upstream or already-adapted
-values; unknown or modified content is preserved without a partial write. This
+values; unknown bundled input fails before target mutation. This
 makes the policy and configured local mechanics durable without rewriting the
 upstream method.
 
@@ -133,19 +133,24 @@ with the target. The snapshot records the annotated tag object, resolved commit,
 upstream root tree, and GitHub-injected per-skill tree metadata. Runtime setup is
 fully offline and requires no provider installer or package manager.
 
-Exact existing directories are reused without an ownership claim. A differing,
-malformed, independently installed, locally modified, or older directory is
-preserved as a conflict. If any conflict exists, no missing provider directory
-is added. Otherwise all missing directories move from same-filesystem staging as
-one small transaction. Status performs the same comparison without target
-writes; lifecycle continues to report core health separately.
+Exact existing directories are reused. Missing or different declared
+directories are repairable and replaced from same-filesystem staging as one
+small transaction; an unsafe declared path blocks the whole change. Status
+performs the same comparison without target writes; lifecycle continues to
+report core health separately. Unrelated skill directories are never included
+in the transaction. A post-commit recovery-directory cleanup failure reports a
+warning and its exact path without falsely claiming the target mutation failed.
 
-The framework records no target origin states, installed-file history,
-quarantine copies, or automatic upgrade/removal transaction. Remove never
-deletes provider directories automatically. A user who wants provider cleanup
-inspects and removes the corresponding `.agents/skills/<name>` path manually.
-This deliberate limitation prevents v0 lifecycle code from claiming ownership
-it cannot prove.
+The framework records no target origin states, installed-file history, or
+quarantine copies. The finite declaration is the ownership proof: lifecycle
+may replace and remove those exact directories, while all other skill names are
+preserved. Edits inside a declared directory are disposable.
+
+Implement and Code Review do not require issue-tracker configuration merely to
+run. They can consume a supplied or repository-local specification, and Code
+Review can explicitly report that no specification is available. To Spec and
+To Tickets retain their issue-tracker prerequisite because publishing tracker
+artifacts is their purpose.
 
 ## Selection and fallback
 
@@ -184,14 +189,14 @@ Before replacing the checked-in snapshot:
    and snapshot checksum together;
 6. run the repository release gate and temporary-project provider smoke tests;
 7. document any user-visible compatibility change; and
-8. keep existing provider directories preserved during target updates.
+8. verify that target update converges existing declared directories safely.
 
 Live upstream/network validation must be reported as live evidence. Hermetic
 fixtures prove only the local command and fallback boundaries.
 
 ## Deferred capabilities
 
-Automatic target upgrades, ownership tracking, removal, and multi-provider
-resolution are deferred. Add one only after a concrete failure
+Ownership tracking beyond the declaration and multi-provider resolution are
+deferred. Add one only after a concrete failure
 shows it is necessary for project data safety or reliable routing and simpler
 host/provider mechanisms are insufficient.

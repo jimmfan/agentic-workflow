@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+from contextlib import redirect_stderr, redirect_stdout
 import hashlib
 import importlib.util
 import io
@@ -52,6 +53,7 @@ def load_module(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -461,21 +463,22 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = run_script(package_copy / "scripts/lifecycle.py", "remove", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("Core removal will continue; provider directories remain preserved", result.stderr)
+        self.assertIn("Core removal will continue; inspect the provider error", result.stderr)
         self.assertNotIn("core router and local workflows remain usable", result.stderr)
         self.assertFalse((self.project / ".ai-workflow").exists())
         self.assertEqual(provider_file.read_text(), "preserve provider bytes\n")
 
-    def test_existing_provider_content_is_preserved(self) -> None:
+    def test_existing_declared_provider_content_is_replaced(self) -> None:
         directory = self.project / ".agents/skills/wayfinder"
         directory.mkdir(parents=True)
         (directory / "personal.txt").write_text("do not touch\n")
         result = run_script(PROVIDERS, "install", self.project)
 
-        self.assertNotEqual(result.returncode, 0)
-        self.assertEqual((directory / "personal.txt").read_text(), "do not touch\n")
-        for name in self.declared_provider_names() - {"wayfinder"}:
-            self.assertFalse((self.project / ".agents/skills" / name).exists())
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse((directory / "personal.txt").exists())
+        self.assertIn("disable-model-invocation: false", (directory / "SKILL.md").read_text())
+        for name in self.declared_provider_names():
+            self.assertTrue((self.project / ".agents/skills" / name / "SKILL.md").is_file())
 
     def test_fresh_lifecycle_projects_every_declared_provider_skill(self) -> None:
         empty_bin = Path(self.temporary.name) / "empty-bin"
@@ -510,21 +513,220 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         for name, snapshot in before.items():
             self.assertEqual(tree_snapshot(self.project / ".agents/skills" / name), snapshot)
 
-    def test_provider_conflict_blocks_every_missing_skill_without_overwrite(self) -> None:
+    def test_modified_and_missing_provider_skills_are_repaired_together(self) -> None:
         first = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
         conflict = self.project / ".agents/skills/wayfinder/personal.txt"
         conflict.write_text("project-owned addition\n", encoding="utf-8")
         missing = self.project / ".agents/skills/research"
         shutil.rmtree(missing)
-        before = tree_snapshot(self.project / ".agents/skills/wayfinder")
+
+        result = run_script(PROVIDERS, "install", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("reconciled optional provider skill wayfinder", result.stdout)
+        self.assertIn("reconciled optional provider skill research", result.stdout)
+        self.assertFalse(conflict.exists())
+        self.assertTrue((missing / "SKILL.md").is_file())
+
+    def test_unsafe_declared_provider_path_blocks_all_projection_changes(self) -> None:
+        first = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        shutil.rmtree(self.project / ".agents/skills/research")
+        shutil.rmtree(self.project / ".agents/skills/wayfinder")
+        (self.project / ".agents/skills/wayfinder").write_text("unsafe\n", encoding="utf-8")
 
         result = run_script(PROVIDERS, "install", self.project)
 
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-        self.assertIn("contains conflicts", result.stderr)
-        self.assertFalse(missing.exists())
-        self.assertEqual(tree_snapshot(self.project / ".agents/skills/wayfinder"), before)
+        self.assertIn("blocked unsafe optional provider skill wayfinder", result.stderr)
+        self.assertFalse((self.project / ".agents/skills/research").exists())
+
+    def test_projection_failure_rolls_back_the_complete_changed_set(self) -> None:
+        first = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        (self.project / ".agents/skills/wayfinder/personal.txt").write_text("old bytes\n")
+        shutil.rmtree(self.project / ".agents/skills/research")
+        before = tree_snapshot(self.project / ".agents/skills")
+
+        scripts_path = str(PROVIDERS.parent)
+        sys.path.insert(0, scripts_path)
+        try:
+            module = load_module("providers_rollback_test", PROVIDERS)
+        finally:
+            sys.path.remove(scripts_path)
+        provider = module.load_provider()
+        with tempfile.TemporaryDirectory(dir=self.project) as temporary:
+            staged = module.prepare_staged_projection(Path(temporary), provider)
+            original_move = module.move_path
+            calls = 0
+
+            def fail_third_move(source: Path, destination: Path) -> None:
+                nonlocal calls
+                calls += 1
+                if calls == 3:
+                    raise OSError("injected projection failure")
+                original_move(source, destination)
+
+            module.move_path = fail_third_move
+            with self.assertRaisesRegex(module.ProviderError, "prior projection restored"):
+                module.replace_projection(self.project, staged, list(provider.skills))
+
+        self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before)
+
+    def test_projection_revalidates_every_declared_destination_before_mutation(self) -> None:
+        first = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        shutil.rmtree(self.project / ".agents/skills/research")
+
+        scripts_path = str(PROVIDERS.parent)
+        sys.path.insert(0, scripts_path)
+        try:
+            module = load_module("providers_full_preflight_test", PROVIDERS)
+        finally:
+            sys.path.remove(scripts_path)
+        original_state = module.projection_state
+        calls = 0
+
+        def make_ready_destination_unsafe(
+            root: Path, staged: Path, skill: object
+        ) -> str:
+            nonlocal calls
+            state = original_state(root, staged, skill)
+            calls += 1
+            if calls == 14:
+                shutil.rmtree(self.project / ".agents/skills/wayfinder")
+                (self.project / ".agents/skills/wayfinder").write_text("unsafe\n")
+            return state
+
+        module.projection_state = make_ready_destination_unsafe
+        with self.assertRaisesRegex(module.ProviderError, "wayfinder"):
+            module.install(self.project, False)
+
+        self.assertFalse((self.project / ".agents/skills/research").exists())
+        self.assertEqual((self.project / ".agents/skills/wayfinder").read_text(), "unsafe\n")
+
+    def test_replacement_cleanup_failure_reports_success_with_recovery_path(self) -> None:
+        first = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        marker = self.project / ".agents/skills/wayfinder/personal.txt"
+        marker.write_text("replace me\n")
+
+        scripts_path = str(PROVIDERS.parent)
+        sys.path.insert(0, scripts_path)
+        try:
+            module = load_module("providers_replace_cleanup_test", PROVIDERS)
+        finally:
+            sys.path.remove(scripts_path)
+        provider = module.load_provider()
+        original_rmtree = module.shutil.rmtree
+        warning = io.StringIO()
+        try:
+            with tempfile.TemporaryDirectory(dir=self.project) as temporary:
+                staged = module.prepare_staged_projection(Path(temporary), provider)
+
+                def fail_recovery_cleanup(path: object, *args: object, **kwargs: object) -> None:
+                    if Path(path).name.startswith(".ai-workflow-provider-rollback-"):
+                        raise PermissionError("injected cleanup failure")
+                    original_rmtree(path, *args, **kwargs)
+
+                module.shutil.rmtree = fail_recovery_cleanup
+                with redirect_stderr(warning):
+                    changed = module.replace_projection(
+                        self.project, staged, list(provider.skills)
+                    )
+        finally:
+            module.shutil.rmtree = original_rmtree
+
+        self.assertEqual([skill.name for skill in changed], ["wayfinder"])
+        self.assertFalse(marker.exists())
+        recovery = list(self.project.glob(".ai-workflow-provider-rollback-*"))
+        self.assertEqual(len(recovery), 1)
+        self.assertIn("replacement committed", warning.getvalue())
+        original_rmtree(recovery[0])
+
+    def test_removal_failure_rolls_back_every_moved_provider(self) -> None:
+        first = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        before = tree_snapshot(self.project / ".agents/skills")
+
+        scripts_path = str(PROVIDERS.parent)
+        sys.path.insert(0, scripts_path)
+        try:
+            module = load_module("providers_remove_rollback_test", PROVIDERS)
+        finally:
+            sys.path.remove(scripts_path)
+        provider = module.load_provider()
+        original_move = module.move_path
+        calls = 0
+
+        def fail_second_move(source: Path, destination: Path) -> None:
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                raise OSError("injected removal failure")
+            original_move(source, destination)
+
+        module.move_path = fail_second_move
+        with self.assertRaisesRegex(module.ProviderError, "prior projection restored"):
+            module.remove_projection(self.project, list(provider.skills))
+
+        self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before)
+
+    def test_removal_cleanup_failure_reports_success_with_recovery_path(self) -> None:
+        first = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+
+        scripts_path = str(PROVIDERS.parent)
+        sys.path.insert(0, scripts_path)
+        try:
+            module = load_module("providers_remove_cleanup_test", PROVIDERS)
+        finally:
+            sys.path.remove(scripts_path)
+        provider = module.load_provider()
+        original_rmtree = module.shutil.rmtree
+        warning = io.StringIO()
+        try:
+            def fail_recovery_cleanup(path: object, *args: object, **kwargs: object) -> None:
+                if Path(path).name.startswith(".ai-workflow-provider-remove-"):
+                    raise PermissionError("injected cleanup failure")
+                original_rmtree(path, *args, **kwargs)
+
+            module.shutil.rmtree = fail_recovery_cleanup
+            with redirect_stderr(warning):
+                removed = module.remove_projection(self.project, list(provider.skills))
+        finally:
+            module.shutil.rmtree = original_rmtree
+
+        self.assertEqual({skill.name for skill in removed}, self.declared_provider_names())
+        for name in self.declared_provider_names():
+            self.assertFalse((self.project / ".agents/skills" / name).exists())
+        recovery = list(self.project.glob(".ai-workflow-provider-remove-*"))
+        self.assertEqual(len(recovery), 1)
+        self.assertIn("removal committed", warning.getvalue())
+        original_rmtree(recovery[0])
+
+    def test_remove_does_not_announce_success_before_transaction(self) -> None:
+        first = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+
+        scripts_path = str(PROVIDERS.parent)
+        sys.path.insert(0, scripts_path)
+        try:
+            module = load_module("providers_remove_output_test", PROVIDERS)
+        finally:
+            sys.path.remove(scripts_path)
+
+        def fail_remove(*_args: object, **_kwargs: object) -> None:
+            raise module.ProviderError("injected remove failure")
+
+        module.remove_projection = fail_remove
+        output = io.StringIO()
+        with redirect_stdout(output), self.assertRaisesRegex(
+            module.ProviderError, "injected remove failure"
+        ):
+            module.remove(self.project, False)
+        self.assertNotIn("removed declared optional provider directories", output.getvalue())
 
     def test_corrupt_bundled_snapshot_is_rejected_without_projection(self) -> None:
         package_copy = self.copy_package("corrupt-provider-checksum")
@@ -573,7 +775,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = run_script(PROVIDERS, "status", self.project)
 
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-        self.assertIn("14 missing", result.stdout)
+        self.assertIn("0 ready, 14 repairable, 0 blocked", result.stdout)
 
     def test_lifecycle_status_reports_incomplete_provider_projection_without_failing_core(self) -> None:
         self.assert_ok(self.adopt("install"))
@@ -592,7 +794,10 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(skill_text.count(WAYFINDER_ADAPTER_BEGIN), 1)
         self.assertEqual(skill_text.count(WAYFINDER_ADAPTER_END), 1)
         self.assertIn("The only canonical local representation", skill_text)
-        self.assertIn("Never force U# -> D# -> T# as ceremony", skill_text)
+        normalized_skill = " ".join(skill_text.split())
+        self.assertIn("never force U# -> D# -> T# as ceremony", normalized_skill)
+        self.assertIn("never renumber an existing ID to remap it", normalized_skill)
+        self.assertIn("Keep the map self-contained", normalized_skill)
         self.assertIn(
             "disable-model-invocation: false",
             (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8"),
@@ -610,19 +815,21 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(encoding="utf-8"),
         )
 
-    def test_unadapted_upstream_wayfinder_is_preserved_as_a_conflict(self) -> None:
+    def test_unadapted_upstream_wayfinder_is_repaired_for_model_invocation(self) -> None:
         source = PACKAGE_ROOT / "provider-snapshots/matt-pocock-skills/skills/wayfinder"
         destination = self.project / ".agents/skills/wayfinder"
         destination.parent.mkdir(parents=True)
         shutil.copytree(source, destination)
-        before = tree_snapshot(destination)
 
         result = run_script(PROVIDERS, "install", self.project)
 
-        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-        self.assertIn("wayfinder: conflict", result.stderr)
-        self.assertEqual(tree_snapshot(destination), before)
-        self.assertFalse((self.project / ".agents/skills/research").exists())
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("reconciled optional provider skill wayfinder", result.stdout)
+        self.assertIn(
+            "disable-model-invocation: false",
+            (destination / "SKILL.md").read_text(encoding="utf-8"),
+        )
+        self.assertTrue((self.project / ".agents/skills/research/SKILL.md").is_file())
 
     def test_exact_existing_projection_is_reused_without_writing(self) -> None:
         first = run_script(PROVIDERS, "install", self.project)
@@ -635,21 +842,17 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("reuse exact optional provider skill wayfinder", second.stdout)
         self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before)
 
-    def test_modified_provider_metadata_is_preserved_without_partial_write(self) -> None:
+    def test_modified_provider_metadata_is_restored_from_bundle(self) -> None:
         install = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
-        skill = self.project / ".agents/skills/wayfinder/SKILL.md"
         openai = self.project / ".agents/skills/wayfinder/agents/openai.yaml"
         openai.write_text("policy:\n  allow_implicit_invocation: ask\n", encoding="utf-8")
-        before_skill = skill.read_bytes()
-        before_openai = openai.read_bytes()
 
         result = run_script(PROVIDERS, "install", self.project)
 
-        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-        self.assertIn("wayfinder: conflict", result.stderr)
-        self.assertEqual(skill.read_bytes(), before_skill)
-        self.assertEqual(openai.read_bytes(), before_openai)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("reconciled optional provider skill wayfinder", result.stdout)
+        self.assertIn("allow_implicit_invocation: true", openai.read_text(encoding="utf-8"))
 
     def test_provider_status_reports_modified_content_without_writing(self) -> None:
         install = run_script(PROVIDERS, "install", self.project)
@@ -661,19 +864,23 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = run_script(PROVIDERS, "status", self.project)
 
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-        self.assertIn("13 ready, 0 missing, 1 conflicts", result.stdout)
+        self.assertIn("13 ready, 1 repairable, 0 blocked", result.stdout)
         self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before)
 
-    def test_provider_remove_distinguishes_and_preserves_adapted_wayfinder(self) -> None:
+    def test_provider_remove_deletes_only_declared_provider_directories(self) -> None:
         install = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
-        before = tree_snapshot(self.project / ".agents/skills")
+        unrelated = self.project / ".agents/skills/my-local-skill/SKILL.md"
+        unrelated.parent.mkdir()
+        unrelated.write_text("local\n", encoding="utf-8")
 
         result = run_script(PROVIDERS, "remove", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("wayfinder (present)", result.stdout)
-        self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before)
+        self.assertIn("removed declared optional provider directories", result.stdout)
+        for name in self.declared_provider_names():
+            self.assertFalse((self.project / ".agents/skills" / name).exists())
+        self.assertEqual(unrelated.read_text(encoding="utf-8"), "local\n")
 
     def test_cp1252_console_escapes_unrepresentable_project_path(self) -> None:
         project = Path(self.temporary.name) / "project-snow-\u96ea"
@@ -720,6 +927,18 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             ("empty skill name", "name", "", "invalid provider skill name"),
             ("missing skill path", "path", None, "needs a path"),
             ("incomplete invocation hosts", "invocation", {}, "invocation hosts differ"),
+            (
+                "unknown configuration requirement",
+                "requires_configuration",
+                ["not-declared"],
+                "invalid configuration requirements",
+            ),
+            (
+                "non-string configuration requirement",
+                "requires_configuration",
+                [{}],
+                "invalid configuration requirements",
+            ),
         )
         for label, field, value, expected in cases:
             with self.subTest(label=label):
@@ -733,6 +952,19 @@ class LifecycleAcceptanceTests(unittest.TestCase):
                 verify = run_script(package_copy / "scripts/verify_package.py")
                 self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
                 self.assertIn(expected, verify.stderr)
+
+    def test_provider_cli_rejects_non_string_configuration_requirements(self) -> None:
+        package_copy = self.copy_package("provider-requirement-type")
+        declaration = package_copy / "payload/ai-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        raw["provider"]["skills"][0]["requires_configuration"] = [{}]
+        declaration.write_text(json.dumps(raw), encoding="utf-8")
+
+        result = run_script(package_copy / "scripts/providers.py", "status", self.project)
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("invalid configuration requirements", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
 
     def test_verifier_requires_the_wayfinder_local_state_adapter(self) -> None:
         package_copy = self.copy_package("wayfinder-adapter-declaration")

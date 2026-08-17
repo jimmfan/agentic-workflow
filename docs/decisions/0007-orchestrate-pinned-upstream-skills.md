@@ -1,6 +1,6 @@
 # ADR-0007: Orchestrate pinned upstream skills
 
-- Status: partially superseded by ADR-0010, ADR-0011, ADR-0012, ADR-0013, ADR-0017, and ADR-0018
+- Status: partially superseded by ADR-0010, ADR-0011, ADR-0012, ADR-0013, and ADR-0020
 - Date: 2026-08-13
 
 ## Context
@@ -138,18 +138,19 @@ host compatibility boundaries intact. Agentic Workflow now declares Wayfinder
 implicit on Codex and GitHub Copilot and applies a narrow metadata overlay
 during provider installation/update because the framework owns routing.
 
-ADR-0015 later extends this into a fingerprinted local-mode adapter because
+ADR-0020 later extends this into a fingerprinted local-mode adapter because
 Codex loads the full provider body after selection. The upstream reasoning
 method remains unchanged; the inserted adapter makes the accepted local storage
 and U#/D#/T# lifecycle authoritative over incompatible tracker mechanics.
 
-ADR-0017 further supersedes this ADR's invocation-policy conclusion for To Spec,
+ADR-0020 further supersedes this ADR's invocation-policy conclusion for To Spec,
 To Tickets, and Implement. They are now implicitly invocable because the router
 selects them from normal intent; Setup, Teach, and Triage remain user-only.
 
-ADR-0018 supersedes this ADR's runtime acquisition conclusion. Releases now
-bundle the exact 14-skill projection at the resolved commit; target lifecycle is
-offline and preserves every differing same-named directory as a conflict.
+ADR-0020 supersedes this ADR's runtime acquisition and target-ownership
+conclusions. Releases bundle the exact 14-skill projection at the resolved
+commit; target lifecycle is offline and replaces the complete declared
+framework-owned projection while preserving unrelated skill directories.
 
 ## Alternatives considered
 

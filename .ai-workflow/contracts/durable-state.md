@@ -70,6 +70,21 @@ project instructions name another canonical decision location, preserve it; do
 not create a parallel ADR namespace or migrate existing records merely to match
 the default.
 
+Treat ADRs as a maintained set of current decisions, not an append-only archive
+of every intermediate conclusion. Distinguish current and superseded records.
+When a project has multiple ADRs, keep a concise index in its canonical ADR
+directory that identifies the current records and preserves short tombstones for
+superseded identifiers. Consolidate amendment chains when one replacement ADR
+can state the current contract more clearly.
+
+A fully superseded ADR may be removed when recoverable version-control history
+retains its text and the index records which current ADR replaced it. If that
+history is not reliably recoverable, archive the superseded record instead.
+Never delete the only recoverable rationale for a consequential decision. Do
+not create an ADR for routine implementation detail, temporary investigation,
+or a choice already governed by a current ADR. Create ADRs and their index
+lazily; installation must not seed either one.
+
 `DEC-NNNN` and Wayfinder `D#` records remain project-owned workflow state. Do
 not promote every workflow choice. When one becomes a lasting architecture or
 contract decision, create or update the canonical ADR, link the workflow record

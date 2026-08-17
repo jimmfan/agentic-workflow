@@ -45,7 +45,8 @@ def provider_attempt(command: str, target: Path, dry_run: bool) -> None:
         if command == "remove":
             print(
                 "WARNING: Optional provider removal check did not complete. "
-                "Core removal will continue; provider directories remain preserved.",
+                "Core removal will continue; inspect the provider error because declared "
+                "directories may remain or recovery data may require attention.",
                 file=sys.stderr,
             )
             return
@@ -74,7 +75,7 @@ def status(target: Path, revision: str) -> int:
     if provider.returncode == 1:
         print(
             "WARNING: Optional provider projection is incomplete; core status is unchanged. "
-            "Run install or update when provider prerequisites are available.",
+            "Run install or update to repair it; resolve any reported unsafe path first.",
             file=sys.stderr,
         )
     elif provider.returncode != 0:

@@ -92,11 +92,13 @@ The suite prioritizes behavior that matters before 1.0:
   to the exact reviewed release identity;
 - the installed source-checkout provider declaration must match the packaged
   declaration, while the maintainer refresh command refuses package-local output;
-- update completes an exact partial projection, exact existing directories are
-  reused, and any modified, extra-file, malformed, or older same-named
-  directory is preserved as a conflict that blocks every missing provider write;
+- update completes an exact partial projection, reuses exact existing
+  directories, and replaces modified, extra-file, malformed, raw-upstream, or
+  older declared directories as one rollback-protected transaction;
+- unsafe declared paths block provider mutation, remove deletes only the
+  declared projection, and unrelated skill directories are preserved;
 - the Wayfinder local-mode adapter applies in release-local staging, while
-  changed target bytes are preserved and status remains read-only;
+  changed target bytes are repaired and status remains read-only;
 - the implicit-invocation adapter automatically exposes To Spec, To Tickets,
   and Implement from the bundled projection, is idempotent,
   keeps Setup, Teach, and Triage user-only, and rejects unexpected activation

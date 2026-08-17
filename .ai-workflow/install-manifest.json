@@ -18,14 +18,14 @@
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "1bc8ebe00ab74ebe1f038a63a3183944e4fab8837cb0c67a9c56626e659cc8a0"
+      "sha256": "586a6d48f46dbb681565af8856598f7a91c35b67ca5d1bc56dc0a32e50ab80e1"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,
       "sha256": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185"
     }
   },
-  "framework_version": "0.12.0",
+  "framework_version": "0.13.0",
   "schema_version": 1,
   "source_revision": "unreleased-local-package"
 }

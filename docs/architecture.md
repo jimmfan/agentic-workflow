@@ -160,15 +160,17 @@ tag, resolved commit, tag object, upstream tree, MIT license, and checksummed
 snapshot. The release contains only the 14 declared skill directories, not the
 upstream repository. Runtime installation copies that snapshot into a temporary
 same-filesystem staging root, applies the declared adapters there, validates the
-complete effective projection, and moves all missing directories together. It
-does not require GitHub CLI, Git, npm, npx, authentication, or network access.
+complete effective projection, and reconciles all missing or different declared
+directories together. It does not require GitHub CLI, Git, npm, npx,
+authentication, or network access.
 
-An exact existing effective directory is reused without claiming ownership. A
-differing, malformed, older, independently installed, or locally modified
-same-named directory is preserved as a conflict. Any conflict blocks every
-missing directory in the declared set, so the router never receives a newly
-partial dependency graph. A projection or validation failure still never
-invalidates a successful core operation.
+The finite declared set is framework-owned reconstructable output. An exact
+effective directory is reused; a missing, malformed, older, raw-upstream, or
+locally modified declared directory is repairable and replaced from staging.
+Unsafe paths such as symlinks or non-directories block all provider changes
+before mutation. Unrelated `.agents/skills/` directories are preserved. A
+projection or validation failure still never invalidates a successful core
+operation.
 
 The pinned Wayfinder provider retains its reasoning method and terminology. A
 clearly delimited local-mode section precedes the unchanged provider method and
@@ -180,18 +182,19 @@ Wayfinder's host invocation flags and discovery descriptions so Codex and
 GitHub Copilot may select it implicitly at the framework's notebook threshold.
 This remains a narrow integration boundary because Agentic Workflow owns
 routing and local storage; it does not rewrite the upstream method below the
-adapter. Claude remains unavailable because no native skill projection exists
-for that host.
+adapter. A Claude model inside GitHub Copilot uses this shared host projection;
+native Claude Code remains unavailable because no native projection exists for
+that host.
 
 The framework keeps no target ownership database, installed-file history,
-quarantine store, automatic upgrade engine, or automatic deletion behavior.
-The snapshot checksum protects the release artifact; exact effective-tree
-comparison protects project-owned target bytes. Updates fill missing directories
-only when all present declarations match the current release. A release with a
-new provider snapshot therefore reports an old or modified target as a conflict
-instead of replacing it. Removal preserves provider directories and keeps
-cleanup manual. These constraints make providers optional capabilities instead
-of a second package manager.
+quarantine store, or automatic upgrade engine.
+The declaration itself is the narrow ownership boundary. The snapshot checksum
+protects the release artifact; exact effective-tree comparison identifies work
+needed to converge. Update replaces declared drift, and remove deletes exactly
+the declared directories transactionally. A cleanup failure after the target
+transaction commits is a warning with a recovery-directory path, not a false
+transaction failure. These constraints avoid a general package manager while
+keeping providers reliably repairable.
 
 Capability routing and invocation policy remain distinct. An absent or
 user-only provider normally falls back to truthful host-native work. An exact
@@ -227,8 +230,8 @@ cannot roll back or invalidate the core.
 and provider skills do not change a healthy core exit status.
 
 `remove` migrates any named legacy durable state, strips composite regions,
-deletes only safely recorded external files, removes `.ai-workflow/`, and
-preserves `.ai-workflow-state/` plus all providers.
+deletes only safely recorded external files, removes `.ai-workflow/`, preserves
+`.ai-workflow-state/`, and removes only the declared provider projection.
 
 ## Verification boundary
 
@@ -274,5 +277,5 @@ See [Workflow routing](routing.md), [Verification](verification.md), and
 [ADR-0011](decisions/0011-use-project-owned-wayfinder-state.md),
 [ADR-0012](decisions/0012-remove-global-active-index.md),
 [ADR-0013](decisions/0013-enable-automatic-wayfinder-routing.md), and
-[ADR-0015](decisions/0015-adapt-wayfinder-effective-local-mode.md), plus
+[ADR-0020](decisions/0020-own-the-declared-provider-projection.md), plus
 [ADR-0016](decisions/0016-reconcile-relevant-wayfinder-state-at-completion.md).

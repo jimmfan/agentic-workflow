@@ -41,14 +41,13 @@ project region. Required local workflow skills similarly live under
 `.agents/skills`. Unknown content at an unrecorded non-composite target blocks
 installation instead of being overwritten.
 
-Optional upstream providers may also live under `.agents/skills`, but they are
-not framework-owned. Existing directories are preserved, provider failure does
-not affect the core, and provider removal is manual. Missing declared provider
-skills are staged and projected as a complete set; status remains incomplete
-until every declared skill is usable. The declared Wayfinder adapter may insert
-the authoritative local-mode instructions and update activation metadata only
-when the pinned method body and exact expected values are recognized. Unknown
-or modified provider content remains untouched and is reported.
+Optional upstream providers also live under `.agents/skills`. The finite set
+declared in `providers.json` is framework-owned reconstructable output; other
+skill directories remain outside that boundary. Install/update stages the
+complete declared projection, repairs missing or different declared directories
+transactionally, and blocks on unsafe paths. Remove deletes exactly the declared
+set. Provider failure does not affect the core. The Wayfinder and invocation
+adapters require recognized pinned input before target mutation.
 
 Local Wayfinder data is a configured project-owned representation under
 `.ai-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned
@@ -79,8 +78,8 @@ unsafe filesystem boundary needs explicit resolution.
 
 Deleting `.ai-workflow/` and running update/install is a supported reconstruction
 path. `.ai-workflow-state/` must remain in place. On removal, project state,
-provider directories, pre-existing external files, and locally changed external
-files are preserved.
+unrelated skill directories, pre-existing external files, and locally changed
+external files are preserved; declared provider directories are deleted.
 
 Every user-facing final response ends with one compact route marker such as:
 

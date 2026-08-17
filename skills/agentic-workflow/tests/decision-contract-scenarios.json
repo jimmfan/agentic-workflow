@@ -419,5 +419,27 @@
     "repository_state_effect": "read-only",
     "external_scope": "none",
     "expected_behavior": "Diagnose with normal Claude Code capability, report that the packaged Debugging skill did not run when material, and make no state change."
+  },
+  {
+    "id": "selected-provider-cannot-execute",
+    "category": "provider-execution-truthfulness",
+    "prompt": "Map the unresolved architecture decisions before implementation.",
+    "setup": "GitHub Copilot in VS Code is using a Claude model, but the installed Wayfinder metadata is stale and disables model invocation, so the selected provider cannot actually load.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "automatic",
+        "executed": false
+      }
+    ],
+    "host": "github-copilot",
+    "route_result": "host-native-fallback",
+    "executed": true,
+    "repository_state_effect": "repository-write",
+    "external_scope": "none",
+    "expected_behavior": "Continue with truthful host-native planning when authorized, state that Wayfinder did not execute, omit Wayfinder from the executed route marker, and recommend lifecycle update to repair the declared projection."
   }
 ]

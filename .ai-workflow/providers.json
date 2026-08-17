@@ -147,9 +147,7 @@
         },
         "name": "implement",
         "path": "skills/engineering/implement",
-        "requires_configuration": [
-          "issue-tracker"
-        ]
+        "requires_configuration": []
       },
       {
         "invocation": {
@@ -169,9 +167,7 @@
         },
         "name": "code-review",
         "path": "skills/engineering/code-review",
-        "requires_configuration": [
-          "issue-tracker"
-        ]
+        "requires_configuration": []
       },
       {
         "invocation": {

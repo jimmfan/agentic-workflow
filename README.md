@@ -344,7 +344,11 @@ Then start a new coding-agent session from the project root so it can discover t
 
 The current implementation supports Codex and GitHub Copilot project skills through `.agents/skills/`.
 
-Claude can use the installed root policy for classification and host-native work, but the current release does not project those skills into `.claude/skills/`.
+A Claude model selected inside GitHub Copilot uses that host's shared skill
+projection; this path is supported by the documented host contract and remains
+under live compatibility testing. Native Claude Code can use the installed root
+policy for classification and host-native work, but the current release does
+not project provider skills into `.claude/skills/`.
 
 Installation and lifecycle internals are documented separately.
 

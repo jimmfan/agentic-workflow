@@ -1,6 +1,6 @@
 # 0008: Require supported runtime and tool floors
 
-- Status: accepted; provider-tool prerequisite superseded by ADR-0018
+- Status: accepted; provider-tool prerequisite superseded by ADR-0020
 - Date: 2026-08-13
 
 ## Context
@@ -35,7 +35,7 @@ releases.
 
 Treat GitHub CLI as a maintainer-only provider snapshot refresh prerequisite,
 not a runtime or target-adoption prerequisite. Runtime provider projection is
-offline under ADR-0018.
+offline under ADR-0020.
 
 Every entry point must perform the Python version check before network or target
 filesystem work and return an actionable ASCII error. User documentation must

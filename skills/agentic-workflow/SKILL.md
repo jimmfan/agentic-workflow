@@ -24,10 +24,10 @@ usable even when every optional provider is unavailable.
 - Other required external integrations are created when absent, reused when
   exactly matching, and blocked when unknown content differs. The small install
   manifest records only evidence needed for safe external deletion.
-- Provider directories are optional and independent. Preserve every existing
-  same-named directory and every provider directory on remove. A narrowly
-  declared Wayfinder adapter may update only a recognized pinned method body and
-  exact activation metadata; unknown or modified content is never rewritten.
+- The finite provider set declared by the package is framework-owned,
+  reconstructable output. Install/update may replace those exact directories,
+  and remove deletes them; every unrelated skill directory is preserved. Apply
+  adapters only to recognized pinned input in staging before target mutation.
 
 Do not treat a missing historical file, old manifest detail, optional profile,
 durable record, provider, or setup file as package corruption. Current desired
@@ -73,26 +73,27 @@ workflows never create, read, or update it. Never recreate
 After core success, lifecycle makes a best-effort offline projection from the
 release's bundled, checksummed provider snapshot. It stages all 14 declared
 skills, applies the Wayfinder local-mode and routed implicit-invocation adapters,
-validates the effective projection, and installs missing directories together.
+validates the effective projection, and reconciles every repairable declaration
+together.
 Runtime provider setup needs no GitHub CLI, Git, npm, npx, authentication, or
 network access.
 
-An exact existing directory is reused. Any differing or unsafe same-named
-directory is preserved as a conflict and blocks all missing provider writes;
-update never overwrites or automatically upgrades it. Provider failure remains
-a warning and never rolls back or invalidates the core. Status is incomplete
-until all 14 effective directories match. Remove preserves every provider
-directory because v0 keeps no provider ownership database.
+The 14 declared directories are framework-owned reconstructable output. An
+exact directory is reused; a missing or different declared directory is
+repaired from staging, and an unsafe path blocks the complete provider change.
+Provider failure remains a warning and never rolls back or invalidates the core.
+Status is incomplete until all 14 effective directories match. Remove deletes
+exactly those declarations and preserves unrelated skill directories.
 
 `status` is read-only and reports core `healthy`, `repairable`, or
 `unsafe/conflict`. Missing optional state files and providers are normal. A
-repairable result should be fixed with `update`; a conflict requires resolving
-the named project-content or unsafe-path boundary first.
+repairable result should be fixed with `update`; an unsafe path requires
+resolving the named filesystem boundary first.
 
 `remove` migrates named legacy durable state, removes managed composite regions,
 deletes only unchanged external files recorded as framework-created, removes
 `.ai-workflow/`, and preserves `.ai-workflow-state/`, changed/pre-existing
-external files, and providers.
+external files, and unrelated skills.
 
 ## Release verification
 

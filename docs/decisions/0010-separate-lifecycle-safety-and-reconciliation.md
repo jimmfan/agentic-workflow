@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-14
 - Supersedes: ADR-0002, provider lifecycle portions of ADR-0007, ADR-0009
-- Amended by: ADR-0014 and ADR-0018
+- Amended by: ADR-0020
 
 ## Context
 
@@ -45,9 +45,11 @@ Adopt current desired-state reconciliation with explicit ownership classes.
    explicit source-to-target install map. The maintainer verifier compares that
    map with the current payload inventory, but ordinary content edits use current
    package bytes and require no generated checksum refresh.
-7. Optional providers have no framework ownership database. Install only missing
-   skills on a best-effort basis, preserve every existing directory, and make
-   cleanup manual. Provider failure never changes core success.
+7. Optional providers have no ownership database. The finite declared provider
+   projection is reconstructable framework output: install/update replaces
+   missing or different declared directories transactionally, remove deletes
+   exactly those declarations, and unrelated skill directories are preserved.
+   Provider failure never changes core success.
 8. Remove the shared lifecycle controller, host hook adapters, and observability
    analyzer. The root policy and detailed routing document are the runtime; one
    required response marker provides v0 route visibility without triggering
@@ -66,9 +68,8 @@ Framework repair is predictable: update converges to current bytes even after a
 file is deleted or edited. Historical absence is irrelevant. Project-state and
 unknown external data retain hard preservation boundaries.
 
-Provider updates no longer replace an installed provider baseline, and removal
-does not clean provider directories automatically. This is an intentional v0
-trade-off; the user can inspect and manage those independent directories.
+Provider lifecycle owns only the finite declared projection. Custom skills stay
+outside those names; edits within a declared provider directory are disposable.
 
 The framework no longer claims deterministic hook enforcement, live host
 capability detection, telemetry normalization, provider provenance, or package
@@ -92,8 +93,8 @@ it. Runtime reconciliation always uses the actual mapped source bytes.
   durable state, and unknown external paths contain or may contain user data.
 - Keep controller and telemetry code disabled: rejected because dormant public
   contracts still impose maintenance and verification cost.
-- Delete providers on remove based on current names: rejected because name
-  matching does not prove framework ownership.
+- Delete arbitrary providers on remove based on discovery: rejected because only
+  the finite declared projection is framework-owned.
 - Remove all transactions: rejected because a mid-operation error around
   composite/external writes could leave a partially applied lifecycle change.
 
@@ -103,12 +104,6 @@ Revisit a deferred subsystem only after a concrete current failure shows it is
 needed to protect project data or make core routing reliable, and after simpler
 host or provider mechanisms prove insufficient.
 
-ADR-0014 records that concrete failure and amends item 7: the missing declared
-provider set is now staged and projected completely or not at all, while the
-no-ownership, preserve-existing, manual-cleanup, and core-success boundaries
-remain unchanged.
-
-ADR-0018 further amends item 7 by sourcing the exact projection from the release
-instead of the network. Exact effective directories are reused; any differing
-directory is preserved as a conflict and blocks the missing set. No target
-ownership database or automatic removal is introduced.
+ADR-0020 records the concrete provider failures and amends item 7. The exact
+effective projection is sourced from the release, staged and validated as a
+whole, and reconciled transactionally without a target ownership database.

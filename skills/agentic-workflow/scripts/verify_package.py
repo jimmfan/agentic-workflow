@@ -252,10 +252,16 @@ def check_provider_declaration() -> None:
     provider = raw.get("provider")
     capabilities = raw.get("capabilities")
     hosts = raw.get("hosts")
+    configuration = raw.get("configuration")
     require(
-        isinstance(provider, dict) and isinstance(capabilities, dict) and isinstance(hosts, dict) and hosts,
+        isinstance(provider, dict)
+        and isinstance(capabilities, dict)
+        and isinstance(hosts, dict)
+        and hosts
+        and isinstance(configuration, dict),
         "provider declaration is incomplete",
     )
+    configuration_names = set(configuration)
     repository = provider.get("repository")
     provider_version = provider.get("version")
     require(
@@ -336,6 +342,14 @@ def check_provider_declaration() -> None:
         require(
             all(isinstance(policy, str) and policy in INVOCATION_POLICIES for policy in invocation.values()),
             f"invalid invocation policy for {name}",
+        )
+        requirements = item.get("requires_configuration")
+        require(
+            isinstance(requirements, list)
+            and all(isinstance(requirement, str) for requirement in requirements)
+            and len(requirements) == len(set(requirements))
+            and all(requirement in configuration_names for requirement in requirements),
+            f"provider skill {name} has invalid configuration requirements",
         )
         adapter = item.get("agentic_workflow_adapter")
         require(
