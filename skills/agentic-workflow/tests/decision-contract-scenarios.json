@@ -283,28 +283,28 @@
     "expected_behavior": "Tell the user to invoke /setup-matt-pocock-skills and stop without setup output, specification output, or state changes."
   },
   {
-    "id": "implementation-user-only-codex",
-    "category": "implementation-handoff",
+    "id": "implementation-implicit-codex",
+    "category": "implementation",
     "prompt": "Implement ready ticket ARC-384 and verify it.",
-    "setup": "The local adapter confirms ready scope and implement is user-only in Codex.",
-    "dominant_activity": "host-native-implementation",
+    "setup": "The local adapter confirms ready scope and the installed Implement provider has reconciled implicit-invocation metadata in Codex.",
+    "dominant_activity": "implementation",
     "capabilities": [
       "verification"
     ],
     "provider_invocations": [
       {
         "name": "implement",
-        "policy": "user-only",
-        "invocation": "not-invoked",
-        "executed": false
+        "policy": "implicit",
+        "invocation": "automatic",
+        "executed": true
       }
     ],
     "host": "codex",
-    "route_result": "host-native-fallback",
+    "route_result": "executed",
     "executed": true,
     "repository_state_effect": "repository-write",
     "external_scope": "none",
-    "expected_behavior": "Implement and verify with normal Codex capability, preserve authorization boundaries, and report that the implement provider did not run."
+    "expected_behavior": "Invoke Implement once with the ready ticket and acceptance criteria, preserve authorization boundaries, and run independent framework Verification without requiring an explicit $implement command."
   },
   {
     "id": "discovery-read-only",
@@ -386,15 +386,15 @@
   {
     "id": "provider-artifact-remains-canonical",
     "category": "canonical-artifact-ownership",
-    "prompt": "$to-spec Create the approved specification as a local provider artifact.",
-    "setup": "A supported host has explicitly invoked to-spec, local publication is authorized, and the project does not require a duplicate framework spec path.",
+    "prompt": "Create the approved specification as a local provider artifact.",
+    "setup": "A supported host has reconciled To Spec for implicit invocation, local publication is authorized, and the project does not require a duplicate framework spec path.",
     "dominant_activity": "specification",
     "capabilities": [],
     "provider_invocations": [
       {
         "name": "to-spec",
-        "policy": "user-only",
-        "invocation": "explicit",
+        "policy": "implicit",
+        "invocation": "automatic",
         "executed": true
       }
     ],
@@ -403,7 +403,7 @@
     "executed": true,
     "repository_state_effect": "provider-native-artifact",
     "external_scope": "none",
-    "expected_behavior": "After explicit invocation, keep the provider-created specification canonical and store at most a concise framework pointer; do not mirror its body into workflow state."
+    "expected_behavior": "After automatic invocation from normal intent, keep the provider-created specification canonical and store at most a concise framework pointer; do not mirror its body into workflow state."
   },
   {
     "id": "claude-local-skill-unavailable",

@@ -35,6 +35,7 @@ class ProviderSkill:
 
 
 WAYFINDER_ADAPTER = "wayfinder-local-state-v1"
+IMPLICIT_INVOCATION_ADAPTER = "implicit-invocation-v1"
 WAYFINDER_ADAPTER_BEGIN = b"<!-- agentic-workflow:wayfinder-local-state-v1:begin -->\n"
 WAYFINDER_ADAPTER_END = b"<!-- agentic-workflow:wayfinder-local-state-v1:end -->\n\n"
 WAYFINDER_LOCAL_MODE = WAYFINDER_ADAPTER_BEGIN + b"""## Agentic Workflow local mode (authoritative)
@@ -156,17 +157,27 @@ def load_provider() -> tuple[str, str, list[ProviderSkill]]:
         adapter_name: str | None = None
         upstream_body_sha256: str | None = None
         if adapter is not None:
-            if not isinstance(adapter, dict) or set(adapter) != {"name", "upstream_body_sha256"}:
+            if not isinstance(adapter, dict):
                 raise ProviderError(f"provider skill {name} has an invalid Agentic Workflow adapter")
             adapter_name = adapter.get("name")
-            upstream_body_sha256 = adapter.get("upstream_body_sha256")
-            if (
-                name != "wayfinder"
-                or adapter_name != WAYFINDER_ADAPTER
-                or not isinstance(upstream_body_sha256, str)
-                or len(upstream_body_sha256) != 64
-                or any(character not in "0123456789abcdef" for character in upstream_body_sha256)
-            ):
+            if adapter_name == WAYFINDER_ADAPTER:
+                upstream_body_sha256 = adapter.get("upstream_body_sha256")
+                valid = (
+                    set(adapter) == {"name", "upstream_body_sha256"}
+                    and name == "wayfinder"
+                    and isinstance(upstream_body_sha256, str)
+                    and len(upstream_body_sha256) == 64
+                    and not any(
+                        character not in "0123456789abcdef"
+                        for character in upstream_body_sha256
+                    )
+                )
+            else:
+                valid = (
+                    adapter_name == IMPLICIT_INVOCATION_ADAPTER
+                    and set(adapter) == {"name"}
+                )
+            if not valid:
                 raise ProviderError(f"provider skill {name} has an unsupported Agentic Workflow adapter")
         if adapter_name and (
             invocation.get("codex") != "implicit"
@@ -260,9 +271,11 @@ def adapter_plan(
     repository: str,
     version: str,
 ) -> list[tuple[Path, bytes, bytes]]:
-    """Return validated local-mode and invocation rewrites for a declared adapter."""
+    """Return validated rewrites for a declared Agentic Workflow adapter."""
     if not skill.adapter:
         return []
+    if skill.adapter == IMPLICIT_INVOCATION_ADAPTER:
+        return implicit_invocation_adapter_plan(root, skill, repository, version)
     if skill.adapter != WAYFINDER_ADAPTER or skill.upstream_body_sha256 is None:
         raise ProviderError(f"provider skill {skill.name} has an unsupported Agentic Workflow adapter")
     if destination_state(root, skill.name) != "present":
@@ -360,6 +373,69 @@ def adapter_plan(
             if upstream_count == 1 and adapted_count == 0:
                 desired = desired.replace(upstream_line, adapted_line, 1)
                 continue
+            raise ProviderError(
+                f"provider skill {skill.name} has unexpected invocation metadata in "
+                f"{path.relative_to(directory)}"
+            )
+        plan.append((path, original, desired))
+    return plan
+
+
+def implicit_invocation_adapter_plan(
+    root: Path,
+    skill: ProviderSkill,
+    repository: str,
+    version: str,
+) -> list[tuple[Path, bytes, bytes]]:
+    """Make a pinned user-only provider skill model-invocable on supported hosts."""
+    if destination_state(root, skill.name) != "present":
+        raise ProviderError(f"provider skill {skill.name} is not safe to adapt")
+
+    directory = root / ".agents" / "skills" / skill.name
+    skill_path = directory / "SKILL.md"
+    openai_path = directory / "agents" / "openai.yaml"
+    if skill_path.is_symlink() or not skill_path.is_file():
+        raise ProviderError(f"provider skill {skill.name} instructions are missing or unsafe")
+    if openai_path.is_symlink() or not openai_path.is_file():
+        raise ProviderError(f"provider skill {skill.name} Codex metadata is missing or unsafe")
+
+    original_skill = skill_path.read_bytes()
+    if not original_skill.startswith(b"---\n"):
+        raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
+    separator = original_skill.find(b"\n---\n", 4)
+    if separator < 0:
+        raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
+    frontmatter = original_skill[4:separator]
+    required_source = (
+        f"    github-path: {skill.path}\n".encode("utf-8"),
+        f"    github-pinned: {version}\n".encode("utf-8"),
+        f"    github-repo: https://github.com/{repository}\n".encode("utf-8"),
+    )
+    if any(frontmatter.count(line) != 1 for line in required_source):
+        raise ProviderError(f"provider skill {skill.name} has incompatible source metadata")
+
+    plan: list[tuple[Path, bytes, bytes]] = []
+    replacements = (
+        (
+            skill_path,
+            b"disable-model-invocation: true\n",
+            b"disable-model-invocation: false\n",
+        ),
+        (
+            openai_path,
+            b"  allow_implicit_invocation: false\n",
+            b"  allow_implicit_invocation: true\n",
+        ),
+    )
+    for path, upstream_line, adapted_line in replacements:
+        original = path.read_bytes()
+        upstream_count = original.count(upstream_line)
+        adapted_count = original.count(adapted_line)
+        if adapted_count == 1 and upstream_count == 0:
+            desired = original
+        elif upstream_count == 1 and adapted_count == 0:
+            desired = original.replace(upstream_line, adapted_line, 1)
+        else:
             raise ProviderError(
                 f"provider skill {skill.name} has unexpected invocation metadata in "
                 f"{path.relative_to(directory)}"

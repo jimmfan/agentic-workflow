@@ -28,7 +28,7 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
    Link the canonical spec, map, or ticket; do not copy its body or overwrite a
    different durable record.
 
-## Resolve invocation before execution
+## Resolve the provider before execution
 
 Resolve the implementation capability through `.ai-workflow/providers.json` and
 validate the installed `implement` skill when available. If its installation,
@@ -37,14 +37,13 @@ normal implementation capability and report that the preferred provider did not
 run. Stop only when the user explicitly required `implement`, or when safety or
 authorization blocks implementation.
 
-Apply the declared host invocation policy. When the user explicitly requires a
-user-only `implement`, give the exact handoff: `$implement` in Codex or
-`/implement` in GitHub Copilot. If the active primary host cannot be
-distinguished, label both forms without guessing. Otherwise use host-native
-implementation without loading or simulating the provider, creating its native
-artifacts, or claiming it ran. Host-native work may still create a durable `IMP`
-record later, but only when continuity is genuinely needed and writes are
-authorized.
+On Codex and GitHub Copilot, `implement` is implicitly invocable after the
+package's declared provider adapter has reconciled its upstream activation
+metadata. Invoke it once when the compatible installed provider and required
+configuration are ready. Otherwise use host-native implementation without
+loading or simulating the provider, creating its native artifacts, or claiming
+it ran. Host-native work may still create a durable `IMP` record later, but only
+when continuity is genuinely needed and writes are authorized.
 
 ## Execute once
 

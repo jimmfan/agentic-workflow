@@ -1,6 +1,6 @@
 ---
 description: Implement a piece of work based on a spec or set of tickets.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
     github-path: skills/engineering/implement
     github-pinned: v1.2.3

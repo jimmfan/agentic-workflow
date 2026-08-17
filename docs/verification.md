@@ -85,6 +85,10 @@ The suite prioritizes behavior that matters before 1.0:
   updates exact upstream content idempotently, preserves unrelated provider
   bytes, rejects changed method bodies or metadata without a partial write,
   distinguishes adapted content during remove, and keeps status read-only;
+- the implicit-invocation adapter automatically exposes To Spec, To Tickets,
+  and Implement after fresh download and later reconciliation, is idempotent,
+  keeps Setup, Teach, and Triage user-only, and rejects unexpected activation
+  metadata without a partial provider projection;
 - ASCII output remains writable on a cp1252 console; and
 - mapped payload content changes require no metadata refresh, while an added,
   removed, or remapped payload file fails the release gate until the explicit

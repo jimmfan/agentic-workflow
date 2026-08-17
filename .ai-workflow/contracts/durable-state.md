@@ -62,6 +62,20 @@ status or evidence that is not already there. Do not copy a specification into
 state, require a duplicate local file for a provider artifact, or invent a global
 framework-owned specs directory.
 
+## Project ADR namespace
+
+Use `docs/decisions/` as the default Architecture Decision Record (ADR)
+namespace for accepted, lasting architecture or contract decisions. If existing
+project instructions name another canonical decision location, preserve it; do
+not create a parallel ADR namespace or migrate existing records merely to match
+the default.
+
+`DEC-NNNN` and Wayfinder `D#` records remain project-owned workflow state. Do
+not promote every workflow choice. When one becomes a lasting architecture or
+contract decision, create or update the canonical ADR, link the workflow record
+to it, and let the workflow record retain effort-specific evidence without
+becoming a competing source for the accepted project rule.
+
 ## Provider artifacts and orchestration pointers
 
 Upstream providers own their course workspaces, research files, specifications,

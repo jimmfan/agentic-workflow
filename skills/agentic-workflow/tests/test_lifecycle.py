@@ -26,6 +26,8 @@ MANAGED_END = b"<!-- ai-workflow:managed-end -->\n"
 PROJECT_BEGIN = b"\n<!-- ai-workflow:project-instructions -->\n"
 WAYFINDER_ADAPTER_BEGIN = "<!-- agentic-workflow:wayfinder-local-state-v1:begin -->\n"
 WAYFINDER_ADAPTER_END = "<!-- agentic-workflow:wayfinder-local-state-v1:end -->\n\n"
+IMPLICIT_INVOCATION_SKILLS = ("to-spec", "to-tickets", "implement")
+USER_ONLY_SKILLS = ("setup-matt-pocock-skills", "teach", "triage")
 
 
 def run_script(
@@ -564,6 +566,53 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             "teach lacks Codex user-only metadata",
         )
 
+    def test_implicit_invocation_adapters_apply_after_download_and_are_idempotent(self) -> None:
+        package_copy = self.copy_package("implicit-invocation-adapters")
+        fake_bin = self.fake_gh_provider_installer("implicit-invocation-bin")
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}{os.pathsep}{env.get('PATH', '')}"
+
+        first = run_script(package_copy / "scripts/providers.py", "install", self.project, env=env)
+        before_second = tree_snapshot(self.project / ".agents/skills")
+        second = run_script(package_copy / "scripts/providers.py", "install", self.project, env=env)
+
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
+        self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before_second)
+        for name in IMPLICIT_INVOCATION_SKILLS:
+            with self.subTest(skill=name):
+                skill_text = (self.project / ".agents/skills" / name / "SKILL.md").read_text(
+                    encoding="utf-8"
+                )
+                openai_text = (
+                    self.project / ".agents/skills" / name / "agents/openai.yaml"
+                ).read_text(encoding="utf-8")
+                self.assertIn("disable-model-invocation: false", skill_text)
+                self.assertNotIn("disable-model-invocation: true", skill_text)
+                self.assertIn("allow_implicit_invocation: true", openai_text)
+                self.assertNotIn("allow_implicit_invocation: false", openai_text)
+                self.assertIn("Fake provider method.", skill_text)
+        for name in USER_ONLY_SKILLS:
+            with self.subTest(skill=name):
+                skill_text = (self.project / ".agents/skills" / name / "SKILL.md").read_text(
+                    encoding="utf-8"
+                )
+                openai_text = (
+                    self.project / ".agents/skills" / name / "agents/openai.yaml"
+                ).read_text(encoding="utf-8")
+                self.assertIn("disable-model-invocation: true", skill_text)
+                self.assertIn("allow_implicit_invocation: false", openai_text)
+
+    def test_implicit_invocation_adapter_rejects_unexpected_metadata_without_projection(self) -> None:
+        fake_bin = self.fake_gh_provider_installer(
+            "invalid-implicit-invocation-bin",
+            missing_copilot_policy_skill="implement",
+        )
+        self.assert_provider_staging_rejected(
+            fake_bin,
+            "implement has unexpected invocation metadata",
+        )
+
     def test_provider_status_is_nonzero_while_declared_projection_is_incomplete(self) -> None:
         result = run_script(PROVIDERS, "status", self.project)
 
@@ -800,6 +849,19 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
         self.assertIn("Wayfinder must declare", verify.stderr)
+
+    def test_verifier_requires_implicit_invocation_adapters(self) -> None:
+        package_copy = self.copy_package("implicit-invocation-adapter-declaration")
+        declaration = package_copy / "payload/ai-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        implement = next(item for item in raw["provider"]["skills"] if item["name"] == "implement")
+        implement.pop("agentic_workflow_adapter")
+        declaration.write_text(json.dumps(raw), encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("implement must declare the implicit-invocation adapter", verify.stderr)
 
     def test_verifier_rejects_removed_subsystem_recreated_as_a_file(self) -> None:
         package_copy = self.copy_package("removed-runtime")

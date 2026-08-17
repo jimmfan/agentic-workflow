@@ -143,6 +143,10 @@ Codex loads the full provider body after selection. The upstream reasoning
 method remains unchanged; the inserted adapter makes the accepted local storage
 and U#/D#/T# lifecycle authoritative over incompatible tracker mechanics.
 
+ADR-0017 further supersedes this ADR's invocation-policy conclusion for To Spec,
+To Tickets, and Implement. They are now implicitly invocable because the router
+selects them from normal intent; Setup, Teach, and Triage remain user-only.
+
 ## Alternatives considered
 
 - Continue local copies: avoids an install dependency but preserves duplicated

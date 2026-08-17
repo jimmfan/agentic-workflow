@@ -269,14 +269,24 @@ def check_provider_declaration() -> None:
             f"provider skill {name} agentic_workflow_adapter must be an object",
         )
         if isinstance(adapter, dict):
+            adapter_name = adapter.get("name")
+            if adapter_name == "wayfinder-local-state-v1":
+                valid_adapter = (
+                    set(adapter) == {"name", "upstream_body_sha256"}
+                    and isinstance(adapter.get("upstream_body_sha256"), str)
+                    and re.fullmatch(r"[0-9a-f]{64}", adapter["upstream_body_sha256"])
+                    is not None
+                    and name == "wayfinder"
+                )
+            else:
+                valid_adapter = (
+                    set(adapter) == {"name"}
+                    and adapter_name == "implicit-invocation-v1"
+                    and name in {"to-spec", "to-tickets", "implement"}
+                )
             require(
-                set(adapter) == {"name", "upstream_body_sha256"}
-                and adapter.get("name") == "wayfinder-local-state-v1"
-                and isinstance(adapter.get("upstream_body_sha256"), str)
-                and re.fullmatch(r"[0-9a-f]{64}", adapter["upstream_body_sha256"]) is not None
-                and name == "wayfinder"
-                and
-                invocation.get("codex") == "implicit"
+                valid_adapter
+                and invocation.get("codex") == "implicit"
                 and invocation.get("github-copilot") == "implicit"
                 and invocation.get("claude-code") == "unavailable",
                 f"provider skill {name} adapter does not match supported host policies",
@@ -290,6 +300,16 @@ def check_provider_declaration() -> None:
         and wayfinder.get("invocation", {}).get("github-copilot") == "implicit",
         "Wayfinder must declare the Agentic Workflow local-state adapter",
     )
+    for name in ("to-spec", "to-tickets", "implement"):
+        skill = next((item for item in skills if item.get("name") == name), None)
+        require(
+            isinstance(skill, dict)
+            and skill.get("agentic_workflow_adapter", {}).get("name")
+            == "implicit-invocation-v1"
+            and skill.get("invocation", {}).get("codex") == "implicit"
+            and skill.get("invocation", {}).get("github-copilot") == "implicit",
+            f"{name} must declare the implicit-invocation adapter",
+        )
 
 
 def check_scenario_catalogs() -> None:

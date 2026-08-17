@@ -17,15 +17,15 @@ capabilities to upstream skills while retaining provider-native names,
 invocation policies, and configuration requirements.
 
 Codex and GitHub Copilot discover these project skills under `.agents/skills`.
-Some are user-only and require exact `$skill-name` or `/skill-name` invocation.
-Claude does not receive a `.claude/skills` projection in this release, so the
-router uses host-native fallback there.
+Setup, Teach, and Triage remain user-only and require exact `$skill-name` or
+`/skill-name` invocation. Agentic Workflow adapts Wayfinder, To Spec, To
+Tickets, and Implement for implicit invocation because they are normal router
+destinations. Claude does not receive a `.claude/skills` projection in this
+release, so the router uses host-native fallback there.
 
-Wayfinder is the intentional exception to its upstream v1.2.3 invocation
-policy. Agentic Workflow preserves the provider's planning methodology but
-permits implicit invocation because Agentic Workflow owns workflow routing. The
-declaration marks Wayfinder implicit for Codex and GitHub Copilot and unavailable
-for Claude.
+Wayfinder also carries a method-body adaptation for Agentic Workflow's canonical
+local state. The other three routed skills need only an activation-metadata
+overlay: their upstream method bodies remain unchanged.
 
 ### Invocation portability boundary
 
@@ -104,8 +104,8 @@ T# only when it exists. This is a storage, re-entry, and item-lifecycle
 adaptation, not a copied planning method or provider fork; see ADR-0011 and
 ADR-0015.
 
-The pinned upstream metadata disables model invocation in `SKILL.md` and
-`agents/openai.yaml`, while its discovery descriptions retain the upstream
+The pinned upstream Wayfinder metadata disables model invocation in `SKILL.md`
+and `agents/openai.yaml`, while its discovery descriptions retain the upstream
 “huge, more than one session” threshold. After a fresh install or during a later
 lifecycle update, `providers.py` applies the declared Wayfinder adapter. It
 inserts an authoritative local-mode section before the unchanged method body
@@ -114,6 +114,14 @@ method-body fingerprint, source metadata, and exact upstream or already-adapted
 values; unknown or modified content is preserved without a partial write. This
 makes the policy and configured local mechanics durable without vendoring or
 rewriting the upstream method.
+
+To Spec, To Tickets, and Implement use the narrower
+`implicit-invocation-v1` adapter. Fresh installation and later updates accept
+exactly one upstream or already-adapted activation scalar in each host metadata
+file, rewrite upstream user-only values to implicit values, and reject missing,
+duplicated, or unexpected values before projecting a partial provider set. The
+adapter verifies pinned source metadata and does not alter the provider method
+body. Setup, Teach, and Triage retain their upstream user-only metadata.
 
 ## Installation policy
 

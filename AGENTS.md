@@ -20,6 +20,11 @@ loaded routing contract are the runtime; there is no separate controller.
 - Unrelated user work, canonical identifiers/artifacts, and relevant active
   durable state MUST be preserved; live source and accepted canonical artifacts
   outrank profiles, memory, and chat.
+- Use `docs/decisions/` as the default Architecture Decision Record (ADR)
+  namespace for accepted, lasting architecture or contract decisions unless
+  project instructions name another canonical location. Workflow decision
+  records do not replace ADRs; promote a lasting decision by creating or
+  updating the canonical ADR and linking the records.
 - Authorized mutating work is complete only after materially affected relevant
   Wayfinder state is reconciled; read-only work reports staleness without
   mutating it. Follow the dedicated state contract and do not inspect unrelated
@@ -144,6 +149,11 @@ Start with the documentation most relevant to the task. Expand the investigation
 * Observability: `docs/observability.md`, when present
 * Packaged skill behavior: `skills/agentic-workflow/SKILL.md`
 * Consuming-project policy: `skills/agentic-workflow/payload/root/AGENTS.md.template`
+
+`docs/decisions/` is this source repository's canonical ADR namespace. It holds
+accepted, lasting architecture or contract decisions; project-owned
+`DEC-NNNN` and effort-scoped Wayfinder `D#` records remain workflow state and
+link to the applicable ADR when a decision is promoted.
 
 Treat accepted architectural decisions and documented public or integration contracts as authoritative. Tests are evidence; tests deliberately encoding those contracts should change with the contract. When decisions, documentation, tests, and implementation disagree, investigate the conflict and update the affected contracts together rather than silently choosing one.
 

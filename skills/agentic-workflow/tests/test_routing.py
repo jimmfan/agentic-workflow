@@ -49,6 +49,21 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".ai-workflow/runtime", routing)
 
+    def test_project_adr_namespace_defaults_without_overriding_existing_convention(self) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        contract = (
+            PACKAGE_ROOT / "payload/ai-workflow/contracts/durable-state.md"
+        ).read_text()
+        normalized_policy = " ".join(root_policy.split())
+        normalized_contract = " ".join(contract.split())
+        self.assertIn("Use `docs/decisions/` as the default", normalized_policy)
+        self.assertIn(
+            "project instructions name another canonical location", normalized_policy
+        )
+        self.assertIn("do not create a parallel ADR namespace", normalized_contract)
+        self.assertIn("Do not promote every workflow choice", normalized_contract)
+        self.assertIn("link the workflow record", normalized_contract)
+
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         contract = (

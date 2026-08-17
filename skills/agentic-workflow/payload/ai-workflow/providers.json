@@ -95,8 +95,11 @@
       {
         "invocation": {
           "claude-code": "unavailable",
-          "codex": "user-only",
-          "github-copilot": "user-only"
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "agentic_workflow_adapter": {
+          "name": "implicit-invocation-v1"
         },
         "name": "to-spec",
         "path": "skills/engineering/to-spec",
@@ -109,8 +112,11 @@
       {
         "invocation": {
           "claude-code": "unavailable",
-          "codex": "user-only",
-          "github-copilot": "user-only"
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "agentic_workflow_adapter": {
+          "name": "implicit-invocation-v1"
         },
         "name": "to-tickets",
         "path": "skills/engineering/to-tickets",
@@ -123,8 +129,11 @@
       {
         "invocation": {
           "claude-code": "unavailable",
-          "codex": "user-only",
-          "github-copilot": "user-only"
+          "codex": "implicit",
+          "github-copilot": "implicit"
+        },
+        "agentic_workflow_adapter": {
+          "name": "implicit-invocation-v1"
         },
         "name": "implement",
         "path": "skills/engineering/implement",
