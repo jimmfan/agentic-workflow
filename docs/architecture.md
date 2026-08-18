@@ -167,9 +167,8 @@ maps, fog of war, named links, and dependency-derived frontier semantics remain
 provider-aligned, while local persistence moves from the provider's default
 `.scratch/` tracker to project-owned map-first U#/E#/F#/D# state. `map.md` owns
 current state, blockers, dependencies, and next work; substantial decomposition
-passes to `to-tickets` without a shadow T#. Older T# state requires manual map
-migration before resume. The same adapter changes
-Wayfinder's host invocation flags and discovery descriptions so Codex and
+passes to `to-tickets` without duplicate Wayfinder work items. The same adapter
+changes Wayfinder's host invocation flags and discovery descriptions so Codex and
 GitHub Copilot may select it implicitly at the framework's notebook threshold.
 This remains a narrow integration boundary because Agentic Workflow owns
 routing and local storage; it does not rewrite the upstream method below the

@@ -142,8 +142,8 @@ ADR-0020 later extends this into a fingerprinted local-mode adapter because
 Codex loads the full provider body after selection. The upstream reasoning
 method remains unchanged; the inserted adapter makes the accepted local storage
 and map-first U#/E#/F#/D# lifecycle authoritative over incompatible tracker
-mechanics. ADR-0022 removes new Wayfinder T# state in favor of `map.md` next work
-or native `to-tickets` artifacts.
+mechanics. ADR-0022 moves executable work out of Wayfinder in favor of `map.md`
+next work or native `to-tickets` artifacts.
 
 ADR-0020 further supersedes this ADR's invocation-policy conclusion for To Spec,
 To Tickets, and Implement. They are now implicitly invocable because the router

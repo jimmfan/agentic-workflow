@@ -165,7 +165,7 @@ The vocabulary is:
 
 ```text
 unknown  = an unresolved consequential question
-evidence = a scoped observation or finding with provenance
+evidence = a scoped observation with provenance and limitations
 fact     = a sufficiently established descriptive conclusion
 decision = a committed choice
 ```
@@ -175,12 +175,10 @@ U#/E#/F#/D# files exist only when independent preservation adds value. Facts
 link their evidence or direct authoritative sources, while conflicting evidence
 marks a fact disputed until it is reconciled.
 
-Wayfinder does not create T# work items. One coherent next action can pass from
-the map directly to implementation. Work that needs dependency ordering or
-separately deliverable sessions goes through `to-tickets`, whose native tickets
-remain canonical and are linked from the map without a shadow copy. Older T#
-files are preserved as project data but require manual map migration before
-resuming under the current contract.
+Wayfinder does not own implementation work items. One coherent next action can
+pass from the map directly to implementation. Work that needs dependency
+ordering or separately deliverable sessions goes through `to-tickets`, whose
+native tickets remain canonical and are linked from the map.
 
 Debugging, Research, Prototype, Grilling, Domain Modeling, human clarification,
 or Implementation may resolve or consume an item without taking ownership of
@@ -209,7 +207,7 @@ U1 resolved
         ↓
 D1 created
         ↓
-T1 created
+smallest next work recorded in map.md
         ↓
 state persisted
 
@@ -224,19 +222,19 @@ recognizes U1 as resolved
         ↓
 reads D1
         ↓
-continues T1
+continues the map's next work
 ```
 
 Another case occurs when implementation changes what the project knows:
 
 ```text
-T1 implementation
+implementation of map.md next work
         ↓
 new constraint discovered
         ↓
 U2 created
         ↓
-T1 blocked or reconsidered
+next work blocked or reconsidered
         ↓
 project state updated
         ↓

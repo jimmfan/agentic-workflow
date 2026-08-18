@@ -954,7 +954,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("validate", help="validate scenario and fixture contracts")
     subparsers.add_parser("fixtures", help="exercise lifecycle safety against every fixture")
-    live = subparsers.add_parser("live", help="run the five opt-in live agent scenarios")
+    live = subparsers.add_parser("live", help="run the opt-in live agent scenarios")
     live.add_argument("--agent-command-json")
     live.add_argument("--scenario", action="append")
     live.add_argument("--timeout-seconds", type=int, default=600)

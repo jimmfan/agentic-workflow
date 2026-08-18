@@ -43,10 +43,10 @@ ignore this section and use the unchanged upstream method normally.
   work. Canonical specifications, research, ADRs, source, tests, and other
   evidence remain in their owning locations and are linked rather than copied.
   A mature effort may still need no child files.
-- Do not create new Wayfinder `tickets/T#`. When ready work needs dependency
-  ordering or separately deliverable sessions, use `to-tickets` and link its
-  native artifact/frontier from the map without a shadow copy. Existing T# files
-  are outside the current contract and are not loaded or migrated automatically.
+- Wayfinder does not create implementation work items or a ticket subtree. When
+  ready work needs dependency ordering or separately deliverable sessions, use
+  `to-tickets` and link its native artifact/frontier from the map without a
+  shadow copy.
 - Wayfinder owns durable coordination, not every action. Debugging, Research,
   Prototype, Grilling, Domain Modeling, human clarification, and Implementation
   may resolve or consume an item while the map remains canonical. Mid-task

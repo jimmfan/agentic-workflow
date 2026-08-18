@@ -751,7 +751,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         normalized_skill = " ".join(skill_text.split())
         self.assertIn("never force U# -> E# -> F# -> D# as ceremony", normalized_skill)
         self.assertIn("never reuse or renumber an ID", normalized_skill)
-        self.assertIn("Do not create new Wayfinder `tickets/T#`", normalized_skill)
+        self.assertIn("Wayfinder does not create implementation work items", normalized_skill)
         self.assertIn("`map.md` alone is valid", normalized_skill)
         self.assertIn("Keep the map self-contained", normalized_skill)
         self.assertIn(

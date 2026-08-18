@@ -27,8 +27,8 @@ Configure local Wayfinder persistence as the canonical project-owned tree under
 `.agent-workflow-state/wayfinder/<effort>/`. Use `map.md` plus optional stable
 `U#`, `E#`, `F#`, and `D#` Markdown files. Keep the map low resolution and make
 it the owner of current state, blockers, dependencies, and next work. Load child
-bodies only when relevant. ADR-0022 removes T# from the current representation;
-substantial decomposition belongs to `to-tickets`.
+bodies only when relevant. ADR-0022 moves executable work out of the current
+representation; substantial decomposition belongs to `to-tickets`.
 
 The upstream provider continues to own Wayfinder reasoning. Agentic Workflow
 owns this local storage and re-entry contract plus the narrow effective-
@@ -62,8 +62,7 @@ model. A map-only effort remains valid.
 The framework contract is distributed under `.agent-workflow/`, but no project
 state below `.agent-workflow-state/wayfinder/` is placed in the distribution
 manifest. Lifecycle performs no migration, and Jira or other external
-synchronization remains out of scope. Older T# state requires a manual map or
-native-ticket migration before current-work resume.
+synchronization remains out of scope.
 
 ## Alternatives considered
 

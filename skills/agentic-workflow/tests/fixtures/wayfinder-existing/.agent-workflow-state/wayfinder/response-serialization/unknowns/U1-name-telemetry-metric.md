@@ -15,4 +15,4 @@ No naming decision has been accepted. This does not block response serialization
 
 ## Resolution
 
-Open. Do not invent an answer while implementing T1.
+Open. Do not invent an answer while implementing the map's current next work.

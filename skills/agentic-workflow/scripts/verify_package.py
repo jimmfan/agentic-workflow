@@ -239,7 +239,7 @@ def check_router_contract() -> None:
         "reciprocal backlinks",
         "mark the F# `disputed`",
         "review dependent decisions",
-        "Older `tickets/T#` artifacts are outside this contract",
+        "does not duplicate those work items in Wayfinder",
         "Use `to-tickets` only when clear work benefits from dependency ordering",
     ):
         require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")

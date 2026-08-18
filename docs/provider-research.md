@@ -101,10 +101,9 @@ Agentic Workflow deliberately configures its canonical local representation
 under `.agent-workflow-state/wayfinder/` instead, with the map itself as the
 re-entry point and optional U#/E#/F#/D# knowledge. The map owns current state,
 blockers, dependencies, and next work. Substantial decomposition passes to the
-native `to-tickets` output without a shadow copy. Older T# state requires manual
-map migration before resume. This is a storage, re-entry, and item-lifecycle
-adaptation, not a copied planning method or provider fork; see ADR-0011,
-ADR-0020, and ADR-0022.
+native `to-tickets` output without a shadow copy. This is a storage, re-entry,
+and item-lifecycle adaptation, not a copied planning method or provider fork;
+see ADR-0011, ADR-0020, and ADR-0022.
 
 The pinned upstream Wayfinder metadata disables model invocation in `SKILL.md`
 and `agents/openai.yaml`, while its discovery descriptions retain the upstream

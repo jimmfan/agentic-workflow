@@ -46,16 +46,16 @@ These JSON catalogs are validated directly by `verify_package.py`. They are not
   a caller-supplied agent command, captures public evidence, and evaluates the
   scenario without asking for hidden reasoning.
 
-Eight live cases are enabled by default: simple bounded work, external research,
+Nine live cases are enabled by default: simple bounded work, external research,
 existing Wayfinder state, read-only stale-state reporting, reconciliation
-conflict handling, evidence/fact contradiction reconciliation, verification
-failure/recovery, and a blocked project. They are opt-in and not part of ordinary
-pull requests.
+conflict handling, evidence/fact contradiction reconciliation, map-only
+continuation with a native `to-tickets` handoff, verification failure/recovery,
+and a blocked project. They are opt-in and not part of ordinary pull requests.
 
 The broader deterministic catalog also covers creating canonical map-first
-Wayfinder state without new T# files, optional U#/E#/F#/D# knowledge, and
-ensuring that an unrelated existing effort neither captures a simple route nor
-gets loaded. The live Wayfinder contracts preserve
+Wayfinder state without implementation work-item children, optional U#/E#/F#/D#
+knowledge, and ensuring that an unrelated existing effort neither captures a
+simple route nor gets loaded. The live Wayfinder contracts preserve
 an unrelated effort during reconciliation, keep stale-state audits read-only,
 and require conflicting reconciliation to stop without guessing. Non-Wayfinder
 durable work resumes from its named DEC/IMP/DBG record without a global active

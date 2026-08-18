@@ -53,9 +53,8 @@ Local Wayfinder data is a configured project-owned representation under
 `.agent-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned
 tree. A map may stand alone; optional children preserve unresolved questions,
 independently useful evidence, established facts, and committed decisions. The
-map owns current state, blockers, dependencies, and next work. Existing T# files
-are preserved as opaque pre-contract data but are not loaded or migrated;
-newly decomposed work belongs to `to-tickets`. See
+map owns current state, blockers, dependencies, and next work. Substantial
+decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics. Other
 durable workflows resume from their canonical DEC, IMP, or DBG record; there is
 no global active index.

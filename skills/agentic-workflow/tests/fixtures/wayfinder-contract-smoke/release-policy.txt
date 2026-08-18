@@ -1,0 +1,3 @@
+minimum_supported=3.11
+rollout_regions=us-east,eu-west
+last_verified=2026-08-18

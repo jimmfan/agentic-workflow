@@ -137,11 +137,6 @@ path = ".agent-workflow-state/wayfinder/platform-migration/decisions/D1-*.md"
 value = "downtime"
 
 [[assertions]]
-kind = "glob_count"
-path = ".agent-workflow-state/wayfinder/platform-migration/tickets/T*.md"
-count = 0
-
-[[assertions]]
 kind = "path_not_exists"
 path = ".agent-workflow-state/active.md"
 

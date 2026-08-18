@@ -5,7 +5,7 @@
 - Scope: deployment-mode configuration
 - Related: F1
 
-## Finding
+## Observation
 
 The observed deployment mode was `deployment_mode=dedicated`.
 

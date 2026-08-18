@@ -1,0 +1,96 @@
+schema_version = 1
+id = "wayfinder-contract-smoke"
+name = "Map-only Wayfinder continuation hands substantial work to To Tickets"
+fixture = "wayfinder-contract-smoke"
+request = "Resume the named runtime-rollout Wayfinder effort as a fresh session. Use its map as the re-entry point. Inspect release-policy.txt and the already approved rollout-plan.md. The policy baseline will constrain several implementation sessions, so preserve exactly one E1 observation with provenance and limitations and one F1 fact supported by E1; do not create U# or D# children for settled or obvious material. Publish the three approved dependency-ordered slices through the configured local to-tickets workflow, link its native frontier from map.md, and leave starting ticket 01 as the single coherent next action. Do not implement the rollout."
+starting_state = [
+  "The named effort contains only map.md and is already valid durable Wayfinder state.",
+  "release-policy.txt warrants one reusable evidence/fact chain; ordinary fixture instructions do not.",
+  "The three-slice rollout decomposition and blocking edges are already approved for local publication.",
+  "A fresh session must continue from map.md without any Wayfinder implementation work item.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "verification_performed",
+]
+must_not = [
+  "repeat_resolved_discovery",
+  "overwrite_project_owned_state",
+  "invent_unknown_answers",
+]
+live = true
+verification_command = "Run python verify.py after creating only the justified E1/F1 chain, publishing the approved native tickets, and updating map.md."
+preserve_paths = [
+  "release-policy.txt",
+  "rollout-plan.md",
+]
+forbid_created_globs = [
+  ".agent-workflow-state/active.md",
+  ".agent-workflow-state/wayfinder/runtime-rollout/tickets",
+  ".agent-workflow-state/wayfinder/runtime-rollout/tickets/**",
+  ".agent-workflow-state/wayfinder/runtime-rollout/unknowns",
+  ".agent-workflow-state/wayfinder/runtime-rollout/unknowns/**",
+  ".agent-workflow-state/wayfinder/runtime-rollout/decisions",
+  ".agent-workflow-state/wayfinder/runtime-rollout/decisions/**",
+]
+route_must_not_include = ["discovery", "implement"]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/runtime-rollout/map.md",
+]
+state_must_not_include = []
+report_must_include = [
+  "map-only",
+  "to-tickets",
+  "fresh session",
+]
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/evidence/E*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/evidence/E1-*.md"
+value = "Source: release-policy.txt"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/evidence/E1-*.md"
+value = "## Observation"
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/facts/F*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/facts/F1-*.md"
+value = "Supported by: E1"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/tickets"
+
+[[assertions]]
+kind = "glob_count"
+path = ".scratch/runtime-rollout/issues/*.md"
+count = 3
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/map.md"
+value = ".scratch/runtime-rollout/issues/"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/map.md"
+value = "## Next work"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/runtime-rollout/map.md"
+value = "01"

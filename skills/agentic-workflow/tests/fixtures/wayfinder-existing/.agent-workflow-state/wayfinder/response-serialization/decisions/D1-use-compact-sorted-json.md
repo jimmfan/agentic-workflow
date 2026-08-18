@@ -1,6 +1,6 @@
 # D1: Use compact sorted JSON
 
-- Related: T1
+- Related: response-serialization map
 
 ## Decision
 

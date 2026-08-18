@@ -9,10 +9,13 @@ implementation work needs decomposition.
 
 ## Current state
 
-- [ADR-0022](../../../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md) is accepted and implemented: `map.md` owns current state, blockers, dependencies, and next work; Wayfinder no longer creates T# work items.
+- [ADR-0022](../../../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md) is accepted and implemented: `map.md` owns current state, blockers, dependencies, and next work; implementation work items remain outside Wayfinder.
 - U#/E#/F#/D# children are optional and lazy. A map-only effort is valid, and facts require an evidence or direct-source link.
 - The source adapter, installed projection, routing, implementation handoff, contracts, documentation, and current behavioral fixtures use the new boundary.
-- `python3 skills/agentic-workflow/scripts/verify_package.py --tests` passes all 90 deterministic checks.
+- The focused live `wayfinder-contract-smoke` passed: it resumed map-only state,
+  created only one justified E#/F# chain, emitted no Wayfinder work items, handed
+  three substantial slices to `to-tickets`, and left ticket 01 as `map.md` next work.
+- `python3 skills/agentic-workflow/scripts/verify_package.py --tests` passes all 91 deterministic checks.
 - The frozen `wayfinder-local-state-smoke-v1` campaign remains unchanged historical evidence. It does not validate the current U/E/F/D contract.
 - Pre-contract files under this effort's `tickets/` directory remain untouched project history and are not a current work frontier.
 

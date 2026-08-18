@@ -68,8 +68,8 @@ The Wayfinder adapter keeps the upstream planning method while making the local
 contract authoritative. It maps consequential unresolved questions to U# and
 recognizes optional E#, F#, and D# knowledge while keeping `map.md` valid alone.
 The map stays the self-contained coordination/re-entry point and owns current
-state, blockers, dependencies, and next work. The adapter prevents new T# state;
-substantial decomposition passes to native `to-tickets` artifacts without a
+state, blockers, dependencies, and next work. The adapter keeps executable work
+outside Wayfinder; substantial decomposition passes to native `to-tickets` artifacts without a
 shadow copy. Canonical specifications, research, ADRs, code, tests, and evidence
 remain linked rather than copied.
 

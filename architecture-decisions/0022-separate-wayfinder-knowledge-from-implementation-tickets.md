@@ -24,8 +24,8 @@ another.
 Wayfinder owns sparse durable project knowledge:
 
 - U# is an unresolved consequential question;
-- E# is an independently useful observation or finding with provenance, scope,
-  and limitations;
+- E# is an independently useful evidence item recording an observation with
+  provenance, scope, and limitations;
 - F# is a sufficiently established, scoped descriptive conclusion; and
 - D# is a committed choice made under project authority.
 

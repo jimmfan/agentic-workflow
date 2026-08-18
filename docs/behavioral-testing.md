@@ -25,8 +25,8 @@ hidden reasoning trace.
 3. **Live behavioral smoke tests** are opt-in. A caller supplies an agent command
    that reads the scenario prompt from standard input and operates in the
    temporary fixture working directory. Five high-value scenarios are enabled:
-   simple bounded work, external factual uncertainty, existing Wayfinder state,
-   verification failure/recovery, and a blocked project.
+   simple bounded work, external factual uncertainty, map-only and existing
+   Wayfinder state, verification failure/recovery, and a blocked project.
 
 The deterministic first two layers plus package checks are the required
 pre-merge gate. Live smoke tests are manual or suitable for a separately

@@ -25,10 +25,10 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_fourteen_contracts_and_eight_live_smokes(self) -> None:
+    def test_catalog_has_fifteen_contracts_and_nine_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 14)
-        self.assertEqual(sum(scenario.live for scenario in scenarios), 8)
+        self.assertEqual(len(scenarios), 15)
+        self.assertEqual(sum(scenario.live for scenario in scenarios), 9)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
             {
@@ -45,6 +45,7 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-reconciliation-conflict",
                 "wayfinder-new-effort",
                 "wayfinder-fact-conflict",
+                "wayfinder-contract-smoke",
                 "unrelated-wayfinder-state",
             },
         )
@@ -261,12 +262,6 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertNotIn("claim_unexecuted_provider", scenario.must_not)
         self.assertIn("unresolved ordering", request)
         self.assertIn("while part of the plan is blocked", request)
-        ticket_assertion = next(
-            item
-            for item in scenario.assertions
-            if item.kind == "glob_count" and "/tickets/T" in item.path.as_posix()
-        )
-        self.assertEqual(ticket_assertion.count, 0)
         self.assertTrue(
             any("/tickets" in pattern for pattern in scenario.forbid_created_globs)
         )
@@ -307,6 +302,46 @@ class BehaviorContractTests(unittest.TestCase):
                 "review D1",
             }
             <= required_values
+        )
+
+    def test_wayfinder_contract_smoke_starts_map_only_and_routes_work_out(self) -> None:
+        scenario = next(
+            item for item in behavior.load_scenarios() if item.id == "wayfinder-contract-smoke"
+        )
+        fixture_effort = (
+            behavior.FIXTURE_ROOT
+            / scenario.fixture
+            / ".agent-workflow-state/wayfinder/runtime-rollout"
+        )
+        self.assertEqual(
+            [path.relative_to(fixture_effort).as_posix() for path in fixture_effort.rglob("*")],
+            ["map.md"],
+        )
+        self.assertTrue(scenario.live)
+        self.assertEqual(
+            next(
+                item.count
+                for item in scenario.assertions
+                if item.kind == "glob_count" and "/evidence/E" in item.path.as_posix()
+            ),
+            1,
+        )
+        self.assertEqual(
+            next(
+                item.count
+                for item in scenario.assertions
+                if item.kind == "glob_count" and "/facts/F" in item.path.as_posix()
+            ),
+            1,
+        )
+        self.assertTrue(any("/tickets" in pattern for pattern in scenario.forbid_created_globs))
+        self.assertTrue(
+            any(
+                item.kind == "glob_count"
+                and item.path.as_posix() == ".scratch/runtime-rollout/issues/*.md"
+                and item.count == 3
+                for item in scenario.assertions
+            )
         )
 
     def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(self) -> None:

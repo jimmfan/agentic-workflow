@@ -20,7 +20,7 @@ only re-entry point.
 Wayfinder may preserve four kinds of durable knowledge:
 
 - `unknown`: an unresolved question that materially affects the destination;
-- `evidence`: an observation, measurement, report, or source finding, including
+- `evidence`: an observation, measurement, report, or source result, including
   its provenance, scope, and limitations;
 - `fact`: a sufficiently established descriptive conclusion, scoped to the
   evidence available now; and
@@ -37,9 +37,9 @@ a fresh session to choose the next relevant detail without loading every child.
 When ready work becomes substantial enough to need dependency ordering or
 independently deliverable sessions, hand it to `to-tickets`. That workflow owns
 its native ticket artifacts and frontier. Wayfinder links the resulting native
-artifact from `map.md`; it does not create a shadow T# copy. Work that fits one
-coherent implementation session can pass directly from the map, a settled D#,
-or another accepted specification to implementation.
+artifact from `map.md`; it does not duplicate those work items in Wayfinder.
+Work that fits one coherent implementation session can pass directly from the
+map, a settled D#, or another accepted specification to implementation.
 
 ## Ownership and locations
 
@@ -186,21 +186,22 @@ Use U# when a question is consequential enough to track independently:
 
 ## Evidence and resolution
 
-<Concise findings or links; when resolved, state the answer and resulting links.>
+<Concise observations or links; when resolved, state the answer and resulting
+links.>
 ```
 
 Use E# when an observation needs durable provenance, scope, limitations, or
 independent reuse:
 
 ```markdown
-# E1: <Observation or finding>
+# E1: <Evidence title>
 
 - Observed: YYYY-MM-DD
 - Source: <repository-relative link, command/result, or cited primary source>
 - Scope: <where this evidence applies>
 - Related: U1, F1
 
-## Finding
+## Observation
 
 <What was observed, without promoting it beyond what the source establishes.>
 
@@ -304,13 +305,6 @@ Use `to-tickets` only when clear work benefits from dependency ordering or
 separately deliverable sessions. Pass the map and only relevant U/E/F/D context.
 The configured tracker or local-ticket convention owns the resulting artifacts;
 Wayfinder records only the current pointer and coordination consequence.
-
-Older `tickets/T#` artifacts are outside this contract. Lifecycle operations
-preserve them as opaque project data but do not load, validate, or migrate them.
-Before resuming such an effort, manually move its current state, blockers,
-dependencies, and smallest coherent next action into `map.md`; use `to-tickets`
-only if the remaining work still needs decomposition. Old T# files may then be
-kept as history or removed by the project owner.
 
 No Jira synchronization, automatic archival, schema migration, database, graph
 engine, or validation service belongs in this contract.

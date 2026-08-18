@@ -109,11 +109,12 @@ The suite prioritizes behavior that matters before 1.0:
   install map is refreshed.
 
 Behavioral contracts separately cover creating map-first Wayfinder state with
-optional U#/E#/F#/D# children, keeping new work out of Wayfinder `tickets/`,
-resuming relevant map state, reconciling affected state after implementation,
-progressively excluding unrelated children and efforts, reporting stale state
-without mutation during read-only work, stopping on unresolved reconciliation
-conflicts, and keeping unrelated efforts out of a direct route.
+optional U#/E#/F#/D# children, keeping implementation work-item artifacts out of
+Wayfinder, resuming relevant map state, reconciling affected state after
+implementation, progressively excluding unrelated children and efforts,
+reporting stale state without mutation during read-only work, stopping on
+unresolved reconciliation conflicts, and keeping unrelated efforts out of a
+direct route.
 
 The frozen `wayfinder-local-state-smoke-v1` campaign and its archived results
 retain the former U/D/T rubric for reproducibility. They are historical evidence,
