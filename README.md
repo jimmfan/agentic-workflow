@@ -169,6 +169,12 @@ directory names and read only plausible candidate maps, while the established
 path stays stable even if wording or implementation phases change. Ambiguous
 matches remain read-only until resolved.
 
+A map may identify its effort as `current`, `completed`, `abandoned`, or
+`superseded`. Likely resume prefers a current match over similarly named
+historical work, while a directly named historical effort remains readable at
+its stable path. Existing maps without an explicit status remain valid and are
+classified only when their outcome and next work make the lifecycle clear.
+
 The vocabulary is:
 
 ```text
@@ -182,6 +188,15 @@ This is not a mandatory pipeline. Small facts and observations stay in the map;
 U#/E#/F#/D# files exist only when independent preservation adds value. Facts
 link their evidence or direct authoritative sources, while conflicting evidence
 marks a fact disputed until it is reconciled.
+
+When an unknown resolves, the answer and map are reconciled without requiring a
+new evidence, fact, or decision child. U/E/F/D files leave current Wayfinder
+state when they no longer retain independent navigational value. Their numbers
+remain stable while current, but retirement releases them for the ordinary
+highest-current-ID-plus-one rule; Git preserves historical meaning. Before
+removal, current references and recoverable history must be safe. An empty
+transient per-effort lock directory serializes map and child mutations and is
+removed after each mutation; it contains no knowledge or allocation data.
 
 Wayfinder does not own implementation work items. One coherent next action can
 pass from the map directly to implementation. Work that needs dependency

@@ -106,6 +106,14 @@ substantive endpoint and scope boundary stay intact. A materially different
 endpoint, bringing explicitly out-of-scope work inside the boundary, or a new
 destination after the prior one finishes normally requires a fresh effort.
 
+Maps may state `Status: current | completed | abandoned | superseded` below the
+H1. Prefer an explicit current match over a similarly named historical effort
+during likely resume. Historical efforts keep their stable paths and remain
+readable when directly named or materially relevant, but do not load their
+children during ordinary current-effort selection. Legacy maps without a status
+remain valid; infer lifecycle only when their outcome and next work make it
+unambiguous.
+
 ## Canonical state
 
 The only canonical local representation is:
@@ -133,10 +141,39 @@ Create children lazily only when independent preservation adds value:
 - D# is a committed choice made under project authority.
 
 These are semantic distinctions; never force U# -> E# -> F# -> D# as ceremony.
-Use stable per-type positive identifiers and never reuse or renumber an ID.
+Use stable per-type positive identifiers while records are current and never
+renumber a current record. Allocate one above the highest current filename, or
+`1` when none exists. A retired number may be reused in a later repository
+state; Git distinguishes its historical meanings.
 Facts link their evidence or direct authoritative sources. Preserve conflicting
 evidence; mark an unresolved fact disputed and surface the blocker rather than
 silently replacing history. Git owns historical evolution.
+
+When a U# resolves, state the answer and reconcile the map's current state,
+blockers, dependencies, fog, and next work. Create or retain E#, F#, or D# only
+when each keeps independent current value; the map may be sufficient. U/E/F/D
+files are current knowledge roles, not permanent historical identities. Git
+preserves retired investigation.
+
+Serialize every effort mutation with atomic creation of the empty transient
+`<effort>/.wayfinder-mutation-lock/` directory. Hold it through reads, writes,
+and removals, then remove it; never commit it or store data in it. If it exists,
+wait through host coordination or stop conservatively, never steal it. Under the
+lock, reject duplicate current IDs before allocating, reread the directory,
+choose one above the current maximum, and create without overwrite. This
+prevents different slugs from claiming the same number.
+
+Before removing a child, reconcile every current map and child reference in the
+selected effort and verify recoverable Git history contains its current content.
+Under the same effort lock, reread every current reference and remove the child
+before releasing the lock. If references or history are unsafe, retain the file.
+After removal its number is no longer reserved.
+
+Completing, abandoning, or superseding an effort records that status and a
+concise outcome in its map, leaves no next work for that effort, and never
+renames or repurposes its directory. Do not move Wayfinder state into the
+general workflow-record archive or add allocation metadata, a registry, history
+log, or migration sweep.
 
 On resume, load the map first and only the child files needed for the current
 question or work. Live source and accepted canonical artifacts outrank stale
@@ -145,9 +182,6 @@ map and children before claiming completion. Read-only analysis, audit,
 diagnosis, or review may reason with Wayfinder but must not create or update
 state.
 
-Before any write, reread the map and target, allocate the next unused identifier,
-and do not overwrite concurrent work or silently merge conflicting claims.
-
 Wayfinder does not create implementation work items or a ticket subtree. One
 coherent scope may pass directly from the map, a settled D#, or another accepted
 source to implementation. When work needs dependency ordering or separately
@@ -155,5 +189,5 @@ deliverable sessions, use `to-tickets`; its native artifacts and frontier stay
 canonical, and the map records only the pointer and coordination consequence.
 
 Do not create a Wayfinder `.scratch/` mirror, external issue-tracker mirror,
-global active index, T# work items, automatic state migration, or a new
-settlement/archive lifecycle.
+global active index, T# work items, automatic state migration, or a separate
+settlement/archive subsystem.

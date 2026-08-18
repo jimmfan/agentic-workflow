@@ -20,6 +20,7 @@ current instructions.
 - [ADR-0021 — Maintain compact current decision context](0021-maintain-compact-current-decision-context.md)
 - [ADR-0022 — Separate Wayfinder knowledge from implementation tickets](0022-separate-wayfinder-knowledge-from-implementation-tickets.md)
 - [ADR-0023 — Own the Wayfinder runtime projection](0023-own-the-wayfinder-runtime-projection.md)
+- [ADR-0024 — Use current-state Wayfinder identifiers](0024-use-current-state-wayfinder-identifiers.md)
 
 ## Superseded tombstones
 

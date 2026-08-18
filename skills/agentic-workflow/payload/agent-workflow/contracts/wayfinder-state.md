@@ -140,8 +140,26 @@ the substantive destination and scope boundary remain intact. A materially
 different endpoint, bringing previously out-of-scope work inside the boundary,
 a change that would make the old map misleading as low-resolution orientation,
 or a new destination after the original one completes normally requires a
-fresh effort. Do not reuse a completed or abandoned directory for unrelated
-work; the detailed completed-effort representation is outside this contract.
+fresh effort. Do not reuse a completed, abandoned, or superseded directory for
+an unrelated destination.
+
+Maps may carry one lifecycle line immediately below the H1:
+`- Status: current | completed | abandoned | superseded`. `current` means the
+destination remains a legitimate continuation target. The other values are
+historical: `completed` reached the destination, `abandoned` stopped without
+reaching it, and `superseded` was replaced by a materially different effort or
+authoritative direction. A superseded map links its successor or governing
+artifact. This single line is the effort lifecycle representation; do not add a
+metadata file, directory move, archive tree, registry, or state machine.
+
+During likely resume, an explicit `current` match outranks a similarly named
+historical match. Read a historical map when it is directly named, explicitly
+requested, needed to follow a successor, or otherwise materially relevant; its
+children do not become part of normal loading merely because the effort once
+matched. An older map without a status remains valid. Infer its lifecycle only
+when its current state, outcome, and next work make that unambiguous; otherwise
+do not silently classify, normalize, or let it displace an explicit current
+match.
 
 ## Progressive loading
 
@@ -149,7 +167,8 @@ work; the detailed completed-effort representation is outside this contract.
    direct or unrelated work.
 2. Apply the effort naming, selection, and stable-path rules above; do not load
    every map to resolve a likely resume.
-3. Read the relevant `map.md` as the low-resolution orientation.
+3. Read the relevant `map.md`, including its lifecycle when present, as the
+   low-resolution orientation.
 4. Follow only links needed for the current question or work. Do not read every
    U/E/F/D child.
 5. Derive the current frontier from the map and any linked native ticket source;
@@ -163,9 +182,11 @@ implementation.
 
 ## Identifiers and links
 
-Use stable, per-type positive identifiers within an effort: `U#`, `E#`, `F#`,
-and `D#`. Assign one greater than the highest existing ID of that type. Never
-reuse or renumber an ID when its title, slug, status, or interpretation changes.
+Use per-type positive identifiers within an effort: `U#`, `E#`, `F#`, and
+`D#`. Never renumber an existing current record. Assign one greater than the
+highest current filename of that type, or `1` when none exists. A retired number
+is not reserved: a later repository state may reuse it, and Git distinguishes
+the historical meanings.
 
 Use repository-relative Markdown links and readable titles. Facts must link the
 evidence artifacts or direct authoritative sources that justify them. Evidence
@@ -177,9 +198,22 @@ or policies that materially constrained the choice.
 Git is the history mechanism. Do not add an event log, revision files, a graph
 index, or another versioning scheme.
 
-Before writing, reread the target and map. Never overwrite a newly appeared ID.
-If concurrent edits disagree, preserve both claims and reconcile explicitly
-rather than choosing silently.
+Serialize every map or child mutation for an effort by atomically creating the
+empty `<effort>/.wayfinder-mutation-lock/` directory. Hold it through all reads,
+writes, and removals in that mutation, then remove it. The directory contains no
+data, is not durable Wayfinder state, and must not be committed. If it already
+exists, wait through host coordination or stop conservatively; never steal or
+guess that a lock is stale. Atomic directory creation is the required host
+primitive. If it is unavailable, do not mutate the effort.
+
+Before creating a child under that lock, reread the map and relevant child
+directory, reject duplicate current numbers, recompute the candidate, and
+create the child without overwriting any path. The lock covers the directory
+read and completed create so two different slugs cannot claim the same number.
+If another creator won before the lock was acquired, the reread naturally
+chooses the new current maximum. Before editing an existing child, reread it and
+the map. If concurrent edits disagree, preserve both claims and reconcile
+explicitly rather than choosing silently.
 
 ## The low-resolution map
 
@@ -188,6 +222,8 @@ clear existing human content instead of normalizing it for ceremony.
 
 ```markdown
 # <Effort name>
+
+- Status: current
 
 ## Destination
 
@@ -326,6 +362,72 @@ not deserve an E#. A conclusion used only to orient the current session does not
 deserve an F#. A preference, proposal, or agent assumption is not an accepted
 D# unless the user or project policy grants the necessary authority.
 
+## Knowledge settlement and effort completion
+
+Wayfinder retains the smallest durable representation needed to navigate the
+effort's current state. The map is current orientation, not a session log, and
+Git preserves historical evolution.
+
+When a U# is answered:
+
+1. state the answer unambiguously in the U# or, when the child no longer adds
+   value, as a compact resolution in the map;
+2. mark an existing U# `resolved` and remove it from unresolved fog, blockers,
+   and frontier work;
+3. reconcile current state, dependencies, next work, and any affected links in
+   the map; and
+4. retain or create E#, F#, or D# only when that record keeps independent
+   provenance, descriptive, or project-authority value.
+
+The map may be the entire current result. Resolution does not require
+U# -> E# -> F# -> D#, and no child is created merely to record that settlement
+happened. Repeating reconciliation against the same answer changes neither the
+map nor its current children.
+
+U/E/F/D files are current durable knowledge, not historical allocation markers.
+A resolved U# may leave the representation once its answer is unambiguous in
+current state and it has no remaining navigational value. Evidence remains only
+while its provenance, scope, limitations, or observation is independently
+useful. Facts remain only while their established descriptive conclusion and
+support chain are useful. Decisions remain only while the committed choice is
+current or still needed to navigate current authority. Git owns historical
+investigation and removed child content.
+
+Before removing a child, inspect the selected effort's map and current child
+files for references to its identifier or path. Reconcile every current
+dependency first: replace the reference with a current canonical source or
+successor, preserve the child when its provenance or meaning is still required,
+and never leave a dangling current link. A fact that still depends on an E# is
+evidence that the E# remains independently useful unless the fact can truthfully
+link the authoritative source directly. Do not scan or reconcile unrelated
+efforts.
+
+Removal is allowed only after recoverable Git history contains the retiring
+file's current content. If that content has never entered recoverable history,
+history is unavailable, or current references cannot be reconciled truthfully,
+keep the file and report the exact blocker. Acquire the effort mutation lock,
+reread the map and current children, confirm no current reference remains, and
+remove the child before releasing the lock. If current state changed before the
+lock was acquired, reconcile again rather than overwriting it. An empty child
+directory may then disappear. The retired number becomes available to the
+ordinary current-state allocation rule.
+
+To finish an effort, set the map status to `completed`, `abandoned`, or
+`superseded`, record the concise outcome or reason, reconcile current canonical
+links, and replace `Next work` with none for that effort. A superseded effort
+also links the successor or governing direction. Do not load historical child
+detail during ordinary effort selection, rename the stable directory, repurpose
+it for a new destination, or move it into `.agent-workflow-state/archive/`;
+that archive belongs to other durable workflow records.
+
+Legacy maps and children require no repository-wide migration. Existing
+U/E/F/D statuses retain their meanings. When authorized work on the relevant
+effort supplies enough evidence, add the lifecycle line or settle only the
+directly affected records; otherwise preserve the state and treat ambiguous
+lifecycle as unknown. Install, update, status, remove, reinstall, provider
+repair, and projection regeneration treat all Wayfinder state as opaque and
+never inventory, validate, migrate, repair, or settle it.
+
 ## Contradictions and revision
 
 Live source and current observed behavior outrank stale Wayfinder summaries.
@@ -375,4 +477,5 @@ The configured tracker or local-ticket convention owns the resulting artifacts;
 Wayfinder records only the current pointer and coordination consequence.
 
 No Jira synchronization, automatic archival, schema migration, database, graph
-engine, or validation service belongs in this contract.
+engine, allocation registry, event log, or validation service belongs in this
+contract.

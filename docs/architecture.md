@@ -105,9 +105,14 @@ profile, record, archive, and Wayfinder files are normal.
 When Wayfinder needs Git-native structured state, its dedicated progressively
 loaded contract configures `.agent-workflow-state/wayfinder/<effort>/` as the
 canonical local representation. It creates no global index, shadow `.scratch/`
-tree, persisted frontier, lifecycle schema, or external-tracker sync. The map
-itself is the re-entry point, and human edits remain opaque project data to
-lifecycle code.
+tree, persisted frontier, lifecycle database, or external-tracker sync. The map
+itself is the re-entry point and may carry one compact current/completed/
+abandoned/superseded status. U/E/F/D identifiers are stable references only
+within current state; Git preserves the meanings of retired records. Human
+Wayfinder state remains opaque project data to lifecycle code. Atomic creation
+of one empty transient lock directory per active effort mutation prevents
+concurrent child-number collisions and reference-removal races without adding
+durable allocation state.
 
 Accepted, lasting architecture or contract decisions use `/` as
 the default ADR namespace. An existing project instruction may name another

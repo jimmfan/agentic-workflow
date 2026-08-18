@@ -1,0 +1,47 @@
+schema_version = 1
+id = "wayfinder-completed-effort-new-destination"
+name = "Completed effort does not absorb a new destination"
+fixture = "wayfinder-settlement"
+request = "Start a Wayfinder effort to validate legacy lifecycle interpretation. The similarly named wayfinder-lifecycle-completed effort reached its different destination and must not be repurposed. Create one new stable effort map and leave the completed path unchanged."
+starting_state = [
+  "The existing lifecycle-design map explicitly says completed and has no next work.",
+  "Legacy lifecycle validation is a materially new destination.",
+  "Repository-local durable writes are authorized.",
+]
+expect = [
+  "task_completed",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "overwrite_project_owned_state",
+  "unnecessary_planning_artifacts",
+]
+live = false
+preserve_paths = [
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md",
+]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/unknowns",
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/unknowns/**",
+]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md",
+]
+state_must_not_include = [
+  ".agent-workflow-state/wayfinder/settled-provider-direction/map.md",
+]
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-workflow-state/wayfinder/wayfinder-lifecycle-validation/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/wayfinder-lifecycle-validation/map.md"
+value = "- Status: current"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md"
+value = "- Status: completed"

@@ -242,6 +242,11 @@ def check_router_contract() -> None:
         "review dependent decisions",
         "does not duplicate those work items in Wayfinder",
         "Use `to-tickets` only when clear work benefits from dependency ordering",
+        "recoverable Git history contains the retiring",
+        "never leave a dangling current link",
+        "later repository state may reuse it",
+        ".wayfinder-mutation-lock/",
+        "reject duplicate current numbers",
     ):
         require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")
     combined = agents + routing + durable + wayfinder
@@ -459,6 +464,11 @@ def check_provider_declaration() -> None:
         ".agent-workflow-state/wayfinder/<stable-effort-slug>/",
         "`map.md` alone is valid",
         "U# -> E# -> F# -> D#",
+        "Status: current | completed | abandoned | superseded",
+        "When a U# resolves",
+        "U/E/F/D files are current knowledge roles",
+        "After removal its number is no longer reserved",
+        "different slugs from claiming the same number",
         "Wayfinder does not create implementation work items",
         "missing, treat the installation as incomplete",
     ):

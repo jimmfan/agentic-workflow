@@ -118,7 +118,7 @@ class RoutingContractTests(unittest.TestCase):
         normalized_root = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
         self.assertIn("choice the user explicitly resolves as settled", normalized_root)
-        self.assertIn("Never reuse or renumber an ID", normalized_contract)
+        self.assertIn("Never renumber an existing current record", normalized_contract)
         self.assertIn("`map.md` owns the current state", normalized_contract)
         self.assertIn("`map.md` alone is a complete and valid", normalized_contract)
         self.assertIn("Do not turn every source read or test run into an E#", normalized_contract)

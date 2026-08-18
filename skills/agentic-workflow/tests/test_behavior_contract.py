@@ -25,9 +25,9 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_twenty_three_contracts_and_nine_live_smokes(self) -> None:
+    def test_catalog_has_twenty_nine_contracts_and_nine_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 23)
+        self.assertEqual(len(scenarios), 29)
         self.assertEqual(sum(scenario.live for scenario in scenarios), 9)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
@@ -55,12 +55,47 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-concurrent-effort-recheck",
                 "wayfinder-distinct-slug-collision",
                 "wayfinder-title-refinement-keeps-path",
+                "wayfinder-resolved-unknown-without-promotion",
+                "wayfinder-settled-knowledge-not-active",
+                "wayfinder-completed-effort-new-destination",
+                "wayfinder-explicit-historical-effort-access",
+                "wayfinder-concurrent-allocation-recheck",
+                "wayfinder-unrecoverable-history-retains-record",
             },
         )
         read_only = next(
             scenario for scenario in scenarios if scenario.id == "wayfinder-read-only-stale-state"
         )
         self.assertIn("unresolved", read_only.report_must_include)
+
+    def test_settlement_scenarios_cover_resolution_history_and_effort_completion(self) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        resolved = scenarios["wayfinder-resolved-unknown-without-promotion"]
+        settled = scenarios["wayfinder-settled-knowledge-not-active"]
+        new_destination = scenarios["wayfinder-completed-effort-new-destination"]
+        historical = scenarios["wayfinder-explicit-historical-effort-access"]
+
+        self.assertTrue(any(item.kind == "path_not_exists" and "U17" in item.path.as_posix() for item in resolved.assertions))
+        self.assertTrue(any(item.kind == "path_not_exists" and "E12" in item.path.as_posix() for item in resolved.assertions))
+        self.assertTrue(
+            any(item.kind == "path_not_exists" and "D1" in item.path.as_posix()
+                for item in settled.assertions)
+        )
+        self.assertTrue(
+            any(
+                item.kind == "path_exists"
+                and item.path.as_posix().endswith("wayfinder-lifecycle-validation/map.md")
+                for item in new_destination.assertions
+            )
+        )
+        self.assertIn("repository_unchanged", historical.expect)
+        self.assertEqual(len(historical.state_must_include), 1)
+
+        concurrent = scenarios["wayfinder-concurrent-allocation-recheck"]
+        unsafe = scenarios["wayfinder-unrecoverable-history-retains-record"]
+        self.assertTrue(any("D3" in item for item in concurrent.forbid_created_globs))
+        self.assertIn("blocked_cleanly", unsafe.expect)
+        self.assertIn("project_state_preserved", unsafe.expect)
 
     def test_effort_selection_scenarios_cover_resume_creation_naming_and_stability(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}

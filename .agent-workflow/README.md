@@ -18,7 +18,8 @@ contents, or remove it.
 - `contracts/durable-state.md`: durable continuity, canonical artifact, conflict,
   and re-entry rules.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
-  optional U#/E#/F#/D# knowledge and progressive loading.
+  optional U#/E#/F#/D# knowledge, current-state allocation, knowledge
+  settlement, effort completion, and progressive loading.
 - `contracts/project-profile.md`: optional advisory project-context rules.
 - `templates/`: source material used only when an authorized workflow actually
   needs durable state.

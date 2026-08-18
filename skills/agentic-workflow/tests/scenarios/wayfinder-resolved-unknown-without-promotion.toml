@@ -1,0 +1,69 @@
+schema_version = 1
+id = "wayfinder-resolved-unknown-without-promotion"
+name = "Resolved unknown and redundant evidence leave current state"
+fixture = "wayfinder-reference-settlement"
+request = "Resume the named provider-state effort. U17 is answered and E12 adds no independent value beyond source.txt. Recoverable Git history contains both files. Update map.md and every remaining F8/D4 reference, make F8 link source.txt directly, then remove U17 and E12. Do not manufacture another child. Repeating the reconciliation must be a no-op."
+starting_state = [
+  "This effort currently contains U17, E12, F8, and D4.",
+  "Recoverable Git history contains U17 and E12, while source.txt can directly support F8.",
+  "F8 and D4 retain independent current value; U17 and E12 do not.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "invent_unknown_answers",
+  "overwrite_project_owned_state",
+  "unnecessary_planning_artifacts",
+]
+live = false
+preserve_paths = []
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/provider-state/facts/F9-*.md",
+  ".agent-workflow-state/wayfinder/provider-state/decisions/D5-*.md",
+]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/provider-state/map.md",
+  ".agent-workflow-state/wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
+  ".agent-workflow-state/wayfinder/provider-state/evidence/E12-provider-configuration.md",
+  ".agent-workflow-state/wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
+  ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md",
+  "source.txt",
+]
+state_must_not_include = []
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/provider-state/unknowns/U17-provider-tracker-state.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/provider-state/evidence/E12-provider-configuration.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md"
+value = "Supported by: [source.txt](../../../../source.txt)"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md"
+value = "U17"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md"
+value = "Related: F8"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-workflow-state/wayfinder/provider-state/map.md"
+value = "U17"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-workflow-state/wayfinder/provider-state/map.md"
+value = "E12"
