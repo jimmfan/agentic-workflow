@@ -23,7 +23,7 @@ verification_command = "Run python verify.py after updating the policy."
 preserve_paths = []
 forbid_created_globs = [
   ".agent-workflow-state/**",
-  "docs/decisions/**",
+  "/**",
   "planning/**",
   "wayfinder/**",
 ]

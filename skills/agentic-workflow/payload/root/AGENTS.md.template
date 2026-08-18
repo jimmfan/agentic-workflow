@@ -22,7 +22,7 @@ loaded routing contract are the runtime; there is no separate controller.
 - Unrelated user work, canonical identifiers/artifacts, and relevant active
   durable state MUST be preserved; live source and accepted canonical artifacts
   outrank profiles, memory, and chat.
-- Use `docs/decisions/` as the default Architecture Decision Record (ADR)
+- Use `/` as the default Architecture Decision Record (ADR)
   namespace for accepted, lasting architecture or contract decisions unless
   project instructions name another canonical location. Current ADRs are
   authoritative; superseded ADRs are history. Workflow decision records do not

@@ -481,7 +481,7 @@ def route_visible(evidence: RunEvidence) -> tuple[bool, str]:
 def state_or_decision_changed(evidence: RunEvidence) -> bool:
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
     return any(
-        path.startswith(".agent-workflow-state/") or path.startswith("docs/decisions/")
+        path.startswith(".agent-workflow-state/") or path.startswith("/")
         for path in created | modified
     )
 

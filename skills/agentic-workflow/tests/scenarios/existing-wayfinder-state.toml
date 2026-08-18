@@ -28,7 +28,7 @@ preserve_paths = [
   ".agent-workflow-state/wayfinder/unrelated-billing-migration/map.md",
 ]
 forbid_created_globs = [
-  "docs/decisions/**",
+  "/**",
   ".agent-workflow-state/active.md",
   ".agent-workflow-state/wayfinder/response-serialization/unknowns/U2*.md",
   ".agent-workflow-state/wayfinder/response-serialization/decisions/D2*.md",

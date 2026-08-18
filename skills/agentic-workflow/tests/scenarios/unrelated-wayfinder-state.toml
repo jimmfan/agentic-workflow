@@ -27,7 +27,7 @@ preserve_paths = [
 forbid_created_globs = [
   ".agent-workflow-state/wayfinder/**",
   ".agent-workflow-state/active.md",
-  "docs/decisions/**",
+  "/**",
   "planning/**",
 ]
 route_must_not_include = ["discovery", "wayfinder"]

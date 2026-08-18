@@ -56,7 +56,7 @@ class RoutingContractTests(unittest.TestCase):
         ).read_text()
         normalized_policy = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
-        self.assertIn("Use `docs/decisions/` as the default", normalized_policy)
+        self.assertIn("Use `/` as the default", normalized_policy)
         self.assertIn(
             "project instructions name another canonical location", normalized_policy
         )
@@ -67,14 +67,14 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("recoverable version-control history", normalized_contract)
 
     def test_adr_index_separates_current_records_from_superseded_history(self) -> None:
-        index = (REPOSITORY_ROOT / "docs/decisions/README.md").read_text()
+        index = (REPOSITORY_ROOT / "/README.md").read_text()
         current, superseded = index.split("## Superseded tombstones", 1)
         for identifier in ("ADR-0002", "ADR-0003", "ADR-0005", "ADR-0009"):
             self.assertNotIn(identifier, current)
             self.assertIn(identifier, superseded)
         governance = (
             REPOSITORY_ROOT
-            / "docs/decisions/0021-maintain-compact-current-decision-context.md"
+            / "/0021-maintain-compact-current-decision-context.md"
         ).read_text()
         self.assertIn("- Status: accepted", governance)
         self.assertIn("Treat a choice the user explicitly resolves as settled", governance)

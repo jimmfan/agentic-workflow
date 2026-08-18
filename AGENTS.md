@@ -23,7 +23,7 @@ loaded routing contract are the runtime; there is no separate controller.
 - Unrelated user work, canonical identifiers/artifacts, and relevant active
   durable state MUST be preserved; live source and accepted canonical artifacts
   outrank profiles, memory, and chat.
-- Use `docs/decisions/` as the default Architecture Decision Record (ADR)
+- Use `/` as the default Architecture Decision Record (ADR)
   namespace for accepted, lasting architecture or contract decisions unless
   project instructions name another canonical location. Current ADRs are
   authoritative; superseded ADRs are history. Workflow decision records do not
@@ -149,7 +149,7 @@ Keep the project centered on this boundary. Do not expand it into a general agen
 
 Start with the documentation most relevant to the task. Expand the investigation when a change is cross-cutting, evidence conflicts, or ownership is unclear.
 
-* Architecture, ownership, providers, or state: `docs/architecture.md` and applicable records under `docs/decisions/`
+* Architecture, ownership, providers, or state: `docs/architecture.md` and applicable records under `/`
 * Routing and workflow composition: `docs/routing.md`
 * Provider evaluation or upgrades: `docs/provider-research.md` and `skills/agentic-workflow/payload/agent-workflow/providers.json`
 * Installation and release verification: `docs/verification.md`
@@ -157,7 +157,7 @@ Start with the documentation most relevant to the task. Expand the investigation
 * Packaged skill behavior: `skills/agentic-workflow/SKILL.md`
 * Consuming-project policy: `skills/agentic-workflow/payload/root/AGENTS.md.template`
 
-`docs/decisions/` is this source repository's canonical ADR namespace. It holds
+`/` is this source repository's canonical ADR namespace. It holds
 accepted, lasting architecture or contract decisions; project-owned
 `DEC-NNNN` and effort-scoped Wayfinder `D#` records remain workflow state and
 link to the applicable ADR when a decision is promoted.

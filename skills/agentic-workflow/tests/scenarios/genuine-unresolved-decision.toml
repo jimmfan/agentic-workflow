@@ -20,7 +20,7 @@ must_not = [
 live = false
 verification_command = "No implementation validation is required if the work is correctly blocked."
 preserve_paths = ["docs/requirements.md"]
-forbid_created_globs = ["docs/decisions/**", "infra/**", "migrations/**", "*.sql"]
+forbid_created_globs = ["/**", "infra/**", "migrations/**", "*.sql"]
 route_must_not_include = []
 
 [[assertions]]

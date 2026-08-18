@@ -108,7 +108,7 @@ tree, persisted frontier, lifecycle schema, or external-tracker sync. The map
 itself is the re-entry point, and human edits remain opaque project data to
 lifecycle code.
 
-Accepted, lasting architecture or contract decisions use `docs/decisions/` as
+Accepted, lasting architecture or contract decisions use `/` as
 the default ADR namespace. An existing project instruction may name another
 canonical location; the framework preserves that convention instead of creating
 a parallel namespace or migrating it. Local `DEC-NNNN` and Wayfinder `D#`
