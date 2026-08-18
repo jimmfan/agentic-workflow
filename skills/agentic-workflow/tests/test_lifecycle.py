@@ -417,7 +417,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertFalse((self.project / ".agent-workflow").exists())
         self.assertEqual(provider_file.read_text(), "preserve provider bytes\n")
 
-    def test_existing_declared_provider_content_is_replaced(self) -> None:
+    def test_damaged_declared_wayfinder_content_is_safely_replaced(self) -> None:
         directory = self.project / ".agents/skills/wayfinder"
         directory.mkdir(parents=True)
         (directory / "personal.txt").write_text("do not touch\n")
@@ -426,6 +426,10 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertFalse((directory / "personal.txt").exists())
         self.assertIn("disable-model-invocation: false", (directory / "SKILL.md").read_text())
+        self.assertIn(
+            "framework-owned runtime projection",
+            (directory / "SKILL.md").read_text(),
+        )
         for name in self.declared_provider_names():
             self.assertTrue((self.project / ".agents/skills" / name / "SKILL.md").is_file())
 
@@ -740,20 +744,37 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("Agentic Workflow: healthy", result.stdout)
         self.assertIn("Optional provider projection is incomplete", result.stderr)
 
-    def test_wayfinder_adapter_applies_after_fresh_provider_install(self) -> None:
+    def test_wayfinder_owned_runtime_projects_from_recognized_upstream_input(self) -> None:
         result = run_script(PROVIDERS, "install", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         skill_text = (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8")
-        self.assertEqual(skill_text.count(WAYFINDER_ADAPTER_BEGIN), 1)
-        self.assertEqual(skill_text.count(WAYFINDER_ADAPTER_END), 1)
-        self.assertIn("The only canonical local representation", skill_text)
+        self.assertNotIn(WAYFINDER_ADAPTER_BEGIN, skill_text)
+        self.assertNotIn(WAYFINDER_ADAPTER_END, skill_text)
+        self.assertIn("framework-owned runtime projection", skill_text)
+        self.assertIn("Effort naming, selection, and stable paths", skill_text)
+        self.assertIn("The map H1 is the durable human-readable effort name", skill_text)
+        self.assertIn("reread the effort-directory listing", skill_text)
         normalized_skill = " ".join(skill_text.split())
+        self.assertIn("derived from Matt Pocock's Wayfinder methodology", normalized_skill)
         self.assertIn("never force U# -> E# -> F# -> D# as ceremony", normalized_skill)
         self.assertIn("never reuse or renumber an ID", normalized_skill)
         self.assertIn("Wayfinder does not create implementation work items", normalized_skill)
         self.assertIn("`map.md` alone is valid", normalized_skill)
         self.assertIn("Keep the map self-contained", normalized_skill)
+        for incompatible in (
+            "shared map on the repo's issue tracker",
+            "labelled `wayfinder:map`",
+            "Each ticket is a **child issue**",
+            "Each ticket carries a `wayfinder:<type>` label",
+            "A session **claims** a ticket by assigning it",
+            "tracker's **native** dependency relationship",
+            "run `/setup-matt-pocock-skills`",
+            "default to the local-markdown tracker",
+            "post the answer as a **resolution comment**",
+            "**close** the issue",
+        ):
+            self.assertNotIn(incompatible, skill_text)
         self.assertIn(
             "disable-model-invocation: false",
             (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8"),
@@ -786,6 +807,76 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             (destination / "SKILL.md").read_text(encoding="utf-8"),
         )
         self.assertTrue((self.project / ".agents/skills/research/SKILL.md").is_file())
+
+    def test_legacy_prepend_wayfinder_projection_is_repaired_to_owned_runtime(self) -> None:
+        source = PACKAGE_ROOT / "provider-snapshots/matt-pocock-skills/skills/wayfinder"
+        destination = self.project / ".agents/skills/wayfinder"
+        destination.parent.mkdir(parents=True)
+        shutil.copytree(source, destination)
+        skill_path = destination / "SKILL.md"
+        upstream = skill_path.read_text(encoding="utf-8")
+        frontmatter, body = upstream.split("\n---\n", 1)
+        legacy = (
+            frontmatter.replace(
+                "disable-model-invocation: true",
+                "disable-model-invocation: false",
+            )
+            + "\n---\n"
+            + WAYFINDER_ADAPTER_BEGIN
+            + "## Agentic Workflow local mode (authoritative)\n\nLegacy overlay.\n\n"
+            + WAYFINDER_ADAPTER_END
+            + body
+        )
+        skill_path.write_text(legacy, encoding="utf-8")
+        openai = destination / "agents/openai.yaml"
+        openai.write_text(
+            openai.read_text(encoding="utf-8").replace(
+                "allow_implicit_invocation: false",
+                "allow_implicit_invocation: true",
+            ),
+            encoding="utf-8",
+        )
+
+        result = run_script(PROVIDERS, "install", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        repaired = skill_path.read_text(encoding="utf-8")
+        self.assertIn("framework-owned runtime projection", repaired)
+        self.assertNotIn(WAYFINDER_ADAPTER_BEGIN, repaired)
+        self.assertNotIn("shared map on the repo's issue tracker", repaired)
+
+    def test_stale_owned_wayfinder_projection_is_repaired_to_current_runtime(self) -> None:
+        install = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
+        skill_path = self.project / ".agents/skills/wayfinder/SKILL.md"
+        frontmatter, _ = skill_path.read_text(encoding="utf-8").split("\n---\n", 1)
+        skill_path.write_text(
+            frontmatter
+            + "\n---\n# Wayfinder\n\nAgentic Workflow's stale owned runtime projection.\n",
+            encoding="utf-8",
+        )
+
+        result = run_script(PROVIDERS, "install", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("reconciled optional provider skill wayfinder", result.stdout)
+        repaired = skill_path.read_text(encoding="utf-8")
+        self.assertIn("## Effort naming, selection, and stable paths", repaired)
+        self.assertNotIn("stale owned runtime projection", repaired)
+
+    def test_malformed_owned_runtime_source_fails_before_projection_mutation(self) -> None:
+        install = run_script(PROVIDERS, "install", self.project)
+        self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
+        before = tree_snapshot(self.project / ".agents/skills")
+        package_copy = self.copy_package("malformed-wayfinder-runtime")
+        projection = package_copy / "runtime-projections/wayfinder.md"
+        projection.write_text("not a Wayfinder runtime\n", encoding="utf-8")
+
+        result = run_script(package_copy / "scripts/providers.py", "install", self.project)
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("runtime projection is malformed", result.stderr)
+        self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before)
 
     def test_exact_existing_projection_is_reused_without_writing(self) -> None:
         first = run_script(PROVIDERS, "install", self.project)
@@ -936,6 +1027,20 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
         self.assertIn("Wayfinder must declare", verify.stderr)
+
+    def test_verifier_rejects_conflicting_owned_wayfinder_runtime_content(self) -> None:
+        package_copy = self.copy_package("conflicting-wayfinder-runtime")
+        projection = package_copy / "runtime-projections/wayfinder.md"
+        projection.write_text(
+            projection.read_text(encoding="utf-8")
+            + "\nEach ticket is a **child issue** of the map.\n",
+            encoding="utf-8",
+        )
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("owned Wayfinder runtime contains incompatible tracker mechanics", verify.stderr)
 
     def test_verifier_requires_implicit_invocation_adapters(self) -> None:
         package_copy = self.copy_package("implicit-invocation-adapter-declaration")

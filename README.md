@@ -72,7 +72,7 @@ flowchart LR
     state --> resume["Later session"]
     resume --> router
 
-    state -.-> wfstate["wayfinder/effort-name-placeholder/"]
+    state -.-> wfstate["wayfinder/stable-effort-slug/"]
     wfstate -.-> map["map.md"]
     wfstate -.-> unknowns["unknowns/U#.md"]
     wfstate -.-> evidence["evidence/E#.md"]
@@ -156,10 +156,18 @@ child directories are optional and created lazily.
 
 Child files are loaded only when needed.
 
-The pinned upstream skill supplies the destination/map/fog methodology. A
-narrow, fingerprinted provider adapter makes this Git-native tree authoritative
-over upstream tracker mechanics when Agentic Workflow local mode is active. In
-that mode no issue tracker or `.scratch/` copy is required.
+Agentic Workflow's effective Wayfinder is a framework-owned runtime projection
+derived from Matt Pocock's pinned Wayfinder methodology. The unchanged upstream
+snapshot remains reviewed provenance and reference; the effective runtime owns
+the Git-native map, effort-selection, continuation, U/E/F/D, and `to-tickets`
+contracts and contains no appended tracker implementation.
+
+The map H1 is the durable readable effort name. Destination and Out of scope
+define its substantive boundary. A new effort derives a concise lowercase,
+hyphen-separated directory slug from that name once; later sessions list
+directory names and read only plausible candidate maps, while the established
+path stays stable even if wording or implementation phases change. Ambiguous
+matches remain read-only until resolved.
 
 The vocabulary is:
 

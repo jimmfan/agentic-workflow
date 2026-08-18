@@ -141,7 +141,11 @@ This project owns:
 * durable coordination, handoffs, and re-entry;
 * acceptance and integration verification.
 
-Selected providers own their internal methodology, terminology, composition, and native artifacts.
+Selected providers own their internal methodology, terminology, composition,
+and native artifacts by default. Wayfinder is the explicit exception defined by
+ADR-0023: Matt Pocock's pinned snapshot remains its methodological origin and
+reviewed provenance, while Agentic Workflow owns the derived effective runtime,
+Git-native state, effort selection, continuation, and handoff contracts.
 
 Keep the project centered on this boundary. Do not expand it into a general agent runtime, package manager, plugin platform, skill library, or observability platform by default. Broader scope requires evidence, comparison with simpler alternatives, and an explicit architectural decision.
 

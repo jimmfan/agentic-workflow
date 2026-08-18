@@ -47,7 +47,9 @@ skill directories remain outside that boundary. Install/update stages the
 complete declared projection, repairs missing or different declared directories
 transactionally, and blocks on unsafe paths. Remove deletes exactly the declared
 set. Provider failure does not affect the core. The Wayfinder and invocation
-adapters require recognized pinned input before target mutation.
+adapters require recognized pinned input before target mutation. Wayfinder's
+effective body is an Agentic Workflow-owned runtime projection derived from the
+unchanged pinned upstream snapshot.
 
 Local Wayfinder data is a configured project-owned representation under
 `.agent-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned

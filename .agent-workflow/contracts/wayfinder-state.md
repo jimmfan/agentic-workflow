@@ -6,12 +6,13 @@ The existence of an effort under `.agent-workflow-state/wayfinder/` is not a
 routing signal. Clear, bounded, or unrelated work stays on its minimum useful
 route and does not read or create Wayfinder state.
 
-Upstream Wayfinder supplies the planning method: orient around a destination,
-keep the map low resolution, represent fog honestly, resolve consequential
-uncertainty incrementally, and zoom into detail only when needed. Agentic
-Workflow supplies the canonical Git-native representation below. It is durable
-project knowledge and coordination state, not an issue tracker and not a mirror
-of `.scratch/` or an external tracker.
+Agentic Workflow's effective Wayfinder workflow is a framework-owned runtime
+projection derived from Matt Pocock's Wayfinder methodology. It keeps the
+method's destination, low-resolution map, honest fog, frontier, incremental
+resolution, readable-name, and progressive-loading concepts while Agentic
+Workflow owns the Git-native state and continuation contract below. This is
+durable project knowledge and coordination state, not an issue tracker and not
+a mirror of `.scratch/` or an external tracker.
 Do not create or update `.agent-workflow-state/active.md`; the effort map is the
 only re-entry point.
 
@@ -70,17 +71,84 @@ instruction, or equivalent restriction never authorizes a Wayfinder state
 write.
 
 Install, update, status, remove, and reinstall never seed, inventory, checksum,
-validate, migrate, rewrite, or remove Wayfinder state. The effort directory is a
-short stable slug. Do not silently merge two efforts, rename one another session
-may reference, or reuse an old effort for a different destination.
+validate, migrate, rewrite, or remove Wayfinder state.
+
+## Effort naming, selection, and stable paths
+
+The H1 heading in `map.md` is the durable human-readable effort name. Its
+Destination states the intended endpoint, while Not yet specified and Out of
+scope distinguish in-scope fog from the scope boundary. The effort is
+recognized from that readable name, destination, scope boundary, and map
+context. The directory slug is only its stable storage key; it is not a
+separate semantic identity object and does not replace the readable name.
+
+Route before inspecting state. An unrelated Wayfinder directory never selects
+Wayfinder or justifies a scan.
+
+When the user or authoritative context supplies an exact repository-relative
+effort path, verify that it is safe, stays below
+`.agent-workflow-state/wayfinder/`, traverses no symlink, and names a regular
+`map.md`. Use that path and do not invent a replacement directory.
+
+For a likely resume without an exact path:
+
+1. List effort directory names.
+2. Use the request and directory names to identify the smallest plausible
+   candidate set.
+3. Read only those candidate maps.
+4. Compare their readable effort names, destinations, scope boundaries,
+   current state, and relevant context.
+5. Resume one effort only when one match is sufficiently clear.
+
+If multiple efforts remain plausible, do not merge them or choose arbitrarily.
+Do not create a third synonymous effort or write affected state. Ask the user when
+interaction is available. In noninteractive execution, report the ambiguity
+and remain read-only for the affected state.
+
+Create a new effort only when Wayfinder is selected, durable writes are
+authorized, structured notes materially reduce the risk of losing or
+conflating important state, no existing effort has the same substantive
+destination and scope boundary, and the destination is materially distinct
+enough to warrant its own map. A branch, ticket, file, command, temporary task
+description, or chat title does not define a new durable effort.
+
+Choose a concise human-readable noun phrase that remains sensible across
+sessions and implementation phases. Avoid temporary or generic names such as
+`Current work`, `Project update`, `Fix branch`, and `Miscellaneous`. Derive the
+directory slug once from that name using a simple default: lowercase,
+filesystem-safe, hyphen-separated, concise, and recognizable, with no timestamp
+or random suffix by default. This is an authoring rule, not a generic slugging
+framework.
+
+Immediately before creating the directory, reread the relevant Wayfinder
+directory listing, account for another session having created an effort, and
+inspect any newly appearing plausible map. If the desired slug already exists,
+resume it only when it represents the same effort. When a materially distinct
+effort has a real collision, use the shortest stable meaningful disambiguator;
+do not overwrite or merge the existing state, and avoid hashes or timestamps
+while a readable alternative exists.
+
+Once created, the effort directory path is stable. Do not rename it because the
+map title improves, implementation phases or branches change, tickets change,
+or new evidence revises current understanding. Established awkward or legacy
+slugs remain valid and resumable. Preserve clear existing maps without
+normalizing them or automatically migrating project-owned state.
+
+Continue the same effort when wording becomes more precise, evidence changes,
+implementation advances, unknowns resolve, or decisions are superseded while
+the substantive destination and scope boundary remain intact. A materially
+different endpoint, bringing previously out-of-scope work inside the boundary,
+a change that would make the old map misleading as low-resolution orientation,
+or a new destination after the original one completes normally requires a
+fresh effort. Do not reuse a completed or abandoned directory for unrelated
+work; the detailed completed-effort representation is outside this contract.
 
 ## Progressive loading
 
 1. Route from the request first. Do not scan Wayfinder state for confidently
    direct or unrelated work.
-2. When the request names an effort, use that exact safe repository-relative
-   path. For a likely resume without an exact path, list effort directory names
-   and read only the smallest set of maps needed to identify the effort.
+2. Apply the effort naming, selection, and stable-path rules above; do not load
+   every map to resolve a likely resume.
 3. Read the relevant `map.md` as the low-resolution orientation.
 4. Follow only links needed for the current question or work. Do not read every
    U/E/F/D child.

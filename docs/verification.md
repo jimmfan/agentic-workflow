@@ -97,8 +97,9 @@ The suite prioritizes behavior that matters before 1.0:
   older declared directories as one rollback-protected transaction;
 - unsafe declared paths block provider mutation, remove deletes only the
   declared projection, and unrelated skill directories are preserved;
-- the Wayfinder local-mode adapter applies in release-local staging, while
-  changed target bytes are repaired and status remains read-only;
+- the unchanged raw Wayfinder snapshot is recognized before the owned runtime
+  body is projected in release-local staging, while changed target bytes are
+  repaired and status remains read-only;
 - the implicit-invocation adapter automatically exposes To Spec, To Tickets,
   and Implement from the bundled projection, is idempotent,
   keeps Setup, Teach, and Triage user-only, and rejects unexpected activation

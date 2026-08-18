@@ -1,5 +1,7 @@
 # D1: Use a fingerprinted local-mode provider overlay
 
+- Status: superseded
+- Superseded by: D2, ADR-0023
 - Related: U1, T1, T2
 
 ## Decision

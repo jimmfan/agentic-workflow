@@ -160,21 +160,22 @@ before mutation. Unrelated `.agents/skills/` directories are preserved. A
 projection or validation failure still never invalidates a successful core
 operation.
 
-The pinned Wayfinder provider retains its reasoning method and terminology. A
-clearly delimited local-mode section precedes the unchanged provider method and
-adapts its configured storage, re-entry, and item lifecycle: low-resolution
-maps, fog of war, named links, and dependency-derived frontier semantics remain
-provider-aligned, while local persistence moves from the provider's default
-`.scratch/` tracker to project-owned map-first U#/E#/F#/D# state. `map.md` owns
-current state, blockers, dependencies, and next work; substantial decomposition
-passes to `to-tickets` without duplicate Wayfinder work items. The same adapter
-changes Wayfinder's host invocation flags and discovery descriptions so Codex and
-GitHub Copilot may select it implicitly at the framework's notebook threshold.
-This remains a narrow integration boundary because Agentic Workflow owns
-routing and local storage; it does not rewrite the upstream method below the
-adapter. A Claude model inside GitHub Copilot uses this shared host projection;
-native Claude Code remains unavailable because no native projection exists for
-that host.
+Wayfinder is the explicit exception to normal provider-method ownership.
+Agentic Workflow owns a concise effective runtime derived from Matt Pocock's
+Wayfinder methodology; the pinned raw snapshot remains unchanged as reviewed
+provenance and reference. During staging, one explicit adapter validates that
+recognized input, retains compatible provenance frontmatter, applies the
+reviewed host-invocation metadata, and replaces the upstream tracker body with
+the package-owned runtime body.
+
+The owned runtime retains destination, low-resolution map, fog, frontier,
+readable-name, and progressive-resolution concepts while defining project-owned
+map-first U/E/F/D state, effort selection, continuation, concurrency, and the
+`to-tickets` boundary. It does not append issue assignment, tracker blocking,
+resolution comments, required tracker setup, or `.scratch/` fallback mechanics.
+A Claude model inside GitHub Copilot uses this shared host projection; native
+Claude Code remains unavailable because no native projection exists for that
+host.
 
 The framework keeps no target ownership database, installed-file history,
 quarantine store, or automatic upgrade engine.

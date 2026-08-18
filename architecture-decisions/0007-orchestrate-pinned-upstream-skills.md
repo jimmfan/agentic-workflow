@@ -1,6 +1,6 @@
 # ADR-0007: Orchestrate pinned upstream skills
 
-- Status: partially superseded by ADR-0010, ADR-0011, ADR-0012, ADR-0013, and ADR-0020
+- Status: partially superseded by ADR-0010, ADR-0011, ADR-0012, ADR-0013, ADR-0020, and ADR-0023
 - Date: 2026-08-13
 
 ## Context
@@ -153,6 +153,12 @@ ADR-0020 supersedes this ADR's runtime acquisition and target-ownership
 conclusions. Releases bundle the exact 14-skill projection at the resolved
 commit; target lifecycle is offline and replaces the complete declared
 framework-owned projection while preserving unrelated skill directories.
+
+ADR-0023 supersedes this ADR's complete-methodology ownership conclusion for
+Wayfinder only. Matt Pocock's pinned snapshot remains its methodological origin
+and reviewed provenance, while Agentic Workflow owns the derived effective
+Wayfinder runtime and its local effort-selection and state contracts. Other
+providers retain the default ownership model in this ADR.
 
 ## Alternatives considered
 

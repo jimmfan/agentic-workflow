@@ -1,14 +1,3 @@
----
-description: Keep a lightweight structured map when important unknowns, decisions, dependencies, blockers, or conflicting facts are becoming unreliable to hold in ordinary context.
-disable-model-invocation: false
-metadata:
-    github-path: skills/engineering/wayfinder
-    github-pinned: v1.2.3
-    github-ref: refs/tags/v1.2.3
-    github-repo: https://github.com/mattpocock/skills
-    github-tree-sha: 48c3a8b0a9705d6310d37f7f9b53bcb2c55955c7
-name: wayfinder
----
 # Wayfinder
 
 Wayfinder keeps a lightweight durable map when important unknowns, decisions,

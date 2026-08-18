@@ -25,9 +25,9 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_fifteen_contracts_and_nine_live_smokes(self) -> None:
+    def test_catalog_has_twenty_three_contracts_and_nine_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 15)
+        self.assertEqual(len(scenarios), 23)
         self.assertEqual(sum(scenario.live for scenario in scenarios), 9)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
@@ -47,12 +47,68 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-fact-conflict",
                 "wayfinder-contract-smoke",
                 "unrelated-wayfinder-state",
+                "wayfinder-resume-synonymous-wording",
+                "wayfinder-ambiguous-effort-resume",
+                "wayfinder-distinct-scope-creates-effort",
+                "wayfinder-exact-legacy-path-stays-stable",
+                "wayfinder-durable-name-ignores-ephemeral-inputs",
+                "wayfinder-concurrent-effort-recheck",
+                "wayfinder-distinct-slug-collision",
+                "wayfinder-title-refinement-keeps-path",
             },
         )
         read_only = next(
             scenario for scenario in scenarios if scenario.id == "wayfinder-read-only-stale-state"
         )
         self.assertIn("unresolved", read_only.report_must_include)
+
+    def test_effort_selection_scenarios_cover_resume_creation_naming_and_stability(self) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        synonym = scenarios["wayfinder-resume-synonymous-wording"]
+        ambiguous = scenarios["wayfinder-ambiguous-effort-resume"]
+        distinct = scenarios["wayfinder-distinct-scope-creates-effort"]
+        legacy = scenarios["wayfinder-exact-legacy-path-stays-stable"]
+        ephemeral = scenarios["wayfinder-durable-name-ignores-ephemeral-inputs"]
+        concurrent = scenarios["wayfinder-concurrent-effort-recheck"]
+        collision = scenarios["wayfinder-distinct-slug-collision"]
+        refinement = scenarios["wayfinder-title-refinement-keeps-path"]
+
+        self.assertIn("existing_state_reused", synonym.expect)
+        self.assertTrue(any("wayfinder-runtime" in item for item in synonym.forbid_created_globs))
+        self.assertIn("blocked_cleanly", ambiguous.expect)
+        self.assertEqual(len(ambiguous.state_must_include), 2)
+        self.assertTrue(
+            any(
+                item.kind == "path_exists"
+                and item.path.as_posix().endswith("wayfinder-knowledge-settlement/map.md")
+                for item in distinct.assertions
+            )
+        )
+        self.assertEqual(
+            [item.as_posix() for item in legacy.state_must_include],
+            [".agent-workflow-state/wayfinder/legacy-dir/map.md"],
+        )
+        ephemeral_state = " ".join(ephemeral.starting_state).lower()
+        for transient in ("branch", "ticket", "file", "temporary-task", "chat-title"):
+            self.assertIn(transient, ephemeral_state)
+        self.assertTrue(any("current-work" in item for item in ephemeral.forbid_created_globs))
+        self.assertIn("existing_state_reused", concurrent.expect)
+        self.assertIn("newly appearing", " ".join(concurrent.starting_state))
+        self.assertTrue(
+            any(
+                item.kind == "path_exists"
+                and item.path.as_posix().endswith("provider-projection-observability/map.md")
+                for item in collision.assertions
+            )
+        )
+        self.assertIn("existing_state_reused", refinement.expect)
+        self.assertTrue(
+            any(
+                item.kind == "path_not_exists"
+                and item.path.as_posix().endswith("provider-naming-continuity/map.md")
+                for item in refinement.assertions
+            )
+        )
 
     def test_scenarios_reject_unknown_behavior_vocabulary(self) -> None:
         source = (behavior.SCENARIO_ROOT / "simple-bounded-task.toml").read_text(encoding="utf-8")

@@ -123,6 +123,31 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("`map.md` alone is a complete and valid", normalized_contract)
         self.assertIn("Do not turn every source read or test run into an E#", normalized_contract)
 
+    def test_wayfinder_efforts_have_stable_names_and_progressive_resume_rules(self) -> None:
+        contract = (
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
+        ).read_text()
+        normalized = " ".join(contract.split())
+        for required in (
+            "## Effort naming, selection, and stable paths",
+            "The H1 heading in `map.md` is the durable human-readable effort name",
+            "directory slug is only its stable storage key",
+            "List effort directory names",
+            "smallest plausible candidate set",
+            "If multiple efforts remain plausible",
+            "create a third synonymous effort",
+            "A branch, ticket, file, command, temporary task description, or chat title",
+            "lowercase, filesystem-safe, hyphen-separated",
+            "Immediately before creating the directory",
+            "shortest stable meaningful disambiguator",
+            "Once created, the effort directory path is stable",
+            "Established awkward or legacy slugs remain valid",
+            "bringing previously out-of-scope work inside the boundary",
+        ):
+            self.assertIn(required, normalized)
+        self.assertNotIn("## Identity", contract)
+        self.assertNotIn("I#", contract)
+
     def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
         by_id = {item["id"]: item for item in scenarios}

@@ -110,7 +110,9 @@ use it instead of making setup ceremony a prerequisite.
 ## Preserve workflow ownership
 
 The selected provider owns its internal method, terminology, and native
-artifacts. The router owns selection and composition, not a duplicate
+artifacts by default. Wayfinder is the declared exception: Agentic Workflow's
+installed skill is the owned effective runtime derived from the pinned upstream
+methodology. The router owns selection and composition, not a duplicate
 methodology. Reuse provider evidence and add a second pass only for a distinct
 request or a demonstrated gap.
 

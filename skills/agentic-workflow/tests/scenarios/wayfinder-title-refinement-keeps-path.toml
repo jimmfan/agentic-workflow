@@ -1,0 +1,53 @@
+schema_version = 1
+id = "wayfinder-title-refinement-keeps-path"
+name = "Readable title refinement keeps the established directory"
+fixture = "wayfinder-effort-selection"
+request = "At the exact path .agent-workflow-state/wayfinder/legacy-dir/map.md, refine the H1 to Provider naming continuity and clarify the same destination. Keep the established directory. Repository-local durable writes are authorized."
+starting_state = [
+  "The exact safe path identifies the effort.",
+  "The improved wording preserves the same substantive endpoint and scope boundary.",
+  "A revised map title is not a reason to rename the directory or create a new effort.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "overwrite_project_owned_state",
+  "unnecessary_planning_artifacts",
+]
+live = false
+preserve_paths = [
+  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
+  ".agent-workflow-state/wayfinder/provider-projection/map.md",
+  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
+  ".agent-workflow-state/wayfinder/concurrency-safe-provider-refresh/map.md",
+]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/provider-naming-continuity",
+  ".agent-workflow-state/wayfinder/provider-naming-continuity/**",
+]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/legacy-dir/map.md",
+]
+state_must_not_include = [
+  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
+  ".agent-workflow-state/wayfinder/provider-projection/map.md",
+  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
+  ".agent-workflow-state/wayfinder/concurrency-safe-provider-refresh/map.md",
+]
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-workflow-state/wayfinder/legacy-dir/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/legacy-dir/map.md"
+value = "# Provider naming continuity"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/provider-naming-continuity/map.md"
