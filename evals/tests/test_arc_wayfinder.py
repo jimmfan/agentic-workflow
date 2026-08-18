@@ -72,8 +72,8 @@ class PreparationAndMutationTests(unittest.TestCase):
             )
             workspace = Path(state["workspace"])
             self.assertNotIn(arc.SOURCE_ROOT, workspace.parents)
-            self.assertFalse((workspace / ".ai-workflow").exists())
-            self.assertFalse((workspace / ".ai-workflow-state").exists())
+            self.assertFalse((workspace / ".agent-workflow").exists())
+            self.assertFalse((workspace / ".agent-workflow-state").exists())
             self.assertFalse((workspace / ".agents").exists())
             self.assertFalse((workspace / "AGENTS.md").exists())
             self.assertIsNone(state["workflow_installation"])
@@ -91,7 +91,7 @@ class PreparationAndMutationTests(unittest.TestCase):
                 require_frozen=False,
             )
             workspace = Path(state["workspace"])
-            self.assertTrue((workspace / ".ai-workflow" / "routing.md").is_file())
+            self.assertTrue((workspace / ".agent-workflow" / "routing.md").is_file())
             skill = workspace / ".agents" / "skills" / "wayfinder" / "SKILL.md"
             self.assertTrue(skill.is_file())
             self.assertIn("github-pinned: v1.2.3", skill.read_text(encoding="utf-8"))
@@ -194,7 +194,7 @@ Legacy security group ownership remains unresolved.
         self.assertTrue(all(grade["state_evolution"]["retained_truth"].values()))
         self.assertTrue(grade["mapping_only_respected"])
 
-        unknown = self.workspace / ".ai-workflow-state/wayfinder/arc/unknowns/U1-compute.md"
+        unknown = self.workspace / ".agent-workflow-state/wayfinder/arc/unknowns/U1-compute.md"
         unknown.parent.mkdir(parents=True)
         unknown.write_text("Instance family is unresolved.\n", encoding="utf-8")
         workflow = arc.grade_phase_3(

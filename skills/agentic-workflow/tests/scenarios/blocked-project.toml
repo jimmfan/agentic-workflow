@@ -19,7 +19,7 @@ must_not = [
 live = true
 verification_command = "No deployment validation is possible until the named project decisions exist."
 preserve_paths = ["docs/blockers.md"]
-forbid_created_globs = ["infra/**", "*.tf", ".ai-workflow-state/**"]
+forbid_created_globs = ["infra/**", "*.tf", ".agent-workflow-state/**"]
 route_must_not_include = []
 
 [[assertions]]

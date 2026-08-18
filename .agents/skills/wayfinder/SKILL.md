@@ -12,9 +12,9 @@ name: wayfinder
 <!-- agentic-workflow:wayfinder-local-state-v1:begin -->
 ## Agentic Workflow local mode (authoritative)
 
-Use this section when `.ai-workflow/contracts/wayfinder-state.md` exists. Read
+Use this section when `.agent-workflow/contracts/wayfinder-state.md` exists. Read
 that contract when Wayfinder is selected. Before an authorized durable-state
-write, also read `.ai-workflow/contracts/durable-state.md`. These rules override
+write, also read `.agent-workflow/contracts/durable-state.md`. These rules override
 incompatible tracker-specific mechanics below. If the local contract is absent,
 ignore this section and use the unchanged upstream method normally.
 
@@ -22,9 +22,9 @@ ignore this section and use the unchanged upstream method normally.
   still allowed; an explicit opt-out prevents automatic selection. Bounded
   debugging, one isolated unknown, and unrelated work keep their normal route.
 - The only canonical local representation is
-  `.ai-workflow-state/wayfinder/<effort>/`: `map.md`, `unknowns/U#`,
+  `.agent-workflow-state/wayfinder/<effort>/`: `map.md`, `unknowns/U#`,
   `decisions/D#`, and `tickets/T#`. Never create `.scratch/`, an external issue
-  tracker copy, or `.ai-workflow-state/active.md`; do not run setup to provision
+  tracker copy, or `.agent-workflow-state/active.md`; do not run setup to provision
   a tracker for this mode.
 - Preserve the upstream reasoning method: orient around a destination, keep the
   map low resolution, represent fog honestly, resolve consequential uncertainty

@@ -230,7 +230,7 @@ and [GitHub's cloud-agent skills guide](https://docs.github.com/en/copilot/how-t
   `agents/openai.yaml:policy.allow_implicit_invocation`, Copilot invocation to
   `SKILL.md:disable-model-invocation`, and currently marks Claude Code
   unavailable because the project has no `.claude/skills` projection. See the
-  checked-in [`providers.json`](../skills/agentic-workflow/payload/ai-workflow/providers.json).
+  checked-in [`providers.json`](../skills/agentic-workflow/payload/agent-workflow/providers.json).
 - **[Repository-observed]** Installed provider skills such as `implement`,
   `to-spec`, and `to-tickets` carry both user-only declarations:
   `disable-model-invocation: true` in `SKILL.md` and
@@ -252,7 +252,7 @@ and [GitHub's cloud-agent skills guide](https://docs.github.com/en/copilot/how-t
 - **[Inferred]** The present dual metadata is not redundant for the currently
   claimed Codex and Copilot surfaces. Removing either declaration would discard
   the documented user-only control for one host family. The repository's
-  [provider declaration](../skills/agentic-workflow/payload/ai-workflow/providers.json)
+  [provider declaration](../skills/agentic-workflow/payload/agent-workflow/providers.json)
   and the host contracts above support that conclusion.
 
 ## 6. Small manual live-host matrix

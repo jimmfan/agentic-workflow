@@ -2,6 +2,11 @@
 
 Tests are separated by determinism and product boundary.
 
+Run focused unittest commands with `python3 -m unittest ...`. Python's generated
+`__pycache__` files are ignored by Git and by package verification; they do not
+need manual cleanup. The full verifier also disables bytecode writes in its test
+subprocess.
+
 ## Deterministic contract and unit tests
 
 - `test_behavior_contract.py` validates the TOML scenario contract, behavior
@@ -29,7 +34,7 @@ These JSON catalogs are validated directly by `verify_package.py`. They are not
   reset behavior, proves install leaves Wayfinder state unseeded, verifies
   implementation fixtures begin red, detects a destructive state mutation, and
   runs install/update/repeated-update/remove/reinstall against every fixture.
-- `test_lifecycle.py` retains focused archive, composite, collision, migration,
+- `test_lifecycle.py` retains focused archive, composite, collision,
   provider-isolation, cp1252, and current-state reconciliation coverage.
 
 ## Human behavioral contracts and live smoke tests

@@ -16,7 +16,7 @@ instructions remain authoritative.
 The compact always-loaded rules live in
 `payload/root/AGENTS.md.template`. Detailed selection, composition, invocation,
 fallback, evidence, and route-marker rules live in
-`payload/ai-workflow/routing.md` and load only for a named skill, resume,
+`payload/agent-workflow/routing.md` and load only for a named skill, resume,
 uncertain route, or route not confidently direct.
 
 Keep these decisions separate:
@@ -31,10 +31,10 @@ work. Use an exact `$skill-name` or `/skill-name` handoff only when the user
 explicitly requires that provider or a real configuration boundary prevents
 host-native progress. Never simulate provider execution.
 
-The dominant workflow owns any durable continuity under `.ai-workflow-state/`.
+The dominant workflow owns any durable continuity under `.agent-workflow-state/`.
 Provider-native tickets, specifications, research, reviews, and learning
 artifacts remain canonical; the framework does not mirror them. Local Wayfinder
-uses the configured canonical tree under `.ai-workflow-state/wayfinder/` and its
+uses the configured canonical tree under `.agent-workflow-state/wayfinder/` and its
 effort map as the re-entry point. A narrow provider adapter makes that local
 tree and its U#/D#/T# ontology authoritative over incompatible tracker mechanics
 in the pinned method body while leaving the upstream reasoning method intact.

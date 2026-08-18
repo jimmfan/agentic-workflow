@@ -628,7 +628,7 @@ def install_workflow(workspace: Path) -> dict[str, Any]:
         if destination.exists():
             shutil.rmtree(destination)
         shutil.copytree(source, destination)
-    installed_roots = [workspace / "AGENTS.md", workspace / "CLAUDE.md", workspace / ".ai-workflow", workspace / ".agents"]
+    installed_roots = [workspace / "AGENTS.md", workspace / "CLAUDE.md", workspace / ".agent-workflow", workspace / ".agents"]
     installed_files: dict[str, str] = {}
     for root in installed_roots:
         candidates = [root] if root.is_file() else files_under(root) if root.is_dir() else []
@@ -793,9 +793,9 @@ def capability_observations(summary: dict[str, Any], workspace: Path) -> dict[st
     for capability, path in CAPABILITY_PATHS.items():
         evidence = [item for item in summary.get("command_events", []) if path in str(item.get("command", ""))]
         invoked = bool(evidence)
-        if capability == "wayfinder" and (workspace / ".ai-workflow-state" / "wayfinder").is_dir():
+        if capability == "wayfinder" and (workspace / ".agent-workflow-state" / "wayfinder").is_dir():
             invoked = True
-            evidence = [*evidence, {"artifact": ".ai-workflow-state/wayfinder"}]
+            evidence = [*evidence, {"artifact": ".agent-workflow-state/wayfinder"}]
         if capability == "domain-modeling" and any((workspace / name).is_file() for name in ("CONTEXT.md", "CONTEXT-MAP.md")):
             invoked = True
             evidence = [*evidence, {"artifact": "CONTEXT.md or CONTEXT-MAP.md"}]
@@ -1230,7 +1230,7 @@ def preflight() -> Path:
         "all_54_runs_prepared": len(records) == 54,
         "all_runs_unique": len({record["run_id"] for record in records}) == len(records),
         "a_has_no_workflow": all(
-            not (Path(record["workspace"]) / ".ai-workflow").exists()
+            not (Path(record["workspace"]) / ".agent-workflow").exists()
             and not (Path(record["workspace"]) / "AGENTS.md").exists()
             for record in a_records
         ),

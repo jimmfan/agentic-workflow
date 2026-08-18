@@ -67,7 +67,7 @@ flowchart LR
 
     result --> durable{"Persist state?"}
     durable -->|no| verify
-    durable -->|yes| state[".ai-workflow-state/"]
+    durable -->|yes| state[".agent-workflow-state/"]
 
     state --> resume["Later session"]
     resume --> router
@@ -134,7 +134,7 @@ The practical threshold is whether a careful engineer would start structured not
 A Wayfinder effort can look like:
 
 ```text
-.ai-workflow-state/
+.agent-workflow-state/
 └── wayfinder/
     └── <effort>/
         ├── map.md
@@ -250,14 +250,14 @@ target-project/
 ├── CLAUDE.md                    # managed region + preserved project region
 ├── .agents/skills/              # local workflows and optional providers
 │
-├── .ai-workflow/                # framework-owned and reconstructable
+├── .agent-workflow/                # framework-owned and reconstructable
 │   ├── install-manifest.json
 │   ├── providers.json
 │   ├── routing.md
 │   ├── contracts/
 │   └── templates/
 │
-└── .ai-workflow-state/          # durable project-owned state
+└── .agent-workflow-state/          # durable project-owned state
     ├── records/
     ├── archive/
     └── wayfinder/
@@ -268,13 +268,13 @@ target-project/
             └── tickets/
 ```
 
-### `.ai-workflow/`
+### `.agent-workflow/`
 
 Framework-owned and reconstructable.
 
 Its contents may be repaired or replaced by the framework.
 
-### `.ai-workflow-state/`
+### `.agent-workflow-state/`
 
 Project-owned.
 
@@ -380,7 +380,7 @@ Installation and lifecycle internals are documented separately.
 
 Run the matching command from the installed project's root. Update reconciles
 the core framework and bundled provider skills while preserving durable project
-state under `.ai-workflow-state/`.
+state under `.agent-workflow-state/`.
 
 ```bash
 # macOS/Linux or a Dev Container

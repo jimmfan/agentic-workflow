@@ -13,9 +13,9 @@ usable even when every optional provider is unavailable.
 
 ## Ownership contract
 
-- `.ai-workflow/` is framework-owned and reconstructable. Install/update may
+- `.agent-workflow/` is framework-owned and reconstructable. Install/update may
   replace the directory from current package bytes.
-- `.ai-workflow-state/` and every entry under it are project-owned durable data.
+- `.agent-workflow-state/` and every entry under it are project-owned durable data.
   Create the directory when absent during install/update, but never seed,
   inventory, checksum, rewrite, or remove its contents.
 - `AGENTS.md` and `CLAUDE.md` are composite. Replace only the unambiguous managed
@@ -50,25 +50,11 @@ Python 3.11 or newer. Use the public README bootstrap for normal end-user
 installation because it resolves an immutable revision and validates archive
 paths, types, counts, sizes, modes, and minimum runtime files.
 
-Install/update first preflight durable migrations, composite boundaries,
-external collisions, and target symlinks. They then stage the new
-`.ai-workflow/`, apply rollback-protected external writes, swap the framework
+Install/update first preflight composite boundaries, external collisions, and
+target symlinks. They then stage the new
+`.agent-workflow/`, apply rollback-protected external writes, swap the framework
 directory, and verify current desired bytes. Missing or drifted reconstructable
 files are replaced without historical checksum forensics.
-
-The only compatibility imports are:
-
-- `.ai-workflow/project-profile.md` ->
-  `.ai-workflow-state/project-profile.md`
-- `.ai-workflow/state/active.md` -> `.ai-workflow-state/legacy-active.md`
-- `.ai-workflow/state/records/` -> `.ai-workflow-state/records/`
-- `.ai-workflow/state/archive/` -> `.ai-workflow-state/archive/`
-
-Ignore a missing source. Move to an absent destination, accept an identical
-destination, and stop while preserving both sides on a differing or unsafe
-destination. `legacy-active.md` preserves historical bytes only; current
-workflows never create, read, or update it. Never recreate
-`.ai-workflow/state/README.md`.
 
 After core success, lifecycle makes a best-effort offline projection from the
 release's bundled, checksummed provider snapshot. It stages all 14 declared
@@ -90,9 +76,9 @@ exactly those declarations and preserves unrelated skill directories.
 repairable result should be fixed with `update`; an unsafe path requires
 resolving the named filesystem boundary first.
 
-`remove` migrates named legacy durable state, removes managed composite regions,
+`remove` removes managed composite regions,
 deletes only unchanged external files recorded as framework-created, removes
-`.ai-workflow/`, and preserves `.ai-workflow-state/`, changed/pre-existing
+`.agent-workflow/`, and preserves `.agent-workflow-state/`, changed/pre-existing
 external files, and unrelated skills.
 
 ## Release verification
@@ -115,4 +101,4 @@ python3 scripts/verify_package.py --refresh-manifest --tests
 
 Never refresh metadata to hide an unexplained change, edit install evidence to
 force deletion, call `adopt.py` alone for a public network install, or delete
-`.ai-workflow-state/` as a lifecycle repair.
+`.agent-workflow-state/` as a lifecycle repair.

@@ -22,7 +22,7 @@ from provider_snapshot import (
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
-DECLARATION = PACKAGE_ROOT / "payload" / "ai-workflow" / "providers.json"
+DECLARATION = PACKAGE_ROOT / "payload" / "agent-workflow" / "providers.json"
 MINIMUM_PYTHON = (3, 11)
 
 
@@ -54,9 +54,9 @@ WAYFINDER_ADAPTER_BEGIN = b"<!-- agentic-workflow:wayfinder-local-state-v1:begin
 WAYFINDER_ADAPTER_END = b"<!-- agentic-workflow:wayfinder-local-state-v1:end -->\n\n"
 WAYFINDER_LOCAL_MODE = WAYFINDER_ADAPTER_BEGIN + b"""## Agentic Workflow local mode (authoritative)
 
-Use this section when `.ai-workflow/contracts/wayfinder-state.md` exists. Read
+Use this section when `.agent-workflow/contracts/wayfinder-state.md` exists. Read
 that contract when Wayfinder is selected. Before an authorized durable-state
-write, also read `.ai-workflow/contracts/durable-state.md`. These rules override
+write, also read `.agent-workflow/contracts/durable-state.md`. These rules override
 incompatible tracker-specific mechanics below. If the local contract is absent,
 ignore this section and use the unchanged upstream method normally.
 
@@ -64,9 +64,9 @@ ignore this section and use the unchanged upstream method normally.
   still allowed; an explicit opt-out prevents automatic selection. Bounded
   debugging, one isolated unknown, and unrelated work keep their normal route.
 - The only canonical local representation is
-  `.ai-workflow-state/wayfinder/<effort>/`: `map.md`, `unknowns/U#`,
+  `.agent-workflow-state/wayfinder/<effort>/`: `map.md`, `unknowns/U#`,
   `decisions/D#`, and `tickets/T#`. Never create `.scratch/`, an external issue
-  tracker copy, or `.ai-workflow-state/active.md`; do not run setup to provision
+  tracker copy, or `.agent-workflow-state/active.md`; do not run setup to provision
   a tracker for this mode.
 - Preserve the upstream reasoning method: orient around a destination, keep the
   map low resolution, represent fog honestly, resolve consequential uncertainty
@@ -600,7 +600,7 @@ def replace_projection(
     destinations.mkdir(parents=True, exist_ok=True)
 
     rollback_root = Path(
-        tempfile.mkdtemp(prefix=".ai-workflow-provider-rollback-", dir=root)
+        tempfile.mkdtemp(prefix=".agent-workflow-provider-rollback-", dir=root)
     )
     backed_up: list[tuple[Path, Path]] = []
     installed: list[tuple[Path, Path]] = []
@@ -653,7 +653,7 @@ def remove_projection(root: Path, skills: list[ProviderSkill]) -> list[ProviderS
     if not present:
         return []
 
-    removal_root = Path(tempfile.mkdtemp(prefix=".ai-workflow-provider-remove-", dir=root))
+    removal_root = Path(tempfile.mkdtemp(prefix=".agent-workflow-provider-remove-", dir=root))
     moved: list[tuple[Path, Path]] = []
     try:
         for skill in present:
@@ -681,7 +681,7 @@ def remove_projection(root: Path, skills: list[ProviderSkill]) -> list[ProviderS
 
 def status(root: Path) -> int:
     provider = load_provider()
-    with tempfile.TemporaryDirectory(prefix="ai-workflow-provider-status-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="agent-workflow-provider-status-") as temporary:
         staged_skills = prepare_staged_projection(Path(temporary), provider)
         states = {
             skill.name: projection_state(root, staged_skills, skill)
@@ -707,7 +707,7 @@ def status(root: Path) -> int:
 
 def install(root: Path, dry_run: bool) -> int:
     provider = load_provider()
-    temporary_arguments = {"prefix": ".ai-workflow-providers-"}
+    temporary_arguments = {"prefix": ".agent-workflow-providers-"}
     if not dry_run:
         temporary_arguments["dir"] = root
     with tempfile.TemporaryDirectory(**temporary_arguments) as temporary:

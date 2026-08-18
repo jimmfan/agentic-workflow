@@ -23,27 +23,27 @@ must_not = [
 live = true
 verification_command = "Run python verify.py after implementing serialize_payload."
 preserve_paths = [
-  ".ai-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
-  ".ai-workflow-state/wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
-  ".ai-workflow-state/wayfinder/unrelated-billing-migration/map.md",
+  ".agent-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".agent-workflow-state/wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
+  ".agent-workflow-state/wayfinder/unrelated-billing-migration/map.md",
 ]
 forbid_created_globs = [
   "docs/decisions/**",
-  ".ai-workflow-state/active.md",
-  ".ai-workflow-state/wayfinder/response-serialization/unknowns/U2*.md",
-  ".ai-workflow-state/wayfinder/response-serialization/decisions/D2*.md",
-  ".ai-workflow-state/wayfinder/response-serialization/tickets/T2*.md",
+  ".agent-workflow-state/active.md",
+  ".agent-workflow-state/wayfinder/response-serialization/unknowns/U2*.md",
+  ".agent-workflow-state/wayfinder/response-serialization/decisions/D2*.md",
+  ".agent-workflow-state/wayfinder/response-serialization/tickets/T2*.md",
   ".scratch/**",
 ]
 route_must_not_include = ["discovery", "wayfinder"]
 state_must_include = [
-  ".ai-workflow-state/wayfinder/response-serialization/map.md",
-  ".ai-workflow-state/wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
-  ".ai-workflow-state/wayfinder/response-serialization/tickets/T1-serialize-public-responses.md",
+  ".agent-workflow-state/wayfinder/response-serialization/map.md",
+  ".agent-workflow-state/wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
+  ".agent-workflow-state/wayfinder/response-serialization/tickets/T1-serialize-public-responses.md",
 ]
 state_must_not_include = [
-  ".ai-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
-  ".ai-workflow-state/wayfinder/unrelated-billing-migration/map.md",
+  ".agent-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".agent-workflow-state/wayfinder/unrelated-billing-migration/map.md",
 ]
 
 [[assertions]]
@@ -53,10 +53,10 @@ value = "NotImplementedError"
 
 [[assertions]]
 kind = "path_contains"
-path = ".ai-workflow-state/wayfinder/response-serialization/tickets/T1-serialize-public-responses.md"
+path = ".agent-workflow-state/wayfinder/response-serialization/tickets/T1-serialize-public-responses.md"
 value = "- Status: done"
 
 [[assertions]]
 kind = "path_not_contains"
-path = ".ai-workflow-state/wayfinder/response-serialization/map.md"
+path = ".agent-workflow-state/wayfinder/response-serialization/map.md"
 value = "Next executable work: [T1"

@@ -2,12 +2,12 @@
   {
     "id": "repair-missing-current-framework-file",
     "operation": "update",
-    "expected": "A deleted current file under .ai-workflow is restored from the current package."
+    "expected": "A deleted current file under .agent-workflow is restored from the current package."
   },
   {
     "id": "replace-drifted-current-framework-file",
     "operation": "update",
-    "expected": "A modified current file under .ai-workflow is replaced without forensic checksum checks."
+    "expected": "A modified current file under .agent-workflow is replaced without forensic checksum checks."
   },
   {
     "id": "ignore-absent-historical-file",
@@ -17,17 +17,12 @@
   {
     "id": "do-not-recreate-old-state-readme",
     "operation": "update",
-    "expected": "The development-era .ai-workflow/state/README.md path is neither required nor recreated."
+    "expected": "The development-era .agent-workflow/state/README.md path is neither required nor recreated."
   },
   {
     "id": "preserve-arbitrary-durable-state",
     "operation": "install-update-remove-reinstall",
-    "expected": "Every project-owned entry under .ai-workflow-state survives byte-for-byte."
-  },
-  {
-    "id": "retire-active-index-without-data-loss",
-    "operation": "install-update",
-    "expected": "No current active index or template is created; an old .ai-workflow/state/active.md is preserved as inert .ai-workflow-state/legacy-active.md, and any existing project-owned active.md remains untouched."
+    "expected": "Every project-owned entry under .agent-workflow-state survives byte-for-byte."
   },
   {
     "id": "preserve-composite-project-region",

@@ -18,7 +18,6 @@ import tempfile
 import tomllib
 from typing import Iterable, Mapping, Sequence
 
-
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 TEST_ROOT = Path(__file__).resolve().parent
 SCENARIO_ROOT = TEST_ROOT / "scenarios"
@@ -99,7 +98,7 @@ SCENARIO_FIELDS = {
 }
 
 FRAMEWORK_CHANGE_PREFIXES = (
-    ".ai-workflow/",
+    ".agent-workflow/",
     ".agents/",
     ".behavior-evidence/",
 )
@@ -482,7 +481,7 @@ def route_visible(evidence: RunEvidence) -> tuple[bool, str]:
 def state_or_decision_changed(evidence: RunEvidence) -> bool:
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
     return any(
-        path.startswith(".ai-workflow-state/") or path.startswith("docs/decisions/")
+        path.startswith(".agent-workflow-state/") or path.startswith("docs/decisions/")
         for path in created | modified
     )
 
@@ -688,13 +687,13 @@ def run_adopt(command: str, workspace: Path) -> subprocess.CompletedProcess[str]
 def exercise_fixture_lifecycle(scenario: Scenario) -> tuple[bool, str]:
     with tempfile.TemporaryDirectory(prefix=f"behavior-{scenario.id}-") as temporary:
         workspace = copy_fixture(scenario, Path(temporary))
-        original = snapshot(workspace / ".ai-workflow-state")
+        original = snapshot(workspace / ".agent-workflow-state")
         for command in ("install", "update", "update", "remove", "install"):
             result = run_adopt(command, workspace)
             if result.returncode != 0:
                 detail = (result.stderr or result.stdout).strip()
                 return False, f"{command} failed: {detail}"
-            current = snapshot(workspace / ".ai-workflow-state")
+            current = snapshot(workspace / ".agent-workflow-state")
             if current != original:
                 return False, f"{command} changed project-owned state"
         return True, "install/update/repeated-update/remove/reinstall preserved project state"

@@ -84,12 +84,12 @@ class PreparationAndMutationTests(unittest.TestCase):
                 require_frozen=False,
             )
             a_workspace = Path(states["A"]["workspace"])
-            self.assertFalse((a_workspace / ".ai-workflow").exists())
+            self.assertFalse((a_workspace / ".agent-workflow").exists())
             self.assertFalse((a_workspace / ".agents").exists())
             self.assertIsNone(states["A"]["workflow_installation"])
             for condition in ("B", "C"):
                 workspace = Path(states[condition]["workspace"])
-                self.assertTrue((workspace / ".ai-workflow" / "routing.md").is_file())
+                self.assertTrue((workspace / ".agent-workflow" / "routing.md").is_file())
                 self.assertTrue((workspace / ".agents" / "skills" / "wayfinder" / "SKILL.md").is_file())
                 self.assertTrue(all(arc.verify_automatic_workspace(states[condition])["checks"].values()))
             self.assertEqual(
@@ -162,14 +162,14 @@ The next actionable work can proceed with the SSM AMI lookup and IAM permissions
         self.assertTrue(grade["continuity"]["exact_fact_trusted_or_consumed"])
 
     def test_phase_3_records_exact_blocker_evidence_without_forcing_boolean(self) -> None:
-        state = self.workspace / ".ai-workflow-state/wayfinder/arc/tickets/T1.md"
+        state = self.workspace / ".agent-workflow-state/wayfinder/arc/tickets/T1.md"
         state.parent.mkdir(parents=True)
         state.write_text(
             "# T1\n\n- Status: ready\n- Blocked by: none\n\nLegacy ownership remains unresolved and non-blocking.\n",
             encoding="utf-8",
         )
         evidence = arc.wayfinder_blocker_evidence(self.workspace)
-        self.assertEqual(evidence["all_blocked_by_lines"][0]["path"], ".ai-workflow-state/wayfinder/arc/tickets/T1.md")
+        self.assertEqual(evidence["all_blocked_by_lines"][0]["path"], ".agent-workflow-state/wayfinder/arc/tickets/T1.md")
         self.assertTrue(evidence["legacy_explicitly_non_blocking"])
         self.assertTrue(evidence["manual_interpretation_required"])
 
@@ -280,7 +280,7 @@ resource "aws_iam_role_policy_attachment" "cni" {
         self.assertEqual(summary["validation_events"][0]["exit_code"], 0)
 
     def test_treatment_crossover_is_primitive_and_condition_specific(self) -> None:
-        state = self.workspace / ".ai-workflow-state/wayfinder/arc/map.md"
+        state = self.workspace / ".agent-workflow-state/wayfinder/arc/map.md"
         state.parent.mkdir(parents=True)
         state.write_text("# ARC\n", encoding="utf-8")
         execution = {
@@ -296,7 +296,7 @@ resource "aws_iam_role_policy_attachment" "cni" {
         result = arc.treatment_crossover(
             "B",
             self.workspace,
-            [".ai-workflow-state/wayfinder/arc/map.md"],
+            [".agent-workflow-state/wayfinder/arc/map.md"],
             execution,
         )
         self.assertTrue(result["treatment_crossover_observed"])

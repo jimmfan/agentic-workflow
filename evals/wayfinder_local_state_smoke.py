@@ -228,15 +228,15 @@ def wayfinder_treatment_observation(
     execution: dict[str, Any],
 ) -> dict[str, Any]:
     all_paths = sorted(base.snapshot(workspace))
-    state_files = [path for path in all_paths if path.startswith(".ai-workflow-state/wayfinder/")]
+    state_files = [path for path in all_paths if path.startswith(".agent-workflow-state/wayfinder/")]
     changed_state_files = sorted(
-        path for path in changed if path.startswith(".ai-workflow-state/wayfinder/")
+        path for path in changed if path.startswith(".agent-workflow-state/wayfinder/")
     )
     alternate_paths = [
         path
         for path in all_paths
         if path.startswith(".scratch/")
-        or path in {".ai-workflow-state/active.md", ".ai-workflow/state/active.md"}
+        or path in {".agent-workflow-state/active.md", ".agent-workflow/state/active.md"}
     ]
     observation = dict(execution.get("wayfinder_observation") or {})
     state_read = bool(state_files) and bool(observation.get("wayfinder_state_read"))
@@ -281,7 +281,7 @@ def finalize_result(
     observations = [phase.get("treatment_crossover", {}) for phase in phases]
     workspace = Path(state["workspace"])
     all_paths = sorted(base.snapshot(workspace))
-    state_files = [path for path in all_paths if path.startswith(".ai-workflow-state/wayfinder/")]
+    state_files = [path for path in all_paths if path.startswith(".agent-workflow-state/wayfinder/")]
     maps = [path for path in state_files if path.endswith("/map.md")]
     unknowns = [path for path in state_files if "/unknowns/U" in path]
     decisions = [path for path in state_files if "/decisions/D" in path]

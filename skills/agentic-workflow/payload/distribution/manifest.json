@@ -1,6 +1,42 @@
 {
   "framework_owned": [
     {
+      "source": "agent-workflow/README.md",
+      "target": ".agent-workflow/README.md"
+    },
+    {
+      "source": "agent-workflow/contracts/durable-state.md",
+      "target": ".agent-workflow/contracts/durable-state.md"
+    },
+    {
+      "source": "agent-workflow/contracts/project-profile.md",
+      "target": ".agent-workflow/contracts/project-profile.md"
+    },
+    {
+      "source": "agent-workflow/contracts/wayfinder-state.md",
+      "target": ".agent-workflow/contracts/wayfinder-state.md"
+    },
+    {
+      "source": "agent-workflow/providers.json",
+      "target": ".agent-workflow/providers.json"
+    },
+    {
+      "source": "agent-workflow/routing.md",
+      "target": ".agent-workflow/routing.md"
+    },
+    {
+      "source": "agent-workflow/templates/decision-record.md",
+      "target": ".agent-workflow/templates/decision-record.md"
+    },
+    {
+      "source": "agent-workflow/templates/project-profile.md",
+      "target": ".agent-workflow/templates/project-profile.md"
+    },
+    {
+      "source": "agent-workflow/templates/work-item.md",
+      "target": ".agent-workflow/templates/work-item.md"
+    },
+    {
       "source": "skills/workflow-debugging/SKILL.md",
       "target": ".agents/skills/workflow-debugging/SKILL.md"
     },
@@ -15,42 +51,6 @@
     {
       "source": "skills/workflow-verification/SKILL.md",
       "target": ".agents/skills/workflow-verification/SKILL.md"
-    },
-    {
-      "source": "ai-workflow/README.md",
-      "target": ".ai-workflow/README.md"
-    },
-    {
-      "source": "ai-workflow/contracts/durable-state.md",
-      "target": ".ai-workflow/contracts/durable-state.md"
-    },
-    {
-      "source": "ai-workflow/contracts/project-profile.md",
-      "target": ".ai-workflow/contracts/project-profile.md"
-    },
-    {
-      "source": "ai-workflow/contracts/wayfinder-state.md",
-      "target": ".ai-workflow/contracts/wayfinder-state.md"
-    },
-    {
-      "source": "ai-workflow/providers.json",
-      "target": ".ai-workflow/providers.json"
-    },
-    {
-      "source": "ai-workflow/routing.md",
-      "target": ".ai-workflow/routing.md"
-    },
-    {
-      "source": "ai-workflow/templates/decision-record.md",
-      "target": ".ai-workflow/templates/decision-record.md"
-    },
-    {
-      "source": "ai-workflow/templates/project-profile.md",
-      "target": ".ai-workflow/templates/project-profile.md"
-    },
-    {
-      "source": "ai-workflow/templates/work-item.md",
-      "target": ".ai-workflow/templates/work-item.md"
     },
     {
       "source": "root/AGENTS.md.template",

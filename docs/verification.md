@@ -69,17 +69,12 @@ conceal an unexplained mapping or version difference.
 
 The suite prioritizes behavior that matters before 1.0:
 
-- missing and drifted `.ai-workflow/` files are restored from current desired
+- missing and drifted `.agent-workflow/` files are restored from current desired
   state, and obsolete internal files disappear;
-- absent historical paths, including `.ai-workflow/state/README.md`, are normal;
-- arbitrary `.ai-workflow-state/` contents survive install, update, remove, and
+- arbitrary `.agent-workflow-state/` contents survive install, update, remove, and
   reinstall byte-for-byte;
-- no current active-index template is installed, while an old
-  `.ai-workflow/state/active.md` survives as inert `legacy-active.md` data;
 - canonical local Wayfinder maps and human-edited child Markdown survive the
   same lifecycle sequence without schema validation or normalization;
-- named legacy durable state migrates only to an absent or identical destination,
-  while conflicts preserve both sides and stop;
 - project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
 - malformed composite markers and unknown external collisions stop before
   partial mutation;
@@ -132,11 +127,13 @@ If the gate fails:
 1. use the first reported error or failed test as the primary diagnostic;
 2. for stale metadata, inspect payload inventory, mapping, and version changes
    before refreshing;
-3. for a lifecycle fixture, rerun that named `unittest` from the source root;
+3. for a lifecycle fixture, rerun that named `unittest` from the source root
+   with `python3 -m unittest ...`; generated Python caches are ignored by Git
+   and package verification and need no manual cleanup;
 4. for a release snapshot refresh issue, run the maintainer command in a
    networked environment with GitHub CLI authentication; ordinary target
    install/update must remain fully offline; and
-5. never delete `.ai-workflow-state/` or unknown external content to make a test
+5. never delete `.agent-workflow-state/` or unknown external content to make a test
    pass.
 
 No live Windows, editor, provider-network, or host-extension validation should

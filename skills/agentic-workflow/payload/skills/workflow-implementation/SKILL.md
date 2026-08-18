@@ -30,7 +30,7 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
 
 ## Resolve the provider before execution
 
-Resolve the implementation capability through `.ai-workflow/providers.json` and
+Resolve the implementation capability through `.agent-workflow/providers.json` and
 validate the installed `implement` skill when available. If its installation,
 configuration, or active-host support is missing, continue with the host's
 normal implementation capability and report that the preferred provider did not

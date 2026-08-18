@@ -97,15 +97,15 @@ def _route_markers(messages: list[str]) -> list[str]:
 
 def _framework_kind(path: str) -> str | None:
     normalized = path.replace("\\", "/")
-    if ".ai-workflow-state/wayfinder/" in normalized:
+    if ".agent-workflow-state/wayfinder/" in normalized:
         return "wayfinder_state"
-    if ".ai-workflow-state/" in normalized:
+    if ".agent-workflow-state/" in normalized:
         return "durable_workflow_state"
     if "/.agents/skills/" in normalized or normalized.startswith(".agents/skills/"):
         return "skill"
     if "/.codex/skills/" in normalized or normalized.startswith(".codex/skills/"):
         return "skill"
-    if ".ai-workflow/" in normalized or normalized.endswith(("AGENTS.md", "CLAUDE.md")):
+    if ".agent-workflow/" in normalized or normalized.endswith(("AGENTS.md", "CLAUDE.md")):
         return "framework_instruction"
     return None
 

@@ -127,7 +127,7 @@ contents, and pin its hash.
 
 Harbor supports `--skill`, but that mechanism copies/registers skill directories
 into the agent's home. It cannot install Agentic Workflow's root `AGENTS.md` and
-`.ai-workflow/` routing contract, so it is not a faithful B condition.
+`.agent-workflow/` routing contract, so it is not a faithful B condition.
 `--extra-instruction-path` appends content to each benchmark instruction and
 would change prompt presentation. Do not use it for B.
 
@@ -191,7 +191,7 @@ exists.
 
 Before each paired task, also verify:
 
-1. A contains none of `AGENTS.md`, `.ai-workflow/`, or `.agents/skills/`.
+1. A contains none of `AGENTS.md`, `.agent-workflow/`, or `.agents/skills/`.
 2. B lifecycle status is healthy and its initial contents match the pinned
    install evidence.
 3. Both commands have the same task digest, model, Codex version, reasoning

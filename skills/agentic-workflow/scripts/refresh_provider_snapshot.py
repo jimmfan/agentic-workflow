@@ -19,7 +19,7 @@ from provider_snapshot import SnapshotTreeError, tree_digest, validate_local_ref
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
-DECLARATION = PACKAGE_ROOT / "payload" / "ai-workflow" / "providers.json"
+DECLARATION = PACKAGE_ROOT / "payload" / "agent-workflow" / "providers.json"
 MINIMUM_PYTHON = (3, 11)
 GIT_OBJECT = re.compile(r"[0-9a-f]{40}")
 

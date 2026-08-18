@@ -4,7 +4,7 @@ name = "Lifecycle preserves arbitrary project-owned state"
 fixture = "state-preservation"
 request = "Exercise install, update, repeated update, remove, and reinstall without changing project-owned workflow state."
 starting_state = [
-  "The consuming project contains arbitrary nested user content under .ai-workflow-state.",
+  "The consuming project contains arbitrary nested user content under .agent-workflow-state.",
   "A human-edited Wayfinder map and unknown use nonstandard Markdown structure.",
   "Optional standard state files are absent.",
 ]
@@ -18,10 +18,10 @@ must_not = [
 live = false
 verification_command = "The deterministic fixture layer performs lifecycle operations and compares state snapshots after every operation."
 preserve_paths = [
-  ".ai-workflow-state/custom/owner-note.txt",
-  ".ai-workflow-state/unexpected.json",
-  ".ai-workflow-state/wayfinder/human-edited/map.md",
-  ".ai-workflow-state/wayfinder/human-edited/unknowns/U7-custom-question.md",
+  ".agent-workflow-state/custom/owner-note.txt",
+  ".agent-workflow-state/unexpected.json",
+  ".agent-workflow-state/wayfinder/human-edited/map.md",
+  ".agent-workflow-state/wayfinder/human-edited/unknowns/U7-custom-question.md",
 ]
 forbid_created_globs = []
 route_must_not_include = []

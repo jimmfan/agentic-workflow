@@ -27,12 +27,12 @@ simple, replaceable, optional, best-effort, or CI-only.
 
 Adopt current desired-state reconciliation with explicit ownership classes.
 
-1. `.ai-workflow/` is entirely reconstructable. Stage and replace it from the
+1. `.agent-workflow/` is entirely reconstructable. Stage and replace it from the
    current mapping. Missing, drifted, extra, and obsolete contents require no
    historical checksum proof.
-2. `.ai-workflow-state/` is entirely project-owned. Never inventory or mutate
-   its current contents. Compatibility migration is limited to four named old
-   locations and stops on a differing destination.
+2. `.agent-workflow-state/` is entirely project-owned. Install and update create
+   the directory when absent but never inventory or mutate its contents.
+   Previous namespace layouts are migrated manually before using this lifecycle.
 3. `AGENTS.md` and `CLAUDE.md` use one parsed managed region and byte-preserved
    project region. Ambiguous markers stop before mutation.
 4. Other external integration paths use the minimum evidence needed for safe
@@ -54,13 +54,14 @@ Adopt current desired-state reconciliation with explicit ownership classes.
    analyzer. The root policy and detailed routing document are the runtime; one
    required response marker provides v0 route visibility without triggering
    additional workflow work.
-9. Keep archive/path/link/special-entry/root/symlink safety, narrow durable-state
-   conflict checks, rollback around external/composite mutation, Python 3.11+,
-   and ASCII/cp1252-safe CLI presentation.
+9. Keep archive/path/link/special-entry/root/symlink safety, rollback around
+   external/composite mutation, Python 3.11+, and ASCII/cp1252-safe CLI
+   presentation.
 
 The new install manifest schema is intentionally small: version, revision,
-external deletion evidence, and composite creation evidence. A narrow reader
-extracts only data-safety evidence from the prior pre-1.0 manifest.
+external deletion evidence, and composite creation evidence. Noncurrent or
+malformed manifests provide no reconstruction evidence; collision checks still
+protect unknown external content.
 
 ## Consequences
 

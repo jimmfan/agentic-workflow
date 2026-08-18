@@ -11,7 +11,7 @@ What is the smallest mechanism that makes the full Wayfinder instruction set see
 
 ## Evidence
 
-- The installed root and routing contracts make `.ai-workflow-state/wayfinder/<effort>/` canonical and define U# as uncertainty, D# as durable decision, and T# as executable work.
+- The installed root and routing contracts make `.agent-workflow-state/wayfinder/<effort>/` canonical and define U# as uncertainty, D# as durable decision, and T# as executable work.
 - The projected pinned `wayfinder/SKILL.md` still makes tracker issues canonical, treats its tickets as decision questions, requires tracker setup, and mandates tracker assignment/comment/close mechanics.
 - The current lifecycle overlay changes only activation metadata and leaves that conflicting body unchanged.
 - Current official Codex documentation says activation begins from skill metadata, but selection loads the full `SKILL.md`; it also says same-named skills are not merged.

@@ -7,7 +7,6 @@ import sys
 import tempfile
 import unittest
 
-
 TEST_ROOT = Path(__file__).resolve().parent
 
 
@@ -51,7 +50,7 @@ class BehaviorFixtureTests(unittest.TestCase):
             workspace = behavior.copy_fixture(scenario, Path(temporary))
             install = behavior.run_adopt("install", workspace)
             self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
-            state_root = workspace / ".ai-workflow-state"
+            state_root = workspace / ".agent-workflow-state"
             self.assertTrue(state_root.is_dir())
             self.assertFalse((state_root / "wayfinder").exists())
             self.assertFalse((state_root / "active.md").exists())
@@ -68,7 +67,7 @@ class BehaviorFixtureTests(unittest.TestCase):
             install = behavior.run_adopt("install", workspace)
             self.assertEqual(install.returncode, 0, install.stderr)
             before = behavior.snapshot(workspace)
-            target = workspace / ".ai-workflow-state/custom/owner-note.txt"
+            target = workspace / ".agent-workflow-state/custom/owner-note.txt"
             target.write_text("destructive replacement\n", encoding="utf-8")
             (workspace / "AGENTS.md").write_text("unauthorized policy replacement\n", encoding="utf-8")
             after = behavior.snapshot(workspace)

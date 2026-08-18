@@ -5,8 +5,8 @@ to supply the progressively loaded routing, state, provider, and template
 contracts used by the compact root policy. Install/update may replace every file
 here with current package bytes.
 
-There is no current `.ai-workflow/state/` directory. Durable project-owned state
-lives only under sibling `.ai-workflow-state/`. Lifecycle operations ensure that
+There is no current `.agent-workflow/state/` directory. Durable project-owned state
+lives only under sibling `.agent-workflow-state/`. Lifecycle operations ensure that
 directory exists but never create optional profile or workflow records, inventory its
 contents, or remove it.
 
@@ -30,7 +30,7 @@ controller, or telemetry analyzer is installed.
 
 ## Ownership
 
-`.ai-workflow/` is disposable. A missing, modified, extra, or obsolete file is
+`.agent-workflow/` is disposable. A missing, modified, extra, or obsolete file is
 repairable with lifecycle `update`; no historical checksum investigation is
 required. The distribution manifest records install targets, not duplicate
 payload hashes; the installed runtime always uses current mapped source bytes.
@@ -50,24 +50,9 @@ set. Provider failure does not affect the core. The Wayfinder and invocation
 adapters require recognized pinned input before target mutation.
 
 Local Wayfinder data is a configured project-owned representation under
-`.ai-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned
+`.agent-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned
 tree. It uses the effort map for re-entry. Other durable workflows resume from
 their canonical DEC, IMP, or DBG record; there is no global active index.
-
-## Durable compatibility import
-
-Only these old locations are recognized:
-
-- `.ai-workflow/project-profile.md`
-- `.ai-workflow/state/active.md` -> `.ai-workflow-state/legacy-active.md`
-- `.ai-workflow/state/records/`
-- `.ai-workflow/state/archive/`
-
-Missing sources are ignored. An absent canonical destination receives the data,
-an identical destination reconciles, and a conflicting or unsafe destination
-stops while preserving both. The legacy active file is preserved but never
-consulted as current state. Historical framework files such as
-`.ai-workflow/state/README.md` are neither required nor recreated.
 
 ## Status and recovery
 
@@ -76,8 +61,8 @@ means update can replace missing/drifted reconstructable or recorded managed
 files. `unsafe/conflict` means an external collision, malformed composite, or
 unsafe filesystem boundary needs explicit resolution.
 
-Deleting `.ai-workflow/` and running update/install is a supported reconstruction
-path. `.ai-workflow-state/` must remain in place. On removal, project state,
+Deleting `.agent-workflow/` and running update/install is a supported reconstruction
+path. `.agent-workflow-state/` must remain in place. On removal, project state,
 unrelated skill directories, pre-existing external files, and locally changed
 external files are preserved; declared provider directories are deleted.
 

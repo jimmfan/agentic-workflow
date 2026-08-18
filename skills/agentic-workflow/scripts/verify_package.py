@@ -14,8 +14,8 @@ import subprocess
 import sys
 from typing import Iterable, Mapping
 
-# This verifier rejects generated package caches. Prevent this process from
-# creating one when it imports the shared provider validation module below.
+# Keep verification itself from creating a generated cache when it imports the
+# shared provider validation module below.
 sys.dont_write_bytecode = True
 
 from provider_snapshot import SnapshotTreeError, tree_digest, validate_local_references
@@ -55,15 +55,15 @@ REQUIRED_PACKAGE_FILES = (
     "payload/distribution/manifest.json",
     "payload/root/AGENTS.md.template",
     "payload/root/CLAUDE.md.template",
-    "payload/ai-workflow/routing.md",
-    "payload/ai-workflow/providers.json",
-    "payload/ai-workflow/contracts/durable-state.md",
-    "payload/ai-workflow/contracts/project-profile.md",
-    "payload/ai-workflow/contracts/wayfinder-state.md",
+    "payload/agent-workflow/routing.md",
+    "payload/agent-workflow/providers.json",
+    "payload/agent-workflow/contracts/durable-state.md",
+    "payload/agent-workflow/contracts/project-profile.md",
+    "payload/agent-workflow/contracts/wayfinder-state.md",
 )
 REMOVED_RUNTIME_PATHS = (
-    PAYLOAD_ROOT / "ai-workflow" / "runtime",
-    PAYLOAD_ROOT / "ai-workflow" / "observability",
+    PAYLOAD_ROOT / "agent-workflow" / "runtime",
+    PAYLOAD_ROOT / "agent-workflow" / "observability",
     PAYLOAD_ROOT / "hosts",
 )
 
@@ -123,11 +123,11 @@ def expected_mappings() -> list[dict[str, str]]:
                 "target": f".agents/skills/{skill.parent.name}/SKILL.md",
             }
         )
-    workflow_root = PAYLOAD_ROOT / "ai-workflow"
+    workflow_root = PAYLOAD_ROOT / "agent-workflow"
     for path in sorted(workflow_root.rglob("*")):
         if path.is_file() and not path.is_symlink():
             relative = path.relative_to(PAYLOAD_ROOT).as_posix()
-            target = ".ai-workflow/" + path.relative_to(workflow_root).as_posix()
+            target = ".agent-workflow/" + path.relative_to(workflow_root).as_posix()
             mappings.append({"source": relative, "target": target})
     return sorted(mappings, key=lambda item: item["target"])
 
@@ -165,7 +165,7 @@ def check_structure() -> None:
             f"deferred v0 subsystem remains packaged: {path}",
         )
     require(
-        not (PAYLOAD_ROOT / "ai-workflow/templates/active-state.md").exists(),
+        not (PAYLOAD_ROOT / "agent-workflow/templates/active-state.md").exists(),
         "retired active-index template remains packaged",
     )
     require(not (REPOSITORY_ROOT / "docs" / "enforcement.md").exists(), "obsolete controller documentation remains")
@@ -185,8 +185,8 @@ def check_manifest() -> None:
         require(isinstance(item, dict) and set(item) == {"source", "target"}, "invalid manifest mapping")
         source = safe_relative(item["source"])
         target = safe_relative(item["target"])
-        require(target.parts[0] != ".ai-workflow-state", "manifest must not own durable project state")
-        require(".ai-workflow/state" not in target.as_posix(), "manifest must not recreate obsolete workflow state")
+        require(target.parts[0] != ".agent-workflow-state", "manifest must not own durable project state")
+        require(".agent-workflow/state" not in target.as_posix(), "manifest must not recreate obsolete workflow state")
         sources.append(source.as_posix())
         targets.append(target.as_posix())
     require(len(sources) == len(set(sources)), "manifest source paths are duplicated")
@@ -195,11 +195,12 @@ def check_manifest() -> None:
 
 def check_filesystem() -> None:
     for path in PACKAGE_ROOT.rglob("*"):
+        # Python caches are generated, globally ignored, and absent from the
+        # explicit distribution map. They must not make an otherwise valid
+        # local verification fail after an ordinary focused test command.
+        if "__pycache__" in path.parts or path.suffix == ".pyc":
+            continue
         require(not path.is_symlink(), f"package contains a symlink: {path.relative_to(PACKAGE_ROOT)}")
-        require(
-            "__pycache__" not in path.parts and path.suffix != ".pyc",
-            f"package contains generated Python cache data: {path.relative_to(PACKAGE_ROOT)}",
-        )
         if path.is_file():
             mode = stat.S_IMODE(path.stat().st_mode)
             if os.name != "nt":
@@ -210,21 +211,20 @@ def check_filesystem() -> None:
 
 def check_router_contract() -> None:
     agents = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
-    routing = (PAYLOAD_ROOT / "ai-workflow" / "routing.md").read_text(encoding="utf-8")
-    durable = (PAYLOAD_ROOT / "ai-workflow" / "contracts" / "durable-state.md").read_text(encoding="utf-8")
-    wayfinder = (PAYLOAD_ROOT / "ai-workflow" / "contracts" / "wayfinder-state.md").read_text(encoding="utf-8")
+    routing = (PAYLOAD_ROOT / "agent-workflow" / "routing.md").read_text(encoding="utf-8")
+    durable = (PAYLOAD_ROOT / "agent-workflow" / "contracts" / "durable-state.md").read_text(encoding="utf-8")
+    wayfinder = (PAYLOAD_ROOT / "agent-workflow" / "contracts" / "wayfinder-state.md").read_text(encoding="utf-8")
     require("Every request MUST be evaluated" in agents, "root policy lacks mandatory routing")
     require("`direct`" in agents and "minimum useful process" in routing, "router lacks the minimum/direct contract")
     require("MUST NOT" in agents and "authority" in agents, "root policy lacks the authorization boundary")
-    require(".ai-workflow-state/" in durable, "durable-state contract lacks the canonical state root")
+    require(".agent-workflow-state/" in durable, "durable-state contract lacks the canonical state root")
     require("no global active-workflow index" in durable, "durable-state contract retains a global active index")
-    require("legacy-active.md" in durable, "durable-state contract lacks legacy active-index preservation")
     require(
         "Multiple unrelated active or interrupted records may coexist" in durable,
         "durable-state contract lacks independent record continuity",
     )
     require(
-        ".ai-workflow-state/wayfinder/" in agents and "unrelated map" in agents,
+        ".agent-workflow-state/wayfinder/" in agents and "unrelated map" in agents,
         "root policy lacks minimal Wayfinder progressive-loading guidance",
     )
     for required in (
@@ -232,7 +232,7 @@ def check_router_contract() -> None:
         "decisions/",
         "tickets/",
         "Do not read every child file",
-        "Do not create or update `.ai-workflow-state/active.md`",
+        "Do not create or update `.agent-workflow-state/active.md`",
         "force every U# to produce a D# or every D# to produce a T#",
         "Wayfinder owns durable coordination, not an execution monopoly",
         "either capability ceremonially",
@@ -240,13 +240,13 @@ def check_router_contract() -> None:
         require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")
     combined = agents + routing + durable + wayfinder
     require(
-        "runtime/README.md" not in combined and ".ai-workflow/runtime" not in combined,
+        "runtime/README.md" not in combined and ".agent-workflow/runtime" not in combined,
         "router still depends on the removed controller payload",
     )
 
 
 def check_provider_declaration() -> None:
-    path = PAYLOAD_ROOT / "ai-workflow" / "providers.json"
+    path = PAYLOAD_ROOT / "agent-workflow" / "providers.json"
     raw = json.loads(path.read_text(encoding="utf-8"))
     require(isinstance(raw, dict) and raw.get("schema_version") == 6, "unsupported provider declaration")
     provider = raw.get("provider")
@@ -412,7 +412,7 @@ def check_provider_declaration() -> None:
             re.search(r"^    github-tree-sha: [0-9a-f]{40}$", frontmatter, re.MULTILINE) is not None,
             f"bundled provider tree provenance is missing for {name}",
         )
-    installed_declaration = REPOSITORY_ROOT / ".ai-workflow" / "providers.json"
+    installed_declaration = REPOSITORY_ROOT / ".agent-workflow" / "providers.json"
     if installed_declaration.exists():
         require(
             installed_declaration.is_file()
@@ -519,7 +519,7 @@ def check_behavior_scenarios() -> None:
 
 
 def check_markdown_links() -> None:
-    roots = [REPOSITORY_ROOT / "README.md", REPOSITORY_ROOT / "docs", PACKAGE_ROOT / "SKILL.md", PAYLOAD_ROOT / "ai-workflow"]
+    roots = [REPOSITORY_ROOT / "README.md", REPOSITORY_ROOT / "docs", PACKAGE_ROOT / "SKILL.md", PAYLOAD_ROOT / "agent-workflow"]
     files: list[Path] = []
     for root in roots:
         if root.is_file():

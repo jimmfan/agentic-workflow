@@ -58,8 +58,8 @@ class PreparationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             state = run.prepare_run("direct", "baseline", 1, run_root=Path(temporary))
             workspace = Path(state["workspace"])
-            self.assertFalse((workspace / ".ai-workflow").exists())
-            self.assertFalse((workspace / ".ai-workflow-state").exists())
+            self.assertFalse((workspace / ".agent-workflow").exists())
+            self.assertFalse((workspace / ".agent-workflow-state").exists())
             self.assertFalse((workspace / ".agents").exists())
             self.assertFalse((workspace / "AGENTS.md").exists())
             self.assertIsNone(state["workflow_installation"])
@@ -68,10 +68,10 @@ class PreparationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             state = run.prepare_run("direct", "workflow", 1, run_root=Path(temporary))
             workspace = Path(state["workspace"])
-            self.assertTrue((workspace / ".ai-workflow" / "routing.md").is_file())
+            self.assertTrue((workspace / ".agent-workflow" / "routing.md").is_file())
             self.assertTrue((workspace / ".agents" / "skills" / "workflow-implementation" / "SKILL.md").is_file())
-            self.assertTrue((workspace / ".ai-workflow-state").is_dir())
-            manifest = json.loads((workspace / ".ai-workflow" / "install-manifest.json").read_text(encoding="utf-8"))
+            self.assertTrue((workspace / ".agent-workflow-state").is_dir())
+            manifest = json.loads((workspace / ".agent-workflow" / "install-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["source_revision"], "unreleased-local-package")
             self.assertFalse(state["workflow_installation"]["network_provider_install_attempted"])
 

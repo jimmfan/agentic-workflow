@@ -490,7 +490,7 @@ def durable_paths(paths: Iterable[str]) -> list[str]:
         if Path(path).suffix.lower() in TEXT_SUFFIXES
         and not path.startswith("terraform/")
         and path != "docs/platform-facts.md"
-        and not path.startswith(".ai-workflow/")
+        and not path.startswith(".agent-workflow/")
         and not path.startswith(".agents/")
         and path not in {"AGENTS.md", "CLAUDE.md"}
     ]
@@ -551,7 +551,7 @@ def grade_phase_1(workspace: Path, before: dict[str, str], variant: str) -> dict
         "mapping_only_respected": not terraform_changed and not any(prohibited_choices.values()),
     }
     if variant == "workflow":
-        state_files = [path for path in changed if path.startswith(".ai-workflow-state/wayfinder/")]
+        state_files = [path for path in changed if path.startswith(".agent-workflow-state/wayfinder/")]
         result["wayfinder"] = {
             "exercised": bool(state_files),
             "state_files": state_files,
@@ -1012,8 +1012,8 @@ def verify_automatic_workspace(state: dict[str, Any]) -> dict[str, Any]:
         checks.update(
             {
                 "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
-                "no_agentic_workflow_directory": not (workspace / ".ai-workflow").exists(),
-                "no_agentic_workflow_state_directory": not (workspace / ".ai-workflow-state").exists(),
+                "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
+                "no_agentic_workflow_state_directory": not (workspace / ".agent-workflow-state").exists(),
                 "no_project_wayfinder_skill": not (
                     workspace / ".agents" / "skills" / "wayfinder"
                 ).exists(),
@@ -1023,7 +1023,7 @@ def verify_automatic_workspace(state: dict[str, Any]) -> dict[str, Any]:
         checks.update(
             {
                 "workflow_agents_policy_present": (workspace / "AGENTS.md").is_file(),
-                "agentic_workflow_directory_present": (workspace / ".ai-workflow").is_dir(),
+                "agentic_workflow_directory_present": (workspace / ".agent-workflow").is_dir(),
                 "wayfinder_skill_present": (
                     workspace / ".agents" / "skills" / "wayfinder" / "SKILL.md"
                 ).is_file(),
@@ -1106,8 +1106,8 @@ def audit_auto_isolation(
             "workspace_outside_agentic_workflow_source_tree": SOURCE_ROOT not in workspace.parents,
             "workspace_is_git_root": git(workspace, "rev-parse", "--show-toplevel").stdout.strip()
             == str(workspace),
-            "no_agentic_workflow_directory": not (workspace / ".ai-workflow").exists(),
-            "no_agentic_workflow_state_directory": not (workspace / ".ai-workflow-state").exists(),
+            "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
+            "no_agentic_workflow_state_directory": not (workspace / ".agent-workflow-state").exists(),
             "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
             "no_project_wayfinder_skill": not (workspace / ".agents" / "skills" / "wayfinder").exists(),
             "no_agentic_or_wayfinder_global_match": not inventory[

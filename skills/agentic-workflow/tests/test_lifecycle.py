@@ -15,7 +15,6 @@ import tarfile
 import tempfile
 import unittest
 
-
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 ADOPT = PACKAGE_ROOT / "scripts" / "adopt.py"
@@ -100,7 +99,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         mutation: str | None = None,
     ) -> tuple[object, Path]:
         package_copy = self.copy_package(name)
-        declaration = package_copy / "payload/ai-workflow/providers.json"
+        declaration = package_copy / "payload/agent-workflow/providers.json"
         raw = json.loads(declaration.read_text(encoding="utf-8"))
         provider = raw["provider"]
         skill_name = "demo"
@@ -199,18 +198,18 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         return refresh, output
 
     def declared_provider_names(self, package_root: Path = PACKAGE_ROOT) -> set[str]:
-        declaration = package_root / "payload/ai-workflow/providers.json"
+        declaration = package_root / "payload/agent-workflow/providers.json"
         raw = json.loads(declaration.read_text(encoding="utf-8"))
         return {item["name"] for item in raw["provider"]["skills"]}
 
     def test_install_creates_only_current_framework_and_empty_state_root(self) -> None:
         self.assert_ok(self.adopt("install"))
-        self.assertTrue((self.project / ".ai-workflow/routing.md").is_file())
-        self.assertTrue((self.project / ".ai-workflow-state").is_dir())
-        self.assertEqual(list((self.project / ".ai-workflow-state").iterdir()), [])
-        self.assertFalse((self.project / ".ai-workflow/templates/active-state.md").exists())
-        self.assertFalse((self.project / ".ai-workflow/state/README.md").exists())
-        manifest = json.loads((self.project / ".ai-workflow/install-manifest.json").read_text())
+        self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
+        self.assertTrue((self.project / ".agent-workflow-state").is_dir())
+        self.assertEqual(list((self.project / ".agent-workflow-state").iterdir()), [])
+        self.assertFalse((self.project / ".agent-workflow/templates/active-state.md").exists())
+        self.assertFalse((self.project / ".agent-workflow/state/README.md").exists())
+        manifest = json.loads((self.project / ".agent-workflow/install-manifest.json").read_text())
         self.assertEqual(manifest["schema_version"], 1)
         self.assertEqual(
             set(manifest),
@@ -221,32 +220,32 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_update_replaces_missing_modified_and_obsolete_reconstructable_files(self) -> None:
         self.assert_ok(self.adopt("install"))
-        routing = self.project / ".ai-workflow/routing.md"
+        routing = self.project / ".agent-workflow/routing.md"
         expected = routing.read_bytes()
         routing.write_bytes(b"locally drifted framework bytes\n")
-        (self.project / ".ai-workflow/README.md").unlink()
-        obsolete = self.project / ".ai-workflow/state/README.md"
+        (self.project / ".agent-workflow/README.md").unlink()
+        obsolete = self.project / ".agent-workflow/state/README.md"
         obsolete.parent.mkdir()
         obsolete.write_text("historical framework file\n")
         self.assert_ok(self.adopt("update"))
         self.assertEqual(routing.read_bytes(), expected)
-        self.assertTrue((self.project / ".ai-workflow/README.md").is_file())
+        self.assertTrue((self.project / ".agent-workflow/README.md").is_file())
         self.assertFalse(obsolete.exists())
 
     def test_deleted_framework_directory_is_rebuilt_conservatively(self) -> None:
         self.assert_ok(self.adopt("install"))
-        state = self.project / ".ai-workflow-state/custom.txt"
+        state = self.project / ".agent-workflow-state/custom.txt"
         state.write_text("durable project bytes\n")
-        shutil.rmtree(self.project / ".ai-workflow")
+        shutil.rmtree(self.project / ".agent-workflow")
         self.assert_ok(self.adopt("update"))
-        self.assertTrue((self.project / ".ai-workflow/routing.md").is_file())
+        self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
         self.assertEqual(state.read_text(), "durable project bytes\n")
-        manifest = json.loads((self.project / ".ai-workflow/install-manifest.json").read_text())
+        manifest = json.loads((self.project / ".agent-workflow/install-manifest.json").read_text())
         self.assertTrue(all(not details["created"] for details in manifest["external_files"].values()))
 
     def test_historical_absence_is_not_a_blocker_or_recreated(self) -> None:
         self.assert_ok(self.adopt("install"))
-        manifest_path = self.project / ".ai-workflow/install-manifest.json"
+        manifest_path = self.project / ".agent-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text())
         retired = self.project / ".agents/skills/retired-workflow/SKILL.md"
         retired.parent.mkdir(parents=True)
@@ -259,10 +258,10 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         retired.unlink()
         self.assert_ok(self.adopt("update"))
         self.assertFalse(retired.exists())
-        self.assertFalse((self.project / ".ai-workflow/state/README.md").exists())
+        self.assertFalse((self.project / ".agent-workflow/state/README.md").exists())
 
     def test_arbitrary_durable_state_survives_update_remove_and_reinstall(self) -> None:
-        state = self.project / ".ai-workflow-state"
+        state = self.project / ".agent-workflow-state"
         (state / "records/nested").mkdir(parents=True)
         (state / "records/nested/data.bin").write_bytes(b"\x00project\xffstate")
         (state / "custom.json").write_text('{"owner":"project"}\n')
@@ -282,7 +281,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(tree_snapshot(state), original)
 
     def test_human_edited_wayfinder_state_is_opaque_to_lifecycle(self) -> None:
-        effort = self.project / ".ai-workflow-state/wayfinder/custom-effort"
+        effort = self.project / ".agent-workflow-state/wayfinder/custom-effort"
         (effort / "unknowns").mkdir(parents=True)
         (effort / "map.md").write_text(
             "# Personal layout\n\nNo standard headings; keep exactly.\n",
@@ -298,56 +297,6 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             with self.subTest(command=command):
                 self.assert_ok(self.adopt(command))
                 self.assertEqual(tree_snapshot(effort), original)
-
-    def test_legacy_active_index_is_preserved_as_inert_history(self) -> None:
-        retired = self.project / ".ai-workflow-state/active.md"
-        retired.parent.mkdir(parents=True)
-        retired_bytes = b"# Existing project-owned file\n\nPreserve but never consult.\n"
-        retired.write_bytes(retired_bytes)
-        legacy = self.project / ".ai-workflow/state/active.md"
-        legacy.parent.mkdir(parents=True)
-        original = b"# Historical active pointer\n\nUnique user context.\n"
-        legacy.write_bytes(original)
-
-        self.assert_ok(self.adopt("install"))
-
-        self.assertFalse(legacy.exists())
-        self.assertEqual(retired.read_bytes(), retired_bytes)
-        preserved = self.project / ".ai-workflow-state/legacy-active.md"
-        self.assertEqual(preserved.read_bytes(), original)
-
-        for command in ("update", "remove", "install"):
-            with self.subTest(command=command):
-                self.assert_ok(self.adopt(command))
-                self.assertEqual(retired.read_bytes(), retired_bytes)
-                self.assertEqual(preserved.read_bytes(), original)
-
-    def test_known_legacy_state_moves_and_conflict_preserves_both(self) -> None:
-        self.assert_ok(self.adopt("install"))
-        legacy = self.project / ".ai-workflow/project-profile.md"
-        legacy.write_text("legacy profile\n")
-        result = self.adopt("update")
-        self.assert_ok(result)
-        self.assertEqual((self.project / ".ai-workflow-state/project-profile.md").read_text(), "legacy profile\n")
-        self.assertFalse(legacy.exists())
-
-        legacy.write_text("legacy profile\n")
-        self.assert_ok(self.adopt("update"))
-        self.assertFalse(legacy.exists())
-        self.assertEqual((self.project / ".ai-workflow-state/project-profile.md").read_text(), "legacy profile\n")
-
-        legacy = self.project / ".ai-workflow/project-profile.md"
-        legacy.write_text("different legacy bytes\n")
-        before_framework = tree_snapshot(self.project / ".ai-workflow")
-        result = self.adopt("update")
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("conflicting legacy and canonical", result.stderr)
-        self.assertEqual(legacy.read_text(), "different legacy bytes\n")
-        self.assertEqual(
-            (self.project / ".ai-workflow-state/project-profile.md").read_text(),
-            "legacy profile\n",
-        )
-        self.assertEqual(tree_snapshot(self.project / ".ai-workflow"), before_framework)
 
     def test_composite_policy_preserves_project_region_through_update_and_remove(self) -> None:
         project_policy = b"# Project policy\n\nKeep this byte-for-byte.\n"
@@ -373,7 +322,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assert_ok(self.adopt("install"))
         policy = self.project / "AGENTS.md"
         policy.write_bytes(MANAGED_BEGIN + b"missing the other boundaries\n")
-        routing = self.project / ".ai-workflow/routing.md"
+        routing = self.project / ".agent-workflow/routing.md"
         routing.write_bytes(b"drift that must remain after failed preflight\n")
         before = tree_snapshot(self.project)
         result = self.adopt("update")
@@ -389,8 +338,8 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("unknown external content", result.stderr)
         self.assertEqual(collision.read_text(), "project-owned skill\n")
-        self.assertFalse((self.project / ".ai-workflow").exists())
-        self.assertFalse((self.project / ".ai-workflow-state").exists())
+        self.assertFalse((self.project / ".agent-workflow").exists())
+        self.assertFalse((self.project / ".agent-workflow-state").exists())
 
     def test_preexisting_exact_external_file_is_preserved_on_remove(self) -> None:
         source = PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
@@ -412,13 +361,13 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         outside = Path(self.temporary.name) / "outside"
         outside.mkdir()
         (outside / "sentinel").write_text("safe\n")
-        (self.project / ".ai-workflow").symlink_to(outside, target_is_directory=True)
+        (self.project / ".agent-workflow").symlink_to(outside, target_is_directory=True)
         result = self.adopt("update")
         self.assertEqual(result.returncode, 2)
         self.assertEqual((outside / "sentinel").read_text(), "safe\n")
 
-        (self.project / ".ai-workflow").unlink()
-        (self.project / ".ai-workflow-state").symlink_to(outside, target_is_directory=True)
+        (self.project / ".agent-workflow").unlink()
+        (self.project / ".agent-workflow-state").symlink_to(outside, target_is_directory=True)
         result = self.adopt("install")
         self.assertEqual(result.returncode, 2)
         self.assertEqual((outside / "sentinel").read_text(), "safe\n")
@@ -433,9 +382,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = self.adopt("status")
         self.assert_ok(result)
         self.assertIn("Agentic Workflow: healthy", result.stdout)
-        self.assertFalse((self.project / ".ai-workflow-state/project-profile.md").exists())
-        self.assertFalse((self.project / ".ai-workflow-state/active.md").exists())
-        (self.project / ".ai-workflow/routing.md").unlink()
+        self.assertFalse((self.project / ".agent-workflow-state/project-profile.md").exists())
+        self.assertFalse((self.project / ".agent-workflow-state/active.md").exists())
+        (self.project / ".agent-workflow/routing.md").unlink()
         result = self.adopt("status")
         self.assertEqual(result.returncode, 1)
         self.assertIn("repairable", result.stdout)
@@ -448,7 +397,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = run_script(package_copy / "scripts/lifecycle.py", "install", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.project / ".ai-workflow/routing.md").is_file())
+        self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
         self.assertIn("Optional provider setup did not complete", result.stderr)
 
     def test_optional_provider_failure_during_remove_reports_truthfully(self) -> None:
@@ -458,14 +407,14 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         provider_file.write_text("preserve provider bytes\n")
 
         package_copy = self.copy_package("remove-provider-failure")
-        declaration = package_copy / "payload/ai-workflow/providers.json"
+        declaration = package_copy / "payload/agent-workflow/providers.json"
         declaration.write_text("{}\n", encoding="utf-8")
         result = run_script(package_copy / "scripts/lifecycle.py", "remove", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("Core removal will continue; inspect the provider error", result.stderr)
         self.assertNotIn("core router and local workflows remain usable", result.stderr)
-        self.assertFalse((self.project / ".ai-workflow").exists())
+        self.assertFalse((self.project / ".agent-workflow").exists())
         self.assertEqual(provider_file.read_text(), "preserve provider bytes\n")
 
     def test_existing_declared_provider_content_is_replaced(self) -> None:
@@ -626,7 +575,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
                 staged = module.prepare_staged_projection(Path(temporary), provider)
 
                 def fail_recovery_cleanup(path: object, *args: object, **kwargs: object) -> None:
-                    if Path(path).name.startswith(".ai-workflow-provider-rollback-"):
+                    if Path(path).name.startswith(".agent-workflow-provider-rollback-"):
                         raise PermissionError("injected cleanup failure")
                     original_rmtree(path, *args, **kwargs)
 
@@ -640,7 +589,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         self.assertEqual([skill.name for skill in changed], ["wayfinder"])
         self.assertFalse(marker.exists())
-        recovery = list(self.project.glob(".ai-workflow-provider-rollback-*"))
+        recovery = list(self.project.glob(".agent-workflow-provider-rollback-*"))
         self.assertEqual(len(recovery), 1)
         self.assertIn("replacement committed", warning.getvalue())
         original_rmtree(recovery[0])
@@ -688,7 +637,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         warning = io.StringIO()
         try:
             def fail_recovery_cleanup(path: object, *args: object, **kwargs: object) -> None:
-                if Path(path).name.startswith(".ai-workflow-provider-remove-"):
+                if Path(path).name.startswith(".agent-workflow-provider-remove-"):
                     raise PermissionError("injected cleanup failure")
                 original_rmtree(path, *args, **kwargs)
 
@@ -701,7 +650,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual({skill.name for skill in removed}, self.declared_provider_names())
         for name in self.declared_provider_names():
             self.assertFalse((self.project / ".agents/skills" / name).exists())
-        recovery = list(self.project.glob(".ai-workflow-provider-remove-*"))
+        recovery = list(self.project.glob(".agent-workflow-provider-remove-*"))
         self.assertEqual(len(recovery), 1)
         self.assertIn("removal committed", warning.getvalue())
         original_rmtree(recovery[0])
@@ -901,7 +850,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
     def test_payload_content_edits_need_no_manifest_refresh_but_mapping_changes_do(self) -> None:
         package_copy = self.copy_package("mapping-change")
 
-        source = package_copy / "payload/ai-workflow/README.md"
+        source = package_copy / "payload/agent-workflow/README.md"
         source.write_text(
             source.read_text(encoding="utf-8") + "\nCurrent package bytes are authoritative.\n",
             encoding="utf-8",
@@ -910,14 +859,14 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         runtime = run_script(package_copy / "scripts/adopt.py", "install", self.project)
         self.assertEqual(runtime.returncode, 0, runtime.stdout + runtime.stderr)
         self.assertEqual(
-            (self.project / ".ai-workflow/README.md").read_bytes(),
+            (self.project / ".agent-workflow/README.md").read_bytes(),
             source.read_bytes(),
         )
 
         verify = run_script(package_copy / "scripts/verify_package.py")
         self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
 
-        unmapped = package_copy / "payload/ai-workflow/contracts/new-contract.md"
+        unmapped = package_copy / "payload/agent-workflow/contracts/new-contract.md"
         unmapped.write_text("# Newly packaged contract\n", encoding="utf-8")
         verify = run_script(package_copy / "scripts/verify_package.py")
         self.assertEqual(verify.returncode, 1)
@@ -925,7 +874,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_verifier_rejects_incomplete_provider_declarations(self) -> None:
         package_copy = self.copy_package("provider-declaration")
-        declaration = package_copy / "payload/ai-workflow/providers.json"
+        declaration = package_copy / "payload/agent-workflow/providers.json"
         valid = json.loads(declaration.read_text(encoding="utf-8"))
 
         cases = (
@@ -960,7 +909,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_provider_cli_rejects_non_string_configuration_requirements(self) -> None:
         package_copy = self.copy_package("provider-requirement-type")
-        declaration = package_copy / "payload/ai-workflow/providers.json"
+        declaration = package_copy / "payload/agent-workflow/providers.json"
         raw = json.loads(declaration.read_text(encoding="utf-8"))
         raw["provider"]["skills"][0]["requires_configuration"] = [{}]
         declaration.write_text(json.dumps(raw), encoding="utf-8")
@@ -973,7 +922,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_verifier_requires_the_wayfinder_local_state_adapter(self) -> None:
         package_copy = self.copy_package("wayfinder-adapter-declaration")
-        declaration = package_copy / "payload/ai-workflow/providers.json"
+        declaration = package_copy / "payload/agent-workflow/providers.json"
         raw = json.loads(declaration.read_text(encoding="utf-8"))
         wayfinder = next(item for item in raw["provider"]["skills"] if item["name"] == "wayfinder")
         wayfinder.pop("agentic_workflow_adapter")
@@ -988,7 +937,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_verifier_requires_implicit_invocation_adapters(self) -> None:
         package_copy = self.copy_package("implicit-invocation-adapter-declaration")
-        declaration = package_copy / "payload/ai-workflow/providers.json"
+        declaration = package_copy / "payload/agent-workflow/providers.json"
         raw = json.loads(declaration.read_text(encoding="utf-8"))
         implement = next(item for item in raw["provider"]["skills"] if item["name"] == "implement")
         implement.pop("agentic_workflow_adapter")
@@ -1011,7 +960,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("snapshot checksum", verify.stderr)
 
         snapshot.write_bytes(original)
-        declaration = package_copy / "payload/ai-workflow/providers.json"
+        declaration = package_copy / "payload/agent-workflow/providers.json"
         raw = json.loads(declaration.read_text(encoding="utf-8"))
         raw["provider"]["resolved_commit"] = "0" * 40
         declaration.write_text(json.dumps(raw), encoding="utf-8")
@@ -1023,7 +972,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_verifier_rejects_source_package_provider_declaration_drift(self) -> None:
         package_copy = self.copy_package("provider-declaration-parity")
-        installed = package_copy.parents[1] / ".ai-workflow/providers.json"
+        installed = package_copy.parents[1] / ".agent-workflow/providers.json"
         installed.parent.mkdir()
         installed.write_text("{}\n", encoding="utf-8")
 
@@ -1085,16 +1034,19 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("\\u96ea", result.stdout)
 
-    def test_verifier_does_not_create_the_cache_it_rejects(self) -> None:
+    def test_verifier_ignores_existing_cache_and_does_not_add_cache_files(self) -> None:
         package_copy = self.copy_package("verifier-bytecode")
         cache = package_copy / "scripts/__pycache__"
-        if cache.exists():
-            shutil.rmtree(cache)
+        cache.mkdir(exist_ok=True)
+        generated = cache / "local-test.cpython-311.pyc"
+        generated.write_bytes(b"generated test cache\n")
+        before = {path.name: path.read_bytes() for path in cache.iterdir() if path.is_file()}
 
         result = run_script(package_copy / "scripts/verify_package.py")
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertFalse(cache.exists())
+        after = {path.name: path.read_bytes() for path in cache.iterdir() if path.is_file()}
+        self.assertEqual(after, before)
 
     def test_provider_reference_validation_rejects_external_resources(self) -> None:
         snapshot_module = load_module(
@@ -1223,7 +1175,7 @@ class BootstrapSafetyTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertFalse((project / ".ai-workflow").exists())
+            self.assertFalse((project / ".agent-workflow").exists())
 
     def test_excessive_package_entries_are_rejected(self) -> None:
         entries = [
@@ -1281,10 +1233,10 @@ class BootstrapSafetyTests(unittest.TestCase):
                 env=env,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertTrue((project / ".ai-workflow/routing.md").is_file())
-            self.assertTrue((project / ".ai-workflow-state").is_dir())
+            self.assertTrue((project / ".agent-workflow/routing.md").is_file())
+            self.assertTrue((project / ".agent-workflow-state").is_dir())
             declaration = json.loads(
-                (PACKAGE_ROOT / "payload/ai-workflow/providers.json").read_text(encoding="utf-8")
+                (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text(encoding="utf-8")
             )
             names = {item["name"] for item in declaration["provider"]["skills"]}
             for name in names:

@@ -120,9 +120,9 @@ class PreparationAndMutationTests(unittest.TestCase):
             states = arc.prepare_pair(run_root=Path(temporary), require_frozen=False)
             a = Path(states["A"]["workspace"])
             b = Path(states["B"]["workspace"])
-            self.assertFalse((a / ".ai-workflow").exists())
+            self.assertFalse((a / ".agent-workflow").exists())
             self.assertIsNone(states["A"]["workflow_installation"])
-            self.assertTrue((b / ".ai-workflow" / "routing.md").is_file())
+            self.assertTrue((b / ".agent-workflow" / "routing.md").is_file())
             self.assertTrue((b / ".agents" / "skills" / "wayfinder" / "SKILL.md").is_file())
             self.assertTrue(all(arc.verify_automatic_workspace(states["B"])["checks"].values()))
 
@@ -159,7 +159,7 @@ class EvidenceAndGraderTests(unittest.TestCase):
         self.assertEqual(packet["m6i_stale"]["evidence"][0]["path"], "handoff.md")
 
     def test_wayfinder_contract_fields_are_structured(self) -> None:
-        path = self.workspace / ".ai-workflow-state/wayfinder/arc/tickets/T1.md"
+        path = self.workspace / ".agent-workflow-state/wayfinder/arc/tickets/T1.md"
         path.parent.mkdir(parents=True)
         path.write_text("# T1\n\n- Status: ready\n- Blocked by: none\n- Related: D1, U3\n", encoding="utf-8")
         fields = arc.structured_wayfinder_fields(self.workspace)

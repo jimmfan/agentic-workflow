@@ -1,9 +1,9 @@
 # Durable workflow state contract
 
 Repository files, not agent or chat memory, preserve workflow continuity. All
-durable Agentic Workflow state lives under `.ai-workflow-state/`, outside the
-reinstallable `.ai-workflow/` framework directory. There is no current
-`.ai-workflow/state/` location and no global active-workflow index. Local
+durable Agentic Workflow state lives under `.agent-workflow-state/`, outside the
+reinstallable `.agent-workflow/` framework directory. There is no current
+`.agent-workflow/state/` location and no global active-workflow index. Local
 Discovery, Implementation, and Debugging resume from their canonical record;
 Wayfinder resumes from its relevant `map.md`. Supporting capabilities may run
 inside a dominant workflow without creating a separate continuity record.
@@ -23,10 +23,10 @@ transcript or private memory.
 
 ## Locations and identifiers
 
-- `.ai-workflow-state/records/<ID>-<slug>.md`: durable local workflow records.
-- `.ai-workflow-state/archive/<year>/<ID>-<slug>.md`: completed, rejected, or
+- `.agent-workflow-state/records/<ID>-<slug>.md`: durable local workflow records.
+- `.agent-workflow-state/archive/<year>/<ID>-<slug>.md`: completed, rejected, or
   superseded history.
-- `.ai-workflow-state/wayfinder/<effort>/`: canonical local Wayfinder map and
+- `.agent-workflow-state/wayfinder/<effort>/`: canonical local Wayfinder map and
   stable U#/D#/T# children.
 
 Use stable, never-reused identifiers: `DEC-NNNN` for bounded local decisions,
@@ -159,7 +159,7 @@ promoted.
 
 ## Re-entry and concurrent records
 
-There is no `.ai-workflow-state/active.md` contract or active-state template.
+There is no `.agent-workflow-state/active.md` contract or active-state template.
 Each DEC, IMP, or DBG record carries its own status, provider pointer when
 applicable, pending work, and exact resume target. A selected-but-unexecuted
 provider route or user-only handoff does not create a record.
@@ -177,12 +177,6 @@ write, reread the target record and any directly related records. Never silently
 overwrite, merge, complete, interrupt, or supersede another record. If two
 records make incompatible claims about the same scope, stop and resolve that
 specific conflict; unrelated records are not a global lock.
-
-An existing `.ai-workflow-state/active.md` is legacy project-owned data. Preserve
-it byte-for-byte, but do not consult, validate, create, or update it. Lifecycle
-compatibility may preserve the historical `.ai-workflow/state/active.md` bytes
-as `.ai-workflow-state/legacy-active.md`; that file is also inert historical
-data, not a current re-entry mechanism.
 
 ## Invalid, stale, or conflicting state
 
@@ -217,4 +211,4 @@ decision history.
 Never store secrets, tokens, private keys, raw credentials, sensitive command
 output, or unnecessary personal data. Ephemeral reasoning and per-turn
 bookkeeping remain outside the repository and never move into
-`.ai-workflow-state/`.
+`.agent-workflow-state/`.

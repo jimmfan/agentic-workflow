@@ -45,8 +45,8 @@ class _EvaluationCodex(Codex):
         command = """
 set -eu
 for path in \
-  /app/.ai-workflow \
-  /app/.ai-workflow-state \
+  /app/.agent-workflow \
+  /app/.agent-workflow-state \
   /app/.agents/skills/workflow-debugging \
   /app/.agents/skills/workflow-discovery \
   /app/.agents/skills/workflow-implementation \
@@ -128,13 +128,13 @@ class AgenticWorkflowCodex(_EvaluationCodex):
             environment,
             command=(
                 "set -eu\n"
-                "test -f /app/.ai-workflow/install-manifest.json\n"
+                "test -f /app/.agent-workflow/install-manifest.json\n"
                 "grep -Fq '<!-- ai-workflow:managed-begin -->' /app/AGENTS.md\n"
                 "test -f /app/.agents/skills/workflow-debugging/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-discovery/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-implementation/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-verification/SKILL.md\n"
-                "python3 -c 'import json; p=json.load(open(\"/app/.ai-workflow/install-manifest.json\")); "
+                "python3 -c 'import json; p=json.load(open(\"/app/.agent-workflow/install-manifest.json\")); "
                 "print(json.dumps({\"source_revision\": p.get(\"source_revision\"), "
                 "\"framework_version\": p.get(\"framework_version\")}, sort_keys=True))'\n"
                 "python3 - <<'PY'\n"
@@ -143,7 +143,7 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "\n"
                 "workspace = Path('/app')\n"
                 "declaration = json.loads(\n"
-                "    (workspace / '.ai-workflow/providers.json').read_text(encoding='utf-8')\n"
+                "    (workspace / '.agent-workflow/providers.json').read_text(encoding='utf-8')\n"
                 ")\n"
                 "provider_names = [item['name'] for item in declaration['provider']['skills']]\n"
                 "missing = [\n"
@@ -156,7 +156,7 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "        'condition B rejected: missing declared providers: ' + ', '.join(missing)\n"
                 "    )\n"
                 "\n"
-                "installed_roots = [workspace / '.ai-workflow']\n"
+                "installed_roots = [workspace / '.agent-workflow']\n"
                 "installed_roots.extend(\n"
                 "    workspace / '.agents/skills' / name\n"
                 "    for name in provider_names\n"

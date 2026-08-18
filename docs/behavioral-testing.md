@@ -78,8 +78,8 @@ verification_command = "Run python verify.py after the change."
 preserve_paths = ["project-state/unknowns.md"]
 forbid_created_globs = ["docs/decisions/**"]
 route_must_not_include = ["discovery"]
-state_must_include = [".ai-workflow-state/wayfinder/example/map.md"]
-state_must_not_include = [".ai-workflow-state/wayfinder/example/unknowns/U9-unrelated.md"]
+state_must_include = [".agent-workflow-state/wayfinder/example/map.md"]
+state_must_not_include = [".agent-workflow-state/wayfinder/example/unknowns/U9-unrelated.md"]
 
 [[assertions]]
 kind = "path_contains"
@@ -88,12 +88,12 @@ value = "observable result"
 
 [[assertions]]
 kind = "glob_count"
-path = ".ai-workflow-state/wayfinder/example/unknowns/U*.md"
+path = ".agent-workflow-state/wayfinder/example/unknowns/U*.md"
 count = 1
 
 [[assertions]]
 kind = "glob_contains"
-path = ".ai-workflow-state/wayfinder/example/unknowns/U1-*.md"
+path = ".agent-workflow-state/wayfinder/example/unknowns/U1-*.md"
 value = "known unresolved question"
 ```
 

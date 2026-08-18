@@ -54,15 +54,15 @@ loaded routing contract are the runtime; there is no separate controller.
 ## Load only when relevant
 
 - For a named skill, resume, uncertain route, or any route not confidently
-  direct, read `.ai-workflow/routing.md` before substantive execution.
+  direct, read `.agent-workflow/routing.md` before substantive execution.
 - After selection, read only the selected skill and the needed provider metadata;
   do not load unrelated skills merely because they are installed.
 - When Wayfinder is selected or a request may continue a relevant effort under
-  `.ai-workflow-state/wayfinder/`, read
-  `.ai-workflow/contracts/wayfinder-state.md` before its map. An unrelated map's
+  `.agent-workflow-state/wayfinder/`, read
+  `.agent-workflow/contracts/wayfinder-state.md` before its map. An unrelated map's
   existence never selects Wayfinder.
-- Before durable workflow mutation, read `.ai-workflow/contracts/durable-state.md`. Before
-  profile mutation, read `.ai-workflow/contracts/project-profile.md`.
+- Before durable workflow mutation, read `.agent-workflow/contracts/durable-state.md`. Before
+  profile mutation, read `.agent-workflow/contracts/project-profile.md`.
 - Project-profile maintenance is opportunistic: prefer a small update only when
   verified durable knowledge emerges naturally and writes are authorized.
 
@@ -78,4 +78,4 @@ only workflows and capabilities that actually executed, in execution order. If
 selection did not become execution, report the applicable terminal outcome.
 
 The marker is mandatory for every final response and must not trigger additional
-work. Follow `.ai-workflow/routing.md` for labels, syntax, and edge cases.
+work. Follow `.agent-workflow/routing.md` for labels, syntax, and edge cases.

@@ -73,7 +73,7 @@ inventing a second notebook format.
 ## Invocation and provider gate
 
 Automatic routing is not automatic invocation. Resolve selected provider
-operations through `.ai-workflow/providers.json`:
+operations through `.agent-workflow/providers.json`:
 
 - `implicit`: the compatible host may load and execute the skill normally;
 - `user-only`: execute only after exact explicit host invocation;
@@ -128,7 +128,7 @@ needed; it does not mirror provider bodies or allocate shadow identifiers.
 
 Local Wayfinder is the narrow exception to the general pointer rule: its
 configured canonical representation lives at
-`.ai-workflow-state/wayfinder/<effort>/` under
+`.agent-workflow-state/wayfinder/<effort>/` under
 `contracts/wayfinder-state.md`. The framework supplies that storage and re-entry
 contract plus a narrow local-mode provider adapter; the provider retains its
 reasoning method. The adapter has authority over incompatible tracker setup,

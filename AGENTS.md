@@ -55,15 +55,15 @@ loaded routing contract are the runtime; there is no separate controller.
 ## Load only when relevant
 
 - For a named skill, resume, uncertain route, or any route not confidently
-  direct, read `.ai-workflow/routing.md` before substantive execution.
+  direct, read `.agent-workflow/routing.md` before substantive execution.
 - After selection, read only the selected skill and the needed provider metadata;
   do not load unrelated skills merely because they are installed.
 - When Wayfinder is selected or a request may continue a relevant effort under
-  `.ai-workflow-state/wayfinder/`, read
-  `.ai-workflow/contracts/wayfinder-state.md` before its map. An unrelated map's
+  `.agent-workflow-state/wayfinder/`, read
+  `.agent-workflow/contracts/wayfinder-state.md` before its map. An unrelated map's
   existence never selects Wayfinder.
-- Before durable workflow mutation, read `.ai-workflow/contracts/durable-state.md`. Before
-  profile mutation, read `.ai-workflow/contracts/project-profile.md`.
+- Before durable workflow mutation, read `.agent-workflow/contracts/durable-state.md`. Before
+  profile mutation, read `.agent-workflow/contracts/project-profile.md`.
 - Project-profile maintenance is opportunistic: prefer a small update only when
   verified durable knowledge emerges naturally and writes are authorized.
 
@@ -79,7 +79,7 @@ only workflows and capabilities that actually executed, in execution order. If
 selection did not become execution, report the applicable terminal outcome.
 
 The marker is mandatory for every final response and must not trigger additional
-work. Follow `.ai-workflow/routing.md` for labels, syntax, and edge cases.
+work. Follow `.agent-workflow/routing.md` for labels, syntax, and edge cases.
 <!-- ai-workflow:managed-end -->
 
 <!-- ai-workflow:project-instructions -->
@@ -147,7 +147,7 @@ Start with the documentation most relevant to the task. Expand the investigation
 
 * Architecture, ownership, providers, or state: `docs/architecture.md` and applicable records under `docs/decisions/`
 * Routing and workflow composition: `docs/routing.md`
-* Provider evaluation or upgrades: `docs/provider-research.md` and `skills/agentic-workflow/payload/ai-workflow/providers.json`
+* Provider evaluation or upgrades: `docs/provider-research.md` and `skills/agentic-workflow/payload/agent-workflow/providers.json`
 * Installation and release verification: `docs/verification.md`
 * Observability: `docs/observability.md`, when present
 * Packaged skill behavior: `skills/agentic-workflow/SKILL.md`
@@ -216,7 +216,7 @@ Framework-owned state should be limited to orchestration information such as:
 Do not create shadow tickets, unknowns, decisions, specifications, learning records, or review records when the selected provider already owns those concepts.
 
 The configured local Wayfinder representation under
-`.ai-workflow-state/wayfinder/` is canonical project-owned state, not a shadow
+`.agent-workflow-state/wayfinder/` is canonical project-owned state, not a shadow
 copy of an upstream tracker. Its U#/D#/T# files follow the dedicated installed
 contract, and its map is the effort's re-entry point. The framework has no
 global active index.

@@ -3,7 +3,7 @@
 Use this contract only when Wayfinder is selected, including a justified
 mid-task escalation, or a request continues a relevant local Wayfinder effort.
 The existence of any effort under
-`.ai-workflow-state/wayfinder/` is not itself a routing signal. Clear, bounded,
+`.agent-workflow-state/wayfinder/` is not itself a routing signal. Clear, bounded,
 or unrelated work stays on its minimum useful route and does not read or create
 Wayfinder state.
 
@@ -14,7 +14,7 @@ Workflow supplies an authoritative local-mode adapter plus the configured
 Git-native representation below. This representation is canonical local
 Wayfinder data, not a framework mirror of an issue tracker.
 Do not create a second copy under `.scratch/`, another planning directory, or an
-external tracker. Do not create or update `.ai-workflow-state/active.md` for a
+external tracker. Do not create or update `.agent-workflow-state/active.md` for a
 Wayfinder effort.
 
 Keep `map.md` self-contained as the effort's coordination and re-entry point.
@@ -29,7 +29,7 @@ copied into Wayfinder.
 All paths below are project-owned durable data:
 
 ```text
-.ai-workflow-state/
+.agent-workflow-state/
 └── wayfinder/
     └── <effort>/
         ├── map.md

@@ -29,7 +29,7 @@ flowchart TD
     fallback --> evidence
 ```
 
-The root `AGENTS.md` policy and `.ai-workflow/routing.md` are the runtime. There
+The root `AGENTS.md` policy and `.agent-workflow/routing.md` are the runtime. There
 is no lifecycle controller or host hook adapter. Host sandboxing and approvals
 remain authoritative. The router separates selection, provider invocation,
 authorization, execution, and completion evidence; none of those decisions
@@ -46,7 +46,7 @@ useful. Supporting Research, TDD, Verification, or Code Review does not create a
 second continuity record. Provider-native tickets, specifications, research,
 and learning artifacts remain canonical; framework records store only concise
 orchestration pointers. Local Wayfinder maps and U#/D#/T# children live under
-`.ai-workflow-state/wayfinder/` and use the effort map for re-entry.
+`.agent-workflow-state/wayfinder/` and use the effort map for re-entry.
 
 A required response marker such as
 `[route: router -> discovery -> research]` provides sufficient v0 route
@@ -56,12 +56,12 @@ visibility. It is not telemetry, execution evidence, or a routing prerequisite.
 
 ```text
 FRAMEWORK-OWNED, RECONSTRUCTABLE
-├── .ai-workflow/
+├── .agent-workflow/
 ├── managed AGENTS.md and CLAUDE.md regions
 └── recorded agent integration files at required external paths
 
 PROJECT-OWNED, DURABLE
-└── .ai-workflow-state/
+└── .agent-workflow-state/
     ├── project-profile.md      # optional
     ├── records/                # optional
     ├── archive/                # optional
@@ -73,7 +73,7 @@ OPTIONAL, INDEPENDENT
 
 ### Reconstructable framework state
 
-`.ai-workflow/` contains only files derived from the current package plus its
+`.agent-workflow/` contains only files derived from the current package plus its
 small install manifest. It is disposable. Install and update stage a new current
 directory and replace the old one as a unit. Missing, modified, obsolete, or
 extra files inside it need no historical checksum investigation.
@@ -96,15 +96,13 @@ repair of current managed content.
 
 ### Durable project state
 
-`.ai-workflow-state/` and every entry below it are project-owned. Lifecycle
+`.agent-workflow-state/` and every entry below it are project-owned. Lifecycle
 operations ensure the directory exists during install/update, but never seed,
 inventory, checksum, merge, rewrite, or remove its contents. Missing optional
-profile, record, archive, and Wayfinder files are normal. An existing
-`.ai-workflow-state/active.md` is preserved as opaque legacy project data but is
-not a current routing or re-entry artifact.
+profile, record, archive, and Wayfinder files are normal.
 
 When Wayfinder needs Git-native structured state, its dedicated progressively
-loaded contract configures `.ai-workflow-state/wayfinder/<effort>/` as the
+loaded contract configures `.agent-workflow-state/wayfinder/<effort>/` as the
 canonical local representation. It creates no global index, shadow `.scratch/`
 tree, persisted frontier, lifecycle schema, or external-tracker sync. The map
 itself is the re-entry point, and human edits remain opaque project data to
@@ -117,15 +115,6 @@ a parallel namespace or migrating it. Local `DEC-NNNN` and Wayfinder `D#`
 records remain workflow state and link to the applicable ADR when a decision is
 promoted.
 
-Only four development-era sources receive compatibility handling:
-`.ai-workflow/project-profile.md` and
-`.ai-workflow/state/{active.md,records,archive}`. The old active index moves to
-the inert `.ai-workflow-state/legacy-active.md` filename solely to avoid data
-loss; it is not interpreted. Each missing source is ignored. An absent
-destination receives the original entry, an identical destination is accepted,
-and a differing or unsafe destination stops before mutation. No other migration
-framework exists.
-
 ### Composite root policies
 
 `AGENTS.md` and `CLAUDE.md` use one managed region followed by one project region.
@@ -135,9 +124,7 @@ markers are ambiguous and stop before any write. Removal strips the managed
 region and restores the project bytes; a composite created from nothing is
 deleted when its project region is empty.
 
-This boundary eliminates encoded restoration blobs. The previous pre-1.0
-manifest is read only narrowly enough to carry an authenticated pre-existing
-policy into the project region on its next update.
+This boundary eliminates encoded restoration blobs.
 
 ### Other external integrations
 
@@ -155,7 +142,7 @@ is sufficient for v0 and avoids a historical retirement database.
 
 ## Optional providers
 
-`.ai-workflow/providers.json` maps routed capabilities to a reviewed upstream
+`.agent-workflow/providers.json` maps routed capabilities to a reviewed upstream
 tag, resolved commit, tag object, upstream tree, MIT license, and checksummed
 snapshot. The release contains only the 14 declared skill directories, not the
 upstream repository. Runtime installation copies that snapshot into a temporary
@@ -219,7 +206,7 @@ The public bootstrap owns only consumer download safety:
 
 `adopt.py` preflights durable-state conflicts, composite boundaries, external
 collisions, and target symlinks before mutation. External writes are snapshotted
-and atomic; the new `.ai-workflow/` tree is staged and swapped. A detected
+and atomic; the new `.agent-workflow/` tree is staged and swapped. A detected
 operation failure restores prior external bytes and the prior reconstructable
 directory where possible. These transactions protect current data; the project
 does not claim crash-safe database semantics.
@@ -232,9 +219,9 @@ cannot roll back or invalidate the core.
 `unsafe/conflict` for core reconciliation. Missing optional project-state files
 and provider skills do not change a healthy core exit status.
 
-`remove` migrates any named legacy durable state, strips composite regions,
-deletes only safely recorded external files, removes `.ai-workflow/`, preserves
-`.ai-workflow-state/`, and removes only the declared provider projection.
+`remove` strips composite regions,
+deletes only safely recorded external files, removes `.agent-workflow/`, preserves
+`.agent-workflow-state/`, and removes only the declared provider projection.
 
 ## Verification boundary
 
@@ -270,7 +257,7 @@ claims that every host or operating system was exercised live.
 
 Live source and observed behavior are authoritative for current system facts.
 Accepted repository decisions and documentation own project decisions;
-provider-native artifacts own provider output; `.ai-workflow-state/` owns local
+provider-native artifacts own provider output; `.agent-workflow-state/` owns local
 workflow continuity, including canonical local Wayfinder efforts; an optional
 project profile is only an advisory cache. All of these outrank private agent
 memory and chat recollection.

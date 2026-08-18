@@ -23,17 +23,17 @@ must_not = [
 live = false
 verification_command = "Run python verify.py after implementing the bounded discount behavior."
 preserve_paths = [
-  ".ai-workflow-state/user-notes.txt",
+  ".agent-workflow-state/user-notes.txt",
   "docs/decisions/0001-discount-bounds.md",
 ]
 forbid_created_globs = ["docs/decisions/0002*.md", "planning/**", "wayfinder/**"]
 route_must_not_include = ["discovery", "wayfinder"]
 state_must_include = [
-  ".ai-workflow-state/records/IMP-0001-discount-bounds.md",
+  ".agent-workflow-state/records/IMP-0001-discount-bounds.md",
   "docs/decisions/0001-discount-bounds.md",
 ]
 state_must_not_include = [
-  ".ai-workflow-state/user-notes.txt",
+  ".agent-workflow-state/user-notes.txt",
 ]
 
 [[assertions]]

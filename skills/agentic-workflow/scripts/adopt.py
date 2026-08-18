@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import base64
 import hashlib
 import json
 import os
@@ -20,8 +19,8 @@ from typing import Iterable, Mapping, MutableMapping, Sequence
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 DISTRIBUTION_MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
-FRAMEWORK_ROOT = PurePosixPath(".ai-workflow")
-DURABLE_ROOT = PurePosixPath(".ai-workflow-state")
+FRAMEWORK_ROOT = PurePosixPath(".agent-workflow")
+DURABLE_ROOT = PurePosixPath(".agent-workflow-state")
 INSTALL_MANIFEST = FRAMEWORK_ROOT / "install-manifest.json"
 COMPOSITE_PATHS = {PurePosixPath("AGENTS.md"), PurePosixPath("CLAUDE.md")}
 MANAGED_BEGIN = b"<!-- ai-workflow:managed-begin -->\n"
@@ -33,15 +32,6 @@ INSTALL_SCHEMA = 1
 LOCAL_REVISION = "unreleased-local-package"
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 REVISION_PATTERN = re.compile(r"[0-9a-f]{40}")
-
-# These are the only compatibility imports. They contain durable project data;
-# every other historical path under .ai-workflow is disposable framework data.
-LEGACY_DURABLE = (
-    (PurePosixPath(".ai-workflow/project-profile.md"), DURABLE_ROOT / "project-profile.md", "file"),
-    (PurePosixPath(".ai-workflow/state/active.md"), DURABLE_ROOT / "legacy-active.md", "file"),
-    (PurePosixPath(".ai-workflow/state/records"), DURABLE_ROOT / "records", "directory"),
-    (PurePosixPath(".ai-workflow/state/archive"), DURABLE_ROOT / "archive", "directory"),
-)
 
 
 class AdoptionError(RuntimeError):
@@ -159,7 +149,7 @@ def load_distribution() -> tuple[str, list[tuple[PurePosixPath, PurePosixPath]]]
 
 
 def empty_install_state() -> dict[str, object]:
-    return {"external_files": {}, "composites": {}, "legacy_restoration": {}}
+    return {"external_files": {}, "composites": {}}
 
 
 def load_install_state(root: Path) -> dict[str, object]:
@@ -200,47 +190,8 @@ def load_install_state(root: Path) -> dict[str, object]:
                 composites[relative.as_posix()] = {"created": details["created"]}
         except AdoptionError:
             return empty_install_state()
-        return {"external_files": external, "composites": composites, "legacy_restoration": {}}
-
-    # Narrow compatibility reader for the previous pre-1.0 manifest. It extracts
-    # only evidence needed to avoid deleting external pre-existing content.
-    files = raw.get("framework_files")
-    if not isinstance(files, dict):
-        return empty_install_state()
-    external = {}
-    composites = {}
-    restoration: dict[str, bytes] = {}
-    try:
-        for key, details in files.items():
-            relative = safe_relative(key)
-            if not isinstance(details, dict):
-                continue
-            origin = details.get("origin")
-            checksum = details.get("sha256")
-            if relative in COMPOSITE_PATHS and isinstance(origin, str) and origin.startswith("composite"):
-                composites[relative.as_posix()] = {"created": origin == "composite-created"}
-                encoded = details.get("preexisting_base64")
-                expected = details.get("preexisting_sha256")
-                if isinstance(encoded, str) and isinstance(expected, str):
-                    try:
-                        restored = base64.b64decode(encoded, validate=True)
-                    except (ValueError, TypeError):
-                        restored = b""
-                    if digest(restored) == expected:
-                        restoration[relative.as_posix()] = restored
-            elif (
-                FRAMEWORK_ROOT not in relative.parents
-                and relative != FRAMEWORK_ROOT
-                and isinstance(checksum, str)
-                and SHA256_PATTERN.fullmatch(checksum)
-            ):
-                external[relative.as_posix()] = {
-                    "created": origin == "created",
-                    "sha256": checksum,
-                }
-    except AdoptionError:
-        return empty_install_state()
-    return {"external_files": external, "composites": composites, "legacy_restoration": restoration}
+        return {"external_files": external, "composites": composites}
+    return empty_install_state()
 
 
 def compose_policy(managed: bytes, project: bytes) -> bytes:
@@ -271,52 +222,6 @@ def source_bytes(source: PurePosixPath) -> bytes:
         return PAYLOAD_ROOT.joinpath(*source.parts).read_bytes()
     except OSError as exc:
         raise AdoptionError(f"cannot read current payload source {source}: {exc}") from exc
-
-
-def snapshot_tree(path: Path, kind: str) -> object:
-    if kind == "file":
-        if path.is_symlink() or not path.is_file():
-            raise AdoptionError(f"durable state must be a regular file: {path}")
-        return path.read_bytes()
-    if path.is_symlink() or not path.is_dir():
-        raise AdoptionError(f"durable state must be a regular directory: {path}")
-    result: dict[str, tuple[str, bytes]] = {}
-    for child in sorted(path.rglob("*")):
-        relative = child.relative_to(path).as_posix()
-        if child.is_symlink():
-            raise AdoptionError(f"durable state contains an unsafe symlink: {child}")
-        if child.is_dir():
-            result[relative] = ("directory", b"")
-        elif child.is_file():
-            result[relative] = ("file", child.read_bytes())
-        else:
-            raise AdoptionError(f"durable state contains an unsupported entry: {child}")
-    return result
-
-
-def plan_durable_migrations(root: Path) -> list[tuple[Path, Path, str, str]]:
-    canonical = checked_target(root, DURABLE_ROOT)
-    if canonical.exists() or canonical.is_symlink():
-        if canonical.is_symlink() or not canonical.is_dir():
-            raise AdoptionError(".ai-workflow-state must be a regular non-symlink directory")
-    plan: list[tuple[Path, Path, str, str]] = []
-    for source_relative, destination_relative, kind in LEGACY_DURABLE:
-        source = checked_target(root, source_relative)
-        if not source.exists() and not source.is_symlink():
-            continue
-        source_snapshot = snapshot_tree(source, kind)
-        destination = checked_target(root, destination_relative)
-        if destination.exists() or destination.is_symlink():
-            if source_snapshot != snapshot_tree(destination, kind):
-                raise AdoptionError(
-                    "conflicting legacy and canonical durable state; preserving both: "
-                    f"{source_relative} and {destination_relative}"
-                )
-            disposition = "duplicate"
-        else:
-            disposition = "move"
-        plan.append((source, destination, kind, disposition))
-    return plan
 
 
 def ensure_parent(path: Path, root: Path, created: list[Path]) -> None:
@@ -403,40 +308,20 @@ def rollback_external(
             pass
 
 
-def prepare_durable_state(
-    root: Path,
-    plan: Sequence[tuple[Path, Path, str, str]],
-) -> tuple[bool, list[tuple[Path, Path]]]:
+def ensure_durable_state(root: Path) -> bool:
     canonical = checked_target(root, DURABLE_ROOT)
-    created = False
     if not canonical.exists():
         canonical.mkdir(mode=0o755)
-        created = True
-    moved: list[tuple[Path, Path]] = []
-    try:
-        created_parents: list[Path] = []
-        for source, destination, _kind, disposition in plan:
-            if disposition == "duplicate":
-                continue
-            ensure_parent(destination, root, created_parents)
-            os.replace(source, destination)
-            moved.append((source, destination))
-    except Exception:
-        rollback_durable_state(canonical, created, moved)
-        raise
-    return created, moved
+        return True
+    if canonical.is_symlink() or not canonical.is_dir():
+        raise AdoptionError(".agent-workflow-state must be a regular non-symlink directory")
+    return False
 
 
-def rollback_durable_state(canonical: Path, created: bool, moved: Sequence[tuple[Path, Path]]) -> None:
-    for source, destination in reversed(moved):
-        try:
-            source.parent.mkdir(parents=True, exist_ok=True)
-            os.replace(destination, source)
-        except OSError:
-            pass
+def rollback_created_durable_state(root: Path, created: bool) -> None:
     if created:
         try:
-            canonical.rmdir()
+            checked_target(root, DURABLE_ROOT).rmdir()
         except OSError:
             pass
 
@@ -462,7 +347,7 @@ def make_framework_stage(
     mappings: Sequence[tuple[PurePosixPath, PurePosixPath]],
     manifest: bytes,
 ) -> Path:
-    stage = Path(tempfile.mkdtemp(prefix=".ai-workflow-stage-", dir=root))
+    stage = Path(tempfile.mkdtemp(prefix=".agent-workflow-stage-", dir=root))
     try:
         for source, target in mappings:
             if target != FRAMEWORK_ROOT and FRAMEWORK_ROOT in target.parents:
@@ -482,10 +367,10 @@ def make_framework_stage(
 def swap_framework(root: Path, stage: Path) -> Path | None:
     current = checked_target(root, FRAMEWORK_ROOT)
     if current.is_symlink() or (current.exists() and not current.is_dir()):
-        raise AdoptionError(".ai-workflow must be a regular non-symlink directory")
+        raise AdoptionError(".agent-workflow must be a regular non-symlink directory")
     backup: Path | None = None
     if current.exists():
-        backup = Path(tempfile.mkdtemp(prefix=".ai-workflow-backup-", dir=root))
+        backup = Path(tempfile.mkdtemp(prefix=".agent-workflow-backup-", dir=root))
         backup.rmdir()
         os.replace(current, backup)
     try:
@@ -518,10 +403,8 @@ def plan_reconciliation(
 ]:
     previous_external = state["external_files"]
     previous_composites = state["composites"]
-    restoration = state["legacy_restoration"]
     assert isinstance(previous_external, dict)
     assert isinstance(previous_composites, dict)
-    assert isinstance(restoration, dict)
 
     writes: dict[PurePosixPath, bytes] = {}
     removals: list[PurePosixPath] = []
@@ -544,9 +427,6 @@ def plan_reconciliation(
             elif has_any_marker(current):
                 _managed, project = parse_policy(current)
                 created = bool(previous.get("created")) if isinstance(previous, dict) else False
-                legacy = restoration.get(key)
-                if not project and isinstance(legacy, bytes):
-                    project = legacy
             else:
                 project = current
                 created = False
@@ -613,16 +493,10 @@ def verify_reconciled(
 def reconcile(root: Path, dry_run: bool, revision: str, verb: str) -> None:
     version, mappings = load_distribution()
     state = load_install_state(root)
-    durable_plan = plan_durable_migrations(root)
     writes, removals, external, composites, actions = plan_reconciliation(root, mappings, state)
-    for source, destination, _kind, disposition in durable_plan:
-        if disposition == "move":
-            actions.append(f"migrate durable state {source.relative_to(root)} -> {destination.relative_to(root)}")
-        else:
-            actions.append(f"reconcile identical durable-state duplicate at {source.relative_to(root)}")
-    actions.append("replace reconstructable .ai-workflow with current desired files")
+    actions.append("replace reconstructable .agent-workflow with current desired files")
     if not checked_target(root, DURABLE_ROOT).exists():
-        actions.append("create empty durable project-state directory .ai-workflow-state")
+        actions.append("create empty durable project-state directory .agent-workflow-state")
 
     if dry_run:
         print(f"{verb.upper()} PLAN {root}")
@@ -633,13 +507,12 @@ def reconcile(root: Path, dry_run: bool, revision: str, verb: str) -> None:
     manifest = install_manifest_bytes(version, revision, external, composites)
     stage = make_framework_stage(root, mappings, manifest)
     durable_created = False
-    moved: list[tuple[Path, Path]] = []
     snapshots: dict[PurePosixPath, tuple[bytes, int] | None] = {}
     created_directories: list[Path] = []
     backup: Path | None = None
     framework_swapped = False
     try:
-        durable_created, moved = prepare_durable_state(root, durable_plan)
+        durable_created = ensure_durable_state(root)
         snapshots, created_directories = apply_external_transaction(root, writes, removals)
         backup = swap_framework(root, stage)
         framework_swapped = True
@@ -651,14 +524,14 @@ def reconcile(root: Path, dry_run: bool, revision: str, verb: str) -> None:
             except OSError:
                 pass
         rollback_external(root, snapshots, created_directories)
-        rollback_durable_state(checked_target(root, DURABLE_ROOT), durable_created, moved)
+        rollback_created_durable_state(root, durable_created)
         if stage.exists():
             shutil.rmtree(stage, ignore_errors=True)
         raise
     if backup is not None:
         shutil.rmtree(backup, ignore_errors=True)
     print(f"OK: Agentic Workflow {verb} completed; current framework state reconciled.")
-    print("OK: Durable project state preserved under .ai-workflow-state/.")
+    print("OK: Durable project state preserved under .agent-workflow-state/.")
 
 
 def status(root: Path) -> int:
@@ -671,9 +544,9 @@ def status(root: Path) -> int:
 
     framework = checked_target(root, FRAMEWORK_ROOT)
     if not framework.exists():
-        problems.append("REPAIR: reconstructable .ai-workflow directory is absent")
+        problems.append("REPAIR: reconstructable .agent-workflow directory is absent")
     elif framework.is_symlink() or not framework.is_dir():
-        conflicts.append("CONFLICT: .ai-workflow is not a regular directory")
+        conflicts.append("CONFLICT: .agent-workflow is not a regular directory")
 
     desired_internal: set[str] = {INSTALL_MANIFEST.as_posix()}
     for source, target in mappings:
@@ -730,7 +603,7 @@ def status(root: Path) -> int:
     if not durable.exists():
         problems.append("REPAIR: durable project-state directory is absent")
     elif durable.is_symlink() or not durable.is_dir():
-        conflicts.append("CONFLICT: .ai-workflow-state is not a regular directory")
+        conflicts.append("CONFLICT: .agent-workflow-state is not a regular directory")
 
     print(f"STATUS {root}")
     print(f"Current package version: {version}")
@@ -754,7 +627,6 @@ def remove(root: Path, dry_run: bool) -> None:
     composite_state = state["composites"]
     assert isinstance(external_state, dict)
     assert isinstance(composite_state, dict)
-    durable_plan = plan_durable_migrations(root)
     writes: dict[PurePosixPath, bytes] = {}
     removals: list[PurePosixPath] = []
     actions: list[str] = []
@@ -791,12 +663,9 @@ def remove(root: Path, dry_run: bool) -> None:
     framework = checked_target(root, FRAMEWORK_ROOT)
     if framework.exists() or framework.is_symlink():
         if framework.is_symlink() or not framework.is_dir():
-            raise AdoptionError(".ai-workflow must be a regular non-symlink directory")
-        actions.append("remove reconstructable .ai-workflow directory")
-    for source, destination, _kind, disposition in durable_plan:
-        if disposition == "move":
-            actions.append(f"migrate durable state {source.relative_to(root)} -> {destination.relative_to(root)}")
-    actions.append("preserve .ai-workflow-state and every file below it")
+            raise AdoptionError(".agent-workflow must be a regular non-symlink directory")
+        actions.append("remove reconstructable .agent-workflow directory")
+    actions.append("preserve .agent-workflow-state and every file below it")
 
     if dry_run:
         print(f"REMOVE PLAN {root}")
@@ -804,24 +673,19 @@ def remove(root: Path, dry_run: bool) -> None:
             print(f"- {action}")
         return
 
-    durable_created = False
-    moved: list[tuple[Path, Path]] = []
     snapshots: dict[PurePosixPath, tuple[bytes, int] | None] = {}
     created_directories: list[Path] = []
     backup: Path | None = None
     try:
-        if durable_plan:
-            durable_created, moved = prepare_durable_state(root, durable_plan)
         snapshots, created_directories = apply_external_transaction(root, writes, removals)
         if framework.exists():
-            backup = Path(tempfile.mkdtemp(prefix=".ai-workflow-remove-", dir=root))
+            backup = Path(tempfile.mkdtemp(prefix=".agent-workflow-remove-", dir=root))
             backup.rmdir()
             os.replace(framework, backup)
     except Exception:
         if backup is not None and backup.exists():
             os.replace(backup, framework)
         rollback_external(root, snapshots, created_directories)
-        rollback_durable_state(checked_target(root, DURABLE_ROOT), durable_created, moved)
         raise
     if backup is not None:
         shutil.rmtree(backup, ignore_errors=True)

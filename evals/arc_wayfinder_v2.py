@@ -325,7 +325,7 @@ def install_workflow(workspace: Path) -> dict[str, Any]:
         raise RuntimeError("the local Wayfinder provider is not the campaign's reviewed v1.2.3 pin")
     installed_paths = [
         path
-        for root in (workspace / ".ai-workflow", workspace / ".agents", workspace / "AGENTS.md", workspace / "CLAUDE.md")
+        for root in (workspace / ".agent-workflow", workspace / ".agents", workspace / "AGENTS.md", workspace / "CLAUDE.md")
         for path in ([root] if root.is_file() else sorted(root.rglob("*")) if root.is_dir() else [])
         if path.is_file()
     ]
@@ -524,7 +524,7 @@ def durable_paths(paths: Iterable[str]) -> list[str]:
         if Path(path).suffix.lower() in TEXT_SUFFIXES
         and not path.startswith("terraform/")
         and path != "docs/platform-facts.md"
-        and not path.startswith(".ai-workflow/")
+        and not path.startswith(".agent-workflow/")
         and not path.startswith(".agents/")
         and path not in {"AGENTS.md", "CLAUDE.md"}
     ]
@@ -597,7 +597,7 @@ def exact_fact_evidence(workspace: Path, paths: Iterable[str] | None = None) -> 
 
 
 def wayfinder_blocker_evidence(workspace: Path) -> dict[str, Any]:
-    root = workspace / ".ai-workflow-state" / "wayfinder"
+    root = workspace / ".agent-workflow-state" / "wayfinder"
     paths = [path.relative_to(workspace).as_posix() for path in root.rglob("*.md")] if root.is_dir() else []
     blocker_lines = evidence_lines(workspace, paths, (r"^\s*-?\s*Blocked by\s*:",))
     legacy_lines = [
@@ -638,7 +638,7 @@ def grade_phase_1(workspace: Path, before: dict[str, str], condition: str) -> di
         "mapping_only_respected": not terraform_changed,
     }
     if condition in WORKFLOW_CONDITIONS:
-        state_files = [path for path in changed if path.startswith(".ai-workflow-state/wayfinder/")]
+        state_files = [path for path in changed if path.startswith(".agent-workflow-state/wayfinder/")]
         result["wayfinder"] = {
             "exercised": bool(state_files),
             "state_files": state_files,
@@ -1016,7 +1016,7 @@ def event_execution_summary(stdout: str, elapsed_seconds: float) -> dict[str, An
         "wayfinder_observation": {
             "explicit_invocation_observed": bool(re.search(r"\$wayfinder\b", combined_messages)),
             "wayfinder_skill_read": bool(re.search(r"\.agents/skills/wayfinder/SKILL\.md", combined_commands)),
-            "wayfinder_state_read": bool(re.search(r"\.ai-workflow-state/wayfinder", combined_commands)),
+            "wayfinder_state_read": bool(re.search(r"\.agent-workflow-state/wayfinder", combined_commands)),
             "route_to_wayfinder_self_reported": bool(
                 re.search(r"\[route:\s*router\s*→\s*wayfinder", combined_messages, re.I)
             ),
@@ -1210,8 +1210,8 @@ def verify_automatic_workspace(state: dict[str, Any]) -> dict[str, Any]:
         checks.update(
             {
                 "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
-                "no_agentic_workflow_directory": not (workspace / ".ai-workflow").exists(),
-                "no_agentic_workflow_state_directory": not (workspace / ".ai-workflow-state").exists(),
+                "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
+                "no_agentic_workflow_state_directory": not (workspace / ".agent-workflow-state").exists(),
                 "no_project_wayfinder_skill": not (
                     workspace / ".agents" / "skills" / "wayfinder"
                 ).exists(),
@@ -1221,12 +1221,12 @@ def verify_automatic_workspace(state: dict[str, Any]) -> dict[str, Any]:
         checks.update(
             {
                 "workflow_agents_policy_present": (workspace / "AGENTS.md").is_file(),
-                "agentic_workflow_directory_present": (workspace / ".ai-workflow").is_dir(),
+                "agentic_workflow_directory_present": (workspace / ".agent-workflow").is_dir(),
                 "wayfinder_skill_present": (
                     workspace / ".agents" / "skills" / "wayfinder" / "SKILL.md"
                 ).is_file(),
                 "expected_framework_version": read_json(
-                    workspace / ".ai-workflow" / "install-manifest.json"
+                    workspace / ".agent-workflow" / "install-manifest.json"
                 ).get("framework_version")
                 == FRAMEWORK_VERSION_PATH.read_text(encoding="utf-8").strip(),
             }
@@ -1335,8 +1335,8 @@ def audit_auto_isolation(
             if condition == "A":
                 static_checks.update(
                     {
-                        "no_agentic_workflow": not (workspace / ".ai-workflow").exists(),
-                        "no_agentic_workflow_state": not (workspace / ".ai-workflow-state").exists(),
+                        "no_agentic_workflow": not (workspace / ".agent-workflow").exists(),
+                        "no_agentic_workflow_state": not (workspace / ".agent-workflow-state").exists(),
                         "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
                         "no_wayfinder_skill": not (workspace / ".agents" / "skills" / "wayfinder").exists(),
                     }
@@ -1344,7 +1344,7 @@ def audit_auto_isolation(
             else:
                 static_checks.update(
                     {
-                        "agentic_workflow_present": (workspace / ".ai-workflow" / "routing.md").is_file(),
+                        "agentic_workflow_present": (workspace / ".agent-workflow" / "routing.md").is_file(),
                         "project_agents_policy_present": (workspace / "AGENTS.md").is_file(),
                         "wayfinder_skill_present": (workspace / ".agents" / "skills" / "wayfinder" / "SKILL.md").is_file(),
                     }
@@ -1474,10 +1474,10 @@ def treatment_crossover(
     execution: dict[str, Any],
 ) -> dict[str, Any]:
     state_files = sorted(
-        path for path in snapshot(workspace) if path.startswith(".ai-workflow-state/wayfinder/")
+        path for path in snapshot(workspace) if path.startswith(".agent-workflow-state/wayfinder/")
     )
     changed_state_files = sorted(
-        path for path in changed if path.startswith(".ai-workflow-state/wayfinder/")
+        path for path in changed if path.startswith(".agent-workflow-state/wayfinder/")
     )
     observation = dict(execution.get("wayfinder_observation") or {})
     state_read = bool(state_files) and bool(observation.get("wayfinder_state_read"))

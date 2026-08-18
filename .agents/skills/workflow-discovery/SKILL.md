@@ -26,7 +26,7 @@ does not own huge-effort planning, teaching methodology, or implementation.
    policy. This may happen after Discovery has started; do not wait for a new
    user prompt. Respect an explicit Wayfinder opt-out. When authorized provider
    execution or truthful host-native fallback needs durable local planning,
-   follow `.ai-workflow/contracts/wayfinder-state.md`. Its local map is the
+   follow `.agent-workflow/contracts/wayfinder-state.md`. Its local map is the
    canonical configured representation and re-entry point. Read-only work stays
    ephemeral and creates no map.
 

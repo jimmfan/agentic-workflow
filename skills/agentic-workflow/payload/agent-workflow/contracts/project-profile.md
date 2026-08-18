@@ -1,13 +1,13 @@
 # Project profile contract
 
-`.ai-workflow-state/project-profile.md` is optional, project-owned advisory context: a
+`.agent-workflow-state/project-profile.md` is optional, project-owned advisory context: a
 concise cache of verified facts and pointers likely to help future work. It is
 not a versioned structured artifact, chat log, task journal, speculative
 architecture document, README copy, source-of-truth replacement, or place for
 secret values. The profile is not a shell script; an agent may run a recorded
 command only after applying the safety gate below.
 
-Install and update establish the parent `.ai-workflow-state/` directory but
+Install and update establish the parent `.agent-workflow-state/` directory but
 never seed the profile. Lifecycle operations preserve every existing profile
 byte-for-byte during install, update, removal, and reinstall. An authorized
 workflow may use the framework template as a
@@ -33,7 +33,7 @@ counts are not a lifecycle schema.
 The framework template may use `Initialization: uninitialized` and `None` for
 unknown sections as authoring prompts. The marker is template text, not a
 readiness state or format version, and the template's presence under
-`.ai-workflow/templates/` does not imply that a project profile is required.
+`.agent-workflow/templates/` does not imply that a project profile is required.
 Missing or empty project context does not prevent unrelated work and is not
 framework corruption.
 

@@ -10,7 +10,7 @@ package manager.
 ## Current reviewed provider
 
 The declaration in
-`skills/agentic-workflow/payload/ai-workflow/providers.json` currently names
+`skills/agentic-workflow/payload/agent-workflow/providers.json` currently names
 `mattpocock/skills` at tag `v1.2.3`, resolved and recorded as commit
 `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`. It maps planning, learning,
 research, specification, tickets, implementation, TDD, and Code Review
@@ -98,7 +98,7 @@ so far, Not yet specified, and Out of scope; it loads child decision tickets on
 demand and derives the frontier from open, unblocked, unclaimed children. Its
 default local-Markdown tracker stores those artifacts below `.scratch/`.
 Agentic Workflow deliberately configures its canonical local representation
-under `.ai-workflow-state/wayfinder/` instead, with stable U#/D#/T# children and
+under `.agent-workflow-state/wayfinder/` instead, with stable U#/D#/T# children and
 the map itself as the re-entry point. Decision and investigation questions map
 to U#, durable project choices map to D#, and concrete executable work maps to
 T# only when it exists. This is a storage, re-entry, and item-lifecycle

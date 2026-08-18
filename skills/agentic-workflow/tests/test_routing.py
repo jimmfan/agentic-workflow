@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 import unittest
 
-
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 
@@ -39,7 +38,7 @@ class RoutingContractTests(unittest.TestCase):
                     self.assertTrue({"name", "policy", "invocation", "executed"} <= set(provider))
 
     def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
-        routing = (PACKAGE_ROOT / "payload/ai-workflow/routing.md").read_text()
+        routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         self.assertIn("Every user-facing final response MUST end with exactly one", root_policy)
         self.assertIn("Every user-facing final response must end with exactly one", routing)
@@ -48,12 +47,12 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("unexecuted selection do not count as execution", routing)
         self.assertIn("Do not reroute, load skills, execute workflows", routing)
         self.assertNotIn("runtime/capabilities.json", routing)
-        self.assertNotIn(".ai-workflow/runtime", routing)
+        self.assertNotIn(".agent-workflow/runtime", routing)
 
     def test_project_adr_namespace_defaults_without_overriding_existing_convention(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         contract = (
-            PACKAGE_ROOT / "payload/ai-workflow/contracts/durable-state.md"
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/durable-state.md"
         ).read_text()
         normalized_policy = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
@@ -92,7 +91,7 @@ class RoutingContractTests(unittest.TestCase):
 
     def test_implementation_and_review_do_not_require_tracker_configuration(self) -> None:
         declaration = json.loads(
-            (PACKAGE_ROOT / "payload/ai-workflow/providers.json").read_text()
+            (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text()
         )
         skills = {item["name"]: item for item in declaration["provider"]["skills"]}
         self.assertEqual(skills["implement"]["requires_configuration"], [])
@@ -103,7 +102,7 @@ class RoutingContractTests(unittest.TestCase):
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         contract = (
-            PACKAGE_ROOT / "payload/ai-workflow/contracts/wayfinder-state.md"
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
         ).read_text()
         self.assertIn("Authorized mutating work is complete only after", root_policy)
         self.assertIn("do not inspect unrelated\n  efforts", root_policy)
@@ -114,7 +113,7 @@ class RoutingContractTests(unittest.TestCase):
 
     def test_resolved_preferences_and_wayfinder_smells_are_explicit(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
-        contract = (PACKAGE_ROOT / "payload/ai-workflow/contracts/wayfinder-state.md").read_text()
+        contract = (PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md").read_text()
         normalized_root = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
         self.assertIn("choice the user explicitly resolves as settled", normalized_root)

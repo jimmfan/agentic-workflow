@@ -13,7 +13,7 @@ dependency-derived frontier work, and progressive loading of child detail. Its
 configured issue tracker owns physical storage. The upstream local-Markdown
 default uses `.scratch/<effort>/map.md` and child issue files.
 
-Agentic Workflow already reserves `.ai-workflow-state/` for project-owned
+Agentic Workflow already reserves `.agent-workflow-state/` for project-owned
 durable continuity and guarantees that lifecycle operations never own its
 contents. Keeping local Wayfinder state elsewhere would split durable planning
 across ownership roots, while pointing to it through a separate global index
@@ -24,7 +24,7 @@ tracker or service.
 ## Decision
 
 Configure local Wayfinder persistence as the canonical project-owned tree under
-`.ai-workflow-state/wayfinder/<effort>/`. Use `map.md` plus stable `U#`, `D#`,
+`.agent-workflow-state/wayfinder/<effort>/`. Use `map.md` plus stable `U#`, `D#`,
 and `T#` Markdown files. Keep the map low resolution, derive frontier work from
 current item status and dependencies, and load child bodies only when relevant.
 
@@ -37,7 +37,7 @@ active index for non-Wayfinder workflows as well; those workflows resume from
 their canonical record.
 
 Keep the Markdown contract permissive. Lifecycle code treats every byte below
-`.ai-workflow-state/` as opaque project data. Agents may recommend compact
+`.agent-workflow-state/` as opaque project data. Agents may recommend compact
 authoring shapes, but install, update, status, and remove do not validate,
 inventory, migrate, checksum, rewrite, or delete them.
 
@@ -56,8 +56,8 @@ and dependency-derived frontier remain intact. Separate U/D/T files make
 uncertainty, durable decisions, and implementation handoff explicit without a
 database or graph model.
 
-The framework contract is distributed under `.ai-workflow/`, but no project
-state below `.ai-workflow-state/wayfinder/` is placed in the distribution
+The framework contract is distributed under `.agent-workflow/`, but no project
+state below `.agent-workflow-state/wayfinder/` is placed in the distribution
 manifest. No migration is introduced, and Jira or other external
 synchronization remains out of scope.
 
@@ -65,7 +65,7 @@ synchronization remains out of scope.
 
 - Keep upstream `.scratch/` storage and add a framework pointer: rejected
   because it splits local durable state and requires separate index indirection.
-- Copy provider artifacts into `.ai-workflow-state/`: rejected because two
+- Copy provider artifacts into `.agent-workflow-state/`: rejected because two
   canonical copies would drift.
 - Add a database, event log, graph index, or persisted frontier: rejected
   because Markdown links, dependencies, agent reasoning, and Git already cover

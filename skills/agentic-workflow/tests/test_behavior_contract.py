@@ -8,7 +8,6 @@ import tempfile
 import textwrap
 import unittest
 
-
 TEST_ROOT = Path(__file__).resolve().parent
 
 
@@ -279,7 +278,7 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertTrue(content_assertion.path.name.startswith("U1-"))
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
-            unknowns = workspace / ".ai-workflow-state/wayfinder/platform-migration/unknowns"
+            unknowns = workspace / ".agent-workflow-state/wayfinder/platform-migration/unknowns"
             unknowns.mkdir(parents=True)
             stable_unknown = unknowns / "U1-any-clear-slug-is-valid.md"
             stable_unknown.write_text(
