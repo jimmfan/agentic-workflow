@@ -17,8 +17,8 @@ contents, or remove it.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/durable-state.md`: durable continuity, canonical artifact, conflict,
   and re-entry rules.
-- `contracts/wayfinder-state.md`: lazily loaded canonical local Wayfinder map,
-  U#/D#/T# identity, and progressive-loading rules.
+- `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
+  optional U#/E#/F#/D# knowledge and progressive loading.
 - `contracts/project-profile.md`: optional advisory project-context rules.
 - `templates/`: source material used only when an authorized workflow actually
   needs durable state.
@@ -51,8 +51,14 @@ adapters require recognized pinned input before target mutation.
 
 Local Wayfinder data is a configured project-owned representation under
 `.agent-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned
-tree. It uses the effort map for re-entry. Other durable workflows resume from
-their canonical DEC, IMP, or DBG record; there is no global active index.
+tree. A map may stand alone; optional children preserve unresolved questions,
+independently useful evidence, established facts, and committed decisions. The
+map owns current state, blockers, dependencies, and next work. Existing T# files
+are preserved as opaque pre-contract data but are not loaded or migrated;
+newly decomposed work belongs to `to-tickets`. See
+`contracts/wayfinder-state.md` for the precise, lazily loaded semantics. Other
+durable workflows resume from their canonical DEC, IMP, or DBG record; there is
+no global active index.
 
 ## Status and recovery
 

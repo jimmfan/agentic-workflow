@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-14
 - Supersedes: local Wayfinder artifact and pointer portions of ADR-0007
-- Amended by: ADR-0012, ADR-0013, ADR-0016, and ADR-0020
+- Amended by: ADR-0012, ADR-0013, ADR-0016, ADR-0020, and ADR-0022
 
 ## Context
 
@@ -18,15 +18,17 @@ durable continuity and guarantees that lifecycle operations never own its
 contents. Keeping local Wayfinder state elsewhere would split durable planning
 across ownership roots, while pointing to it through a separate global index
 would add unnecessary continuity state. The project also needs explicit unknown,
-decision, and executable-work identities without introducing an external
-tracker or service.
+evidence, fact, and decision identities without introducing an external tracker
+or service.
 
 ## Decision
 
 Configure local Wayfinder persistence as the canonical project-owned tree under
-`.agent-workflow-state/wayfinder/<effort>/`. Use `map.md` plus stable `U#`, `D#`,
-and `T#` Markdown files. Keep the map low resolution, derive frontier work from
-current item status and dependencies, and load child bodies only when relevant.
+`.agent-workflow-state/wayfinder/<effort>/`. Use `map.md` plus optional stable
+`U#`, `E#`, `F#`, and `D#` Markdown files. Keep the map low resolution and make
+it the owner of current state, blockers, dependencies, and next work. Load child
+bodies only when relevant. ADR-0022 removes T# from the current representation;
+substantial decomposition belongs to `to-tickets`.
 
 The upstream provider continues to own Wayfinder reasoning. Agentic Workflow
 owns this local storage and re-entry contract plus the narrow effective-
@@ -52,14 +54,16 @@ This deliberately differs from the pinned provider's default `.scratch/` local
 tracker and from its single decision-ticket representation. The divergence is
 limited to the configured local storage boundary: provider concepts such as
 Destination, Decisions so far, Not yet specified, Out of scope, named links,
-and dependency-derived frontier remain intact. Separate U/D/T files make
-uncertainty, durable decisions, and implementation handoff explicit without a
-database or graph model.
+and dependency-derived frontier remain intact. Optional U/E/F/D files separate
+unresolved questions, sourced observations, established conclusions, and
+committed choices without forcing bookkeeping or adding a database or graph
+model. A map-only effort remains valid.
 
 The framework contract is distributed under `.agent-workflow/`, but no project
 state below `.agent-workflow-state/wayfinder/` is placed in the distribution
-manifest. No migration is introduced, and Jira or other external
-synchronization remains out of scope.
+manifest. Lifecycle performs no migration, and Jira or other external
+synchronization remains out of scope. Older T# state requires a manual map or
+native-ticket migration before current-work resume.
 
 ## Alternatives considered
 

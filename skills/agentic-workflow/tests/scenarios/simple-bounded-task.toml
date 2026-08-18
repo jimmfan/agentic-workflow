@@ -21,7 +21,7 @@ verification_command = "Run python verify.py after the change."
 preserve_paths = []
 forbid_created_globs = [
   ".agent-workflow-state/**",
-  "/**",
+  "docs/decisions/**",
   "planning/**",
   "wayfinder/**",
 ]
@@ -31,4 +31,3 @@ route_must_not_include = ["discovery", "wayfinder"]
 kind = "path_contains"
 path = "app.py"
 value = "hello, world!"
-

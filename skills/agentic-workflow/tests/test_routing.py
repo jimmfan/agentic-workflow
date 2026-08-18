@@ -56,7 +56,7 @@ class RoutingContractTests(unittest.TestCase):
         ).read_text()
         normalized_policy = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
-        self.assertIn("Use `/` as the default", normalized_policy)
+        self.assertIn("Use `architecture-decision/` as the default", normalized_policy)
         self.assertIn(
             "project instructions name another canonical location", normalized_policy
         )
@@ -67,14 +67,14 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("recoverable version-control history", normalized_contract)
 
     def test_adr_index_separates_current_records_from_superseded_history(self) -> None:
-        index = (REPOSITORY_ROOT / "/README.md").read_text()
+        index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
         current, superseded = index.split("## Superseded tombstones", 1)
         for identifier in ("ADR-0002", "ADR-0003", "ADR-0005", "ADR-0009"):
             self.assertNotIn(identifier, current)
             self.assertIn(identifier, superseded)
         governance = (
             REPOSITORY_ROOT
-            / "/0021-maintain-compact-current-decision-context.md"
+            / "architecture-decisions/0021-maintain-compact-current-decision-context.md"
         ).read_text()
         self.assertIn("- Status: accepted", governance)
         self.assertIn("Treat a choice the user explicitly resolves as settled", governance)
@@ -106,10 +106,11 @@ class RoutingContractTests(unittest.TestCase):
         ).read_text()
         self.assertIn("Authorized mutating work is complete only after", root_policy)
         self.assertIn("do not inspect unrelated\n  efforts", root_policy)
-        self.assertIn("Do not globally scan Wayfinder state", contract)
-        self.assertIn("Canonical artifacts keep ownership of their content", contract)
-        self.assertIn("never performs\nreconciliation writes", contract)
-        self.assertIn("No\nhook, background process, global index", contract)
+        normalized_contract = " ".join(contract.split())
+        self.assertIn("Do not globally scan for related efforts", normalized_contract)
+        self.assertIn("do not copy canonical artifact bodies", normalized_contract)
+        self.assertIn("Read-only work reports the exact stale claim", normalized_contract)
+        self.assertIn("No hook, daemon, synchronization service", normalized_contract)
 
     def test_resolved_preferences_and_wayfinder_smells_are_explicit(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -117,9 +118,10 @@ class RoutingContractTests(unittest.TestCase):
         normalized_root = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
         self.assertIn("choice the user explicitly resolves as settled", normalized_root)
-        self.assertIn("not a reason to renumber an existing item", normalized_contract)
-        self.assertIn("large external planning document", normalized_contract)
-        self.assertIn("zero children", normalized_contract)
+        self.assertIn("Never reuse or renumber an ID", normalized_contract)
+        self.assertIn("`map.md` owns the current state", normalized_contract)
+        self.assertIn("`map.md` alone is a complete and valid", normalized_contract)
+        self.assertIn("Do not turn every source read or test run into an E#", normalized_contract)
 
     def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())

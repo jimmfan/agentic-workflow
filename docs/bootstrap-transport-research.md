@@ -14,7 +14,7 @@ The immediate archive-limit design remains a separate decision; the narrowest
 current-code option is to distinguish package-entry limits from a larger,
 streamed whole-archive parsing limit. That transitional design was subsequently
 accepted and is recorded in
-[ADR-0019](decisions/0019-scope-bootstrap-limits-to-the-distributable-package.md).
+[ADR-0019](../architecture-decisions/0019-scope-bootstrap-limits-to-the-distributable-package.md).
 
 A package-only GitHub Release asset is the strongest future replacement for
 the full-repository source archive, but it is not the smallest safe change now.
@@ -46,7 +46,7 @@ installed the core and four local workflow skills, then correctly warned that
 the optional provider projection could not be installed because
 `bundled provider snapshot checksum differs from the declaration`. The package
 therefore cannot currently preserve the complete routed provider behavior required by
-[ADR-0020](decisions/0020-own-the-declared-provider-projection.md).
+[ADR-0020](../architecture-decisions/0020-own-the-declared-provider-projection.md).
 
 Do not replace bootstrap with `gh skill` unless either GitHub CLI gains a mode
 that injects metadata only into the selected skill's root manifest, or Agentic

@@ -57,8 +57,9 @@ pointer before resuming the decision; never let teaching decide it.
 
 ## Provider identity boundary
 
-Local Wayfinder U#/D#/T# identifiers are canonical only inside their configured
-effort and must not be wrapped in `DEC`, `IMP`, `TKT`, `UNK`, or another alias.
+Local Wayfinder U#/E#/F#/D# identifiers are canonical only inside their
+configured effort and must not be wrapped in `DEC`, `IMP`, `TKT`, `UNK`, or
+another alias.
 Preserve any referenced external issue IDs, URLs, linked titles, and
 `wayfinder:*` labels unchanged. Jira and GitHub identifiers remain external
 tracker identities; this framework neither synchronizes them nor creates a

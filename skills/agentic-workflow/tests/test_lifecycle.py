@@ -749,8 +749,10 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(skill_text.count(WAYFINDER_ADAPTER_END), 1)
         self.assertIn("The only canonical local representation", skill_text)
         normalized_skill = " ".join(skill_text.split())
-        self.assertIn("never force U# -> D# -> T# as ceremony", normalized_skill)
-        self.assertIn("never renumber an existing ID to remap it", normalized_skill)
+        self.assertIn("never force U# -> E# -> F# -> D# as ceremony", normalized_skill)
+        self.assertIn("never reuse or renumber an ID", normalized_skill)
+        self.assertIn("Do not create new Wayfinder `tickets/T#`", normalized_skill)
+        self.assertIn("`map.md` alone is valid", normalized_skill)
         self.assertIn("Keep the map self-contained", normalized_skill)
         self.assertIn(
             "disable-model-invocation: false",

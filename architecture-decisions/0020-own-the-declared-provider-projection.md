@@ -2,10 +2,10 @@
 
 - Status: accepted
 - Date: 2026-08-17
-- Last amended: 2026-08-17
+- Last amended: 2026-08-18
 - Supersedes: ADR-0014, ADR-0015, ADR-0017, and ADR-0018
 - Amends: ADR-0007, ADR-0010, ADR-0011, and ADR-0013
-- Related: ADR-0021
+- Related: ADR-0021 and ADR-0022
 
 ## Context
 
@@ -65,11 +65,13 @@ and the exact retained path, but does not falsely report that the committed
 target mutation failed.
 
 The Wayfinder adapter keeps the upstream planning method while making the local
-contract authoritative. Upstream decision and investigation tickets map to U#;
-T# is reserved for concrete executable work, and existing IDs are never
-renumbered to change classification. The map stays the self-contained
-coordination/re-entry point and links to canonical specifications, research,
-ADRs, code, tests, and evidence rather than copying or outsourcing its state.
+contract authoritative. It maps consequential unresolved questions to U# and
+recognizes optional E#, F#, and D# knowledge while keeping `map.md` valid alone.
+The map stays the self-contained coordination/re-entry point and owns current
+state, blockers, dependencies, and next work. The adapter prevents new T# state;
+substantial decomposition passes to native `to-tickets` artifacts without a
+shadow copy. Canonical specifications, research, ADRs, code, tests, and evidence
+remain linked rather than copied.
 
 The invocation adapters make Wayfinder, To Spec, To Tickets, and Implement
 model-invocable on Codex and GitHub Copilot. Setup, Teach, and Triage remain

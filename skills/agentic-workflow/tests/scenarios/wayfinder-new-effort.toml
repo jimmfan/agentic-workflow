@@ -17,7 +17,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = false
-verification_command = "Validate that the resulting repository-local planning state preserves the destination, decisions, unknowns, and executable work without creating a global active file or parallel copy."
+verification_command = "Validate that the resulting repository-local planning state preserves the destination, current state, blockers, decisions, unknowns, and next work without creating Wayfinder tickets, a global active file, or a parallel copy."
 preserve_paths = []
 forbid_created_globs = [
   ".agent-workflow-state/active.md",
@@ -43,6 +43,8 @@ forbid_created_globs = [
   "planning/**",
   "wayfinder",
   "wayfinder/**",
+  ".agent-workflow-state/wayfinder/platform-migration/tickets",
+  ".agent-workflow-state/wayfinder/platform-migration/tickets/**",
 ]
 
 [[assertions]]
@@ -58,6 +60,21 @@ value = "## Destination"
 kind = "path_contains"
 path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
 value = "## Notes"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Current state"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Blockers and dependencies"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Next work"
 
 [[assertions]]
 kind = "path_contains"
@@ -87,7 +104,7 @@ value = "U1"
 [[assertions]]
 kind = "path_contains"
 path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
-value = "T1"
+value = "consumer"
 
 [[assertions]]
 kind = "path_not_contains"
@@ -122,12 +139,7 @@ value = "downtime"
 [[assertions]]
 kind = "glob_count"
 path = ".agent-workflow-state/wayfinder/platform-migration/tickets/T*.md"
-count = 1
-
-[[assertions]]
-kind = "glob_contains"
-path = ".agent-workflow-state/wayfinder/platform-migration/tickets/T1-*.md"
-value = "consumer"
+count = 0
 
 [[assertions]]
 kind = "path_not_exists"

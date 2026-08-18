@@ -75,8 +75,9 @@ flowchart LR
     state -.-> wfstate["wayfinder/effort-name-placeholder/"]
     wfstate -.-> map["map.md"]
     wfstate -.-> unknowns["unknowns/U#.md"]
+    wfstate -.-> evidence["evidence/E#.md"]
+    wfstate -.-> facts["facts/F#.md"]
     wfstate -.-> decisions["decisions/D#.md"]
-    wfstate -.-> tickets["tickets/T#.md"]
 
     state -.-> records["records/"]
 ```
@@ -140,13 +141,18 @@ A Wayfinder effort can look like:
         ├── map.md
         ├── unknowns/
         │   └── U1-example.md
-        ├── decisions/
-        │   └── D1-example.md
-        └── tickets/
-            └── T1-example.md
+        ├── evidence/
+        │   └── E1-example.md
+        ├── facts/
+        │   └── F1-example.md
+        └── decisions/
+            └── D1-example.md
 ```
 
-`map.md` stays intentionally low-resolution. It provides enough context to identify the current state of the effort and locate relevant detail.
+`map.md` stays intentionally low-resolution. It owns current state, blockers,
+dependencies, and next work, with enough context for a fresh session to locate
+only the relevant detail. A simple effort is valid with `map.md` alone; all
+child directories are optional and created lazily.
 
 Child files are loaded only when needed.
 
@@ -155,26 +161,27 @@ narrow, fingerprinted provider adapter makes this Git-native tree authoritative
 over upstream tracker mechanics when Agentic Workflow local mode is active. In
 that mode no issue tracker or `.scratch/` copy is required.
 
-The common relationship is:
+The vocabulary is:
 
 ```text
-Unknown
-   ↓
-Investigation
-   ↓
-Decision
-   ↓
-Work
-   ↓
-New information
-   ├── continue
-   ├── create another unknown
-   └── reconsider an earlier decision
+unknown  = an unresolved consequential question
+evidence = a scoped observation or finding with provenance
+fact     = a sufficiently established descriptive conclusion
+decision = a committed choice
 ```
 
-This is not a mandatory pipeline. A sharp investigation or decision question is
-U#, its evidence may resolve without a durable D#, a D# may require no T#, and
-T# exists only for concrete executable work when decomposition is useful.
+This is not a mandatory pipeline. Small facts and observations stay in the map;
+U#/E#/F#/D# files exist only when independent preservation adds value. Facts
+link their evidence or direct authoritative sources, while conflicting evidence
+marks a fact disputed until it is reconciled.
+
+Wayfinder does not create T# work items. One coherent next action can pass from
+the map directly to implementation. Work that needs dependency ordering or
+separately deliverable sessions goes through `to-tickets`, whose native tickets
+remain canonical and are linked from the map without a shadow copy. Older T#
+files are preserved as project data but require manual map migration before
+resuming under the current contract.
+
 Debugging, Research, Prototype, Grilling, Domain Modeling, human clarification,
 or Implementation may resolve or consume an item without taking ownership of
 the map.
@@ -264,8 +271,9 @@ target-project/
         └── <effort>/
             ├── map.md
             ├── unknowns/
-            ├── decisions/
-            └── tickets/
+            ├── evidence/
+            ├── facts/
+            └── decisions/
 ```
 
 ### `.agent-workflow/`

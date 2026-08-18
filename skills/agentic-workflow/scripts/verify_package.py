@@ -229,13 +229,18 @@ def check_router_contract() -> None:
     )
     for required in (
         "unknowns/",
+        "evidence/",
+        "facts/",
         "decisions/",
-        "tickets/",
-        "Do not read every child file",
+        "`map.md` alone is a complete and valid Wayfinder effort",
+        "Do not read every",
         "Do not create or update `.agent-workflow-state/active.md`",
-        "force every U# to produce a D# or every D# to produce a T#",
-        "Wayfinder owns durable coordination, not an execution monopoly",
-        "either capability ceremonially",
+        "Facts must link",
+        "reciprocal backlinks",
+        "mark the F# `disputed`",
+        "review dependent decisions",
+        "Older `tickets/T#` artifacts are outside this contract",
+        "Use `to-tickets` only when clear work benefits from dependency ordering",
     ):
         require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")
     combined = agents + routing + durable + wayfinder

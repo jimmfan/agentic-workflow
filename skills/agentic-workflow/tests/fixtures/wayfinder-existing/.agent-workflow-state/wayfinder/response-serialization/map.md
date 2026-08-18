@@ -5,10 +5,22 @@
 The service has an accepted response format and an executable path to implement
 it without inventing unresolved telemetry policy.
 
+## Current state
+
+- [D1 — Use compact sorted JSON](decisions/D1-use-compact-sorted-json.md) is accepted.
+- [U1 — Name the telemetry metric](unknowns/U1-name-telemetry-metric.md) remains unresolved and does not constrain response serialization.
+
+## Blockers and dependencies
+
+None. D1 settles the only dependency for the current implementation slice.
+
+## Next work
+
+- Implement `serialize_payload` in `service.py` using D1, then run `python verify.py`.
+
 ## Notes
 
-- Next executable work: [T1 — Serialize public responses](tickets/T1-serialize-public-responses.md).
-- Preserve [U1 — Name the telemetry metric](unknowns/U1-name-telemetry-metric.md); it is explicitly non-blocking for T1.
+- Preserve U1; telemetry naming is explicitly non-blocking for this work.
 
 ## Decisions so far
 

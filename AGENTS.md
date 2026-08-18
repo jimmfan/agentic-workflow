@@ -149,7 +149,7 @@ Keep the project centered on this boundary. Do not expand it into a general agen
 
 Start with the documentation most relevant to the task. Expand the investigation when a change is cross-cutting, evidence conflicts, or ownership is unclear.
 
-* Architecture, ownership, providers, or state: `docs/architecture.md` and applicable records under `/`
+* Architecture, ownership, providers, or state: `docs/architecture.md` and applicable records under `architecture-decisions/`
 * Routing and workflow composition: `docs/routing.md`
 * Provider evaluation or upgrades: `docs/provider-research.md` and `skills/agentic-workflow/payload/agent-workflow/providers.json`
 * Installation and release verification: `docs/verification.md`
@@ -157,7 +157,7 @@ Start with the documentation most relevant to the task. Expand the investigation
 * Packaged skill behavior: `skills/agentic-workflow/SKILL.md`
 * Consuming-project policy: `skills/agentic-workflow/payload/root/AGENTS.md.template`
 
-`/` is this source repository's canonical ADR namespace. It holds
+`architecture-decisions/` is this source repository's canonical ADR namespace. It holds
 accepted, lasting architecture or contract decisions; project-owned
 `DEC-NNNN` and effort-scoped Wayfinder `D#` records remain workflow state and
 link to the applicable ADR when a decision is promoted.
@@ -221,9 +221,9 @@ Do not create shadow tickets, unknowns, decisions, specifications, learning reco
 
 The configured local Wayfinder representation under
 `.agent-workflow-state/wayfinder/` is canonical project-owned state, not a shadow
-copy of an upstream tracker. Its U#/D#/T# files follow the dedicated installed
-contract, and its map is the effort's re-entry point. The framework has no
-global active index.
+copy of an upstream tracker. Its sparse child knowledge follows the dedicated
+installed contract, and its map is the effort's re-entry point. The framework
+has no global active index.
 
 Repository artifacts and accepted project state outrank chat recollection or private agent memory.
 

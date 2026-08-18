@@ -25,10 +25,10 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_thirteen_contracts_and_seven_live_smokes(self) -> None:
+    def test_catalog_has_fourteen_contracts_and_eight_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 13)
-        self.assertEqual(sum(scenario.live for scenario in scenarios), 7)
+        self.assertEqual(len(scenarios), 14)
+        self.assertEqual(sum(scenario.live for scenario in scenarios), 8)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
             {
@@ -44,6 +44,7 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-read-only-stale-state",
                 "wayfinder-reconciliation-conflict",
                 "wayfinder-new-effort",
+                "wayfinder-fact-conflict",
                 "unrelated-wayfinder-state",
             },
         )
@@ -260,6 +261,53 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertNotIn("claim_unexecuted_provider", scenario.must_not)
         self.assertIn("unresolved ordering", request)
         self.assertIn("while part of the plan is blocked", request)
+        ticket_assertion = next(
+            item
+            for item in scenario.assertions
+            if item.kind == "glob_count" and "/tickets/T" in item.path.as_posix()
+        )
+        self.assertEqual(ticket_assertion.count, 0)
+        self.assertTrue(
+            any("/tickets" in pattern for pattern in scenario.forbid_created_globs)
+        )
+
+    def test_wayfinder_fact_conflict_exercises_evidence_fact_and_decision_boundaries(self) -> None:
+        scenario = next(
+            item for item in behavior.load_scenarios() if item.id == "wayfinder-fact-conflict"
+        )
+        self.assertTrue(scenario.live)
+        self.assertIn(
+            ".agent-workflow-state/wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+            {path.as_posix() for path in scenario.preserve_paths},
+        )
+        counts = {
+            item.path.as_posix(): item.count
+            for item in scenario.assertions
+            if item.kind == "glob_count"
+        }
+        self.assertEqual(
+            counts[".agent-workflow-state/wayfinder/deployment-mode/evidence/E*.md"], 2
+        )
+        self.assertEqual(
+            counts[".agent-workflow-state/wayfinder/deployment-mode/unknowns/U*.md"], 1
+        )
+        required_values = {
+            item.value
+            for item in scenario.assertions
+            if item.kind in {"glob_contains", "path_contains"}
+        }
+        self.assertTrue(
+            {
+                "Source: config.txt",
+                "Scope: current deployment configuration",
+                "## Limitations",
+                "- Status: open",
+                "- Contradicted by: E2",
+                "F1 is disputed",
+                "review D1",
+            }
+            <= required_values
+        )
 
     def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(self) -> None:
         scenario = next(

@@ -98,12 +98,13 @@ so far, Not yet specified, and Out of scope; it loads child decision tickets on
 demand and derives the frontier from open, unblocked, unclaimed children. Its
 default local-Markdown tracker stores those artifacts below `.scratch/`.
 Agentic Workflow deliberately configures its canonical local representation
-under `.agent-workflow-state/wayfinder/` instead, with stable U#/D#/T# children and
-the map itself as the re-entry point. Decision and investigation questions map
-to U#, durable project choices map to D#, and concrete executable work maps to
-T# only when it exists. This is a storage, re-entry, and item-lifecycle
-adaptation, not a copied planning method or provider fork; see ADR-0011 and
-ADR-0020.
+under `.agent-workflow-state/wayfinder/` instead, with the map itself as the
+re-entry point and optional U#/E#/F#/D# knowledge. The map owns current state,
+blockers, dependencies, and next work. Substantial decomposition passes to the
+native `to-tickets` output without a shadow copy. Older T# state requires manual
+map migration before resume. This is a storage, re-entry, and item-lifecycle
+adaptation, not a copied planning method or provider fork; see ADR-0011,
+ADR-0020, and ADR-0022.
 
 The pinned upstream Wayfinder metadata disables model invocation in `SKILL.md`
 and `agents/openai.yaml`, while its discovery descriptions retain the upstream

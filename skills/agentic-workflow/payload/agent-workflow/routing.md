@@ -65,8 +65,8 @@ Resume only relevant work. A named durable record or Wayfinder effort selects
 that exact re-entry point; a likely but unnamed resume justifies the minimum
 inspection needed to identify it. An unrelated record or map never captures the
 route, and confidently unrelated work does not scan durable state. An
-implementation may consume a settled Wayfinder D#/T# without rerunning
-Wayfinder.
+implementation may consume a coherent Wayfinder map scope, settled D#, or native
+ticket without rerunning Wayfinder.
 
 After Wayfinder selection or relevant resume, load
 `contracts/wayfinder-state.md` before the map and only the child files needed for

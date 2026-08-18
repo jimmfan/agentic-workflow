@@ -12,16 +12,17 @@ methodology. Upstream `implement` owns the build loop, its appropriate use of
 ## Establish the boundary
 
 1. Read the project profile, applicable accepted decisions, and the canonical
-   spec or ticket artifact. The workflow that created that durable artifact owns
-   its canonical location; consume it by reference instead of copying it into a
-   framework path. On resume, validate the named `IMP` record and its provider
-   artifact before continuing at the record's exact `Resume target`.
+   map, spec, or ticket artifact. The workflow that created that durable artifact
+   owns its canonical location; consume it by reference instead of copying it
+   into a framework path. On resume, validate the named `IMP` record and its
+   provider artifact before continuing at the record's exact `Resume target`.
 2. Return a material unresolved choice to `workflow-discovery` and an
    unexplained existing failure to `workflow-debugging`.
-3. Use one coherent ready scope. If substantial work needs dependency-ordered
-   sessions, select upstream `to-tickets` first, apply its host invocation policy,
-   and use its native ticket identities unchanged after it actually runs. Do not
-   create shadow framework tickets.
+3. Use one coherent ready scope, including `map.md` Next work when it is
+   sufficient. If substantial work needs dependency-ordered sessions, select
+   upstream `to-tickets` first, apply its host invocation policy, and use its
+   native ticket identities unchanged after it actually runs. Do not create
+   shadow framework tickets.
 4. Do not create an `IMP-NNNN` record merely because Implementation or a
    provider handoff was selected. After execution begins, create one only when
    orchestration must survive sessions and repository writes are authorized.

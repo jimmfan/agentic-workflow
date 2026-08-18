@@ -45,8 +45,9 @@ Durable workflows resume from their canonical record or map when persistence is
 useful. Supporting Research, TDD, Verification, or Code Review does not create a
 second continuity record. Provider-native tickets, specifications, research,
 and learning artifacts remain canonical; framework records store only concise
-orchestration pointers. Local Wayfinder maps and U#/D#/T# children live under
-`.agent-workflow-state/wayfinder/` and use the effort map for re-entry.
+orchestration pointers. Local Wayfinder maps and optional U#/E#/F#/D# knowledge
+live under `.agent-workflow-state/wayfinder/` and use the effort map for
+re-entry.
 
 A required response marker such as
 `[route: router -> discovery -> research]` provides sufficient v0 route
@@ -65,7 +66,7 @@ PROJECT-OWNED, DURABLE
     ├── project-profile.md      # optional
     ├── records/                # optional
     ├── archive/                # optional
-    └── wayfinder/              # optional canonical local maps and U#/D#/T# state
+    └── wayfinder/              # optional map-first U#/E#/F#/D# knowledge state
 
 OPTIONAL, INDEPENDENT
 └── upstream provider directories under .agents/skills/
@@ -164,7 +165,10 @@ clearly delimited local-mode section precedes the unchanged provider method and
 adapts its configured storage, re-entry, and item lifecycle: low-resolution
 maps, fog of war, named links, and dependency-derived frontier semantics remain
 provider-aligned, while local persistence moves from the provider's default
-`.scratch/` tracker to project-owned U#/D#/T# state. The same adapter changes
+`.scratch/` tracker to project-owned map-first U#/E#/F#/D# state. `map.md` owns
+current state, blockers, dependencies, and next work; substantial decomposition
+passes to `to-tickets` without a shadow T#. Older T# state requires manual map
+migration before resume. The same adapter changes
 Wayfinder's host invocation flags and discovery descriptions so Codex and
 GitHub Copilot may select it implicitly at the framework's notebook threshold.
 This remains a narrow integration boundary because Agentic Workflow owns
@@ -263,9 +267,10 @@ project profile is only an advisory cache. All of these outrank private agent
 memory and chat recollection.
 
 See [Workflow routing](routing.md), [Verification](verification.md), and
-[ADR-0010](decisions/0010-separate-lifecycle-safety-and-reconciliation.md) plus
-[ADR-0011](decisions/0011-use-project-owned-wayfinder-state.md),
-[ADR-0012](decisions/0012-remove-global-active-index.md),
-[ADR-0013](decisions/0013-enable-automatic-wayfinder-routing.md), and
-[ADR-0020](decisions/0020-own-the-declared-provider-projection.md), plus
-[ADR-0016](decisions/0016-reconcile-relevant-wayfinder-state-at-completion.md).
+[ADR-0010](../architecture-decisions/0010-separate-lifecycle-safety-and-reconciliation.md) plus
+[ADR-0011](../architecture-decisions/0011-use-project-owned-wayfinder-state.md),
+[ADR-0012](../architecture-decisions/0012-remove-global-active-index.md),
+[ADR-0013](../architecture-decisions/0013-enable-automatic-wayfinder-routing.md), and
+[ADR-0020](../architecture-decisions/0020-own-the-declared-provider-projection.md), plus
+[ADR-0016](../architecture-decisions/0016-reconcile-relevant-wayfinder-state-at-completion.md) and
+[ADR-0022](../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md).

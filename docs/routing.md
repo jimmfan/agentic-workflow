@@ -61,13 +61,15 @@ Provider-native tickets, specifications, research, reviews, and learning
 artifacts remain canonical; the framework does not mirror them. Local Wayfinder
 uses the configured canonical tree under `.agent-workflow-state/wayfinder/` and its
 effort map as the re-entry point. A narrow provider adapter makes that local
-tree and its U#/D#/T# ontology authoritative over incompatible tracker mechanics
-in the pinned method body while leaving the upstream reasoning method intact.
+tree and its sparse U#/E#/F#/D# knowledge model authoritative over incompatible
+tracker mechanics in the pinned method body while leaving the upstream reasoning
+method intact. The map owns current state, blockers, dependencies, and next work;
+new decomposed work belongs to native `to-tickets` output.
 Other durable workflows resume from their
 canonical DEC, IMP, or DBG record; there is no global active index. The router
 loads that dedicated contract only
 after Wayfinder is selected or a relevant effort is being resumed, then reads
-the map and only relevant U#/D#/T# children. An unrelated existing map never
+the map and only relevant U#/E#/F#/D# children. An unrelated existing map never
 changes a request's route. Diagnosis, review, explanation, and audit requests
 stay read-only unless the user separately authorizes mutation.
 

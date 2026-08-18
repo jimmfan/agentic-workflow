@@ -2,27 +2,44 @@
 
 Use this contract only when Wayfinder is selected, including a justified
 mid-task escalation, or a request continues a relevant local Wayfinder effort.
-The existence of any effort under
-`.agent-workflow-state/wayfinder/` is not itself a routing signal. Clear, bounded,
-or unrelated work stays on its minimum useful route and does not read or create
-Wayfinder state.
+The existence of an effort under `.agent-workflow-state/wayfinder/` is not a
+routing signal. Clear, bounded, or unrelated work stays on its minimum useful
+route and does not read or create Wayfinder state.
 
 Upstream Wayfinder supplies the planning method: orient around a destination,
 keep the map low resolution, represent fog honestly, resolve consequential
 uncertainty incrementally, and zoom into detail only when needed. Agentic
-Workflow supplies an authoritative local-mode adapter plus the configured
-Git-native representation below. This representation is canonical local
-Wayfinder data, not a framework mirror of an issue tracker.
-Do not create a second copy under `.scratch/`, another planning directory, or an
-external tracker. Do not create or update `.agent-workflow-state/active.md` for a
-Wayfinder effort.
+Workflow supplies the canonical Git-native representation below. It is durable
+project knowledge and coordination state, not an issue tracker and not a mirror
+of `.scratch/` or an external tracker.
+Do not create or update `.agent-workflow-state/active.md`; the effort map is the
+only re-entry point.
 
-Keep `map.md` self-contained as the effort's coordination and re-entry point.
-Do not point it at a large external planning document that holds the effort's
-questions, evidence, decisions, or frontier; that document would be acting as a
-second map. Canonical specifications, research, ADRs, source, tests, and other
-evidence stay in their owning locations and are linked from the map rather than
-copied into Wayfinder.
+## Responsibility boundary
+
+Wayfinder may preserve four kinds of durable knowledge:
+
+- `unknown`: an unresolved question that materially affects the destination;
+- `evidence`: an observation, measurement, report, or source finding, including
+  its provenance, scope, and limitations;
+- `fact`: a sufficiently established descriptive conclusion, scoped to the
+  evidence available now; and
+- `decision`: a committed choice made under the project's authority.
+
+These are distinctions, not a mandatory pipeline. Evidence may leave an
+unknown unresolved, a fact may require no decision, and a decision may be made
+under uncertainty without manufacturing a fact.
+
+`map.md` owns the current state, blockers, dependencies, and next work. It is
+the effort's coordination and re-entry point. Keep enough information there for
+a fresh session to choose the next relevant detail without loading every child.
+
+When ready work becomes substantial enough to need dependency ordering or
+independently deliverable sessions, hand it to `to-tickets`. That workflow owns
+its native ticket artifacts and frontier. Wayfinder links the resulting native
+artifact from `map.md`; it does not create a shadow T# copy. Work that fits one
+coherent implementation session can pass directly from the map, a settled D#,
+or another accepted specification to implementation.
 
 ## Ownership and locations
 
@@ -33,62 +50,29 @@ All paths below are project-owned durable data:
 └── wayfinder/
     └── <effort>/
         ├── map.md
-        ├── unknowns/
-        │   └── U1-<slug>.md
-        ├── decisions/
-        │   └── D1-<slug>.md
-        └── tickets/
-            └── T1-<slug>.md
+        ├── unknowns/       # optional U# files
+        ├── evidence/       # optional E# files
+        ├── facts/          # optional F# files
+        └── decisions/      # optional D# files
 ```
+
+`map.md` alone is a complete and valid Wayfinder effort. Create each child
+directory lazily with its first item, and create an item only when preserving it
+independently has real value. Short-lived observations, obvious repository
+facts, and one-line conclusions normally stay as concise map notes or links.
+Do not turn every source read or test run into an E# and do not extract every
+stable sentence into an F#.
 
 Create an effort only when repository writes are authorized and structured
 durable notes materially reduce the risk of losing or conflating important
-state. Ordinary authorized project work may create or update this selected
-workflow's project-owned state without a second request for permission. A
-read-only analysis, audit, diagnosis, review, `do not change files` instruction,
-or equivalent restriction never authorizes a Wayfinder state write.
+state. A read-only analysis, audit, diagnosis, review, `do not change files`
+instruction, or equivalent restriction never authorizes a Wayfinder state
+write.
 
-A task need not already be multi-session. Create child directories lazily with
-their first item; Git does not preserve empty directories. Install, update,
-status, remove, and reinstall never seed, inventory, checksum, validate,
-migrate, rewrite, or remove this state.
-
-The effort directory name is a short stable slug. Do not silently merge two
-efforts, rename an effort that another session may reference, or reuse an old
-effort directory for a different destination.
-
-## Scoped reconciliation at completion
-
-During authorized mutating work, an existing effort is relevant when the
-request or progressively loaded context connects the work to that effort. If
-the work materially changes a fact, decision, dependency, status, result, or
-next action represented there, reconciling the affected map and U/D/T files is
-part of completing the work. It needs no separate user request. Merely changing
-files does not require creating a new effort or discovering whether an
-unmentioned effort might exist.
-
-Do not globally scan Wayfinder state to look for possible relationships. Use
-the normal routing and progressive-loading rules to identify the relevant
-effort, then reread its map and only the directly affected children before the
-completion claim. Compare them with authoritative code, ADRs, documentation,
-tests, and evaluation results. Update only stale coordination facts such as an
-affected item status or result, a concise evidence pointer or gist, a dependency,
-or the map's next-work summary. Do not normalize unchanged files, resolve
-unaffected questions, or rewrite another effort.
-
-Canonical artifacts keep ownership of their content. Wayfinder records a
-concise link and the minimum coordination consequence instead of copying an
-implementation, decision rationale, test result, report, or specification. No
-hook, background process, global index, synchronization service, or lifecycle
-machinery is implied by this completion rule; the acting agent performs the
-bounded reconciliation as part of the authorized work.
-
-Read-only analysis, audit, diagnosis, review, or status work never performs
-reconciliation writes. It reports the exact stale file or claim and points to
-the authoritative evidence instead. If conflicting edits or insufficient
-evidence prevent truthful reconciliation during mutating work, preserve the
-state, report the specific blocker, and do not claim the affected work fully
-complete.
+Install, update, status, remove, and reinstall never seed, inventory, checksum,
+validate, migrate, rewrite, or remove Wayfinder state. The effort directory is a
+short stable slug. Do not silently merge two efforts, rename one another session
+may reference, or reuse an old effort for a different destination.
 
 ## Progressive loading
 
@@ -96,200 +80,237 @@ complete.
    direct or unrelated work.
 2. When the request names an effort, use that exact safe repository-relative
    path. For a likely resume without an exact path, list effort directory names
-   and read only the smallest set of `map.md` files needed to identify the
-   relevant effort. If relevance remains ambiguous, ask rather than combining
-   efforts.
-3. Read the relevant `map.md` as the low-resolution session orientation.
-4. Follow its links and the user's target to load only the U/D/T files needed
-   for the current question or executable work. Do not read every child file.
-5. When choosing frontier work, inspect filenames plus concise status and
-   dependency lines across plausible candidates; load a full child body only
-   after it is relevant. Derive the frontier from current item state and
-   dependencies rather than persisting a separate frontier file.
+   and read only the smallest set of maps needed to identify the effort.
+3. Read the relevant `map.md` as the low-resolution orientation.
+4. Follow only links needed for the current question or work. Do not read every
+   U/E/F/D child.
+5. Derive the current frontier from the map and any linked native ticket source;
+   do not persist a second frontier or global active index.
 
-An implementation request may consume a relevant map, decision, and ticket
-without rerunning Wayfinder. A new unknown discovered during implementation may
-return the effort to Wayfinder only when it materially obscures the destination;
-ordinary implementation detail stays in the implementation route.
+An implementation request may consume a coherent next-work scope from the map,
+a settled decision or specification, or a native ticket without rerunning
+Wayfinder. A new unknown returns work to Wayfinder only when it
+materially obscures the destination; ordinary implementation detail stays in
+implementation.
 
-## Identifiers and relationships
+## Identifiers and links
 
-- `U#` is an unresolved question that materially affects the destination.
-- `D#` is a durable project decision.
-- `T#` is concrete executable work.
-- Upstream Wayfinder tickets are decision or investigation questions unless
-  their resolution is concrete executable work. Map the former to U# even when
-  upstream calls them tasks. Use T# only for executable work, often linked to
-  the U# it unblocks.
-- Resolving a U# updates its evidence, resolution, and status. Create or update
-  a D# only when the result is a durable project decision. Create a T# only when
-  a concrete executable outcome exists and decomposition adds value. Never
-  force every U# to produce a D# or every D# to produce a T#.
-- The U#/T# distinction governs newly created local items; it is not a reason to
-  renumber an existing item. Assign the next unused positive number for that
-  type within the effort. Never reuse an ID, and never change it when a title,
-  slug, or classification changes.
-- Use repository-relative Markdown links and concise `Related` or `Blocked by`
-  lines for many-to-many relationships. Refer to an item with both its stable ID
-  and readable title, for example `D2 — Keep compact JSON` linked to
-  `decisions/D2-compact-json.md`.
-- Git is the history mechanism. Do not add an event log, revision files, or a
-  second versioning scheme.
+Use stable, per-type positive identifiers within an effort: `U#`, `E#`, `F#`,
+and `D#`. Assign one greater than the highest existing ID of that type. Never
+reuse or renumber an ID when its title, slug, status, or interpretation changes.
 
-Before writing, reread the target file and the relevant map. Never overwrite a
-newly appeared ID. If concurrent edits disagree, preserve both sets of evidence
-and reconcile the Markdown explicitly rather than choosing silently.
+Use repository-relative Markdown links and readable titles. Facts must link the
+evidence artifacts or direct authoritative sources that justify them. Evidence
+may optionally name facts it supports or contradicts, but reciprocal backlinks
+are not required; requiring both directions creates synchronization work without
+improving provenance. Decisions should link the facts, evidence, unknowns, ADRs,
+or policies that materially constrained the choice.
+
+Git is the history mechanism. Do not add an event log, revision files, a graph
+index, or another versioning scheme.
+
+Before writing, reread the target and map. Never overwrite a newly appeared ID.
+If concurrent edits disagree, preserve both claims and reconcile explicitly
+rather than choosing silently.
 
 ## The low-resolution map
 
-`map.md` is an index and orientation aid, not the store for detailed reasoning.
-Keep these Wayfinder headings, adding only concise links and gists:
+Use these headings as a compact authoring default, not a strict schema. Preserve
+clear existing human content instead of normalizing it for ceremony.
 
 ```markdown
 # <Effort name>
 
 ## Destination
 
-<One or two lines describing what it means for the route to be clear.>
+<What it means for the route to be clear.>
+
+## Current state
+
+<Concise established state and links to independently useful U/E/F/D detail.>
+
+## Blockers and dependencies
+
+<What prevents progress, what depends on what, and any recovery condition.>
+
+## Next work
+
+<The smallest coherent next action or linked native ticket frontier.>
 
 ## Notes
 
-<Standing constraints, relevant U#/D#/T links, and useful skills or evidence.>
+<Standing constraints and useful canonical links.>
 
 ## Decisions so far
 
-- D1 — <title> (`decisions/D1-<slug>.md`) — <one-line gist; make the title a link>
+- D1 — Title (`decisions/D1-title.md`) — one-line gist
 
 ## Not yet specified
 
-<Fog of war that is in scope but not yet sharp enough to state as a U#.>
+<In-scope fog not yet sharp enough to state as a U#.>
 
 ## Out of scope
 
 <Explicit boundaries beyond this destination.>
 ```
 
-Keep a new map lightweight. Its initial Notes may contain only concise known
-facts, unknowns, blockers, assumptions, and work that can proceed, while empty
-or still-foggy sections remain short. Add U#/D#/T# children only when a sharp
-question, durable decision, or executable outcome actually exists; the map
-grows with the problem rather than anticipating ceremony.
+The map may summarize small facts and evidence inline. Promote detail to a child
+only when it is likely to be reused, disputed, independently revised, too large
+for low-resolution orientation, or important enough to require provenance.
+Prioritize one coherent next action; list parallel work only when the dependency
+structure makes it genuinely useful. If work has been decomposed by
+`to-tickets`, link its canonical frontier rather than restating every ticket.
 
-A new map may legitimately have zero children while its fog is still being
-sharpened. A mature map that points to an external planning document and still
-has no U# or T# children is unfinished, not minimal: the decomposition has not
-actually happened.
+A precise material question belongs in U#; vague fog stays under `Not yet
+specified` until it can be asked sharply. Out-of-scope work does not become next
+work unless the destination is deliberately redrawn.
 
-Link details instead of restating them. A precise material question belongs in
-an unknown file, not in `Not yet specified`; fog stays on the map until the
-question can be stated sharply. Out-of-scope work does not graduate into the
-frontier unless the destination is deliberately redrawn.
+## Optional child files
 
-## Child files
+These are permissive authoring shapes, not lifecycle schemas. Omit inapplicable
+fields and rename headings when clarity improves.
 
-These are authoring shapes, not lifecycle schemas. Omit inapplicable fields,
-rename headings when clarity improves, and use readable existing human content
-rather than rejecting a file for format differences.
-
-An unknown records the question, useful evidence, and how it may be resolved:
+Use U# when a question is consequential enough to track independently:
 
 ```markdown
-# U1: <Question title>
+# U1: <Question>
 
 - Status: open | resolved
-- Resolution mode: research | prototype | grilling | human clarification | direct
+- Resolution mode: research | prototype | debugging | human clarification | direct
 - Blocked by: none
 - Related: none
 
-## Question
+## Why it matters
 
-<The precise uncertainty and why it materially affects the destination.>
+<How the answer changes the destination, a decision, or next work.>
 
-## Evidence
+## Evidence and resolution
 
-<Concise findings or links; do not paste research transcripts.>
-
-## Resolution
-
-<Leave open until resolved; link any resulting D# or explain why none is needed.>
+<Concise findings or links; when resolved, state the answer and resulting links.>
 ```
 
-A decision records the durable choice and its consequences:
+Use E# when an observation needs durable provenance, scope, limitations, or
+independent reuse:
 
 ```markdown
-# D1: <Decision title>
+# E1: <Observation or finding>
 
-- Related: U1, T1
+- Observed: YYYY-MM-DD
+- Source: <repository-relative link, command/result, or cited primary source>
+- Scope: <where this evidence applies>
+- Related: U1, F1
 
-## Decision
+## Finding
 
-<The current decision.>
+<What was observed, without promoting it beyond what the source establishes.>
 
-## Why
+## Limitations
 
-<Concise rationale and decisive evidence.>
+<Important uncertainty, sampling limits, or conflicting evidence.>
+```
 
-## Consequences
+Use F# when a descriptive conclusion is established enough to rely on across
+sessions and retaining its evidence chain matters:
 
-<Important effects and constraints.>
+```markdown
+# F1: <Established conclusion>
+
+- Status: current | disputed | stale
+- Scope: <where and when the conclusion applies>
+- Supported by: E1, <or direct authoritative source>
+- Contradicted by: none
+
+## Fact
+
+<The scoped conclusion.>
 
 ## Change note
 
-<Only when changed: what changed and why. Git retains the full history.>
+<Only when revised: what changed and why.>
 ```
 
-When a decision changes, update the same D# and add one brief change note. Do
-not create a competing D# merely to version the old answer. A resolved U# may
-link no D# when the answer is a fact, eliminates a path, or otherwise creates no
-durable choice worth preserving.
-
-A ticket records one concrete executable outcome after the route is sufficiently
-clear:
+Use D# for a committed choice, not for a descriptive conclusion:
 
 ```markdown
-# T1: <Executable outcome>
+# D1: <Choice>
 
-- Status: ready | blocked | in-progress | done
-- Blocked by: none
-- Related: D1
+- Status: accepted | superseded
+- Authority: <user, accepted policy, or canonical ADR>
+- Related: U1, F1
 
-## Outcome
+## Decision
 
-<The end-to-end behavior or result to deliver.>
+<The choice now in force.>
 
-## Acceptance
+## Why and consequences
 
-- <Observable completion criterion>
+<Decisive context, tradeoffs, and important constraints.>
+
+## Change note
+
+<Only when changed: what changed and why.>
 ```
 
-## Workflow boundaries
+A resolved U# need not create F# or D#. An E# need not create F#. A routine
+source read, transient command output, or fact obvious from current source does
+not deserve an E#. A conclusion used only to orient the current session does not
+deserve an F#. A preference, proposal, or agent assumption is not an accepted
+D# unless the user or project policy grants the necessary authority.
 
-The usual direction is `uncertainty -> U# -> evidence -> D# -> to-tickets ->
-T# -> implementation`, but it is not a rigid pipeline. One unknown may inform
-many decisions, a decision may need no ticket, and an unknown may resolve
-without creating a decision. Research, prototype, debugging, grilling, or human
-clarification may supply evidence without taking ownership of the map.
+## Contradictions and revision
 
-Wayfinder owns durable coordination, not an execution monopoly. A task may
-escalate from Debugging, Discovery, or another useful workflow into Wayfinder
-state while that specialized capability continues to resolve the relevant U#.
-Research and Prototype may create their own native evidence artifacts, but they
-link back rather than becoming a competing map. Implementation may consume a
-settled D# or T# without reopening the whole effort.
+Live source and current observed behavior outrank stale Wayfinder summaries.
+When newer or stronger evidence conflicts with a fact:
 
-Use Grilling and Domain Modeling while charting only when the destination,
-human preferences, domain language, or ownership boundaries genuinely require
-them. Grilling is human-in-the-loop and never answers for the user. Do not run
-either capability ceremonially for a clear mid-task escalation, a straightforward
-resume, or to make an evaluation observe a skill invocation.
+1. preserve the conflicting evidence and its provenance;
+2. if the conflict is unresolved, mark the F# `disputed`, open or reopen the
+   relevant U#, and surface the blocker in the map;
+3. if resolved, update the same F# with its current scope, supporting and
+   contradicting links, plus one concise change note; and
+4. review dependent decisions and next work, but do not silently change a
+   decision merely because its factual basis changed.
 
-Use `to-tickets` when clear work benefits from dependency-ordered or separately
-deliverable sessions. For this configured local representation, its canonical
-output is T# files under the effort; do not also publish `.scratch/` tickets.
-Pass only the map and relevant U#/D# context into ticketing. Implementation
-loads the selected T# and only the decisions or unknowns that constrain it.
+Use `stale` when a fact's scope or evidence no longer supports present use but
+the replacement conclusion is not yet established. A newer decision that is
+silent about a fact does not supersede that fact. A changed decision updates the
+same D# or points to the canonical superseding ADR; Git retains history.
 
-No Jira, external synchronization, automatic archival, schema migration,
-database, graph engine, or validation service belongs in this contract. A T#
-may contain a normal link to an external issue in the future, but the link does
-not change ownership or authorize external access or mutation.
+## Scoped reconciliation at completion
+
+During authorized mutating work, an existing effort is relevant when the
+request or progressively loaded context connects the work to it. If work
+materially changes a represented fact, decision, dependency, status, result, or
+next action, reconcile the affected map and only the directly affected children
+before claiming completion. This needs no separate request.
+
+Do not globally scan for related efforts. Compare the selected state with
+authoritative source, ADRs, documentation, tests, and results. Update concise
+coordination consequences and links; do not copy canonical artifact bodies,
+normalize unchanged files, or resolve unrelated questions. Read-only work
+reports the exact stale claim and authoritative evidence without writing.
+
+If conflicting edits or insufficient evidence prevent truthful reconciliation,
+preserve state, report the blocker, and do not claim the affected work fully
+complete. No hook, daemon, synchronization service, or lifecycle machinery is
+implied; the acting agent performs this bounded reconciliation.
+
+## Workflow and ticket boundaries
+
+Research, Prototype, Debugging, Grilling, Domain Modeling, or human clarification
+may supply evidence while Wayfinder retains durable coordination. Their native
+artifacts stay canonical and are linked rather than copied.
+
+Use `to-tickets` only when clear work benefits from dependency ordering or
+separately deliverable sessions. Pass the map and only relevant U/E/F/D context.
+The configured tracker or local-ticket convention owns the resulting artifacts;
+Wayfinder records only the current pointer and coordination consequence.
+
+Older `tickets/T#` artifacts are outside this contract. Lifecycle operations
+preserve them as opaque project data but do not load, validate, or migrate them.
+Before resuming such an effort, manually move its current state, blockers,
+dependencies, and smallest coherent next action into `map.md`; use `to-tickets`
+only if the remaining work still needs decomposition. Old T# files may then be
+kept as history or removed by the project owner.
+
+No Jira synchronization, automatic archival, schema migration, database, graph
+engine, or validation service belongs in this contract.

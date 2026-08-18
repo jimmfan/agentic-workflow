@@ -1,0 +1,109 @@
+schema_version = 1
+id = "wayfinder-fact-conflict"
+name = "Conflicting evidence disputes a fact without silently changing a decision"
+fixture = "wayfinder-fact-conflict"
+request = "Resume the named deployment-mode Wayfinder effort. Current configuration contradicts F1. Reconcile the durable state: preserve the conflicting observation as E2 with config.txt provenance, scope, and limitations; mark F1 contradicted by E2; open U1; surface F1 as a blocker; make authority review of D1 the next action; and do not silently change D1."
+starting_state = [
+  "F1 says deployment mode is dedicated and links its original E1 observation.",
+  "Current config.txt now says deployment_mode=shared, so the contradiction is unresolved.",
+  "D1 depends on F1 but remains an accepted choice until its authority reviews the new evidence.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "verification_performed",
+  "uncertainty_recorded_or_blocked",
+  "project_state_preserved",
+]
+must_not = [
+  "invent_unknown_answers",
+  "overwrite_project_owned_state",
+]
+live = true
+verification_command = "Run python verify.py after reconciling E2, F1, U1, and map.md without changing D1."
+preserve_paths = [
+  ".agent-workflow-state/wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+]
+forbid_created_globs = [
+  ".agent-workflow-state/active.md",
+  ".agent-workflow-state/wayfinder/deployment-mode/tickets",
+  ".agent-workflow-state/wayfinder/deployment-mode/tickets/**",
+  ".scratch/**",
+]
+route_must_not_include = ["discovery"]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/deployment-mode/map.md",
+  ".agent-workflow-state/wayfinder/deployment-mode/evidence/E1-original-deployment-mode.md",
+  ".agent-workflow-state/wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md",
+  ".agent-workflow-state/wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+]
+state_must_not_include = []
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/deployment-mode/evidence/E*.md"
+count = 2
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/evidence/E2-*.md"
+value = "deployment_mode=shared"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/evidence/E2-*.md"
+value = "Source: config.txt"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/evidence/E2-*.md"
+value = "Scope: current deployment configuration"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/evidence/E2-*.md"
+value = "## Limitations"
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/deployment-mode/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/unknowns/U1-*.md"
+value = "deployment mode"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/unknowns/U1-*.md"
+value = "- Status: open"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md"
+value = "- Status: disputed"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md"
+value = "- Contradicted by: E2"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/map.md"
+value = "F1 is disputed"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/deployment-mode/map.md"
+value = "review D1"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/deployment-mode/tickets"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/active.md"

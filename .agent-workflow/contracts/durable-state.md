@@ -27,18 +27,18 @@ transcript or private memory.
 - `.agent-workflow-state/archive/<year>/<ID>-<slug>.md`: completed, rejected, or
   superseded history.
 - `.agent-workflow-state/wayfinder/<effort>/`: canonical local Wayfinder map and
-  stable U#/D#/T# children.
+  optional stable U#/E#/F#/D# knowledge.
 
 Use stable, never-reused identifiers: `DEC-NNNN` for bounded local decisions,
 `IMP-NNNN` for implementation orchestration, `DBG-NNNN` for debugging, and
 `IDP-NNNN` for optional internal-developer-platform opportunities. Allocate one
 greater than the highest
 matching ID in both records and archive. Renaming a slug does not change its ID.
-These prefixes apply only to Agentic Workflow records. Local Wayfinder
-uses its own stable `U#`, `D#`, and `T#` identifiers under the dedicated contract;
-those are canonical item identities, not aliases for `DEC`, `IMP`, or an
-external tracker. A referenced Jira key such as `ARC-384` or GitHub issue such as
-`#384` remains an external identity and is never rewritten as a local item.
+These prefixes apply only to Agentic Workflow records. Local Wayfinder uses its
+own stable `U#`, `E#`, `F#`, and `D#` identifiers under the dedicated contract;
+none are aliases for `DEC`, `IMP`, or an external tracker. A referenced Jira key such as
+`ARC-384` or GitHub issue such as `#384` remains an external identity and is
+never rewritten as a local item.
 
 Decision statuses are `proposed`, `provisional`, `accepted`, `rejected`, and
 `superseded`. Implementation and debugging records use `active`, `interrupted`,
@@ -103,10 +103,10 @@ in the owning DEC, IMP, or DBG record; it must not copy a provider body or
 allocate a parallel framework alias.
 
 Use `to-tickets` only when dependency-ordered or independently deliverable
-sessions add value. For a local Wayfinder effort, its configured identity,
-location, and frontier rules come from `wayfinder-state.md`; other tracker or
-local-Markdown ticket identities pass through unchanged. Work that fits one
-coherent implementation session skips ticket decomposition. A ticket's status or
+sessions add value. Its tracker or local-Markdown output keeps its native
+identity and frontier; a Wayfinder effort links that output without creating a
+shadow T#. Work that fits one coherent implementation session skips ticket
+decomposition and may use the map's `Next work` directly. A ticket's status or
 text never grants permission to run a command, access an external system, or
 mutate state.
 

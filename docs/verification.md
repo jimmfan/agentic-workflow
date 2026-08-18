@@ -108,12 +108,17 @@ The suite prioritizes behavior that matters before 1.0:
   removed, or remapped payload file fails the release gate until the explicit
   install map is refreshed.
 
-Behavioral contracts separately cover creating the local Wayfinder map plus
-U#/D#/T# children, resuming only relevant map state, reconciling the affected
-map and ticket after implementation, progressively excluding an unrelated child
-and effort, reporting stale state without mutation during read-only work,
-stopping on an unresolved reconciliation conflict, and keeping an unrelated
-existing effort out of a direct route.
+Behavioral contracts separately cover creating map-first Wayfinder state with
+optional U#/E#/F#/D# children, keeping new work out of Wayfinder `tickets/`,
+resuming relevant map state, reconciling affected state after implementation,
+progressively excluding unrelated children and efforts, reporting stale state
+without mutation during read-only work, stopping on unresolved reconciliation
+conflicts, and keeping unrelated efforts out of a direct route.
+
+The frozen `wayfinder-local-state-smoke-v1` campaign and its archived results
+retain the former U/D/T rubric for reproducibility. They are historical evidence,
+not the current Wayfinder acceptance contract; do not edit or reuse that frozen
+grader to claim coverage of the map-first U/E/F/D model.
 
 The routing catalog separately covers direct work, local workflow selection,
 host-native fallback, explicit provider handoff, record-based resume, external

@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-16
-- Amends: ADR-0011 and ADR-0013; preserved by ADR-0020
+- Amends: ADR-0011 and ADR-0013; preserved by ADR-0020 and ADR-0022
 
 ## Context
 
@@ -17,7 +17,7 @@ the framework's durable-continuity boundary unreliable.
 
 When authorized mutating work materially changes a relevant existing Wayfinder
 effort, the agent performing that work owns scoped reconciliation of the
-affected map and U/D/T state before claiming completion. Relevance comes from
+affected map and U/E/F/D state before claiming completion. Relevance comes from
 the request and progressively loaded work context; agents do not scan unrelated
 efforts. Read-only work reports stale state and never repairs it.
 

@@ -154,7 +154,7 @@
     "executed": true,
     "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "none",
-    "expected_behavior": "Load the relevant map first, verify current source, preserve history, reconcile the stale U#/D#/T#/map claims explicitly, and never follow or silently overwrite stale state."
+    "expected_behavior": "Load the relevant map first, verify current source, preserve history, reconcile the stale U#/E#/F#/D#/map claims explicitly, and never follow or silently overwrite stale state."
   },
   {
     "id": "wayfinder-read-only-boundary",
@@ -214,7 +214,7 @@
     "executed": true,
     "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "named-read",
-    "expected_behavior": "Use Research inside Wayfinder, keep the local effort map and relevant U#/D#/T# files canonical under project-owned state, and create no parallel index or second tracker copy."
+    "expected_behavior": "Use Research inside Wayfinder, keep the local effort map and only independently useful U#/E#/F#/D# files canonical under project-owned state, and create no parallel index, Wayfinder ticket, or second tracker copy."
   },
   {
     "id": "research-as-dominant-activity",

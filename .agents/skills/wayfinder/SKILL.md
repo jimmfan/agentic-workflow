@@ -22,29 +22,31 @@ ignore this section and use the unchanged upstream method normally.
   still allowed; an explicit opt-out prevents automatic selection. Bounded
   debugging, one isolated unknown, and unrelated work keep their normal route.
 - The only canonical local representation is
-  `.agent-workflow-state/wayfinder/<effort>/`: `map.md`, `unknowns/U#`,
-  `decisions/D#`, and `tickets/T#`. Never create `.scratch/`, an external issue
-  tracker copy, or `.agent-workflow-state/active.md`; do not run setup to provision
-  a tracker for this mode.
+  `.agent-workflow-state/wayfinder/<effort>/`: `map.md` plus optional
+  `unknowns/U#`, `evidence/E#`, `facts/F#`, and `decisions/D#`. `map.md` alone is
+  valid. Wayfinder itself never creates `.scratch/`, an external issue-tracker
+  copy, or `.agent-workflow-state/active.md`; do not run setup solely to
+  provision a tracker for Wayfinder.
 - Preserve the upstream reasoning method: orient around a destination, keep the
   map low resolution, represent fog honestly, resolve consequential uncertainty
   incrementally, progressively load detail, and derive the frontier from current
   status and dependencies.
-- Map a sharp decision, investigation, research, prototype, grilling, or human
-  clarification question to U#. Upstream Wayfinder decision or investigation
-  tickets are U# items in local mode, even when upstream calls them tasks. Update
-  that U# with evidence and resolution. Create or update D# only when the answer
-  is a durable project decision. Create T# only for concrete executable work
-  when decomposition adds value. The U#/T# split applies when creating local
-  items; never renumber an existing ID to remap it, and never force
-  U# -> D# -> T# as ceremony.
+- Use U# for an unresolved consequential question, E# for an independently useful
+  observation with provenance and limitations, F# for a sufficiently established
+  scoped conclusion, and D# for a committed choice. Create children lazily only
+  when preserving them independently adds value; never force U# -> E# -> F# -> D#
+  as ceremony, and never reuse or renumber an ID. Facts link their evidence or
+  direct authoritative sources. Preserve conflicting evidence, mark unresolved
+  facts disputed, and surface the blocker instead of silently replacing history.
 - Keep the map self-contained as the effort's coordination and re-entry point.
-  Do not outsource its questions, evidence, decisions, or frontier to a large
-  external planning document. Canonical specifications, research, ADRs, source,
-  tests, and other evidence remain in their owning locations and are linked from
-  the map rather than copied into it. A new map may have no U#/T# children while
-  its fog is still being sharpened; zero children in a mature map is a sign that
-  decomposition has not happened.
+  It owns current state, blockers, dependencies, and the smallest coherent next
+  work. Canonical specifications, research, ADRs, source, tests, and other
+  evidence remain in their owning locations and are linked rather than copied.
+  A mature effort may still need no child files.
+- Do not create new Wayfinder `tickets/T#`. When ready work needs dependency
+  ordering or separately deliverable sessions, use `to-tickets` and link its
+  native artifact/frontier from the map without a shadow copy. Existing T# files
+  are outside the current contract and are not loaded or migrated automatically.
 - Wayfinder owns durable coordination, not every action. Debugging, Research,
   Prototype, Grilling, Domain Modeling, human clarification, and Implementation
   may resolve or consume an item while the map remains canonical. Mid-task
@@ -56,11 +58,12 @@ ignore this section and use the unchanged upstream method normally.
   the loop; never invent the human side of it.
 - Read-only analysis, audit, diagnosis, or review may use Wayfinder reasoning
   but must not create or update state. On resume, load the relevant `map.md`
-  first and only the needed U/D/T children. Live/source evidence wins over stale
-  state; preserve history and reconcile affected files explicitly.
+  first and only the needed U/E/F/D children. Live/source
+  evidence wins over stale state; preserve history and reconcile affected files
+  explicitly.
 - Tracker labels, assignment/claiming, issue comments/closing, and tracker-native
   blocking below do not apply in local mode. Before a write, reread the target
-  and map, allocate the next unused per-type ID, and never overwrite a concurrent
+  and map, allocate the next unused U/E/F/D ID, and never overwrite a concurrent
   file or silently merge conflicting evidence.
 
 <!-- agentic-workflow:wayfinder-local-state-v1:end -->

@@ -18,6 +18,7 @@ current instructions.
 - [ADR-0019 — Scope bootstrap limits to the distributable package](0019-scope-bootstrap-limits-to-the-distributable-package.md)
 - [ADR-0020 — Own the declared provider projection](0020-own-the-declared-provider-projection.md)
 - [ADR-0021 — Maintain compact current decision context](0021-maintain-compact-current-decision-context.md)
+- [ADR-0022 — Separate Wayfinder knowledge from implementation tickets](0022-separate-wayfinder-knowledge-from-implementation-tickets.md)
 
 ## Superseded tombstones
 

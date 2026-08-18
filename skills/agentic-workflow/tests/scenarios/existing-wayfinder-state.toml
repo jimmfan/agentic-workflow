@@ -5,7 +5,7 @@ fixture = "wayfinder-existing"
 request = "Implement the next actionable slice from the existing Wayfinder map and verify it. Preserve unresolved non-blocking unknowns."
 starting_state = [
   "A canonical local Wayfinder map points to a settled D1 serialization decision.",
-  "The map identifies T1 as the actionable implementation slice.",
+  "The map states the actionable implementation slice under Next work.",
   "A separate U1 telemetry naming unknown remains explicitly non-blocking.",
 ]
 expect = [
@@ -28,18 +28,18 @@ preserve_paths = [
   ".agent-workflow-state/wayfinder/unrelated-billing-migration/map.md",
 ]
 forbid_created_globs = [
-  "/**",
+  "docs/decisions/**",
   ".agent-workflow-state/active.md",
   ".agent-workflow-state/wayfinder/response-serialization/unknowns/U2*.md",
   ".agent-workflow-state/wayfinder/response-serialization/decisions/D2*.md",
-  ".agent-workflow-state/wayfinder/response-serialization/tickets/T2*.md",
+  ".agent-workflow-state/wayfinder/response-serialization/tickets",
+  ".agent-workflow-state/wayfinder/response-serialization/tickets/**",
   ".scratch/**",
 ]
 route_must_not_include = ["discovery", "wayfinder"]
 state_must_include = [
   ".agent-workflow-state/wayfinder/response-serialization/map.md",
   ".agent-workflow-state/wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
-  ".agent-workflow-state/wayfinder/response-serialization/tickets/T1-serialize-public-responses.md",
 ]
 state_must_not_include = [
   ".agent-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
@@ -52,11 +52,6 @@ path = "service.py"
 value = "NotImplementedError"
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/response-serialization/tickets/T1-serialize-public-responses.md"
-value = "- Status: done"
-
-[[assertions]]
 kind = "path_not_contains"
 path = ".agent-workflow-state/wayfinder/response-serialization/map.md"
-value = "Next executable work: [T1"
+value = "Implement `serialize_payload` in `service.py` using D1"

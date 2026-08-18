@@ -98,6 +98,7 @@ class BehaviorFixtureTests(unittest.TestCase):
             "actionable-work",
             "implementation-project",
             "verification-failure",
+            "wayfinder-fact-conflict",
             "wayfinder-unrelated",
         }
         with tempfile.TemporaryDirectory() as temporary:
