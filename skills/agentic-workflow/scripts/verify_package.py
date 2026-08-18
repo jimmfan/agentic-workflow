@@ -434,7 +434,7 @@ def check_provider_declaration() -> None:
         == "wayfinder-runtime-projection-v1"
         and wayfinder.get("invocation", {}).get("codex") == "implicit"
         and wayfinder.get("invocation", {}).get("github-copilot") == "implicit",
-        "Wayfinder must declare the Agentic Workflow local-state adapter",
+        "Wayfinder must declare the Agentic Workflow runtime-projection adapter",
     )
     wayfinder_adapter = wayfinder["agentic_workflow_adapter"]
     projection_source = package_path(
