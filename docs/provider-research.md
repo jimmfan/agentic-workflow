@@ -127,11 +127,12 @@ body. Setup, Teach, and Triage retain their upstream user-only metadata.
 ## Installation policy
 
 After core reconciliation succeeds, `providers.py` stages the bundled 14-skill
-snapshot, validates its declared checksum, inventory, source metadata, and MIT
-license, applies the declared adapters, and compares each effective directory
-with the target. The snapshot records the annotated tag object, resolved commit,
-upstream root tree, and GitHub-injected per-skill tree metadata. Runtime setup is
-fully offline and requires no provider installer or package manager.
+snapshot, validates the inventory, safe filesystem shape, local references,
+source metadata, and adapter preconditions needed for projection, then compares
+each effective directory with the target. The maintainer gate—not end-user
+lifecycle—validates the declared checksum, provenance, and MIT license against
+the reviewed release identity. Runtime setup is fully offline and requires no
+provider installer or package manager.
 
 Exact existing directories are reused. Missing or different declared
 directories are repairable and replaced from same-filesystem staging as one

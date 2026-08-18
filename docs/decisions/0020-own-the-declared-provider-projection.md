@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-17
+- Last amended: 2026-08-17
 - Supersedes: ADR-0014, ADR-0015, ADR-0017, and ADR-0018
 - Amends: ADR-0007, ADR-0010, ADR-0011, and ADR-0013
 - Related: ADR-0021
@@ -32,10 +33,14 @@ The pinned unmodified snapshot and MIT notice remain release inputs; Agentic
 Workflow creates the effective projection by applying its reviewed Wayfinder
 local-mode and implicit-invocation adapters in staging.
 
+The maintainer and CI release gate validates the bundled checksum, provenance,
+and MIT license against the reviewed release identity. These release bookkeeping
+checks do not run again in an end-user lifecycle operation.
+
 Install and update:
 
-1. validate the bundled checksum, exact inventory, provenance, license, safe
-   regular-file shape, local references, and adapter preconditions;
+1. validate the exact inventory, safe regular-file shape, local references, and
+   adapter preconditions needed to build a usable projection;
 2. stage and validate the complete effective 14-skill projection on the target
    filesystem;
 3. classify each declared destination as `ready`, `repairable` (missing or
@@ -91,9 +96,11 @@ fork upstream methodology: the bundle preserves pinned upstream bytes, while
 small fingerprinted adapters define the intentional integration differences.
 
 Users must put custom skills in differently named directories; edits inside the
-14 declared names are disposable. Unsafe filesystem objects fail closed. A
-live GitHub Copilot/Claude run is still required before claiming that editor and
-model combination has been validated end to end.
+14 declared names are disposable. Unsafe filesystem objects fail closed.
+Runtime does not block provider setup on duplicated release checksums; a bad
+checked-in snapshot fails the maintainer gate before release. A live GitHub
+Copilot/Claude run is still required before claiming that editor and model
+combination has been validated end to end.
 
 ## Alternatives considered
 

@@ -188,13 +188,16 @@ that host.
 
 The framework keeps no target ownership database, installed-file history,
 quarantine store, or automatic upgrade engine.
-The declaration itself is the narrow ownership boundary. The snapshot checksum
-protects the release artifact; exact effective-tree comparison identifies work
-needed to converge. Update replaces declared drift, and remove deletes exactly
-the declared directories transactionally. A cleanup failure after the target
-transaction commits is a warning with a recovery-directory path, not a false
-transaction failure. These constraints avoid a general package manager while
-keeping providers reliably repairable.
+The declaration itself is the narrow ownership boundary. The maintainer gate
+binds the snapshot checksum, provenance, and license to the reviewed release;
+end-user lifecycle operations do not repeat that release bookkeeping. Runtime
+checks only the inventory, safe filesystem shape, references, and adapter
+preconditions needed to build a usable projection. Exact effective-tree
+comparison identifies work needed to converge. Update replaces declared drift,
+and remove deletes exactly the declared directories transactionally. A cleanup
+failure after the target transaction commits is a warning with a
+recovery-directory path, not a false transaction failure. These constraints
+avoid a general package manager while keeping providers reliably repairable.
 
 Capability routing and invocation policy remain distinct. An absent or
 user-only provider normally falls back to truthful host-native work. An exact

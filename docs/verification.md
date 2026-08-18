@@ -16,7 +16,11 @@ extraction and execution.
 
 The bootstrap does not run the full package verifier. Runtime reconciliation
 requires only the current source-to-target mapping and readable current source
-files. The distribution manifest does not duplicate payload content hashes.
+files. Optional provider setup similarly validates only the inventory, safe
+filesystem shape, references, metadata, and adapter preconditions needed to
+project usable skills. Release checksum, provenance, and license bookkeeping is
+left to the maintainer gate. The distribution manifest does not duplicate
+payload content hashes.
 
 ## Maintainer and CI gate
 
@@ -87,9 +91,10 @@ The suite prioritizes behavior that matters before 1.0:
 - a fresh bootstrap archive projects all 14 declared provider skills with an
   empty `PATH`, proving runtime setup does not require GitHub CLI, Git, npm,
   npx, authentication, or network access;
-- the bundled provider checksum, exact inventory, resolved commit provenance,
-  per-skill source metadata, local-reference closure, and MIT license are bound
-  to the exact reviewed release identity;
+- the maintainer gate binds the bundled provider checksum, exact inventory,
+  resolved commit provenance, per-skill source metadata, local-reference
+  closure, and MIT license to the exact reviewed release identity without
+  turning those release checks into an end-user runtime gate;
 - the installed source-checkout provider declaration must match the packaged
   declaration, while the maintainer refresh command refuses package-local output;
 - update completes an exact partial projection, reuses exact existing

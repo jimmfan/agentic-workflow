@@ -13,7 +13,12 @@ import sys
 import tempfile
 from typing import Iterable
 
-from provider_snapshot import SnapshotTreeError, tree_digest, validate_local_references
+from provider_snapshot import (
+    SnapshotTreeError,
+    tree_digest,
+    validate_local_references,
+    validate_tree_shape,
+)
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
@@ -40,9 +45,6 @@ class Provider:
     version: str
     resolved_commit: str
     snapshot_root: Path
-    snapshot_sha256: str
-    license_path: Path
-    license_sha256: str
     skills: tuple[ProviderSkill, ...]
 
 
@@ -152,10 +154,7 @@ def load_provider() -> Provider:
     repository = provider.get("repository")
     version = provider.get("version")
     resolved_commit = provider.get("resolved_commit")
-    tag_object = provider.get("tag_object")
-    upstream_tree = provider.get("upstream_tree")
     snapshot = provider.get("snapshot")
-    license_info = provider.get("license")
     skills = provider.get("skills")
     if not isinstance(repository, str) or repository.count("/") != 1:
         raise ProviderError("provider repository must use owner/name form")
@@ -163,22 +162,9 @@ def load_provider() -> Provider:
         raise ProviderError("provider version must be a non-empty pinned tag")
     if not is_sha(resolved_commit, 40):
         raise ProviderError("provider resolved commit must be a 40-character Git object ID")
-    if not is_sha(tag_object, 40) or not is_sha(upstream_tree, 40):
-        raise ProviderError("provider tag and tree provenance must use 40-character Git object IDs")
-    if not isinstance(snapshot, dict) or set(snapshot) != {"path", "sha256"}:
+    if not isinstance(snapshot, dict):
         raise ProviderError("provider snapshot declaration is incomplete")
     snapshot_root = package_path(snapshot.get("path"), "provider snapshot path")
-    snapshot_sha256 = snapshot.get("sha256")
-    if not is_sha(snapshot_sha256, 64):
-        raise ProviderError("provider snapshot checksum must be a SHA-256 digest")
-    if not isinstance(license_info, dict) or set(license_info) != {"name", "path", "sha256"}:
-        raise ProviderError("provider license declaration is incomplete")
-    if license_info.get("name") != "MIT":
-        raise ProviderError("provider snapshot must declare its MIT license")
-    license_path = package_path(license_info.get("path"), "provider license path")
-    license_sha256 = license_info.get("sha256")
-    if not is_sha(license_sha256, 64):
-        raise ProviderError("provider license checksum must be a SHA-256 digest")
     if not isinstance(skills, list):
         raise ProviderError("provider skills must be an array")
     hosts = raw.get("hosts")
@@ -265,9 +251,6 @@ def load_provider() -> Provider:
         version,
         resolved_commit,
         snapshot_root,
-        snapshot_sha256,
-        license_path,
-        license_sha256,
         tuple(result),
     )
 
@@ -520,11 +503,6 @@ def apply_adapter(
 
 
 def validate_snapshot(provider: Provider) -> None:
-    if provider.license_path.is_symlink() or not provider.license_path.is_file():
-        raise ProviderError("bundled provider license is missing or unsafe")
-    license_bytes = provider.license_path.read_bytes()
-    if sha256(license_bytes).hexdigest() != provider.license_sha256 or b"MIT License" not in license_bytes:
-        raise ProviderError("bundled provider license differs from the declaration")
     expected = {skill.name for skill in provider.skills}
     if provider.snapshot_root.is_symlink() or not provider.snapshot_root.is_dir():
         raise ProviderError("bundled provider snapshot is missing or unsafe")
@@ -532,13 +510,11 @@ def validate_snapshot(provider: Provider) -> None:
     if actual != expected:
         raise ProviderError("bundled provider inventory differs from the declaration")
     try:
-        digest = tree_digest(provider.snapshot_root)
+        validate_tree_shape(provider.snapshot_root)
         for skill in provider.skills:
             validate_local_references(provider.snapshot_root / skill.name)
     except SnapshotTreeError as exc:
         raise ProviderError(str(exc)) from exc
-    if digest != provider.snapshot_sha256:
-        raise ProviderError("bundled provider snapshot checksum differs from the declaration")
 
 
 def prepare_staged_projection(staging_root: Path, provider: Provider) -> Path:

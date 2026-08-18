@@ -728,17 +728,22 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             module.remove(self.project, False)
         self.assertNotIn("removed declared optional provider directories", output.getvalue())
 
-    def test_corrupt_bundled_snapshot_is_rejected_without_projection(self) -> None:
-        package_copy = self.copy_package("corrupt-provider-checksum")
+    def test_runtime_projection_does_not_enforce_release_snapshot_checksum(self) -> None:
+        package_copy = self.copy_package("runtime-provider-checksum")
         snapshot = package_copy / "provider-snapshots/matt-pocock-skills/skills/codebase-design/SKILL.md"
-        snapshot.write_text(snapshot.read_text(encoding="utf-8") + "\ncorrupt\n", encoding="utf-8")
+        snapshot.write_text(
+            snapshot.read_text(encoding="utf-8") + "\nrelease-content-drift\n",
+            encoding="utf-8",
+        )
 
         result = run_script(package_copy / "scripts/providers.py", "install", self.project)
 
-        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
-        self.assertIn("snapshot checksum", result.stderr)
-        for name in self.declared_provider_names():
-            self.assertFalse((self.project / ".agents/skills" / name).exists())
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("OK: Optional provider skills match the bundled projection.", result.stdout)
+        projected = self.project / ".agents/skills/codebase-design/SKILL.md"
+        self.assertTrue(
+            projected.read_text(encoding="utf-8").endswith("\nrelease-content-drift\n")
+        )
 
     def test_implicit_invocation_adapters_apply_from_bundle_and_are_idempotent(self) -> None:
         first = run_script(PROVIDERS, "install", self.project)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from hashlib import sha256
 from pathlib import Path
 import re
@@ -15,20 +16,30 @@ MARKDOWN_LINK = re.compile(r"\[[^]]*\]\(([^)]+)\)")
 TEXT_SUFFIXES = frozenset({".json", ".md", ".toml", ".txt", ".yaml", ".yml"})
 
 
-def tree_digest(root: Path) -> str:
+def _tree_paths(root: Path) -> Iterator[Path]:
     if root.is_symlink() or not root.is_dir():
         raise SnapshotTreeError(f"provider tree is missing or unsafe: {root}")
-    digest = sha256()
     for path in sorted(root.rglob("*")):
-        relative = path.relative_to(root).as_posix().encode("utf-8")
         if path.is_symlink():
             raise SnapshotTreeError(f"provider tree contains a symlink: {path}")
+        if not path.is_dir() and not path.is_file():
+            raise SnapshotTreeError(f"provider tree contains an unsupported entry: {path}")
+        yield path
+
+
+def validate_tree_shape(root: Path) -> None:
+    for _path in _tree_paths(root):
+        pass
+
+
+def tree_digest(root: Path) -> str:
+    digest = sha256()
+    for path in _tree_paths(root):
+        relative = path.relative_to(root).as_posix().encode("utf-8")
         if path.is_dir():
             digest.update(b"D\0" + relative + b"\0")
-        elif path.is_file():
-            digest.update(b"F\0" + relative + b"\0" + sha256(path.read_bytes()).digest())
         else:
-            raise SnapshotTreeError(f"provider tree contains an unsupported entry: {path}")
+            digest.update(b"F\0" + relative + b"\0" + sha256(path.read_bytes()).digest())
     return digest.hexdigest()
 
 
