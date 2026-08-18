@@ -64,7 +64,7 @@ framework-owned specs directory.
 
 ## Project ADR namespace
 
-Use `docs/decisions/` as the default Architecture Decision Record (ADR)
+Use `architecture-decision/` as the default Architecture Decision Record (ADR)
 namespace for accepted, lasting architecture or contract decisions. If existing
 project instructions name another canonical decision location, preserve it; do
 not create a parallel ADR namespace or migrate existing records merely to match
