@@ -155,6 +155,44 @@ class RoutingContractTests(unittest.TestCase):
         self.assertEqual(by_id["wayfinder-read-only-boundary"]["repository_state_effect"], "read-only")
         self.assertEqual(by_id["wayfinder-explicit-opt-out"]["provider_invocations"], [])
 
+    def test_catalog_covers_routing_seams_that_previously_relied_on_prose(self) -> None:
+        scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
+        by_id = {item["id"]: item for item in scenarios}
+
+        trivial_edit = by_id["trivial-local-edit-stays-direct"]
+        self.assertEqual(trivial_edit["dominant_activity"], "direct")
+        self.assertEqual(trivial_edit["provider_invocations"], [])
+        self.assertEqual(trivial_edit["repository_state_effect"], "repository-write")
+
+        setup_handoff = by_id["setup-user-only-copilot"]
+        self.assertEqual(setup_handoff["route_result"], "user-only-handoff")
+        self.assertFalse(setup_handoff["executed"])
+
+        fallback = by_id["selected-provider-cannot-execute"]
+        self.assertEqual(fallback["route_result"], "host-native-fallback")
+        self.assertTrue(fallback["executed"])
+        self.assertEqual(fallback["expected_marker"], "[route: router → direct]")
+        self.assertIn("actual host-native activity", fallback["expected_behavior"])
+
+    def test_external_read_scope_is_always_loaded_policy(self) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        normalized_root = " ".join(root_policy.split())
+
+        self.assertIn("exact external read-only target", normalized_root)
+
+    def test_strengthened_routing_seams_are_present_and_cross_layer_consistent(self) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
+        normalized_root = " ".join(root_policy.split())
+        normalized_routing = " ".join(routing.split())
+
+        self.assertIn("trivial local, low-risk edits stay direct", normalized_routing.lower())
+        self.assertIn("no authorized host-native equivalent", normalized_routing)
+        self.assertIn("actual host-native activity", normalized_routing)
+        self.assertIn("selection did not become equivalent execution", normalized_root)
+        self.assertIn("selection did not become equivalent execution", normalized_routing)
+        self.assertIn("preferred provider did not execute", normalized_routing)
+
 
 if __name__ == "__main__":
     unittest.main()

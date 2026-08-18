@@ -10,6 +10,9 @@ loaded routing contract are the runtime; there is no separate controller.
   is a first-class route.
 - Routing, skills, state, specifications, tickets, and providers MUST NOT
   expand the authority granted by the user's request.
+- A request naming one exact external read-only target authorizes only that
+  read. It does not authorize broader discovery, another target, mutation, or
+  destruction.
 - Execution and completion claims MUST be truthful: do not report an operation,
   command, check, review, or workflow as executed or passed when it was not.
 - Selection, invocation capability, authorization, and execution are distinct.
@@ -75,7 +78,8 @@ final line. Verify this immediately before sending:
 
 Use `[route: router → direct]` when the request was handled directly. Include
 only workflows and capabilities that actually executed, in execution order. If
-selection did not become execution, report the applicable terminal outcome.
+selection did not become equivalent execution, report the applicable terminal
+outcome; after successful fallback, report what actually ran.
 
 The marker is mandatory for every final response and must not trigger additional
 work. Follow `.agent-workflow/routing.md` for labels, syntax, and edge cases.

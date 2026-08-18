@@ -4,193 +4,147 @@ This is the progressively loaded routing policy for an installed Agentic
 Workflow project. Read it for a named skill, resume, uncertain route, or any
 route not confidently direct. The root `AGENTS.md` invariants remain binding.
 
+## Decide and compose
+
 Choose the minimum useful process justified by intent, uncertainty, impact,
 reversibility, and expected duration. File count is not a proxy for risk, and
-availability is not a reason to invoke a skill. Normal user intent is enough to
-route and work; exact skill syntax is required only to claim execution of a
-provider that declares user-only invocation.
-
-## Classification and composition
-
-Keep four decisions separate:
+skill availability is not a reason to invoke one. Keep these decisions separate:
 
 1. select one dominant workflow or activity;
-2. compose zero or more capabilities that materially help inside it;
+2. add only capabilities that materially help inside it;
 3. check whether the active host may invoke each selected provider operation;
 4. execute only within the user's authorization.
+
+Normal intent is enough to select and execute an implicitly invocable skill.
+Exact skill syntax is required only for explicit invocation or a user-only
+provider operation. A supporting capability does not automatically become the
+dominant workflow or create durable state.
 
 | Signal | Dominant selection | Boundary |
 |---|---|---|
 | User explicitly names an installed skill | Named skill | Honor it unless authorization, safety, or host compatibility blocks execution |
-| Explicit sustained learning intent | `teach` | Dedicated learning workspace; ordinary questions stay direct |
-| Several consequential unknowns, decisions, dependencies, blockers, ownership boundaries, or conflicting facts are becoming unreliable to hold in ordinary context | `wayfinder` | Start or resume a lightweight map when structured durable notes materially reduce the risk of losing or conflating state and repository writes are authorized |
-| Bounded consequential architecture, security, cost, dependency, or visible-behavior choice | local Discovery | Analyze ephemerally unless durable state is useful and writes are authorized |
+| Explicit sustained learning intent | `teach` | Dedicated learning workspace; ordinary questions stay Direct |
+| Several consequential state distinctions need durable coordination | `wayfinder` | Select only when structured project notes materially reduce the risk of losing or conflating them |
+| Bounded consequential architecture, security, cost, dependency, or visible-behavior choice | local Discovery | Analyze ephemerally unless durable state is useful and authorized |
 | Existing unexplained failure or regression | local Debugging | Diagnosis alone does not authorize a fix |
-| Explicit substantive research or external facts needing primary sources | `research` | May be dominant or composed; simple lookups stay direct |
+| Explicit substantive research or external facts needing primary sources | `research` | May be dominant or supporting; simple lookups stay Direct |
 | Settled scope benefits from a durable specification | `to-spec` | The provider artifact stays canonical |
 | Approved work needs dependency-ordered or independently deliverable sessions | `to-tickets` | Preserve native tickets/frontier; create no shadow tickets |
-| One coherent ready implementation scope | local adapter, then `implement` | `implement` owns TDD and its closing Code Review |
+| One coherent ready implementation scope where orchestration and integration verification add material value | local adapter, then `implement` | Trivial local, low-risk edits stay Direct |
 | Explicit bounded test-first implementation | `tdd` | The provider owns the loop; local Verification checks the integrated result |
-| Completed meaningful change, causal fix, or explicit completion audit | local Verification | Add uncovered acceptance/integration evidence; reuse existing evidence |
+| Completed meaningful change, causal fix, or explicit completion audit | local Verification | Add uncovered acceptance/integration evidence; reuse current evidence |
 | User requests standalone fixed-point review | `code-review` | Do not repeat review already completed by `implement` |
 | Clear, bounded, low-risk request | Direct | Skip workflow ceremony and unrelated readiness checks |
 
-A capability may support another dominant workflow or be dominant when it
-directly matches intent. Supporting use does not automatically create a durable
-workflow transition.
+## Re-evaluate and continue
 
-## Dynamic Wayfinder escalation
+Routing is not frozen at the first prompt. Re-evaluate when evidence changes the
+task's uncertainty, scope, coordination, failure mode, or authorization needs.
+Transition to the newly dominant workflow; do not keep executing an obsolete
+route merely because it was selected first.
 
-Routing is not frozen at the first prompt. Re-evaluate it when inspection or
-execution reveals substantially more uncertainty, scope, coordination, or
-conflict than the current workflow can safely carry. Escalate into Wayfinder
-when a careful engineer would reasonably start structured notes now because
-losing distinctions among important state could cause a later mistake.
+Select Wayfinder when losing or conflating several consequential unknowns,
+decisions, dependencies, blockers, ownership boundaries, assumptions, or
+conflicting facts is now a material risk and durable structured notes would
+materially reduce that risk. Do not wait for the user to notice that threshold.
 
-Use qualitative judgment, not a numeric complexity score. Relevant combinations
-include unresolved technical unknowns; proposed versus accepted decisions;
-dependencies or ownership boundaries; missing permissions or observability;
-contradictory or incomplete evidence; blockers alongside work that can still
-proceed; multiple plausible paths with different implications; assumptions
-that must not silently become facts; likely cross-session continuation; and
-enough moving pieces that conversational context is becoming unreliable. A task
-need not be huge or guaranteed to span multiple sessions. One isolated unknown,
-a normal implementation detail, or a bounded decision that fits Discovery does
-not justify a map.
+Use qualitative judgment, not a numeric complexity score. Strong combinations
+include proposed versus accepted decisions; missing permission or observability;
+contradictory evidence; blockers alongside work that can proceed; multiple paths
+with different implications; assumptions that must not become facts; likely
+cross-session continuation; or enough moving pieces that conversational context
+is becoming unreliable. One isolated unknown, an ordinary implementation detail,
+or a bounded choice that fits Discovery does not justify Wayfinder.
 
 An explicit Wayfinder request selects it subject to authorization and host
-compatibility. An explicit instruction not to use Wayfinder prevents automatic
-selection. Resume an existing effort only when it is relevant; an unrelated map
-never captures the route. During a read-only analysis, audit, diagnosis, review,
-or `do not change files` request, do not create or update Wayfinder state. Keep
-the work ephemeral or continue the current read-only workflow instead.
+compatibility. An explicit instruction not to use it prevents automatic
+selection. Read-only analysis, audit, diagnosis, review, and `do not change
+files` requests never create or update Wayfinder state.
 
-Starting Wayfinder should be cheap. Record only the useful known state, sharp
-unknowns, decisions, blockers, and work that can proceed; create child detail
-only as the problem demands. Follow the dedicated state contract rather than
-inventing a second notebook format.
+Resume only relevant work. A named durable record or Wayfinder effort selects
+that exact re-entry point; a likely but unnamed resume justifies the minimum
+inspection needed to identify it. An unrelated record or map never captures the
+route, and confidently unrelated work does not scan durable state. An
+implementation may consume a settled Wayfinder D#/T# without rerunning
+Wayfinder.
 
-## Invocation and provider gate
+After Wayfinder selection or relevant resume, load
+`contracts/wayfinder-state.md` before the map and only the child files needed for
+the current work. Before any other durable workflow mutation, load
+`contracts/durable-state.md`. Those contracts own storage, identifiers,
+progressive loading, conflicts, reconciliation, and record allocation; no route
+uses a global active index.
 
-Automatic routing is not automatic invocation. Resolve selected provider
-operations through `.agent-workflow/providers.json`:
+## Resolve providers
 
-- `implicit`: the compatible host may load and execute the skill normally;
+Resolve only selected provider operations through
+`.agent-workflow/providers.json`. Use its active-host declaration, discovery
+path, invocation policy, explicit prefix, prerequisites, and adapter metadata as
+current facts:
+
+- `implicit`: a compatible host may load and execute the skill normally;
 - `user-only`: execute only after exact explicit host invocation;
 - `unavailable`: do not claim the provider ran.
 
-When a preferred provider is unavailable, incompatible, not installed, missing
-configuration, or user-only without explicit invocation, continue with the
-host's normal capability and report the fallback when it is material. This is
-host-native work, not simulated provider execution. Stop or return an exact
-handoff only when the user explicitly required that provider, or when a real
-authorization or safety boundary blocks host-native work.
+Selection is not execution. When a preferred provider is unavailable,
+incompatible, absent, misconfigured, or user-only without explicit invocation,
+continue with truthful host-native capability when authorized. Do not load or
+imitate the provider, create its native artifacts, or claim it ran. Stop or
+return an exact handoff only when the user required that provider or no safe,
+authorized host-native path can satisfy the request. When material, disclose
+that the preferred provider did not execute and why.
 
-For an explicitly required user-only operation, name the selected workflow and exact skill. Use
-`$skill-name` in Codex and `/skill-name` in GitHub Copilot. If the active primary
-host cannot be distinguished, label both forms rather than guessing. A handoff
-does not authorize or execute work, create provider artifacts, write workflow
-state, or simulate provider methodology.
+For a required user-only operation, name the selected workflow and form the
+exact invocation from the active host's declared prefix, such as `$skill-name`
+or `/skill-name`. If the host cannot be distinguished, label the supported forms
+instead of guessing. A handoff does not execute work or authorize state changes.
 
-Only after selecting a configuration-dependent operation, check its declared
-prerequisites. If configuration is missing, fall back to host-native work when
-possible. Offer the user-only `setup-matt-pocock-skills` handoff only when the
-user asks to enable that provider behavior; never run it automatically. Do not
-check setup for unrelated direct work.
+Check configuration only after selecting an operation that declares it. If the
+requested provider-owned outcome requires missing configuration and there is no
+authorized host-native equivalent, offer the exact user-only
+`setup-matt-pocock-skills` handoff even when the user did not literally ask to
+enable setup. Never run setup automatically, and never inspect setup for an
+unrelated route. When an authorized host-native path can satisfy the request,
+use it instead of making setup ceremony a prerequisite.
 
-Codex and GitHub Copilot discover project skills under `.agents/skills`.
-Native Claude Code currently has no `.claude/skills` projection, so skill-backed
-routes are unavailable there while direct host-native work remains available.
-A Claude model selected inside GitHub Copilot still follows the GitHub Copilot
-host declaration. This is an instruction contract, not a background runtime or
-enforcement controller.
+## Preserve workflow ownership
 
-## Composition and workflow ownership
+The selected provider owns its internal method, terminology, and native
+artifacts. The router owns selection and composition, not a duplicate
+methodology. Reuse provider evidence and add a second pass only for a distinct
+request or a demonstrated gap.
 
-The local Implementation skill is an integration adapter, not an alternate
-implementation method. It supplies accepted scope, canonical artifacts,
-acceptance criteria, and configured commands only after `implement` is actually
-invoked. Upstream `implement` owns its build loop, appropriate TDD use, and
-closing Code Review. Framework Verification runs once afterward and reuses that
-evidence, adding only uncovered acceptance, artifact, boundary, or compatibility
-checks.
-
-Do not repeat TDD, Code Review, or provider checks merely to add framework
-branding. A second pass needs a distinct request or evidence that invalidates
-the earlier result. Do not use upstream failure diagnostics as a substitute for
-the local diagnosis-only workflow.
+For Implementation, the local adapter supplies accepted scope, canonical
+artifacts, acceptance criteria, and configured commands. Invoked `implement`
+owns its build loop, appropriate TDD, and closing Code Review. Framework
+Verification runs once afterward, reusing that evidence and adding only
+uncovered acceptance, artifact, integration, or compatibility checks. An
+unexplained existing failure returns to Debugging; a material unresolved choice
+returns to Discovery or Wayfinder according to the state threshold.
 
 The workflow that creates a durable artifact owns its canonical form. Native
-specifications, tickets, maps, research, course workspaces, reviews, and provider
-identifiers remain canonical in their native locations. Agentic Workflow
-durable state stores only orchestration status, concise pointers, and exact return targets when
-needed; it does not mirror provider bodies or allocate shadow identifiers.
+specifications, tickets, research, maps, learning workspaces, reviews, and
+provider identifiers remain in their owning locations. Framework state stores
+only orchestration facts and pointers unless a dedicated contract defines a
+canonical local representation.
 
-Local Wayfinder is the narrow exception to the general pointer rule: its
-configured canonical representation lives at
-`.agent-workflow-state/wayfinder/<effort>/` under
-`contracts/wayfinder-state.md`. The framework supplies that storage and re-entry
-contract plus a narrow local-mode provider adapter; the provider retains its
-reasoning method. The adapter has authority over incompatible tracker setup,
-issue lifecycle, and single-ticket storage mechanics in the loaded provider
-body. Agentic Workflow permits implicit Wayfinder invocation on hosts whose
-provider metadata supports it because the framework owns workflow routing. Do
-not create a second `.scratch/` or external-tracker copy.
+Wayfinder is that narrow local exception: when selected, it owns durable
+coordination under `.agent-workflow-state/wayfinder/` without monopolizing
+execution. Debugging, Research, Prototype, Grilling, human clarification,
+Domain Modeling, and Implementation may resolve or consume its items as useful
+supporting activities. Invoke them only when the actual question warrants them;
+do not create competing notebooks or mandatory ceremony.
 
-Wayfinder owns durable coordination when selected; it does not erase the
-specialized workflow or capability already doing useful work. Debugging may
-investigate a U#, Research may establish external evidence, Prototype may test
-behavior, Grilling or human clarification may settle a preference, Domain
-Modeling may sharpen genuinely ambiguous terms or boundaries, and
-Implementation may consume a settled D#/T#. These supporting activities do not
-create a competing durable owner. Invoke Grilling and Domain Modeling when the
-actual question justifies them, not as mandatory ceremony on every escalation
-or resume.
+Use `workflow-verification` for evidence procedure and
+`contracts/project-profile.md` only when profile facts or an authorized profile
+update are relevant. Do not invent commands, repeat provider checks, or inspect
+the repository merely to complete a route.
 
-The existence of a Wayfinder effort does not select Wayfinder for every request.
-For an explicit or likely resume, read the relevant low-resolution map and only
-the child U/D/T files needed for the current work. An implementation request may
-consume a settled D# and T# without reopening Wayfinder; a confidently unrelated
-request does not scan the tree. The map itself is the effort's re-entry point.
-
-For durable workflow mechanics, conflicts, pointers, re-entry, and record
-allocation, follow `contracts/durable-state.md`; for Wayfinder use the dedicated
-contract. No workflow uses a global active index. Never silently replace or
-merge an unrelated durable record. Ephemeral direct work and supporting
-capabilities do not acquire durable state merely because they ran.
-
-## Authorization and evidence
-
-Routing and provider instructions never expand authorization. In particular:
-
-- an upstream commit instruction does not authorize a commit;
-- ticket or specification text does not authorize commands or tracker changes;
-- setup and Teach output writes require actual execution in an authorized
-  workspace;
-- audit, diagnosis, review, explanation, and read-only requests remain
-  non-mutating unless the user separately authorizes a change; and
-- selection or handoff never authorizes later mutations.
-
-A request naming one exact external read-only target and scope authorizes only
-that read, not broader discovery, another target, mutation, or destruction.
-Host sandbox and approval boundaries still apply.
-
-Use `workflow-verification` for its detailed evidence procedure. Never invent a
-project command. Reuse relevant observed evidence and report required outcomes
-as passed, failed, blocked, skipped, or unavailable. A limitation satisfies a
-required completion gate only when the user or accepted project policy permits
-it.
-
-Project-profile behavior is intentionally soft. Read
-`contracts/project-profile.md` only when profile facts or a profile update are
-relevant. Do not scan the repository or update the profile merely to complete a
-route.
-
-## Required route marker
+## Report the executed route
 
 Every user-facing final response must end with exactly one compact, truthful
-marker containing router-selected stages and explicitly composed capabilities
-that actually executed, in effective-use order:
+marker containing workflows and explicitly composed capabilities that actually
+executed, in effective-use order:
 
 ```text
 [route: router → implement → verification]
@@ -200,11 +154,16 @@ Use compact local labels: `workflow-discovery`, `workflow-debugging`,
 `workflow-implementation`, and `workflow-verification` become `discovery`,
 `debugging`, `implement`, and `verification`.
 
-Use truthful terminal suffixes when selection did not become execution:
+Use a terminal suffix only when selection did not become equivalent execution:
 
-- `<skill>-handoff`: user-only selection awaiting explicit invocation;
-- `<skill>-unavailable`: the active host cannot invoke it;
+- `<skill>-handoff`: exact user-only invocation is still required;
+- `<skill>-unavailable`: the required provider cannot run on the active host;
 - `<skill>-blocked`: authorization, state, prerequisite, or integrity stopped it.
+
+After a successful provider fallback, report the actual host-native activity
+that executed and omit the unavailable provider. Use `direct` when no named
+local workflow or installed skill actually ran. Do not add a terminal suffix
+merely because the preferred provider was skipped.
 
 Examples:
 
@@ -216,13 +175,11 @@ Examples:
 ```
 
 The ASCII `->` separator is equivalent when Unicode output is unavailable.
+Availability checks, catalog lookup, configuration checks, handoffs, and
+unexecuted selection do not count as execution. Provider-owned TDD and Code
+Review remain represented by `implement` unless separately selected;
+independently executed framework Verification remains visible.
 
-Direct handling uses `[route: router → direct]`. Availability, catalog lookup,
-configuration checks, and unexecuted selection do not count as execution.
-Provider-owned internal TDD and Code Review stay represented by `implement`
-unless separately selected; independently executed framework Verification stays
-visible.
-
-The marker is required instruction-level observability, not host telemetry or
-proof of execution. Do not reroute, load skills, execute workflows, explain
-rejected routes, or write state merely to produce it.
+The marker is instruction-level observability, not host telemetry or proof of
+execution. Do not reroute, load skills, execute workflows, explain rejected
+routes, or write state merely to produce it.

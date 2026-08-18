@@ -14,10 +14,26 @@ that the work already be huge or multi-session. Explicit use and opt-out
 instructions remain authoritative.
 
 The compact always-loaded rules live in
-`payload/root/AGENTS.md.template`. Detailed selection, composition, invocation,
-fallback, evidence, and route-marker rules live in
+`payload/root/AGENTS.md.template`. Detailed selection, composition, transitions,
+provider fallback, relevant resume, and route-marker rules live in
 `payload/agent-workflow/routing.md` and load only for a named skill, resume,
 uncertain route, or route not confidently direct.
+
+Runtime ownership is deliberately split:
+
+| Owner | Runtime responsibility |
+|---|---|
+| Root `AGENTS.md` | Every-request routing, authorization, preservation, truthfulness, progressive-loading gates, and the marker requirement |
+| `routing.md` | Selection criteria, route transitions, relevant resume, provider resolution, workflow composition, and detailed marker semantics |
+| `providers.json` | Current host discovery, invocation, availability, configuration, and adapter facts |
+| Provider and local skills | The selected workflow's methodology and its provider-specific execution boundary |
+| State contracts | Storage, identifiers, progressive state loading, conflict handling, reconciliation, and re-entry mechanics |
+| ADRs and project documentation | Architectural rationale, history, maintenance policy, and compatibility explanation |
+
+This keeps concrete host snapshots and provider methodology out of the router
+while retaining the routing consequence of those facts. For example, the router
+must consult the active host's declared invocation prefix, but it does not need
+an embedded list of which hosts currently use `$` or `/`.
 
 Keep these decisions separate:
 
@@ -30,6 +46,15 @@ Unavailable or user-only providers normally fall back to truthful host-native
 work. Use an exact `$skill-name` or `/skill-name` handoff only when the user
 explicitly requires that provider or a real configuration boundary prevents
 host-native progress. Never simulate provider execution.
+
+Three seams are intentionally explicit. Trivial local, low-risk edits remain
+Direct even though they mutate files; Implementation is for ready work where its
+orchestration and integration verification add material value. A selected
+provider operation with missing configuration returns the exact setup handoff
+when no authorized host-native equivalent can deliver the requested outcome.
+After a successful host-native fallback, the route marker reports what actually
+ran and omits the unavailable provider; a terminal suffix is reserved for a
+selection that did not become equivalent execution.
 
 The dominant workflow owns any durable continuity under `.agent-workflow-state/`.
 Provider-native tickets, specifications, research, reviews, and learning

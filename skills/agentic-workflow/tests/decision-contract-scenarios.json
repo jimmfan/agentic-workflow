@@ -15,6 +15,21 @@
     "expected_behavior": "Answer directly without checking setup, reporting package corruption, loading a provider, or changing repository state."
   },
   {
+    "id": "trivial-local-edit-stays-direct",
+    "category": "direct-trivial-edit",
+    "prompt": "Fix the typo in this one documentation sentence.",
+    "setup": "The target and correction are explicit, the edit is local and low-risk, and no consequential design or integration question is unresolved.",
+    "dominant_activity": "direct",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "direct",
+    "executed": true,
+    "repository_state_effect": "repository-write",
+    "external_scope": "none",
+    "expected_behavior": "Make the bounded edit directly and perform only proportionate verification without invoking Implementation or unrelated workflow ceremony."
+  },
+  {
     "id": "wayfinder-implicit-codex",
     "category": "wayfinder-automatic-selection",
     "prompt": "Map this foggy multi-quarter platform migration.",
@@ -438,8 +453,9 @@
     "host": "github-copilot",
     "route_result": "host-native-fallback",
     "executed": true,
+    "expected_marker": "[route: router → direct]",
     "repository_state_effect": "repository-write",
     "external_scope": "none",
-    "expected_behavior": "Continue with truthful host-native planning when authorized, state that Wayfinder did not execute, omit Wayfinder from the executed route marker, and recommend lifecycle update to repair the declared projection."
+    "expected_behavior": "Continue with truthful host-native planning when authorized, state that Wayfinder did not execute, report the actual host-native activity and omit Wayfinder from the executed route marker, and recommend lifecycle update to repair the declared projection."
   }
 ]
