@@ -293,11 +293,10 @@ Provider-native artifacts and identifiers remain canonical in their native locat
 Agentic Workflow references those artifacts rather than creating parallel copies when the provider already owns the information.
 
 For supported hosts, the declared Matt Pocock provider inventory is projected
-as a complete set under `.agents/skills/`. Fresh install stages every declared
-skill before projection, and update completes a partial projection without
-replacing directories that are already present. A failed provider attempt leaves
-the independently installed core usable but reports provider status as
-incomplete.
+as a complete set under `.agents/skills/`. Install and update reconcile every
+declared skill to the bundled release in one rollback-protected transaction. A
+failed provider attempt leaves the independently installed core usable but
+reports provider status as incomplete.
 
 ## Workflow model
 
@@ -332,12 +331,37 @@ Agentic Workflow keeps root instructions small and loads detailed workflow guida
 
 Agentic Workflow is a project-level workflow and state layer, not a coding-agent runtime or general-purpose memory system. Framework files are replaceable; durable project state remains separate and understandable without the framework.
 
+## Prerequisites
+
+Run lifecycle commands in the environment that owns the target project: the
+macOS or Linux host Terminal, a VS Code terminal inside a Dev Container, or
+native Windows PowerShell. Core installation requires Python 3.11 or newer and
+HTTPS access to GitHub.
+
+Check the Python version in that environment:
+
+```bash
+# macOS/Linux or a Dev Container
+python3 --version
+```
+
+```powershell
+# Native Windows PowerShell
+py -3 --version
+```
+
 ## Install
 
 From the root of the project where you want to use Agentic Workflow:
 
 ```bash
+# macOS/Linux or a Dev Container
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
+```
+
+```powershell
+# Native Windows PowerShell
+py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
 ```
 
 Then start a new coding-agent session from the project root so it can discover the installed project instructions and skills.
@@ -351,6 +375,27 @@ policy for classification and host-native work, but the current release does
 not project provider skills into `.claude/skills/`.
 
 Installation and lifecycle internals are documented separately.
+
+## Update
+
+Run the matching command from the installed project's root. Update reconciles
+the core framework and bundled provider skills while preserving durable project
+state under `.ai-workflow-state/`.
+
+```bash
+# macOS/Linux or a Dev Container
+python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
+```
+
+```powershell
+# Native Windows PowerShell
+py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
+```
+
+Append `--dry-run` to preview an install or update without changing the target.
+The same bootstrap accepts `status` for a read-only health check and `remove`
+to remove reconstructable framework files while preserving project-owned
+durable state.
 
 ## Experimental status
 
