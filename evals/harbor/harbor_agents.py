@@ -19,7 +19,6 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_PACKAGE = REPOSITORY_ROOT / "skills" / "agentic-workflow"
 REMOTE_PACKAGE = "/tmp/agentic-workflow-package"
 WORKSPACE = "/app"
-MANAGED_MARKER = "<!-- ai-workflow:managed-begin -->"
 
 
 def _render_result(label: str, result: ExecResult) -> str:
@@ -59,7 +58,7 @@ do
 done
 for file in /app/AGENTS.md /app/CLAUDE.md
 do
-  if [ -f "$file" ] && grep -Fq '<!-- ai-workflow:managed-begin -->' "$file"; then
+  if [ -f "$file" ] && grep -Fq '<!-- agent-workflow:managed-begin -->' "$file"; then
     echo "unexpected Agentic Workflow marker: $file" >&2
     exit 1
   fi
@@ -129,7 +128,7 @@ class AgenticWorkflowCodex(_EvaluationCodex):
             command=(
                 "set -eu\n"
                 "test -f /app/.agent-workflow/install-manifest.json\n"
-                "grep -Fq '<!-- ai-workflow:managed-begin -->' /app/AGENTS.md\n"
+                "grep -Fq '<!-- agent-workflow:managed-begin -->' /app/AGENTS.md\n"
                 "test -f /app/.agents/skills/workflow-debugging/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-discovery/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-implementation/SKILL.md\n"

@@ -1,5 +1,5 @@
-<!-- ai-workflow:managed-begin -->
+<!-- agent-workflow:managed-begin -->
 @AGENTS.md
-<!-- ai-workflow:managed-end -->
+<!-- agent-workflow:managed-end -->
 
-<!-- ai-workflow:project-instructions -->
+<!-- agent-workflow:project-instructions -->

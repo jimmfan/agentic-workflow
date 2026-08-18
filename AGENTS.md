@@ -1,4 +1,4 @@
-<!-- ai-workflow:managed-begin -->
+<!-- agent-workflow:managed-begin -->
 # Agentic Workflow
 
 Agentic Workflow is a small intent router over host tools and replaceable skills.
@@ -80,9 +80,9 @@ selection did not become execution, report the applicable terminal outcome.
 
 The marker is mandatory for every final response and must not trigger additional
 work. Follow `.agent-workflow/routing.md` for labels, syntax, and edge cases.
-<!-- ai-workflow:managed-end -->
+<!-- agent-workflow:managed-end -->
 
-<!-- ai-workflow:project-instructions -->
+<!-- agent-workflow:project-instructions -->
 # AGENTS.md
 
 ## Pre-1.0 engineering priority
