@@ -18,8 +18,9 @@ subprocess.
   requiring one exact trace.
 - `test_wayfinder_state.py` validates the authored, installed, and generated
   settlement contract plus a deterministic state-transition oracle for
-  current-state allocation, effort-lock serialization, reference-safe retirement,
-  conservative failure, identifier reuse, effort lifecycle, and projection parity.
+  current-state allocation, effort-lock serialization, reference-safe
+  retirement without a Git-history gate, identifier reuse, effort lifecycle,
+  and projection parity.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
@@ -59,8 +60,9 @@ and a blocked project. They are opt-in and not part of ordinary pull requests.
 The broader deterministic catalog also covers creating canonical map-first
 Wayfinder state without implementation work-item children, optional U#/E#/F#/D#
 knowledge, resolved unknowns and redundant evidence leaving current state,
-effort-lock serialization under concurrent allocation, unsafe retirement blocking,
-completed-effort/new-destination separation, explicit historical access, and
+effort-lock serialization under concurrent allocation and retirement,
+uncommitted transient retirement, completed-effort/new-destination separation,
+explicit historical access, and
 ensuring that an unrelated existing effort neither captures a simple route nor
 gets loaded. The live Wayfinder contracts preserve
 an unrelated effort during reconciliation, keep stale-state audits read-only,

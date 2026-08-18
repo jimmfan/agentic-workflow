@@ -193,10 +193,12 @@ When an unknown resolves, the answer and map are reconciled without requiring a
 new evidence, fact, or decision child. U/E/F/D files leave current Wayfinder
 state when they no longer retain independent navigational value. Their numbers
 remain stable while current, but retirement releases them for the ordinary
-highest-current-ID-plus-one rule; Git preserves historical meaning. Before
-removal, current references and recoverable history must be safe. An empty
-transient per-effort lock directory serializes map and child mutations and is
-removed after each mutation; it contains no knowledge or allocation data.
+highest-current-ID-plus-one rule; Git preserves historical states that actually
+enter Git. Retirement requires current information and references to be
+reconciled, not a prior commit of the retiring child. One empty transient
+per-effort lock serializes map and child mutations so allocation cannot collide
+and retirement cannot race a current-reference edit; it contains no knowledge
+or allocation data.
 
 Wayfinder does not own implementation work items. One coherent next action can
 pass from the map directly to implementation. Work that needs dependency

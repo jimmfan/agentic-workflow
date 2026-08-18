@@ -141,10 +141,11 @@ Create children lazily only when independent preservation adds value:
 - D# is a committed choice made under project authority.
 
 These are semantic distinctions; never force U# -> E# -> F# -> D# as ceremony.
-Use stable per-type positive identifiers while records are current and never
-renumber a current record. Allocate one above the highest current filename, or
-`1` when none exists. A retired number may be reused in a later repository
-state; Git distinguishes its historical meanings.
+Keep stable numeric handles plus readable slugs while records are current, such
+as `U17-node-group-isolation.md`; never renumber a current record or allow a
+same-type duplicate. Allocate one above the highest currently present number,
+or `1` when none exists, without searching for interior gaps. A retired number
+may reappear in a later repository state; it is not permanently reserved.
 Facts link their evidence or direct authoritative sources. Preserve conflicting
 evidence; mark an unresolved fact disputed and surface the blocker rather than
 silently replacing history. Git owns historical evolution.
@@ -155,19 +156,23 @@ when each keeps independent current value; the map may be sufficient. U/E/F/D
 files are current knowledge roles, not permanent historical identities. Git
 preserves retired investigation.
 
-Serialize every effort mutation with atomic creation of the empty transient
-`<effort>/.wayfinder-mutation-lock/` directory. Hold it through reads, writes,
-and removals, then remove it; never commit it or store data in it. If it exists,
-wait through host coordination or stop conservatively, never steal it. Under the
-lock, reject duplicate current IDs before allocating, reread the directory,
-choose one above the current maximum, and create without overwrite. This
-prevents different slugs from claiming the same number.
+Serialize every map or child mutation with atomic creation of the empty
+transient `<effort>/.wayfinder-mutation-lock/` directory. Hold it through the
+affected reads, writes, and removals; then remove it. Never commit, populate, or
+steal it. If safe atomic locking is unavailable, stop conservatively. Under the
+lock, allocation rereads the type directory, rejects duplicate current IDs,
+chooses one above the current maximum, and creates without overwrite. One
+effort-wide lock remains the smallest mechanism because readable slugs defeat
+exact-path collision protection and retirement must exclude concurrent current
+reference edits through its final scan and removal.
 
-Before removing a child, reconcile every current map and child reference in the
-selected effort and verify recoverable Git history contains its current content.
-Under the same effort lock, reread every current reference and remove the child
-before releasing the lock. If references or history are unsafe, retain the file.
-After removal its number is no longer reserved.
+Before removing a child, preserve independently useful current information and
+reconcile every current map and child reference in the selected effort. Under
+the effort lock, reread the affected current state immediately before removal
+and retain the child if truthful reconciliation is incomplete. Remove it before
+releasing the lock. Exact current contents need not already exist in Git;
+transient navigation artifacts may disappear. After removal its number is no
+longer reserved.
 
 Completing, abandoning, or superseding an effort records that status and a
 concise outcome in its map, leaves no next work for that effort, and never

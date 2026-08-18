@@ -242,11 +242,11 @@ def check_router_contract() -> None:
         "review dependent decisions",
         "does not duplicate those work items in Wayfinder",
         "Use `to-tickets` only when clear work benefits from dependency ordering",
-        "recoverable Git history contains the retiring",
+        "exact contents already exist in Git",
         "never leave a dangling current link",
-        "later repository state may reuse it",
+        "A retired number is not reserved",
         ".wayfinder-mutation-lock/",
-        "reject duplicate current numbers",
+        "never allow two current records",
     ):
         require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")
     combined = agents + routing + durable + wayfinder
@@ -468,7 +468,9 @@ def check_provider_declaration() -> None:
         "When a U# resolves",
         "U/E/F/D files are current knowledge roles",
         "After removal its number is no longer reserved",
-        "different slugs from claiming the same number",
+        "never renumber a current record or allow a same-type duplicate",
+        "retirement must exclude concurrent current reference edits",
+        "Exact current contents need not already exist in Git",
         "Wayfinder does not create implementation work items",
         "missing, treat the installation as incomplete",
     ):

@@ -2,10 +2,10 @@ schema_version = 1
 id = "wayfinder-resolved-unknown-without-promotion"
 name = "Resolved unknown and redundant evidence leave current state"
 fixture = "wayfinder-reference-settlement"
-request = "Resume the named provider-state effort. U17 is answered and E12 adds no independent value beyond source.txt. Recoverable Git history contains both files. Update map.md and every remaining F8/D4 reference, make F8 link source.txt directly, then remove U17 and E12. Do not manufacture another child. Repeating the reconciliation must be a no-op."
+request = "Resume the named provider-state effort. U17 is answered and E12 adds no independent value beyond source.txt. Update map.md and every remaining F8/D4 reference, make F8 link source.txt directly, then remove U17 and E12. Do not manufacture another child or require either transient record to enter Git first. Repeating the reconciliation must be a no-op."
 starting_state = [
   "This effort currently contains U17, E12, F8, and D4.",
-  "Recoverable Git history contains U17 and E12, while source.txt can directly support F8.",
+  "source.txt can directly support F8; Git history is not a retirement prerequisite.",
   "F8 and D4 retain independent current value; U17 and E12 do not.",
 ]
 expect = [

@@ -20,20 +20,29 @@ while Git retains historical evolution.
   records, not Wayfinder children or effort directories.
 - The accepted design treats numbers as current-state references, not historical
   primary keys. Child files leave current state when they lack independent
-  navigational value; their numbers may later be reused and Git preserves the
-  historical meanings.
+  navigational value; their numbers may later reappear through ordinary
+  highest-current-plus-one allocation. Allocation never searches interior gaps.
+- Current child filenames retain numeric prefixes and readable slugs. Existing
+  current records are never renumbered, and same-type current numbers cannot
+  collide.
 - Atomic creation of one empty transient per-effort lock serializes all map and
-  child mutations. Allocation uses the current maximum; retirement holds the
-  same lock while rechecking references and removing a file whose current
-  content is already recoverable from Git. Unsafe state retains the record.
+  child mutations. Readable slugs make path-only no-overwrite insufficient for
+  allocation, and the same lock closes retirement's final reference-scan/remove
+  race. The lock is coordination only, not durable knowledge or allocation
+  state.
+- Retirement requires preservation of independently useful current information
+  and reconciliation of current references. A retiring child's exact contents
+  need not enter Git first; Git preserves only historical states that actually
+  entered it.
 - Each map gains one optional `Status: current | completed | abandoned |
   superseded` line. Explicit current efforts outrank historical ones during a
   likely resume; historical efforts remain accessible when directly relevant.
 - The authored contract, installed payload, generated runtime, documentation,
   ADR, fixtures, and deterministic behavior catalog now agree on this model.
-- Final verification passed 107 source-package tests, 69 evaluation tests, 29
+- Final verification passed 108 source-package tests, 69 evaluation tests, 29
   static behavioral scenarios, package verification with tests, projection
-  regeneration, both closing review axes, and `git diff --check`.
+  regeneration, and `git diff --check`. Both closing review axes completed; all
+  substantive findings were corrected, and the Spec re-review was clean.
 
 ## Blockers and dependencies
 
@@ -53,15 +62,20 @@ None for this effort.
 - [ADR-0024](../../../architecture-decisions/0024-use-current-state-wayfinder-identifiers.md)
 - Git is the history mechanism; this effort introduces no second archive,
   registry, event log, allocation database, or global maintenance sweep.
+- The repository audit found no workflow that consumes repository-lifetime
+  U/E/F/D numeric uniqueness; the earlier invariant was self-imposed.
 - Permanent compact tombstones and high-water metadata confuse current knowledge
-  with historical identity. Neither is needed when Git owns historical meaning.
-  The existing archive convention remains scoped to other workflow records.
+  with historical identity. Neither is needed. The existing archive convention
+  remains scoped to other workflow records.
 
 ## Decisions so far
 
 - Use current-state identifiers plus map-owned effort status. ADR-0024 explicitly
   rejects lifetime-uniqueness bookkeeping, tombstones, registries, archive trees,
   event logs, and lifecycle databases.
+- Retain the transient effort mutation lock because it is the smallest single
+  mechanism that prevents readable-slug allocation collisions and makes
+  reference-safe retirement atomic; do not turn it into durable state.
 
 ## Not yet specified
 

@@ -60,7 +60,7 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-completed-effort-new-destination",
                 "wayfinder-explicit-historical-effort-access",
                 "wayfinder-concurrent-allocation-recheck",
-                "wayfinder-unrecoverable-history-retains-record",
+                "wayfinder-uncommitted-transient-record-retires",
             },
         )
         read_only = next(
@@ -92,10 +92,14 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertEqual(len(historical.state_must_include), 1)
 
         concurrent = scenarios["wayfinder-concurrent-allocation-recheck"]
-        unsafe = scenarios["wayfinder-unrecoverable-history-retains-record"]
+        transient = scenarios["wayfinder-uncommitted-transient-record-retires"]
         self.assertTrue(any("D3" in item for item in concurrent.forbid_created_globs))
-        self.assertIn("blocked_cleanly", unsafe.expect)
-        self.assertIn("project_state_preserved", unsafe.expect)
+        self.assertIn("task_completed", transient.expect)
+        self.assertIn("meaningful_repository_change", transient.expect)
+        self.assertTrue(
+            any(item.kind == "path_not_exists" and "U17" in item.path.as_posix()
+                for item in transient.assertions)
+        )
 
     def test_effort_selection_scenarios_cover_resume_creation_naming_and_stability(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}

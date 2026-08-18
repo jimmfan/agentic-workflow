@@ -118,11 +118,11 @@ unknown fields, and unsupported assertion kinds.
 
 The deterministic catalog includes settlement contracts for removing resolved
 U# and redundant E# files only after reference reconciliation, serializing
-concurrent creation with the transient effort lock, retaining records
-when recoverable history is unavailable, creating a fresh effort after a
-completed destination, and reading an explicitly named historical effort
-without making it current. These are human-authored behavior contracts, not
-evidence that an unrun model obeyed them.
+concurrent creation with a transient effort mutation lock, allowing an
+uncommitted transient child to retire once current state is reconciled, creating
+a fresh effort after a completed destination, and reading an explicitly named
+historical effort without making it current. These are human-authored behavior
+contracts, not evidence that an unrun model obeyed them.
 
 ## Fixtures and reset
 

@@ -108,11 +108,12 @@ canonical local representation. It creates no global index, shadow `.scratch/`
 tree, persisted frontier, lifecycle database, or external-tracker sync. The map
 itself is the re-entry point and may carry one compact current/completed/
 abandoned/superseded status. U/E/F/D identifiers are stable references only
-within current state; Git preserves the meanings of retired records. Human
-Wayfinder state remains opaque project data to lifecycle code. Atomic creation
-of one empty transient lock directory per active effort mutation prevents
-concurrent child-number collisions and reference-removal races without adding
-durable allocation state.
+within current state; Git preserves historical states that actually enter Git
+but is not a retirement gate. Human Wayfinder state remains opaque project data
+to lifecycle code. Atomic creation of one empty transient per-effort lock
+directory serializes map and child mutations, preventing different readable
+slugs from concurrently claiming the same number and making reference-safe
+retirement indivisible without durable allocation state.
 
 Accepted, lasting architecture or contract decisions use `/` as
 the default ADR namespace. An existing project instruction may name another

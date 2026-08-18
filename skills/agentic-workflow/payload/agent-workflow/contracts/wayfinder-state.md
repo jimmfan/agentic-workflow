@@ -183,10 +183,17 @@ implementation.
 ## Identifiers and links
 
 Use per-type positive identifiers within an effort: `U#`, `E#`, `F#`, and
-`D#`. Never renumber an existing current record. Assign one greater than the
-highest current filename of that type, or `1` when none exists. A retired number
-is not reserved: a later repository state may reuse it, and Git distinguishes
-the historical meanings.
+`D#`. Keep the numeric prefix plus a readable filename slug, such as
+`U17-node-group-isolation.md`; do not reduce child filenames to bare numbers.
+The identifier is a stable handle within the current Wayfinder representation,
+not a repository-lifetime primary key. Never renumber an existing current
+record, and never allow two current records of one type to share a number.
+
+Assign one greater than the highest currently present identifier of that type,
+or `1` when none exists. Do not search for or deliberately recycle interior
+gaps. A retired number is not reserved: removing the current highest record may
+cause its number to appear again in a later repository state, and Git
+distinguishes historical meanings that actually entered Git.
 
 Use repository-relative Markdown links and readable titles. Facts must link the
 evidence artifacts or direct authoritative sources that justify them. Evidence
@@ -199,21 +206,22 @@ Git is the history mechanism. Do not add an event log, revision files, a graph
 index, or another versioning scheme.
 
 Serialize every map or child mutation for an effort by atomically creating the
-empty `<effort>/.wayfinder-mutation-lock/` directory. Hold it through all reads,
-writes, and removals in that mutation, then remove it. The directory contains no
-data, is not durable Wayfinder state, and must not be committed. If it already
-exists, wait through host coordination or stop conservatively; never steal or
-guess that a lock is stale. Atomic directory creation is the required host
-primitive. If it is unavailable, do not mutate the effort.
+empty `<effort>/.wayfinder-mutation-lock/` directory. Hold it through the
+affected reads, writes, and removals, then remove it. The lock contains no data,
+is not durable Wayfinder state, and must not be committed. If it already exists,
+wait through host coordination or stop conservatively; never steal or guess that
+a lock is stale. If atomic directory creation is unavailable, do not mutate the
+effort.
 
-Before creating a child under that lock, reread the map and relevant child
-directory, reject duplicate current numbers, recompute the candidate, and
-create the child without overwriting any path. The lock covers the directory
-read and completed create so two different slugs cannot claim the same number.
-If another creator won before the lock was acquired, the reread naturally
-chooses the new current maximum. Before editing an existing child, reread it and
-the map. If concurrent edits disagree, preserve both claims and reconcile
-explicitly rather than choosing silently.
+Under that lock, allocation rereads the relevant child directory, rejects
+duplicate current numbers, recomputes the candidate, and creates the child
+without overwriting any path. The same single lock also makes a retirement's
+final reference scan and removal indivisible with compliant map and child edits.
+Readable slugs make exact-path no-overwrite insufficient for allocation, while
+rereads alone cannot close the check-to-remove retirement race. Before editing
+an existing child or the map, reread it and the directly affected current state.
+If concurrent edits disagree, preserve both claims and reconcile explicitly
+rather than choosing silently.
 
 ## The low-resolution map
 
@@ -402,15 +410,19 @@ evidence that the E# remains independently useful unless the fact can truthfully
 link the authoritative source directly. Do not scan or reconcile unrelated
 efforts.
 
-Removal is allowed only after recoverable Git history contains the retiring
-file's current content. If that content has never entered recoverable history,
-history is unavailable, or current references cannot be reconciled truthfully,
-keep the file and report the exact blocker. Acquire the effort mutation lock,
-reread the map and current children, confirm no current reference remains, and
-remove the child before releasing the lock. If current state changed before the
-lock was acquired, reconcile again rather than overwriting it. An empty child
-directory may then disappear. The retired number becomes available to the
-ordinary current-state allocation rule.
+Removal is allowed once all independently useful current information is
+preserved and every current reference is reconciled truthfully. There is no
+requirement that the child's exact contents already exist in Git. Git preserves
+states that actually entered Git; transient navigation artifacts may disappear
+without first becoming historical records.
+
+Under the effort mutation lock, immediately before removal, reread the target,
+map, and current children and confirm no current reference or independently
+useful information still depends on the child. If participating state changed
+before the lock was acquired, retry from the new current state rather than
+overwriting it. Remove the child before releasing the lock; an empty child
+directory may then disappear. The retired number becomes available through the
+ordinary highest-current-plus-one rule.
 
 To finish an effort, set the map status to `completed`, `abandoned`, or
 `superseded`, record the concise outcome or reason, reconcile current canonical

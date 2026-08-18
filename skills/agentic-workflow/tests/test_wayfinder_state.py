@@ -4,7 +4,6 @@ from contextlib import contextmanager
 from pathlib import Path
 import re
 import shutil
-import subprocess
 import tempfile
 import threading
 import time
@@ -20,7 +19,7 @@ RUNTIME = PACKAGE_ROOT / "runtime-projections/wayfinder.md"
 GENERATED_SKILL = REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md"
 FIXTURES = PACKAGE_ROOT / "tests/fixtures"
 TYPE_DIRECTORIES = {"U": "unknowns", "E": "evidence", "F": "facts", "D": "decisions"}
-CURRENT_ID = re.compile(r"^([UEFD])([1-9][0-9]*)(?:-[^.]+)?\.md$")
+CURRENT_ID = re.compile(r"^([UEFD])([1-9][0-9]*)-([^.]+)\.md$")
 
 
 class UnsafeWayfinderState(RuntimeError):
@@ -77,10 +76,11 @@ def create_current_child(
     slug: str,
     body: str,
     before_lock: Callable[[], None] | None = None,
+    lock_attempts: int = 1_000,
 ) -> Path:
     if before_lock is not None:
         before_lock()
-    with effort_mutation_lock(effort):
+    with effort_mutation_lock(effort, attempts=lock_attempts):
         directory = effort / TYPE_DIRECTORIES[kind]
         directory.mkdir(parents=True, exist_ok=True)
         candidate = next_current_id(effort, kind)
@@ -116,47 +116,31 @@ def references_to(effort: Path, target: Path) -> list[Path]:
     return references
 
 
-def git_history_contains_current(repository: Path, target: Path) -> bool:
-    relative = target.relative_to(repository).as_posix()
-    commits = subprocess.run(
-        ["git", "log", "--all", "--format=%H", "--", relative],
-        cwd=repository,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=True,
-    ).stdout.splitlines()
-    current = target.read_bytes()
-    for commit in commits:
-        historical = subprocess.run(
-            ["git", "show", f"{commit}:{relative}"],
-            cwd=repository,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-        )
-        if historical.returncode == 0 and historical.stdout == current:
-            return True
-    return False
-
-
 def retire_current_child(
     effort: Path,
     target: Path,
     *,
-    repository: Path,
+    before_final_check: Callable[[], None] | None = None,
     lock_attempts: int = 1_000,
 ) -> bool:
     with effort_mutation_lock(effort, attempts=lock_attempts):
         if not target.exists():
             return False
-        if not git_history_contains_current(repository, target):
-            raise UnsafeWayfinderState(
-                "retiring file's current content is absent from recoverable Git history"
-            )
         references = references_to(effort, target)
         if references:
             raise UnsafeWayfinderState(f"current references remain: {references}")
+
+        observed_target = target.read_bytes()
+        observed_current = current_markdown(effort, excluding=target)
+        if before_final_check is not None:
+            before_final_check()
+        if not target.exists() or target.read_bytes() != observed_target:
+            raise UnsafeWayfinderState("retiring child changed during reconciliation")
+        if current_markdown(effort, excluding=target) != observed_current:
+            raise UnsafeWayfinderState("current state changed during reconciliation")
+        if references_to(effort, target):
+            raise UnsafeWayfinderState("current references appeared during reconciliation")
+
         target.unlink()
         parent = target.parent
         if not any(parent.iterdir()):
@@ -164,45 +148,34 @@ def retire_current_child(
         return True
 
 
-def commit_fixture(repository: Path, message: str) -> None:
-    subprocess.run(["git", "init", "-q"], cwd=repository, check=True)
-    subprocess.run(["git", "add", "."], cwd=repository, check=True)
-    subprocess.run(
-        [
-            "git",
-            "-c",
-            "user.name=Wayfinder Test",
-            "-c",
-            "user.email=wayfinder@example.invalid",
-            "commit",
-            "-qm",
-            message,
-        ],
-        cwd=repository,
-        check=True,
-    )
-
-
 class WayfinderStateContractTests(unittest.TestCase):
     def setUp(self) -> None:
         self.contract = CONTRACT.read_text(encoding="utf-8")
         self.normalized = " ".join(self.contract.split())
 
-    def test_current_state_allocation_reuses_retired_highest_id_without_renumbering(self) -> None:
+    def test_current_state_allocation_skips_gaps_and_may_reuse_retired_highest(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            repository = Path(temporary) / "project"
-            effort = repository / ".agent-workflow-state/wayfinder/effort"
+            effort = Path(temporary) / "effort"
             first = create_current_child(effort, "D", "first", "first\n")
             second = create_current_child(effort, "D", "second", "second\n")
+            third = create_current_child(effort, "D", "third", "third\n")
             first_before = first.read_bytes()
-            commit_fixture(repository, "current decisions")
+            third_before = third.read_bytes()
 
-            self.assertEqual((first.name, second.name), ("D1-first.md", "D2-second.md"))
-            self.assertTrue(retire_current_child(effort, second, repository=repository))
+            self.assertEqual(
+                (first.name, second.name, third.name),
+                ("D1-first.md", "D2-second.md", "D3-third.md"),
+            )
+            self.assertTrue(retire_current_child(effort, second))
+            fourth = create_current_child(effort, "D", "fourth", "fourth\n")
+            self.assertEqual(fourth.name, "D4-fourth.md")
+
+            self.assertTrue(retire_current_child(effort, fourth))
             replacement = create_current_child(effort, "D", "replacement", "new meaning\n")
 
-            self.assertEqual(replacement.name, "D2-replacement.md")
+            self.assertEqual(replacement.name, "D4-replacement.md")
             self.assertEqual(first.read_bytes(), first_before)
+            self.assertEqual(third.read_bytes(), third_before)
             self.assertFalse((effort / "allocation.md").exists())
 
     def test_atomic_effort_lock_serializes_simultaneous_different_slugs(self) -> None:
@@ -248,10 +221,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             effort = root / ".agent-workflow-state/wayfinder/provider-state"
             unknown = effort / "unknowns/U17-provider-tracker-state.md"
             evidence = effort / "evidence/E12-provider-configuration.md"
-            commit_fixture(root, "initial investigation")
-
             with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
-                retire_current_child(effort, unknown, repository=root)
+                retire_current_child(effort, unknown)
 
             (effort / "map.md").write_text(
                 "# Provider state settlement\n\n- Status: current\n\n"
@@ -283,60 +254,80 @@ class WayfinderStateContractTests(unittest.TestCase):
                 evidence.read_text(encoding="utf-8").replace("Related: U17, F8", "Related: F8"),
                 encoding="utf-8",
             )
-            commit_fixture(root, "reconcile current references")
-
-            self.assertTrue(retire_current_child(effort, evidence, repository=root))
-            self.assertTrue(retire_current_child(effort, unknown, repository=root))
-            self.assertFalse(retire_current_child(effort, evidence, repository=root))
+            self.assertTrue(retire_current_child(effort, evidence))
+            self.assertTrue(retire_current_child(effort, unknown))
+            self.assertFalse(retire_current_child(effort, evidence))
             source_link = (fact.parent / "../../../../source.txt").resolve()
             self.assertEqual(source_link, (root / "source.txt").resolve())
             self.assertTrue(source_link.is_file())
             self.assertNotIn("U17", decision.read_text(encoding="utf-8"))
 
-    def test_unrecoverable_history_or_unavailable_lock_retains_record(self) -> None:
-        fixture = FIXTURES / "wayfinder-reference-settlement"
+    def test_uncommitted_child_can_retire_and_busy_lock_preserves_state(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary) / "project"
-            shutil.copytree(fixture, root)
-            effort = root / ".agent-workflow-state/wayfinder/provider-state"
-            unknown = effort / "unknowns/U17-provider-tracker-state.md"
-            commit_fixture(root, "initial investigation")
-            unknown.write_text(
-                unknown.read_text(encoding="utf-8") + "\nUncommitted current detail.\n",
-                encoding="utf-8",
-            )
+            effort = Path(temporary) / "effort"
+            unknowns = effort / "unknowns"
+            unknowns.mkdir(parents=True)
+            unknown = unknowns / "U1-transient.md"
+            unknown.write_text("# U1: Transient question\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(UnsafeWayfinderState, "current content"):
-                retire_current_child(effort, unknown, repository=root)
-            self.assertTrue(unknown.exists())
+            self.assertTrue(retire_current_child(effort, unknown))
+            self.assertFalse(unknown.exists())
 
+            unknowns.mkdir()
+            replacement = unknowns / "U1-current.md"
+            replacement.write_text("# U1: Current question\n", encoding="utf-8")
             (effort / ".wayfinder-mutation-lock").mkdir()
-            with self.assertRaisesRegex(UnsafeWayfinderState, "lock is unavailable"):
-                retire_current_child(effort, unknown, repository=root, lock_attempts=1)
-            self.assertTrue(unknown.exists())
+            with self.assertRaisesRegex(UnsafeWayfinderState, "effort mutation lock"):
+                create_current_child(
+                    effort, "U", "blocked", "blocked\n", lock_attempts=1
+                )
+            with self.assertRaisesRegex(UnsafeWayfinderState, "effort mutation lock"):
+                retire_current_child(effort, replacement, lock_attempts=1)
+            self.assertTrue(replacement.exists())
+            self.assertTrue((effort / ".wayfinder-mutation-lock").is_dir())
 
     def test_resolved_unknown_can_settle_to_map_only(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            repository = Path(temporary) / "project"
-            effort = repository / ".agent-workflow-state/wayfinder/map-only"
+            effort = Path(temporary) / "map-only"
             unknowns = effort / "unknowns"
             unknowns.mkdir(parents=True)
             map_path = effort / "map.md"
             unknown = unknowns / "U1-tracker-state.md"
             map_path.write_text("# Map only\n\nU1 remains open.\n", encoding="utf-8")
             unknown.write_text("# U1: Tracker state?\n", encoding="utf-8")
-            commit_fixture(repository, "record investigation")
-
             map_path.write_text(
                 "# Map only\n\nTracker state is not required.\n",
                 encoding="utf-8",
             )
-            self.assertTrue(retire_current_child(effort, unknown, repository=repository))
+            self.assertTrue(retire_current_child(effort, unknown))
 
             self.assertEqual(
                 [path.relative_to(effort).as_posix() for path in effort.iterdir()],
                 ["map.md"],
             )
+
+    def test_retirement_rechecks_current_state_under_effort_lock(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "effort"
+            unknowns = effort / "unknowns"
+            unknowns.mkdir(parents=True)
+            map_path = effort / "map.md"
+            map_path.write_text("# Concurrent retirement\n", encoding="utf-8")
+            unknown = unknowns / "U1-transient.md"
+            unknown.write_text("# U1: Transient question\n", encoding="utf-8")
+
+            def concurrent_reference() -> None:
+                map_path.write_text(
+                    map_path.read_text(encoding="utf-8") + "\nU1 is still needed.\n",
+                    encoding="utf-8",
+                )
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "current state changed"):
+                retire_current_child(
+                    effort, unknown, before_final_check=concurrent_reference
+                )
+            self.assertTrue(unknown.exists())
+            self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
 
     def test_unsafe_current_paths_block_allocation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -348,6 +339,11 @@ class WayfinderStateContractTests(unittest.TestCase):
                 next_current_id(effort, "U")
 
             (directory / "notes.md").unlink()
+            (directory / "U1.md").write_text("bare\n", encoding="utf-8")
+            with self.assertRaisesRegex(UnsafeWayfinderState, "unrecognized child filename"):
+                next_current_id(effort, "U")
+
+            (directory / "U1.md").unlink()
             (directory / "U1-first.md").write_text("first\n", encoding="utf-8")
             (directory / "U1-duplicate.md").write_text("duplicate\n", encoding="utf-8")
             with self.assertRaisesRegex(UnsafeWayfinderState, "duplicate current U"):
@@ -355,15 +351,20 @@ class WayfinderStateContractTests(unittest.TestCase):
 
     def test_contract_keeps_only_current_roles_and_no_allocation_primitive(self) -> None:
         for required in (
+            "numeric prefix plus a readable filename slug",
+            "stable handle within the current Wayfinder representation",
             "Never renumber an existing current record",
-            "Assign one greater than the highest current filename",
+            "never allow two current records of one type to share a number",
+            "one greater than the highest currently present identifier",
+            "Do not search for or deliberately recycle interior gaps",
             "A retired number is not reserved",
-            "atomically creating the empty `<effort>/.wayfinder-mutation-lock/` directory",
-            "reject duplicate current numbers",
+            "`<effort>/.wayfinder-mutation-lock/` directory",
+            "Serialize every map or child mutation for an effort",
+            "final reference scan and removal indivisible",
             "U/E/F/D files are current durable knowledge",
-            "recoverable Git history contains the retiring file's current content",
+            "There is no requirement that the child's exact contents already exist in Git",
             "never leave a dangling current link",
-            "The retired number becomes available",
+            "ordinary highest-current-plus-one rule",
         ):
             self.assertIn(required, self.normalized)
         self.assertNotIn("`allocation.md`", self.contract)
@@ -400,11 +401,13 @@ class WayfinderStateContractTests(unittest.TestCase):
         normalized_runtime = " ".join(runtime.split())
         for required in (
             "Status: current | completed | abandoned | superseded",
-            "never renumber a current record",
-            "A retired number may be reused",
-            "empty transient `<effort>/.wayfinder-mutation-lock/` directory",
-            "different slugs from claiming the same number",
+            "numeric handles plus readable slugs",
+            "never renumber a current record or allow a same-type duplicate",
+            "without searching for interior gaps",
+            "`<effort>/.wayfinder-mutation-lock/` directory",
+            "retirement must exclude concurrent current reference edits",
             "U/E/F/D files are current knowledge roles",
+            "Exact current contents need not already exist in Git",
             "After removal its number is no longer reserved",
         ):
             self.assertIn(required, normalized_runtime)
