@@ -30,6 +30,9 @@ MANIFEST_SCHEMA = 6
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
 MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 INVOCATION_POLICIES = frozenset({"implicit", "user-only", "unavailable"})
+# Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
+PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
+PRE_THIN_DIRECT_ROOT_WORDS = 682
 REVIEWED_PROVIDER = {
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
@@ -215,19 +218,42 @@ def check_router_contract() -> None:
     routing = (PAYLOAD_ROOT / "agent-workflow" / "routing.md").read_text(encoding="utf-8")
     durable = (PAYLOAD_ROOT / "agent-workflow" / "contracts" / "durable-state.md").read_text(encoding="utf-8")
     wayfinder = (PAYLOAD_ROOT / "agent-workflow" / "contracts" / "wayfinder-state.md").read_text(encoding="utf-8")
-    require("Every request MUST be evaluated" in agents, "root policy lacks mandatory routing")
+    normalized_agents = " ".join(agents.split())
+    normalized_routing = " ".join(routing.split())
+    require("Every request MUST be routed" in agents, "root policy lacks mandatory routing")
     require("`direct`" in agents and "minimum useful process" in routing, "router lacks the minimum/direct contract")
     require("MUST NOT" in agents and "authority" in agents, "root policy lacks the authorization boundary")
+    for required in (
+        "Start Direct",
+        "installed skill descriptions",
+        "smallest authorized read-only reconnaissance",
+        "Do not load `.agent-workflow/routing.md`",
+        "more than one workflow or capability must be composed",
+        "Counts trigger assessment, never selection by themselves",
+        "any hard signal or at least two soft signals",
+        "Read-only work never changes repository, external, or durable state",
+        "Before any durable-state write",
+    ):
+        require(required in normalized_agents, f"thin root router lacks required boundary: {required}")
+    require(
+        len(agents.split()) <= PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5,
+        "thin root router exceeds the prior ambiguity-gate context budget",
+    )
+    require(
+        len(agents.split()) <= PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100,
+        "thin root router reduces confidently Direct context by less than 35%",
+    )
+    require(
+        "default transitions, not mandatory pipelines" in normalized_routing.lower(),
+        "detailed router lacks conditional default transitions",
+    )
     require(".agent-workflow-state/" in durable, "durable-state contract lacks the canonical state root")
     require("no global active-workflow index" in durable, "durable-state contract retains a global active index")
     require(
         "Multiple unrelated active or interrupted records may coexist" in durable,
         "durable-state contract lacks independent record continuity",
     )
-    require(
-        ".agent-workflow-state/wayfinder/" in agents and "unrelated map" in agents,
-        "root policy lacks minimal Wayfinder progressive-loading guidance",
-    )
+    require("wayfinder-state.md" in agents and "unrelated map" in agents, "root policy lacks Wayfinder loading guidance")
     normalized_wayfinder = " ".join(wayfinder.split())
     for required in (
         "unknowns/",

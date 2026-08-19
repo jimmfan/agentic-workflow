@@ -38,6 +38,8 @@ It checks:
 - the exact current source-to-target mapping and synchronized version;
 - absence of deferred controller, hook, and observability payloads;
 - routing, authorization, durable-state, and provider declaration contracts;
+- thin-router word budgets and deterministic positive/negative escalation
+  contracts (not live model-routing proof);
 - local Markdown links plus the lifecycle-acceptance and routing-decision JSON
   catalog schemas;
 - lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and

@@ -30,6 +30,21 @@
     "expected_behavior": "Make the bounded edit directly and perform only proportionate verification without invoking Implementation or unrelated workflow ceremony."
   },
   {
+    "id": "three-trivial-items-stay-direct",
+    "category": "wayfinder-count-is-assessment-only",
+    "prompt": "Correct three named typos in README.md.",
+    "setup": "All three corrections are explicit, independent, bounded to one file, and contain no consequential unknown, conflict, dependency, blocker, or continuity need.",
+    "dominant_activity": "direct",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "direct",
+    "executed": true,
+    "repository_state_effect": "repository-write",
+    "external_scope": "none",
+    "expected_behavior": "Notice that the request has three items, assess whether durable coordination is useful, and remain Direct because count alone never selects Wayfinder."
+  },
+  {
     "id": "wayfinder-implicit-codex",
     "category": "wayfinder-automatic-selection",
     "prompt": "Map this foggy multi-quarter platform migration.",
@@ -87,6 +102,28 @@
     "repository_state_effect": "none",
     "external_scope": "none",
     "expected_behavior": "Use bounded Discovery without invoking Wayfinder or creating a Wayfinder effort merely because one important question exists."
+  },
+  {
+    "id": "wayfinder-two-soft-signals",
+    "category": "wayfinder-soft-signal-selection",
+    "prompt": "Plan the authentication migration while we investigate how token rotation and session invalidation constrain each other.",
+    "setup": "Two consequential unknowns interact, the answer changes a meaningful dependency graph, the work is authorized to use repository-local planning state, and no single hard signal independently decides the route.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
+    "external_scope": "none",
+    "expected_behavior": "Select Wayfinder because at least two qualitative soft signals coexist, preserve the interacting unknowns and dependency consequence, and avoid treating the rubric as a numeric complexity score."
   },
   {
     "id": "wayfinder-explicit-codex",

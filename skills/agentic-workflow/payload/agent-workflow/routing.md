@@ -1,8 +1,11 @@
 # Detailed routing contract
 
 This is the progressively loaded routing policy for an installed Agentic
-Workflow project. Read it for a named skill, resume, uncertain route, or any
-route not confidently direct. The root `AGENTS.md` invariants remain binding.
+Workflow project. The root `AGENTS.md` already performs the cheap first-pass
+classification. Read this file only when that gate identifies unresolved route
+ambiguity, multi-workflow composition, material provider fallback or handoff,
+or unclear ownership of a relevant durable resume. Direct work and one obvious
+selected skill do not load it. Root invariants remain binding.
 
 ## Decide and compose
 
@@ -15,6 +18,8 @@ skill availability is not a reason to invoke one. Keep these decisions separate:
 3. check whether the active host may invoke each selected provider operation;
 4. execute only within the user's authorization.
 
+The installed skill descriptions are the first selection interface; this table
+resolves overlaps and compositions rather than replacing those descriptions.
 Normal intent is enough to select and execute an implicitly invocable skill.
 Exact skill syntax is required only for explicit invocation or a user-only
 provider operation. A supporting capability does not automatically become the
@@ -43,18 +48,21 @@ task's uncertainty, scope, coordination, failure mode, or authorization needs.
 Transition to the newly dominant workflow; do not keep executing an obsolete
 route merely because it was selected first.
 
-Select Wayfinder when losing or conflating several consequential unknowns,
-decisions, dependencies, blockers, ownership boundaries, assumptions, or
-conflicting facts is now a material risk and durable structured notes would
-materially reduce that risk. Do not wait for the user to notice that threshold.
+Three or more meaningful items trigger a Wayfinder assessment, not selection.
+Select Wayfinder when any hard signal or at least two soft signals make durable
+coordination materially safer than conversation alone. This is an activation
+rubric, not a numeric complexity score.
 
-Use qualitative judgment, not a numeric complexity score. Strong combinations
-include proposed versus accepted decisions; missing permission or observability;
-contradictory evidence; blockers alongside work that can proceed; multiple paths
-with different implications; assumptions that must not become facts; likely
-cross-session continuation; or enough moving pieces that conversational context
-is becoming unreliable. One isolated unknown, an ordinary implementation detail,
-or a bounded choice that fits Discovery does not justify Wayfinder.
+Hard signals are likely cross-session or handoff continuity, conflicting
+authoritative sources, an authority-owned blocker while other work can proceed,
+coordination across owners or areas, or provenance needed to keep an assumption
+distinct from fact. Soft signals are interacting consequential unknowns, several
+durable distinctions across state categories, a plan changing with evidence, a
+meaningful dependency graph, or material reconstruction risk for a fresh agent.
+
+Counts alone never select Wayfinder. One isolated unknown, several independent
+routine actions, an ordinary implementation detail, or a bounded choice that
+fits Discovery does not justify it.
 
 An explicit Wayfinder request selects it subject to authorization and host
 compatibility. An explicit instruction not to use it prevents automatic
@@ -81,6 +89,29 @@ the current work. Before any other durable workflow mutation, load
 `contracts/durable-state.md`. Those contracts own storage, identifiers,
 progressive loading, conflicts, reconciliation, and record allocation; no route
 uses a global active index.
+
+## Use default transitions, not mandatory pipelines
+
+Keep current-session actions in the host todo mechanism. Use Wayfinder for
+durable uncertainty, decisions, conflicts, dependencies, blockers, and
+provenance. Use specifications for settled scope and acceptance criteria, and
+use tickets for approved independently deliverable work and blocking edges.
+Never copy one representation into another merely to complete a route.
+
+- Direct work stays Direct unless new evidence changes the route.
+- A consequential choice starts in Discovery. Add Domain Modeling only for
+  material conceptual or vocabulary ambiguity, Wayfinder only at its durable
+  threshold, and `to-spec` only when settled scope needs a canonical artifact.
+- An unexplained failure starts in Debugging. Add Wayfinder only for durable
+  coordination; move to Implementation only when a fix is authorized.
+- Settled scope may use `to-spec`; approved work uses `to-tickets` only when
+  dependency ordering or independent sessions add value.
+- Meaningful Implementation runs Verification once. New unexplained failure
+  returns to Debugging; a material unresolved choice returns to Discovery or
+  Wayfinder.
+
+These are defaults with entry conditions, not stages to execute merely because
+they appear in a path.
 
 ## Resolve providers
 

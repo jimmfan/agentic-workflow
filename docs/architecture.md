@@ -29,16 +29,19 @@ flowchart TD
     fallback --> evidence
 ```
 
-The root `AGENTS.md` policy and `.agent-workflow/routing.md` are the runtime. There
-is no lifecycle controller or host hook adapter. Host sandboxing and approvals
-remain authoritative. The router separates selection, provider invocation,
-authorization, execution, and completion evidence; none of those decisions
-expands another.
+The root `AGENTS.md` policy, selected skills, and progressively loaded
+`.agent-workflow/routing.md` are the runtime. There is no lifecycle controller or
+host hook adapter. The root starts Direct, uses installed skill descriptions as
+the cheap selection interface, and loads the detailed router only for unresolved
+ambiguity, composition, material provider fallback, or unclear durable-resume
+ownership. Host sandboxing and approvals remain authoritative. Selection,
+provider invocation, authorization, execution, and completion evidence remain
+distinct.
 
-The router may reclassify work after it starts. Wayfinder becomes appropriate
-when several important state distinctions would be unsafe to leave only in
-ordinary conversational context, not only when a prompt announces a huge
-multi-session effort. Bounded work remains direct or in its existing local
+The router may reclassify work after it starts. Item count prompts assessment but
+does not select Wayfinder. Any hard continuity/conflict/authority/provenance
+signal or at least two softer interaction/dependency/reconstruction signals may
+cross the durable threshold. Bounded work remains Direct or in its existing
 workflow, and read-only work does not gain durable state authority.
 
 Durable workflows resume from their canonical record or map when persistence is

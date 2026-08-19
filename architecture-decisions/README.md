@@ -23,6 +23,7 @@ current instructions.
 - [ADR-0024 — Use current-state Wayfinder identifiers](0024-use-current-state-wayfinder-identifiers.md)
 - [ADR-0025 — Preserve human authority across workflows](0025-preserve-human-authority-across-workflows.md)
 - [ADR-0026 — Structure Wayfinder territory and converge it](0026-structure-wayfinder-territory-and-converge-it.md)
+- [ADR-0027 — Use thin evidence-triggered routing](0027-use-thin-evidence-triggered-routing.md)
 
 ## Superseded tombstones
 

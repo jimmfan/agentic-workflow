@@ -1,23 +1,26 @@
 # Workflow routing
 
 The installed router solves one problem: choose the minimum useful way to handle
-the request without expanding the user's authority. Clear, bounded, low-risk
-work is `direct`; availability of a workflow or provider is never a reason to
-invoke it.
+the request without expanding the user's authority. It starts Direct, classifies
+from intent and installed skill descriptions, and may perform the smallest
+authorized read-only reconnaissance needed when evidence is insufficient. One
+obvious skill loads directly; availability alone never selects a capability.
 
-Routing is dynamic. When an initially normal task reveals several consequential
-unknowns, decisions, dependencies, ownership boundaries, blockers, assumptions,
-or conflicting facts that are becoming unreliable to hold in conversational
-context, the router may start or resume Wayfinder automatically. This is a
-qualitative notebook threshold, not a numeric complexity score or a requirement
-that the work already be huge or multi-session. Explicit use and opt-out
-instructions remain authoritative.
+Routing is dynamic. Three or more meaningful items prompt a Wayfinder assessment,
+but count alone never selects it. Wayfinder starts or resumes when any hard
+signal or at least two soft signals show that durable coordination is materially
+safer than conversation alone. Hard signals cover continuity, authoritative
+conflict, authority-owned blockers alongside work that can proceed, coordinated
+owners or areas, and provenance risk. Soft signals cover interacting unknowns,
+multiple durable state categories, evidence-driven plan change, dependency
+graphs, and fresh-agent reconstruction risk. This is an activation rubric, not
+a weighted complexity score. Explicit use and opt-out remain authoritative.
 
-The compact always-loaded rules live in
-`payload/root/AGENTS.md.template`. Detailed selection, composition, transitions,
-provider fallback, relevant resume, and route-marker rules live in
-`payload/agent-workflow/routing.md` and load only for a named skill, resume,
-uncertain route, or route not confidently direct.
+The compact always-loaded rules live in `payload/root/AGENTS.md.template`.
+Detailed overlap resolution, composition, transitions, provider fallback,
+unclear durable-resume ownership, and route-marker edge cases live in
+`payload/agent-workflow/routing.md`. They load only after the thin gate identifies
+one of those needs, not for Direct work or one obvious selected skill.
 
 Runtime ownership is deliberately split:
 
@@ -41,6 +44,13 @@ Keep these decisions separate:
 2. add only capabilities that materially help it;
 3. determine whether the active host may invoke each optional provider; and
 4. execute only actions authorized by the user.
+
+Default route sequences are transitions with entry conditions, not mandatory
+pipelines. Host todos hold current-session actions; Wayfinder holds durable
+coordination; specifications hold settled scope and acceptance criteria; tickets
+hold approved independently deliverable work and blocking edges. Domain Modeling
+joins Discovery or Wayfinder only when conceptual or vocabulary ambiguity is
+material.
 
 Unavailable or user-only providers normally fall back to truthful host-native
 work. Use an exact `$skill-name` or `/skill-name` handoff only when the user

@@ -82,15 +82,22 @@ flowchart LR
     state -.-> records["records/"]
 ```
 
-The router is intentionally small.
+The router is intentionally small and Direct-first.
 
-Its job is to classify the request and select a direct route, a dominant workflow, or an optional provider capability.
+Its job is to classify from intent and installed skill descriptions, select a
+direct route or one dominant workflow, and load detailed routing only when real
+ambiguity, composition, provider fallback, or durable-resume ownership requires
+it.
 
 A clear, bounded task can remain direct and does not need to create durable state.
 
 Other work can use workflows such as Discovery, Wayfinder, Implementation, or Debugging, with supporting capabilities such as Research, TDD, Verification, or Code Review when relevant.
 
-Routing can change as work unfolds. If investigation reveals enough consequential unknowns, decisions, dependencies, blockers, or conflicting facts that ordinary conversational context is becoming unreliable, Agentic Workflow may open or resume a lightweight Wayfinder map automatically. No numeric complexity score or explicit user invocation is required.
+Routing can change as work unfolds. Three meaningful items prompt a Wayfinder
+assessment, not automatic selection. A hard continuity, conflict, authority, or
+provenance signal—or at least two softer interaction, dependency, plan-change,
+or reconstruction signals—may justify a lightweight durable map. This is not a
+weighted complexity score, and explicit invocation is not required.
 
 Optional provider capabilities can be used when installed and available. If one is unavailable, the framework must not report that it ran.
 

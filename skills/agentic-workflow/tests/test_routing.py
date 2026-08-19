@@ -6,6 +6,9 @@ import unittest
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
+# Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
+PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
+PRE_THIN_DIRECT_ROOT_WORDS = 682
 
 
 class RoutingContractTests(unittest.TestCase):
@@ -56,10 +59,9 @@ class RoutingContractTests(unittest.TestCase):
         ).read_text()
         normalized_policy = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
-        self.assertIn("Use `architecture-decision/` as the default", normalized_policy)
-        self.assertIn(
-            "project instructions name another canonical location", normalized_policy
-        )
+        self.assertNotIn("architecture-decision/", normalized_policy)
+        self.assertIn("Use `architecture-decision/` as the default", normalized_contract)
+        self.assertIn("existing project instructions name another canonical decision location", normalized_contract)
         self.assertIn("do not create a parallel ADR namespace", normalized_contract)
         self.assertIn("Do not promote every workflow choice", normalized_contract)
         self.assertIn("link the workflow record", normalized_contract)
@@ -104,9 +106,10 @@ class RoutingContractTests(unittest.TestCase):
         contract = (
             PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
         ).read_text()
-        self.assertIn("Authorized mutating work is complete only after", root_policy)
-        self.assertIn("do not inspect unrelated\n  efforts", root_policy)
         normalized_contract = " ".join(contract.split())
+        normalized_root = " ".join(root_policy.split())
+        self.assertIn("Before any durable-state write", normalized_root)
+        self.assertIn("An unrelated map never selects Wayfinder", normalized_root)
         self.assertIn("Do not globally scan for related efforts", normalized_contract)
         self.assertIn("do not copy canonical artifact bodies", normalized_contract)
         self.assertIn("Read-only work reports the exact stale claim", normalized_contract)
@@ -210,30 +213,93 @@ class RoutingContractTests(unittest.TestCase):
         self.assertEqual(fallback["expected_marker"], "[route: router → direct]")
         self.assertIn("actual host-native activity", fallback["expected_behavior"])
 
+        three_items = by_id["three-trivial-items-stay-direct"]
+        self.assertEqual(three_items["dominant_activity"], "direct")
+        self.assertEqual(three_items["provider_invocations"], [])
+
+        soft_signals = by_id["wayfinder-two-soft-signals"]
+        self.assertEqual(soft_signals["dominant_activity"], "wayfinder")
+        self.assertTrue(soft_signals["provider_invocations"][0]["executed"])
+
     def test_external_read_scope_is_always_loaded_policy(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         normalized_root = " ".join(root_policy.split())
 
         self.assertIn("exact external read-only target", normalized_root)
 
-    def test_strengthened_routing_seams_are_present_and_cross_layer_consistent(self) -> None:
+    def test_thin_router_is_direct_first_and_progressively_loaded(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
         normalized_root = " ".join(root_policy.split())
         normalized_routing = " ".join(routing.split())
 
-        self.assertIn("Before substantive work, assess routing", normalized_root)
-        self.assertIn(
-            "important unknowns, decisions, dependencies, blockers, conflicting facts, or multiple coordinated work areas",
-            normalized_root,
-        )
-        self.assertIn("does not itself make work direct", normalized_root)
+        self.assertIn("Start Direct", normalized_root)
+        self.assertIn("installed skill descriptions", normalized_root)
+        self.assertIn("smallest authorized read-only reconnaissance", normalized_root)
+        self.assertIn("Do not load `.agent-workflow/routing.md`", normalized_root)
+        self.assertIn("more than one workflow or capability must be composed", normalized_root)
+        self.assertIn("Counts trigger assessment, never selection by themselves", normalized_root)
+        self.assertIn("any hard signal or at least two soft signals", normalized_root)
+        self.assertIn("Read-only work never changes repository, external, or durable state", normalized_root)
+        self.assertNotIn("\n* ", root_policy)
+        self.assertNotIn("If it is unclear whether the work is clearly bounded", normalized_root)
+        self.assertNotIn("For a named skill, a resume", normalized_root)
+        self.assertIn("default transitions, not mandatory pipelines", normalized_routing.lower())
         self.assertIn("trivial local, low-risk edits stay direct", normalized_routing.lower())
         self.assertIn("no authorized host-native equivalent", normalized_routing)
         self.assertIn("actual host-native activity", normalized_routing)
         self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn("selection did not become equivalent execution", normalized_routing)
         self.assertIn("preferred provider did not execute", normalized_routing)
+
+    def test_thin_router_meets_context_reduction_budgets(self) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        root_words = len(root_policy.split())
+
+        self.assertLessEqual(
+            root_words,
+            PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5,
+            "routing context must be at least 80% smaller when the old ambiguity gate loaded root plus router",
+        )
+        self.assertLessEqual(
+            root_words,
+            PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100,
+            "the always-loaded root must be at least 35% smaller for confidently Direct work",
+        )
+
+        selected_skills = [
+            PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md",
+            PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md",
+            PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md",
+            PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md",
+            REPOSITORY_ROOT / ".agents/skills/domain-modeling/SKILL.md",
+            REPOSITORY_ROOT / ".agents/skills/implement/SKILL.md",
+            REPOSITORY_ROOT / ".agents/skills/research/SKILL.md",
+            REPOSITORY_ROOT / ".agents/skills/tdd/SKILL.md",
+            REPOSITORY_ROOT / ".agents/skills/to-spec/SKILL.md",
+            REPOSITORY_ROOT / ".agents/skills/to-tickets/SKILL.md",
+        ]
+        for skill in selected_skills:
+            with self.subTest(skill=skill.parent.name):
+                skill_words = len(skill.read_text().split())
+                old_context = PRE_THIN_AMBIGUOUS_ROUTE_WORDS + skill_words
+                new_context = root_words + skill_words
+                self.assertLessEqual(
+                    new_context,
+                    old_context / 2,
+                    "ordinary selected-workflow context must be at least 50% smaller",
+                )
+
+    def test_thin_router_decision_is_current_and_records_deterministic_gate(self) -> None:
+        decision = (
+            REPOSITORY_ROOT
+            / "architecture-decisions/0027-use-thin-evidence-triggered-routing.md"
+        ).read_text()
+        index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
+        self.assertIn("- Status: accepted", decision)
+        self.assertIn("deterministic", decision.lower())
+        self.assertIn("model-based grading", decision.lower())
+        self.assertIn("ADR-0027", index)
 
 
 if __name__ == "__main__":
