@@ -50,11 +50,13 @@ storage remains canonical.
 
 For a new durable effort, reuse authoritative project structure from accepted
 ADRs, specifications, domain documentation, source, or another canonical
-artifact when it already establishes these bearings. When it cannot be
-established confidently, Domain Modeling is the preferred structural discovery
-mechanism. Establish enough structure before substantial U/E/F/D state accumulates, then
-derive the effort's identity, readable name, destination, boundary, and stable
-path from that understanding. Do not choose `wayfinder/<effort-name>/` first and
+artifact when it already establishes sufficient bearings. Otherwise establish
+them directly when current context supports them confidently. When material
+structural ambiguity remains and structural discovery is actually needed,
+Domain Modeling is the preferred structural discovery mechanism. Establish
+enough structure before substantial U/E/F/D state accumulates, then derive the
+effort's identity, readable name, destination, boundary, and stable path from
+that understanding. Do not choose `wayfinder/<effort-name>/` first and
 rationalize its structure afterward.
 
 Domain Modeling is conditional: do not invoke it merely because Wayfinder was
@@ -71,7 +73,8 @@ parallel territory structures merely because an earlier map used them.
 
 Choose a resolution mechanism by the shape of the uncertainty:
 
-- use Domain Modeling for unclear concepts, terminology, boundaries, or relationships;
+- use Domain Modeling when material ambiguity in concepts, terminology,
+  boundaries, or relationships makes structural discovery necessary;
 - use Research for externally answerable uncertainty that needs trustworthy sources;
 - use Prototype when trying something concrete is the cheapest honest way to learn;
 - use Debugging for uncertainty about observed behavior and its cause; and

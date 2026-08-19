@@ -424,6 +424,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         for required in (
             "## Semantic territory and effort identity",
             "authoritative project structure",
+            "Otherwise establish them directly when current context supports them confidently",
+            "material structural ambiguity remains and structural discovery is actually needed",
             "Domain Modeling is the preferred structural discovery mechanism",
             "before substantial U/E/F/D state accumulates",
             "## Territory",
@@ -454,6 +456,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             "### Converge and shrink",
             "`map.md` alone is valid",
             "use `to-tickets`",
+            "Use Domain Modeling when material structural ambiguity remains",
+            "Completion alone does not make a child redundant",
         ):
             self.assertIn(required, normalized_runtime)
         for contract_only_detail in (

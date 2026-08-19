@@ -58,8 +58,10 @@ First decide whether durable Wayfinder state is useful. For a new durable
 effort, establish enough low-resolution structure to navigate: the destination,
 scope boundary, major coherent areas or domains, and important relationships or
 seams. Reuse accepted project structure when it already supplies those bearings.
-If it does not, Domain Modeling is the preferred way to discover them before
-substantial U/E/F/D state accumulates.
+Otherwise establish them directly when current context supports them
+confidently. Use Domain Modeling when material structural ambiguity remains and
+structural discovery is actually needed, before substantial U/E/F/D state
+accumulates.
 
 Derive the effort's identity, readable name, and stable path from that
 understanding. Do not invent a directory name first and rationalize its purpose
@@ -74,9 +76,10 @@ expose another unknown, change dependencies, or make new work takeable.
 
 ### Choose a resolution mechanism
 
-- **Domain Modeling** — prefer it when a new effort's concepts, terminology,
-  boundaries, areas, or relationships lack authoritative structure. It may also
-  expose assumptions, unknowns, dependencies, and authority-dependent choices.
+- **Domain Modeling** — use it when material ambiguity in a new effort's
+  concepts, terminology, boundaries, areas, or relationships makes structural
+  discovery necessary. It may also expose assumptions, unknowns, dependencies,
+  and authority-dependent choices.
 - **Research** — use for externally answerable uncertainty that needs
   trustworthy sources.
 - **Prototype** — use when uncertainty is best resolved by trying something
@@ -107,10 +110,11 @@ artifact, or nothing separate when the result has no independent long-term
 value. Do not turn every area or D# into an ADR or ticket.
 
 As areas settle, update the same semantic map, point to canonical outcomes, and
-retire redundant U/E/F/D children under the state contract. If new evidence
-changes the territory, reconcile its current areas and seams instead of keeping
-parallel structures. Git preserves history. A completed effort should normally
-shrink toward a concise map that records its outcome and canonical pointers.
+retire redundant U/E/F/D children under the state contract. Completion alone
+does not make a child redundant. If new evidence changes the territory,
+reconcile its current areas and seams instead of keeping parallel structures.
+Git preserves history. A completed effort should normally shrink toward a
+concise map that records its outcome and canonical pointers.
 
 If assessment finds no consequential uncertainty, dependency, blocker,
 conflicting fact, or continuity need worth preserving, state that no durable
