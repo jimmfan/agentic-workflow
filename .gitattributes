@@ -1,0 +1,5 @@
+# Keep repository text stable across host checkouts.
+* text=auto eol=lf
+
+# Preserve the reviewed provider snapshot byte-for-byte.
+skills/agentic-workflow/provider-snapshots/matt-pocock-skills/** -text

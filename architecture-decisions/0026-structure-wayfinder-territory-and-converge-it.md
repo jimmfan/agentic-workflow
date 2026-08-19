@@ -42,12 +42,14 @@ The representation remains flexible; `Territory` is a useful heading, not a
 rigid schema or new record type.
 
 For a new durable effort, reuse authoritative structure from accepted project
-artifacts when it already supplies those bearings. When it does not, Domain
-Modeling is the preferred structural discovery mechanism before substantial
-U/E/F/D state accumulates. Domain Modeling is not mandatory when authoritative
-structure is clear and is not rerun ceremonially for a coherent resumed effort.
-Research, Prototype, and Debugging generally resolve fog within established
-territory. Human or project authority remains non-delegable under ADR-0025.
+artifacts when it already supplies those bearings. Otherwise establish them
+directly when current context supports them confidently. When material
+structural ambiguity remains and structural discovery is actually needed,
+Domain Modeling is the preferred discovery mechanism before substantial U/E/F/D
+state accumulates. Domain Modeling is not mandatory ceremony for every new
+effort or resume. Research, Prototype, and Debugging generally resolve fog
+within established territory. Human or project authority remains non-delegable
+under ADR-0025.
 
 Effort identity, readable name, destination, boundary, major areas, and stable
 path follow that understanding. Agents do not invent
@@ -107,7 +109,8 @@ Existing clear maps remain valid and receive no automatic migration.
   does not require a physical hierarchy and nested state would increase loading,
   migration, and reconciliation costs.
 - Always run Domain Modeling: rejected because authoritative project structure
-  may already be sufficient and resumed coherent efforts need no ceremony.
+  or confident current context may already be sufficient, and resumed coherent
+  efforts need no ceremony.
 - Keep all resolved records for completeness: rejected because Wayfinder is
   current navigation state and Git already owns recoverable history.
 - Promote every settlement to an ADR or ticket: rejected because canonical
