@@ -57,12 +57,14 @@ conflict handling, evidence/fact contradiction reconciliation, map-only
 continuation with a native `to-tickets` handoff, verification failure/recovery,
 and a blocked project. They are opt-in and not part of ordinary pull requests.
 
-The broader deterministic catalog also covers creating canonical map-first
-Wayfinder state without implementation work-item children, optional U#/E#/F#/D#
-knowledge, resolved unknowns and redundant evidence leaving current state,
-effort-lock serialization under concurrent allocation and retirement,
-uncommitted transient retirement, completed-effort/new-destination separation,
-explicit historical access, and
+The broader deterministic catalog also covers Domain Modeling surfacing
+consequential uncertainty, authority-dependent choices asking a concrete human
+question without creating downstream work, Wayfinder assessment concluding that
+no durable state is needed, creating canonical map-first state without
+implementation work-item children, optional U#/E#/F#/D# knowledge, resolved
+unknowns and redundant evidence leaving current state, effort-lock serialization
+under concurrent allocation and retirement, uncommitted transient retirement,
+completed-effort/new-destination separation, explicit historical access, and
 ensuring that an unrelated existing effort neither captures a simple route nor
 gets loaded. The live Wayfinder contracts preserve
 an unrelated effort during reconciliation, keep stale-state audits read-only,

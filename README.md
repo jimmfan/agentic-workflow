@@ -215,6 +215,12 @@ Debugging, Research, Prototype, Grilling, Domain Modeling, human clarification,
 or Implementation may resolve or consume an item without taking ownership of
 the map.
 
+Domain Modeling can sharpen concepts, terminology, boundaries, relationships,
+assumptions, and dependencies; Wayfinder preserves only the consequential
+durable results. When progress depends on human or project authority, the agent
+asks the concrete question, explains why that authority is required, and states
+what the answer will unblock instead of assuming a decision.
+
 Wayfinder is not required for every task.
 
 An existing Wayfinder effort should not cause an unrelated, bounded request to enter the Wayfinder workflow.

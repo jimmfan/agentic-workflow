@@ -407,6 +407,19 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertIn("None for this effort.", historical)
         self.assertIn("../settled-provider-direction/map.md", superseded)
 
+    def test_contract_preserves_resolution_methods_and_human_authority(self) -> None:
+        for required in (
+            "## Resolving uncertainty and authority",
+            "Domain Modeling",
+            "Research",
+            "Prototype",
+            "Debugging",
+            "human clarification or Grilling",
+            "accepted D#, specification, or implementation ticket",
+            "no durable Wayfinder state is needed",
+        ):
+            self.assertIn(required, self.contract)
+
     def test_authored_installed_and_generated_surfaces_are_consistent(self) -> None:
         self.assertEqual(CONTRACT.read_bytes(), INSTALLED_CONTRACT.read_bytes())
         runtime = RUNTIME.read_text(encoding="utf-8")
@@ -415,20 +428,19 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertEqual(runtime, generated_body)
         normalized_runtime = " ".join(runtime.split())
         for required in (
-            "Status: current | completed | abandoned | superseded",
-            "numeric handles plus readable slugs",
-            "never renumber a current record or allow a same-type duplicate",
-            "without searching for interior gaps",
-            "`<effort>/.wayfinder-mutation-lock/` directory",
-            "retirement must exclude concurrent current reference edits",
-            "U/E/F/D files are current knowledge roles",
-            "Exact current contents need not already exist in Git",
-            "After removal its number is no longer reserved",
-            "effort-local current-state shorthand",
-            "Outside the selected effort",
-            "repository-relative Markdown link",
+            "## Core invariants",
+            "### Choose a resolution mechanism",
+            "`map.md` alone is valid",
+            "use `to-tickets`",
         ):
             self.assertIn(required, normalized_runtime)
+        for contract_only_detail in (
+            ".wayfinder-mutation-lock",
+            "highest currently present",
+            "retired number",
+            "final scan and removal",
+        ):
+            self.assertNotIn(contract_only_detail, normalized_runtime)
 
 
 if __name__ == "__main__":

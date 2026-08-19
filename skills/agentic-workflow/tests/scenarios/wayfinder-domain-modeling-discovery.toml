@@ -1,0 +1,49 @@
+schema_version = 1
+id = "wayfinder-domain-modeling-discovery"
+name = "Domain Modeling exposes consequential uncertainty for Wayfinder"
+fixture = "wayfinder-new"
+request = "Use Wayfinder to create the named Migration domain boundary effort. Use Domain Modeling to clarify what consumer, cutover boundary, and ownership mean before planning implementation. Preserve only consequential results in the current map and U# knowledge."
+starting_state = [
+  "The repository uses consumer and cutover boundary ambiguously.",
+  "Those concepts affect migration scope, ownership, dependencies, and safe ordering.",
+  "Repository-local Wayfinder writes are authorized, but no authority-dependent choice has been accepted.",
+]
+expect = [
+  "task_completed",
+  "uncertainty_recorded_or_blocked",
+  "meaningful_repository_change",
+]
+must_not = [
+  "silent_decision_invention",
+  "overwrite_project_owned_state",
+]
+live = false
+verification_command = "Confirm the map and one U# preserve the consequential domain uncertainty without creating decisions or implementation tickets."
+preserve_paths = []
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/migration-domain-boundary/decisions",
+  ".agent-workflow-state/wayfinder/migration-domain-boundary/decisions/**",
+  ".agent-workflow-state/wayfinder/migration-domain-boundary/tickets",
+  ".agent-workflow-state/wayfinder/migration-domain-boundary/tickets/**",
+  ".scratch/**",
+]
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-workflow-state/wayfinder/migration-domain-boundary/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/migration-domain-boundary/map.md"
+value = "## Destination"
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/migration-domain-boundary/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/migration-domain-boundary/unknowns/U*.md"
+value = "consumer"
+

@@ -468,26 +468,27 @@ def check_provider_declaration() -> None:
     for required in (
         "framework-owned runtime projection",
         "derived from Matt Pocock's Wayfinder methodology",
-        "## Effort naming, selection, and stable paths",
-        ".agent-workflow-state/wayfinder/<stable-effort-slug>/",
+        "## Core invariants",
+        "### Choose a resolution mechanism",
         "`map.md` alone is valid",
-        "U# -> E# -> F# -> D#",
-        "Status: current | completed | abandoned | superseded",
-        "When a U# resolves",
-        "U/E/F/D files are current knowledge roles",
-        "After removal its number is no longer reserved",
-        "never renumber a current record or allow a same-type duplicate",
-        "retirement must exclude concurrent current reference edits",
-        "Exact current contents need not already exist in Git",
-        "effort-local current-state shorthand",
-        "Outside the selected effort",
-        "repository-relative Markdown link",
-        "Wayfinder does not create implementation work items",
-        "missing, treat the installation as incomplete",
+        "Wayfinder does not own implementation work items",
+        "use `to-tickets`",
+        "contracts own detailed effort selection",
+        "If the Wayfinder contract is missing",
     ):
         require(
             required in " ".join(projection_text.split()),
             f"owned Wayfinder runtime lacks required contract: {required}",
+        )
+    for contract_only_detail in (
+        ".wayfinder-mutation-lock",
+        "highest currently present",
+        "retired number",
+        "final scan and removal",
+    ):
+        require(
+            contract_only_detail not in projection_text,
+            f"owned Wayfinder runtime duplicates state-contract mechanics: {contract_only_detail}",
         )
     for incompatible in (
         "shared map on the repo's issue tracker",

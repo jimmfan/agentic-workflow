@@ -162,6 +162,7 @@ class RoutingContractTests(unittest.TestCase):
                 "wayfinder-read-only-boundary",
                 "wayfinder-explicit-opt-out",
                 "wayfinder-with-research",
+                "wayfinder-with-prototype",
             }
             <= set(by_id)
         )
@@ -175,6 +176,13 @@ class RoutingContractTests(unittest.TestCase):
         self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["dominant_activity"], "discovery")
         self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["provider_invocations"], [])
         self.assertEqual(by_id["wayfinder-with-debugging-evidence"]["capabilities"], ["debugging"])
+        self.assertEqual(by_id["wayfinder-with-prototype"]["capabilities"], ["prototype"])
+        for scenario_id in (
+            "wayfinder-with-research",
+            "wayfinder-with-prototype",
+            "wayfinder-with-debugging-evidence",
+        ):
+            self.assertIn("reconcile", by_id[scenario_id]["expected_behavior"].lower())
         self.assertEqual(
             by_id["wayfinder-reconcile-stale-state"]["repository_state_effect"],
             "project-owned-wayfinder-state",

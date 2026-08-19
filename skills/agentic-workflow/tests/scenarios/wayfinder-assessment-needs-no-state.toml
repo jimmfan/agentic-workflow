@@ -1,0 +1,30 @@
+schema_version = 1
+id = "wayfinder-assessment-needs-no-state"
+name = "Wayfinder assessment may conclude that no durable state is needed"
+fixture = "simple-project"
+request = "Assess whether the explicit greeting change needs Wayfinder. The requested result, affected function, and verification command are already clear. Report the assessment without implementing the change and do not manufacture durable state."
+starting_state = [
+  "Wayfinder was considered because the user requested an assessment.",
+  "The destination, scope, implementation, and verification path are already explicit.",
+  "There is no consequential uncertainty, dependency, blocker, authority choice, or cross-session coordination need.",
+]
+expect = [
+  "repository_unchanged",
+  "project_state_preserved",
+]
+must_not = [
+  "unnecessary_planning_artifacts",
+  "manufacture_uncertainty",
+  "overwrite_project_owned_state",
+]
+live = false
+preserve_paths = ["app.py", "verify.py"]
+forbid_created_globs = [
+  ".agent-workflow-state/**",
+  "planning/**",
+  "wayfinder/**",
+]
+report_must_include = [
+  "no durable Wayfinder state is needed",
+]
+

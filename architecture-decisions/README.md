@@ -21,6 +21,7 @@ current instructions.
 - [ADR-0022 — Separate Wayfinder knowledge from implementation tickets](0022-separate-wayfinder-knowledge-from-implementation-tickets.md)
 - [ADR-0023 — Own the Wayfinder runtime projection](0023-own-the-wayfinder-runtime-projection.md)
 - [ADR-0024 — Use current-state Wayfinder identifiers](0024-use-current-state-wayfinder-identifiers.md)
+- [ADR-0025 — Preserve human authority across workflows](0025-preserve-human-authority-across-workflows.md)
 
 ## Superseded tombstones
 

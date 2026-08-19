@@ -17,7 +17,10 @@ contradictory operational rules.
 Agentic Workflow's map-first U/E/F/D contract and native `to-tickets` boundary
 are materially distinct from the upstream tracker implementation, but the
 upstream destination, map, fog, frontier, readable-name, and progressive-
-resolution methodology remains valuable and must remain attributed.
+resolution methodology remains valuable and must remain attributed. Runtime
+ownership must not silently erase the reasoning purpose carried by upstream
+mechanics, including conditional Domain Modeling, choosing an appropriate way
+to resolve uncertainty, and genuine human-authority gates.
 
 The local contract also called an effort directory a short stable slug without
 fully specifying how a fresh session should match an existing effort, choose a
@@ -34,6 +37,21 @@ Agentic Workflow owns the effective Wayfinder runtime projection. Matt
 Pocock's pinned Wayfinder remains the unchanged methodological source,
 acknowledged influence, reviewed release input, and future reference. The
 effective runtime is intentionally derived rather than byte-equivalent.
+
+The owned runtime primarily explains how to Wayfind. It preserves destination-
+first orientation, low-resolution maps, honest fog, incremental frontier
+discovery, progressive context loading, and the possibility that assessment
+finds no durable state worth creating. It conditionally composes Domain
+Modeling, Research, Prototype, Debugging, Grilling, or human clarification
+according to the actual uncertainty and reconciles only consequential durable
+results. A choice requiring human or project authority remains unresolved until
+that authority answers; an agent assumption cannot become an accepted decision,
+specification, or implementation ticket.
+
+The progressively loaded Wayfinder state contract, rather than the runtime
+method body, owns detailed effort selection, identifiers, links, mutation
+locking, retirement, settlement, and lifecycle mechanics. The runtime keeps
+only the behavioral boundary needed to use that contract correctly.
 
 Keep one explicit Wayfinder exception in the current provider adapter. The
 provider declaration names a package-owned authored runtime body. During
@@ -74,8 +92,9 @@ because repository history establishes no released syntax requiring one.
 Future upstream upgrades follow a deliberate porting model: review the new
 upstream release, identify useful methodological improvements, selectively
 port them into the owned runtime, and then update provenance, projection
-expectations, and tests. Effective behavior does not automatically inherit
-every upstream change.
+expectations, and behavioral tests. That review compares reasoning purposes,
+not only tracker mechanics or body fingerprints. Effective behavior does not
+automatically inherit every upstream change.
 
 ## Consequences
 
@@ -83,6 +102,9 @@ Consuming agents receive one coherent Wayfinder runtime plus a progressively
 loaded detailed state contract. The full tracker body, issue assignment,
 resolution comments, issue closing, tracker-native blocking, required tracker
 setup, and local `.scratch/` fallback are absent from the effective runtime.
+The shorter runtime gives the preserved reasoning method and human-authority
+boundary higher visibility while detailed storage mechanics remain available
+on demand.
 
 The provider projection remains reproducible, transactional, idempotent, and
 fail-closed. Fresh, raw-upstream, legacy prepend, stale, and damaged but safely

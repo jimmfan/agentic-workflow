@@ -25,9 +25,9 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_twenty_nine_contracts_and_nine_live_smokes(self) -> None:
+    def test_catalog_has_thirty_two_contracts_and_nine_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 29)
+        self.assertEqual(len(scenarios), 32)
         self.assertEqual(sum(scenario.live for scenario in scenarios), 9)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
@@ -61,12 +61,48 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-explicit-historical-effort-access",
                 "wayfinder-concurrent-allocation-recheck",
                 "wayfinder-uncommitted-transient-record-retires",
+                "wayfinder-domain-modeling-discovery",
+                "wayfinder-human-authority-clarification",
+                "wayfinder-assessment-needs-no-state",
             },
         )
         read_only = next(
             scenario for scenario in scenarios if scenario.id == "wayfinder-read-only-stale-state"
         )
         self.assertIn("unresolved", read_only.report_must_include)
+
+    def test_wayfinder_methodology_scenarios_cover_discovery_authority_no_state_resume_and_tickets(self) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+
+        domain = scenarios["wayfinder-domain-modeling-discovery"]
+        self.assertIn("uncertainty_recorded_or_blocked", domain.expect)
+        self.assertTrue(
+            any(item.kind == "glob_contains" and "unknowns/U" in item.path.as_posix()
+                for item in domain.assertions)
+        )
+        self.assertTrue(any("decisions" in item for item in domain.forbid_created_globs))
+
+        authority = scenarios["wayfinder-human-authority-clarification"]
+        self.assertIn("uncertainty_recorded_or_blocked", authority.expect)
+        self.assertIn("meaningful_repository_change", authority.expect)
+        self.assertIn("what the answer will unblock", authority.report_must_include)
+        self.assertTrue(any("decisions" in item for item in authority.forbid_created_globs))
+        self.assertTrue(any(".scratch" in item for item in authority.forbid_created_globs))
+
+        no_state = scenarios["wayfinder-assessment-needs-no-state"]
+        self.assertIn("repository_unchanged", no_state.expect)
+        self.assertIn(".agent-workflow-state/**", no_state.forbid_created_globs)
+
+        resume = scenarios["wayfinder-resume-synonymous-wording"]
+        self.assertEqual(len(resume.state_must_include), 1)
+        self.assertEqual(len(resume.state_must_not_include), 3)
+
+        tickets = scenarios["wayfinder-contract-smoke"]
+        self.assertTrue(any("/tickets" in item for item in tickets.forbid_created_globs))
+        self.assertTrue(
+            any(item.kind == "glob_count" and item.path.as_posix().endswith("issues/*.md")
+                and item.count == 3 for item in tickets.assertions)
+        )
 
     def test_settlement_scenarios_cover_resolution_history_and_effort_completion(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}

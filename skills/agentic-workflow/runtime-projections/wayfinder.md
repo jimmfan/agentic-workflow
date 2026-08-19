@@ -15,180 +15,114 @@ allowed, and an explicit opt-out prevents automatic selection. Keep clear,
 bounded, low-risk, unrelated, and read-only work on its minimum useful route;
 one ordinary implementation detail or isolated unknown does not justify a map.
 
+## Core invariants
+
+- Route before inspecting Wayfinder state. Existing state never selects
+  Wayfinder by itself, and considering or selecting Wayfinder does not require a
+  write. An assessment may conclude that no durable Wayfinder state is needed.
+- Name the destination before decomposing the route. Keep `map.md` at low
+  resolution, represent fog honestly, identify the current frontier, and load
+  detail only as it becomes relevant.
+- `map.md` is the coordination and re-entry point. `map.md` alone is valid;
+  U/E/F/D children are optional durable knowledge, not required ceremony.
+- Live source and accepted project artifacts outrank stale Wayfinder state.
+  Reconcile only consequential current results and preserve conflicts honestly.
+- Never decide an authority-dependent choice on the human's behalf. Surface the
+  concrete question, explain why that authority is required, and state what the
+  answer will unblock.
+- Use the resolution mechanism that fits the uncertainty. Domain Modeling,
+  Research, Prototype, Debugging, human clarification, or Grilling supplies
+  reasoning, evidence, or clarification; Wayfinder preserves only consequential
+  durable results.
+- Wayfinder does not own implementation work items. Pass substantial
+  dependency-ordered or independently deliverable work to `to-tickets` and
+  link its canonical frontier without a shadow copy.
+
 When Wayfinder is selected or a request continues a relevant effort, read
 `.agent-workflow/contracts/wayfinder-state.md` before the map. Before an
 authorized durable write, also read
-`.agent-workflow/contracts/durable-state.md`. If the required Wayfinder
-contract is missing, treat the installation as incomplete: do not create
-tracker or `.scratch/` fallback state, do not run setup to obtain a tracker,
-and either stop safely or continue through another truthful authorized route.
+`.agent-workflow/contracts/durable-state.md`. Those contracts own detailed
+effort selection, paths, identifiers, links, locking, reconciliation,
+settlement, and lifecycle mechanics. If the Wayfinder contract is missing, do
+not invent tracker or `.scratch/` fallback state; treat the installation as
+incomplete and stop safely or continue through another truthful authorized
+route.
 
 ## Method
 
-Name the destination before decomposing the route. Keep `map.md` at low
-resolution, represent fog honestly, and identify the frontier from current
-state and dependencies. Resolve consequential uncertainty incrementally and
-load detail only when it becomes relevant. Advance the frontier until the route
-is sufficiently clear, then continue the authorized work, hand it off to its
-owning workflow, or stop with the map's next work explicit.
+Name the destination before decomposing the route. Keep the map low resolution,
+record in-scope fog under **Not yet specified**, distinguish **Out of scope**,
+and choose the smallest coherent unblocked next work as the frontier. Resolve
+consequential uncertainty incrementally; each answer may sharpen the
+destination, expose another unknown, change dependencies, or make new work
+takeable.
 
-- **Destination** states what it means for the route to be clear or the effort
-  to reach its intended endpoint.
-- **Not yet specified** holds in-scope fog that is not sharp enough to express
-  as a precise U#.
-- **Out of scope** records work consciously beyond the destination.
-- The **frontier** is the smallest coherent next work that can advance now.
+### Choose a resolution mechanism
 
-Readable names matter. Refer to maps and child knowledge by readable title,
-with stable paths and identifiers carried in their links rather than used as
-substitutes for names.
+- **Domain Modeling** — use for unclear concepts, terminology, boundaries, or
+  relationships. It may also expose assumptions, unknowns, dependencies, and
+  choices that require project authority.
+- **Research** — use for externally answerable uncertainty that needs
+  trustworthy sources.
+- **Prototype** — use when uncertainty is best resolved by trying something
+  concrete and inexpensive.
+- **Debugging** — use for uncertainty about observed behavior and its cause.
+- **Human clarification or Grilling** — use for intent, preference, approval,
+  prioritization, or another authority-dependent choice.
 
-## Effort naming, selection, and stable paths
+These activities keep their own native artifacts. Reconcile only consequential
+results into the current effort: sharpen the Destination, map state, fog,
+blockers, dependencies, frontier, or next work; create or retain U/E/F/D detail
+only when independent durable value justifies it. Domain Modeling is
+conditional, not ceremony for every new effort or resume.
 
-Route before scanning state. The existence of
-`.agent-workflow-state/wayfinder/` is not a routing signal.
+When progress depends on human or project authority, do not infer the answer
+from convenience, precedent, or an agent proposal. Surface the concrete
+question, explain why that authority is required, state what the answer will
+unblock, and leave the relevant uncertainty or blocker explicit. Do not turn an
+assumed answer into an accepted D#, specification, or implementation ticket.
 
-The map H1 is the durable human-readable effort name. Recognize an effort from
-that name, its Destination, its scope boundary, and map context. The directory
-slug is only a stable storage key; do not create an Identity section, registry,
-or I# record type.
+If assessment finds no consequential uncertainty, dependency, blocker,
+conflicting fact, or continuity need worth preserving, state that no durable
+Wayfinder state is needed and continue or hand off through the minimum useful
+route. Do not manufacture a map or child merely because Wayfinder was considered
+or automatically selected.
 
-When authoritative context supplies an exact safe repository-relative effort
-path, use it, verify it stays inside the Wayfinder state root, and read its
-`map.md`. Do not invent a replacement directory.
+## Work from the map
 
-For a likely resume without an exact path:
+Route first. For a relevant resume, use an exact supplied map path when
+available; otherwise follow the contract's progressive candidate-selection
+rules. Read `map.md` first and only the child files or linked canonical
+artifacts needed for the current question. If multiple efforts remain plausible,
+ask the user rather than choosing, merging, or creating a synonym.
 
-1. list effort directory names;
-2. use the request and those names to choose the smallest plausible candidate
-   set;
-3. read only those candidate maps; and
-4. compare their H1 names, destinations, scope boundaries, current state, and
-   relevant context.
-
-Resume only when one match is sufficiently clear. If several efforts remain
-plausible, do not select, merge, write, or create a third synonym. Ask the user
-when interaction is available; otherwise report the ambiguity and remain
-read-only for the affected state.
-
-Create an effort only when Wayfinder is selected, durable writes are authorized,
-structured notes materially help, and no existing effort has the same
-substantive destination and scope boundary. A branch, ticket, file, command,
-temporary task description, or chat title does not define a new effort.
-
-Choose a concise durable noun phrase for the map H1, such as `Wayfinder runtime
-projection`, rather than `Current work` or `Implement ticket 42`. Derive the
-slug once from that name: lowercase, filesystem-safe, hyphen-separated,
-concise, and recognizable, with no timestamp or random suffix by default.
-Immediately before creation, reread the effort-directory listing and inspect
-any newly appearing plausible map.
-
-If the slug exists, resume it only when it is the same effort. For a materially
-different destination, use the shortest stable meaningful disambiguator and
-never overwrite or merge the existing effort. Once created, keep the directory
-path stable even if the title improves, phases or branches change, or new
-evidence revises the map. Established awkward slugs remain valid.
-
-Clarified wording, changed evidence, implementation progress, resolved
-unknowns, and superseded decisions remain in the same effort while the
-substantive endpoint and scope boundary stay intact. A materially different
-endpoint, bringing explicitly out-of-scope work inside the boundary, or a new
-destination after the prior one finishes normally requires a fresh effort.
-
-Maps may state `Status: current | completed | abandoned | superseded` below the
-H1. Prefer an explicit current match over a similarly named historical effort
-during likely resume. Historical efforts keep their stable paths and remain
-readable when directly named or materially relevant, but do not load their
-children during ordinary current-effort selection. Legacy maps without a status
-remain valid; infer lifecycle only when their outcome and next work make it
-unambiguous.
-
-## Canonical state
-
-The only canonical local representation is:
-
-```text
-.agent-workflow-state/wayfinder/<stable-effort-slug>/
-├── map.md
-├── unknowns/       # optional U# files
-├── evidence/       # optional E# files
-├── facts/          # optional F# files
-└── decisions/      # optional D# files
-```
-
-`map.md` alone is valid. Keep the map self-contained as the effort's
-coordination and re-entry point; it owns current state, blockers, dependencies,
-and smallest coherent next work. Link specifications, research, ADRs, source,
-tests, and provider-native artifacts from their owning locations rather than
-copying them.
-
-Create children lazily only when independent preservation adds value:
+Keep `map.md` self-contained enough for a fresh session to recover the
+destination, current state, blockers and dependencies, and smallest coherent
+next work. Use readable names and links:
 
 - U# is an unresolved consequential question.
 - E# is independently useful evidence with provenance, scope, and limitations.
 - F# is a sufficiently established scoped descriptive conclusion.
 - D# is a committed choice made under project authority.
 
-These are semantic distinctions; never force U# -> E# -> F# -> D# as ceremony.
-Keep stable numeric handles plus readable slugs while records are current, such
-as `U17-node-group-isolation.md`; never renumber a current record or allow a
-same-type duplicate. Allocate one above the highest currently present number,
-or `1` when none exists, without searching for interior gaps. A retired number
-may reappear in a later repository state; it is not permanently reserved.
-Bare U#/E#/F#/D# tokens are effort-local current-state shorthand. They may link
-claims within the selected effort, such as `U17 resolved by F8`, but are not
-durable repository-wide identity. Readable child filenames are the canonical
-filesystem paths. Outside the selected effort, a reference that must survive
-the current representation uses a repository-relative Markdown link with a
-readable label to the child or a longer-lived canonical artifact. Facts link
-their evidence or direct authoritative sources. Preserve conflicting evidence;
-mark an unresolved fact disputed and surface the blocker rather than silently
-replacing history. Git owns historical evolution.
+These are semantic distinctions, not a U# -> E# -> F# -> D# pipeline. The map
+may be the whole current result. When an answer or project change matters,
+reconcile the map and only independently useful child knowledge according to the
+state contract.
 
-When a U# resolves, state the answer and reconcile the map's current state,
-blockers, dependencies, fog, and next work. Create or retain E#, F#, or D# only
-when each keeps independent current value; the map may be sufficient. U/E/F/D
-files are current knowledge roles, not permanent historical identities. Git
-preserves retired investigation.
+Advance the frontier until the route is sufficiently clear, then continue the
+authorized work, hand it to its owning workflow, or stop with next work explicit.
+One coherent scope may pass directly to implementation. When substantial work
+needs dependency ordering or separately deliverable sessions, use `to-tickets`;
+its native artifacts remain canonical and the map records only the coordination
+consequence.
 
-Serialize every map or child mutation with atomic creation of the empty
-transient `<effort>/.wayfinder-mutation-lock/` directory. Hold it through the
-affected reads, writes, and removals; then remove it. Never commit, populate, or
-steal it. If safe atomic locking is unavailable, stop conservatively. Under the
-lock, allocation rereads the type directory, rejects duplicate current IDs,
-chooses one above the current maximum, and creates without overwrite. One
-effort-wide lock remains the smallest mechanism because readable slugs defeat
-exact-path collision protection and retirement must exclude concurrent current
-reference edits through its final scan and removal.
+## Boundaries
 
-Before removing a child, preserve independently useful current information,
-reconcile every current map and child reference in the selected effort, and
-reconcile any known current canonical reference outside it that would otherwise
-break or mislead. Do not scan unrelated efforts, the repository, or Git history
-for bare identifiers. Under the effort lock, reread the affected current state
-immediately before removal and retain the child if truthful reconciliation is
-incomplete. Remove it before releasing the lock. Exact current contents need
-not already exist in Git; transient navigation artifacts may disappear. After
-removal its number is no longer reserved.
-
-Completing, abandoning, or superseding an effort records that status and a
-concise outcome in its map, leaves no next work for that effort, and never
-renames or repurposes its directory. Do not move Wayfinder state into the
-general workflow-record archive or add allocation metadata, a registry, history
-log, or migration sweep.
-
-On resume, load the map first and only the child files needed for the current
-question or work. Live source and accepted canonical artifacts outrank stale
-state. During authorized mutating work, reconcile only the materially affected
-map and children before claiming completion. Read-only analysis, audit,
-diagnosis, or review may reason with Wayfinder but must not create or update
-state.
-
-Wayfinder does not create implementation work items or a ticket subtree. One
-coherent scope may pass directly from the map, a settled D#, or another accepted
-source to implementation. When work needs dependency ordering or separately
-deliverable sessions, use `to-tickets`; its native artifacts and frontier stay
-canonical, and the map records only the pointer and coordination consequence.
+Read-only analysis, audit, diagnosis, or review may use Wayfinder reasoning but
+must not create or update state. Authorized mutations follow the state
+contract's concurrency and reconciliation rules; never improvise identifier,
+lock, retirement, settlement, or lifecycle behavior in the runtime.
 
 Do not create a Wayfinder `.scratch/` mirror, external issue-tracker mirror,
 global active index, T# work items, automatic state migration, or a separate

@@ -10,6 +10,9 @@ loaded routing contract are the runtime; there is no separate controller.
   is a first-class route.
 - Routing, skills, state, specifications, tickets, and providers MUST NOT
   expand the authority granted by the user's request.
+- When a choice requires human or project authority, do not decide it on the
+  human's behalf. Surface the concrete question, explain why that authority is
+  required, and state what the answer will unblock.
 - A request naming one exact external read-only target authorizes only that
   read. It does not authorize broader discovery, another target, mutation, or
   destruction.

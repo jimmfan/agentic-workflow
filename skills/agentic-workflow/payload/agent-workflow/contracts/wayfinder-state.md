@@ -31,6 +31,31 @@ These are distinctions, not a mandatory pipeline. Evidence may leave an
 unknown unresolved, a fact may require no decision, and a decision may be made
 under uncertainty without manufacturing a fact.
 
+## Resolving uncertainty and authority
+
+Choose a resolution mechanism by the shape of the uncertainty:
+
+- use Domain Modeling for unclear concepts, terminology, boundaries, or relationships;
+- use Research for externally answerable uncertainty that needs trustworthy sources;
+- use Prototype when trying something concrete is the cheapest honest way to learn;
+- use Debugging for uncertainty about observed behavior and its cause; and
+- use human clarification or Grilling for intent, preference, approval,
+  prioritization, or another choice requiring human or project authority.
+
+Domain Modeling may also expose assumptions, unknowns, dependencies, or
+authority-dependent choices. These workflows own their native artifacts and
+supply reasoning, evidence, or clarification; Wayfinder preserves only results
+with consequential durable value. Reconcile such results into the current
+Destination, map state, fog, blockers, dependencies, frontier, next work, or
+independently useful U/E/F/D knowledge as appropriate. None of these mechanisms
+is mandatory ceremony for every effort.
+
+When a choice requires human or project authority, do not decide it on the
+human's behalf. Surface the concrete question, explain why that authority is required,
+and state what the answer will unblock. Keep the uncertainty or blocker explicit
+until an authoritative answer exists. Do not turn an assumed answer into an
+accepted D#, specification, or implementation ticket.
+
 `map.md` owns the current state, blockers, dependencies, and next work. It is
 the effort's coordination and re-entry point. Keep enough information there for
 a fresh session to choose the next relevant detail without loading every child.
@@ -69,6 +94,11 @@ durable notes materially reduce the risk of losing or conflating important
 state. A read-only analysis, audit, diagnosis, review, `do not change files`
 instruction, or equivalent restriction never authorizes a Wayfinder state
 write.
+
+Assessment, including assessment after automatic Wayfinder routing, may find
+that no consequential uncertainty or continuity need is worth preserving. In
+that case, report that no durable Wayfinder state is needed and create neither a
+map nor a child merely because Wayfinder was considered or selected.
 
 Install, update, status, remove, and reinstall never seed, inventory, checksum,
 validate, migrate, rewrite, or remove Wayfinder state.
@@ -308,7 +338,7 @@ Use U# when a question is consequential enough to track independently:
 # U1: <Question>
 
 - Status: open | resolved
-- Resolution mode: research | prototype | debugging | human clarification | direct
+- Resolution mode: domain modeling | research | prototype | debugging | human clarification | grilling | direct
 - Blocked by: none
 - Related: none
 
@@ -500,9 +530,9 @@ implied; the acting agent performs this bounded reconciliation.
 
 ## Workflow and ticket boundaries
 
-Research, Prototype, Debugging, Grilling, Domain Modeling, or human clarification
-may supply evidence while Wayfinder retains durable coordination. Their native
-artifacts stay canonical and are linked rather than copied.
+The resolution mechanisms above may supply reasoning, evidence, or clarification
+while Wayfinder retains durable coordination. Their native artifacts stay
+canonical and are linked rather than copied.
 
 Use `to-tickets` only when clear work benefits from dependency ordering or
 separately deliverable sessions. Pass the map and only relevant U/E/F/D context.

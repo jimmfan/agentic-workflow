@@ -12,11 +12,26 @@ and native `to-tickets` artifacts only when implementation needs decomposition.
 - [ADR-0022](../../../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md) is accepted and implemented: `map.md` owns current state, blockers, dependencies, and next work; implementation work items remain outside Wayfinder.
 - U#/E#/F#/D# children are optional and lazy. A map-only effort is valid, and facts require an evidence or direct-source link.
 - [ADR-0023](../../../architecture-decisions/0023-own-the-wayfinder-runtime-projection.md) replaces the former dual-spec prepend overlay with one concise, framework-owned runtime body. The pinned raw snapshot remains immutable provenance and selective upstream ideas can be ported deliberately.
+- ADR-0023 now also protects the reasoning method inside that owned runtime:
+  destination, fog, frontier, conditional Domain Modeling, fit-for-purpose
+  uncertainty resolution, no-state assessment, and genuine authority gates.
+- [ADR-0025](../../../architecture-decisions/0025-preserve-human-authority-across-workflows.md) establishes the cross-workflow rule that authority-dependent assumptions cannot become accepted decisions, specifications, tickets, or implementation direction.
 - The projection, provider declaration and adapter, routing and state contracts, documentation, generated skill, and deterministic effort-selection fixtures use the owned-runtime boundary.
 - An effort is selected by exact requested path when supplied, otherwise by progressively reading the candidate directory names and maps. Ambiguity is reported without mutation; creation requires selected Wayfinder, authorized and materially useful durable state, no existing match, and a materially distinct destination.
-- The full deterministic package suite passes all 97 tests, the evaluation-harness suite passes all 69 tests, all 14 declared provider skills match the bundled projection, and the release verifier passes after refreshing the required version metadata.
-- Independent Standards and Spec review found contract gaps in the first implementation pass; those findings were corrected and both axes are now clear. Independent workflow verification confirmed projection parity, raw-snapshot integrity, mirrors, provider compatibility, and acceptance behavior.
-- The effective skill is 8,001 bytes, 159 lines, and 1,122 words versus 15,963 bytes, 192 lines, and 2,529 words at the starting revision. The complete upstream tracker body and its operational tracker mechanics are absent; effort-selection and stable-path guidance is present. These are instruction-size measurements, not token or model-quality claims.
+- The focused contract suite passes all 41 tests; the full deterministic package
+  gate passes all 111 tests; all 14 declared provider skills match the bundled
+  projection; and package verification passes.
+- Independent Standards and Spec review found one impossible scenario
+  expectation, incomplete Research/Debugging reconciliation assertions,
+  duplicated prose fingerprints, and an incidental manifest update. All were
+  corrected; both review axes are now clear. Workflow verification confirmed
+  authored/generated parity, raw-snapshot integrity, provider compatibility,
+  acceptance coverage, and final diff hygiene.
+- The effective runtime is 7,020 bytes, 129 lines, and 967 words versus 10,635
+  bytes, 195 lines, and 1,530 words at this correction's fixed point. Detailed
+  identifier, locking, retirement, lifecycle, and settlement mechanics now stay
+  behind the state contract; these are instruction-size measurements, not token
+  or model-quality claims.
 - The focused live `wayfinder-contract-smoke` passed: it resumed map-only state,
   created only one justified E#/F# chain, emitted no Wayfinder work items, handed
   three substantial slices to `to-tickets`, and left ticket 01 as `map.md` next work.
@@ -29,10 +44,10 @@ None for this implementation.
 
 ## Next work
 
-No implementation remains for this change. The separate follow-up may design
-resolved-knowledge and completed-effort settlement after this owned runtime and
-stable naming boundary is accepted. Do not reuse or edit frozen campaigns for
-that work.
+No implementation remains for this focused correction. Future Wayfinder runtime
+changes should preserve the reasoning and authority boundaries established by
+ADR-0023 and ADR-0025 while leaving detailed state mechanics in the state
+contract.
 
 ## Notes
 
@@ -48,6 +63,7 @@ that work.
 - [D2 — Own the runtime projection and stable effort boundary](decisions/D2-own-runtime-projection.md) — Replace the recognized pinned body with a concise authored runtime projection and define deterministic effort selection without renaming existing paths.
 - [ADR-0022 — Separate Wayfinder knowledge from implementation tickets](../../../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md) — Keep map-first U/E/F/D knowledge sparse and hand substantial decomposition to `to-tickets`.
 - [ADR-0023 — Own the Wayfinder runtime projection](../../../architecture-decisions/0023-own-the-wayfinder-runtime-projection.md) — Establish the package-owned runtime body, immutable raw provenance, and selective upstream-porting boundary.
+- [ADR-0025 — Preserve human authority across workflows](../../../architecture-decisions/0025-preserve-human-authority-across-workflows.md) — Keep authority-dependent assumptions out of accepted decisions, specifications, tickets, and implementation direction.
 
 ## Not yet specified
 

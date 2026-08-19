@@ -108,7 +108,7 @@
     "executed": true,
     "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "none",
-    "expected_behavior": "Honor explicit Wayfinder, use the adapted local map and U/D/T ontology, and create no tracker issue, setup output, .scratch copy, or global active index."
+    "expected_behavior": "Honor explicit Wayfinder, use the adapted map-first U/E/F/D model, and create no Wayfinder implementation tickets, tracker issue, setup output, .scratch copy, or global active index."
   },
   {
     "id": "wayfinder-with-debugging-evidence",
@@ -132,7 +132,7 @@
     "executed": true,
     "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "none",
-    "expected_behavior": "Load map.md before U2, use Debugging to establish evidence without creating a DBG or competing notebook, then update U2 and any justified D# while preserving Wayfinder as the durable owner."
+    "expected_behavior": "Load map.md before U2, use Debugging to establish evidence without creating a DBG or competing notebook, then reconcile U2, the current map, and next work plus any justified D# while preserving Wayfinder as the durable owner."
   },
   {
     "id": "wayfinder-reconcile-stale-state",
@@ -214,7 +214,7 @@
     "executed": true,
     "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "named-read",
-    "expected_behavior": "Use Research inside Wayfinder, keep the local effort map and only independently useful U#/E#/F#/D# files canonical under project-owned state, and create no parallel index, Wayfinder ticket, or second tracker copy."
+    "expected_behavior": "Use Research inside Wayfinder, keep its cited report canonical, reconcile the consequential answer and current next work into the local effort map and only independently useful U#/E#/F#/D# knowledge, and create no parallel index, Wayfinder ticket, or second tracker copy."
   },
   {
     "id": "research-as-dominant-activity",
@@ -237,6 +237,36 @@
     "repository_state_effect": "provider-native-artifact",
     "external_scope": "named-read",
     "expected_behavior": "Execute Research as the dominant activity and keep its native cited report canonical without starting Wayfinder."
+  },
+  {
+    "id": "wayfinder-with-prototype",
+    "category": "wayfinder-specialized-capability-composition",
+    "prompt": "Continue the named interaction-design Wayfinder effort and prototype the smallest concrete flow that can resolve U3.",
+    "setup": "The relevant map is selected; U3 asks how a user-visible interaction should behave, a disposable prototype is authorized, and the prototype provider is compatible and implicitly invocable.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [
+      "prototype"
+    ],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      },
+      {
+        "name": "prototype",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
+    "external_scope": "none",
+    "expected_behavior": "Use Prototype to resolve behavior best answered by trying something concrete, keep the disposable artifact in its owning location, and reconcile the consequential answer and current next work into the selected Wayfinder map without creating implementation tickets."
   },
   {
     "id": "debugging-as-dominant-activity",

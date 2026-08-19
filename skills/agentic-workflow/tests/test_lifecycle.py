@@ -752,22 +752,15 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertNotIn(WAYFINDER_ADAPTER_BEGIN, skill_text)
         self.assertNotIn(WAYFINDER_ADAPTER_END, skill_text)
         self.assertIn("framework-owned runtime projection", skill_text)
-        self.assertIn("Effort naming, selection, and stable paths", skill_text)
-        self.assertIn("The map H1 is the durable human-readable effort name", skill_text)
-        self.assertIn("reread the effort-directory listing", skill_text)
         normalized_skill = " ".join(skill_text.split())
         self.assertIn("derived from Matt Pocock's Wayfinder methodology", normalized_skill)
-        self.assertIn("never force U# -> E# -> F# -> D# as ceremony", normalized_skill)
-        self.assertIn("never renumber a current record", normalized_skill)
-        self.assertIn("Status: current | completed | abandoned | superseded", normalized_skill)
-        self.assertIn("When a U# resolves", normalized_skill)
-        self.assertIn("U/E/F/D files are current knowledge roles", normalized_skill)
-        self.assertIn("After removal its number is no longer reserved", normalized_skill)
-        self.assertIn(".wayfinder-mutation-lock/", normalized_skill)
-        self.assertIn("Exact current contents need not already exist in Git", normalized_skill)
-        self.assertIn("Wayfinder does not create implementation work items", normalized_skill)
+        self.assertIn("## Core invariants", normalized_skill)
+        self.assertIn("### Choose a resolution mechanism", normalized_skill)
+        self.assertIn("Wayfinder does not own implementation work items", normalized_skill)
         self.assertIn("`map.md` alone is valid", normalized_skill)
-        self.assertIn("Keep the map self-contained", normalized_skill)
+        self.assertIn("use `to-tickets`", normalized_skill)
+        self.assertNotIn(".wayfinder-mutation-lock", normalized_skill)
+        self.assertNotIn("highest currently present", normalized_skill)
         for incompatible in (
             "shared map on the repo's issue tracker",
             "labelled `wayfinder:map`",
@@ -867,7 +860,8 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("reconciled optional provider skill wayfinder", result.stdout)
         repaired = skill_path.read_text(encoding="utf-8")
-        self.assertIn("## Effort naming, selection, and stable paths", repaired)
+        self.assertIn("## Core invariants", repaired)
+        self.assertIn("### Choose a resolution mechanism", repaired)
         self.assertNotIn("stale owned runtime projection", repaired)
 
     def test_malformed_owned_runtime_source_fails_before_projection_mutation(self) -> None:
