@@ -19,6 +19,13 @@ durable coordination. The project also needs to retain Domain Modeling,
 specification, ticketing, provider, and lifecycle capabilities without loading
 their complete instructions for unrelated work.
 
+An opt-in cross-model smoke test later showed that the original wording was not
+deterministic enough after reconnaissance. A frontier model escalated when a
+synthetic target revealed several hard signals; a smaller model correctly began
+Direct and identified the same blocker, conflict, and provenance needs, but
+completed Direct instead of selecting Wayfinder. The phrase "re-evaluate when
+evidence changes" did not reliably force the assessment step.
+
 ## Decision
 
 Use a thin, Direct-first root router. Classify from user intent and installed
@@ -42,6 +49,12 @@ needed to distinguish assumptions from facts. Soft signals cover interacting
 consequential unknowns, multiple durable state categories, evidence-driven plan
 change, meaningful dependency graphs, and material fresh-agent reconstruction
 risk. This is a qualitative activation rubric, not a weighted complexity score.
+
+After any reconnaissance, require an explicit Wayfinder assessment before
+completion. When the rubric finds any hard signal or at least two soft signals,
+selection is mandatory unless the user opted out or authorization or host
+compatibility blocks execution. Keep this gate in the thin root policy; do not
+restore unconditional loading of the detailed router.
 
 Treat route sequences as default transitions with entry conditions, not
 mandatory pipelines. Host todos hold current-session actions; Wayfinder holds
@@ -78,6 +91,11 @@ authority boundaries, relevant fresh-session continuation, provider
 truthfulness, and the pre-write contract gate. Without live model-based grading,
 missed-route and fresh-agent outcome regressions remain observable risks rather
 than deterministically proven absences.
+
+The mandatory post-reconnaissance assessment slightly strengthens the thin
+gate without increasing its 433-word budget. It may expose more false-positive
+assessments, but counts still cannot select Wayfinder and isolated unknowns and
+routine actions retain their explicit Direct boundary.
 
 Reconsider this decision if ordinary work repeatedly misses an applicable
 workflow, fresh sessions lose consequential state, host catalogs cannot expose

@@ -48,8 +48,9 @@ task's uncertainty, scope, coordination, failure mode, or authorization needs.
 Transition to the newly dominant workflow; do not keep executing an obsolete
 route merely because it was selected first.
 
-Three or more meaningful items trigger a Wayfinder assessment, not selection.
-Select Wayfinder when any hard signal or at least two soft signals make durable
+After any reconnaissance, MUST assess Wayfinder before completing. Three or
+more meaningful items also trigger assessment, not selection. MUST select
+Wayfinder when any hard signal or at least two soft signals make durable
 coordination materially safer than conversation alone. This is an activation
 rubric, not a numeric complexity score.
 

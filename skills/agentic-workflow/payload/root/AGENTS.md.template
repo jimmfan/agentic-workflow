@@ -2,9 +2,9 @@
 
 ## Always follow
 
-- Every request MUST be routed. Start Direct; select one useful dominant workflow.
+- Every request MUST be routed. Start Direct; select one dominant workflow.
 - Workflows MUST NOT expand authority. An exact external read-only target permits
-  only that read, not broader discovery, mutation, or destruction.
+  that read, not broader discovery, mutation, or destruction.
 - MUST NOT decide for human or project authority. Ask the concrete question, why
   that authority is required, and what the answer unblocks. Treat a choice the
   user explicitly resolves as settled; reopen only for conflicting evidence,
@@ -17,7 +17,7 @@
 ## Route with minimum context
 
 - Classify from intent and installed skill descriptions. Honor compatible named
-  skills; keep clear, bounded, low-risk work Direct.
+  skills; keep bounded, low-risk work Direct.
 - If evidence is insufficient, do the smallest authorized read-only
   reconnaissance needed to classify the request. Reconnaissance does not
   authorize mutation or a wider external scope.
@@ -26,13 +26,14 @@
   Load it only after reconnaissance if the route remains ambiguous, more than
   one workflow or capability must be composed, provider fallback matters, or a
   relevant durable resume's owner is unclear.
-- Re-evaluate when evidence changes the route. Availability never selects.
+- Re-evaluate when evidence changes. Availability never selects.
 
 ## Wayfinder escalation
 
-Three or more meaningful items prompt a Wayfinder assessment. Counts trigger
-assessment, never selection by themselves. Select or resume Wayfinder when any
-hard signal or at least two soft signals apply:
+After reconnaissance, MUST assess Wayfinder before completing. 3+ meaningful
+items prompt assessment. Counts trigger assessment, never selection
+by themselves. MUST select or resume Wayfinder when any hard signal or at least
+two soft signals apply:
 
 - Hard: cross-session continuity; conflicting authoritative sources; an
   authority-owned blocker while work proceeds; coordinated owners or areas; or

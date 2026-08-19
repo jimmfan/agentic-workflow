@@ -239,6 +239,8 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Do not load `.agent-workflow/routing.md`", normalized_root)
         self.assertIn("more than one workflow or capability must be composed", normalized_root)
         self.assertIn("Counts trigger assessment, never selection by themselves", normalized_root)
+        self.assertIn("After reconnaissance, MUST assess Wayfinder before completing", normalized_root)
+        self.assertIn("MUST select or resume Wayfinder", normalized_root)
         self.assertIn("any hard signal or at least two soft signals", normalized_root)
         self.assertIn("Read-only work never changes repository, external, or durable state", normalized_root)
         self.assertNotIn("\n* ", root_policy)

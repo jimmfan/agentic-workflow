@@ -6,6 +6,10 @@ These evaluations answer narrow questions about Agentic Workflow, not general co
 2. Does repository-owned workflow state improve continuity when useful evidence disappears between completely fresh agent sessions?
 3. Does explicit structured Wayfinder state outperform an equally capable vanilla Codex agent explicitly asked to leave strong durable repository-native handoff notes over a four-phase project?
 
+The separate [routing interpretation smoke test](routing-smoke/README.md) checks
+whether Direct and evidence-triggered escalation are interpreted consistently
+across model adapters while progressively revealing only requested policy.
+
 Failure is useful evidence. The harness does not alter framework behavior, prompt the workflow variant to use Wayfinder, prohibit baseline notes, or collapse the observations into a synthetic score.
 
 ## Storage contract

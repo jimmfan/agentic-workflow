@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "direct",
+      "request": "Read note.txt and report its exact word count. Do not modify files.",
+      "available_resources": ["note.txt", ".agent-workflow/routing.md", ".agent-workflow/providers.json", ".agents/skills/wayfinder/SKILL.md"],
+      "required_resources": ["note.txt"],
+      "forbidden_resources": [".agent-workflow/routing.md", ".agent-workflow/providers.json", ".agents/skills/wayfinder/SKILL.md"],
+      "expected_first_resources": ["note.txt"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "direct",
+      "expected_wayfinder_selected": false
+    },
+    {
+      "id": "evolving",
+      "request": "Inspect task.md and recommend the next planning step. Do not modify files.",
+      "available_resources": ["task.md", ".agent-workflow/routing.md", ".agent-workflow/providers.json", ".agents/skills/wayfinder/SKILL.md", ".agent-workflow/contracts/wayfinder-state.md"],
+      "required_resources": ["task.md", ".agent-workflow/providers.json", ".agents/skills/wayfinder/SKILL.md", ".agent-workflow/contracts/wayfinder-state.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["task.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
+    }
+  ]
+}
