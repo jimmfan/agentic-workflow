@@ -1,8 +1,20 @@
-# Agentic Workflow
+# Mandatory — no exceptions
 
-## Always follow
-
-- Every request MUST be routed. Start Direct; select one dominant workflow.
+- You MUST route every request.
+- You MUST treat Direct as the default route.
+- You MUST select an applicable workflow when intent, an explicit compatible
+  skill request, or an installed skill description clearly warrants one.
+- Use these first-pass routing cues:
+  - failure → Debugging
+  - consequential choice → Discovery
+  - substantive research or external facts needing primary sources → Research
+  - ready substantial change → Implementation
+  - completed meaningful change → Verification
+  - durable coordination of unresolved work, evidence, or decisions across
+    sessions, handoffs, or owners → assess Wayfinder using the criteria below
+- For Direct work or one obvious route, load only what that route needs. Read
+  `.agent-workflow/routing.md` only when the route remains unclear or requires
+  composition, provider fallback, or durable-resume resolution.
 - Workflows MUST NOT expand authority. An exact external read-only target permits
   that read, not broader discovery, mutation, or destruction.
 - MUST NOT decide for human or project authority. Ask the concrete question, why
@@ -11,29 +23,16 @@
   safety, authority, or request.
 - Report truthfully. Selection, invocation, authorization, execution, and
   completion are distinct; never claim unexecuted work.
-- Preserve unrelated work, canonical artifacts, identifiers, and project-owned
-  state. Live source and accepted artifacts outrank profiles, memory, and chat.
+- Preserve project-owned state and canonical identifiers. Live source and
+  accepted canonical artifacts outrank profiles, memory, and chat.
 
-## Route with minimum context
+## When to use Wayfinder
 
-- Classify from intent and installed skill descriptions. Honor compatible named
-  skills; keep bounded, low-risk work Direct.
-- If evidence is insufficient, do the smallest authorized read-only
-  reconnaissance needed to classify the request. Reconnaissance does not
-  authorize mutation or a wider external scope.
-- Load only selected skill and needed provider metadata. Do not load
-  `.agent-workflow/routing.md` for Direct work or one obvious selected skill.
-  Load it only after reconnaissance if the route remains ambiguous, more than
-  one workflow or capability must be composed, provider fallback matters, or a
-  relevant durable resume's owner is unclear.
-- Re-evaluate when evidence changes. Availability never selects.
-
-## Wayfinder escalation
-
-After reconnaissance, MUST assess Wayfinder before completing. 3+ meaningful
-items prompt assessment. Counts trigger assessment, never selection
-by themselves. MUST select or resume Wayfinder when any hard signal or at least
-two soft signals apply:
+When unresolved work, evidence, or decisions may need coordination across
+sessions, handoffs, or owners, apply the criteria below. 3+ meaningful items
+also require this check; counts alone never select Wayfinder. Unless the user
+explicitly opts out, MUST select or resume Wayfinder when any hard signal or at
+least two soft signals apply:
 
 - Hard: cross-session continuity; conflicting authoritative sources; an
   authority-owned blocker while work proceeds; coordinated owners or areas; or
@@ -42,24 +41,26 @@ two soft signals apply:
   categories; a plan changing with evidence; a meaningful dependency graph; or
   material reconstruction risk for a fresh agent.
 
-Isolated unknowns and routine actions stay in their minimum workflow. Honor
-explicit use and opt-out. Read-only work never changes repository, external, or
-durable state.
+A single unresolved item does not by itself justify Wayfinder. Handle it
+Directly or in the applicable workflow; if it requires human or project
+authority, follow the mandatory authority rule above. Honor explicit Wayfinder
+use.
 
 ## Load state only when selected
 
 For selected or relevant resumed Wayfinder work, read
 `.agent-workflow/contracts/wayfinder-state.md` before the map. An unrelated map
 never selects Wayfinder. Before any durable-state write, read
-`.agent-workflow/contracts/durable-state.md`; before profile mutation, read the
-project-profile contract. Do not seed optional state.
+`.agent-workflow/contracts/durable-state.md`; before profile mutation, read
+`.agent-workflow/contracts/project-profile.md`. Do not seed optional state.
 
 ## Report the route
 
-Every user-facing final response MUST end with exactly one marker as its final line:
+Every user-facing final response MUST end with exactly one marker as its final
+line:
 
 `[route: router → <executed path or terminal outcome>]`
 
-Use `direct` when no skill ran and include only what executed. If selection did
-not become equivalent execution, use the routing contract's terminal outcome.
-The marker never triggers work.
+Use `direct` when no workflow or skill ran and include only what executed. If
+selection did not become equivalent execution, use the routing contract's
+terminal outcome. The marker never triggers work.

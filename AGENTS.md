@@ -14,20 +14,31 @@
 - Preserve unrelated work, canonical artifacts, identifiers, and project-owned
   state. Live source and accepted artifacts outrank profiles, memory, and chat.
 
+
 ## Route with minimum context
 
-- Classify from intent and installed skill descriptions. Honor compatible named
-  skills; keep bounded, low-risk work Direct.
+- Every request is routed through this gate; obvious routes require no further
+  routing instructions.
+- Use these common first-pass intent cues:
+  - failure → Debugging
+  - consequential choice → Discovery
+  - substantive research or external facts needing primary sources → Research
+  - ready substantial change → Implementation
+  - completed meaningful change → Verification
+  - durable coordination of unresolved work, evidence, or decisions across
+    sessions or handoffs → assess Wayfinder using the escalation rules below
+- Keep bounded, low-risk work Direct. Honor compatible named skills and clear
+  skill-specific intent. Use installed skill descriptions to recognize other
+  obvious routes; availability alone never selects.
 - If evidence is insufficient, do the smallest authorized read-only
   reconnaissance needed to classify the request. Reconnaissance does not
   authorize mutation or a wider external scope.
-- Load only selected skill and needed provider metadata. Do not load
-  `.agent-workflow/routing.md` for Direct work or one obvious selected skill.
-  Load it only after reconnaissance if the route remains ambiguous, more than
-  one workflow or capability must be composed, provider fallback matters, or a
-  relevant durable resume's owner is unclear.
-- Re-evaluate when evidence changes. Availability never selects.
-
+- For Direct work or one obvious route, load only what that route needs. Load
+  `.agent-workflow/routing.md` only after reconnaissance if the route remains
+  ambiguous, more than one workflow or capability must be composed, provider
+  fallback matters, or a relevant durable resume's owner is unclear.
+- Re-evaluate when evidence changes.
+- 
 ## Wayfinder escalation
 
 After reconnaissance, MUST assess Wayfinder before completing. 3+ meaningful
