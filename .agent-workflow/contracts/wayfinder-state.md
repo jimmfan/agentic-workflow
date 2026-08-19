@@ -188,6 +188,14 @@ Use per-type positive identifiers within an effort: `U#`, `E#`, `F#`, and
 The identifier is a stable handle within the current Wayfinder representation,
 not a repository-lifetime primary key. Never renumber an existing current
 record, and never allow two current records of one type to share a number.
+Numeric uniqueness is scoped to current same-type records within that effort.
+
+A bare U#/E#/F#/D# identifier is effort-local current-state shorthand. Inside
+the selected effort's map and children, concise statements such as
+`U17 resolved by F8` and `D4 follows from F8` are valid when the effort context
+is unambiguous. The readable filename, such as
+`decisions/D4-use-dedicated-node-group.md`, is the child's canonical filesystem
+path; the bare number is not durable repository-wide identity.
 
 Assign one greater than the highest currently present identifier of that type,
 or `1` when none exists. Do not search for or deliberately recycle interior
@@ -195,12 +203,24 @@ gaps. A retired number is not reserved: removing the current highest record may
 cause its number to appear again in a later repository state, and Git
 distinguishes historical meanings that actually entered Git.
 
-Use repository-relative Markdown links and readable titles. Facts must link the
-evidence artifacts or direct authoritative sources that justify them. Evidence
-may optionally name facts it supports or contradicts, but reciprocal backlinks
-are not required; requiring both directions creates synchronization work without
-improving provenance. Decisions should link the facts, evidence, unknowns, ADRs,
-or policies that materially constrained the choice.
+When a canonical artifact outside the selected effort needs a reference that
+survives beyond the current Wayfinder representation, use a repository-relative
+Markdown link with a readable label to the child path or to a longer-lived
+canonical artifact. Do not rely on bare prose such as `See D4` as permanent
+repository-wide identity. An external canonical artifact need not retain a
+reference to a temporary U/E/F/D child that has no independent current value;
+reconcile or remove any known current reference before retiring that child.
+Do not scan the repository or Git history merely to find historical bare
+identifiers. Retirement remains bounded to the selected effort and known current
+canonical references that would otherwise become broken or misleading.
+
+Within the effort, use repository-relative Markdown links and readable titles
+when a path is useful. Facts must link the evidence artifacts or direct
+authoritative sources that justify them. Evidence may optionally name facts it
+supports or contradicts, but reciprocal backlinks are not required; requiring
+both directions creates synchronization work without improving provenance.
+Decisions should link the facts, evidence, unknowns, ADRs, or policies that
+materially constrained the choice.
 
 Git is the history mechanism. Do not add an event log, revision files, a graph
 index, or another versioning scheme.
@@ -402,13 +422,14 @@ current or still needed to navigate current authority. Git owns historical
 investigation and removed child content.
 
 Before removing a child, inspect the selected effort's map and current child
-files for references to its identifier or path. Reconcile every current
-dependency first: replace the reference with a current canonical source or
-successor, preserve the child when its provenance or meaning is still required,
-and never leave a dangling current link. A fact that still depends on an E# is
-evidence that the E# remains independently useful unless the fact can truthfully
-link the authoritative source directly. Do not scan or reconcile unrelated
-efforts.
+files for references to its identifier or path, and reconcile any known current
+canonical reference outside the effort that would otherwise become broken or
+misleading. Reconcile every current dependency first: replace the reference with
+a current canonical source or successor, preserve the child when its provenance
+or meaning is still required, and never leave a dangling current link. A fact
+that still depends on an E# is evidence that the E# remains independently useful
+unless the fact can truthfully link the authoritative source directly. Do not
+scan or reconcile unrelated efforts, the whole repository, or Git history.
 
 Removal is allowed once all independently useful current information is
 preserved and every current reference is reconciled truthfully. There is no

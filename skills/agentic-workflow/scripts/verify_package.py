@@ -228,6 +228,7 @@ def check_router_contract() -> None:
         ".agent-workflow-state/wayfinder/" in agents and "unrelated map" in agents,
         "root policy lacks minimal Wayfinder progressive-loading guidance",
     )
+    normalized_wayfinder = " ".join(wayfinder.split())
     for required in (
         "unknowns/",
         "evidence/",
@@ -247,8 +248,15 @@ def check_router_contract() -> None:
         "A retired number is not reserved",
         ".wayfinder-mutation-lock/",
         "never allow two current records",
+        "effort-local current-state shorthand",
+        "canonical filesystem path",
+        "outside the selected effort needs a reference",
+        "Do not scan the repository or Git history",
     ):
-        require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")
+        require(
+            required in normalized_wayfinder,
+            f"Wayfinder state contract lacks required boundary: {required}",
+        )
     combined = agents + routing + durable + wayfinder
     require(
         "runtime/README.md" not in combined and ".agent-workflow/runtime" not in combined,
@@ -471,6 +479,9 @@ def check_provider_declaration() -> None:
         "never renumber a current record or allow a same-type duplicate",
         "retirement must exclude concurrent current reference edits",
         "Exact current contents need not already exist in Git",
+        "effort-local current-state shorthand",
+        "Outside the selected effort",
+        "repository-relative Markdown link",
         "Wayfinder does not create implementation work items",
         "missing, treat the installation as incomplete",
     ):

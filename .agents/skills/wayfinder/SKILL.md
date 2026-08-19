@@ -146,9 +146,15 @@ as `U17-node-group-isolation.md`; never renumber a current record or allow a
 same-type duplicate. Allocate one above the highest currently present number,
 or `1` when none exists, without searching for interior gaps. A retired number
 may reappear in a later repository state; it is not permanently reserved.
-Facts link their evidence or direct authoritative sources. Preserve conflicting
-evidence; mark an unresolved fact disputed and surface the blocker rather than
-silently replacing history. Git owns historical evolution.
+Bare U#/E#/F#/D# tokens are effort-local current-state shorthand. They may link
+claims within the selected effort, such as `U17 resolved by F8`, but are not
+durable repository-wide identity. Readable child filenames are the canonical
+filesystem paths. Outside the selected effort, a reference that must survive
+the current representation uses a repository-relative Markdown link with a
+readable label to the child or a longer-lived canonical artifact. Facts link
+their evidence or direct authoritative sources. Preserve conflicting evidence;
+mark an unresolved fact disputed and surface the blocker rather than silently
+replacing history. Git owns historical evolution.
 
 When a U# resolves, state the answer and reconcile the map's current state,
 blockers, dependencies, fog, and next work. Create or retain E#, F#, or D# only
@@ -166,13 +172,15 @@ effort-wide lock remains the smallest mechanism because readable slugs defeat
 exact-path collision protection and retirement must exclude concurrent current
 reference edits through its final scan and removal.
 
-Before removing a child, preserve independently useful current information and
-reconcile every current map and child reference in the selected effort. Under
-the effort lock, reread the affected current state immediately before removal
-and retain the child if truthful reconciliation is incomplete. Remove it before
-releasing the lock. Exact current contents need not already exist in Git;
-transient navigation artifacts may disappear. After removal its number is no
-longer reserved.
+Before removing a child, preserve independently useful current information,
+reconcile every current map and child reference in the selected effort, and
+reconcile any known current canonical reference outside it that would otherwise
+break or mislead. Do not scan unrelated efforts, the repository, or Git history
+for bare identifiers. Under the effort lock, reread the affected current state
+immediately before removal and retain the child if truthful reconciliation is
+incomplete. Remove it before releasing the lock. Exact current contents need
+not already exist in Git; transient navigation artifacts may disappear. After
+removal its number is no longer reserved.
 
 Completing, abandoning, or superseding an effort records that status and a
 concise outcome in its map, leaves no next work for that effort, and never

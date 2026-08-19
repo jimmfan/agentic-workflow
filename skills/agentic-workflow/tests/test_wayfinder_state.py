@@ -370,6 +370,21 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertNotIn("`allocation.md`", self.contract)
         self.assertNotIn("compact retired detail", self.contract)
 
+    def test_identifier_reference_scope_is_effort_local_and_links_are_durable(self) -> None:
+        for semantic_pattern in (
+            r"bare .+ effort-local current-state shorthand",
+            r"uniqueness is scoped to current same-type records within that effort",
+            r"readable filename.+ canonical filesystem path",
+            r"outside the selected effort .+ repository-relative Markdown link",
+            r"need not retain .+ temporary U/E/F/D child",
+            r"Do not scan the repository or Git history",
+        ):
+            self.assertRegex(self.normalized, semantic_pattern)
+
+        self.assertIn("U17 resolved by F8", self.contract)
+        self.assertIn("D4 follows from F8", self.contract)
+        self.assertIn("D4-use-dedicated-node-group.md", self.contract)
+
     def test_effort_lifecycle_remains_map_owned_and_progressive(self) -> None:
         for required in (
             "- Status: current | completed | abandoned | superseded",
@@ -409,6 +424,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             "U/E/F/D files are current knowledge roles",
             "Exact current contents need not already exist in Git",
             "After removal its number is no longer reserved",
+            "effort-local current-state shorthand",
+            "Outside the selected effort",
+            "repository-relative Markdown link",
         ):
             self.assertIn(required, normalized_runtime)
 

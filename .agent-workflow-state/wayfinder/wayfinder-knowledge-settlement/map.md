@@ -25,15 +25,20 @@ while Git retains historical evolution.
 - Current child filenames retain numeric prefixes and readable slugs. Existing
   current records are never renumbered, and same-type current numbers cannot
   collide.
+- Bare U#/E#/F#/D# references are shorthand within one effort's current state,
+  not repository-wide identity. Durable references from outside the effort use
+  readable repository-relative Markdown links to a current child path or a
+  longer-lived canonical artifact.
 - Atomic creation of one empty transient per-effort lock serializes all map and
   child mutations. Readable slugs make path-only no-overwrite insufficient for
   allocation, and the same lock closes retirement's final reference-scan/remove
   race. The lock is coordination only, not durable knowledge or allocation
   state.
 - Retirement requires preservation of independently useful current information
-  and reconciliation of current references. A retiring child's exact contents
-  need not enter Git first; Git preserves only historical states that actually
-  entered it.
+  and reconciliation of current effort references plus any known current
+  canonical reference that would break or mislead. It requires neither a
+  repository-wide scan nor Git reconstruction, and a retiring child's exact
+  contents need not enter Git first.
 - Each map gains one optional `Status: current | completed | abandoned |
   superseded` line. Explicit current efforts outrank historical ones during a
   likely resume; historical efforts remain accessible when directly relevant.
@@ -43,6 +48,10 @@ while Git retains historical evolution.
   static behavioral scenarios, package verification with tests, projection
   regeneration, and `git diff --check`. Both closing review axes completed; all
   substantive findings were corrected, and the Spec re-review was clean.
+- The reference-scope clarification in version 0.16.2 passed 11 focused
+  Wayfinder-state tests, 109 full source-package tests, and package verification
+  with tests. Evaluation code and fixtures did not change, so evaluation tests
+  were not rerun for this clarification.
 
 ## Blockers and dependencies
 

@@ -26,6 +26,12 @@ share a number. Filenames retain both, for example
 currently present identifier of its type, or `1` when none exists; allocation
 does not search for interior gaps.
 
+A bare U#/E#/F#/D# token is current-state shorthand scoped to its Wayfinder
+effort, not durable repository-wide identity. Readable filenames remain the
+canonical filesystem paths. A canonical artifact outside the effort uses a
+repository-relative Markdown link with a readable label when its reference must
+outlive the current Wayfinder representation.
+
 Because different readable slugs can produce different paths for the same
 number, exact-path no-overwrite is insufficient under concurrent creation.
 Rereads likewise cannot close the race between a retirement's final reference
@@ -46,8 +52,9 @@ repository state.
 
 Wayfinder retains only its smallest useful current representation and needs no
 allocation metadata or migration. Numeric references are repository-state
-local. Git history can interpret states that entered Git, while intentionally
-transient navigation records may disappear without a forced historical commit.
+local and bare references are effort-local. Git history can interpret states
+that entered Git, while intentionally transient navigation records may disappear
+without a forced historical commit.
 
 Permanent tombstones, `allocation.md`, archive trees, registries, event logs,
 history or lifecycle databases, graph indexes, and package-manager-style

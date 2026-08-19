@@ -115,6 +115,12 @@ directory serializes map and child mutations, preventing different readable
 slugs from concurrently claiming the same number and making reference-safe
 retirement indivisible without durable allocation state.
 
+Bare U#/E#/F#/D# references are effort-local current-state shorthand. Readable
+child filenames are canonical paths; durable references from ADRs,
+specifications, tickets, or other artifacts outside the effort use
+repository-relative Markdown links with readable labels instead of treating a
+bare number as repository-wide identity.
+
 Accepted, lasting architecture or contract decisions use `/` as
 the default ADR namespace. An existing project instruction may name another
 canonical location; the framework preserves that convention instead of creating

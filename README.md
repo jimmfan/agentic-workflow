@@ -200,6 +200,12 @@ per-effort lock serializes map and child mutations so allocation cannot collide
 and retirement cannot race a current-reference edit; it contains no knowledge
 or allocation data.
 
+Bare references such as `U17`, `F8`, or `D4` are concise shorthand only inside
+their current Wayfinder effort. Readable child filenames remain the canonical
+paths. ADRs, specifications, tickets, and other artifacts outside the effort use
+repository-relative Markdown links with readable labels when a reference must
+remain durable beyond the current Wayfinder representation.
+
 Wayfinder does not own implementation work items. One coherent next action can
 pass from the map directly to implementation. Work that needs dependency
 ordering or separately deliverable sessions goes through `to-tickets`, whose
