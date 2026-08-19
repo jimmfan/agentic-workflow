@@ -222,6 +222,12 @@ class RoutingContractTests(unittest.TestCase):
         normalized_root = " ".join(root_policy.split())
         normalized_routing = " ".join(routing.split())
 
+        self.assertIn("Before substantive work, assess routing", normalized_root)
+        self.assertIn(
+            "important unknowns, decisions, dependencies, blockers, conflicting facts, or multiple coordinated work areas",
+            normalized_root,
+        )
+        self.assertIn("does not itself make work direct", normalized_root)
         self.assertIn("trivial local, low-risk edits stay direct", normalized_routing.lower())
         self.assertIn("no authorized host-native equivalent", normalized_routing)
         self.assertIn("actual host-native activity", normalized_routing)

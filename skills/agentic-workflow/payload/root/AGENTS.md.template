@@ -4,51 +4,49 @@ Agentic Workflow is a small intent router over host tools and replaceable skills
 Use host-native sandboxing and approvals. This policy and the progressively
 loaded routing contract are the runtime; there is no separate controller.
 
-## Universal invariants
+## Routing gate
 
-- Every request MUST be evaluated through the Agentic Workflow router. `direct`
-  is a first-class route.
-- Routing, skills, state, specifications, tickets, and providers MUST NOT
-  expand the authority granted by the user's request.
+Apply this gate to every request before substantive work.
+
+- Only clearly bounded work may proceed directly without reading
+  `.agent-workflow/routing.md`.
+- If a request involves important unknowns, decisions, dependencies, blockers,
+  conflicting facts, or multiple coordinated work areas, read
+  `.agent-workflow/routing.md` before proceeding.
+- If it is unclear whether the work is clearly bounded, read
+  `.agent-workflow/routing.md`.
+- Read-only, analysis, strategy, discovery, or `do not modify files` wording
+  does not itself make work direct.
+
+## ALWAYS FOLLOW
+
+- Every request MUST be evaluated through the Agentic Workflow router using the
+  routing gate above. `direct` is a first-class route.
+- Routing, skills, state, specifications, tickets, and providers MUST NOT expand
+  the authority granted by the user's request.
+- Treat authorization narrowly. A request to read, inspect, or act on one
+  specific target does not authorize broader discovery, other targets,
+  mutation, or destruction.
 - When a choice requires human or project authority, do not decide it on the
   human's behalf. Surface the concrete question, explain why that authority is
   required, and state what the answer will unblock.
-- A request naming one exact external read-only target authorizes only that
-  read. It does not authorize broader discovery, another target, mutation, or
-  destruction.
-- Execution and completion claims MUST be truthful: do not report an operation,
-  command, check, review, or workflow as executed or passed when it was not.
-- Selection, invocation capability, authorization, and execution are distinct.
-  Provider execution MUST NOT be simulated; when a preferred provider cannot run,
-  continue with truthful host-native capability unless the user required that
-  provider or authorization/safety blocks the work.
-- Unrelated user work, canonical identifiers/artifacts, and relevant active
-  durable state MUST be preserved; live source and accepted canonical artifacts
+- Execution and completion claims MUST be truthful. Distinguish failed, blocked,
+  skipped, and unavailable work from work actually executed or verified.
+- Selection, authorization, invocation capability, and execution are distinct.
+  Never simulate provider execution or claim that selection means execution.
+- Preserve unrelated user work, canonical artifacts and identifiers, and
+  relevant active durable state. Live source and accepted canonical artifacts
   outrank profiles, memory, and chat.
-- Use `architecture-decision/` as the default Architecture Decision Record (ADR)
-  namespace for accepted, lasting architecture or contract decisions unless
-  project instructions name another canonical location. Current ADRs are
-  authoritative; superseded ADRs are history. Workflow decision records do not
-  replace ADRs; promote a lasting decision by creating or updating the canonical
-  ADR and linking the records.
-- Authorized mutating work is complete only after materially affected relevant
-  Wayfinder state is reconciled; read-only work reports staleness without
-  mutating it. Follow the dedicated state contract and do not inspect unrelated
-  efforts.
-- Material completion claims MUST reflect actual evidence and distinguish failed,
-  blocked, skipped, and unavailable checks.
 
 ## Routing defaults
 
-- Choose the minimum useful process. Keep clear, bounded, low-risk work direct.
 - Choose one dominant workflow or activity and add only supporting capabilities
   that materially help; availability alone is not a reason to invoke one.
-- Re-evaluate the route as work unfolds. When several important unknowns,
-  decisions, dependencies, blockers, or conflicting facts are becoming unsafe
-  to hold only in conversational context, Wayfinder may start or resume
-  automatically if durable project notes are authorized. Do not wait for the
-  user to notice the transition, and do not use Wayfinder for ordinary bounded
-  complexity.
+- Re-evaluate the route as work unfolds. When important unknowns, decisions,
+  dependencies, blockers, or conflicting facts are becoming unsafe to hold only
+  in conversational context, Wayfinder may start or resume automatically if
+  durable project notes are authorized. Do not wait for the user to notice the
+  transition, and do not use Wayfinder for ordinary bounded complexity.
 - Honor explicitly named installed skills, subject to authorization and host
   compatibility. Honor an explicit instruction not to use Wayfinder.
 - Reuse trustworthy evidence and prefer provider-owned methodology over repeated
@@ -59,16 +57,17 @@ loaded routing contract are the runtime; there is no separate controller.
 
 ## Load only when relevant
 
-- For a named skill, resume, uncertain route, or any route not confidently
-  direct, read `.agent-workflow/routing.md` before substantive execution.
+- For a named skill, a resume, or whenever the routing gate above requires it,
+  read `.agent-workflow/routing.md` before substantive execution.
 - After selection, read only the selected skill and the needed provider metadata;
   do not load unrelated skills merely because they are installed.
 - When Wayfinder is selected or a request may continue a relevant effort under
   `.agent-workflow-state/wayfinder/`, read
-  `.agent-workflow/contracts/wayfinder-state.md` before its map. An unrelated map's
-  existence never selects Wayfinder.
-- Before durable workflow mutation, read `.agent-workflow/contracts/durable-state.md`. Before
-  profile mutation, read `.agent-workflow/contracts/project-profile.md`.
+  `.agent-workflow/contracts/wayfinder-state.md` before its map. An unrelated
+  map's existence never selects Wayfinder.
+- Before durable workflow mutation, read
+  `.agent-workflow/contracts/durable-state.md`. Before profile mutation, read
+  `.agent-workflow/contracts/project-profile.md`.
 - Project-profile maintenance is opportunistic: prefer a small update only when
   verified durable knowledge emerges naturally and writes are authorized.
 
