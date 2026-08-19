@@ -259,11 +259,17 @@ telemetry contracts.
 
 ## Portability
 
+Supported execution environments use POSIX-style shells on macOS, Linux, WSL,
+and Linux-based devcontainers. Bash is the primary shell contract; Zsh and
+similar POSIX shells are expected to work. Native PowerShell and CMD are not
+supported. Git Bash on native Windows is best-effort and does not justify
+Windows-specific machinery.
+
 Lifecycle code uses Python 3.11+ standard-library filesystem APIs and
 `PurePosixPath` for package identities. It does not require Git, a daemon,
 database, container runtime, or a particular editor layout. CLI messages are
 ASCII; dynamic text is emitted with backslash replacement on restrictive
-consoles such as Windows cp1252.
+consoles.
 
 Live validation on one platform is reported separately from portability by
 design. Archive fixtures and temporary-project tests are hermetic evidence, not

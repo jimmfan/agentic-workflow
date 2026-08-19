@@ -259,9 +259,11 @@ Machine-checkable prerequisites should be validated by code and documented for h
 
 ## Portability
 
-Keep core installation, lifecycle, and analysis behavior portable across Windows, macOS, and Linux where practical.
+Keep core installation, lifecycle, and analysis behavior portable across POSIX-style shell environments on macOS, Linux, WSL, and Linux-based devcontainers. Bash is the primary shell contract; Zsh and similar POSIX shells should work where reasonably simple.
 
-Prefer platform-neutral Python and filesystem APIs. Do not assume a particular shell, path syntax, Python launcher, executable-bit model, temporary directory, or editor installation layout.
+Prefer portable Bash/POSIX behavior plus platform-neutral Python and filesystem APIs. Avoid unnecessary assumptions about a particular POSIX shell implementation, Python launcher, executable-bit model, temporary directory, or editor installation layout.
+
+Native PowerShell and CMD are not supported. Git Bash on native Windows is best-effort; do not add Windows-specific complexity solely to support it.
 
 Add platform-specific behavior only when necessary and isolate it clearly.
 

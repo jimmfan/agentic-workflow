@@ -389,21 +389,17 @@ Agentic Workflow is a project-level workflow and state layer, not a coding-agent
 
 ## Prerequisites
 
-Run lifecycle commands in the environment that owns the target project: the
-macOS or Linux host Terminal, a VS Code terminal inside a Dev Container, or
-native Windows PowerShell. Core installation requires Python 3.11 or newer and
-HTTPS access to GitHub.
+Run lifecycle commands in a POSIX-style shell in the environment that owns the
+target project: Bash on macOS, Linux, WSL, or inside a Linux-based devcontainer.
+Zsh and similar POSIX shells are also expected to work. Native PowerShell and
+CMD are not supported; Git Bash on native Windows is best-effort. Core
+installation requires Python 3.11 or newer and HTTPS access to GitHub.
 
 Check the Python version in that environment:
 
 ```bash
-# macOS/Linux or a Dev Container
+# macOS, Linux, WSL, or a Linux-based devcontainer
 python3 --version
-```
-
-```powershell
-# Native Windows PowerShell
-py -3 --version
 ```
 
 ## Install
@@ -411,13 +407,8 @@ py -3 --version
 From the root of the project where you want to use Agentic Workflow:
 
 ```bash
-# macOS/Linux or a Dev Container
+# macOS, Linux, WSL, or a Linux-based devcontainer
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
-```
-
-```powershell
-# Native Windows PowerShell
-py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
 ```
 
 Then start a new coding-agent session from the project root so it can discover the installed project instructions and skills.
@@ -439,13 +430,8 @@ the core framework and bundled provider skills while preserving durable project
 state under `.agent-workflow-state/`.
 
 ```bash
-# macOS/Linux or a Dev Container
+# macOS, Linux, WSL, or a Linux-based devcontainer
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
-```
-
-```powershell
-# Native Windows PowerShell
-py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
 ```
 
 Append `--dry-run` to preview an install or update without changing the target.
