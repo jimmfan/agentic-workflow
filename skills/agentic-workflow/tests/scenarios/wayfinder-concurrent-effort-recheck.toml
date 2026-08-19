@@ -1,0 +1,36 @@
+schema_version = 1
+id = "wayfinder-concurrent-effort-recheck"
+name = "Final directory recheck resumes a concurrent matching effort"
+fixture = "wayfinder-effort-selection"
+request = "Create a Wayfinder effort for concurrency-safe provider refresh unless another session has already created the same durable effort. Report the selected path without changing an existing map."
+starting_state = [
+  "The first effort-directory listing did not contain the requested name.",
+  "Another session created concurrency-safe-provider-refresh before the required final creation recheck.",
+  "The newly appearing map has the same effort name, destination, and scope boundary.",
+]
+expect = [
+  "existing_state_reused",
+  "repository_unchanged",
+  "project_state_preserved",
+]
+must_not = [
+  "overwrite_project_owned_state",
+  "unnecessary_planning_artifacts",
+]
+live = false
+preserve_paths = [
+  ".agent-workflow-state/wayfinder/concurrency-safe-provider-refresh/map.md",
+]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/concurrency-safe-provider-refresh-2",
+  ".agent-workflow-state/wayfinder/concurrency-safe-provider-refresh-2/**",
+]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/concurrency-safe-provider-refresh/map.md",
+]
+state_must_not_include = [
+  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
+  ".agent-workflow-state/wayfinder/provider-projection/map.md",
+  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
+  ".agent-workflow-state/wayfinder/legacy-dir/map.md",
+]

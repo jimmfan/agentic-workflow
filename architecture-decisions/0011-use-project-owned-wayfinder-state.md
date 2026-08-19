@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-14
 - Supersedes: local Wayfinder artifact and pointer portions of ADR-0007
-- Amended by: ADR-0012, ADR-0013, ADR-0016, ADR-0020, and ADR-0022
+- Amended by: ADR-0012, ADR-0013, ADR-0016, ADR-0020, ADR-0022, and ADR-0023
 
 ## Context
 
@@ -30,9 +30,9 @@ it the owner of current state, blockers, dependencies, and next work. Load child
 bodies only when relevant. ADR-0022 moves executable work out of the current
 representation; substantial decomposition belongs to `to-tickets`.
 
-The upstream provider continues to own Wayfinder reasoning. Agentic Workflow
-owns this local storage and re-entry contract plus the narrow effective-
-instruction adapter later consolidated in ADR-0020. The local tree is the native
+Matt Pocock's pinned provider remains the methodological origin and reviewed
+provenance. Under ADR-0023, Agentic Workflow owns the derived effective runtime,
+this local storage and re-entry contract, and effort selection. The local tree is the native
 configured representation, not a mirror of `.scratch/` or an external tracker.
 The relevant effort map is the re-entry point. ADR-0012 later removes the global
 active index for non-Wayfinder workflows as well; those workflows resume from
@@ -51,8 +51,8 @@ contract, map, and relevant child files load progressively. Merely having an
 effort on disk does not route unrelated work through Wayfinder.
 
 This deliberately differs from the pinned provider's default `.scratch/` local
-tracker and from its single decision-ticket representation. The divergence is
-limited to the configured local storage boundary: provider concepts such as
+tracker and from its single decision-ticket representation. The owned runtime
+preserves useful method concepts such as
 Destination, Decisions so far, Not yet specified, Out of scope, named links,
 and dependency-derived frontier remain intact. Optional U/E/F/D files separate
 unresolved questions, sourced observations, established conclusions, and

@@ -11,6 +11,9 @@ loaded routing contract are the runtime; there is no separate controller.
   is a first-class route.
 - Routing, skills, state, specifications, tickets, and providers MUST NOT
   expand the authority granted by the user's request.
+- When a choice requires human or project authority, do not decide it on the
+  human's behalf. Surface the concrete question, explain why that authority is
+  required, and state what the answer will unblock.
 - A request naming one exact external read-only target authorizes only that
   read. It does not authorize broader discovery, another target, mutation, or
   destruction.
@@ -141,7 +144,11 @@ This project owns:
 * durable coordination, handoffs, and re-entry;
 * acceptance and integration verification.
 
-Selected providers own their internal methodology, terminology, composition, and native artifacts.
+Selected providers own their internal methodology, terminology, composition,
+and native artifacts by default. Wayfinder is the explicit exception defined by
+ADR-0023: Matt Pocock's pinned snapshot remains its methodological origin and
+reviewed provenance, while Agentic Workflow owns the derived effective runtime,
+Git-native state, effort selection, continuation, and handoff contracts.
 
 Keep the project centered on this boundary. Do not expand it into a general agent runtime, package manager, plugin platform, skill library, or observability platform by default. Broader scope requires evidence, comparison with simpler alternatives, and an explicit architectural decision.
 
@@ -252,9 +259,11 @@ Machine-checkable prerequisites should be validated by code and documented for h
 
 ## Portability
 
-Keep core installation, lifecycle, and analysis behavior portable across Windows, macOS, and Linux where practical.
+Keep core installation, lifecycle, and analysis behavior portable across POSIX-style shell environments on macOS, Linux, WSL, and Linux-based devcontainers. Bash is the primary shell contract; Zsh and similar POSIX shells should work where reasonably simple.
 
-Prefer platform-neutral Python and filesystem APIs. Do not assume a particular shell, path syntax, Python launcher, executable-bit model, temporary directory, or editor installation layout.
+Prefer portable Bash/POSIX behavior plus platform-neutral Python and filesystem APIs. Avoid unnecessary assumptions about a particular POSIX shell implementation, Python launcher, executable-bit model, temporary directory, or editor installation layout.
+
+Native PowerShell and CMD are not supported. Git Bash on native Windows is best-effort; do not add Windows-specific complexity solely to support it.
 
 Add platform-specific behavior only when necessary and isolate it clearly.
 

@@ -97,24 +97,24 @@ Wayfinder v1.2.3 defines a low-resolution map with Destination, Notes, Decisions
 so far, Not yet specified, and Out of scope; it loads child decision tickets on
 demand and derives the frontier from open, unblocked, unclaimed children. Its
 default local-Markdown tracker stores those artifacts below `.scratch/`.
-Agentic Workflow deliberately configures its canonical local representation
+Agentic Workflow deliberately owns its effective runtime and canonical local representation
 under `.agent-workflow-state/wayfinder/` instead, with the map itself as the
 re-entry point and optional U#/E#/F#/D# knowledge. The map owns current state,
 blockers, dependencies, and next work. Substantial decomposition passes to the
-native `to-tickets` output without a shadow copy. This is a storage, re-entry,
-and item-lifecycle adaptation, not a copied planning method or provider fork;
-see ADR-0011, ADR-0020, and ADR-0022.
+native `to-tickets` output without a shadow copy. The pinned release remains the
+methodological source and reviewed provenance, while the local runtime is an
+intentional derived projection; see ADR-0011, ADR-0020, ADR-0022, and ADR-0023.
 
 The pinned upstream Wayfinder metadata disables model invocation in `SKILL.md`
 and `agents/openai.yaml`, while its discovery descriptions retain the upstream
 “huge, more than one session” threshold. During release-local staging,
-`providers.py` applies the declared Wayfinder adapter. It
-inserts an authoritative local-mode section before the unchanged method body
-and changes the four known invocation/selection scalars. It requires the pinned
-method-body fingerprint, source metadata, and exact upstream or already-adapted
-values; unknown bundled input fails before target mutation. This
-makes the policy and configured local mechanics durable without rewriting the
-upstream method.
+`providers.py` applies the declared Wayfinder adapter. It requires the pinned
+method-body fingerprint and source metadata, changes the four known invocation/
+selection scalars, and replaces the upstream body with the package-owned runtime
+source. Unknown bundled input or malformed owned instructions fail before
+target mutation. The raw snapshot remains unchanged. Future upstream upgrades
+are reviewed and useful method improvements are selectively ported rather than
+automatically inherited.
 
 To Spec, To Tickets, and Implement use the narrower
 `implicit-invocation-v1` adapter. Release-local staging accepts

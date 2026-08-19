@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-16
 - Amends: ADR-0007 and ADR-0011
-- Amended by: ADR-0016 and ADR-0020
+- Amended by: ADR-0016, ADR-0020, and ADR-0023
 
 ## Context
 
@@ -40,11 +40,12 @@ Claude Code, which has no native provider projection. Remove Wayfinder's setup
 prerequisites because Agentic Workflow's local state contract already configures
 the canonical tracker representation.
 
-Adapt the pinned provider during fresh installation and later lifecycle updates
-with one narrow invocation/selection overlay. ADR-0020 extends that mechanism
-into a fingerprinted local-mode adapter because metadata alone cannot reconcile
-the loaded method body. The declared provider projection is framework-owned and
-reconciled by normal lifecycle operations.
+Adapt the pinned provider during fresh installation and later lifecycle updates.
+ADR-0020 added the fingerprinted local-mode adapter because metadata alone
+could not reconcile the loaded body; ADR-0023 replaces that dual specification
+with one owned runtime while retaining these invocation semantics. The declared
+provider projection is framework-owned and reconciled by normal lifecycle
+operations.
 
 Agentic Workflow preserves Wayfinder's methodology but permits implicit
 invocation because Agentic Workflow owns workflow routing.
@@ -56,13 +57,15 @@ Wayfinder syntax. Routing can respond when complexity emerges rather than only
 to the initial prompt. Explicit invocation still works because an implicitly
 invocable skill may also be named directly.
 
-The framework initially diverged from four upstream metadata scalars. ADR-0020
-adds one clearly delimited local-mode block while preserving the provider method
-below it. Both divergences are reviewable in the provider declaration and
-mechanically reapplied after fresh install or update, so they are not one-off
-edits to a generated provider directory. A future upstream method or metadata
-shape change fails closed for the adapter while leaving the provider and core
-framework usable.
+The framework initially diverged from four upstream metadata scalars, and
+ADR-0020 later added a prepended local-mode block. ADR-0023 supersedes that
+dual-spec body with one concise Agentic Workflow-owned runtime projection while
+retaining the recognized pinned snapshot as provenance. The invocation and
+body adaptations are reviewable in the provider declaration and mechanically
+reapplied after fresh install or update, so they are not one-off edits to a
+generated provider directory. A future upstream method or metadata shape change
+fails closed for the adapter while leaving the provider and core framework
+usable.
 
 GitHub Copilot support follows its current shared `SKILL.md` discovery contract.
 Codex support follows `agents/openai.yaml`. No native Claude Code provider
@@ -78,8 +81,9 @@ contract; live model-matrix validation is tracked separately.
   still prevent actual implicit provider execution.
 - Edit installed Wayfinder directories manually: rejected because fresh install
   or provider refresh would restore upstream metadata.
-- Fork or rewrite Wayfinder: rejected because the desired divergence concerns
-  invocation policy and configured local mechanics, not the upstream planning
-  method. ADR-0020 preserves that conclusion with a thin inserted adapter.
+- Own a derived Wayfinder runtime: originally rejected while divergence was
+  believed narrow; ADR-0023 supersedes that conclusion after the local state,
+  continuation, concurrency, U/E/F/D, and handoff contracts became materially
+  distinct from the upstream tracker runtime.
 - Add a generic provider-patching framework: rejected as unnecessary before
   another real provider adaptation demonstrates the need.

@@ -24,8 +24,9 @@ payload content hashes.
 
 ## Maintainer and CI gate
 
-Run this read-only command from the **source repository root** in the macOS/Linux
-host Terminal or the VS Code Dev Container terminal that owns the checkout:
+Run this read-only command from the **source repository root** in Bash on macOS,
+Linux, WSL, or inside a Linux-based devcontainer. Zsh and similar POSIX shells
+are also expected to work:
 
 ```bash
 python3 skills/agentic-workflow/scripts/verify_package.py --tests
@@ -97,8 +98,9 @@ The suite prioritizes behavior that matters before 1.0:
   older declared directories as one rollback-protected transaction;
 - unsafe declared paths block provider mutation, remove deletes only the
   declared projection, and unrelated skill directories are preserved;
-- the Wayfinder local-mode adapter applies in release-local staging, while
-  changed target bytes are repaired and status remains read-only;
+- the unchanged raw Wayfinder snapshot is recognized before the owned runtime
+  body is projected in release-local staging, while changed target bytes are
+  repaired and status remains read-only;
 - the implicit-invocation adapter automatically exposes To Spec, To Tickets,
   and Implement from the bundled projection, is idempotent,
   keeps Setup, Teach, and Triage user-only, and rejects unexpected activation
@@ -142,8 +144,11 @@ If the gate fails:
 5. never delete `.agent-workflow-state/` or unknown external content to make a test
    pass.
 
-No live Windows, editor, provider-network, or host-extension validation should
-be claimed unless it was actually performed and reported separately.
+The deterministic GitHub Actions gate runs on Ubuntu. Native PowerShell and CMD
+execution is outside the supported platform contract; Git Bash on native
+Windows is best-effort. Do not claim live validation of any host, editor,
+provider network, or host extension unless it was actually performed and
+reported separately.
 
 ## Behavioral layers
 

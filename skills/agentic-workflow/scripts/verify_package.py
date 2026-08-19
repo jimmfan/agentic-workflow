@@ -50,6 +50,7 @@ REQUIRED_PACKAGE_FILES = (
     "scripts/provider_snapshot.py",
     "scripts/refresh_provider_snapshot.py",
     "scripts/verify_package.py",
+    "runtime-projections/wayfinder.md",
     "tests/behavior.py",
     "payload/VERSION",
     "payload/distribution/manifest.json",
@@ -227,6 +228,7 @@ def check_router_contract() -> None:
         ".agent-workflow-state/wayfinder/" in agents and "unrelated map" in agents,
         "root policy lacks minimal Wayfinder progressive-loading guidance",
     )
+    normalized_wayfinder = " ".join(wayfinder.split())
     for required in (
         "unknowns/",
         "evidence/",
@@ -241,8 +243,20 @@ def check_router_contract() -> None:
         "review dependent decisions",
         "does not duplicate those work items in Wayfinder",
         "Use `to-tickets` only when clear work benefits from dependency ordering",
+        "exact contents already exist in Git",
+        "never leave a dangling current link",
+        "A retired number is not reserved",
+        ".wayfinder-mutation-lock/",
+        "never allow two current records",
+        "effort-local current-state shorthand",
+        "canonical filesystem path",
+        "outside the selected effort needs a reference",
+        "Do not scan the repository or Git history",
     ):
-        require(required in wayfinder, f"Wayfinder state contract lacks required boundary: {required}")
+        require(
+            required in normalized_wayfinder,
+            f"Wayfinder state contract lacks required boundary: {required}",
+        )
     combined = agents + routing + durable + wayfinder
     require(
         "runtime/README.md" not in combined and ".agent-workflow/runtime" not in combined,
@@ -253,7 +267,7 @@ def check_router_contract() -> None:
 def check_provider_declaration() -> None:
     path = PAYLOAD_ROOT / "agent-workflow" / "providers.json"
     raw = json.loads(path.read_text(encoding="utf-8"))
-    require(isinstance(raw, dict) and raw.get("schema_version") == 6, "unsupported provider declaration")
+    require(isinstance(raw, dict) and raw.get("schema_version") == 7, "unsupported provider declaration")
     provider = raw.get("provider")
     capabilities = raw.get("capabilities")
     hosts = raw.get("hosts")
@@ -363,12 +377,13 @@ def check_provider_declaration() -> None:
         )
         if isinstance(adapter, dict):
             adapter_name = adapter.get("name")
-            if adapter_name == "wayfinder-local-state-v1":
+            if adapter_name == "wayfinder-runtime-projection-v1":
                 valid_adapter = (
-                    set(adapter) == {"name", "upstream_body_sha256"}
+                    set(adapter) == {"name", "projection_source", "upstream_body_sha256"}
                     and isinstance(adapter.get("upstream_body_sha256"), str)
                     and re.fullmatch(r"[0-9a-f]{64}", adapter["upstream_body_sha256"])
                     is not None
+                    and adapter.get("projection_source") == "runtime-projections/wayfinder.md"
                     and name == "wayfinder"
                 )
             else:
@@ -428,10 +443,79 @@ def check_provider_declaration() -> None:
     wayfinder = next((item for item in skills if item.get("name") == "wayfinder"), None)
     require(
         isinstance(wayfinder, dict)
-        and wayfinder.get("agentic_workflow_adapter", {}).get("name") == "wayfinder-local-state-v1"
+        and wayfinder.get("agentic_workflow_adapter", {}).get("name")
+        == "wayfinder-runtime-projection-v1"
         and wayfinder.get("invocation", {}).get("codex") == "implicit"
         and wayfinder.get("invocation", {}).get("github-copilot") == "implicit",
-        "Wayfinder must declare the Agentic Workflow local-state adapter",
+        "Wayfinder must declare the Agentic Workflow runtime-projection adapter",
+    )
+    wayfinder_adapter = wayfinder["agentic_workflow_adapter"]
+    projection_source = package_path(
+        wayfinder_adapter.get("projection_source"),
+        "Wayfinder runtime projection source",
+    )
+    require(
+        projection_source.is_file() and not projection_source.is_symlink(),
+        "owned Wayfinder runtime projection is missing or unsafe",
+    )
+    projection_text = projection_source.read_text(encoding="utf-8")
+    require(
+        projection_text.startswith("# Wayfinder\n")
+        and projection_text.endswith("\n")
+        and "\n---\n" not in projection_text,
+        "owned Wayfinder runtime projection is malformed",
+    )
+    for required in (
+        "framework-owned runtime projection",
+        "derived from Matt Pocock's Wayfinder methodology",
+        "## Core invariants",
+        "### Establish territory",
+        "### Choose a resolution mechanism",
+        "### Converge and shrink",
+        "`map.md` alone is valid",
+        "Wayfinder does not own implementation work items",
+        "use `to-tickets`",
+        "contracts own detailed effort selection",
+        "If the Wayfinder contract is missing",
+    ):
+        require(
+            required in " ".join(projection_text.split()),
+            f"owned Wayfinder runtime lacks required contract: {required}",
+        )
+    for contract_only_detail in (
+        ".wayfinder-mutation-lock",
+        "highest currently present",
+        "retired number",
+        "final scan and removal",
+    ):
+        require(
+            contract_only_detail not in projection_text,
+            f"owned Wayfinder runtime duplicates state-contract mechanics: {contract_only_detail}",
+        )
+    for incompatible in (
+        "shared map on the repo's issue tracker",
+        "labelled `wayfinder:map`",
+        "Each ticket is a **child issue**",
+        "Each ticket carries a `wayfinder:<type>` label",
+        "A session **claims** a ticket by assigning it",
+        "tracker's **native** dependency relationship",
+        "run `/setup-matt-pocock-skills`",
+        "default to the local-markdown tracker",
+        "post the answer as a **resolution comment**",
+        "**close** the issue",
+    ):
+        require(
+            incompatible not in projection_text,
+            "owned Wayfinder runtime contains incompatible tracker mechanics",
+        )
+    upstream_wayfinder = snapshot_root / "wayfinder" / "SKILL.md"
+    upstream_bytes = upstream_wayfinder.read_bytes()
+    separator = upstream_bytes.find(b"\n---\n", 4)
+    require(separator >= 0, "bundled Wayfinder skill lacks valid frontmatter")
+    upstream_body = upstream_bytes[separator + len(b"\n---\n") :]
+    require(
+        sha256(upstream_body).hexdigest() == wayfinder_adapter["upstream_body_sha256"],
+        "Wayfinder upstream body fingerprint differs from the reviewed input",
     )
     for name in ("to-spec", "to-tickets", "implement"):
         skill = next((item for item in skills if item.get("name") == name), None)

@@ -68,6 +68,13 @@ route, and confidently unrelated work does not scan durable state. An
 implementation may consume a coherent Wayfinder map scope, settled D#, or native
 ticket without rerunning Wayfinder.
 
+For likely Wayfinder resume, prefer an explicit current map over a similarly
+named completed, abandoned, or superseded map. Historical maps remain available
+when directly named, explicitly requested, needed to follow a successor, or
+otherwise materially relevant; do not load their child history merely to select
+current work. A legacy map without lifecycle status remains valid and does not
+receive an inferred status unless its outcome and next work make that clear.
+
 After Wayfinder selection or relevant resume, load
 `contracts/wayfinder-state.md` before the map and only the child files needed for
 the current work. Before any other durable workflow mutation, load
@@ -110,7 +117,9 @@ use it instead of making setup ceremony a prerequisite.
 ## Preserve workflow ownership
 
 The selected provider owns its internal method, terminology, and native
-artifacts. The router owns selection and composition, not a duplicate
+artifacts by default. Wayfinder is the declared exception: Agentic Workflow's
+installed skill is the owned effective runtime derived from the pinned upstream
+methodology. The router owns selection and composition, not a duplicate
 methodology. Reuse provider evidence and add a second pass only for a distinct
 request or a demonstrated gap.
 

@@ -58,7 +58,7 @@ files are replaced without historical checksum forensics.
 
 After core success, lifecycle makes a best-effort offline projection from the
 release's bundled, checksummed provider snapshot. It stages all 14 declared
-skills, applies the Wayfinder local-mode and routed implicit-invocation adapters,
+skills, applies the owned Wayfinder runtime projection and routed implicit-invocation adapters,
 validates the effective projection, and reconciles every repairable declaration
 together.
 Runtime provider setup needs no GitHub CLI, Git, npm, npx, authentication, or

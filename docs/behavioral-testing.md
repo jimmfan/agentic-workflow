@@ -116,6 +116,14 @@ A new scenario should need one TOML file and one small fixture directory. The
 validator rejects unknown behavior names, unsafe paths, missing preserved files,
 unknown fields, and unsupported assertion kinds.
 
+The deterministic catalog includes settlement contracts for removing resolved
+U# and redundant E# files only after reference reconciliation, serializing
+concurrent creation with a transient effort mutation lock, allowing an
+uncommitted transient child to retire once current state is reconciled, creating
+a fresh effort after a completed destination, and reading an explicitly named
+historical effort without making it current. These are human-authored behavior
+contracts, not evidence that an unrun model obeyed them.
+
 ## Fixtures and reset
 
 Fixtures live under `skills/agentic-workflow/tests/fixtures/`. They contain only

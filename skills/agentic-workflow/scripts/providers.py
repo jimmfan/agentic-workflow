@@ -37,6 +37,7 @@ class ProviderSkill:
     invocation: dict[str, str]
     adapter: str | None
     upstream_body_sha256: str | None
+    projection_source: Path | None
 
 
 @dataclass(frozen=True)
@@ -48,67 +49,8 @@ class Provider:
     skills: tuple[ProviderSkill, ...]
 
 
-WAYFINDER_ADAPTER = "wayfinder-local-state-v1"
+WAYFINDER_ADAPTER = "wayfinder-runtime-projection-v1"
 IMPLICIT_INVOCATION_ADAPTER = "implicit-invocation-v1"
-WAYFINDER_ADAPTER_BEGIN = b"<!-- agentic-workflow:wayfinder-local-state-v1:begin -->\n"
-WAYFINDER_ADAPTER_END = b"<!-- agentic-workflow:wayfinder-local-state-v1:end -->\n\n"
-WAYFINDER_LOCAL_MODE = WAYFINDER_ADAPTER_BEGIN + b"""## Agentic Workflow local mode (authoritative)
-
-Use this section when `.agent-workflow/contracts/wayfinder-state.md` exists. Read
-that contract when Wayfinder is selected. Before an authorized durable-state
-write, also read `.agent-workflow/contracts/durable-state.md`. These rules override
-incompatible tracker-specific mechanics below. If the local contract is absent,
-ignore this section and use the unchanged upstream method normally.
-
-- Agentic Workflow decides when local Wayfinder is selected. Explicit use is
-  still allowed; an explicit opt-out prevents automatic selection. Bounded
-  debugging, one isolated unknown, and unrelated work keep their normal route.
-- The only canonical local representation is
-  `.agent-workflow-state/wayfinder/<effort>/`: `map.md` plus optional
-  `unknowns/U#`, `evidence/E#`, `facts/F#`, and `decisions/D#`. `map.md` alone is
-  valid. Wayfinder itself never creates `.scratch/`, an external issue-tracker
-  copy, or `.agent-workflow-state/active.md`; do not run setup solely to
-  provision a tracker for Wayfinder.
-- Preserve the upstream reasoning method: orient around a destination, keep the
-  map low resolution, represent fog honestly, resolve consequential uncertainty
-  incrementally, progressively load detail, and derive the frontier from current
-  status and dependencies.
-- Use U# for an unresolved consequential question, E# for an independently useful
-  observation with provenance and limitations, F# for a sufficiently established
-  scoped conclusion, and D# for a committed choice. Create children lazily only
-  when preserving them independently adds value; never force U# -> E# -> F# -> D#
-  as ceremony, and never reuse or renumber an ID. Facts link their evidence or
-  direct authoritative sources. Preserve conflicting evidence, mark unresolved
-  facts disputed, and surface the blocker instead of silently replacing history.
-- Keep the map self-contained as the effort's coordination and re-entry point.
-  It owns current state, blockers, dependencies, and the smallest coherent next
-  work. Canonical specifications, research, ADRs, source, tests, and other
-  evidence remain in their owning locations and are linked rather than copied.
-  A mature effort may still need no child files.
-- Wayfinder does not create implementation work items or a ticket subtree. When
-  ready work needs dependency ordering or separately deliverable sessions, use
-  `to-tickets` and link its native artifact/frontier from the map without a
-  shadow copy.
-- Wayfinder owns durable coordination, not every action. Debugging, Research,
-  Prototype, Grilling, Domain Modeling, human clarification, and Implementation
-  may resolve or consume an item while the map remains canonical. Mid-task
-  escalation does not erase a useful specialized workflow, and charting does
-  not require stopping when authorized, bounded work can safely continue.
-- Use Grilling and Domain Modeling when destination or domain ambiguity actually
-  needs live human clarification or a sharper domain model. Do not invoke them
-  ceremonially for a clear mid-task escalation or resume. Grilling is human in
-  the loop; never invent the human side of it.
-- Read-only analysis, audit, diagnosis, or review may use Wayfinder reasoning
-  but must not create or update state. On resume, load the relevant `map.md`
-  first and only the needed U/E/F/D children. Live/source
-  evidence wins over stale state; preserve history and reconcile affected files
-  explicitly.
-- Tracker labels, assignment/claiming, issue comments/closing, and tracker-native
-  blocking below do not apply in local mode. Before a write, reread the target
-  and map, allocate the next unused U/E/F/D ID, and never overwrite a concurrent
-  file or silently merge conflicting evidence.
-
-""" + WAYFINDER_ADAPTER_END
 def configure_console() -> None:
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
@@ -150,7 +92,7 @@ def load_provider() -> Provider:
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise ProviderError(f"cannot read provider declaration: {exc}") from exc
     provider = raw.get("provider") if isinstance(raw, dict) else None
-    if not isinstance(raw, dict) or raw.get("schema_version") != 6:
+    if not isinstance(raw, dict) or raw.get("schema_version") != 7:
         raise ProviderError("unsupported provider declaration")
     if not isinstance(provider, dict):
         raise ProviderError("provider declaration needs a provider object")
@@ -207,14 +149,19 @@ def load_provider() -> Provider:
         adapter = item.get("agentic_workflow_adapter")
         adapter_name: str | None = None
         upstream_body_sha256: str | None = None
+        projection_source: Path | None = None
         if adapter is not None:
             if not isinstance(adapter, dict):
                 raise ProviderError(f"provider skill {name} has an invalid Agentic Workflow adapter")
             adapter_name = adapter.get("name")
             if adapter_name == WAYFINDER_ADAPTER:
                 upstream_body_sha256 = adapter.get("upstream_body_sha256")
+                projection_source = package_path(
+                    adapter.get("projection_source"),
+                    f"provider skill {name} projection source",
+                )
                 valid = (
-                    set(adapter) == {"name", "upstream_body_sha256"}
+                    set(adapter) == {"name", "projection_source", "upstream_body_sha256"}
                     and name == "wayfinder"
                     and isinstance(upstream_body_sha256, str)
                     and len(upstream_body_sha256) == 64
@@ -245,6 +192,7 @@ def load_provider() -> Provider:
                 invocation,
                 adapter_name,
                 upstream_body_sha256,
+                projection_source,
             )
         )
     if len({skill.name for skill in result}) != len(result):
@@ -341,7 +289,11 @@ def adapter_plan(
         return []
     if skill.adapter == IMPLICIT_INVOCATION_ADAPTER:
         return implicit_invocation_adapter_plan(root, skill, repository, version)
-    if skill.adapter != WAYFINDER_ADAPTER or skill.upstream_body_sha256 is None:
+    if (
+        skill.adapter != WAYFINDER_ADAPTER
+        or skill.upstream_body_sha256 is None
+        or skill.projection_source is None
+    ):
         raise ProviderError(f"provider skill {skill.name} has an unsupported Agentic Workflow adapter")
     if destination_state(root, skill.name) != "present":
         raise ProviderError(f"provider skill {skill.name} is not safe to adapt")
@@ -367,12 +319,28 @@ def adapter_plan(
         raise ProviderError(f"provider skill {skill.name} has incompatible source metadata")
 
     upstream_body = original_skill[body_start:]
-    if WAYFINDER_ADAPTER_BEGIN in upstream_body or WAYFINDER_ADAPTER_END in upstream_body:
-        raise ProviderError(f"provider skill {skill.name} has unexpected local-mode adapter markers")
+    if b"<!-- agentic-workflow:wayfinder-" in upstream_body:
+        raise ProviderError(f"provider skill {skill.name} has unexpected projection markers")
     if sha256(upstream_body).hexdigest() != skill.upstream_body_sha256:
         raise ProviderError(f"provider skill {skill.name} has an unexpected pinned method body")
 
-    desired_skill = original_skill[:body_start] + WAYFINDER_LOCAL_MODE + upstream_body
+    if skill.projection_source.is_symlink() or not skill.projection_source.is_file():
+        raise ProviderError(f"provider skill {skill.name} runtime projection is missing or unsafe")
+    try:
+        projection_body = skill.projection_source.read_bytes()
+        projection_body.decode("utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise ProviderError(
+            f"cannot read runtime projection for provider skill {skill.name}: {exc}"
+        ) from exc
+    if (
+        not projection_body.startswith(b"# Wayfinder\n")
+        or not projection_body.endswith(b"\n")
+        or b"\n---\n" in projection_body
+    ):
+        raise ProviderError(f"provider skill {skill.name} runtime projection is malformed")
+
+    desired_skill = original_skill[:body_start] + projection_body
     replacements = (
         (
             skill_path,

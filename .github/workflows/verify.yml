@@ -11,14 +11,8 @@ permissions:
 
 jobs:
   deterministic-pre-merge-gate:
-    name: Deterministic / Python 3.11 / ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
+    name: Deterministic / Python 3.11 / Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out source

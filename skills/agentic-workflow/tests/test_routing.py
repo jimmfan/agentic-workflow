@@ -118,10 +118,36 @@ class RoutingContractTests(unittest.TestCase):
         normalized_root = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
         self.assertIn("choice the user explicitly resolves as settled", normalized_root)
-        self.assertIn("Never reuse or renumber an ID", normalized_contract)
+        self.assertIn("Never renumber an existing current record", normalized_contract)
         self.assertIn("`map.md` owns the current state", normalized_contract)
         self.assertIn("`map.md` alone is a complete and valid", normalized_contract)
         self.assertIn("Do not turn every source read or test run into an E#", normalized_contract)
+
+    def test_wayfinder_efforts_have_stable_names_and_progressive_resume_rules(self) -> None:
+        contract = (
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
+        ).read_text()
+        normalized = " ".join(contract.split())
+        for required in (
+            "## Effort naming, selection, and stable paths",
+            "The H1 heading in `map.md` is the durable human-readable effort name",
+            "directory slug is only its stable storage key",
+            "List effort directory names",
+            "smallest plausible candidate set",
+            "If multiple efforts remain plausible",
+            "create a third synonymous effort",
+            "A branch, ticket, file, command, temporary task description, or chat title",
+            "lowercase, filesystem-safe, hyphen-separated",
+            "Immediately before creating the directory",
+            "shortest stable meaningful disambiguator",
+            "Once created, the effort directory path is stable",
+            "Established awkward or legacy slugs remain valid",
+            "bringing previously out-of-scope work inside the boundary",
+        ):
+            self.assertIn(required, normalized)
+        self.assertNotIn("## Identity", contract)
+        self.assertNotIn("├── identity", contract)
+        self.assertNotIn("identity/unknowns", contract)
 
     def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
@@ -137,6 +163,7 @@ class RoutingContractTests(unittest.TestCase):
                 "wayfinder-read-only-boundary",
                 "wayfinder-explicit-opt-out",
                 "wayfinder-with-research",
+                "wayfinder-with-prototype",
             }
             <= set(by_id)
         )
@@ -150,6 +177,13 @@ class RoutingContractTests(unittest.TestCase):
         self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["dominant_activity"], "discovery")
         self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["provider_invocations"], [])
         self.assertEqual(by_id["wayfinder-with-debugging-evidence"]["capabilities"], ["debugging"])
+        self.assertEqual(by_id["wayfinder-with-prototype"]["capabilities"], ["prototype"])
+        for scenario_id in (
+            "wayfinder-with-research",
+            "wayfinder-with-prototype",
+            "wayfinder-with-debugging-evidence",
+        ):
+            self.assertIn("reconcile", by_id[scenario_id]["expected_behavior"].lower())
         self.assertEqual(
             by_id["wayfinder-reconcile-stale-state"]["repository_state_effect"],
             "project-owned-wayfinder-state",

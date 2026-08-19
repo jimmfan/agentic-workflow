@@ -18,7 +18,8 @@ contents, or remove it.
 - `contracts/durable-state.md`: durable continuity, canonical artifact, conflict,
   and re-entry rules.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
-  optional U#/E#/F#/D# knowledge and progressive loading.
+  optional U#/E#/F#/D# knowledge, current-state allocation, knowledge
+  settlement, effort completion, and progressive loading.
 - `contracts/project-profile.md`: optional advisory project-context rules.
 - `templates/`: source material used only when an authorized workflow actually
   needs durable state.
@@ -47,7 +48,9 @@ skill directories remain outside that boundary. Install/update stages the
 complete declared projection, repairs missing or different declared directories
 transactionally, and blocks on unsafe paths. Remove deletes exactly the declared
 set. Provider failure does not affect the core. The Wayfinder and invocation
-adapters require recognized pinned input before target mutation.
+adapters require recognized pinned input before target mutation. Wayfinder's
+effective body is an Agentic Workflow-owned runtime projection derived from the
+unchanged pinned upstream snapshot.
 
 Local Wayfinder data is a configured project-owned representation under
 `.agent-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned

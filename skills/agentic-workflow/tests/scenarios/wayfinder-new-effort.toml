@@ -2,10 +2,10 @@ schema_version = 1
 id = "wayfinder-new-effort"
 name = "Complicated migration planning starts lightweight durable state"
 fixture = "wayfinder-new"
-request = "Plan our zero-downtime platform migration. The route has unresolved ordering, dependencies, and assumptions that must remain distinct, and we also need to identify concrete work that can begin while part of the plan is blocked."
+request = "Plan our zero-downtime platform migration. Reuse migration-architecture.md for the destination, boundary, major areas, and relationships; that authoritative structure is already clear, so do not rerun Domain Modeling. Preserve unresolved ordering separately and identify concrete work that can begin while part of the plan is blocked."
 starting_state = [
   "Several important pieces of migration state are becoming unreliable to hold only in conversational context.",
-  "Zero downtime is accepted, migration ordering is unresolved, and consumer inventory is executable now.",
+  "migration-architecture.md authoritatively defines consumer inventory, cutover orchestration, rollback, ownership, and their seams; migration ordering remains unresolved.",
   "Repository-local durable planning is authorized, but no external tracker mutation is authorized.",
 ]
 expect = [
@@ -18,7 +18,8 @@ must_not = [
 ]
 live = false
 verification_command = "Validate that the resulting repository-local planning state preserves the destination, current state, blockers, decisions, unknowns, and next work without creating Wayfinder tickets, a global active file, or a parallel copy."
-preserve_paths = []
+preserve_paths = ["migration-architecture.md"]
+route_must_not_include = ["domain-modeling"]
 forbid_created_globs = [
   ".agent-workflow-state/active.md",
   ".agent-workflow-state/archive",
@@ -65,6 +66,31 @@ value = "## Notes"
 kind = "path_contains"
 path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
 value = "## Current state"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
+value = "## Territory"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
+value = "Consumer inventory"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
+value = "Cutover orchestration"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
+value = "Rollback"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/platform-migration/map.md"
+value = "depends on"
 
 [[assertions]]
 kind = "path_contains"

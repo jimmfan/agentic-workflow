@@ -6,6 +6,7 @@
 - Supersedes: ADR-0014, ADR-0015, ADR-0017, and ADR-0018
 - Amends: ADR-0007, ADR-0010, ADR-0011, and ADR-0013
 - Related: ADR-0021 and ADR-0022
+- Amended by: ADR-0023
 
 ## Context
 
@@ -30,8 +31,9 @@ effective metadata the lifecycle refused to repair.
 
 The declared provider directories are framework-owned, replaceable build output.
 The pinned unmodified snapshot and MIT notice remain release inputs; Agentic
-Workflow creates the effective projection by applying its reviewed Wayfinder
-local-mode and implicit-invocation adapters in staging.
+Workflow creates the effective projection by applying its reviewed adapters in
+staging. ADR-0023 makes Wayfinder an explicit derived-runtime exception; the
+other adapters remain narrow invocation changes.
 
 The maintainer and CI release gate validates the bundled checksum, provenance,
 and MIT license against the reviewed release identity. These release bookkeeping
@@ -64,8 +66,10 @@ to delete the now-obsolete recovery directory after commit reports a warning
 and the exact retained path, but does not falsely report that the committed
 target mutation failed.
 
-The Wayfinder adapter keeps the upstream planning method while making the local
-contract authoritative. It maps consequential unresolved questions to U# and
+The Wayfinder adapter validates the upstream source and projects the
+Agentic Workflow-owned runtime defined by ADR-0023. That runtime keeps the
+useful destination, map, fog, frontier, and readable-name methodology while it
+maps consequential unresolved questions to U# and
 recognizes optional E#, F#, and D# knowledge while keeping `map.md` valid alone.
 The map stays the self-contained coordination/re-entry point and owns current
 state, blockers, dependencies, and next work. The adapter keeps executable work
@@ -93,9 +97,10 @@ failure is reported truthfully but does not roll back a successful core update.
 Fresh, partial, raw-upstream, modified, and older adapted installations converge
 on the same tested effective projection without user cleanup. The specific
 GitHub Copilot/Claude failure caused by raw Wayfinder's disabled invocation
-metadata is repairable by normal update. Runtime remains offline and does not
-fork upstream methodology: the bundle preserves pinned upstream bytes, while
-small fingerprinted adapters define the intentional integration differences.
+metadata is repairable by normal update. Runtime remains offline. The bundle
+preserves pinned upstream bytes and attribution, while the effective Wayfinder
+body is intentionally derived and owned locally; future upstream changes are
+reviewed and selectively ported.
 
 Users must put custom skills in differently named directories; edits inside the
 14 declared names are disposable. Unsafe filesystem objects fail closed.

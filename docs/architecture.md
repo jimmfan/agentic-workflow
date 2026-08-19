@@ -105,9 +105,21 @@ profile, record, archive, and Wayfinder files are normal.
 When Wayfinder needs Git-native structured state, its dedicated progressively
 loaded contract configures `.agent-workflow-state/wayfinder/<effort>/` as the
 canonical local representation. It creates no global index, shadow `.scratch/`
-tree, persisted frontier, lifecycle schema, or external-tracker sync. The map
-itself is the re-entry point, and human edits remain opaque project data to
-lifecycle code.
+tree, persisted frontier, lifecycle database, or external-tracker sync. The map
+itself is the re-entry point and may carry one compact current/completed/
+abandoned/superseded status. U/E/F/D identifiers are stable references only
+within current state; Git preserves historical states that actually enter Git
+but is not a retirement gate. Human Wayfinder state remains opaque project data
+to lifecycle code. Atomic creation of one empty transient per-effort lock
+directory serializes map and child mutations, preventing different readable
+slugs from concurrently claiming the same number and making reference-safe
+retirement indivisible without durable allocation state.
+
+Bare U#/E#/F#/D# references are effort-local current-state shorthand. Readable
+child filenames are canonical paths; durable references from ADRs,
+specifications, tickets, or other artifacts outside the effort use
+repository-relative Markdown links with readable labels instead of treating a
+bare number as repository-wide identity.
 
 Accepted, lasting architecture or contract decisions use `/` as
 the default ADR namespace. An existing project instruction may name another
@@ -160,21 +172,22 @@ before mutation. Unrelated `.agents/skills/` directories are preserved. A
 projection or validation failure still never invalidates a successful core
 operation.
 
-The pinned Wayfinder provider retains its reasoning method and terminology. A
-clearly delimited local-mode section precedes the unchanged provider method and
-adapts its configured storage, re-entry, and item lifecycle: low-resolution
-maps, fog of war, named links, and dependency-derived frontier semantics remain
-provider-aligned, while local persistence moves from the provider's default
-`.scratch/` tracker to project-owned map-first U#/E#/F#/D# state. `map.md` owns
-current state, blockers, dependencies, and next work; substantial decomposition
-passes to `to-tickets` without duplicate Wayfinder work items. The same adapter
-changes Wayfinder's host invocation flags and discovery descriptions so Codex and
-GitHub Copilot may select it implicitly at the framework's notebook threshold.
-This remains a narrow integration boundary because Agentic Workflow owns
-routing and local storage; it does not rewrite the upstream method below the
-adapter. A Claude model inside GitHub Copilot uses this shared host projection;
-native Claude Code remains unavailable because no native projection exists for
-that host.
+Wayfinder is the explicit exception to normal provider-method ownership.
+Agentic Workflow owns a concise effective runtime derived from Matt Pocock's
+Wayfinder methodology; the pinned raw snapshot remains unchanged as reviewed
+provenance and reference. During staging, one explicit adapter validates that
+recognized input, retains compatible provenance frontmatter, applies the
+reviewed host-invocation metadata, and replaces the upstream tracker body with
+the package-owned runtime body.
+
+The owned runtime retains destination, low-resolution map, fog, frontier,
+readable-name, and progressive-resolution concepts while defining project-owned
+map-first U/E/F/D state, effort selection, continuation, concurrency, and the
+`to-tickets` boundary. It does not append issue assignment, tracker blocking,
+resolution comments, required tracker setup, or `.scratch/` fallback mechanics.
+A Claude model inside GitHub Copilot uses this shared host projection; native
+Claude Code remains unavailable because no native projection exists for that
+host.
 
 The framework keeps no target ownership database, installed-file history,
 quarantine store, or automatic upgrade engine.
@@ -246,11 +259,17 @@ telemetry contracts.
 
 ## Portability
 
+Supported execution environments use POSIX-style shells on macOS, Linux, WSL,
+and Linux-based devcontainers. Bash is the primary shell contract; Zsh and
+similar POSIX shells are expected to work. Native PowerShell and CMD are not
+supported. Git Bash on native Windows is best-effort and does not justify
+Windows-specific machinery.
+
 Lifecycle code uses Python 3.11+ standard-library filesystem APIs and
 `PurePosixPath` for package identities. It does not require Git, a daemon,
 database, container runtime, or a particular editor layout. CLI messages are
 ASCII; dynamic text is emitted with backslash replacement on restrictive
-consoles such as Windows cp1252.
+consoles.
 
 Live validation on one platform is reported separately from portability by
 design. Archive fixtures and temporary-project tests are hermetic evidence, not

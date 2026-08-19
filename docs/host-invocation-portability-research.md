@@ -239,7 +239,8 @@ and [GitHub's cloud-agent skills guide](https://docs.github.com/en/copilot/how-t
   checked-in framework artifacts.
 - **[Repository-observed]** The declared Wayfinder adapter intentionally flips
   both spellings to implicit (`disable-model-invocation: false` and
-  `allow_implicit_invocation: true`) while inserting the local-mode adapter.
+  `allow_implicit_invocation: true`) while replacing the recognized upstream
+  body with the Agentic Workflow-owned runtime projection.
   See [`providers.py`](../skills/agentic-workflow/scripts/providers.py) and the
   installed provider files under `.agents/skills/wayfinder/`.
 - **[Repository-observed]** Provider validation checks the Copilot policy from

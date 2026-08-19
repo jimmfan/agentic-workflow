@@ -72,7 +72,7 @@ flowchart LR
     state --> resume["Later session"]
     resume --> router
 
-    state -.-> wfstate["wayfinder/effort-name-placeholder/"]
+    state -.-> wfstate["wayfinder/stable-effort-slug/"]
     wfstate -.-> map["map.md"]
     wfstate -.-> unknowns["unknowns/U#.md"]
     wfstate -.-> evidence["evidence/E#.md"]
@@ -156,10 +156,30 @@ child directories are optional and created lazily.
 
 Child files are loaded only when needed.
 
-The pinned upstream skill supplies the destination/map/fog methodology. A
-narrow, fingerprinted provider adapter makes this Git-native tree authoritative
-over upstream tracker mechanics when Agentic Workflow local mode is active. In
-that mode no issue tracker or `.scratch/` copy is required.
+Agentic Workflow's effective Wayfinder is a framework-owned runtime projection
+derived from Matt Pocock's pinned Wayfinder methodology. The unchanged upstream
+snapshot remains reviewed provenance and reference; the effective runtime owns
+the Git-native map, effort-selection, continuation, U/E/F/D, and `to-tickets`
+contracts and contains no appended tracker implementation.
+
+The map gives low-resolution semantic bearings: destination, scope boundary,
+major coherent areas, and important relationships or seams. Existing
+authoritative project structure is reused; when those bearings are genuinely
+unclear, Domain Modeling is the preferred discovery mechanism before substantial
+child state accumulates. The map organizes the territory, while U/E/F/D classify
+current knowledge within it.
+
+The map H1 is the durable readable effort name. A new effort derives its name
+and concise lowercase, hyphen-separated directory slug only after its destination
+and boundary are understood; later sessions list directory names and read only
+plausible candidate maps. The established path stays stable even if wording or
+implementation phases change. Ambiguous matches remain read-only until resolved.
+
+A map may identify its effort as `current`, `completed`, `abandoned`, or
+`superseded`. Likely resume prefers a current match over similarly named
+historical work, while a directly named historical effort remains readable at
+its stable path. Existing maps without an explicit status remain valid and are
+classified only when their outcome and next work make the lifecycle clear.
 
 The vocabulary is:
 
@@ -175,6 +195,30 @@ U#/E#/F#/D# files exist only when independent preservation adds value. Facts
 link their evidence or direct authoritative sources, while conflicting evidence
 marks a fact disputed until it is reconciled.
 
+When an unknown resolves, the answer and map are reconciled without requiring a
+new evidence, fact, or decision child. U/E/F/D files leave current Wayfinder
+state when they no longer retain independent navigational value. Their numbers
+remain stable while current, but retirement releases them for the ordinary
+highest-current-ID-plus-one rule; Git preserves historical states that actually
+enter Git. Retirement requires current information and references to be
+reconciled, not a prior commit of the retiring child. One empty transient
+per-effort lock serializes map and child mutations so allocation cannot collide
+and retirement cannot race a current-reference edit; it contains no knowledge
+or allocation data.
+
+An area is settled when it has no consequential fog and its durable outcomes
+have moved to the proper canonical owner or workflow. That may be an ADR,
+specification, documentation or source, `to-tickets`, Implementation, another
+project artifact, or no separate artifact. Not every area becomes an ADR or
+ticket. As areas settle, Wayfinder retires redundant children; completed efforts
+normally shrink toward a concise map, with Git preserving history.
+
+Bare references such as `U17`, `F8`, or `D4` are concise shorthand only inside
+their current Wayfinder effort. Readable child filenames remain the canonical
+paths. ADRs, specifications, tickets, and other artifacts outside the effort use
+repository-relative Markdown links with readable labels when a reference must
+remain durable beyond the current Wayfinder representation.
+
 Wayfinder does not own implementation work items. One coherent next action can
 pass from the map directly to implementation. Work that needs dependency
 ordering or separately deliverable sessions goes through `to-tickets`, whose
@@ -183,6 +227,12 @@ native tickets remain canonical and are linked from the map.
 Debugging, Research, Prototype, Grilling, Domain Modeling, human clarification,
 or Implementation may resolve or consume an item without taking ownership of
 the map.
+
+Domain Modeling can sharpen concepts, terminology, boundaries, relationships,
+assumptions, and dependencies; Wayfinder preserves only the consequential
+durable results. When progress depends on human or project authority, the agent
+asks the concrete question, explains why that authority is required, and states
+what the answer will unblock instead of assuming a decision.
 
 Wayfinder is not required for every task.
 
@@ -339,21 +389,17 @@ Agentic Workflow is a project-level workflow and state layer, not a coding-agent
 
 ## Prerequisites
 
-Run lifecycle commands in the environment that owns the target project: the
-macOS or Linux host Terminal, a VS Code terminal inside a Dev Container, or
-native Windows PowerShell. Core installation requires Python 3.11 or newer and
-HTTPS access to GitHub.
+Run lifecycle commands in a POSIX-style shell in the environment that owns the
+target project: Bash on macOS, Linux, WSL, or inside a Linux-based devcontainer.
+Zsh and similar POSIX shells are also expected to work. Native PowerShell and
+CMD are not supported; Git Bash on native Windows is best-effort. Core
+installation requires Python 3.11 or newer and HTTPS access to GitHub.
 
 Check the Python version in that environment:
 
 ```bash
-# macOS/Linux or a Dev Container
+# macOS, Linux, WSL, or a Linux-based devcontainer
 python3 --version
-```
-
-```powershell
-# Native Windows PowerShell
-py -3 --version
 ```
 
 ## Install
@@ -361,13 +407,8 @@ py -3 --version
 From the root of the project where you want to use Agentic Workflow:
 
 ```bash
-# macOS/Linux or a Dev Container
+# macOS, Linux, WSL, or a Linux-based devcontainer
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
-```
-
-```powershell
-# Native Windows PowerShell
-py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
 ```
 
 Then start a new coding-agent session from the project root so it can discover the installed project instructions and skills.
@@ -389,13 +430,8 @@ the core framework and bundled provider skills while preserving durable project
 state under `.agent-workflow-state/`.
 
 ```bash
-# macOS/Linux or a Dev Container
+# macOS, Linux, WSL, or a Linux-based devcontainer
 python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
-```
-
-```powershell
-# Native Windows PowerShell
-py -3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
 ```
 
 Append `--dry-run` to preview an install or update without changing the target.

@@ -9,184 +9,166 @@ metadata:
     github-tree-sha: 48c3a8b0a9705d6310d37f7f9b53bcb2c55955c7
 name: wayfinder
 ---
-<!-- agentic-workflow:wayfinder-local-state-v1:begin -->
-## Agentic Workflow local mode (authoritative)
+# Wayfinder
 
-Use this section when `.agent-workflow/contracts/wayfinder-state.md` exists. Read
-that contract when Wayfinder is selected. Before an authorized durable-state
-write, also read `.agent-workflow/contracts/durable-state.md`. These rules override
-incompatible tracker-specific mechanics below. If the local contract is absent,
-ignore this section and use the unchanged upstream method normally.
+Wayfinder keeps a lightweight durable map when important unknowns, decisions,
+dependencies, blockers, or conflicting facts are becoming unreliable to hold
+in ordinary context. Agentic Workflow's effective Wayfinder workflow is a
+framework-owned runtime projection derived from Matt Pocock's Wayfinder
+methodology. The pinned upstream snapshot remains unchanged as reviewed
+provenance and reference; Agentic Workflow owns this runtime's routing,
+Git-native state, effort selection, continuation, concurrency, U/E/F/D, and
+`to-tickets` handoff contracts.
 
-- Agentic Workflow decides when local Wayfinder is selected. Explicit use is
-  still allowed; an explicit opt-out prevents automatic selection. Bounded
-  debugging, one isolated unknown, and unrelated work keep their normal route.
-- The only canonical local representation is
-  `.agent-workflow-state/wayfinder/<effort>/`: `map.md` plus optional
-  `unknowns/U#`, `evidence/E#`, `facts/F#`, and `decisions/D#`. `map.md` alone is
-  valid. Wayfinder itself never creates `.scratch/`, an external issue-tracker
-  copy, or `.agent-workflow-state/active.md`; do not run setup solely to
-  provision a tracker for Wayfinder.
-- Preserve the upstream reasoning method: orient around a destination, keep the
-  map low resolution, represent fog honestly, resolve consequential uncertainty
-  incrementally, progressively load detail, and derive the frontier from current
-  status and dependencies.
-- Use U# for an unresolved consequential question, E# for an independently useful
-  observation with provenance and limitations, F# for a sufficiently established
-  scoped conclusion, and D# for a committed choice. Create children lazily only
-  when preserving them independently adds value; never force U# -> E# -> F# -> D#
-  as ceremony, and never reuse or renumber an ID. Facts link their evidence or
-  direct authoritative sources. Preserve conflicting evidence, mark unresolved
-  facts disputed, and surface the blocker instead of silently replacing history.
-- Keep the map self-contained as the effort's coordination and re-entry point.
-  It owns current state, blockers, dependencies, and the smallest coherent next
-  work. Canonical specifications, research, ADRs, source, tests, and other
-  evidence remain in their owning locations and are linked rather than copied.
-  A mature effort may still need no child files.
-- Wayfinder does not create implementation work items or a ticket subtree. When
-  ready work needs dependency ordering or separately deliverable sessions, use
-  `to-tickets` and link its native artifact/frontier from the map without a
-  shadow copy.
-- Wayfinder owns durable coordination, not every action. Debugging, Research,
-  Prototype, Grilling, Domain Modeling, human clarification, and Implementation
-  may resolve or consume an item while the map remains canonical. Mid-task
-  escalation does not erase a useful specialized workflow, and charting does
-  not require stopping when authorized, bounded work can safely continue.
-- Use Grilling and Domain Modeling when destination or domain ambiguity actually
-  needs live human clarification or a sharper domain model. Do not invoke them
-  ceremonially for a clear mid-task escalation or resume. Grilling is human in
-  the loop; never invent the human side of it.
-- Read-only analysis, audit, diagnosis, or review may use Wayfinder reasoning
-  but must not create or update state. On resume, load the relevant `map.md`
-  first and only the needed U/E/F/D children. Live/source
-  evidence wins over stale state; preserve history and reconcile affected files
-  explicitly.
-- Tracker labels, assignment/claiming, issue comments/closing, and tracker-native
-  blocking below do not apply in local mode. Before a write, reread the target
-  and map, allocate the next unused U/E/F/D ID, and never overwrite a concurrent
-  file or silently merge conflicting evidence.
+Use Wayfinder when structured project notes materially reduce the risk of
+losing or conflating several consequential state distinctions. Explicit use is
+allowed, and an explicit opt-out prevents automatic selection. Keep clear,
+bounded, low-risk, unrelated, and read-only work on its minimum useful route;
+one ordinary implementation detail or isolated unknown does not justify a map.
 
-<!-- agentic-workflow:wayfinder-local-state-v1:end -->
+## Core invariants
 
-A loose idea has arrived — too big for one agent session, and wrapped in fog: the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **shared map** on the repo's issue tracker, then works its **decision tickets** — questions whose resolution is a decision, not slices of a build to execute — one at a time until the route is clear.
+- Route before inspecting Wayfinder state. Existing state never selects
+  Wayfinder by itself, and considering or selecting Wayfinder does not require a
+  write. An assessment may conclude that no durable Wayfinder state is needed.
+- Name the destination and understand the territory before decomposing the
+  route. Keep `map.md` at low resolution, represent fog honestly, identify the
+  current frontier, and load detail only as it becomes relevant.
+- `map.md` organizes the destination, boundary, major areas, and important
+  seams. U/E/F/D classify current knowledge within that territory; they do not
+  replace its structure. `map.md` alone is valid.
+- Live source and accepted project artifacts outrank stale Wayfinder state.
+  Reconcile only consequential current results, preserve conflicts honestly,
+  and retire state when its navigational value disappears.
+- Never decide an authority-dependent choice on the human's behalf. Surface the
+  concrete question, explain why that authority is required, and state what the
+  answer will unblock.
+- Use the resolution mechanism that fits the uncertainty. Domain Modeling,
+  Research, Prototype, Debugging, human clarification, or Grilling supplies
+  reasoning, evidence, or clarification; Wayfinder preserves only consequential
+  durable results.
+- Wayfinder does not own implementation work items. Pass substantial
+  dependency-ordered or independently deliverable work to `to-tickets` and
+  link its canonical frontier without a shadow copy.
 
-The destination varies per effort, and naming it is the first act of charting — it shapes every ticket. It might be a spec to hand off and iterate on, a decision to lock before planning starts, or a change made in place like a data-structure migration. The map is domain-agnostic — engineering work, course content, whatever fits the shape.
+When Wayfinder is selected or a request continues a relevant effort, read
+`.agent-workflow/contracts/wayfinder-state.md` before the map. Before an
+authorized durable write, also read
+`.agent-workflow/contracts/durable-state.md`. Those contracts own detailed
+effort selection, paths, identifiers, links, locking, reconciliation,
+settlement, and lifecycle mechanics. If the Wayfinder contract is missing, do
+not invent tracker or `.scratch/` fallback state; treat the installation as
+incomplete and stop safely or continue through another truthful authorized
+route.
 
-## Plan, don't do
+## Method
 
-Wayfinder is **planning** by default: each ticket resolves a decision, and the map is done when the way is clear — nothing left to decide before someone goes and does the thing. The pull to just do the work is usually the signal you've reached the edge of the map and it's time to hand off. An effort can override this in its **Notes** — carrying execution into the map itself — but absent that, produce decisions, not deliverables.
+### Establish territory
 
-## Refer by name
+First decide whether durable Wayfinder state is useful. For a new durable
+effort, establish enough low-resolution structure to navigate: the destination,
+scope boundary, major coherent areas or domains, and important relationships or
+seams. Reuse accepted project structure when it already supplies those bearings.
+Otherwise establish them directly when current context supports them
+confidently. Use Domain Modeling when material structural ambiguity remains and
+structural discovery is actually needed, before substantial U/E/F/D state
+accumulates.
 
-Every map and ticket is an issue, so it has a **name** — its title. In everything the human reads — narration, the map's Decisions-so-far — refer to it by that name, never by a bare id, number, or slug. A wall of `#42, #43, #44` is illegible; names read at a glance. The id and URL don't vanish — a name wraps its link — but they ride _inside_ the name, never stand in for it.
+Derive the effort's identity, readable name, and stable path from that
+understanding. Do not invent a directory name first and rationalize its purpose
+afterward. Keep the semantic structure in `map.md`, using a short **Territory**
+section or another clear shape; do not create nested area storage. On resume,
+reuse a coherent map instead of rerunning structural discovery as ceremony.
 
-## The Map
+Keep in-scope fog under **Not yet specified**, distinguish **Out of scope**, and
+choose the smallest coherent unblocked next work as the frontier. Resolve
+consequential uncertainty incrementally; each answer may reshape an area,
+expose another unknown, change dependencies, or make new work takeable.
 
-The map is a single issue on this repo's issue tracker, labelled `wayfinder:map` — the canonical artifact. Its tickets are child issues of the map.
+### Choose a resolution mechanism
 
-The map is an **index**, not a store. It lists the decisions made and points at the tickets that hold their detail; a decision lives in exactly one place — its ticket — so the map never restates it, only gists it and links.
+- **Domain Modeling** — use it when material ambiguity in a new effort's
+  concepts, terminology, boundaries, areas, or relationships makes structural
+  discovery necessary. It may also expose assumptions, unknowns, dependencies,
+  and authority-dependent choices.
+- **Research** — use for externally answerable uncertainty that needs
+  trustworthy sources.
+- **Prototype** — use when uncertainty is best resolved by trying something
+  concrete and inexpensive.
+- **Debugging** — use for uncertainty about observed behavior and its cause.
+- **Human clarification or Grilling** — use for intent, preference, approval,
+  prioritization, or another authority-dependent choice.
 
-**Where the map, its child tickets, blocking, and frontier queries physically live is tracker-specific.** The issue tracker should have been provided to you — run `/setup-matt-pocock-skills` if not. Consult the tracker doc's "Wayfinding operations" section for how _this_ repo expresses them. If no tracker has been provided, default to the local-markdown tracker.
+These activities keep their own native artifacts. Reconcile only consequential
+results into the current effort: sharpen the Destination, map state, fog,
+blockers, dependencies, frontier, or next work; create or retain U/E/F/D detail
+only when independent durable value justifies it. Domain Modeling is
+conditional, not ceremony for every new effort or resume.
 
-### The map body
+When progress depends on human or project authority, do not infer the answer
+from convenience, precedent, or an agent proposal. Surface the concrete
+question, explain why that authority is required, state what the answer will
+unblock, and leave the relevant uncertainty or blocker explicit. Do not turn an
+assumed answer into an accepted D#, specification, or implementation ticket.
 
-The whole map at low resolution, loaded once per session. Open tickets are **not** listed — they are open child issues, found by query.
+### Converge and shrink
 
-```markdown
-## Destination
+Treat a semantic area as settled when no consequential fog remains there and
+every durable outcome has reached its proper canonical owner or the workflow
+that owns the resulting work. That owner may be an ADR, specification,
+documentation or source, `to-tickets`, Implementation, another project-native
+artifact, or nothing separate when the result has no independent long-term
+value. Do not turn every area or D# into an ADR or ticket.
 
-<what reaching the end of this map looks like — the spec, decision, or change this effort is finding its way to. One or two lines; every session orients to it before choosing a ticket.>
+As areas settle, update the same semantic map, point to canonical outcomes, and
+retire redundant U/E/F/D children under the state contract. Completion alone
+does not make a child redundant. If new evidence changes the territory,
+reconcile its current areas and seams instead of keeping parallel structures.
+Git preserves history. A completed effort should normally shrink toward a
+concise map that records its outcome and canonical pointers.
 
-## Notes
+If assessment finds no consequential uncertainty, dependency, blocker,
+conflicting fact, or continuity need worth preserving, state that no durable
+Wayfinder state is needed and continue or hand off through the minimum useful
+route. Do not manufacture a map or child merely because Wayfinder was considered
+or automatically selected.
 
-<domain; skills every session should consult; standing preferences for this effort>
+## Work from the map
 
-## Decisions so far
+Route first. For a relevant resume, use an exact supplied map path when
+available; otherwise follow the contract's progressive candidate-selection
+rules. Read `map.md` first and only the child files or linked canonical
+artifacts needed for the current question. If multiple efforts remain plausible,
+ask the user rather than choosing, merging, or creating a synonym.
 
-<!-- the index — one line per closed ticket: enough to judge relevance, then zoom the link for the detail the ticket holds -->
+Keep `map.md` self-contained enough for a fresh session to recover the
+destination, current state, blockers and dependencies, and smallest coherent
+next work. Use readable names and links:
 
-- [<closed ticket title>](link) — <one-line gist of the answer>
+- U# is an unresolved consequential question.
+- E# is independently useful evidence with provenance, scope, and limitations.
+- F# is a sufficiently established scoped descriptive conclusion.
+- D# is a committed choice made under project authority.
 
-## Not yet specified
+These are semantic distinctions, not a U# -> E# -> F# -> D# pipeline. The map
+may be the whole current result. When an answer or project change matters,
+reconcile the map and only independently useful child knowledge according to the
+state contract.
 
-<!-- see "Fog of war": in-scope fog you can't ticket yet; graduates as the frontier advances -->
+Advance the frontier until the route is sufficiently clear, then continue the
+authorized work, hand it to its owning workflow, or stop with next work explicit.
+One coherent scope may pass directly to implementation. When substantial work
+needs dependency ordering or separately deliverable sessions, use `to-tickets`;
+its native artifacts remain canonical and the map records only the coordination
+consequence.
 
-## Out of scope
+## Boundaries
 
-<!-- see "Out of scope": work ruled beyond the destination; closed, never graduates -->
-```
+Read-only analysis, audit, diagnosis, or review may use Wayfinder reasoning but
+must not create or update state. Authorized mutations follow the state
+contract's concurrency and reconciliation rules; never improvise identifier,
+lock, retirement, settlement, or lifecycle behavior in the runtime.
 
-### Tickets
-
-Each ticket is a **child issue** of the map; the tracker's issue id is its identity. Its body is the question, sized to one 100K token agent session:
-
-```markdown
-## Question
-
-<the decision or investigation this ticket resolves>
-```
-
-Each ticket carries a `wayfinder:<type>` label — one of `research`, `prototype`, `grilling`, `task` (see [Ticket Types](#ticket-types)).
-
-A session **claims** a ticket by assigning it to the dev driving the map, **first**, before any work, so concurrent sessions skip it. That assignee _is_ the claim: an open, unassigned ticket is unclaimed.
-
-Blocking uses the tracker's **native** dependency relationship — essential because it renders the frontier _visually_ in the tracker's own UI, so the human sees what's takeable without opening the map. Only a tracker that lacks native blocking falls back to a body convention. A ticket is **unblocked** when every ticket blocking it is closed; the **frontier** is the open, unblocked, unclaimed children — the edge of the known.
-
-The answer isn't part of the body — it's recorded on resolution (see [Work through the map](#work-through-the-map)). Assets created while resolving a ticket are linked from the issue, not pasted in.
-
-## Ticket Types
-
-Every ticket is either **HITL** — human in the loop, worked _with_ a human who speaks for themselves — or **AFK**, driven by the agent alone. A HITL ticket only resolves through that live exchange; the agent never stands in for the human's side of it (a grilling agent that answers its own questions has broken this).
-
-- **Research** (AFK): Reading documentation, third-party APIs, or local resources like knowledge bases to surface a fact a decision waits on. Resolved by a `/research` **subagent**. Use when knowledge outside the current working directory is required.
-- **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap, rough, concrete artifact to react to — an outline, a rough take, a stub, or UI/logic code via the /prototype skill. Links the prototype as an asset. Use when "how should it look" or "how should it behave" is the key question.
-- **Grilling** (HITL): Conversation. The default case. Always invoke the /grilling and /domain-modeling skills.
-- **Task** (HITL or AFK): Manual work that must happen before a _decision_ can be made — nothing to decide, prototype, or research, but the discussion is blocked until it's done. Signing up for a service so its API can be judged, provisioning access, moving data so its shape can be seen. This is the one type that _does_ rather than decides — and it earns its place by unblocking a decision, not by delivering the destination. The agent drives it alone where it can (AFK); otherwise it hands the human a precise checklist (HITL). Resolved when the work is done; the answer records what was done and any resulting facts (credentials location, new URLs, row counts) later tickets depend on.
-
-## Fog of war
-
-The map is _deliberately_ incomplete: don't chart what you can't yet see. Beyond the live tickets lies the **fog of war** — the dim view of decisions and investigations you can tell are coming but can't yet pin down, because they hang on questions still open. Resolving a ticket clears the fog ahead of it, graduating whatever's now specifiable into fresh tickets — one at a time, until the way to the destination is clear and no tickets remain.
-
-The map's **Not yet specified** section is where that dim view is written down: the suspected question, the area to revisit later. It's the undiscovered frontier _toward_ the destination — everything here is in scope, just not sharp enough to ticket. Write as loosely or as fully as the view allows; it doubles as a signpost for collaborators reading where the effort is headed.
-
-**Fog or ticket?** The test is whether you can state the question precisely now — _not_ whether you can answer it now.
-
-- **Ticket when** the question is already sharp — even if it's blocked and you can't act on it yet.
-- **Not yet specified when** you can't yet phrase it that sharply. Don't pre-slice the fog into ticket-sized pieces: it's coarser than a ticket, and one patch may graduate into several tickets, or none, once the frontier reaches it.
-
-**Not yet specified** excludes what's already decided (Decisions so far), what's already a live ticket, and what's out of scope (the next section).
-
-## Out of scope
-
-Fog only ever gathers _toward_ the destination. The destination fixes the scope, so work beyond it is **out of scope** — it isn't fog, and it doesn't belong in **Not yet specified**. It gets its own **Out of scope** section on the map: work you've consciously ruled out of _this_ effort. Scope, not sharpness, lands it here.
-
-Out-of-scope work never graduates — the frontier stops at the destination — so it returns only if the destination is redrawn, and then as a fresh effort, not a resumption.
-
-Ruling something out of scope is a scoping act, not a step on the route. When a ticket that already exists turns out to sit past the destination — mis-scoped in while charting, or exposed by a resolution — **close it** (a closed ticket is unambiguously off the frontier) and leave one line in the **Out of scope** section: the gist plus why it's out of scope, linking the closed ticket. It stays out of **Decisions so far**, which records the route actually walked — a scope boundary isn't a step on it.
-
-## Invocation
-
-Two modes. Either way, **never resolve more than one ticket per session** — with the exception of research tickets.
-
-### Chart the map
-
-User invokes with a loose idea.
-
-1. **Name the destination.** Run a `/grilling` and `/domain-modeling` session to pin down what this map is finding its way to — the spec, decision, or change. The destination fixes the scope, so it's settled first.
-2. **Map the frontier.** Grill again, **breadth-first** this time: fan out across the whole space rather than deep on any one thread, surfacing the open decisions and the first steps takeable now. **If this surfaces no fog** — the way to the destination is already clear, the whole journey small enough for one session — you don't need a map. Stop and ask the user how they'd like to proceed.
-3. **Create the map** (label `wayfinder:map`): Destination and Notes filled in, Decisions-so-far empty, the fog sketched into **Not yet specified**.
-4. **Create the tickets you can specify now** as child issues of the map — then wire blocking edges in a **second pass** (issues need ids before they can reference each other). Wiring sorts them into the frontier and the blocked; everything you can't yet specify stays in the fog — the **Not yet specified** section.
-5. **Fire the research subagents.** For each `research` ticket you just created, spin up a `/research` subagent to resolve it in parallel, capturing its findings on a throwaway `research/<name>` branch with a context pointer from the ticket.
-6. Stop — charting is one session's work; it hand-resolves nothing.
-
-### Work through the map
-
-User invokes with a map (URL or number). A ticket is **optional** — without one, you pick the next decision, not the user.
-
-1. Load the **map** — the low-res view, not every ticket body.
-2. Choose the ticket. If the user named one, use it. Otherwise take the first frontier ticket in order. **Claim it**: assign it to yourself before any work.
-3. Resolve it — **zoom as needed**: fetch the full body of any related or closed ticket on demand; invoke the skills the `## Notes` block names. If in doubt, use `/grilling` and `/domain-modeling`.
-4. Record the resolution: post the answer as a **resolution comment**, **close** the issue, and **append a context pointer** to the map's Decisions-so-far.
-5. Add newly-surfaced tickets (create-then-wire); graduate any fog the answer has made specifiable, clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
-
-The user may run unblocked tickets in parallel, so expect other sessions to be editing the tracker concurrently.
+Do not create a Wayfinder `.scratch/` mirror, external issue-tracker mirror,
+global active index, T# work items, automatic state migration, or a separate
+settlement/archive subsystem.

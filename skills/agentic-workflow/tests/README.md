@@ -16,6 +16,11 @@ subprocess.
 - `test_routing.py` validates representative selection, invocation,
   authorization, record-based resume, and durable-effect decisions without
   requiring one exact trace.
+- `test_wayfinder_state.py` validates the authored, installed, and generated
+  settlement contract plus a deterministic state-transition oracle for
+  current-state allocation, effort-lock serialization, reference-safe
+  retirement without a Git-history gate, identifier reuse, effort lifecycle,
+  and projection parity.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
@@ -52,10 +57,16 @@ conflict handling, evidence/fact contradiction reconciliation, map-only
 continuation with a native `to-tickets` handoff, verification failure/recovery,
 and a blocked project. They are opt-in and not part of ordinary pull requests.
 
-The broader deterministic catalog also covers creating canonical map-first
-Wayfinder state without implementation work-item children, optional U#/E#/F#/D#
-knowledge, and ensuring that an unrelated existing effort neither captures a
-simple route nor gets loaded. The live Wayfinder contracts preserve
+The broader deterministic catalog also covers Domain Modeling surfacing
+consequential uncertainty, authority-dependent choices asking a concrete human
+question without creating downstream work, Wayfinder assessment concluding that
+no durable state is needed, creating canonical map-first state without
+implementation work-item children, optional U#/E#/F#/D# knowledge, resolved
+unknowns and redundant evidence leaving current state, effort-lock serialization
+under concurrent allocation and retirement, uncommitted transient retirement,
+completed-effort/new-destination separation, explicit historical access, and
+ensuring that an unrelated existing effort neither captures a simple route nor
+gets loaded. The live Wayfinder contracts preserve
 an unrelated effort during reconciliation, keep stale-state audits read-only,
 and require conflicting reconciliation to stop without guessing. Non-Wayfinder
 durable work resumes from its named DEC/IMP/DBG record without a global active
