@@ -71,16 +71,38 @@ class BehaviorContractTests(unittest.TestCase):
         )
         self.assertIn("unresolved", read_only.report_must_include)
 
-    def test_wayfinder_methodology_scenarios_cover_discovery_authority_no_state_resume_and_tickets(self) -> None:
+    def test_wayfinder_methodology_scenarios_cover_structure_convergence_authority_and_handoffs(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
 
         domain = scenarios["wayfinder-domain-modeling-discovery"]
         self.assertIn("uncertainty_recorded_or_blocked", domain.expect)
+        self.assertIn("Domain Modeling", domain.request)
+        self.assertNotIn("Zero-downtime platform cutover", domain.request)
+        self.assertTrue(
+            any(
+                item.kind == "path_exists"
+                and item.path.as_posix().endswith("zero-downtime-platform-cutover/map.md")
+                for item in domain.assertions
+            )
+        )
+        for bearing in ("## Territory", "Consumer inventory", "Cutover orchestration", "Ownership", "depends on"):
+            self.assertTrue(
+                any(item.kind == "path_contains" and item.value == bearing
+                    for item in domain.assertions)
+            )
         self.assertTrue(
             any(item.kind == "glob_contains" and "unknowns/U" in item.path.as_posix()
                 for item in domain.assertions)
         )
         self.assertTrue(any("decisions" in item for item in domain.forbid_created_globs))
+
+        authoritative = scenarios["wayfinder-new-effort"]
+        self.assertIn("migration-architecture.md", authoritative.request)
+        self.assertIn("domain-modeling", authoritative.route_must_not_include)
+        self.assertTrue(
+            any(item.kind == "path_contains" and item.value == "## Territory"
+                for item in authoritative.assertions)
+        )
 
         authority = scenarios["wayfinder-human-authority-clarification"]
         self.assertIn("uncertainty_recorded_or_blocked", authority.expect)
@@ -96,6 +118,7 @@ class BehaviorContractTests(unittest.TestCase):
         resume = scenarios["wayfinder-resume-synonymous-wording"]
         self.assertEqual(len(resume.state_must_include), 1)
         self.assertEqual(len(resume.state_must_not_include), 3)
+        self.assertIn("domain-modeling", resume.route_must_not_include)
 
         tickets = scenarios["wayfinder-contract-smoke"]
         self.assertTrue(any("/tickets" in item for item in tickets.forbid_created_globs))
@@ -113,6 +136,26 @@ class BehaviorContractTests(unittest.TestCase):
 
         self.assertTrue(any(item.kind == "path_not_exists" and "U17" in item.path.as_posix() for item in resolved.assertions))
         self.assertTrue(any(item.kind == "path_not_exists" and "E12" in item.path.as_posix() for item in resolved.assertions))
+        for child_type in ("unknowns", "evidence", "facts", "decisions"):
+            self.assertTrue(
+                any(
+                    item.kind == "path_not_exists"
+                    and item.path.as_posix().endswith(f"provider-state/{child_type}")
+                    for item in resolved.assertions
+                )
+            )
+        self.assertTrue(
+            any(
+                item.kind == "path_exists" and item.path.as_posix() == "docs/provider-runtime.md"
+                for item in resolved.assertions
+            )
+        )
+        self.assertTrue(
+            any(
+                item.kind == "path_contains" and item.value == "Provider requirements — settled"
+                for item in resolved.assertions
+            )
+        )
         self.assertTrue(
             any(item.kind == "path_not_exists" and "D1" in item.path.as_posix()
                 for item in settled.assertions)
@@ -126,6 +169,14 @@ class BehaviorContractTests(unittest.TestCase):
         )
         self.assertIn("repository_unchanged", historical.expect)
         self.assertEqual(len(historical.state_must_include), 1)
+        completed_map = behavior.FIXTURE_ROOT / "wayfinder-settlement/.agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md"
+        self.assertIn("docs/wayfinder-lifecycle.md", completed_map.read_text())
+        completed_effort = completed_map.parent
+        self.assertFalse(any((completed_effort / child).exists() for child in ("unknowns", "evidence", "facts", "decisions")))
+        self.assertTrue(
+            any(item.kind == "path_not_exists" and item.path.as_posix() == "issues"
+                for item in new_destination.assertions)
+        )
 
         concurrent = scenarios["wayfinder-concurrent-allocation-recheck"]
         transient = scenarios["wayfinder-uncommitted-transient-record-retires"]

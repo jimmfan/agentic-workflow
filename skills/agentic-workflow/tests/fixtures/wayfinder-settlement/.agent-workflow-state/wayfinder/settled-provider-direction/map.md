@@ -10,6 +10,11 @@ Keep the current provider direction clear without loading obsolete choices.
 
 The governing direction is the framework-owned local runtime.
 
+## Territory
+
+- Projection ownership — settled in the current runtime direction.
+- Projection verification — active and represented by Next work.
+
 ## Blockers and dependencies
 
 None.

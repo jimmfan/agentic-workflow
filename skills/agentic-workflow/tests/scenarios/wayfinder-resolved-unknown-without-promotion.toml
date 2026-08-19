@@ -1,12 +1,12 @@
 schema_version = 1
 id = "wayfinder-resolved-unknown-without-promotion"
-name = "Resolved unknown and redundant evidence leave current state"
+name = "Settled semantic area moves to canonical ownership and shrinks"
 fixture = "wayfinder-reference-settlement"
-request = "Resume the named provider-state effort. U17 is answered and E12 adds no independent value beyond source.txt. Update map.md and every remaining F8/D4 reference, make F8 link source.txt directly, then remove U17 and E12. Do not manufacture another child or require either transient record to enter Git first. Repeating the reconciliation must be a no-op."
+request = "Resume the named provider-state effort and settle its Provider requirements area. U17 is answered, source.txt is authoritative, and the project-owner choice in D4 is accepted. Move the durable fact and choice into concise canonical docs/provider-runtime.md, update map.md to link that owner and mark the area settled, then retire redundant U17, E12, F8, and D4 plus empty child directories. Create no ADR or ticket."
 starting_state = [
   "This effort currently contains U17, E12, F8, and D4.",
-  "source.txt can directly support F8; Git history is not a retirement prerequisite.",
-  "F8 and D4 retain independent current value; U17 and E12 do not.",
+  "Provider requirements is an active semantic area whose source-supported fact and project-authorized choice are ready for canonical project documentation.",
+  "Once docs/provider-runtime.md and the map carry the durable outcome, no U/E/F/D child retains independent navigational value; Git history is not a retirement prerequisite.",
 ]
 expect = [
   "task_completed",
@@ -20,10 +20,12 @@ must_not = [
   "unnecessary_planning_artifacts",
 ]
 live = false
-preserve_paths = []
+preserve_paths = ["source.txt"]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/provider-state/facts/F9-*.md",
-  ".agent-workflow-state/wayfinder/provider-state/decisions/D5-*.md",
+  "architecture-decisions",
+  "architecture-decisions/**",
+  "issues",
+  "issues/**",
 ]
 state_must_include = [
   ".agent-workflow-state/wayfinder/provider-state/map.md",
@@ -44,26 +46,57 @@ kind = "path_not_exists"
 path = ".agent-workflow-state/wayfinder/provider-state/evidence/E12-provider-configuration.md"
 
 [[assertions]]
-kind = "path_contains"
+kind = "path_not_exists"
 path = ".agent-workflow-state/wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md"
-value = "Supported by: [source.txt](../../../../source.txt)"
 
 [[assertions]]
-kind = "path_not_contains"
+kind = "path_not_exists"
 path = ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md"
-value = "U17"
+
+[[assertions]]
+kind = "path_exists"
+path = "docs/provider-runtime.md"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md"
-value = "Related: F8"
+path = "docs/provider-runtime.md"
+value = "provider_requires_tracker_state=false"
 
 [[assertions]]
-kind = "path_not_contains"
-path = ".agent-workflow-state/wayfinder/provider-state/map.md"
-value = "U17"
+kind = "path_contains"
+path = "docs/provider-runtime.md"
+value = "Use the local runtime without tracker state"
 
 [[assertions]]
-kind = "path_not_contains"
+kind = "path_contains"
 path = ".agent-workflow-state/wayfinder/provider-state/map.md"
-value = "E12"
+value = "[Provider runtime](../../../../docs/provider-runtime.md)"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/provider-state/map.md"
+value = "Provider requirements — settled"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/provider-state/unknowns"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/provider-state/evidence"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/provider-state/facts"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/provider-state/decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "architecture-decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "issues"

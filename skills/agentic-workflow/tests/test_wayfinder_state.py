@@ -418,7 +418,27 @@ class WayfinderStateContractTests(unittest.TestCase):
             "accepted D#, specification, or implementation ticket",
             "no durable Wayfinder state is needed",
         ):
-            self.assertIn(required, self.contract)
+            self.assertIn(required, self.normalized)
+
+    def test_contract_structures_territory_and_converges_without_hierarchy(self) -> None:
+        for required in (
+            "## Semantic territory and effort identity",
+            "authoritative project structure",
+            "Domain Modeling is the preferred structural discovery mechanism",
+            "before substantial U/E/F/D state accumulates",
+            "## Territory",
+            "A semantic area is settled",
+            "proper canonical owner",
+            "Completed efforts should normally shrink",
+        ):
+            self.assertIn(required, self.normalized)
+        for forbidden in (
+            "identity/unknowns",
+            "networking/decisions",
+            "├── identity",
+            "## Identity",
+        ):
+            self.assertNotIn(forbidden, self.contract)
 
     def test_authored_installed_and_generated_surfaces_are_consistent(self) -> None:
         self.assertEqual(CONTRACT.read_bytes(), INSTALLED_CONTRACT.read_bytes())
@@ -429,7 +449,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         normalized_runtime = " ".join(runtime.split())
         for required in (
             "## Core invariants",
+            "### Establish territory",
             "### Choose a resolution mechanism",
+            "### Converge and shrink",
             "`map.md` alone is valid",
             "use `to-tickets`",
         ):

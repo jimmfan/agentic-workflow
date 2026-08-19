@@ -31,13 +31,15 @@ one ordinary implementation detail or isolated unknown does not justify a map.
 - Route before inspecting Wayfinder state. Existing state never selects
   Wayfinder by itself, and considering or selecting Wayfinder does not require a
   write. An assessment may conclude that no durable Wayfinder state is needed.
-- Name the destination before decomposing the route. Keep `map.md` at low
-  resolution, represent fog honestly, identify the current frontier, and load
-  detail only as it becomes relevant.
-- `map.md` is the coordination and re-entry point. `map.md` alone is valid;
-  U/E/F/D children are optional durable knowledge, not required ceremony.
+- Name the destination and understand the territory before decomposing the
+  route. Keep `map.md` at low resolution, represent fog honestly, identify the
+  current frontier, and load detail only as it becomes relevant.
+- `map.md` organizes the destination, boundary, major areas, and important
+  seams. U/E/F/D classify current knowledge within that territory; they do not
+  replace its structure. `map.md` alone is valid.
 - Live source and accepted project artifacts outrank stale Wayfinder state.
-  Reconcile only consequential current results and preserve conflicts honestly.
+  Reconcile only consequential current results, preserve conflicts honestly,
+  and retire state when its navigational value disappears.
 - Never decide an authority-dependent choice on the human's behalf. Surface the
   concrete question, explain why that authority is required, and state what the
   answer will unblock.
@@ -61,18 +63,31 @@ route.
 
 ## Method
 
-Name the destination before decomposing the route. Keep the map low resolution,
-record in-scope fog under **Not yet specified**, distinguish **Out of scope**,
-and choose the smallest coherent unblocked next work as the frontier. Resolve
-consequential uncertainty incrementally; each answer may sharpen the
-destination, expose another unknown, change dependencies, or make new work
-takeable.
+### Establish territory
+
+First decide whether durable Wayfinder state is useful. For a new durable
+effort, establish enough low-resolution structure to navigate: the destination,
+scope boundary, major coherent areas or domains, and important relationships or
+seams. Reuse accepted project structure when it already supplies those bearings.
+If it does not, Domain Modeling is the preferred way to discover them before
+substantial U/E/F/D state accumulates.
+
+Derive the effort's identity, readable name, and stable path from that
+understanding. Do not invent a directory name first and rationalize its purpose
+afterward. Keep the semantic structure in `map.md`, using a short **Territory**
+section or another clear shape; do not create nested area storage. On resume,
+reuse a coherent map instead of rerunning structural discovery as ceremony.
+
+Keep in-scope fog under **Not yet specified**, distinguish **Out of scope**, and
+choose the smallest coherent unblocked next work as the frontier. Resolve
+consequential uncertainty incrementally; each answer may reshape an area,
+expose another unknown, change dependencies, or make new work takeable.
 
 ### Choose a resolution mechanism
 
-- **Domain Modeling** — use for unclear concepts, terminology, boundaries, or
-  relationships. It may also expose assumptions, unknowns, dependencies, and
-  choices that require project authority.
+- **Domain Modeling** — prefer it when a new effort's concepts, terminology,
+  boundaries, areas, or relationships lack authoritative structure. It may also
+  expose assumptions, unknowns, dependencies, and authority-dependent choices.
 - **Research** — use for externally answerable uncertainty that needs
   trustworthy sources.
 - **Prototype** — use when uncertainty is best resolved by trying something
@@ -92,6 +107,21 @@ from convenience, precedent, or an agent proposal. Surface the concrete
 question, explain why that authority is required, state what the answer will
 unblock, and leave the relevant uncertainty or blocker explicit. Do not turn an
 assumed answer into an accepted D#, specification, or implementation ticket.
+
+### Converge and shrink
+
+Treat a semantic area as settled when no consequential fog remains there and
+every durable outcome has reached its proper canonical owner or the workflow
+that owns the resulting work. That owner may be an ADR, specification,
+documentation or source, `to-tickets`, Implementation, another project-native
+artifact, or nothing separate when the result has no independent long-term
+value. Do not turn every area or D# into an ADR or ticket.
+
+As areas settle, update the same semantic map, point to canonical outcomes, and
+retire redundant U/E/F/D children under the state contract. If new evidence
+changes the territory, reconcile its current areas and seams instead of keeping
+parallel structures. Git preserves history. A completed effort should normally
+shrink toward a concise map that records its outcome and canonical pointers.
 
 If assessment finds no consequential uncertainty, dependency, blocker,
 conflicting fact, or continuity need worth preserving, state that no durable

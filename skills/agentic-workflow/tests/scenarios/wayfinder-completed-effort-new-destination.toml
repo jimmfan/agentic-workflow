@@ -20,10 +20,19 @@ must_not = [
 live = false
 preserve_paths = [
   ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md",
+  "docs/wayfinder-lifecycle.md",
 ]
 forbid_created_globs = [
   ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/unknowns",
   ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/unknowns/**",
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/evidence",
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/evidence/**",
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/facts",
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/facts/**",
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/decisions",
+  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/decisions/**",
+  "issues",
+  "issues/**",
 ]
 state_must_include = [
   ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md",
@@ -45,3 +54,16 @@ value = "- Status: current"
 kind = "path_contains"
 path = ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md"
 value = "- Status: completed"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md"
+value = "docs/wayfinder-lifecycle.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "issues"

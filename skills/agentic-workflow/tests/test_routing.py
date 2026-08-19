@@ -146,7 +146,8 @@ class RoutingContractTests(unittest.TestCase):
         ):
             self.assertIn(required, normalized)
         self.assertNotIn("## Identity", contract)
-        self.assertNotIn("I#", contract)
+        self.assertNotIn("├── identity", contract)
+        self.assertNotIn("identity/unknowns", contract)
 
     def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())

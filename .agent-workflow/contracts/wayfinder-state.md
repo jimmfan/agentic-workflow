@@ -8,9 +8,10 @@ route and does not read or create Wayfinder state.
 
 Agentic Workflow's effective Wayfinder workflow is a framework-owned runtime
 projection derived from Matt Pocock's Wayfinder methodology. It keeps the
-method's destination, low-resolution map, honest fog, frontier, incremental
-resolution, readable-name, and progressive-loading concepts while Agentic
-Workflow owns the Git-native state and continuation contract below. This is
+method's destination, low-resolution semantic map, honest fog, frontier,
+incremental resolution, convergence, readable-name, and progressive-loading
+concepts while Agentic Workflow owns the Git-native state and continuation
+contract below. This is
 durable project knowledge and coordination state, not an issue tracker and not
 a mirror of `.scratch/` or an external tracker.
 Do not create or update `.agent-workflow-state/active.md`; the effort map is the
@@ -30,6 +31,41 @@ Wayfinder may preserve four kinds of durable knowledge:
 These are distinctions, not a mandatory pipeline. Evidence may leave an
 unknown unresolved, a fact may require no decision, and a decision may be made
 under uncertainty without manufacturing a fact.
+
+## Semantic territory and effort identity
+
+U/E/F/D is a knowledge taxonomy, not the effort's problem structure. Every
+durable effort keeps enough low-resolution semantic structure in `map.md` to
+give a fresh agent useful bearings. When relevant, that includes:
+
+- the destination and substantive scope boundary;
+- the major coherent areas or domains within the effort; and
+- important relationships, dependencies, or seams between those areas.
+
+Use the smallest clear representation: prose, bullets, a compact table, or a
+small diagram are all valid. `## Territory` is a useful default heading, not a
+required schema. Do not create area identifiers, nested domain directories, or
+parallel maps merely to express this structure; the flat optional U/E/F/D
+storage remains canonical.
+
+For a new durable effort, reuse authoritative project structure from accepted
+ADRs, specifications, domain documentation, source, or another canonical
+artifact when it already establishes these bearings. When it cannot be
+established confidently, Domain Modeling is the preferred structural discovery
+mechanism. Establish enough structure before substantial U/E/F/D state accumulates, then
+derive the effort's identity, readable name, destination, boundary, and stable
+path from that understanding. Do not choose `wayfinder/<effort-name>/` first and
+rationalize its structure afterward.
+
+Domain Modeling is conditional: do not invoke it merely because Wayfinder was
+selected, and do not rerun it when a resumed map and authoritative project
+context remain coherent. Research, Prototype, and Debugging usually resolve fog
+within established territory. No mechanism may fabricate a human-authority
+choice.
+
+When evidence changes the semantic structure, update the current map's areas,
+relationships, boundary, fog, and frontier coherently. Do not retain stale or
+parallel territory structures merely because an earlier map used them.
 
 ## Resolving uncertainty and authority
 
@@ -105,12 +141,14 @@ validate, migrate, rewrite, or remove Wayfinder state.
 
 ## Effort naming, selection, and stable paths
 
-The H1 heading in `map.md` is the durable human-readable effort name. Its
-Destination states the intended endpoint, while Not yet specified and Out of
-scope distinguish in-scope fog from the scope boundary. The effort is
-recognized from that readable name, destination, scope boundary, and map
-context. The directory slug is only its stable storage key; it is not a
-separate semantic identity object and does not replace the readable name.
+The H1 heading in `map.md` is the durable human-readable effort name. Derive it
+after authoritative context or structural discovery establishes enough of the
+destination, scope boundary, major areas, and relationships to identify the
+effort honestly. Not yet specified and Out of scope distinguish in-scope fog
+from the scope boundary. The effort is recognized from that readable name,
+destination, boundary, semantic territory, and map context. The directory slug
+is only its stable storage key; it is not a separate semantic identity object
+and does not replace the readable name.
 
 Route before inspecting state. An unrelated Wayfinder directory never selects
 Wayfinder or justifies a scan.
@@ -287,6 +325,10 @@ clear existing human content instead of normalizing it for ceremony.
 
 <What it means for the route to be clear.>
 
+## Territory
+
+<When useful: major coherent areas and the relationships or seams that matter.>
+
 ## Current state
 
 <Concise established state and links to independently useful U/E/F/D detail.>
@@ -316,7 +358,9 @@ clear existing human content instead of normalizing it for ceremony.
 <Explicit boundaries beyond this destination.>
 ```
 
-The map may summarize small facts and evidence inline. Promote detail to a child
+`Territory` is optional when the same bearings are already clear elsewhere in
+the map. The map may summarize small facts and evidence inline. Promote detail
+to a child
 only when it is likely to be reused, disputed, independently revised, too large
 for low-resolution orientation, or important enough to require provenance.
 Prioritize one coherent next action; list parallel work only when the dependency
@@ -426,6 +470,21 @@ Wayfinder retains the smallest durable representation needed to navigate the
 effort's current state. The map is current orientation, not a session log, and
 Git preserves historical evolution.
 
+A semantic area is settled when no consequential fog remains for that area and
+every durable outcome has either reached its proper canonical owner or been
+handed to the workflow that owns the resulting work. Canonical outcomes may be
+an ADR for a lasting consequential decision, a specification, project
+documentation or source, `to-tickets` for substantial decomposition,
+Implementation for one coherent scope, another project-native artifact, or no
+separate artifact when the result has no independent long-term value. Settlement
+does not require every area or D# to become an ADR or ticket.
+
+As an area settles, reconcile its current map description, fog, blockers,
+dependencies, frontier, and canonical links. Retain U/E/F/D only while those
+children still add independent current navigational value. The map may show
+which areas remain active or settled in ordinary prose; do not add required area
+IDs, per-area lifecycle files, or another state hierarchy.
+
 When a U# is answered:
 
 1. state the answer unambiguously in the U# or, when the child no longer adds
@@ -475,10 +534,17 @@ overwriting it. Remove the child before releasing the lock; an empty child
 directory may then disappear. The retired number becomes available through the
 ordinary highest-current-plus-one rule.
 
-To finish an effort, set the map status to `completed`, `abandoned`, or
-`superseded`, record the concise outcome or reason, reconcile current canonical
-links, and replace `Next work` with none for that effort. A superseded effort
-also links the successor or governing direction. Do not load historical child
+To complete an effort, confirm its destination is reached, no consequential fog
+remains in any in-scope area, durable outcomes are canonically owned or handed
+off, and redundant child knowledge is retired. Completed efforts should
+normally shrink to a concise map with the outcome and canonical pointers. Then set the map
+status to `completed`, record the outcome, reconcile current canonical links,
+and replace `Next work` with none for that effort.
+
+To abandon or supersede an effort, set the corresponding status, record the
+concise reason or outcome, reconcile current canonical links, and replace `Next
+work` with none for that effort. A superseded effort also links the successor or
+governing direction. Do not load historical child
 detail during ordinary effort selection, rename the stable directory, repurpose
 it for a new destination, or move it into `.agent-workflow-state/archive/`;
 that archive belongs to other durable workflow records.

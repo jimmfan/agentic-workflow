@@ -162,12 +162,18 @@ snapshot remains reviewed provenance and reference; the effective runtime owns
 the Git-native map, effort-selection, continuation, U/E/F/D, and `to-tickets`
 contracts and contains no appended tracker implementation.
 
-The map H1 is the durable readable effort name. Destination and Out of scope
-define its substantive boundary. A new effort derives a concise lowercase,
-hyphen-separated directory slug from that name once; later sessions list
-directory names and read only plausible candidate maps, while the established
-path stays stable even if wording or implementation phases change. Ambiguous
-matches remain read-only until resolved.
+The map gives low-resolution semantic bearings: destination, scope boundary,
+major coherent areas, and important relationships or seams. Existing
+authoritative project structure is reused; when those bearings are genuinely
+unclear, Domain Modeling is the preferred discovery mechanism before substantial
+child state accumulates. The map organizes the territory, while U/E/F/D classify
+current knowledge within it.
+
+The map H1 is the durable readable effort name. A new effort derives its name
+and concise lowercase, hyphen-separated directory slug only after its destination
+and boundary are understood; later sessions list directory names and read only
+plausible candidate maps. The established path stays stable even if wording or
+implementation phases change. Ambiguous matches remain read-only until resolved.
 
 A map may identify its effort as `current`, `completed`, `abandoned`, or
 `superseded`. Likely resume prefers a current match over similarly named
@@ -199,6 +205,13 @@ reconciled, not a prior commit of the retiring child. One empty transient
 per-effort lock serializes map and child mutations so allocation cannot collide
 and retirement cannot race a current-reference edit; it contains no knowledge
 or allocation data.
+
+An area is settled when it has no consequential fog and its durable outcomes
+have moved to the proper canonical owner or workflow. That may be an ADR,
+specification, documentation or source, `to-tickets`, Implementation, another
+project artifact, or no separate artifact. Not every area becomes an ADR or
+ticket. As areas settle, Wayfinder retires redundant children; completed efforts
+normally shrink toward a concise map, with Git preserving history.
 
 Bare references such as `U17`, `F8`, or `D4` are concise shorthand only inside
 their current Wayfinder effort. Readable child filenames remain the canonical

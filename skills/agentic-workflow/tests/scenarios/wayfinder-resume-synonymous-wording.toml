@@ -5,7 +5,7 @@ fixture = "wayfinder-effort-selection"
 request = "Continue the work to replace Wayfinder's mixed local override and upstream body with one first-party effective instruction set. Identify the current next work and report it without changing files."
 starting_state = [
   "The request uses different wording from the existing Wayfinder runtime projection effort.",
-  "One existing map has the same substantive destination and scope boundary.",
+  "One existing map has the same substantive destination, scope boundary, coherent territory, and relationships.",
   "Other effort directory names are not plausible matches.",
 ]
 expect = [
@@ -30,6 +30,7 @@ forbid_created_globs = [
   ".agent-workflow-state/wayfinder/own-wayfinder",
   ".agent-workflow-state/wayfinder/own-wayfinder/**",
 ]
+route_must_not_include = ["domain-modeling"]
 state_must_include = [
   ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
 ]

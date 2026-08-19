@@ -12,6 +12,11 @@ Keep only the current provider-state knowledge needed for navigation.
 [E12](evidence/E12-provider-configuration.md). [F8](facts/F8-provider-needs-no-tracker.md)
 and [D4](decisions/D4-use-local-runtime.md) remain current.
 
+## Territory
+
+- Provider requirements — active; U17 blocks canonical settlement.
+- Runtime choice — established by D4 but still awaiting canonical project ownership.
+
 ## Blockers and dependencies
 
 U17 must be reconciled before implementation continues.

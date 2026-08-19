@@ -22,6 +22,7 @@ current instructions.
 - [ADR-0023 — Own the Wayfinder runtime projection](0023-own-the-wayfinder-runtime-projection.md)
 - [ADR-0024 — Use current-state Wayfinder identifiers](0024-use-current-state-wayfinder-identifiers.md)
 - [ADR-0025 — Preserve human authority across workflows](0025-preserve-human-authority-across-workflows.md)
+- [ADR-0026 — Structure Wayfinder territory and converge it](0026-structure-wayfinder-territory-and-converge-it.md)
 
 ## Superseded tombstones
 
