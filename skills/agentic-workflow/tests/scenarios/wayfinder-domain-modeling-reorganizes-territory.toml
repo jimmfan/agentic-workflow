@@ -1,0 +1,67 @@
+schema_version = 1
+id = "wayfinder-domain-modeling-reorganizes-territory"
+name = "Domain Modeling improves mappable but poorly organized territory"
+fixture = "wayfinder-reorganize-territory"
+request = "Use Wayfinder for the policy execution migration. The destination is mappable and progress is not blocked, but the repository conflates intake, evaluation, and execution as one policy service. Reorganize responsibilities and relationships because doing so would materially improve the map. Establish useful territory before creating any U/E/F/D children."
+starting_state = [
+  "The destination and scope are sufficiently clear to map directly.",
+  "The current flat vocabulary hides distinct responsibilities and their dependency.",
+  "Repository-local Wayfinder writes are authorized.",
+]
+expect = [
+  "task_completed",
+  "meaningful_repository_change",
+]
+must_not = [
+  "manufacture_uncertainty",
+  "silent_decision_invention",
+]
+live = false
+verification_command = "Confirm that the map organizes intake, evaluation, and execution as distinct related territory without manufacturing U/E/F/D children or a second planning system."
+preserve_paths = []
+report_must_include = ["Domain Modeling"]
+forbid_created_globs = [
+  ".scratch/**",
+  ".agent-workflow-state/active.md",
+  ".agent-workflow-state/wayfinder/policy-execution-migration/tickets/**",
+]
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+value = "Policy intake"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+value = "Policy evaluation"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+value = "Execution runtime"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+value = "depends on"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/unknowns"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/evidence"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/facts"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/policy-execution-migration/decisions"

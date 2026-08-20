@@ -10,15 +10,15 @@
   "external_files": {
     ".agents/skills/workflow-debugging/SKILL.md": {
       "created": true,
-      "sha256": "de3051e6240cf08e42f7bcd76244dfda563d14ed218662be6dd22a16ba38fb4e"
+      "sha256": "999dc4f5d90fd78266979e7fbb0119e3ba7ba302eb9fce3783c9c6f60e221d38"
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "27db89818b3b97d993ed76f7f15099af326ac6a1cbabd1d4baa6d43b9d1fb4ca"
+      "sha256": "4a297b5ee1cabdd9176f3a0fd8962643546d65919fe608f3f9f4b435ca40399e"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "b291addd86f3a362f772c9933e4cc8bfbc8cea4a00af0cbf23ea8ded3303c984"
+      "sha256": "a27c1fd327717e8e2f590171ccee3be6c8a995586d23d0378308fcc4c72420d4"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,

@@ -34,15 +34,26 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 When selecting or resuming Wayfinder, read the state contract before the map.
 It defines effort selection, paths, identifiers, locking, reconciliation,
 settlement, and lifecycle. Do not load the general durable-state contract merely
-to write Wayfinder state.
+to write Wayfinder state. If the state contract is unavailable, fail closed for
+the affected Wayfinder work: do not inspect or mutate a map; do not invent
+substitute persistence or create tracker, specialist-record, or scratch state.
+Report the incomplete installation.
 
 ## Establish territory
 
-Reuse accepted project structure when it supplies the destination, scope,
+Reuse accepted project structure when it supplies a useful destination, scope,
 areas, and important seams. Otherwise establish the smallest useful structure
-directly. Load Domain Modeling only when structural or vocabulary ambiguity
-prevents a coherent map. Derive the effort name and stable path from that
-territory, and reuse it on resume.
+directly. Domain Modeling is the preferred structural fallback when clarifying
+or reorganizing concepts, vocabulary, boundaries, responsibilities, or
+relationships would materially improve the map's usefulness or coherence;
+progress need not already be blocked. When it would help, establish enough
+territory before substantial U/E/F/D accumulates, then derive the effort name
+and stable path from that territory.
+
+On a coherent resume, do not reload Domain Modeling merely because Wayfinder
+resumed. If later authoritative evidence materially invalidates the territory,
+Domain Modeling may re-enter to revise the same map. Reconcile the current
+structure rather than preserving stale or parallel territory.
 
 ## Resolve the frontier progressively
 
@@ -54,9 +65,14 @@ improve resolution:
 - **Debugging** for an observed behavior with an unknown cause.
 - **Research** for external uncertainty needing primary-source evidence.
 - **Prototype** when a disposable experiment is the cheapest honest test.
-- **Domain Modeling** when concepts, boundaries, or vocabulary block progress.
+- **Domain Modeling** to establish, improve, or revise territory under the rule
+  above.
 - **Human clarification or Grilling** for authority, intent, preference, or
   prioritization.
+
+Research, Prototype, and Debugging usually resolve ordinary fog within coherent
+territory; they do not replace structural modeling when the territory itself
+needs improvement or revision.
 
 Do not load specialists speculatively. Specialists own their methods and native
 artifacts and create no framework continuity record. If work is interrupted,

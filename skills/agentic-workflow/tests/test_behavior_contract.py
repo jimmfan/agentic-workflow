@@ -25,9 +25,9 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_thirty_two_contracts_and_nine_live_smokes(self) -> None:
+    def test_catalog_has_thirty_four_contracts_and_nine_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 32)
+        self.assertEqual(len(scenarios), 34)
         self.assertEqual(sum(scenario.live for scenario in scenarios), 9)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
@@ -62,6 +62,8 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-concurrent-allocation-recheck",
                 "wayfinder-uncommitted-transient-record-retires",
                 "wayfinder-domain-modeling-discovery",
+                "wayfinder-domain-modeling-reorganizes-territory",
+                "wayfinder-domain-modeling-revises-territory",
                 "wayfinder-human-authority-clarification",
                 "wayfinder-assessment-needs-no-state",
             },
@@ -76,7 +78,8 @@ class BehaviorContractTests(unittest.TestCase):
 
         domain = scenarios["wayfinder-domain-modeling-discovery"]
         self.assertIn("uncertainty_recorded_or_blocked", domain.expect)
-        self.assertIn("Domain Modeling", domain.request)
+        self.assertNotIn("Domain Modeling", domain.request)
+        self.assertIn("Domain Modeling", domain.report_must_include)
         self.assertNotIn("Zero-downtime platform cutover", domain.request)
         self.assertTrue(
             any(
@@ -119,6 +122,47 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertEqual(len(resume.state_must_include), 1)
         self.assertEqual(len(resume.state_must_not_include), 3)
         self.assertIn("domain-modeling", resume.route_must_not_include)
+
+        reorganized = scenarios["wayfinder-domain-modeling-reorganizes-territory"]
+        self.assertIn("meaningful_repository_change", reorganized.expect)
+        self.assertNotIn("Domain Modeling", reorganized.request)
+        self.assertIn("Domain Modeling", reorganized.report_must_include)
+        for bearing in (
+            "Policy intake",
+            "Policy evaluation",
+            "Execution runtime",
+            "depends on",
+        ):
+            self.assertTrue(
+                any(item.kind == "path_contains" and item.value == bearing
+                    for item in reorganized.assertions)
+            )
+        for child_type in ("unknowns", "evidence", "facts", "decisions"):
+            self.assertTrue(
+                any(
+                    item.kind == "path_not_exists"
+                    and item.path.as_posix().endswith(child_type)
+                    for item in reorganized.assertions
+                )
+            )
+
+        revised = scenarios["wayfinder-domain-modeling-revises-territory"]
+        self.assertIn("existing_state_reused", revised.expect)
+        self.assertNotIn("Domain Modeling", revised.request)
+        self.assertIn("Domain Modeling", revised.report_must_include)
+        self.assertIn("architecture.md", {item.as_posix() for item in revised.preserve_paths})
+        for bearing in ("Policy control plane", "Execution data plane", "Audit boundary"):
+            self.assertTrue(
+                any(item.kind == "path_contains" and item.value == bearing
+                    for item in revised.assertions)
+            )
+        self.assertTrue(
+            any(
+                item.kind == "path_not_contains"
+                and item.value == "Control service owns policy evaluation and execution"
+                for item in revised.assertions
+            )
+        )
 
         tickets = scenarios["wayfinder-contract-smoke"]
         self.assertTrue(any("/tickets" in item for item in tickets.forbid_created_globs))

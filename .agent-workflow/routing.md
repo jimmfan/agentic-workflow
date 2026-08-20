@@ -26,6 +26,7 @@ resolves overlaps:
 | Sustained learning intent | `teach` | Ordinary questions stay Direct |
 | Durable coordination threshold crossed | `wayfinder` | Structured project state must materially improve continuity |
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
+| Domain concepts, vocabulary, boundaries, responsibilities, or relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the model materially helps; ordinary vocabulary lookup stays Direct |
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis does not authorize a fix |
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
 | Settled scope needs a specification | `to-spec` | Its artifact remains canonical |
@@ -65,6 +66,11 @@ without changing durable ownership. The same rule applies to Debugging and
 other specialists. Meaningful Implementation runs Verification once. New causal
 uncertainty returns to Debugging; a material unresolved choice returns to
 Discovery or Wayfinder according to the coordination threshold.
+
+Discovery owns bounded consequential choice and tradeoff analysis. Compose
+Domain Modeling when structural ambiguity materially affects that analysis or
+reorganizing the domain would materially improve it; otherwise Discovery runs
+alone.
 
 ## Resolve providers
 

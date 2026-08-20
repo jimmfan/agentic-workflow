@@ -88,7 +88,14 @@ class RoutingContractTests(unittest.TestCase):
     def test_adr_index_separates_current_records_from_superseded_history(self) -> None:
         index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
         current, superseded = index.split("## Superseded tombstones", 1)
-        for identifier in ("ADR-0002", "ADR-0003", "ADR-0005", "ADR-0009"):
+        for identifier in (
+            "ADR-0002",
+            "ADR-0003",
+            "ADR-0005",
+            "ADR-0007",
+            "ADR-0009",
+            "ADR-0012",
+        ):
             self.assertNotIn(identifier, current)
             self.assertIn(identifier, superseded)
         governance = (
@@ -101,6 +108,15 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("ADR-0028", current)
         self.assertNotIn("ADR-0012", current)
         self.assertIn("ADR-0012", superseded)
+        for filename in (
+            "0002-use-checksummed-copy-adoption.md",
+            "0003-use-internal-reference-inspired-workflows.md",
+            "0005-add-decomposition-and-independent-review.md",
+            "0007-orchestrate-pinned-upstream-skills.md",
+            "0009-use-host-neutral-lifecycle-controller.md",
+            "0012-remove-global-active-index.md",
+        ):
+            self.assertNotIn(f"]({filename})", superseded)
 
     def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
@@ -147,6 +163,81 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Create no IMP or replacement record", implementation)
         self.assertIn("Invoke `workflow-verification` once", implementation)
         self.assertIn("not a current framework re-entry point", durable)
+
+    def test_domain_modeling_selection_covers_standalone_discovery_and_wayfinder_boundaries(self) -> None:
+        scenarios = {
+            item["id"]: item
+            for item in json.loads(
+                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+            )
+        }
+
+        standalone = scenarios["domain-modeling-standalone"]
+        self.assertEqual(standalone["dominant_activity"], "domain-modeling")
+        self.assertEqual(standalone["capabilities"], [])
+        self.assertTrue(standalone["provider_invocations"][0]["executed"])
+
+        discovery = scenarios["discovery-with-coherent-domain"]
+        self.assertEqual(discovery["dominant_activity"], "discovery")
+        self.assertEqual(discovery["capabilities"], [])
+
+        composed = scenarios["discovery-with-domain-modeling"]
+        self.assertEqual(composed["dominant_activity"], "discovery")
+        self.assertEqual(composed["capabilities"], ["domain-modeling"])
+        self.assertIn("materially affects", composed["expected_behavior"])
+
+        routing = " ".join(
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
+        )
+        self.assertIn("Discovery owns bounded consequential choice", routing)
+        self.assertIn("reorganizing the domain would materially improve", routing)
+
+    def test_missing_wayfinder_contract_fails_closed_without_substitute_state(self) -> None:
+        scenarios = {
+            item["id"]: item
+            for item in json.loads(
+                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+            )
+        }
+        missing = scenarios["wayfinder-missing-state-contract"]
+        self.assertFalse(missing["executed"])
+        self.assertEqual(missing["repository_state_effect"], "none")
+        self.assertIn("no substitute persistence", missing["expected_behavior"])
+
+        runtime = " ".join(
+            (PACKAGE_ROOT / "runtime-projections/wayfinder.md").read_text().split()
+        )
+        self.assertIn("If the state contract is unavailable", runtime)
+        self.assertIn("do not invent substitute persistence", runtime)
+
+    def test_relevant_project_profile_context_reaches_selected_specialists(self) -> None:
+        scenarios = {
+            item["id"]: item
+            for item in json.loads(
+                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+            )
+        }
+        for identifier, activity in (
+            ("discovery-uses-project-profile", "discovery"),
+            ("debugging-uses-project-profile", "debugging"),
+            ("implementation-uses-project-profile", "implementation"),
+        ):
+            with self.subTest(identifier=identifier):
+                scenario = scenarios[identifier]
+                self.assertEqual(scenario["dominant_activity"], activity)
+                self.assertIn("project-profile.md", scenario["expected_behavior"])
+                self.assertIn("relevant", scenario["expected_behavior"])
+
+        for relative in (
+            "payload/skills/workflow-discovery/SKILL.md",
+            "payload/skills/workflow-debugging/SKILL.md",
+            "payload/skills/workflow-implementation/SKILL.md",
+        ):
+            with self.subTest(relative=relative):
+                skill = " ".join((PACKAGE_ROOT / relative).read_text().split())
+                self.assertIn(".agent-workflow-state/project-profile.md", skill)
+                self.assertIn(".agent-workflow/contracts/project-profile.md", skill)
+                self.assertIn("only when", skill)
 
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()

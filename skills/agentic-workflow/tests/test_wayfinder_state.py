@@ -469,6 +469,12 @@ class WayfinderStateContractTests(unittest.TestCase):
             "create no framework continuity record",
             "Use `to-tickets`",
             "Verification follows execution",
+            "preferred structural fallback",
+            "before substantial U/E/F/D accumulates",
+            "do not reload Domain Modeling",
+            "later authoritative evidence materially invalidates",
+            "ordinary fog within coherent territory",
+            "If the state contract is unavailable",
         ):
             self.assertIn(required, normalized_runtime)
         for contract_only_detail in (

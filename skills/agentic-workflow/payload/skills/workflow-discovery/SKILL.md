@@ -10,7 +10,11 @@ method materially improves a choice.
 
 ## Establish the boundary
 
-1. Read only relevant project facts, commands, and canonical artifacts.
+1. Read only relevant project facts, commands, and canonical artifacts. Read
+   `.agent-workflow-state/project-profile.md` only when its decision factors,
+   verified facts, pointers, or commands materially inform the choice. Before
+   running a recorded command, read
+   `.agent-workflow/contracts/project-profile.md` and apply its safety gate.
 2. Keep read-only work ephemeral; a provisional choice does not authorize a
    write.
 3. Standalone Discovery returns its result without creating DEC or another

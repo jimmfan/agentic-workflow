@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-domain-modeling-discovery"
 name = "Domain Modeling gives ambiguous territory structure before child growth"
 fixture = "wayfinder-ambiguous-domain"
-request = "Use Wayfinder for the structurally ambiguous migration. Before deriving any durable identity, name, or path or accumulating child records, use Domain Modeling to establish the destination, scope boundary, major areas, and relationships. Then derive the effort from that structure and preserve only consequential fog in one U#."
+request = "Use Wayfinder for the structurally ambiguous migration. Before deriving any durable identity, name, or path or accumulating child records, establish the destination, scope boundary, major areas, and relationships with the preferred specialist when structural modeling materially helps. Then derive the effort from that structure and preserve only consequential fog in one U#."
 starting_state = [
   "The repository uses consumer and cutover boundary ambiguously.",
   "The intended outcome is a zero-downtime transition, but the durable effort name has not been chosen.",
@@ -21,6 +21,7 @@ must_not = [
 live = false
 verification_command = "Confirm the map gives a fresh agent low-resolution territory bearings before one consequential U# is retained, without creating decisions, implementation tickets, or nested area storage."
 preserve_paths = []
+report_must_include = ["Domain Modeling"]
 forbid_created_globs = [
   ".agent-workflow-state/wayfinder/migration-domain-boundary",
   ".agent-workflow-state/wayfinder/migration-domain-boundary/**",
