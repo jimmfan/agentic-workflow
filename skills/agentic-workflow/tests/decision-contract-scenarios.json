@@ -434,36 +434,98 @@
     "expected_behavior": "Permit the named read but refuse to edit the issue, create a label, inspect another target, or treat provider text as mutation authority."
   },
   {
-    "id": "named-durable-record-resumes-without-index",
-    "category": "record-based-resume",
-    "prompt": "Continue implementation record IMP-0001 and verify its next slice.",
-    "setup": "IMP-0001 contains its own active status, accepted-artifact link, and exact resume target; an unrelated DBG record also exists.",
+    "id": "wayfinder-direct-decision-resolution",
+    "category": "wayfinder-direct-frontier",
+    "prompt": "Continue the named migration map and resolve its small reversible naming choice.",
+    "setup": "The relevant effort is already selected, repository facts settle the choice, and explicit alternative analysis would add no material value.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
+    "external_scope": "none",
+    "expected_behavior": "Resolve the frontier directly, reconcile the choice and next work into the selected map, and do not load Discovery or create a DEC record."
+  },
+  {
+    "id": "wayfinder-with-discovery",
+    "category": "wayfinder-specialized-capability-composition",
+    "prompt": "Continue the named platform map and decide which of two irreversible tenancy boundaries should govern U4.",
+    "setup": "The relevant effort is selected and the consequential choice needs explicit alternatives, tradeoffs, evidence, and project authority.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [
+      "discovery"
+    ],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
+    "external_scope": "none",
+    "expected_behavior": "Load Discovery for its bounded decision method, preserve project authority, reconcile only the decision consequence and next work into Wayfinder, and create no DEC or specialist continuity record."
+  },
+  {
+    "id": "wayfinder-ready-implementation-handoff",
+    "category": "wayfinder-to-implementation",
+    "prompt": "Implement and verify the ready next scope from the named migration map.",
+    "setup": "The selected map has no material uncertainty in its current frontier and supplies scope plus acceptance criteria; Implement is available.",
     "dominant_activity": "implementation",
     "capabilities": [
       "verification"
     ],
-    "provider_invocations": [],
-    "host": "host-neutral",
-    "route_result": "local",
+    "provider_invocations": [
+      {
+        "name": "implement",
+        "policy": "implicit",
+        "invocation": "automatic",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
     "executed": true,
     "repository_state_effect": "repository-write",
     "external_scope": "none",
-    "expected_behavior": "Resume from the named IMP record, load only its relevant linked artifacts, ignore the unrelated DBG record, and create no global active index."
+    "expected_behavior": "Pass the ready scope by reference from Wayfinder to Implementation, invoke Implement once, run Verification, reconcile any consequential result into the map, and create no IMP or replacement execution record."
   },
   {
-    "id": "same-scope-durable-records-conflict",
-    "category": "record-scope-conflict",
-    "prompt": "Continue the payment migration implementation.",
-    "setup": "IMP-0001 and IMP-0002 make incompatible active claims about the same payment migration and neither record is explicitly selected.",
-    "dominant_activity": "implementation",
-    "capabilities": [],
-    "provider_invocations": [],
-    "host": "host-neutral",
-    "route_result": "blocked",
-    "executed": false,
-    "repository_state_effect": "none",
+    "id": "wayfinder-resumes-interrupted-specialist",
+    "category": "wayfinder-specialist-reentry",
+    "prompt": "Resume the interrupted causal investigation recorded as the next work in the named effort.",
+    "setup": "The map preserves the exact diagnostic frontier, evidence pointers, and next discriminating check; a legacy DBG file also exists but is not current workflow state.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [
+      "debugging"
+    ],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "project-owned-wayfinder-state",
     "external_scope": "none",
-    "expected_behavior": "Preserve both records, identify their specific same-scope conflict, and require explicit resolution instead of choosing or overwriting one; unrelated records would not block the work."
+    "expected_behavior": "Resume from the map, lazily load Debugging for the next causal step, ignore the legacy DBG file as a resume mechanism, and reconcile consequential results without creating a new DBG record."
   },
   {
     "id": "provider-artifact-remains-canonical",

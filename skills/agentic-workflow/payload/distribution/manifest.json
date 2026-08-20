@@ -25,16 +25,8 @@
       "target": ".agent-workflow/routing.md"
     },
     {
-      "source": "agent-workflow/templates/decision-record.md",
-      "target": ".agent-workflow/templates/decision-record.md"
-    },
-    {
       "source": "agent-workflow/templates/project-profile.md",
       "target": ".agent-workflow/templates/project-profile.md"
-    },
-    {
-      "source": "agent-workflow/templates/work-item.md",
-      "target": ".agent-workflow/templates/work-item.md"
     },
     {
       "source": "skills/workflow-debugging/SKILL.md",
@@ -61,6 +53,6 @@
       "target": "CLAUDE.md"
     }
   ],
-  "framework_version": "0.18.0",
+  "framework_version": "0.19.0",
   "schema_version": 6
 }

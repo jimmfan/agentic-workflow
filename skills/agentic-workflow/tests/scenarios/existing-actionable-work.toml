@@ -1,12 +1,12 @@
 schema_version = 1
 id = "existing-actionable-work"
-name = "Persisted actionable implementation continues from current state"
+name = "Ready Wayfinder scope hands off without IMP continuity"
 fixture = "actionable-work"
-request = "Continue implementation record IMP-0001, complete its next actionable slice, and verify the result."
+request = "Continue the ready implementation scope from the named discount-bounds Wayfinder map, complete it, and verify the result."
 starting_state = [
-  "IMP-0001 is active and contains the exact resume target.",
+  "The discount-bounds Wayfinder map contains the exact ready scope and acceptance criteria.",
   "An accepted project decision defines the discount bounds.",
-  "An unexpected user note exists inside project-owned workflow state.",
+  "A legacy IMP record and an unexpected user note exist in project-owned state and must remain untouched.",
 ]
 expect = [
   "task_completed",
@@ -24,11 +24,13 @@ live = false
 verification_command = "Run python verify.py after implementing the bounded discount behavior."
 preserve_paths = [
   ".agent-workflow-state/user-notes.txt",
+  ".agent-workflow-state/records/IMP-0001-discount-bounds.md",
   "docs/decisions/0001-discount-bounds.md",
 ]
 forbid_created_globs = ["docs/decisions/0002*.md", "planning/**", "wayfinder/**"]
-route_must_not_include = ["discovery", "wayfinder"]
+route_must_not_include = ["discovery", "debugging"]
 state_must_include = [
+  ".agent-workflow-state/wayfinder/discount-bounds/map.md",
   ".agent-workflow-state/records/IMP-0001-discount-bounds.md",
   "docs/decisions/0001-discount-bounds.md",
 ]

@@ -14,18 +14,18 @@
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "6f2bf050979720965678b4db7bdc37f978c175f6ec7b7988c81d0b5c99c48d08"
+      "sha256": "492732d8afc629d7d09a5db4acb8d744978f2909dd7ccf15feb37381f4fbbc4b"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "586a6d48f46dbb681565af8856598f7a91c35b67ca5d1bc56dc0a32e50ab80e1"
+      "sha256": "1f115fd181312df42b0eb2ee37e959e6eba368eab993927080531df05d13fea5"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,
-      "sha256": "19772c4db9fe83e8e5e9aae40961a0bda2c778b6e5225fdcc09d035b46552185"
+      "sha256": "6b34ea8d493efb1844243f1ef029a3219d5a8aeeee636c6a8f00c3a6e0b22ac1"
     }
   },
-  "framework_version": "0.13.0",
+  "framework_version": "0.18.0",
   "schema_version": 1,
-  "source_revision": "unreleased-local-package"
+  "source_revision": "d915355c6bfe91d67bfb24dcdaa9442515d706b8"
 }
