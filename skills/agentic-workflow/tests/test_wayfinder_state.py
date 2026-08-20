@@ -407,26 +407,31 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertIn("None for this effort.", historical)
         self.assertIn("../settled-provider-direction/map.md", superseded)
 
-    def test_contract_preserves_resolution_methods_and_human_authority(self) -> None:
+    def test_contract_preserves_specialist_results_without_copying_methods(self) -> None:
         for required in (
-            "## Resolving uncertainty and authority",
-            "Domain Modeling",
-            "Research",
-            "Prototype",
-            "Debugging",
-            "human clarification or Grilling",
+            "## Specialist result boundary",
+            "continue directly or load one materially useful specialist",
+            "Specialists own their methods and native artifacts",
+            "Do not copy a specialist method, transcript, or temporary bookkeeping",
+            "No DEC, IMP, DBG, or replacement record is allocated",
             "accepted D#, specification, or implementation ticket",
             "no durable Wayfinder state is needed",
         ):
             self.assertIn(required, self.normalized)
+        for duplicated_method in (
+            "Form 3–5 ranked, falsifiable hypotheses",
+            "Compare only viable alternatives",
+            "Use primary sources for consequential",
+        ):
+            self.assertNotIn(duplicated_method, self.contract)
 
     def test_contract_structures_territory_and_converges_without_hierarchy(self) -> None:
         for required in (
             "## Semantic territory and effort identity",
             "authoritative project structure",
-            "Otherwise establish them directly when current context supports them confidently",
-            "material structural ambiguity remains and structural discovery is actually needed",
-            "Domain Modeling is the preferred structural discovery mechanism",
+            "Otherwise establish it directly when current context supports it confidently",
+            "If structural ambiguity remains",
+            "state contract does not own that method",
             "before substantial U/E/F/D state accumulates",
             "## Territory",
             "A semantic area is settled",
@@ -451,13 +456,19 @@ class WayfinderStateContractTests(unittest.TestCase):
         normalized_runtime = " ".join(runtime.split())
         for required in (
             "## Core invariants",
-            "### Establish territory",
-            "### Choose a resolution mechanism",
-            "### Converge and shrink",
-            "`map.md` alone is valid",
+            "## Establish territory",
+            "## Resolve the frontier progressively",
+            "## Reconcile, converge, and hand off",
+            "The map may be the whole result",
+            "Continue directly when the frontier can be resolved safely",
+            "Discovery",
+            "Debugging",
+            "Research",
+            "Prototype",
+            "Domain Modeling",
+            "creates no DEC, IMP, DBG",
             "use `to-tickets`",
-            "Use Domain Modeling when material structural ambiguity remains",
-            "Completion alone does not make a child redundant",
+            "Implementation owns execution and Verification follows it",
         ):
             self.assertIn(required, normalized_runtime)
         for contract_only_detail in (

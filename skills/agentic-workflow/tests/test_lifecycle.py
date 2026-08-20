@@ -264,6 +264,15 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         state = self.project / ".agent-workflow-state"
         (state / "records/nested").mkdir(parents=True)
         (state / "records/nested/data.bin").write_bytes(b"\x00project\xffstate")
+        for legacy_name in (
+            "DEC-0001-legacy-choice.md",
+            "IMP-0002-legacy-work.md",
+            "DBG-0003-legacy-failure.md",
+        ):
+            (state / "records" / legacy_name).write_text(
+                f"# {legacy_name}\n\nOpaque historical project data.\n",
+                encoding="utf-8",
+            )
         (state / "custom.json").write_text('{"owner":"project"}\n')
         try:
             (state / "record-link").symlink_to("records/nested/data.bin")
@@ -755,9 +764,11 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         normalized_skill = " ".join(skill_text.split())
         self.assertIn("derived from Matt Pocock's Wayfinder methodology", normalized_skill)
         self.assertIn("## Core invariants", normalized_skill)
-        self.assertIn("### Choose a resolution mechanism", normalized_skill)
-        self.assertIn("Wayfinder does not own implementation work items", normalized_skill)
-        self.assertIn("`map.md` alone is valid", normalized_skill)
+        self.assertIn("## Resolve the frontier progressively", normalized_skill)
+        self.assertIn("Specialists remain stateless", normalized_skill)
+        self.assertIn("creates no DEC, IMP, DBG", normalized_skill)
+        self.assertIn("The map may be the whole result", normalized_skill)
+        self.assertIn("Implementation owns execution and Verification follows it", normalized_skill)
         self.assertIn("use `to-tickets`", normalized_skill)
         self.assertNotIn(".wayfinder-mutation-lock", normalized_skill)
         self.assertNotIn("highest currently present", normalized_skill)
@@ -861,7 +872,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("reconciled optional provider skill wayfinder", result.stdout)
         repaired = skill_path.read_text(encoding="utf-8")
         self.assertIn("## Core invariants", repaired)
-        self.assertIn("### Choose a resolution mechanism", repaired)
+        self.assertIn("## Resolve the frontier progressively", repaired)
         self.assertNotIn("stale owned runtime projection", repaired)
 
     def test_malformed_owned_runtime_source_fails_before_projection_mutation(self) -> None:

@@ -125,10 +125,12 @@ retain the former U/D/T rubric for reproducibility. They are historical evidence
 not the current Wayfinder acceptance contract; do not edit or reuse that frozen
 grader to claim coverage of the map-first U/E/F/D model.
 
-The routing catalog separately covers direct work, local workflow selection,
-host-native fallback, explicit provider handoff, record-based resume, external
-read scope, and provider-artifact ownership. It is an executable contract
-check, not proof that a live editor or provider service was exercised.
+The routing catalog separately covers direct work, standalone Discovery,
+direct and specialist-backed Wayfinder frontiers, Wayfinder-to-Implementation
+handoff, interrupted-specialist re-entry from the map, host-native fallback,
+explicit provider handoff, external read scope, and provider-artifact
+ownership. It is an executable contract check, not proof that a live editor or
+provider service was exercised.
 
 ## Useful failure diagnostics
 

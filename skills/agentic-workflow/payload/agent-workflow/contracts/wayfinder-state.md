@@ -6,14 +6,12 @@ The existence of an effort under `.agent-workflow-state/wayfinder/` is not a
 routing signal. Clear, bounded, or unrelated work stays on its minimum useful
 route and does not read or create Wayfinder state.
 
-Agentic Workflow's effective Wayfinder workflow is a framework-owned runtime
-projection derived from Matt Pocock's Wayfinder methodology. It keeps the
-method's destination, low-resolution semantic map, honest fog, frontier,
-incremental resolution, convergence, readable-name, and progressive-loading
-concepts while Agentic Workflow owns the Git-native state and continuation
-contract below. This is
-durable project knowledge and coordination state, not an issue tracker and not
-a mirror of `.scratch/` or an external tracker.
+Wayfinder is Agentic Workflow's sole framework-owned durable coordination
+layer. Its effective runtime is derived from Matt Pocock's Wayfinder
+methodology, while this contract owns the Git-native state and continuation
+mechanics. This is durable project knowledge and coordination state, not an
+issue tracker, specialist notebook, or mirror of `.scratch/` or an external
+tracker.
 Do not create or update `.agent-workflow-state/active.md`; the effort map is the
 only re-entry point.
 
@@ -51,43 +49,31 @@ storage remains canonical.
 For a new durable effort, reuse authoritative project structure from accepted
 ADRs, specifications, domain documentation, source, or another canonical
 artifact when it already establishes sufficient bearings. Otherwise establish
-them directly when current context supports them confidently. When material
-structural ambiguity remains and structural discovery is actually needed,
-Domain Modeling is the preferred structural discovery mechanism. Establish
-enough structure before substantial U/E/F/D state accumulates, then derive the
-effort's identity, readable name, destination, boundary, and stable path from
-that understanding. Do not choose `wayfinder/<effort-name>/` first and
-rationalize its structure afterward.
-
-Domain Modeling is conditional: do not invoke it merely because Wayfinder was
-selected, and do not rerun it when a resumed map and authoritative project
-context remain coherent. Research, Prototype, and Debugging usually resolve fog
-within established territory. No mechanism may fabricate a human-authority
-choice.
+it directly when current context supports it confidently. If structural
+ambiguity remains, the Wayfinder runtime may select an appropriate specialist;
+this state contract does not own that method. Establish enough structure before
+substantial U/E/F/D state accumulates, then derive the effort's identity,
+readable name, destination, boundary, and stable path from that understanding.
+Do not choose `wayfinder/<effort-name>/` first and rationalize its structure
+afterward.
 
 When evidence changes the semantic structure, update the current map's areas,
 relationships, boundary, fog, and frontier coherently. Do not retain stale or
 parallel territory structures merely because an earlier map used them.
 
-## Resolving uncertainty and authority
+## Specialist result boundary
 
-Choose a resolution mechanism by the shape of the uncertainty:
+The Wayfinder runtime decides whether to continue directly or load one
+materially useful specialist. Specialists own their methods and native
+artifacts; they create no framework persistence record. Reconcile only the
+consequential coordination needed to continue: the unresolved frontier, useful
+evidence or conclusions, relevant artifact pointers, resolution mode when it
+helps re-entry, dependencies, blockers, and next work. Do not copy a specialist
+method, transcript, or temporary bookkeeping into Wayfinder.
 
-- use Domain Modeling when material ambiguity in concepts, terminology,
-  boundaries, or relationships makes structural discovery necessary;
-- use Research for externally answerable uncertainty that needs trustworthy sources;
-- use Prototype when trying something concrete is the cheapest honest way to learn;
-- use Debugging for uncertainty about observed behavior and its cause; and
-- use human clarification or Grilling for intent, preference, approval,
-  prioritization, or another choice requiring human or project authority.
-
-Domain Modeling may also expose assumptions, unknowns, dependencies, or
-authority-dependent choices. These workflows own their native artifacts and
-supply reasoning, evidence, or clarification; Wayfinder preserves only results
-with consequential durable value. Reconcile such results into the current
-Destination, map state, fog, blockers, dependencies, frontier, next work, or
-independently useful U/E/F/D knowledge as appropriate. None of these mechanisms
-is mandatory ceremony for every effort.
+If specialist work is interrupted, the selected effort map and only justified
+U/E/F/D detail become the re-entry point. No DEC, IMP, DBG, or replacement
+record is allocated.
 
 When a choice requires human or project authority, do not decide it on the
 human's behalf. Surface the concrete question, explain why that authority is required,
@@ -103,8 +89,9 @@ When ready work becomes substantial enough to need dependency ordering or
 independently deliverable sessions, hand it to `to-tickets`. That workflow owns
 its native ticket artifacts and frontier. Wayfinder links the resulting native
 artifact from `map.md`; it does not duplicate those work items in Wayfinder.
-Work that fits one coherent implementation session can pass directly from the
-map, a settled D#, or another accepted specification to implementation.
+Work that fits one coherent implementation session passes directly from the
+map, a settled D#, or another accepted specification to Implementation and
+Verification. No implementation continuity record is created.
 
 ## Ownership and locations
 
@@ -385,7 +372,7 @@ Use U# when a question is consequential enough to track independently:
 # U1: <Question>
 
 - Status: open | resolved
-- Resolution mode: domain modeling | research | prototype | debugging | human clarification | grilling | direct
+- Resolution mode: direct | discovery | debugging | research | prototype | domain modeling | human clarification | grilling
 - Blocked by: none
 - Related: none
 
@@ -550,7 +537,8 @@ work` with none for that effort. A superseded effort also links the successor or
 governing direction. Do not load historical child
 detail during ordinary effort selection, rename the stable directory, repurpose
 it for a new destination, or move it into `.agent-workflow-state/archive/`;
-that archive belongs to other durable workflow records.
+that path is outside current Wayfinder lifecycle and may contain opaque legacy
+project data.
 
 Legacy maps and children require no repository-wide migration. Existing
 U/E/F/D statuses retain their meanings. When authorized work on the relevant
@@ -599,9 +587,12 @@ implied; the acting agent performs this bounded reconciliation.
 
 ## Workflow and ticket boundaries
 
-The resolution mechanisms above may supply reasoning, evidence, or clarification
-while Wayfinder retains durable coordination. Their native artifacts stay
-canonical and are linked rather than copied.
+Direct reasoning or one lazily selected specialist may supply reasoning,
+evidence, or clarification while Wayfinder alone retains framework-owned
+durable coordination. Specialist-native artifacts stay canonical and are linked
+rather than copied. Legacy DEC/IMP/DBG files are project-owned historical data:
+lifecycle operations preserve them, and current workflows neither allocate nor
+resume them.
 
 Use `to-tickets` only when clear work benefits from dependency ordering or
 separately deliverable sessions. Pass the map and only relevant U/E/F/D context.

@@ -13,9 +13,9 @@ subprocess.
   vocabulary, fixture size, observable evaluator, required route-marker syntax,
   demand-driven Wayfinder creation and provider claims, progressive Wayfinder
   state inputs, and live command protocol using a deterministic fake agent.
-- `test_routing.py` validates representative selection, invocation,
-  authorization, record-based resume, and durable-effect decisions without
-  requiring one exact trace.
+- `test_routing.py` validates representative selection, lazy specialist
+  invocation, authorization, Wayfinder resume, and durable-effect decisions
+  without requiring one exact trace.
 - `test_wayfinder_state.py` validates the authored, installed, and generated
   settlement contract plus a deterministic state-transition oracle for
   current-state allocation, effort-lock serialization, reference-safe
@@ -68,9 +68,9 @@ completed-effort/new-destination separation, explicit historical access, and
 ensuring that an unrelated existing effort neither captures a simple route nor
 gets loaded. The live Wayfinder contracts preserve
 an unrelated effort during reconciliation, keep stale-state audits read-only,
-and require conflicting reconciliation to stop without guessing. Non-Wayfinder
-durable work resumes from its named DEC/IMP/DBG record without a global active
-index.
+and require conflicting reconciliation to stop without guessing. Lifecycle
+coverage preserves legacy DEC/IMP/DBG files as opaque project data while current
+workflow scenarios resume only from Wayfinder or canonical provider artifacts.
 
 See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema,
 evidence model, commands, side effects, cleanup, and limitations.

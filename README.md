@@ -79,7 +79,6 @@ flowchart LR
     wfstate -.-> facts["facts/F#.md"]
     wfstate -.-> decisions["decisions/D#.md"]
 
-    state -.-> records["records/"]
 ```
 
 The router is intentionally small and Direct-first.
@@ -231,9 +230,10 @@ pass from the map directly to implementation. Work that needs dependency
 ordering or separately deliverable sessions goes through `to-tickets`, whose
 native tickets remain canonical and are linked from the map.
 
-Debugging, Research, Prototype, Grilling, Domain Modeling, human clarification,
-or Implementation may resolve or consume an item without taking ownership of
-the map.
+Discovery, Debugging, Research, Prototype, Grilling, Domain Modeling, or human
+clarification may resolve an item without taking ownership of the map.
+Implementation consumes a ready scope as an execution handoff; it is not a
+Wayfinder reasoning mechanism or continuity record.
 
 Domain Modeling can sharpen concepts, terminology, boundaries, relationships,
 assumptions, and dependencies; Wayfinder preserves only the consequential
@@ -317,11 +317,10 @@ target-project/
 │   ├── providers.json
 │   ├── routing.md
 │   ├── contracts/
-│   └── templates/
+│   └── templates/project-profile.md
 │
 └── .agent-workflow-state/          # durable project-owned state
-    ├── records/
-    ├── archive/
+    ├── project-profile.md           # optional
     └── wayfinder/
         └── <effort>/
             ├── map.md
@@ -330,6 +329,9 @@ target-project/
             ├── facts/
             └── decisions/
 ```
+
+Legacy `DEC`, `IMP`, and `DBG` files under project-owned state remain untouched
+historical data. Current workflows neither allocate nor resume them.
 
 ### `.agent-workflow/`
 

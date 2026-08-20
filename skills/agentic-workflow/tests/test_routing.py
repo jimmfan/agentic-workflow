@@ -9,6 +9,22 @@ REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 # Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
 PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
 PRE_THIN_DIRECT_ROOT_WORDS = 682
+PRE_DECOMPOSITION_CONTEXT = {
+    "direct": (3362, 466),
+    "standalone-discovery": (7642, 1050),
+    "wayfinder-decision": (54264, 7683),
+    "wayfinder-causal": (71751, 10118),
+    "wayfinder-research": (68316, 9636),
+    "wayfinder-implementation": (52822, 7462),
+    "multi-front": (79626, 11294),
+}
+
+
+def instruction_profile(paths: list[Path]) -> tuple[int, int]:
+    bodies = [path.read_text(encoding="utf-8") for path in paths]
+    return sum(len(body.encode("utf-8")) for body in bodies), sum(
+        len(body.split()) for body in bodies
+    )
 
 
 class RoutingContractTests(unittest.TestCase):
@@ -18,7 +34,7 @@ class RoutingContractTests(unittest.TestCase):
         results = {item["route_result"] for item in scenarios}
         effects = {item["repository_state_effect"] for item in scenarios}
         self.assertTrue({"direct", "debugging", "discovery", "research"} <= dominant)
-        self.assertTrue({"direct", "local", "host-native-fallback", "blocked"} <= results)
+        self.assertTrue({"direct", "local", "host-native-fallback", "user-only-handoff"} <= results)
         self.assertTrue({"read-only", "none", "repository-write"} <= effects)
 
     def test_every_scenario_keeps_selection_execution_and_effect_explicit(self) -> None:
@@ -61,12 +77,12 @@ class RoutingContractTests(unittest.TestCase):
         normalized_contract = " ".join(contract.split())
         self.assertNotIn("architecture-decision/", normalized_policy)
         self.assertIn("Use `architecture-decision/` as the default", normalized_contract)
-        self.assertIn("existing project instructions name another canonical decision location", normalized_contract)
-        self.assertIn("do not create a parallel ADR namespace", normalized_contract)
+        self.assertIn("Preserve an existing project convention", normalized_contract)
+        self.assertIn("instead of creating a parallel namespace", normalized_contract)
         self.assertIn("Do not promote every workflow choice", normalized_contract)
-        self.assertIn("link the workflow record", normalized_contract)
-        self.assertIn("maintained set of current decisions", normalized_contract)
-        self.assertIn("recoverable version-control history", normalized_contract)
+        self.assertIn("A current Wayfinder D# may link that ADR", normalized_contract)
+        self.assertIn("maintained current decisions", normalized_contract)
+        self.assertIn("only recoverable rationale", normalized_contract)
 
     def test_adr_index_separates_current_records_from_superseded_history(self) -> None:
         index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
@@ -81,6 +97,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("- Status: accepted", governance)
         self.assertIn("Treat a choice the user explicitly resolves as settled", governance)
         self.assertIn("maintained set of current decisions", governance)
+        self.assertIn("ADR-0028", current)
+        self.assertNotIn("ADR-0012", current)
+        self.assertIn("ADR-0012", superseded)
 
     def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
@@ -101,6 +120,33 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("issue-tracker", skills["to-spec"]["requires_configuration"])
         self.assertIn("issue-tracker", skills["to-tickets"]["requires_configuration"])
 
+    def test_specialist_workflows_are_stateless_and_keep_their_methods(self) -> None:
+        discovery = (
+            PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
+        ).read_text()
+        debugging = (
+            PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
+        ).read_text()
+        implementation = (
+            PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+        ).read_text()
+        durable = (
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/durable-state.md"
+        ).read_text()
+
+        discovery = " ".join(discovery.split())
+        debugging = " ".join(debugging.split())
+        implementation = " ".join(implementation.split())
+        durable = " ".join(durable.split())
+
+        self.assertIn("without creating DEC", discovery)
+        self.assertIn("Compare only viable alternatives", discovery)
+        self.assertIn("without creating a DBG", debugging)
+        self.assertIn("Form 3–5 ranked, falsifiable hypotheses", debugging)
+        self.assertIn("Create no IMP or replacement execution record", implementation)
+        self.assertIn("invoke `workflow-verification` once", implementation)
+        self.assertIn("not a current framework re-entry point", durable)
+
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         contract = (
@@ -108,7 +154,8 @@ class RoutingContractTests(unittest.TestCase):
         ).read_text()
         normalized_contract = " ".join(contract.split())
         normalized_root = " ".join(root_policy.split())
-        self.assertIn("Before any durable-state write", normalized_root)
+        self.assertIn("wayfinder-state.md` before the map", normalized_root)
+        self.assertIn("only before another current project-state write", normalized_root)
         self.assertIn("An unrelated map never selects Wayfinder", normalized_root)
         self.assertIn("Do not globally scan for related efforts", normalized_contract)
         self.assertIn("do not copy canonical artifact bodies", normalized_contract)
@@ -120,7 +167,7 @@ class RoutingContractTests(unittest.TestCase):
         contract = (PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md").read_text()
         normalized_root = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
-        self.assertIn("choice the user explicitly resolves as settled", normalized_root)
+        self.assertIn("Reopen a settled choice only", normalized_root)
         self.assertIn("Never renumber an existing current record", normalized_contract)
         self.assertIn("`map.md` owns the current state", normalized_contract)
         self.assertIn("`map.md` alone is a complete and valid", normalized_contract)
@@ -162,6 +209,10 @@ class RoutingContractTests(unittest.TestCase):
                 "wayfinder-one-isolated-unknown-stays-discovery",
                 "wayfinder-explicit-codex",
                 "wayfinder-with-debugging-evidence",
+                "wayfinder-direct-decision-resolution",
+                "wayfinder-with-discovery",
+                "wayfinder-ready-implementation-handoff",
+                "wayfinder-resumes-interrupted-specialist",
                 "wayfinder-reconcile-stale-state",
                 "wayfinder-read-only-boundary",
                 "wayfinder-explicit-opt-out",
@@ -180,11 +231,17 @@ class RoutingContractTests(unittest.TestCase):
         self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["dominant_activity"], "discovery")
         self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["provider_invocations"], [])
         self.assertEqual(by_id["wayfinder-with-debugging-evidence"]["capabilities"], ["debugging"])
+        self.assertEqual(by_id["wayfinder-direct-decision-resolution"]["capabilities"], [])
+        self.assertEqual(by_id["wayfinder-with-discovery"]["capabilities"], ["discovery"])
+        self.assertEqual(by_id["wayfinder-ready-implementation-handoff"]["capabilities"], ["verification"])
+        self.assertEqual(by_id["wayfinder-resumes-interrupted-specialist"]["capabilities"], ["debugging"])
         self.assertEqual(by_id["wayfinder-with-prototype"]["capabilities"], ["prototype"])
         for scenario_id in (
             "wayfinder-with-research",
             "wayfinder-with-prototype",
             "wayfinder-with-debugging-evidence",
+            "wayfinder-with-discovery",
+            "wayfinder-resumes-interrupted-specialist",
         ):
             self.assertIn("reconcile", by_id[scenario_id]["expected_behavior"].lower())
         self.assertEqual(
@@ -233,16 +290,15 @@ class RoutingContractTests(unittest.TestCase):
         normalized_root = " ".join(root_policy.split())
         normalized_routing = " ".join(routing.split())
 
-        self.assertIn("Start Direct", normalized_root)
-        self.assertIn("installed skill descriptions", normalized_root)
-        self.assertIn("smallest authorized read-only reconnaissance", normalized_root)
-        self.assertIn("Do not load `.agent-workflow/routing.md`", normalized_root)
-        self.assertIn("more than one workflow or capability must be composed", normalized_root)
-        self.assertIn("Counts trigger assessment, never selection by themselves", normalized_root)
-        self.assertIn("After reconnaissance, MUST assess Wayfinder before completing", normalized_root)
+        self.assertIn("Direct is default", normalized_root)
+        self.assertIn("encountering the topic alone never forces a specialist", normalized_root)
+        self.assertIn("one obvious specialist inside an already selected Wayfinder effort", normalized_root)
+        self.assertIn("Read `.agent-workflow/routing.md` only when", normalized_root)
+        self.assertIn("Three or more meaningful items require assessment, never selection by count alone", normalized_root)
+        self.assertIn("After reconnaissance, assess durable coordination", normalized_root)
         self.assertIn("MUST select or resume Wayfinder", normalized_root)
         self.assertIn("any hard signal or at least two soft signals", normalized_root)
-        self.assertIn("Read-only work never changes repository, external, or durable state", normalized_root)
+        self.assertIn("Read-only work changes no state", normalized_root)
         self.assertNotIn("\n* ", root_policy)
         self.assertNotIn("If it is unclear whether the work is clearly bounded", normalized_root)
         self.assertNotIn("For a named skill, a resume", normalized_root)
@@ -292,7 +348,77 @@ class RoutingContractTests(unittest.TestCase):
                     "ordinary selected-workflow context must be at least 50% smaller",
                 )
 
-    def test_thin_router_decision_is_current_and_records_deterministic_gate(self) -> None:
+    def test_specialist_backed_wayfinder_reduces_directional_context_profiles(self) -> None:
+        root = PACKAGE_ROOT / "payload/root/AGENTS.md.template"
+        runtime = PACKAGE_ROOT / "runtime-projections/wayfinder.md"
+        state = PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
+        discovery = PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
+        debugging = PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
+        implementation = PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+        verification = PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md"
+        research = REPOSITORY_ROOT / ".agents/skills/research/SKILL.md"
+        prototype = REPOSITORY_ROOT / ".agents/skills/prototype/SKILL.md"
+        domain_modeling = REPOSITORY_ROOT / ".agents/skills/domain-modeling/SKILL.md"
+        implement = REPOSITORY_ROOT / ".agents/skills/implement/SKILL.md"
+
+        profiles = {
+            "direct": [root],
+            "standalone-discovery": [root, discovery],
+            "wayfinder-decision": [root, runtime, state],
+            "wayfinder-decision-with-discovery": [root, runtime, state, discovery],
+            "wayfinder-causal": [root, runtime, state, debugging],
+            "wayfinder-research": [root, runtime, state, research],
+            "wayfinder-implementation": [
+                root,
+                runtime,
+                state,
+                implementation,
+                implement,
+                verification,
+            ],
+            "multi-front": [
+                root,
+                runtime,
+                state,
+                discovery,
+                debugging,
+                research,
+                prototype,
+                domain_modeling,
+                implementation,
+                verification,
+            ],
+        }
+        measured = {name: instruction_profile(paths) for name, paths in profiles.items()}
+
+        self.assertLessEqual(measured["direct"], PRE_DECOMPOSITION_CONTEXT["direct"])
+        self.assertLess(
+            measured["standalone-discovery"],
+            PRE_DECOMPOSITION_CONTEXT["standalone-discovery"],
+        )
+        self.assertLess(
+            measured["wayfinder-decision"],
+            PRE_DECOMPOSITION_CONTEXT["wayfinder-decision"],
+        )
+        self.assertLess(
+            measured["wayfinder-decision-with-discovery"],
+            PRE_DECOMPOSITION_CONTEXT["wayfinder-decision"],
+        )
+        for name in (
+            "wayfinder-causal",
+            "wayfinder-research",
+            "wayfinder-implementation",
+            "multi-front",
+        ):
+            with self.subTest(profile=name):
+                self.assertLess(measured[name], PRE_DECOMPOSITION_CONTEXT[name])
+
+        self.assertEqual(
+            measured["wayfinder-decision-with-discovery"][0] - measured["wayfinder-decision"][0],
+            discovery.stat().st_size,
+        )
+
+    def test_thin_router_and_sole_coordinator_decisions_are_current(self) -> None:
         decision = (
             REPOSITORY_ROOT
             / "architecture-decisions/0027-use-thin-evidence-triggered-routing.md"
@@ -302,6 +428,13 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("deterministic", decision.lower())
         self.assertIn("model-based grading", decision.lower())
         self.assertIn("ADR-0027", index)
+        coordinator = (
+            REPOSITORY_ROOT
+            / "architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md"
+        ).read_text()
+        self.assertIn("- Status: accepted", coordinator)
+        self.assertIn("sole framework-owned durable coordination", coordinator)
+        self.assertIn("ADR-0028", index)
 
 
 if __name__ == "__main__":

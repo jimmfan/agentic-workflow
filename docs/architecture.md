@@ -44,13 +44,13 @@ signal or at least two softer interaction/dependency/reconstruction signals may
 cross the durable threshold. Bounded work remains Direct or in its existing
 workflow, and read-only work does not gain durable state authority.
 
-Durable workflows resume from their canonical record or map when persistence is
-useful. Supporting Research, TDD, Verification, or Code Review does not create a
-second continuity record. Provider-native tickets, specifications, research,
-and learning artifacts remain canonical; framework records store only concise
-orchestration pointers. Local Wayfinder maps and optional U#/E#/F#/D# knowledge
-live under `.agent-workflow-state/wayfinder/` and use the effort map for
-re-entry.
+Wayfinder is the framework's sole durable coordination layer. It resumes from
+its effort map and lazily delegates reasoning to stateless specialists only when
+their method materially helps the current frontier. Provider-native tickets,
+specifications, research, reviews, and learning artifacts remain canonical;
+Wayfinder stores only consequential coordination and pointers. Its maps and
+optional U#/E#/F#/D# knowledge live under
+`.agent-workflow-state/wayfinder/`.
 
 A required response marker such as
 `[route: router -> discovery -> research]` provides sufficient v0 route
@@ -67,8 +67,6 @@ FRAMEWORK-OWNED, RECONSTRUCTABLE
 PROJECT-OWNED, DURABLE
 └── .agent-workflow-state/
     ├── project-profile.md      # optional
-    ├── records/                # optional
-    ├── archive/                # optional
     └── wayfinder/              # optional map-first U#/E#/F#/D# knowledge state
 
 OPTIONAL, INDEPENDENT
@@ -103,7 +101,9 @@ repair of current managed content.
 `.agent-workflow-state/` and every entry below it are project-owned. Lifecycle
 operations ensure the directory exists during install/update, but never seed,
 inventory, checksum, merge, rewrite, or remove its contents. Missing optional
-profile, record, archive, and Wayfinder files are normal.
+profile and Wayfinder files are normal. Legacy record and archive paths are
+preserved as opaque historical project data rather than resumed or migrated by
+current workflows.
 
 When Wayfinder needs Git-native structured state, its dedicated progressively
 loaded contract configures `.agent-workflow-state/wayfinder/<effort>/` as the
@@ -127,9 +127,10 @@ bare number as repository-wide identity.
 Accepted, lasting architecture or contract decisions use `/` as
 the default ADR namespace. An existing project instruction may name another
 canonical location; the framework preserves that convention instead of creating
-a parallel namespace or migrating it. Local `DEC-NNNN` and Wayfinder `D#`
-records remain workflow state and link to the applicable ADR when a decision is
-promoted.
+a parallel namespace or migrating it. Wayfinder `D#` entries remain
+effort-local coordination state and link to the applicable ADR when a decision
+is promoted. Legacy `DEC-NNNN`, `IMP-NNNN`, and `DBG-NNNN` files are historical
+project data, not current workflow records.
 
 ### Composite root policies
 

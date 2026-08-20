@@ -1,3 +1,2 @@
 def bounded_discount(percent: int) -> int:
-    raise NotImplementedError("continue IMP-0001")
-
+    raise NotImplementedError("continue the ready discount-bounds scope")

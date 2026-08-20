@@ -67,7 +67,8 @@ After a successful host-native fallback, the route marker reports what actually
 ran and omits the unavailable provider; a terminal suffix is reserved for a
 selection that did not become equivalent execution.
 
-The dominant workflow owns any durable continuity under `.agent-workflow-state/`.
+Wayfinder alone owns framework durable coordination under
+`.agent-workflow-state/wayfinder/`.
 Provider-native tickets, specifications, research, reviews, and learning
 artifacts remain canonical; the framework does not mirror them. Local Wayfinder
 uses the configured canonical tree under `.agent-workflow-state/wayfinder/` and its
@@ -77,10 +78,10 @@ Wayfinder methodology. The map owns current state, blockers, dependencies, and
 next work; sparse U#/E#/F#/D# knowledge stays lazy, and new decomposed work belongs
 to native `to-tickets` output. A current effort outranks a similarly named
 completed, abandoned, or superseded effort during likely resume; historical
-maps remain accessible when directly named or materially relevant.
-Other durable workflows resume from their
-canonical DEC, IMP, or DBG record; there is no global active index. The router
-loads that dedicated contract only
+maps remain accessible when directly named or materially relevant. Legacy DEC,
+IMP, and DBG files remain untouched historical project data and are never
+allocated, resumed, or migrated by current workflows. The router loads the
+Wayfinder contract only
 after Wayfinder is selected or a relevant effort is being resumed, then reads
 the map and only relevant U#/E#/F#/D# children. An unrelated existing map never
 changes a request's route. Diagnosis, review, explanation, and audit requests
@@ -90,11 +91,12 @@ Normal authorized project work may create a lightweight Wayfinder map without a
 second permission request after the router selects it. A read-only request may
 use ephemeral structure but does not create or update Wayfinder state.
 
-When a useful specialized activity is already underway, Wayfinder may own only
-durable coordination: Debugging, Research, Prototype, Grilling, Domain Modeling,
-human clarification, or Implementation can resolve or consume an item without
-creating a competing map. Grilling and Domain Modeling are conditional on real
-human/domain ambiguity, not mandatory ceremony for every escalation.
+Within a selected effort, continue directly when the frontier is clear. Load
+Discovery, Debugging, Research, Prototype, Domain Modeling, Grilling, or human
+clarification only when that method materially improves resolution. Specialists
+remain stateless from the framework's perspective and return only consequential
+results for reconciliation. Implementation is a ready-scope execution handoff,
+followed by Verification, not a Wayfinder reasoning method or continuity record.
 
 After meaningful implementation or a causal fix, gather acceptance evidence not
 already supplied by the selected provider. Do not repeat provider-owned TDD or

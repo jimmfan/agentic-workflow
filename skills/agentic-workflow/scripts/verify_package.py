@@ -172,6 +172,11 @@ def check_structure() -> None:
         not (PAYLOAD_ROOT / "agent-workflow/templates/active-state.md").exists(),
         "retired active-index template remains packaged",
     )
+    for retired_template in ("decision-record.md", "work-item.md"):
+        require(
+            not (PAYLOAD_ROOT / "agent-workflow/templates" / retired_template).exists(),
+            f"retired specialist-state template remains packaged: {retired_template}",
+        )
     require(not (REPOSITORY_ROOT / "docs" / "enforcement.md").exists(), "obsolete controller documentation remains")
     require(not (REPOSITORY_ROOT / "docs" / "observability.md").exists(), "obsolete observability documentation remains")
 
@@ -220,19 +225,19 @@ def check_router_contract() -> None:
     wayfinder = (PAYLOAD_ROOT / "agent-workflow" / "contracts" / "wayfinder-state.md").read_text(encoding="utf-8")
     normalized_agents = " ".join(agents.split())
     normalized_routing = " ".join(routing.split())
-    require("Every request MUST be routed" in agents, "root policy lacks mandatory routing")
+    normalized_durable = " ".join(durable.split())
+    require("MUST route every request" in agents, "root policy lacks mandatory routing")
     require("`direct`" in agents and "minimum useful process" in routing, "router lacks the minimum/direct contract")
     require("MUST NOT" in agents and "authority" in agents, "root policy lacks the authorization boundary")
     for required in (
-        "Start Direct",
-        "installed skill descriptions",
-        "smallest authorized read-only reconnaissance",
-        "Do not load `.agent-workflow/routing.md`",
-        "more than one workflow or capability must be composed",
-        "Counts trigger assessment, never selection by themselves",
+        "Direct is default",
+        "encountering the topic alone never forces a specialist",
+        "one obvious specialist inside an already selected Wayfinder effort",
+        "Read `.agent-workflow/routing.md` only when",
+        "never selection by count alone",
         "any hard signal or at least two soft signals",
-        "Read-only work never changes repository, external, or durable state",
-        "Before any durable-state write",
+        "Read-only work changes no state",
+        "only before another current project-state write",
     ):
         require(required in normalized_agents, f"thin root router lacks required boundary: {required}")
     require(
@@ -248,10 +253,14 @@ def check_router_contract() -> None:
         "detailed router lacks conditional default transitions",
     )
     require(".agent-workflow-state/" in durable, "durable-state contract lacks the canonical state root")
-    require("no global active-workflow index" in durable, "durable-state contract retains a global active index")
+    require("no global active index" in durable, "durable-state contract retains a global active index")
     require(
-        "Multiple unrelated active or interrupted records may coexist" in durable,
-        "durable-state contract lacks independent record continuity",
+        "Wayfinder is the sole framework-owned durable coordination layer" in normalized_durable,
+        "durable-state contract lacks sole-coordinator ownership",
+    )
+    require(
+        "never delete, migrate, rewrite, validate, allocate from, resume, or normalize them" in normalized_durable,
+        "durable-state contract lacks legacy record preservation",
     )
     require("wayfinder-state.md" in agents and "unrelated map" in agents, "root policy lacks Wayfinder loading guidance")
     normalized_wayfinder = " ".join(wayfinder.split())
@@ -278,6 +287,9 @@ def check_router_contract() -> None:
         "canonical filesystem path",
         "outside the selected effort needs a reference",
         "Do not scan the repository or Git history",
+        "## Specialist result boundary",
+        "continue directly or load one materially useful specialist",
+        "No DEC, IMP, DBG, or replacement record is allocated",
     ):
         require(
             required in normalized_wayfinder,
@@ -495,13 +507,15 @@ def check_provider_declaration() -> None:
         "framework-owned runtime projection",
         "derived from Matt Pocock's Wayfinder methodology",
         "## Core invariants",
-        "### Establish territory",
-        "### Choose a resolution mechanism",
-        "### Converge and shrink",
-        "`map.md` alone is valid",
-        "Wayfinder does not own implementation work items",
+        "## Establish territory",
+        "## Resolve the frontier progressively",
+        "## Reconcile, converge, and hand off",
+        "The map may be the whole result",
+        "Specialists remain stateless",
+        "creates no DEC, IMP, DBG",
+        "Implementation owns execution and Verification follows it",
         "use `to-tickets`",
-        "contracts own detailed effort selection",
+        "contract owns paths, effort selection",
         "If the Wayfinder contract is missing",
     ):
         require(

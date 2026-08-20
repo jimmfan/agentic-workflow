@@ -1,6 +1,5 @@
 # Actionable work fixture
 
-Resume the exact active implementation record under `.agent-workflow-state/` and
-honor the accepted decision under `docs/decisions/`. Validate with
-`python verify.py`.
-
+Resume the ready scope from the named Wayfinder map, honor the accepted decision
+under `docs/decisions/`, and leave the legacy IMP record untouched. Validate
+with `python verify.py`.

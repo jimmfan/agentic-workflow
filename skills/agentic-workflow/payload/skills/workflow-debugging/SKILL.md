@@ -8,10 +8,13 @@ description: Diagnose an existing unexplained failure through an evidence-driven
 Find the cause before choosing the fix. The first plausible theory is a
 hypothesis, not a diagnosis.
 
-When resuming a named `DBG-NNNN` record, validate its status and evidence, then
-continue with the stored hypothesis or diagnostic at `Resume target`. For a
-likely resume without an exact record, follow the durable-state contract's
-progressive identification rule rather than reconstructing state from chat.
+Debugging owns causal-investigation methodology, not durable continuity. Run it
+standalone when the investigation fits the current session. If consequential
+diagnostic work must survive a session or several state distinctions cross the
+Wayfinder threshold, select Wayfinder; its map is the only framework re-entry
+point. When Wayfinder selected Debugging for a frontier, load only the relevant
+map detail and return consequential results for reconciliation without creating
+a DBG or competing notebook.
 
 ## Establish the investigation
 
@@ -20,13 +23,11 @@ progressive identification rule rather than reconstructing state from chat.
 2. Read the project profile's domain-specific system model and diagnostics, if
    present. The core workflow supplies no technology commands.
 3. Fix the mutation boundary before gathering evidence. For diagnosis-only or
-   other nonmutating scope, do not create a record, edit instrumentation, write
+   other nonmutating scope, do not edit instrumentation, write
    diagnostic artifacts, or run a mutating check. Use existing evidence and
    read-only observations; if a mutation becomes necessary, pause and request
    separate authorization.
-4. Create a `DBG-NNNN` work record when an authorized investigation must persist
-   across chats.
-5. Gather the smallest relevant evidence while redacting secrets and sensitive
+4. Gather the smallest relevant evidence while redacting secrets and sensitive
    output. Record commands actually run and their baseline results.
 
 ## Establish the feedback signal

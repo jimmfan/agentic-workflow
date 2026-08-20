@@ -3,6 +3,7 @@
 - Status: accepted
 - Date: 2026-08-18
 - Amends: ADR-0007, ADR-0011, ADR-0013, ADR-0020, and ADR-0022
+- Amended by: ADR-0028
 
 ## Context
 

@@ -1,6 +1,6 @@
 # ADR-0012: Resume from canonical records and maps
 
-- Status: accepted
+- Status: superseded by ADR-0028
 - Date: 2026-08-14
 - Supersedes: the global active-workflow portions of ADR-0007 and the original
   non-Wayfinder index exception in ADR-0011
@@ -18,6 +18,9 @@ global index. Keeping both models added transition, conflict, and template rules
 without protecting data or making routing reliably more accurate.
 
 ## Decision
+
+This decision is historical. ADR-0028 removes current DEC/IMP/DBG continuity
+entirely while preserving existing files as opaque project-owned data.
 
 Remove `active.md` as a current framework concept and remove the distributed
 active-state template. DEC, IMP, and DBG workflows resume from their canonical
