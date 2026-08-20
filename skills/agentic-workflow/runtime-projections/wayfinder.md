@@ -12,13 +12,15 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 ## Core invariants
 
 - Route before inspecting state; an existing map never selects Wayfinder.
-- Name the destination and territory before decomposing work. Keep `map.md`
-  low-resolution and load detail only when relevant.
+- Establish the destination and enough relevant territory to orient the effort
+  before substantial decomposition. Keep `map.md` low-resolution and load
+  detail only when relevant.
 - The map owns current state, blockers, dependencies, frontier, and next work.
   Optional U/E/F/D preserves only independently useful knowledge.
 - Live source and accepted project artifacts outrank stale map state.
-- Never decide an authority-owned choice. Keep the question and what it blocks
-  explicit.
+- Durable Wayfinder state can record authority; it cannot create authority.
+  Use an actual human or project source, or valid delegated scope, for an
+  authority-owned choice. Keep the question and what it blocks explicit.
 
 When selecting or resuming Wayfinder, read the state contract before the map.
 It defines effort selection, paths, identifiers, locking, reconciliation,
@@ -69,6 +71,14 @@ Research, Prototype, and Debugging usually resolve ordinary fog within coherent
 territory; they do not replace structural modeling when the territory itself
 needs improvement or revision.
 
+The resolution method determines what evidence or authority is sufficient to
+answer the question. It is not merely an artifact label: human clarification
+requires the responsible authority, research requires appropriate source
+evidence, and prototype or debugging requires relevant observed or experimental
+evidence. Existing authoritative evidence may satisfy the method without a
+ceremonial specialist invocation, but one method cannot substitute for another's
+required authority or evidence.
+
 Do not load specialists speculatively. Specialists own their methods and native
 artifacts and create no framework continuity record. If work is interrupted,
 reconcile only the consequential frontier, evidence or conclusions, artifact
@@ -89,24 +99,28 @@ the current destination and relevant territory, especially when the answer
 requires human or project authority, depends on an external owner or approval,
 or gates multiple downstream areas or a meaningful seam. Ask the substantive
 project question when project knowledge determines materiality; do not ask
-merely whether to create a U#. Keep incidental or merely unspecified detail in
-the map. Ordinary research or debugging fog, a long list, or a template does
-not by itself justify a U#. A temporary U# is useful only when separate
-preservation improves current coordination or later continuation, not as
-create-and-retire ceremony.
+merely whether to create a U#. Keep incidental or merely unspecified detail
+under `Not yet specified` in the map. Precision alone is insufficient. Ordinary
+research or debugging fog, a long list, or a template does not by itself
+justify a U#. A temporary U# is useful only when separate preservation improves
+current coordination or later continuation, not as create-and-retire ceremony.
 
 When dependency evidence is sufficient, surface the navigation shape concisely:
 the critical path, independent parallel work, and any off-path dependency whose
 external lead time materially affects the route. Do not infer a critical path
 from an unordered backlog or incomplete evidence.
 
-Resolve consequential U#, reconcile and shrink the map, then expose the
-coherent ready frontier and hand off one or more ready scopes without advancing
-work that remains dependency-blocked. Each Implementation handoff consumes one
-coherent scope and its acceptance criteria; Verification follows execution. Use
-`to-tickets` only when approved work needs substantial dependency ordering or
-independently deliverable sessions, and link its native frontier without a
-shadow copy.
+The ready frontier is the set of coherent scopes whose material decision
+dependencies are answered or explicitly dispositioned and can therefore
+proceed now. Answer the consequential U#, or canonically record the responsible
+authority’s explicit acceptance of the remaining uncertainty for that boundary.
+The U# then remains factually unanswered and does not become resolved; the
+acceptance unblocks only the named boundary. Reconcile and shrink the map, then
+hand off one or more ready scopes without advancing work that remains
+dependency-blocked. Each Implementation handoff consumes one coherent scope and
+its acceptance criteria; Verification follows execution. Use `to-tickets` only
+when approved work needs substantial dependency ordering or independently
+deliverable sessions, and link its native frontier without a shadow copy.
 
 Read-only work never mutates state. Follow the state contract for every
 authorized mutation. Legacy project-owned records remain untouched historical

@@ -25,10 +25,10 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_thirty_five_contracts_and_ten_live_smokes(self) -> None:
+    def test_catalog_has_thirty_eight_contracts_and_thirteen_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 35)
-        self.assertEqual(sum(scenario.live for scenario in scenarios), 10)
+        self.assertEqual(len(scenarios), 38)
+        self.assertEqual(sum(scenario.live for scenario in scenarios), 13)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
             {
@@ -67,6 +67,9 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-human-authority-clarification",
                 "wayfinder-assessment-needs-no-state",
                 "wayfinder-selective-unknown-promotion",
+                "wayfinder-accepted-residual-uncertainty",
+                "wayfinder-state-cannot-grant-authority",
+                "wayfinder-unordered-dependencies-no-critical-path",
             },
         )
         read_only = next(
@@ -120,42 +123,39 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertIn("uncertainty_recorded_or_blocked", promotion.expect)
         self.assertNotIn("exactly three", promotion.request.lower())
         self.assertFalse(any(item.kind == "glob_count" for item in promotion.assertions))
-        promoted_values = {
-            item.value
-            for item in promotion.assertions
-            if item.kind == "glob_any_contains"
-        }
-        self.assertTrue(
-            {"project authority", "external approval", "gates multiple downstream areas"}
-            <= promoted_values
-        )
-        self.assertTrue(
-            any(
-                item.kind == "glob_contains" and item.value == "## Why it matters"
-                for item in promotion.assertions
-            )
-        )
+        self.assertFalse(any(item.kind == "path_exists" for item in promotion.assertions))
+        self.assertFalse(any(item.value == "## Territory" for item in promotion.assertions))
+        self.assertFalse(any("project authority" in item for item in promotion.starting_state))
+        self.assertFalse(any("gates multiple" in item for item in promotion.starting_state))
         self.assertTrue(
             any(
                 item.kind == "glob_none_contains" and item.value == "precise cost model"
                 for item in promotion.assertions
             )
         )
-        map_values = {
-            item.value
-            for item in promotion.assertions
-            if item.kind == "path_contains"
-        }
+        self.assertTrue(any(item.kind == "glob_any_contains" for item in promotion.assertions))
+
+        accepted = scenarios["wayfinder-accepted-residual-uncertainty"]
+        self.assertTrue(accepted.live)
         self.assertTrue(
-            {
-                "2 → 7 → 10 → 11 → 13 → 20 → 21 → 23",
-                "firewall approval",
-                "firewall approval has the longest external lead time",
-                "full-team review",
-                "parallel track",
-                "two-region",
-            }
-            <= map_values
+            any(item.kind == "glob_contains" and item.value == "- Status: open"
+                for item in accepted.assertions)
+        )
+        self.assertTrue(
+            any(item.kind == "glob_any_contains" and item.value == "accepted"
+                for item in accepted.assertions)
+        )
+
+        self_grant = scenarios["wayfinder-state-cannot-grant-authority"]
+        self.assertTrue(self_grant.live)
+        self.assertIn("silent_decision_invention", self_grant.must_not)
+        self.assertTrue(any("decisions" in item for item in self_grant.forbid_created_globs))
+
+        unordered = scenarios["wayfinder-unordered-dependencies-no-critical-path"]
+        self.assertTrue(unordered.live)
+        self.assertTrue(
+            any(item.kind == "glob_none_contains" and item.value == "critical path"
+                for item in unordered.assertions)
         )
 
         no_state = scenarios["wayfinder-assessment-needs-no-state"]

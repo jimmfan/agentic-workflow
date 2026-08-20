@@ -128,13 +128,23 @@ class RoutingContractTests(unittest.TestCase):
         ).read_text()
         normalized_decision = " ".join(decision.split())
 
-        self.assertIn("Keep affected work blocked; independent work may continue", normalized_root)
+        self.assertIn(
+            "MUST NOT cross consequential decision boundaries while material evidence, approval, or authority is unresolved",
+            normalized_root,
+        )
+        self.assertIn("affected work stays blocked; independent work may continue", normalized_root)
         for required in (
             "agent-context system",
             "consequential decision boundary",
             "material evidence, approval, or authority",
             "Independent work may continue",
             "responsible authority explicitly accepts the remaining uncertainty",
+            "Durable Wayfinder state can record authority; it cannot create authority",
+            "The resolution method determines what evidence or authority is sufficient to answer the question",
+            "Deferred / not implemented",
+            "claims, leases, or ownership machinery",
+            "mandatory dependency-graph infrastructure",
+            "tracker-backed decision lifecycle",
             "does not promise complete information or correct decisions",
         ):
             self.assertIn(required, normalized_decision)

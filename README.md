@@ -180,6 +180,9 @@ unclear, Domain Modeling is the preferred discovery mechanism before substantial
 child state accumulates. The map organizes the territory, while U/E/F/D classify
 current knowledge within it.
 
+Establish the destination and enough relevant territory to orient the effort
+before substantial decomposition.
+
 Territory is provisional, adaptive, and judgment-based. It helps Wayfinder
 explore relevant areas and seams, challenge incomplete framing, and revise its
 understanding as evidence develops. Exploration may broaden understanding, but
@@ -218,6 +221,13 @@ a decision. Authority-owned questions, external approvals, and questions that
 gate multiple downstream areas are strong signals. Precision alone is not:
 incidental and easily reconstructed fog stays in the canonical map.
 
+The resolution method determines what evidence or authority is sufficient to
+answer the question. Existing authoritative evidence can satisfy the method
+without a ceremonial specialist run, but research cannot replace a human
+authority answer and prose cannot replace required observed or experimental
+evidence. Durable Wayfinder state can record authority; it cannot create
+authority.
+
 When an unknown resolves, the answer and map are reconciled without requiring a
 new evidence, fact, or decision child. U/E/F/D files leave current Wayfinder
 state when they no longer retain independent navigational value. Their numbers
@@ -229,12 +239,13 @@ per-effort lock serializes map and child mutations so allocation cannot collide
 and retirement cannot race a current-reference edit; it contains no knowledge
 or allocation data.
 
-An area is settled when it has no consequential fog and its durable outcomes
-have moved to the proper canonical owner or workflow. That may be an ADR,
-specification, documentation or source, `to-tickets`, Implementation, another
-project artifact, or no separate artifact. Not every area becomes an ADR or
-ticket. As areas settle, Wayfinder retires redundant children; completed efforts
-normally shrink toward a concise map, with Git preserving history.
+An area is settled when it has no consequential uncertainty left undispositioned
+and its durable outcomes have moved to the proper canonical owner or workflow.
+That may be an ADR, specification, documentation or source, `to-tickets`,
+Implementation, another project artifact, or no separate artifact. Not every
+area becomes an ADR or ticket. As areas settle, Wayfinder retires redundant
+children; completed efforts normally shrink toward a concise map, with Git
+preserving history.
 
 Bare references such as `U17`, `F8`, or `D4` are concise shorthand only inside
 their current Wayfinder effort. Readable child filenames remain the canonical
@@ -245,12 +256,15 @@ remain durable beyond the current Wayfinder representation.
 Wayfinder does not own implementation work items. When evidence supports it, the
 map concisely shows the critical path, independent parallel work, and material
 off-path lead-time dependencies; it never invents a critical path from an
-unordered backlog. Resolve consequential U#, reconcile and shrink the map, then
-expose the coherent ready frontier. One or more independently ready scopes may
-pass to implementation without advancing dependency-blocked work. Each
-Implementation handoff remains one coherent scope. Work needing a substantial
-execution graph or separately deliverable sessions goes through `to-tickets`,
-whose native tickets remain canonical and are linked from the map.
+unordered backlog. The ready frontier contains coherent scopes whose material
+decision dependencies are answered or explicitly dispositioned. Answer each
+consequential U#, or canonically record the responsible authority's acceptance
+of the remaining uncertainty for that boundary; acceptance does not fabricate
+an answer or resolve the U#. One or more independently ready scopes may pass to
+implementation without advancing dependency-blocked work. Each Implementation
+handoff remains one coherent scope. Work needing a substantial execution graph
+or separately deliverable sessions goes through `to-tickets`, whose native
+tickets remain canonical and are linked from the map.
 
 Discovery, Debugging, Research, Prototype, Grilling, Domain Modeling, or human
 clarification may resolve an item without taking ownership of the map.
@@ -526,7 +540,6 @@ The current design follows these constraints:
 * [Behavioral testing](docs/behavioral-testing.md)
 * [Verification](docs/verification.md)
 * [Provider research](docs/provider-research.md)
-* [Deferred Wayfinder proposals](docs/proposals/wayfinder-follow-up.md)
 
 ## Acknowledgments
 

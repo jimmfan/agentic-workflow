@@ -478,6 +478,71 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, self.normalized)
 
+    def test_runtime_and_contract_distinguish_map_fog_from_durable_unknowns(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        for required in (
+            "Establish the destination and enough relevant territory to orient the effort before substantial decomposition.",
+            "Precision alone is insufficient",
+            "Not yet specified",
+        ):
+            self.assertIn(required, runtime)
+
+        for required in (
+            "Establish the destination and enough relevant territory to orient the effort before substantial decomposition.",
+            "In-scope fog or unresolved detail that does not currently justify independent U# tracking.",
+            "Precision alone is insufficient",
+        ):
+            self.assertIn(required, self.normalized)
+
+    def test_resolution_modes_define_sufficient_evidence_or_authority(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        rule = (
+            "The resolution method determines what evidence or authority is sufficient "
+            "to answer the question."
+        )
+        for surface in (runtime, self.normalized):
+            self.assertIn(rule, surface)
+            self.assertIn("human clarification", surface)
+            self.assertIn("research", surface)
+            self.assertIn("prototype", surface)
+
+        for required in (
+            "cannot be supplied by agent inference or substituted research",
+            "appropriate source evidence",
+            "observed or experimental evidence",
+            "Running a named method is not itself resolution",
+        ):
+            self.assertIn(required, self.normalized)
+
+    def test_durable_state_records_but_cannot_create_authority(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        authority_rule = "Durable Wayfinder state can record authority; it cannot create authority."
+        for surface in (runtime, self.normalized):
+            self.assertIn(authority_rule, surface)
+            self.assertIn("valid delegated scope", surface)
+
+        self.assertIn(
+            "An agent-authored map, U#, E#, F#, D#, or note is not an authority source",
+            self.normalized,
+        )
+
+    def test_answer_or_authoritative_disposition_can_unblock_only_the_named_boundary(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        gate = (
+            "Answer the consequential U#, or canonically record the responsible authority’s "
+            "explicit acceptance of the remaining uncertainty for that boundary."
+        )
+        for surface in (runtime, self.normalized):
+            self.assertIn(gate, surface)
+            self.assertIn("The ready frontier is the set of coherent scopes", surface)
+            self.assertIn("answered or explicitly dispositioned", surface)
+            self.assertIn("remains factually unanswered", surface)
+            self.assertIn("does not become resolved", surface)
+            self.assertIn("only the named boundary", surface)
+
+        self.assertIn("- Status: open | resolved", self.contract)
+        self.assertNotIn("Status: accepted uncertainty", self.contract)
+
     def test_runtime_and_contract_expose_an_unblocked_ready_frontier(self) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         for required in (

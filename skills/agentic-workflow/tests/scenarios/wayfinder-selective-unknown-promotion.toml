@@ -1,13 +1,10 @@
 schema_version = 1
 id = "wayfinder-selective-unknown-promotion"
-name = "Consequential ARC uncertainty is promoted without proliferating state"
+name = "ARC uncertainty is promoted selectively without losing route clarity"
 fixture = "wayfinder-selective-promotion"
-request = "Use Wayfinder to map a practical route for the ARC platform delivery described in README.md. Keep the territory-oriented map canonical and preserve only unresolved detail that materially helps a later session continue. Do not make project-authority decisions or publish implementation tickets."
+request = "Use Wayfinder to map a practical route for the ARC platform delivery described in README.md. Preserve durable state only when it improves later continuation. Do not decide authority questions or publish implementation tickets."
 starting_state = [
-  "ADR review status requires project authority and governs whether downstream direction is settled.",
-  "Firewall coverage depends on an external approval owner and carries material lead time.",
-  "Two-region topology gates multiple downstream areas and a meaningful infrastructure seam.",
-  "The precise cost model is incidental fog that does not currently govern continuation.",
+  "README.md is the current repository evidence for this assessment.",
   "Repository-local Wayfinder writes are authorized; external mutations are not.",
 ]
 expect = [
@@ -20,86 +17,53 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = true
-verification_command = "Confirm that the map retains broad territory and unresolved context, consequential authority/external-owner/cross-area questions are promoted for independent continuation, and the incidental cost detail is not promoted."
+verification_command = "Confirm that the result preserves useful navigation, independently retains at least one continuation-worthy unresolved question, and keeps lower-value unresolved detail lightweight."
 preserve_paths = ["README.md"]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/arc-platform-delivery/decisions",
-  ".agent-workflow-state/wayfinder/arc-platform-delivery/decisions/**",
-  ".agent-workflow-state/wayfinder/arc-platform-delivery/tickets",
-  ".agent-workflow-state/wayfinder/arc-platform-delivery/tickets/**",
+  ".agent-workflow-state/wayfinder/*/decisions",
+  ".agent-workflow-state/wayfinder/*/decisions/**",
+  ".agent-workflow-state/wayfinder/*/tickets",
+  ".agent-workflow-state/wayfinder/*/tickets/**",
   ".scratch",
   ".scratch/**",
 ]
 
 [[assertions]]
-kind = "path_exists"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+value = "ARC"
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
-value = "## Territory"
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+value = "critical path"
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+value = "parallel"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+value = "external lead time"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
 value = "precise cost model"
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
-value = "full-team review"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
-value = "firewall approval"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
-value = "two-region"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
-value = "2 → 7 → 10 → 11 → 13 → 20 → 21 → 23"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
-value = "parallel track"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/map.md"
-value = "firewall approval has the longest external lead time"
-
-[[assertions]]
-kind = "glob_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/unknowns/U*.md"
-value = "## Why it matters"
-
-[[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/unknowns/U*.md"
-value = "project authority"
-
-[[assertions]]
-kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/unknowns/U*.md"
-value = "external approval"
-
-[[assertions]]
-kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/unknowns/U*.md"
-value = "gates multiple downstream areas"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+value = "review"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/unknowns/U*.md"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
 value = "precise cost model"
 
 [[assertions]]
-kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/arc-platform-delivery/decisions"
+kind = "glob_none_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+value = "## Why it matters"

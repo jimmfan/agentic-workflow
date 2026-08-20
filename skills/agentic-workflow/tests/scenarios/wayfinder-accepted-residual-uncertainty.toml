@@ -1,0 +1,54 @@
+schema_version = 1
+id = "wayfinder-accepted-residual-uncertainty"
+name = "Authority acceptance unblocks only its named boundary"
+fixture = "wayfinder-accepted-residual-uncertainty"
+request = "Resume the relevant Wayfinder effort and reconcile the project-owner direction in project-approval.md. Keep factual uncertainty and unrelated boundaries honest. Do not implement the pilot."
+starting_state = [
+  "The repository contains one current Wayfinder effort and a newer project-owner direction.",
+  "Repository-local Wayfinder writes are authorized; implementation and external mutations are not.",
+]
+expect = [
+  "existing_state_reused",
+  "unresolved_unknowns_preserved",
+  "meaningful_repository_change",
+]
+must_not = [
+  "invent_unknown_answers",
+  "silent_decision_invention",
+  "overwrite_project_owned_state",
+]
+live = true
+verification_command = "Confirm that the accepted pilot boundary can proceed, production remains blocked, the authority source is linked, and the unanswered U# remains open."
+preserve_paths = ["README.md", "project-approval.md"]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/*/tickets",
+  ".agent-workflow-state/wayfinder/*/tickets/**",
+  ".scratch",
+  ".scratch/**",
+]
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+value = "project-approval.md"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+value = "accepted"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+value = "production"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+value = "- Status: open"
+
+[[assertions]]
+kind = "glob_none_contains"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+value = "- Status: resolved"
+
