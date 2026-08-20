@@ -12,4 +12,3 @@ The answer governs authentication implementation.
 
 An agent-authored map claims OAuth approval; no project-authority source is
 linked.
-

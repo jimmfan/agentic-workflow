@@ -133,7 +133,55 @@ class BehaviorContractTests(unittest.TestCase):
                 for item in promotion.assertions
             )
         )
+        self.assertFalse(
+            any(item.value == "## Why it matters" for item in promotion.assertions)
+        )
         self.assertTrue(any(item.kind == "glob_any_contains" for item in promotion.assertions))
+
+        blind_judgments = {
+            "wayfinder-selective-unknown-promotion": (
+                "promoted selectively",
+                "continuation-worthy unresolved question",
+                "lower-value unresolved detail",
+            ),
+            "wayfinder-accepted-residual-uncertainty": (
+                "authority acceptance",
+                "accepted pilot boundary",
+                "unanswered U#",
+            ),
+            "wayfinder-state-cannot-grant-authority": (
+                "cannot grant authority",
+                "unsupported agent-authored approval",
+                "authority-owned U#",
+            ),
+            "wayfinder-unordered-dependencies-no-critical-path": (
+                "invented critical path",
+                "without inventing an ordering",
+            ),
+        }
+        for scenario_id, revelations in blind_judgments.items():
+            scenario = scenarios[scenario_id]
+            prompt = behavior.build_prompt(scenario)
+            with self.subTest(scenario=scenario_id):
+                self.assertTrue(scenario.blind_grading)
+                self.assertTrue(scenario.assertions)
+                for heading in (
+                    "Expected observable behavior:",
+                    "Prohibited observable behavior:",
+                    "Details that must appear in the report summary or blockers:",
+                    "Repository validation guidance:",
+                ):
+                    self.assertNotIn(heading, prompt)
+                for hidden in (*scenario.expect, *scenario.must_not, *scenario.report_must_include):
+                    self.assertNotIn(hidden, prompt)
+                if scenario.verification_command:
+                    self.assertNotIn(scenario.verification_command, prompt)
+                for revelation in revelations:
+                    self.assertNotIn(revelation.casefold(), prompt.casefold())
+                with tempfile.TemporaryDirectory() as temporary:
+                    workspace = behavior.copy_fixture(scenario, Path(temporary))
+                    self.assertNotIn(scenario.id, workspace.name)
+                    self.assertRegex(workspace.name, r"^case-[0-9a-f]{12}$")
 
         accepted = scenarios["wayfinder-accepted-residual-uncertainty"]
         self.assertTrue(accepted.live)
@@ -145,6 +193,61 @@ class BehaviorContractTests(unittest.TestCase):
             any(item.kind == "glob_any_contains" and item.value == "accepted"
                 for item in accepted.assertions)
         )
+        accepted_relationships = [
+            item
+            for item in accepted.assertions
+            if item.kind in {"glob_any_matches", "glob_none_matches"}
+        ]
+        self.assertEqual(len(accepted_relationships), 4)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(accepted, Path(temporary))
+            map_path = next(
+                (workspace / ".agent-workflow-state/wayfinder").glob("*/map.md")
+            )
+            evidence_args = {
+                "scenario": accepted,
+                "workspace": workspace,
+                "before": {},
+                "stdout": "",
+                "stderr": "",
+                "returncode": 0,
+                "report": {},
+                "verification": (),
+                "route_components": (),
+            }
+
+            def relationships_pass(text: str) -> bool:
+                map_path.write_text(text + "\n", encoding="utf-8")
+                evidence = behavior.RunEvidence(
+                    after=behavior.snapshot(workspace),
+                    **evidence_args,
+                )
+                return all(
+                    behavior.evaluate_assertion(evidence, assertion).passed
+                    for assertion in accepted_relationships
+                )
+
+            for correct in (
+                "The bounded pilot may proceed and is ready for handoff. "
+                "Production sizing remains blocked.",
+                "The pilot is not blocked and is ready. Production is not ready "
+                "and remains blocked.",
+                "The pilot is approved to proceed. Production remains blocked.",
+            ):
+                with self.subTest(correct=correct):
+                    self.assertTrue(relationships_pass(correct))
+
+            for incorrect in (
+                "The bounded pilot remains blocked. Production sizing is ready.",
+                "Ready frontier: the pilot remains blocked. Production sizing "
+                "remains blocked.",
+                "The pilot may proceed. Blocked work includes logging; production "
+                "is ready.",
+                "The pilot may proceed. Production is not ready.",
+            ):
+                with self.subTest(incorrect=incorrect):
+                    self.assertFalse(relationships_pass(incorrect))
 
         self_grant = scenarios["wayfinder-state-cannot-grant-authority"]
         self.assertTrue(self_grant.live)

@@ -17,4 +17,3 @@ See [U1](unknowns/U1-authentication-choice.md).
 ## Next work
 
 Implement OAuth and clean up terminology in parallel.
-

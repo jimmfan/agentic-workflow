@@ -12,4 +12,3 @@ bounded pilot may proceed under accepted uncertainty.
 ## Evidence and resolution
 
 No authoritative peak requirement has been recorded.
-

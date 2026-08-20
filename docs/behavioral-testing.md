@@ -74,6 +74,7 @@ must_not = [
   "invent_unknown_answers",
 ]
 live = false
+blind_grading = false
 verification_command = "Run python verify.py after the change."
 preserve_paths = ["project-state/unknowns.md"]
 forbid_created_globs = ["/**"]
@@ -107,10 +108,23 @@ path = ".agent-workflow-state/wayfinder/example/unknowns/U*.md"
 value = "incidental detail"
 ```
 
+Set optional `blind_grading = true` for behavioral-judgment scenarios where
+showing the rubric would coach the agent toward the classification under test.
+The live prompt then withholds `expect`, `must_not`, state-loading constraints,
+report requirements, and `verification_command`; hidden evaluation and
+assertions still run normally. The scenario name, request, and starting state
+must remain neutral, and the live workspace uses an opaque case name so the
+scenario identifier does not reveal the rubric. Prefer ordinary guided smoke
+tests when prompt contamination is not the behavior under evaluation.
+
 `expect` and `must_not` use a deliberately small vocabulary implemented in
 `tests/behavior.py`. Case-specific assertions support path existence, UTF-8
 substring presence/absence, and case-insensitive substring checks or exact
-regular-file counts for a safe relative glob. `glob_contains`
+regular-file counts for a safe relative glob. `glob_any_matches` and
+`glob_none_matches` apply a case-insensitive expression that may span newlines
+to require a match in at least one or no matching files; use them sparingly when
+related semantic outcomes must be associated without requiring a particular
+document layout. `glob_contains`
 requires every match to contain the value, while `glob_any_contains` and
 `glob_none_contains` test whether at least one or no matching file contains it
 without fixing the artifact count. A broad exact count can reject extra children

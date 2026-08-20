@@ -1,8 +1,8 @@
 schema_version = 1
 id = "wayfinder-selective-unknown-promotion"
-name = "ARC uncertainty is promoted selectively without losing route clarity"
+name = "ARC platform delivery"
 fixture = "wayfinder-selective-promotion"
-request = "Use Wayfinder to map a practical route for the ARC platform delivery described in README.md. Preserve durable state only when it improves later continuation. Do not decide authority questions or publish implementation tickets."
+request = "Use Wayfinder to orient the ARC platform delivery described in README.md. Do not publish implementation tickets or change the source documents."
 starting_state = [
   "README.md is the current repository evidence for this assessment.",
   "Repository-local Wayfinder writes are authorized; external mutations are not.",
@@ -17,7 +17,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = true
-verification_command = "Confirm that the result preserves useful navigation, independently retains at least one continuation-worthy unresolved question, and keeps lower-value unresolved detail lightweight."
+blind_grading = true
 preserve_paths = ["README.md"]
 forbid_created_globs = [
   ".agent-workflow-state/wayfinder/*/decisions",
@@ -62,8 +62,3 @@ value = "review"
 kind = "glob_none_contains"
 path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
 value = "precise cost model"
-
-[[assertions]]
-kind = "glob_none_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
-value = "## Why it matters"

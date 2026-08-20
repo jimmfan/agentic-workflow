@@ -1,8 +1,8 @@
 schema_version = 1
 id = "wayfinder-unordered-dependencies-no-critical-path"
-name = "Unordered work does not acquire an invented critical path"
+name = "SDK onboarding orientation"
 fixture = "wayfinder-unordered-dependencies"
-request = "Use Wayfinder to map the SDK onboarding refresh in README.md and expose work that can proceed. Do not publish tickets or edit the guidance."
+request = "Use Wayfinder to orient the SDK onboarding refresh described in README.md. Do not publish tickets or edit the guidance."
 starting_state = [
   "README.md contains the complete current work description.",
   "Repository-local Wayfinder writes are authorized; implementation is not.",
@@ -16,7 +16,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = true
-verification_command = "Confirm that the map exposes the independently ready work without inventing an ordering or unresolved question."
+blind_grading = true
 preserve_paths = ["README.md"]
 forbid_created_globs = [
   ".agent-workflow-state/wayfinder/*/unknowns",
@@ -41,4 +41,3 @@ value = "independent"
 kind = "glob_none_contains"
 path = ".agent-workflow-state/wayfinder/*/map.md"
 value = "critical path"
-

@@ -70,12 +70,13 @@ territory. It does not replace the map. Physical storage remains one flat set of
 optional type directories under the effort; areas do not receive nested trees,
 parallel maps, identifiers, or lifecycle files.
 
-A semantic area is settled when no consequential fog remains there and every
-durable outcome has reached its proper canonical project owner or the workflow
-that owns the resulting work. Depending on the result, that owner may be an ADR,
-specification, project documentation or source, `to-tickets`, Implementation,
-another project-native artifact, or no separate artifact. Not every area or D#
-becomes an ADR, and not every area becomes a ticket.
+A semantic area is settled when no consequential uncertainty remains
+undispositioned there and every durable outcome has reached its proper canonical
+project owner or the workflow that owns the resulting work. Depending on the
+result, that owner may be an ADR, specification, project documentation or
+source, `to-tickets`, Implementation, another project-native artifact, or no
+separate artifact. Not every area or D# becomes an ADR, and not every area
+becomes a ticket.
 
 Settlement exposes a coherent ready frontier rather than requiring one global
 next action. The frontier may contain one or more independently ready scopes,
@@ -89,10 +90,10 @@ parallel structures. Git provides history; Wayfinder does not add archives or
 retain stale knowledge merely because it was once written.
 
 A completed effort has reached its destination, has no consequential in-scope
-fog, has handed off or canonically placed durable outcomes, and has retired
-redundant temporary knowledge. Completed efforts should normally become
-materially smaller than active exploration and may end with little more than a
-concise `map.md` pointing to canonical outcomes.
+uncertainty left undispositioned, has handed off or canonically placed durable
+outcomes, and has retired redundant temporary knowledge. Completed efforts
+should normally become materially smaller than active exploration and may end
+with little more than a concise `map.md` pointing to canonical outcomes.
 
 Assessment may still conclude that no durable Wayfinder state is useful. This
 decision does not create a mandatory Wayfinder-to-Domain-Modeling-to-map

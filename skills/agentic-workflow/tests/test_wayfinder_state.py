@@ -470,6 +470,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
         for required in (
             promotion_rule,
+            "`unknown`: a precise unresolved question preserved independently because its question or eventual answer could materially improve a later developer’s ability to make or evaluate a decision",
             "human or project authority",
             "external owner or approval",
             "multiple downstream areas or a meaningful seam",

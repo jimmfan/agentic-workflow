@@ -19,7 +19,9 @@ only re-entry point.
 
 Wayfinder may preserve four kinds of durable knowledge:
 
-- `unknown`: an unresolved question that materially affects the destination;
+- `unknown`: a precise unresolved question preserved independently because its
+  question or eventual answer could materially improve a later developer’s
+  ability to make or evaluate a decision;
 - `evidence`: an observation, measurement, report, or source result, including
   its provenance, scope, and limitations;
 - `fact`: a sufficiently established descriptive conclusion, scoped to the

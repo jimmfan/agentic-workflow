@@ -204,7 +204,7 @@ classified only when their outcome and next work make the lifecycle clear.
 The vocabulary is:
 
 ```text
-unknown  = an unresolved consequential question
+unknown  = a precise unresolved question worth independent preservation
 evidence = a scoped observation with provenance and limitations
 fact     = a sufficiently established descriptive conclusion
 decision = a committed choice

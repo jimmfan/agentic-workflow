@@ -127,12 +127,25 @@ class RoutingContractTests(unittest.TestCase):
             / "architecture-decisions/0029-preserve-material-decision-context.md"
         ).read_text()
         normalized_decision = " ".join(decision.split())
+        convergence = (
+            REPOSITORY_ROOT
+            / "architecture-decisions/0026-structure-wayfinder-territory-and-converge-it.md"
+        ).read_text()
+        normalized_convergence = " ".join(convergence.split())
 
         self.assertIn(
-            "MUST NOT cross consequential decision boundaries while material evidence, approval, or authority is unresolved",
+            "MUST NOT cross a consequential decision boundary without required "
+            "evidence, approval, or authority",
             normalized_root,
         )
-        self.assertIn("affected work stays blocked; independent work may continue", normalized_root)
+        self.assertIn(
+            "Explicit responsible-authority acceptance leaves the recorded uncertainty "
+            "unresolved and unblocks only its named boundary",
+            normalized_root,
+        )
+        self.assertNotIn("U#", normalized_root)
+        self.assertIn("independent work may continue", normalized_root)
+        self.assertIn("why authority is required", normalized_root)
         for required in (
             "agent-context system",
             "consequential decision boundary",
@@ -148,6 +161,14 @@ class RoutingContractTests(unittest.TestCase):
             "does not promise complete information or correct decisions",
         ):
             self.assertIn(required, normalized_decision)
+        self.assertIn(
+            "A semantic area is settled when no consequential uncertainty remains undispositioned there",
+            normalized_convergence,
+        )
+        self.assertIn(
+            "has no consequential in-scope uncertainty left undispositioned",
+            normalized_convergence,
+        )
 
     def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
@@ -405,7 +426,7 @@ class RoutingContractTests(unittest.TestCase):
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         normalized_root = " ".join(root_policy.split())
 
-        self.assertIn("exact external read-only target", normalized_root)
+        self.assertIn("Exact external read-only targets", normalized_root)
 
     def test_thin_router_is_direct_first_and_progressively_loaded(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -414,8 +435,12 @@ class RoutingContractTests(unittest.TestCase):
         normalized_routing = " ".join(routing.split())
 
         self.assertIn("Direct is default", normalized_root)
+        self.assertIn("skill selects a workflow", normalized_root)
         self.assertIn("encountering the topic alone never forces a specialist", normalized_root)
-        self.assertIn("one obvious specialist inside an already selected Wayfinder effort", normalized_root)
+        self.assertIn(
+            "one obvious specialist inside an already selected Wayfinder effort",
+            normalized_root,
+        )
         self.assertIn("Read `.agent-workflow/routing.md` only when", normalized_root)
         self.assertIn("Three or more meaningful items require assessment, never selection by count alone", normalized_root)
         self.assertIn("After reconnaissance, assess durable coordination", normalized_root)
