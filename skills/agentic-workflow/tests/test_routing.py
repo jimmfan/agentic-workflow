@@ -106,6 +106,7 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Treat a choice the user explicitly resolves as settled", governance)
         self.assertIn("maintained set of current decisions", governance)
         self.assertIn("ADR-0028", current)
+        self.assertIn("ADR-0029", current)
         self.assertNotIn("ADR-0012", current)
         self.assertIn("ADR-0012", superseded)
         for filename in (
@@ -117,6 +118,26 @@ class RoutingContractTests(unittest.TestCase):
             "0012-remove-global-active-index.md",
         ):
             self.assertNotIn(f"]({filename})", superseded)
+
+    def test_decision_context_goal_blocks_only_dependent_work(self) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        normalized_root = " ".join(root_policy.split())
+        decision = (
+            REPOSITORY_ROOT
+            / "architecture-decisions/0029-preserve-material-decision-context.md"
+        ).read_text()
+        normalized_decision = " ".join(decision.split())
+
+        self.assertIn("Keep affected work blocked; independent work may continue", normalized_root)
+        for required in (
+            "agent-context system",
+            "consequential decision boundary",
+            "material evidence, approval, or authority",
+            "Independent work may continue",
+            "responsible authority explicitly accepts the remaining uncertainty",
+            "does not promise complete information or correct decisions",
+        ):
+            self.assertIn(required, normalized_decision)
 
     def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
@@ -247,7 +268,7 @@ class RoutingContractTests(unittest.TestCase):
         normalized_contract = " ".join(contract.split())
         normalized_root = " ".join(root_policy.split())
         self.assertIn("wayfinder-state.md` before the map", normalized_root)
-        self.assertIn("only before another current project-state write", normalized_root)
+        self.assertIn("only before current project-state writes", normalized_root)
         self.assertIn("An unrelated map never selects Wayfinder", normalized_root)
         self.assertIn("Do not globally scan for related efforts", normalized_contract)
         self.assertIn("do not copy canonical artifact bodies", normalized_contract)

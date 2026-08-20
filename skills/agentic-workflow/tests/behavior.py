@@ -69,8 +69,10 @@ PROHIBITIONS = {
 }
 
 ASSERTION_KINDS = {
+    "glob_any_contains",
     "glob_contains",
     "glob_count",
+    "glob_none_contains",
     "path_exists",
     "path_not_exists",
     "path_contains",
@@ -210,7 +212,13 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
         path = safe_relative(item.get("path"), f"{item_label}.path")
         value = item.get("value")
         count = item.get("count")
-        needs_value = kind in {"glob_contains", "path_contains", "path_not_contains"}
+        needs_value = kind in {
+            "glob_any_contains",
+            "glob_contains",
+            "glob_none_contains",
+            "path_contains",
+            "path_not_contains",
+        }
         needs_count = kind == "glob_count"
         if needs_value and (not isinstance(value, str) or not value):
             raise BehaviorError(f"{item_label}.value must be a non-empty string")
@@ -487,26 +495,51 @@ def state_or_decision_changed(evidence: RunEvidence) -> bool:
 
 
 def evaluate_assertion(evidence: RunEvidence, assertion: Assertion) -> CheckResult:
-    if assertion.kind in {"glob_contains", "glob_count"}:
+    if assertion.kind in {
+        "glob_any_contains",
+        "glob_contains",
+        "glob_count",
+        "glob_none_contains",
+    }:
         pattern = assertion.path.as_posix()
         matches = sorted(
             relative
             for relative, entry in evidence.after.items()
             if entry.kind == "file" and fnmatch.fnmatchcase(relative, pattern)
         )
-        if assertion.kind == "glob_contains":
+        if assertion.kind in {
+            "glob_any_contains",
+            "glob_contains",
+            "glob_none_contains",
+        }:
             assert assertion.value is not None
-            missing: list[str] = []
+            containing: list[str] = []
+            unreadable: list[str] = []
             for relative in matches:
                 try:
                     content = evidence.workspace.joinpath(*PurePosixPath(relative).parts).read_text(
                         encoding="utf-8"
                     )
                 except (OSError, UnicodeError):
-                    missing.append(relative)
+                    unreadable.append(relative)
                     continue
-                if assertion.value.casefold() not in content.casefold():
-                    missing.append(relative)
+                if assertion.value.casefold() in content.casefold():
+                    containing.append(relative)
+            if assertion.kind == "glob_any_contains":
+                return CheckResult(
+                    f"assert:{assertion.path}:glob-any-contains",
+                    bool(containing),
+                    f"matched {len(matches)} files; expected text found in {containing}; "
+                    f"unreadable={unreadable}",
+                )
+            if assertion.kind == "glob_none_contains":
+                return CheckResult(
+                    f"assert:{assertion.path}:glob-none-contains",
+                    not containing and not unreadable,
+                    f"matched {len(matches)} files; prohibited text found in {containing}; "
+                    f"unreadable={unreadable}",
+                )
+            missing = sorted(set(matches) - set(containing))
             return CheckResult(
                 f"assert:{assertion.path}:glob-contains",
                 bool(matches) and not missing,

@@ -430,6 +430,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Semantic territory and effort identity",
             "authoritative project structure",
             "Otherwise establish it directly when current context supports it confidently",
+            "Territory is provisional, adaptive, and judgment-based",
+            "challenge incomplete framing",
+            "must not silently broaden the user's goal, delegated authority, or implementation scope",
             "If structural ambiguity remains",
             "state contract does not own that method",
             "before substantial U/E/F/D state accumulates",
@@ -447,6 +450,74 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, self.contract)
 
+    def test_runtime_and_contract_promote_only_continuation_worthy_unknowns(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        promotion_rule = (
+            "A precise question becomes U# when preserving the question or its eventual "
+            "answer could materially improve a later developer’s ability to make or "
+            "evaluate a decision."
+        )
+        for required in (
+            "Map uncertainty broadly, then promote selectively",
+            promotion_rule,
+            "human or project authority",
+            "external owner or approval",
+            "multiple downstream areas or a meaningful seam",
+            "Ordinary research or debugging fog",
+            "does not by itself justify a U#",
+        ):
+            self.assertIn(required, runtime)
+
+        for required in (
+            promotion_rule,
+            "human or project authority",
+            "external owner or approval",
+            "multiple downstream areas or a meaningful seam",
+            "Keep incidental, routine, easily reconstructed, or merely unspecified detail in the map",
+            "Never create a U# from a template, precision, or item count alone",
+        ):
+            self.assertIn(required, self.normalized)
+
+    def test_runtime_and_contract_expose_an_unblocked_ready_frontier(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        for required in (
+            "coherent ready frontier",
+            "one or more ready scopes",
+            "without advancing work that remains dependency-blocked",
+            "Each Implementation handoff",
+        ):
+            self.assertIn(required, runtime)
+
+        for required in (
+            "coherent ready frontier",
+            "one or more independently ready scopes",
+            "dependency-blocked work",
+            "one coherent scope at a time",
+        ):
+            self.assertIn(required, self.normalized)
+
+    def test_runtime_and_contract_surface_only_evidence_backed_navigation_shape(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        for required in (
+            "When dependency evidence is sufficient, surface the navigation shape concisely",
+            "critical path",
+            "independent parallel work",
+            "off-path dependency",
+            "external lead time",
+            "Do not infer a critical path from an unordered backlog or incomplete evidence",
+        ):
+            self.assertIn(required, runtime)
+
+        for required in (
+            "When evidence establishes execution order",
+            "critical path",
+            "independent parallel work",
+            "off-path dependency",
+            "external lead time",
+            "Never manufacture a critical path from an unordered backlog or incomplete dependency evidence",
+        ):
+            self.assertIn(required, self.normalized)
+
     def test_authored_installed_and_generated_surfaces_are_consistent(self) -> None:
         self.assertEqual(CONTRACT.read_bytes(), INSTALLED_CONTRACT.read_bytes())
         runtime = RUNTIME.read_text(encoding="utf-8")
@@ -459,6 +530,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Establish territory",
             "## Resolve the frontier progressively",
             "## Reconcile and hand off",
+            "Territory is provisional, adaptive, and judgment-based",
             "Optional U/E/F/D preserves only independently useful knowledge",
             "Continue directly when the frontier can be resolved safely",
             "Discovery",

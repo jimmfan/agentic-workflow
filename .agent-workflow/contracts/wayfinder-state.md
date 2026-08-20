@@ -46,6 +46,12 @@ required schema. Do not create area identifiers, nested domain directories, or
 parallel maps merely to express this structure; the flat optional U/E/F/D
 storage remains canonical.
 
+Territory is provisional, adaptive, and judgment-based. It helps Wayfinder
+explore relevant areas and seams, challenge incomplete framing, and revise its
+understanding as evidence develops. Exploration may broaden understanding, but
+must not silently broaden the user's goal, delegated authority, or
+implementation scope.
+
 For a new durable effort, reuse authoritative project structure from accepted
 ADRs, specifications, domain documentation, source, or another canonical
 artifact when it already establishes sufficient bearings. Otherwise establish
@@ -89,9 +95,10 @@ When ready work becomes substantial enough to need dependency ordering or
 independently deliverable sessions, hand it to `to-tickets`. That workflow owns
 its native ticket artifacts and frontier. Wayfinder links the resulting native
 artifact from `map.md`; it does not duplicate those work items in Wayfinder.
-Work that fits one coherent implementation session passes directly from the
-map, a settled D#, or another accepted specification to Implementation and
-Verification. No implementation continuity record is created.
+Each independently ready scope may pass directly from the map, a settled D#, or
+another accepted specification to Implementation and Verification. Each
+Implementation handoff still consumes one coherent scope at a time. No
+implementation continuity record is created.
 
 ## Ownership and locations
 
@@ -329,7 +336,8 @@ clear existing human content instead of normalizing it for ceremony.
 
 ## Next work
 
-<The smallest coherent next action or linked native ticket frontier.>
+<The coherent ready frontier: one or more independently ready scopes, or a
+linked native ticket frontier.>
 
 ## Notes
 
@@ -353,13 +361,38 @@ the map. The map may summarize small facts and evidence inline. Promote detail
 to a child
 only when it is likely to be reused, disputed, independently revised, too large
 for low-resolution orientation, or important enough to require provenance.
-Prioritize one coherent next action; list parallel work only when the dependency
-structure makes it genuinely useful. If work has been decomposed by
-`to-tickets`, link its canonical frontier rather than restating every ticket.
+Keep the coherent ready frontier concise. List one or more independently ready
+scopes only when the dependency structure makes that distinction genuinely
+useful, and never include dependency-blocked work. If work has been decomposed
+by `to-tickets`, link its canonical frontier rather than restating every ticket.
 
-A precise material question belongs in U#; vague fog stays under `Not yet
-specified` until it can be asked sharply. Out-of-scope work does not become next
-work unless the destination is deliberately redrawn.
+When evidence establishes execution order, keep the navigation shape concise:
+surface the critical path, independent parallel work, and any off-path
+dependency whose external lead time materially affects the route. Never
+manufacture a critical path from an unordered backlog or incomplete dependency
+evidence.
+
+Map uncertainty broadly, then promote selectively. A precise question becomes
+U# when preserving the question or its eventual answer could materially improve
+a later developer’s ability to make or evaluate a decision. Apply that judgment
+within the current destination and relevant territory. Materiality is more
+likely when losing the question or answer could cause a later developer to make
+a different consequential decision, mistake an assumption for fact, repeat
+substantial investigation, miss a required authority, owner, or approval, or
+advance dependent work prematurely. Human or project authority, an external
+owner or approval, and effects across multiple downstream areas or a meaningful
+seam are strong signals, not a mandatory checklist.
+
+Ask the substantive project question when project knowledge determines whether
+the question or answer is material; do not ask merely whether to create a U#.
+Keep incidental, routine, easily reconstructed, or merely unspecified detail in
+the map; ordinary research or debugging fog usually remains there or with its
+selected specialist. Never create a U# from a template, precision, or item count
+alone. A temporary U# is useful only when separate preservation improves current
+coordination or later continuation; do not create and immediately retire one as
+process ceremony. Vague fog stays under `Not yet specified` until it can be
+asked sharply. Out-of-scope work does not become next work unless the
+destination is deliberately redrawn.
 
 ## Optional child files
 
@@ -465,9 +498,10 @@ every durable outcome has either reached its proper canonical owner or been
 handed to the workflow that owns the resulting work. Canonical outcomes may be
 an ADR for a lasting consequential decision, a specification, project
 documentation or source, `to-tickets` for substantial decomposition,
-Implementation for one coherent scope, another project-native artifact, or no
-separate artifact when the result has no independent long-term value. Settlement
-does not require every area or D# to become an ADR or ticket.
+Implementation for one or more independently ready scopes handed off coherently
+one at a time, another project-native artifact, or no separate artifact when the
+result has no independent long-term value. Settlement does not require every
+area or D# to become an ADR or ticket.
 
 As an area settles, reconcile its current map description, fog, blockers,
 dependencies, frontier, and canonical links. Retain U/E/F/D only while those
@@ -523,6 +557,12 @@ before the lock was acquired, retry from the new current state rather than
 overwriting it. Remove the child before releasing the lock; an empty child
 directory may then disappear. The retired number becomes available through the
 ordinary highest-current-plus-one rule.
+
+Resolve consequential U#, reconcile and shrink the map, then expose the
+coherent ready frontier and hand off one or more ready scopes without advancing
+dependency-blocked work. Independent ready work need not wait for unrelated
+blocked work, but each Implementation invocation consumes one coherent scope at
+a time.
 
 To complete an effort, confirm its destination is reached, no consequential fog
 remains in any in-scope area, durable outcomes are canonically owned or handed

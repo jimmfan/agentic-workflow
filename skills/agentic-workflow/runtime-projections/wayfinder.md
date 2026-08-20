@@ -32,7 +32,13 @@ Report the incomplete installation.
 
 Reuse accepted project structure when it supplies a useful destination, scope,
 areas, and important seams. Otherwise establish the smallest useful structure
-directly. Domain Modeling is the preferred structural fallback when clarifying
+directly. Territory is provisional, adaptive, and judgment-based. It helps
+Wayfinder explore relevant areas and seams, challenge incomplete framing, and
+revise its understanding as evidence develops. Exploration may broaden
+understanding, but must not silently broaden the user's goal, delegated
+authority, or implementation scope.
+
+Domain Modeling is the preferred structural fallback when clarifying
 or reorganizing concepts, vocabulary, boundaries, responsibilities, or
 relationships would materially improve the map's usefulness or coherence;
 progress need not already be blocked. When it would help, establish enough
@@ -72,14 +78,35 @@ not DEC/IMP/DBG or a specialist notebook, is the re-entry point.
 ## Reconcile and hand off
 
 Keep the map sufficient for a fresh session to recover the destination,
-current state, blockers, dependencies, and smallest coherent next work. Link
+current state, blockers, dependencies, and coherent ready frontier. Link
 canonical artifacts instead of copying them. The state contract defines when
 U/E/F/D detail is worth retaining and how settled state shrinks.
 
-Hand one coherent ready scope and its acceptance criteria to Implementation;
-Verification follows execution. Use `to-tickets` only when approved work needs
-dependency ordering or independently deliverable sessions, and link its native
-frontier without a shadow copy.
+Map uncertainty broadly, then promote selectively. A precise question becomes
+U# when preserving the question or its eventual answer could materially improve
+a later developer’s ability to make or evaluate a decision. This applies within
+the current destination and relevant territory, especially when the answer
+requires human or project authority, depends on an external owner or approval,
+or gates multiple downstream areas or a meaningful seam. Ask the substantive
+project question when project knowledge determines materiality; do not ask
+merely whether to create a U#. Keep incidental or merely unspecified detail in
+the map. Ordinary research or debugging fog, a long list, or a template does
+not by itself justify a U#. A temporary U# is useful only when separate
+preservation improves current coordination or later continuation, not as
+create-and-retire ceremony.
+
+When dependency evidence is sufficient, surface the navigation shape concisely:
+the critical path, independent parallel work, and any off-path dependency whose
+external lead time materially affects the route. Do not infer a critical path
+from an unordered backlog or incomplete evidence.
+
+Resolve consequential U#, reconcile and shrink the map, then expose the
+coherent ready frontier and hand off one or more ready scopes without advancing
+work that remains dependency-blocked. Each Implementation handoff consumes one
+coherent scope and its acceptance criteria; Verification follows execution. Use
+`to-tickets` only when approved work needs substantial dependency ordering or
+independently deliverable sessions, and link its native frontier without a
+shadow copy.
 
 Read-only work never mutates state. Follow the state contract for every
 authorized mutation. Legacy project-owned records remain untouched historical

@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-08-18
 - Amends: ADR-0022 and ADR-0023
-- Amended by: ADR-0028
+- Amended by: ADR-0028 and ADR-0029
 
 ## Context
 
@@ -42,6 +42,13 @@ boundary, major coherent areas or domains, and important relationships or seams.
 The representation remains flexible; `Territory` is a useful heading, not a
 rigid schema or new record type.
 
+Territory is provisional, adaptive, and judgment-based. It helps Wayfinder
+explore relevant areas and seams, challenge incomplete framing, and revise its
+understanding as evidence develops. Exploration may broaden understanding, but
+must not silently broaden the user's goal, delegated authority, or
+implementation scope. This flexibility is intentional while the project gathers
+behavioral evidence; it does not justify a formal territory schema.
+
 For a new durable effort, reuse authoritative structure from accepted project
 artifacts when it already supplies those bearings. Otherwise establish them
 directly when current context supports them confidently. When material
@@ -69,6 +76,11 @@ that owns the resulting work. Depending on the result, that owner may be an ADR,
 specification, project documentation or source, `to-tickets`, Implementation,
 another project-native artifact, or no separate artifact. Not every area or D#
 becomes an ADR, and not every area becomes a ticket.
+
+Settlement exposes a coherent ready frontier rather than requiring one global
+next action. The frontier may contain one or more independently ready scopes,
+each handed to Implementation coherently, while dependency-blocked work remains
+behind its unresolved boundary.
 
 Settlement reconciles the current map and its canonical pointers, then retires
 U/E/F/D records as their independent navigational value disappears. New evidence
@@ -116,3 +128,6 @@ Existing clear maps remain valid and receive no automatic migration.
   current navigation state and Git already owns recoverable history.
 - Promote every settlement to an ADR or ticket: rejected because canonical
   ownership depends on the result's actual durability and work shape.
+- Formalize territory boundaries or scoring now: deferred until evaluation shows
+  that provisional judgment causes agents to get stuck, drift scope, or
+  reconstruct the same effort inconsistently.

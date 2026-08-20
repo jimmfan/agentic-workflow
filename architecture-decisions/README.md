@@ -23,6 +23,7 @@ current instructions.
 - [ADR-0026 — Structure Wayfinder territory and converge it](0026-structure-wayfinder-territory-and-converge-it.md)
 - [ADR-0027 — Use thin evidence-triggered routing](0027-use-thin-evidence-triggered-routing.md)
 - [ADR-0028 — Use Wayfinder as the sole durable coordinator](0028-use-wayfinder-as-sole-durable-coordinator.md)
+- [ADR-0029 — Preserve material decision context and gate dependent work](0029-preserve-material-decision-context.md)
 
 ## Superseded tombstones
 

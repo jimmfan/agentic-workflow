@@ -25,10 +25,10 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_thirty_four_contracts_and_nine_live_smokes(self) -> None:
+    def test_catalog_has_thirty_five_contracts_and_ten_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 34)
-        self.assertEqual(sum(scenario.live for scenario in scenarios), 9)
+        self.assertEqual(len(scenarios), 35)
+        self.assertEqual(sum(scenario.live for scenario in scenarios), 10)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
             {
@@ -66,6 +66,7 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-domain-modeling-revises-territory",
                 "wayfinder-human-authority-clarification",
                 "wayfinder-assessment-needs-no-state",
+                "wayfinder-selective-unknown-promotion",
             },
         )
         read_only = next(
@@ -113,6 +114,49 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertIn("what the answer will unblock", authority.report_must_include)
         self.assertTrue(any("decisions" in item for item in authority.forbid_created_globs))
         self.assertTrue(any(".scratch" in item for item in authority.forbid_created_globs))
+
+        promotion = scenarios["wayfinder-selective-unknown-promotion"]
+        self.assertTrue(promotion.live)
+        self.assertIn("uncertainty_recorded_or_blocked", promotion.expect)
+        self.assertNotIn("exactly three", promotion.request.lower())
+        self.assertFalse(any(item.kind == "glob_count" for item in promotion.assertions))
+        promoted_values = {
+            item.value
+            for item in promotion.assertions
+            if item.kind == "glob_any_contains"
+        }
+        self.assertTrue(
+            {"project authority", "external approval", "gates multiple downstream areas"}
+            <= promoted_values
+        )
+        self.assertTrue(
+            any(
+                item.kind == "glob_contains" and item.value == "## Why it matters"
+                for item in promotion.assertions
+            )
+        )
+        self.assertTrue(
+            any(
+                item.kind == "glob_none_contains" and item.value == "precise cost model"
+                for item in promotion.assertions
+            )
+        )
+        map_values = {
+            item.value
+            for item in promotion.assertions
+            if item.kind == "path_contains"
+        }
+        self.assertTrue(
+            {
+                "2 → 7 → 10 → 11 → 13 → 20 → 21 → 23",
+                "firewall approval",
+                "firewall approval has the longest external lead time",
+                "full-team review",
+                "parallel track",
+                "two-region",
+            }
+            <= map_values
+        )
 
         no_state = scenarios["wayfinder-assessment-needs-no-state"]
         self.assertIn("repository_unchanged", no_state.expect)
@@ -643,6 +687,81 @@ class BehaviorContractTests(unittest.TestCase):
             )
             self.assertTrue(behavior.evaluate_assertion(evidence, count_assertion).passed)
             self.assertFalse(behavior.evaluate_assertion(evidence, content_assertion).passed)
+
+    def test_semantic_glob_assertions_do_not_fix_artifact_filenames_or_counts(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary)
+            unknowns = workspace / ".agent-workflow-state/wayfinder/arc/unknowns"
+            unknowns.mkdir(parents=True)
+            (unknowns / "U7-review.md").write_text(
+                "# U7: Has the ADR completed full-team review?\n",
+                encoding="utf-8",
+            )
+            (unknowns / "U9-firewall.md").write_text(
+                "# U9: Which destinations have firewall approval?\n",
+                encoding="utf-8",
+            )
+            evidence = behavior.RunEvidence(
+                scenario=next(iter(behavior.load_scenarios())),
+                workspace=workspace,
+                before={},
+                after=behavior.snapshot(workspace),
+                stdout="",
+                stderr="",
+                returncode=0,
+                report={},
+                verification=(),
+                route_components=(),
+            )
+            pattern = behavior.PurePosixPath(
+                ".agent-workflow-state/wayfinder/arc/unknowns/U*.md"
+            )
+            any_review = behavior.Assertion(
+                kind="glob_any_contains",
+                path=pattern,
+                value="full-team review",
+            )
+            none_cost = behavior.Assertion(
+                kind="glob_none_contains",
+                path=pattern,
+                value="precise cost model",
+            )
+            self.assertTrue(behavior.evaluate_assertion(evidence, any_review).passed)
+            self.assertTrue(behavior.evaluate_assertion(evidence, none_cost).passed)
+
+            empty_pattern = behavior.PurePosixPath("missing/U*.md")
+            no_matches = behavior.Assertion(
+                kind="glob_none_contains",
+                path=empty_pattern,
+                value="anything",
+            )
+            any_missing = behavior.Assertion(
+                kind="glob_any_contains",
+                path=empty_pattern,
+                value="anything",
+            )
+            self.assertTrue(behavior.evaluate_assertion(evidence, no_matches).passed)
+            self.assertFalse(behavior.evaluate_assertion(evidence, any_missing).passed)
+
+            (unknowns / "U11-cost.md").write_text(
+                "# U11: What is the precise cost model?\n",
+                encoding="utf-8",
+            )
+            evidence_with_incidental = behavior.RunEvidence(
+                scenario=evidence.scenario,
+                workspace=workspace,
+                before={},
+                after=behavior.snapshot(workspace),
+                stdout="",
+                stderr="",
+                returncode=0,
+                report={},
+                verification=(),
+                route_components=(),
+            )
+            self.assertFalse(
+                behavior.evaluate_assertion(evidence_with_incidental, none_cost).passed
+            )
 
 
 if __name__ == "__main__":

@@ -1,9 +1,9 @@
 # Mandatory — no exceptions
 
-- You MUST route every request. Direct is default; clear intent or an applicable
-  installed skill selects a workflow.
-- Use these first-pass cues when the named method materially helps; encountering
-  the topic alone never forces a specialist:
+- MUST route every request. Direct is default; clear intent or an applicable
+  skill selects a workflow.
+- Use cues when the method materially helps; encountering the topic alone never
+  forces a specialist:
   - unexplained causal failure → consider Debugging
   - consequential choice needing alternative analysis → consider Discovery
   - substantive sourced external uncertainty → consider Research
@@ -20,7 +20,8 @@
   permits only that read.
 - MUST NOT decide for human or project authority. Ask the concrete question,
   why authority is required, and what the answer unblocks. Reopen a settled
-  choice only for conflict, safety, authority, or request.
+  choice only for conflict, safety, authority, or request. Keep affected work
+  blocked; independent work may continue.
 - Report truthfully; never claim unexecuted work.
 - Preserve unrelated work, project state, canonical artifacts, and identifiers.
   Live source and accepted artifacts outrank profiles, memory, and chat.
@@ -45,11 +46,11 @@ opt-out. Read-only work changes no state.
 
 ## Load state only when selected
 
-For selected or relevant resumed Wayfinder work, read
+For selected or resumed Wayfinder work, read
 `.agent-workflow/contracts/wayfinder-state.md` before the map. An unrelated map
 never selects Wayfinder. Read `.agent-workflow/contracts/durable-state.md` only
-before another current project-state write, and the project-profile contract
-before profile mutation. Do not seed optional state.
+before current project-state writes, and the project-profile contract
+before profile mutation. Do not seed state.
 
 ## Report the route
 

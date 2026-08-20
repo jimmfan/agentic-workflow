@@ -95,16 +95,28 @@ count = 1
 kind = "glob_contains"
 path = ".agent-workflow-state/wayfinder/example/unknowns/U1-*.md"
 value = "known unresolved question"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-workflow-state/wayfinder/example/unknowns/U*.md"
+value = "external approval"
+
+[[assertions]]
+kind = "glob_none_contains"
+path = ".agent-workflow-state/wayfinder/example/unknowns/U*.md"
+value = "incidental detail"
 ```
 
 `expect` and `must_not` use a deliberately small vocabulary implemented in
 `tests/behavior.py`. Case-specific assertions support path existence, UTF-8
 substring presence/absence, and case-insensitive substring checks or exact
-regular-file counts for a safe relative glob. A broad count can reject extra
-children while a stable-ID content glob such as `U1-*.md` requires the intended
-identity and meaning without fixing the descriptive filename slug. This keeps
-contracts focused on outcomes and prevents the harness from becoming a second
-router.
+regular-file counts for a safe relative glob. `glob_contains`
+requires every match to contain the value, while `glob_any_contains` and
+`glob_none_contains` test whether at least one or no matching file contains it
+without fixing the artifact count. A broad exact count can reject extra children
+while a stable-ID content glob such as `U1-*.md` requires the intended identity
+and meaning without fixing the descriptive filename slug. This keeps contracts
+focused on outcomes and prevents the harness from becoming a second router.
 
 The optional `state_must_include` and `state_must_not_include` arrays constrain
 the public `state_used` report. They make progressive-loading behavior observable

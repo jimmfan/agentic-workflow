@@ -237,7 +237,7 @@ def check_router_contract() -> None:
         "never selection by count alone",
         "any hard signal or at least two soft signals",
         "Read-only work changes no state",
-        "only before another current project-state write",
+        "only before current project-state writes",
     ):
         require(required in normalized_agents, f"thin root router lacks required boundary: {required}")
     require(
@@ -514,7 +514,9 @@ def check_provider_declaration() -> None:
         "Optional U/E/F/D preserves only independently useful knowledge",
         "Specialists own their methods and native artifacts",
         "create no framework continuity record",
-        "Hand one coherent ready scope",
+        "coherent ready frontier",
+        "one or more ready scopes",
+        "Each Implementation handoff consumes one coherent scope",
         "Verification follows execution",
         "Use `to-tickets`",
         "It defines effort selection, paths, identifiers, locking",
