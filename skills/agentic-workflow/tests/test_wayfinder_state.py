@@ -458,17 +458,17 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Core invariants",
             "## Establish territory",
             "## Resolve the frontier progressively",
-            "## Reconcile, converge, and hand off",
-            "The map may be the whole result",
+            "## Reconcile and hand off",
+            "Optional U/E/F/D preserves only independently useful knowledge",
             "Continue directly when the frontier can be resolved safely",
             "Discovery",
             "Debugging",
             "Research",
             "Prototype",
             "Domain Modeling",
-            "creates no DEC, IMP, DBG",
-            "use `to-tickets`",
-            "Implementation owns execution and Verification follows it",
+            "create no framework continuity record",
+            "Use `to-tickets`",
+            "Verification follows execution",
         ):
             self.assertIn(required, normalized_runtime)
         for contract_only_detail in (

@@ -59,12 +59,13 @@ class RoutingContractTests(unittest.TestCase):
     def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
         routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        normalized_routing = " ".join(routing.split())
         self.assertIn("Every user-facing final response MUST end with exactly one", root_policy)
-        self.assertIn("Every user-facing final response must end with exactly one", routing)
-        self.assertIn("[route: router → debugging → wayfinder]", routing)
-        self.assertIn("[route: router → research-handoff]", routing)
-        self.assertIn("unexecuted selection do not count as execution", routing)
-        self.assertIn("Do not reroute, load skills, execute workflows", routing)
+        self.assertIn("Every user-facing final response ends with exactly one", normalized_routing)
+        self.assertIn("[route: router → implement → verification]", normalized_routing)
+        self.assertIn("<skill>-handoff", normalized_routing)
+        self.assertIn("unexecuted selections do not count as execution", normalized_routing)
+        self.assertIn("Never reroute, load skills, execute work", normalized_routing)
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".agent-workflow/runtime", routing)
 
@@ -140,11 +141,11 @@ class RoutingContractTests(unittest.TestCase):
         durable = " ".join(durable.split())
 
         self.assertIn("without creating DEC", discovery)
-        self.assertIn("Compare only viable alternatives", discovery)
+        self.assertIn("Compare viable alternatives", discovery)
         self.assertIn("without creating a DBG", debugging)
         self.assertIn("Form 3–5 ranked, falsifiable hypotheses", debugging)
-        self.assertIn("Create no IMP or replacement execution record", implementation)
-        self.assertIn("invoke `workflow-verification` once", implementation)
+        self.assertIn("Create no IMP or replacement record", implementation)
+        self.assertIn("Invoke `workflow-verification` once", implementation)
         self.assertIn("not a current framework re-entry point", durable)
 
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
@@ -302,13 +303,13 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("\n* ", root_policy)
         self.assertNotIn("If it is unclear whether the work is clearly bounded", normalized_root)
         self.assertNotIn("For a named skill, a resume", normalized_root)
-        self.assertIn("default transitions, not mandatory pipelines", normalized_routing.lower())
-        self.assertIn("trivial local, low-risk edits stay direct", normalized_routing.lower())
-        self.assertIn("no authorized host-native equivalent", normalized_routing)
-        self.assertIn("actual host-native activity", normalized_routing)
+        self.assertIn("avoid routing loops", normalized_routing.lower())
+        self.assertIn("trivial low-risk edits stay direct", normalized_routing.lower())
+        self.assertIn("no safe authorized fallback exists", normalized_routing)
+        self.assertIn("report the host-native activity", normalized_routing)
         self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn("selection did not become equivalent execution", normalized_routing)
-        self.assertIn("preferred provider did not execute", normalized_routing)
+        self.assertIn("omit the unavailable provider", normalized_routing)
 
     def test_thin_router_meets_context_reduction_budgets(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()

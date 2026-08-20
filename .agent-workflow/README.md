@@ -1,13 +1,13 @@
 # Installed Agentic Workflow
 
 This directory is the reconstructable part of Agentic Workflow. Its purpose is
-to supply the progressively loaded routing, state, provider, and template
+to supply the progressively loaded routing, state, provider, and profile-template
 contracts used by the compact root policy. Install/update may replace every file
 here with current package bytes.
 
 There is no current `.agent-workflow/state/` directory. Durable project-owned state
 lives only under sibling `.agent-workflow-state/`. Lifecycle operations ensure that
-directory exists but never create optional profile or workflow records, inventory its
+directory exists but never create optional profile or Wayfinder state, inventory its
 contents, or remove it.
 
 ## Contents
@@ -15,14 +15,14 @@ contents, or remove it.
 - `routing.md`: detailed minimum-workflow selection, composition, invocation,
   fallback, authorization, evidence, and required route-marker rules.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
-- `contracts/durable-state.md`: durable continuity, canonical artifact, conflict,
-  and re-entry rules.
+- `contracts/durable-state.md`: current durable ownership, canonical-artifact,
+  legacy-state preservation, and optional project-profile rules.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   optional U#/E#/F#/D# knowledge, current-state allocation, knowledge
   settlement, effort completion, and progressive loading.
 - `contracts/project-profile.md`: optional advisory project-context rules.
-- `templates/`: source material used only when an authorized workflow actually
-  needs durable state.
+- `templates/project-profile.md`: source material for an authorized optional
+  project profile.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
 
@@ -58,9 +58,10 @@ tree. A map may stand alone; optional children preserve unresolved questions,
 independently useful evidence, established facts, and committed decisions. The
 map owns current state, blockers, dependencies, and next work. Substantial
 decomposed work belongs to `to-tickets`, not Wayfinder. See
-`contracts/wayfinder-state.md` for the precise, lazily loaded semantics. Other
-durable workflows resume from their canonical DEC, IMP, or DBG record; there is
-no global active index.
+`contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
+Discovery, Debugging, Research, Prototype, and Domain Modeling remain stateless
+specialists. Implementation is an execution handoff. Legacy DEC, IMP, and DBG
+files remain untouched historical project data and are not resumed.
 
 ## Status and recovery
 
