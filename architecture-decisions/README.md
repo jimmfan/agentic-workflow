@@ -8,7 +8,6 @@ current instructions.
 ## Current
 
 - [ADR-0006 — Use an inert bootstrap payload](0006-use-inert-bootstrap-payload.md)
-- [ADR-0007 — Orchestrate pinned upstream skills](0007-orchestrate-pinned-upstream-skills.md) (partially superseded)
 - [ADR-0008 — Require supported Python](0008-require-supported-python.md) (provider-tool portion superseded)
 - [ADR-0010 — Separate lifecycle safety and reconciliation](0010-separate-lifecycle-safety-and-reconciliation.md)
 - [ADR-0011 — Use project-owned Wayfinder state](0011-use-project-owned-wayfinder-state.md)
@@ -27,11 +26,12 @@ current instructions.
 
 ## Superseded tombstones
 
-- [ADR-0002 — Use checksummed copy adoption](0002-use-checksummed-copy-adoption.md); superseded by ADR-0010.
-- [ADR-0003 — Keep Wayfinder and Teach optional references](0003-use-internal-reference-inspired-workflows.md); superseded by ADR-0007.
-- [ADR-0005 — Add durable decomposition and independent review](0005-add-decomposition-and-independent-review.md); superseded by ADR-0007.
-- [ADR-0009 — Use a host-neutral lifecycle controller](0009-use-host-neutral-lifecycle-controller.md); superseded by ADR-0010.
-- [ADR-0012 — Resume from canonical records and maps](0012-remove-global-active-index.md); superseded by ADR-0028.
+- ADR-0002 — Use checksummed copy adoption; superseded by ADR-0010.
+- ADR-0003 — Keep Wayfinder and Teach optional references; superseded by ADR-0007.
+- ADR-0005 — Add durable decomposition and independent review; superseded by ADR-0007.
+- ADR-0007 — Orchestrate pinned upstream skills; superseded by ADR-0008, ADR-0010, ADR-0011, ADR-0013, ADR-0020, ADR-0023, ADR-0027, and ADR-0028.
+- ADR-0009 — Use a host-neutral lifecycle controller; superseded by ADR-0010.
+- ADR-0012 — Resume from canonical records and maps; superseded by ADR-0028.
 - ADR-0014 — Complete provider projection; superseded and consolidated into ADR-0020.
 - ADR-0015 — Effective local-mode Wayfinder adapter; superseded and consolidated into ADR-0020.
 - ADR-0017 — Routed provider invocation adapters; superseded and consolidated into ADR-0020.
