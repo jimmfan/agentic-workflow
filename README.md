@@ -8,6 +8,11 @@ The project started from a practical problem: engineering work rarely happens in
 
 Agentic Workflow explores whether explicitly recording that state can help an agent continue work without depending on the previous chat or session.
 
+Its core goal is to preserve the material context that humans and later agents
+need to make or evaluate responsible project decisions. Dependent work should
+not cross an unresolved consequential decision boundary, while unrelated ready
+work remains free to proceed.
+
 This project is pre-1.0 and actively evolving.
 
 ## The idea
@@ -175,6 +180,15 @@ unclear, Domain Modeling is the preferred discovery mechanism before substantial
 child state accumulates. The map organizes the territory, while U/E/F/D classify
 current knowledge within it.
 
+Establish the destination and enough relevant territory to orient the effort
+before substantial decomposition.
+
+Territory is provisional, adaptive, and judgment-based. It helps Wayfinder
+explore relevant areas and seams, challenge incomplete framing, and revise its
+understanding as evidence develops. Exploration may broaden understanding, but
+must not silently broaden the user's goal, delegated authority, or
+implementation scope.
+
 The map H1 is the durable readable effort name. A new effort derives its name
 and concise lowercase, hyphen-separated directory slug only after its destination
 and boundary are understood; later sessions list directory names and read only
@@ -190,7 +204,7 @@ classified only when their outcome and next work make the lifecycle clear.
 The vocabulary is:
 
 ```text
-unknown  = an unresolved consequential question
+unknown  = a precise unresolved question worth independent preservation
 evidence = a scoped observation with provenance and limitations
 fact     = a sufficiently established descriptive conclusion
 decision = a committed choice
@@ -200,6 +214,19 @@ This is not a mandatory pipeline. Small facts and observations stay in the map;
 U#/E#/F#/D# files exist only when independent preservation adds value. Facts
 link their evidence or direct authoritative sources, while conflicting evidence
 marks a fact disputed until it is reconciled.
+
+A precise question becomes U# when preserving the question or its eventual
+answer could materially improve a later developer’s ability to make or evaluate
+a decision. Authority-owned questions, external approvals, and questions that
+gate multiple downstream areas are strong signals. Precision alone is not:
+incidental and easily reconstructed fog stays in the canonical map.
+
+The resolution method determines what evidence or authority is sufficient to
+answer the question. Existing authoritative evidence can satisfy the method
+without a ceremonial specialist run, but research cannot replace a human
+authority answer and prose cannot replace required observed or experimental
+evidence. Durable Wayfinder state can record authority; it cannot create
+authority.
 
 When an unknown resolves, the answer and map are reconciled without requiring a
 new evidence, fact, or decision child. U/E/F/D files leave current Wayfinder
@@ -212,12 +239,13 @@ per-effort lock serializes map and child mutations so allocation cannot collide
 and retirement cannot race a current-reference edit; it contains no knowledge
 or allocation data.
 
-An area is settled when it has no consequential fog and its durable outcomes
-have moved to the proper canonical owner or workflow. That may be an ADR,
-specification, documentation or source, `to-tickets`, Implementation, another
-project artifact, or no separate artifact. Not every area becomes an ADR or
-ticket. As areas settle, Wayfinder retires redundant children; completed efforts
-normally shrink toward a concise map, with Git preserving history.
+An area is settled when it has no consequential uncertainty left undispositioned
+and its durable outcomes have moved to the proper canonical owner or workflow.
+That may be an ADR, specification, documentation or source, `to-tickets`,
+Implementation, another project artifact, or no separate artifact. Not every
+area becomes an ADR or ticket. As areas settle, Wayfinder retires redundant
+children; completed efforts normally shrink toward a concise map, with Git
+preserving history.
 
 Bare references such as `U17`, `F8`, or `D4` are concise shorthand only inside
 their current Wayfinder effort. Readable child filenames remain the canonical
@@ -225,10 +253,18 @@ paths. ADRs, specifications, tickets, and other artifacts outside the effort use
 repository-relative Markdown links with readable labels when a reference must
 remain durable beyond the current Wayfinder representation.
 
-Wayfinder does not own implementation work items. One coherent next action can
-pass from the map directly to implementation. Work that needs dependency
-ordering or separately deliverable sessions goes through `to-tickets`, whose
-native tickets remain canonical and are linked from the map.
+Wayfinder does not own implementation work items. When evidence supports it, the
+map concisely shows the critical path, independent parallel work, and material
+off-path lead-time dependencies; it never invents a critical path from an
+unordered backlog. The ready frontier contains coherent scopes whose material
+decision dependencies are answered or explicitly dispositioned. Answer each
+consequential U#, or canonically record the responsible authority's acceptance
+of the remaining uncertainty for that boundary; acceptance does not fabricate
+an answer or resolve the U#. One or more independently ready scopes may pass to
+implementation without advancing dependency-blocked work. Each Implementation
+handoff remains one coherent scope. Work needing a substantial execution graph
+or separately deliverable sessions goes through `to-tickets`, whose native
+tickets remain canonical and are linked from the map.
 
 Discovery, Debugging, Research, Prototype, Grilling, Domain Modeling, or human
 clarification may resolve an item without taking ownership of the map.

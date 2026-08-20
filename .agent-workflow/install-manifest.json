@@ -10,22 +10,22 @@
   "external_files": {
     ".agents/skills/workflow-debugging/SKILL.md": {
       "created": true,
-      "sha256": "9610ccd1eafa090efaa459ac56ce88759fe50fee77ebb8bd338840a522b65809"
+      "sha256": "999dc4f5d90fd78266979e7fbb0119e3ba7ba302eb9fce3783c9c6f60e221d38"
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "492732d8afc629d7d09a5db4acb8d744978f2909dd7ccf15feb37381f4fbbc4b"
+      "sha256": "4a297b5ee1cabdd9176f3a0fd8962643546d65919fe608f3f9f4b435ca40399e"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "1f115fd181312df42b0eb2ee37e959e6eba368eab993927080531df05d13fea5"
+      "sha256": "a27c1fd327717e8e2f590171ccee3be6c8a995586d23d0378308fcc4c72420d4"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,
       "sha256": "6b34ea8d493efb1844243f1ef029a3219d5a8aeeee636c6a8f00c3a6e0b22ac1"
     }
   },
-  "framework_version": "0.18.0",
+  "framework_version": "0.19.1",
   "schema_version": 1,
-  "source_revision": "d915355c6bfe91d67bfb24dcdaa9442515d706b8"
+  "source_revision": "unreleased-local-package"
 }

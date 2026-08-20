@@ -59,12 +59,13 @@ class RoutingContractTests(unittest.TestCase):
     def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
         routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        normalized_routing = " ".join(routing.split())
         self.assertIn("Every user-facing final response MUST end with exactly one", root_policy)
-        self.assertIn("Every user-facing final response must end with exactly one", routing)
-        self.assertIn("[route: router → debugging → wayfinder]", routing)
-        self.assertIn("[route: router → research-handoff]", routing)
-        self.assertIn("unexecuted selection do not count as execution", routing)
-        self.assertIn("Do not reroute, load skills, execute workflows", routing)
+        self.assertIn("Every user-facing final response ends with exactly one", normalized_routing)
+        self.assertIn("[route: router → implement → verification]", normalized_routing)
+        self.assertIn("<skill>-handoff", normalized_routing)
+        self.assertIn("unexecuted selections do not count as execution", normalized_routing)
+        self.assertIn("Never reroute, load skills, execute work", normalized_routing)
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".agent-workflow/runtime", routing)
 
@@ -87,7 +88,14 @@ class RoutingContractTests(unittest.TestCase):
     def test_adr_index_separates_current_records_from_superseded_history(self) -> None:
         index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
         current, superseded = index.split("## Superseded tombstones", 1)
-        for identifier in ("ADR-0002", "ADR-0003", "ADR-0005", "ADR-0009"):
+        for identifier in (
+            "ADR-0002",
+            "ADR-0003",
+            "ADR-0005",
+            "ADR-0007",
+            "ADR-0009",
+            "ADR-0012",
+        ):
             self.assertNotIn(identifier, current)
             self.assertIn(identifier, superseded)
         governance = (
@@ -98,8 +106,69 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Treat a choice the user explicitly resolves as settled", governance)
         self.assertIn("maintained set of current decisions", governance)
         self.assertIn("ADR-0028", current)
+        self.assertIn("ADR-0029", current)
         self.assertNotIn("ADR-0012", current)
         self.assertIn("ADR-0012", superseded)
+        for filename in (
+            "0002-use-checksummed-copy-adoption.md",
+            "0003-use-internal-reference-inspired-workflows.md",
+            "0005-add-decomposition-and-independent-review.md",
+            "0007-orchestrate-pinned-upstream-skills.md",
+            "0009-use-host-neutral-lifecycle-controller.md",
+            "0012-remove-global-active-index.md",
+        ):
+            self.assertNotIn(f"]({filename})", superseded)
+
+    def test_decision_context_goal_blocks_only_dependent_work(self) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        normalized_root = " ".join(root_policy.split())
+        decision = (
+            REPOSITORY_ROOT
+            / "architecture-decisions/0029-preserve-material-decision-context.md"
+        ).read_text()
+        normalized_decision = " ".join(decision.split())
+        convergence = (
+            REPOSITORY_ROOT
+            / "architecture-decisions/0026-structure-wayfinder-territory-and-converge-it.md"
+        ).read_text()
+        normalized_convergence = " ".join(convergence.split())
+
+        self.assertIn(
+            "MUST NOT cross a consequential decision boundary without required "
+            "evidence, approval, or authority",
+            normalized_root,
+        )
+        self.assertIn(
+            "Explicit responsible-authority acceptance leaves the recorded uncertainty "
+            "unresolved and unblocks only its named boundary",
+            normalized_root,
+        )
+        self.assertNotIn("U#", normalized_root)
+        self.assertIn("independent work may continue", normalized_root)
+        self.assertIn("why authority is required", normalized_root)
+        for required in (
+            "agent-context system",
+            "consequential decision boundary",
+            "material evidence, approval, or authority",
+            "Independent work may continue",
+            "responsible authority explicitly accepts the remaining uncertainty",
+            "Durable Wayfinder state can record authority; it cannot create authority",
+            "The resolution method determines what evidence or authority is sufficient to answer the question",
+            "Deferred / not implemented",
+            "claims, leases, or ownership machinery",
+            "mandatory dependency-graph infrastructure",
+            "tracker-backed decision lifecycle",
+            "does not promise complete information or correct decisions",
+        ):
+            self.assertIn(required, normalized_decision)
+        self.assertIn(
+            "A semantic area is settled when no consequential uncertainty remains undispositioned there",
+            normalized_convergence,
+        )
+        self.assertIn(
+            "has no consequential in-scope uncertainty left undispositioned",
+            normalized_convergence,
+        )
 
     def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
@@ -140,12 +209,87 @@ class RoutingContractTests(unittest.TestCase):
         durable = " ".join(durable.split())
 
         self.assertIn("without creating DEC", discovery)
-        self.assertIn("Compare only viable alternatives", discovery)
+        self.assertIn("Compare viable alternatives", discovery)
         self.assertIn("without creating a DBG", debugging)
         self.assertIn("Form 3–5 ranked, falsifiable hypotheses", debugging)
-        self.assertIn("Create no IMP or replacement execution record", implementation)
-        self.assertIn("invoke `workflow-verification` once", implementation)
+        self.assertIn("Create no IMP or replacement record", implementation)
+        self.assertIn("Invoke `workflow-verification` once", implementation)
         self.assertIn("not a current framework re-entry point", durable)
+
+    def test_domain_modeling_selection_covers_standalone_discovery_and_wayfinder_boundaries(self) -> None:
+        scenarios = {
+            item["id"]: item
+            for item in json.loads(
+                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+            )
+        }
+
+        standalone = scenarios["domain-modeling-standalone"]
+        self.assertEqual(standalone["dominant_activity"], "domain-modeling")
+        self.assertEqual(standalone["capabilities"], [])
+        self.assertTrue(standalone["provider_invocations"][0]["executed"])
+
+        discovery = scenarios["discovery-with-coherent-domain"]
+        self.assertEqual(discovery["dominant_activity"], "discovery")
+        self.assertEqual(discovery["capabilities"], [])
+
+        composed = scenarios["discovery-with-domain-modeling"]
+        self.assertEqual(composed["dominant_activity"], "discovery")
+        self.assertEqual(composed["capabilities"], ["domain-modeling"])
+        self.assertIn("materially affects", composed["expected_behavior"])
+
+        routing = " ".join(
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
+        )
+        self.assertIn("Discovery owns bounded consequential choice", routing)
+        self.assertIn("reorganizing the domain would materially improve", routing)
+
+    def test_missing_wayfinder_contract_fails_closed_without_substitute_state(self) -> None:
+        scenarios = {
+            item["id"]: item
+            for item in json.loads(
+                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+            )
+        }
+        missing = scenarios["wayfinder-missing-state-contract"]
+        self.assertFalse(missing["executed"])
+        self.assertEqual(missing["repository_state_effect"], "none")
+        self.assertIn("no substitute persistence", missing["expected_behavior"])
+
+        runtime = " ".join(
+            (PACKAGE_ROOT / "runtime-projections/wayfinder.md").read_text().split()
+        )
+        self.assertIn("If the state contract is unavailable", runtime)
+        self.assertIn("do not invent substitute persistence", runtime)
+
+    def test_relevant_project_profile_context_reaches_selected_specialists(self) -> None:
+        scenarios = {
+            item["id"]: item
+            for item in json.loads(
+                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+            )
+        }
+        for identifier, activity in (
+            ("discovery-uses-project-profile", "discovery"),
+            ("debugging-uses-project-profile", "debugging"),
+            ("implementation-uses-project-profile", "implementation"),
+        ):
+            with self.subTest(identifier=identifier):
+                scenario = scenarios[identifier]
+                self.assertEqual(scenario["dominant_activity"], activity)
+                self.assertIn("project-profile.md", scenario["expected_behavior"])
+                self.assertIn("relevant", scenario["expected_behavior"])
+
+        for relative in (
+            "payload/skills/workflow-discovery/SKILL.md",
+            "payload/skills/workflow-debugging/SKILL.md",
+            "payload/skills/workflow-implementation/SKILL.md",
+        ):
+            with self.subTest(relative=relative):
+                skill = " ".join((PACKAGE_ROOT / relative).read_text().split())
+                self.assertIn(".agent-workflow-state/project-profile.md", skill)
+                self.assertIn(".agent-workflow/contracts/project-profile.md", skill)
+                self.assertIn("only when", skill)
 
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -155,7 +299,7 @@ class RoutingContractTests(unittest.TestCase):
         normalized_contract = " ".join(contract.split())
         normalized_root = " ".join(root_policy.split())
         self.assertIn("wayfinder-state.md` before the map", normalized_root)
-        self.assertIn("only before another current project-state write", normalized_root)
+        self.assertIn("only before current project-state writes", normalized_root)
         self.assertIn("An unrelated map never selects Wayfinder", normalized_root)
         self.assertIn("Do not globally scan for related efforts", normalized_contract)
         self.assertIn("do not copy canonical artifact bodies", normalized_contract)
@@ -282,7 +426,7 @@ class RoutingContractTests(unittest.TestCase):
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         normalized_root = " ".join(root_policy.split())
 
-        self.assertIn("exact external read-only target", normalized_root)
+        self.assertIn("Exact external read-only targets", normalized_root)
 
     def test_thin_router_is_direct_first_and_progressively_loaded(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -291,8 +435,12 @@ class RoutingContractTests(unittest.TestCase):
         normalized_routing = " ".join(routing.split())
 
         self.assertIn("Direct is default", normalized_root)
+        self.assertIn("skill selects a workflow", normalized_root)
         self.assertIn("encountering the topic alone never forces a specialist", normalized_root)
-        self.assertIn("one obvious specialist inside an already selected Wayfinder effort", normalized_root)
+        self.assertIn(
+            "one obvious specialist inside an already selected Wayfinder effort",
+            normalized_root,
+        )
         self.assertIn("Read `.agent-workflow/routing.md` only when", normalized_root)
         self.assertIn("Three or more meaningful items require assessment, never selection by count alone", normalized_root)
         self.assertIn("After reconnaissance, assess durable coordination", normalized_root)
@@ -302,13 +450,13 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("\n* ", root_policy)
         self.assertNotIn("If it is unclear whether the work is clearly bounded", normalized_root)
         self.assertNotIn("For a named skill, a resume", normalized_root)
-        self.assertIn("default transitions, not mandatory pipelines", normalized_routing.lower())
-        self.assertIn("trivial local, low-risk edits stay direct", normalized_routing.lower())
-        self.assertIn("no authorized host-native equivalent", normalized_routing)
-        self.assertIn("actual host-native activity", normalized_routing)
+        self.assertIn("avoid routing loops", normalized_routing.lower())
+        self.assertIn("trivial low-risk edits stay direct", normalized_routing.lower())
+        self.assertIn("no safe authorized fallback exists", normalized_routing)
+        self.assertIn("report the host-native activity", normalized_routing)
         self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn("selection did not become equivalent execution", normalized_routing)
-        self.assertIn("preferred provider did not execute", normalized_routing)
+        self.assertIn("omit the unavailable provider", normalized_routing)
 
     def test_thin_router_meets_context_reduction_budgets(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()

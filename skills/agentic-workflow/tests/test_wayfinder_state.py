@@ -430,6 +430,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Semantic territory and effort identity",
             "authoritative project structure",
             "Otherwise establish it directly when current context supports it confidently",
+            "Territory is provisional, adaptive, and judgment-based",
+            "challenge incomplete framing",
+            "must not silently broaden the user's goal, delegated authority, or implementation scope",
             "If structural ambiguity remains",
             "state contract does not own that method",
             "before substantial U/E/F/D state accumulates",
@@ -447,6 +450,140 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, self.contract)
 
+    def test_runtime_and_contract_promote_only_continuation_worthy_unknowns(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        promotion_rule = (
+            "A precise question becomes U# when preserving the question or its eventual "
+            "answer could materially improve a later developer’s ability to make or "
+            "evaluate a decision."
+        )
+        for required in (
+            "Map uncertainty broadly, then promote selectively",
+            promotion_rule,
+            "human or project authority",
+            "external owner or approval",
+            "multiple downstream areas or a meaningful seam",
+            "Ordinary research or debugging fog",
+            "does not by itself justify a U#",
+        ):
+            self.assertIn(required, runtime)
+
+        for required in (
+            promotion_rule,
+            "`unknown`: a precise unresolved question preserved independently because its question or eventual answer could materially improve a later developer’s ability to make or evaluate a decision",
+            "human or project authority",
+            "external owner or approval",
+            "multiple downstream areas or a meaningful seam",
+            "Keep incidental, routine, easily reconstructed, or merely unspecified detail in the map",
+            "Never create a U# from a template, precision, or item count alone",
+        ):
+            self.assertIn(required, self.normalized)
+
+    def test_runtime_and_contract_distinguish_map_fog_from_durable_unknowns(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        for required in (
+            "Establish the destination and enough relevant territory to orient the effort before substantial decomposition.",
+            "Precision alone is insufficient",
+            "Not yet specified",
+        ):
+            self.assertIn(required, runtime)
+
+        for required in (
+            "Establish the destination and enough relevant territory to orient the effort before substantial decomposition.",
+            "In-scope fog or unresolved detail that does not currently justify independent U# tracking.",
+            "Precision alone is insufficient",
+        ):
+            self.assertIn(required, self.normalized)
+
+    def test_resolution_modes_define_sufficient_evidence_or_authority(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        rule = (
+            "The resolution method determines what evidence or authority is sufficient "
+            "to answer the question."
+        )
+        for surface in (runtime, self.normalized):
+            self.assertIn(rule, surface)
+            self.assertIn("human clarification", surface)
+            self.assertIn("research", surface)
+            self.assertIn("prototype", surface)
+
+        for required in (
+            "cannot be supplied by agent inference or substituted research",
+            "appropriate source evidence",
+            "observed or experimental evidence",
+            "Running a named method is not itself resolution",
+        ):
+            self.assertIn(required, self.normalized)
+
+    def test_durable_state_records_but_cannot_create_authority(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        authority_rule = "Durable Wayfinder state can record authority; it cannot create authority."
+        for surface in (runtime, self.normalized):
+            self.assertIn(authority_rule, surface)
+            self.assertIn("valid delegated scope", surface)
+
+        self.assertIn(
+            "An agent-authored map, U#, E#, F#, D#, or note is not an authority source",
+            self.normalized,
+        )
+
+    def test_answer_or_authoritative_disposition_can_unblock_only_the_named_boundary(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        gate = (
+            "Answer the consequential U#, or canonically record the responsible authority’s "
+            "explicit acceptance of the remaining uncertainty for that boundary."
+        )
+        for surface in (runtime, self.normalized):
+            self.assertIn(gate, surface)
+            self.assertIn("The ready frontier is the set of coherent scopes", surface)
+            self.assertIn("answered or explicitly dispositioned", surface)
+            self.assertIn("remains factually unanswered", surface)
+            self.assertIn("does not become resolved", surface)
+            self.assertIn("only the named boundary", surface)
+
+        self.assertIn("- Status: open | resolved", self.contract)
+        self.assertNotIn("Status: accepted uncertainty", self.contract)
+
+    def test_runtime_and_contract_expose_an_unblocked_ready_frontier(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        for required in (
+            "coherent ready frontier",
+            "one or more ready scopes",
+            "without advancing work that remains dependency-blocked",
+            "Each Implementation handoff",
+        ):
+            self.assertIn(required, runtime)
+
+        for required in (
+            "coherent ready frontier",
+            "one or more independently ready scopes",
+            "dependency-blocked work",
+            "one coherent scope at a time",
+        ):
+            self.assertIn(required, self.normalized)
+
+    def test_runtime_and_contract_surface_only_evidence_backed_navigation_shape(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        for required in (
+            "When dependency evidence is sufficient, surface the navigation shape concisely",
+            "critical path",
+            "independent parallel work",
+            "off-path dependency",
+            "external lead time",
+            "Do not infer a critical path from an unordered backlog or incomplete evidence",
+        ):
+            self.assertIn(required, runtime)
+
+        for required in (
+            "When evidence establishes execution order",
+            "critical path",
+            "independent parallel work",
+            "off-path dependency",
+            "external lead time",
+            "Never manufacture a critical path from an unordered backlog or incomplete dependency evidence",
+        ):
+            self.assertIn(required, self.normalized)
+
     def test_authored_installed_and_generated_surfaces_are_consistent(self) -> None:
         self.assertEqual(CONTRACT.read_bytes(), INSTALLED_CONTRACT.read_bytes())
         runtime = RUNTIME.read_text(encoding="utf-8")
@@ -458,17 +595,24 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Core invariants",
             "## Establish territory",
             "## Resolve the frontier progressively",
-            "## Reconcile, converge, and hand off",
-            "The map may be the whole result",
+            "## Reconcile and hand off",
+            "Territory is provisional, adaptive, and judgment-based",
+            "Optional U/E/F/D preserves only independently useful knowledge",
             "Continue directly when the frontier can be resolved safely",
             "Discovery",
             "Debugging",
             "Research",
             "Prototype",
             "Domain Modeling",
-            "creates no DEC, IMP, DBG",
-            "use `to-tickets`",
-            "Implementation owns execution and Verification follows it",
+            "create no framework continuity record",
+            "Use `to-tickets`",
+            "Verification follows execution",
+            "preferred structural fallback",
+            "before substantial U/E/F/D accumulates",
+            "do not reload Domain Modeling",
+            "later authoritative evidence materially invalidates",
+            "ordinary fog within coherent territory",
+            "If the state contract is unavailable",
         ):
             self.assertIn(required, normalized_runtime)
         for contract_only_detail in (

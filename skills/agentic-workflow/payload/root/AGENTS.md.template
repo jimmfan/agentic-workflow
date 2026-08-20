@@ -1,9 +1,9 @@
 # Mandatory — no exceptions
 
-- You MUST route every request. Direct is default; clear intent or an applicable
-  installed skill selects a workflow.
-- Use these first-pass cues when the named method materially helps; encountering
-  the topic alone never forces a specialist:
+- MUST route every request. Direct is default; clear intent or an applicable
+  skill selects a workflow.
+- Use cues when the method materially helps; encountering the topic alone never
+  forces a specialist:
   - unexplained causal failure → consider Debugging
   - consequential choice needing alternative analysis → consider Discovery
   - substantive sourced external uncertainty → consider Research
@@ -11,17 +11,20 @@
   - completed meaningful change → Verification
   - durable coordination across sessions, handoffs, owners, or interacting
     state → assess Wayfinder using the criteria below
-- For Direct work, one obvious route, or one obvious specialist inside an
-  already selected Wayfinder effort, load only what that work needs. Read
-  `.agent-workflow/routing.md` only when ownership remains unclear, provider
-  fallback or handoff materially matters, or relevant durable re-entry is
-  ambiguous.
-- Workflows MUST NOT expand authority. An exact external read-only target
-  permits only that read.
-- MUST NOT decide for human or project authority. Ask the concrete question,
-  why authority is required, and what the answer unblocks. Reopen a settled
+- For one obvious specialist inside an already selected Wayfinder effort, load
+  only what it needs.
+  Read `.agent-workflow/routing.md` only when ownership is unclear or provider
+  fallback, handoff, or durable re-entry materially matters.
+- Workflows never expand authority. Exact external read-only targets permit only
+  that read.
+- MUST NOT cross a consequential decision boundary without required evidence,
+  approval, or authority. Explicit responsible-authority acceptance leaves the
+  recorded uncertainty unresolved and unblocks only its named boundary;
+  independent work may continue.
+- Never decide for human or project authority. Ask the concrete question and
+  why authority is required, and what its answer unblocks. Reopen a settled
   choice only for conflict, safety, authority, or request.
-- Report truthfully; never claim unexecuted work.
+- Never claim unexecuted work.
 - Preserve unrelated work, project state, canonical artifacts, and identifiers.
   Live source and accepted artifacts outrank profiles, memory, and chat.
 
@@ -39,17 +42,17 @@ or at least two soft signals apply:
   categories; evidence-driven plan change; a meaningful dependency graph; or
   material fresh-agent reconstruction risk.
 
-A single unknown, routine action, and implementation detail stay
-Direct or in their applicable workflow. Honor explicit Wayfinder use and
-opt-out. Read-only work changes no state.
+Single unknowns and routine/implementation work use Direct or applicable
+workflows. Honor Wayfinder use and opt-out. Read-only work changes no
+state.
 
 ## Load state only when selected
 
-For selected or relevant resumed Wayfinder work, read
+For selected/resumed Wayfinder, read
 `.agent-workflow/contracts/wayfinder-state.md` before the map. An unrelated map
 never selects Wayfinder. Read `.agent-workflow/contracts/durable-state.md` only
-before another current project-state write, and the project-profile contract
-before profile mutation. Do not seed optional state.
+before current project-state writes, and the project-profile contract
+before profile mutation. Never seed state.
 
 ## Report the route
 

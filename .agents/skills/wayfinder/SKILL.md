@@ -11,164 +11,128 @@ name: wayfinder
 ---
 # Wayfinder
 
-Wayfinder keeps a lightweight durable map when important unknowns, decisions,
-dependencies, blockers, or conflicting facts are becoming unreliable to hold
-in ordinary context. Agentic Workflow's effective Wayfinder workflow is a
-framework-owned runtime projection derived from Matt Pocock's Wayfinder
-methodology. The pinned upstream snapshot remains unchanged as reviewed
-provenance and reference; Agentic Workflow owns this runtime's routing,
-Git-native state, effort selection, continuation, concurrency, U/E/F/D, and
-`to-tickets` handoff contracts.
+Wayfinder is Agentic Workflow's sole framework-owned durable coordination
+layer. Use it when consequential state needs reliable continuity across
+sessions, handoffs, owners, or interacting areas. Clear bounded work, one
+isolated unknown, and read-only work stay on their minimum useful route.
 
-Use Wayfinder when structured project notes materially reduce the risk of
-losing or conflating several consequential state distinctions. Explicit use is
-allowed, and an explicit opt-out prevents automatic selection. Keep clear,
-bounded, low-risk, unrelated, and read-only work on its minimum useful route;
-one ordinary implementation detail or isolated unknown does not justify a map.
+This framework-owned runtime projection is derived from Matt Pocock's
+Wayfinder methodology. It chooses how to navigate and resolve the frontier;
+`.agent-workflow/contracts/wayfinder-state.md` owns state mechanics.
 
 ## Core invariants
 
-- Route before inspecting Wayfinder state. Existing state never selects
-  Wayfinder by itself, and considering or selecting Wayfinder does not require a
-  write. An assessment may conclude that no durable Wayfinder state is needed.
-- Name the destination and understand the territory before decomposing the
-  route. Keep `map.md` at low resolution, represent fog honestly, identify the
-  current frontier, and load detail only as it becomes relevant.
-- `map.md` organizes the destination, boundary, major areas, and important
-  seams. U/E/F/D classify current knowledge within that territory; they do not
-  replace its structure. `map.md` alone is valid.
-- Live source and accepted project artifacts outrank stale Wayfinder state.
-  Reconcile only consequential current results, preserve conflicts honestly,
-  and retire state when its navigational value disappears.
-- Never decide an authority-dependent choice on the human's behalf. Surface the
-  concrete question, explain why that authority is required, and state what the
-  answer will unblock.
-- Use the resolution mechanism that fits the uncertainty. Domain Modeling,
-  Research, Prototype, Debugging, human clarification, or Grilling supplies
-  reasoning, evidence, or clarification; Wayfinder preserves only consequential
-  durable results.
-- Wayfinder does not own implementation work items. Pass substantial
-  dependency-ordered or independently deliverable work to `to-tickets` and
-  link its canonical frontier without a shadow copy.
+- Route before inspecting state; an existing map never selects Wayfinder.
+- Establish the destination and enough relevant territory to orient the effort
+  before substantial decomposition. Keep `map.md` low-resolution and load
+  detail only when relevant.
+- The map owns current state, blockers, dependencies, frontier, and next work.
+  Optional U/E/F/D preserves only independently useful knowledge.
+- Live source and accepted project artifacts outrank stale map state.
+- Durable Wayfinder state can record authority; it cannot create authority.
+  Use an actual human or project source, or valid delegated scope, for an
+  authority-owned choice. Keep the question and what it blocks explicit.
 
-When Wayfinder is selected or a request continues a relevant effort, read
-`.agent-workflow/contracts/wayfinder-state.md` before the map. Before an
-authorized durable write, also read
-`.agent-workflow/contracts/durable-state.md`. Those contracts own detailed
-effort selection, paths, identifiers, links, locking, reconciliation,
-settlement, and lifecycle mechanics. If the Wayfinder contract is missing, do
-not invent tracker or `.scratch/` fallback state; treat the installation as
-incomplete and stop safely or continue through another truthful authorized
-route.
+When selecting or resuming Wayfinder, read the state contract before the map.
+It defines effort selection, paths, identifiers, locking, reconciliation,
+settlement, and lifecycle. Do not load the general durable-state contract merely
+to write Wayfinder state. If the state contract is unavailable, fail closed for
+the affected Wayfinder work: do not inspect or mutate a map; do not invent
+substitute persistence or create tracker, specialist-record, or scratch state.
+Report the incomplete installation.
 
-## Method
+## Establish territory
 
-### Establish territory
+Reuse accepted project structure when it supplies a useful destination, scope,
+areas, and important seams. Otherwise establish the smallest useful structure
+directly. Territory is provisional, adaptive, and judgment-based. It helps
+Wayfinder explore relevant areas and seams, challenge incomplete framing, and
+revise its understanding as evidence develops. Exploration may broaden
+understanding, but must not silently broaden the user's goal, delegated
+authority, or implementation scope.
 
-First decide whether durable Wayfinder state is useful. For a new durable
-effort, establish enough low-resolution structure to navigate: the destination,
-scope boundary, major coherent areas or domains, and important relationships or
-seams. Reuse accepted project structure when it already supplies those bearings.
-Otherwise establish them directly when current context supports them
-confidently. Use Domain Modeling when material structural ambiguity remains and
-structural discovery is actually needed, before substantial U/E/F/D state
-accumulates.
+Domain Modeling is the preferred structural fallback when clarifying
+or reorganizing concepts, vocabulary, boundaries, responsibilities, or
+relationships would materially improve the map's usefulness or coherence;
+progress need not already be blocked. When it would help, establish enough
+territory before substantial U/E/F/D accumulates, then derive the effort name
+and stable path from that territory.
 
-Derive the effort's identity, readable name, and stable path from that
-understanding. Do not invent a directory name first and rationalize its purpose
-afterward. Keep the semantic structure in `map.md`, using a short **Territory**
-section or another clear shape; do not create nested area storage. On resume,
-reuse a coherent map instead of rerunning structural discovery as ceremony.
+On a coherent resume, do not reload Domain Modeling merely because Wayfinder
+resumed. If later authoritative evidence materially invalidates the territory,
+Domain Modeling may re-enter to revise the same map. Reconcile the current
+structure rather than preserving stale or parallel territory.
 
-Keep in-scope fog under **Not yet specified**, distinguish **Out of scope**, and
-choose the smallest coherent unblocked next work as the frontier. Resolve
-consequential uncertainty incrementally; each answer may reshape an area,
-expose another unknown, change dependencies, or make new work takeable.
+## Resolve the frontier progressively
 
-### Choose a resolution mechanism
+Continue directly when the frontier can be resolved safely without additional
+methodology. Load only the smallest specialist whose method would materially
+improve resolution:
 
-- **Domain Modeling** — use it when material ambiguity in a new effort's
-  concepts, terminology, boundaries, areas, or relationships makes structural
-  discovery necessary. It may also expose assumptions, unknowns, dependencies,
-  and authority-dependent choices.
-- **Research** — use for externally answerable uncertainty that needs
-  trustworthy sources.
-- **Prototype** — use when uncertainty is best resolved by trying something
-  concrete and inexpensive.
-- **Debugging** — use for uncertainty about observed behavior and its cause.
-- **Human clarification or Grilling** — use for intent, preference, approval,
-  prioritization, or another authority-dependent choice.
+- **Discovery** for consequential alternatives and tradeoffs.
+- **Debugging** for an observed behavior with an unknown cause.
+- **Research** for external uncertainty needing primary-source evidence.
+- **Prototype** when a disposable experiment is the cheapest honest test.
+- **Domain Modeling** to establish, improve, or revise territory under the rule
+  above.
+- **Human clarification or Grilling** for authority, intent, preference, or
+  prioritization.
 
-These activities keep their own native artifacts. Reconcile only consequential
-results into the current effort: sharpen the Destination, map state, fog,
-blockers, dependencies, frontier, or next work; create or retain U/E/F/D detail
-only when independent durable value justifies it. Domain Modeling is
-conditional, not ceremony for every new effort or resume.
+Research, Prototype, and Debugging usually resolve ordinary fog within coherent
+territory; they do not replace structural modeling when the territory itself
+needs improvement or revision.
 
-When progress depends on human or project authority, do not infer the answer
-from convenience, precedent, or an agent proposal. Surface the concrete
-question, explain why that authority is required, state what the answer will
-unblock, and leave the relevant uncertainty or blocker explicit. Do not turn an
-assumed answer into an accepted D#, specification, or implementation ticket.
+The resolution method determines what evidence or authority is sufficient to
+answer the question. It is not merely an artifact label: human clarification
+requires the responsible authority, research requires appropriate source
+evidence, and prototype or debugging requires relevant observed or experimental
+evidence. Existing authoritative evidence may satisfy the method without a
+ceremonial specialist invocation, but one method cannot substitute for another's
+required authority or evidence.
 
-### Converge and shrink
+Do not load specialists speculatively. Specialists own their methods and native
+artifacts and create no framework continuity record. If work is interrupted,
+reconcile only the consequential frontier, evidence or conclusions, artifact
+pointers, resolution mode when useful, and next work into Wayfinder. The map,
+not DEC/IMP/DBG or a specialist notebook, is the re-entry point.
 
-Treat a semantic area as settled when no consequential fog remains there and
-every durable outcome has reached its proper canonical owner or the workflow
-that owns the resulting work. That owner may be an ADR, specification,
-documentation or source, `to-tickets`, Implementation, another project-native
-artifact, or nothing separate when the result has no independent long-term
-value. Do not turn every area or D# into an ADR or ticket.
+## Reconcile and hand off
 
-As areas settle, update the same semantic map, point to canonical outcomes, and
-retire redundant U/E/F/D children under the state contract. Completion alone
-does not make a child redundant. If new evidence changes the territory,
-reconcile its current areas and seams instead of keeping parallel structures.
-Git preserves history. A completed effort should normally shrink toward a
-concise map that records its outcome and canonical pointers.
+Keep the map sufficient for a fresh session to recover the destination,
+current state, blockers, dependencies, and coherent ready frontier. Link
+canonical artifacts instead of copying them. The state contract defines when
+U/E/F/D detail is worth retaining and how settled state shrinks.
 
-If assessment finds no consequential uncertainty, dependency, blocker,
-conflicting fact, or continuity need worth preserving, state that no durable
-Wayfinder state is needed and continue or hand off through the minimum useful
-route. Do not manufacture a map or child merely because Wayfinder was considered
-or automatically selected.
+Map uncertainty broadly, then promote selectively. A precise question becomes
+U# when preserving the question or its eventual answer could materially improve
+a later developer’s ability to make or evaluate a decision. This applies within
+the current destination and relevant territory, especially when the answer
+requires human or project authority, depends on an external owner or approval,
+or gates multiple downstream areas or a meaningful seam. Ask the substantive
+project question when project knowledge determines materiality; do not ask
+merely whether to create a U#. Keep incidental or merely unspecified detail
+under `Not yet specified` in the map. Precision alone is insufficient. Ordinary
+research or debugging fog, a long list, or a template does not by itself
+justify a U#. A temporary U# is useful only when separate preservation improves
+current coordination or later continuation, not as create-and-retire ceremony.
 
-## Work from the map
+When dependency evidence is sufficient, surface the navigation shape concisely:
+the critical path, independent parallel work, and any off-path dependency whose
+external lead time materially affects the route. Do not infer a critical path
+from an unordered backlog or incomplete evidence.
 
-Route first. For a relevant resume, use an exact supplied map path when
-available; otherwise follow the contract's progressive candidate-selection
-rules. Read `map.md` first and only the child files or linked canonical
-artifacts needed for the current question. If multiple efforts remain plausible,
-ask the user rather than choosing, merging, or creating a synonym.
+The ready frontier is the set of coherent scopes whose material decision
+dependencies are answered or explicitly dispositioned and can therefore
+proceed now. Answer the consequential U#, or canonically record the responsible
+authority’s explicit acceptance of the remaining uncertainty for that boundary.
+The U# then remains factually unanswered and does not become resolved; the
+acceptance unblocks only the named boundary. Reconcile and shrink the map, then
+hand off one or more ready scopes without advancing work that remains
+dependency-blocked. Each Implementation handoff consumes one coherent scope and
+its acceptance criteria; Verification follows execution. Use `to-tickets` only
+when approved work needs substantial dependency ordering or independently
+deliverable sessions, and link its native frontier without a shadow copy.
 
-Keep `map.md` self-contained enough for a fresh session to recover the
-destination, current state, blockers and dependencies, and smallest coherent
-next work. Use readable names and links:
-
-- U# is an unresolved consequential question.
-- E# is independently useful evidence with provenance, scope, and limitations.
-- F# is a sufficiently established scoped descriptive conclusion.
-- D# is a committed choice made under project authority.
-
-These are semantic distinctions, not a U# -> E# -> F# -> D# pipeline. The map
-may be the whole current result. When an answer or project change matters,
-reconcile the map and only independently useful child knowledge according to the
-state contract.
-
-Advance the frontier until the route is sufficiently clear, then continue the
-authorized work, hand it to its owning workflow, or stop with next work explicit.
-One coherent scope may pass directly to implementation. When substantial work
-needs dependency ordering or separately deliverable sessions, use `to-tickets`;
-its native artifacts remain canonical and the map records only the coordination
-consequence.
-
-## Boundaries
-
-Read-only analysis, audit, diagnosis, or review may use Wayfinder reasoning but
-must not create or update state. Authorized mutations follow the state
-contract's concurrency and reconciliation rules; never improvise identifier,
-lock, retirement, settlement, or lifecycle behavior in the runtime.
-
-Do not create a Wayfinder `.scratch/` mirror, external issue-tracker mirror,
-global active index, T# work items, automatic state migration, or a separate
-settlement/archive subsystem.
+Read-only work never mutates state. Follow the state contract for every
+authorized mutation. Legacy project-owned records remain untouched historical
+data.

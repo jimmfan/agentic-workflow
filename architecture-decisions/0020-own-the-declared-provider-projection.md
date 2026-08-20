@@ -81,8 +81,11 @@ The invocation adapters make Wayfinder, To Spec, To Tickets, and Implement
 model-invocable on Codex and GitHub Copilot. Setup, Teach, and Triage remain
 user-only. Claude Code remains declared unavailable; this decision concerns a
 Claude model hosted by GitHub Copilot, not native Claude Code. Selection,
-invocation capability, authorization, and execution remain distinct, and an
-unavailable provider must never be reported as executed.
+invocation capability, authorization, and execution remain distinct. When an
+unavailable selected provider has an authorized host-native fallback that can
+satisfy the request, use that fallback without imitating the provider or
+claiming its execution; otherwise give the exact handoff only when the user
+required that provider or no safe authorized fallback exists.
 
 Implement and Code Review have no hard issue-tracker prerequisite: each can
 consume a supplied or repository-local specification, and review can report a

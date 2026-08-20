@@ -237,7 +237,7 @@ def check_router_contract() -> None:
         "never selection by count alone",
         "any hard signal or at least two soft signals",
         "Read-only work changes no state",
-        "only before another current project-state write",
+        "only before current project-state writes",
     ):
         require(required in normalized_agents, f"thin root router lacks required boundary: {required}")
     require(
@@ -249,8 +249,9 @@ def check_router_contract() -> None:
         "thin root router reduces confidently Direct context by less than 35%",
     )
     require(
-        "default transitions, not mandatory pipelines" in normalized_routing.lower(),
-        "detailed router lacks conditional default transitions",
+        "avoid routing loops" in normalized_routing.lower()
+        and "according to the coordination threshold" in normalized_routing.lower(),
+        "detailed router lacks conditional specialist transitions",
     )
     require(".agent-workflow-state/" in durable, "durable-state contract lacks the canonical state root")
     require("no global active index" in durable, "durable-state contract retains a global active index")
@@ -509,14 +510,16 @@ def check_provider_declaration() -> None:
         "## Core invariants",
         "## Establish territory",
         "## Resolve the frontier progressively",
-        "## Reconcile, converge, and hand off",
-        "The map may be the whole result",
-        "Specialists remain stateless",
-        "creates no DEC, IMP, DBG",
-        "Implementation owns execution and Verification follows it",
-        "use `to-tickets`",
-        "contract owns paths, effort selection",
-        "If the Wayfinder contract is missing",
+        "## Reconcile and hand off",
+        "Optional U/E/F/D preserves only independently useful knowledge",
+        "Specialists own their methods and native artifacts",
+        "create no framework continuity record",
+        "coherent ready frontier",
+        "one or more ready scopes",
+        "Each Implementation handoff consumes one coherent scope",
+        "Verification follows execution",
+        "Use `to-tickets`",
+        "It defines effort selection, paths, identifiers, locking",
     ):
         require(
             required in " ".join(projection_text.split()),

@@ -586,5 +586,142 @@
     "repository_state_effect": "repository-write",
     "external_scope": "none",
     "expected_behavior": "Continue with truthful host-native planning when authorized, state that Wayfinder did not execute, report the actual host-native activity and omit Wayfinder from the executed route marker, and recommend lifecycle update to repair the declared projection."
+  },
+  {
+    "id": "domain-modeling-standalone",
+    "category": "standalone-domain-modeling",
+    "prompt": "Sharpen the project vocabulary and responsibility boundaries for policy evaluation and execution.",
+    "setup": "The user explicitly wants to improve the domain model, the work fits one session, and no Wayfinder continuity is needed.",
+    "dominant_activity": "domain-modeling",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "domain-modeling",
+        "policy": "implicit",
+        "invocation": "automatic",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "provider-native-artifact",
+    "external_scope": "none",
+    "expected_behavior": "Run Domain Modeling as the standalone method, preserve its native glossary or ADR ownership, and do not start Wayfinder merely because domain structure is being improved."
+  },
+  {
+    "id": "discovery-with-coherent-domain",
+    "category": "discovery-domain-modeling-negative",
+    "prompt": "Choose between two cache invalidation policies whose terms and service boundaries are already established.",
+    "setup": "The bounded consequential choice benefits from explicit alternatives and tradeoffs, while accepted domain documentation already makes the concepts and responsibilities coherent.",
+    "dominant_activity": "discovery",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "codex",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Use Discovery alone for the bounded tradeoff; do not load Domain Modeling when the domain is already coherent and reorganizing it would not improve the analysis."
+  },
+  {
+    "id": "discovery-with-domain-modeling",
+    "category": "discovery-domain-modeling-composition",
+    "prompt": "Choose ownership for policy evaluation, but first resolve whether policy intake, evaluation, and execution are one responsibility or distinct domain boundaries.",
+    "setup": "The decision is bounded and Discovery owns its alternatives and tradeoffs, but structural ambiguity materially affects which alternatives are viable and reorganizing the domain would materially improve the analysis.",
+    "dominant_activity": "discovery",
+    "capabilities": [
+      "domain-modeling"
+    ],
+    "provider_invocations": [
+      {
+        "name": "domain-modeling",
+        "policy": "implicit",
+        "invocation": "automatic",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "provider-native-artifact",
+    "external_scope": "none",
+    "expected_behavior": "Keep Discovery as the decision owner and compose Domain Modeling only because structural ambiguity materially affects the tradeoff analysis; preserve each method's native artifact boundary and create no DEC."
+  },
+  {
+    "id": "wayfinder-missing-state-contract",
+    "category": "wayfinder-missing-state-contract",
+    "prompt": "Resume the named Wayfinder migration effort.",
+    "setup": "Wayfinder is selected, but `.agent-workflow/contracts/wayfinder-state.md` is missing, so safe effort selection and mutation semantics are unavailable.",
+    "dominant_activity": "wayfinder",
+    "capabilities": [],
+    "provider_invocations": [
+      {
+        "name": "wayfinder",
+        "policy": "implicit",
+        "invocation": "implicit",
+        "executed": false
+      }
+    ],
+    "host": "codex",
+    "route_result": "wayfinder-blocked",
+    "executed": false,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Fail closed for the affected Wayfinder work, report the missing state contract, make no map read or mutation, and create no substitute persistence, tracker, specialist record, or scratch notebook."
+  },
+  {
+    "id": "discovery-uses-project-profile",
+    "category": "specialist-project-profile-context",
+    "prompt": "Choose the release strategy using the project's established constraints and decision checks.",
+    "setup": "Relevant decision factors and a safe evidence command are cached in `.agent-workflow-state/project-profile.md`; unrelated profile sections exist and higher-precedence sources remain canonical.",
+    "dominant_activity": "discovery",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "codex",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "none",
+    "expected_behavior": "Read only relevant `.agent-workflow-state/project-profile.md` facts and pointers, verify them against canonical sources when needed, and load `.agent-workflow/contracts/project-profile.md` before running a recorded command."
+  },
+  {
+    "id": "debugging-uses-project-profile",
+    "category": "specialist-project-profile-context",
+    "prompt": "Diagnose the failing queue health check using the project's configured debugging model and commands.",
+    "setup": "Relevant diagnostic paths and a safe reproducer command are cached in `.agent-workflow-state/project-profile.md`; unrelated profile sections exist.",
+    "dominant_activity": "debugging",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "codex",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "none",
+    "expected_behavior": "Read only relevant `.agent-workflow-state/project-profile.md` debugging facts and commands, then load `.agent-workflow/contracts/project-profile.md` and apply its safety gate before running a recorded command."
+  },
+  {
+    "id": "implementation-uses-project-profile",
+    "category": "specialist-project-profile-context",
+    "prompt": "Implement the accepted queue fix and use the project's configured checks.",
+    "setup": "The scope is settled and `.agent-workflow-state/project-profile.md` contains relevant paths, constraints, and configured commands plus unrelated advisory context.",
+    "dominant_activity": "implementation",
+    "capabilities": [
+      "verification"
+    ],
+    "provider_invocations": [
+      {
+        "name": "implement",
+        "policy": "implicit",
+        "invocation": "automatic",
+        "executed": true
+      }
+    ],
+    "host": "codex",
+    "route_result": "executed",
+    "executed": true,
+    "repository_state_effect": "repository-write",
+    "external_scope": "none",
+    "expected_behavior": "Pass only relevant `.agent-workflow-state/project-profile.md` facts, pointers, and configured commands into Implementation, and load `.agent-workflow/contracts/project-profile.md` before any recorded command executes."
   }
 ]

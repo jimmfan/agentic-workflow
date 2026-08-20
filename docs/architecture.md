@@ -291,8 +291,8 @@ memory and chat recollection.
 See [Workflow routing](routing.md), [Verification](verification.md), and
 [ADR-0010](../architecture-decisions/0010-separate-lifecycle-safety-and-reconciliation.md) plus
 [ADR-0011](../architecture-decisions/0011-use-project-owned-wayfinder-state.md),
-[ADR-0012](../architecture-decisions/0012-remove-global-active-index.md),
 [ADR-0013](../architecture-decisions/0013-enable-automatic-wayfinder-routing.md), and
 [ADR-0020](../architecture-decisions/0020-own-the-declared-provider-projection.md), plus
 [ADR-0016](../architecture-decisions/0016-reconcile-relevant-wayfinder-state-at-completion.md) and
-[ADR-0022](../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md).
+[ADR-0022](../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md), and
+[ADR-0028](../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md).

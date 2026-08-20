@@ -69,8 +69,12 @@ PROHIBITIONS = {
 }
 
 ASSERTION_KINDS = {
+    "glob_any_contains",
+    "glob_any_matches",
     "glob_contains",
     "glob_count",
+    "glob_none_contains",
+    "glob_none_matches",
     "path_exists",
     "path_not_exists",
     "path_contains",
@@ -87,6 +91,7 @@ SCENARIO_FIELDS = {
     "expect",
     "must_not",
     "live",
+    "blind_grading",
     "verification_command",
     "preserve_paths",
     "forbid_created_globs",
@@ -128,6 +133,7 @@ class Scenario:
     expect: tuple[str, ...]
     must_not: tuple[str, ...]
     live: bool
+    blind_grading: bool
     verification_command: str
     preserve_paths: tuple[PurePosixPath, ...]
     forbid_created_globs: tuple[str, ...]
@@ -210,10 +216,23 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
         path = safe_relative(item.get("path"), f"{item_label}.path")
         value = item.get("value")
         count = item.get("count")
-        needs_value = kind in {"glob_contains", "path_contains", "path_not_contains"}
+        needs_value = kind in {
+            "glob_any_contains",
+            "glob_any_matches",
+            "glob_contains",
+            "glob_none_contains",
+            "glob_none_matches",
+            "path_contains",
+            "path_not_contains",
+        }
         needs_count = kind == "glob_count"
         if needs_value and (not isinstance(value, str) or not value):
             raise BehaviorError(f"{item_label}.value must be a non-empty string")
+        if kind in {"glob_any_matches", "glob_none_matches"}:
+            try:
+                re.compile(value, re.IGNORECASE | re.DOTALL)
+            except re.error as exc:
+                raise BehaviorError(f"{item_label}.value is not a valid regular expression: {exc}") from exc
         if not needs_value and value is not None:
             raise BehaviorError(f"{item_label}.value is not valid for {kind}")
         if needs_count and (not isinstance(count, int) or isinstance(count, bool) or count < 0):
@@ -258,6 +277,9 @@ def load_scenario(path: Path) -> Scenario:
         raise BehaviorError(f"scenario {path.name} needs a request")
     if not isinstance(raw["live"], bool):
         raise BehaviorError(f"scenario {path.name} live must be true or false")
+    blind_grading = raw.get("blind_grading", False)
+    if not isinstance(blind_grading, bool):
+        raise BehaviorError(f"scenario {path.name} blind_grading must be true or false")
 
     starting_state = string_list(raw["starting_state"], f"{path.name}.starting_state")
     expect = string_list(raw["expect"], f"{path.name}.expect")
@@ -336,6 +358,7 @@ def load_scenario(path: Path) -> Scenario:
         expect=expect,
         must_not=must_not,
         live=raw["live"],
+        blind_grading=blind_grading,
         verification_command=verification_command.strip(),
         preserve_paths=preserve_paths,
         forbid_created_globs=forbid_created_globs,
@@ -487,26 +510,63 @@ def state_or_decision_changed(evidence: RunEvidence) -> bool:
 
 
 def evaluate_assertion(evidence: RunEvidence, assertion: Assertion) -> CheckResult:
-    if assertion.kind in {"glob_contains", "glob_count"}:
+    if assertion.kind in {
+        "glob_any_contains",
+        "glob_any_matches",
+        "glob_contains",
+        "glob_count",
+        "glob_none_contains",
+        "glob_none_matches",
+    }:
         pattern = assertion.path.as_posix()
         matches = sorted(
             relative
             for relative, entry in evidence.after.items()
             if entry.kind == "file" and fnmatch.fnmatchcase(relative, pattern)
         )
-        if assertion.kind == "glob_contains":
+        if assertion.kind in {
+            "glob_any_contains",
+            "glob_any_matches",
+            "glob_contains",
+            "glob_none_contains",
+            "glob_none_matches",
+        }:
             assert assertion.value is not None
-            missing: list[str] = []
+            containing: list[str] = []
+            unreadable: list[str] = []
             for relative in matches:
                 try:
                     content = evidence.workspace.joinpath(*PurePosixPath(relative).parts).read_text(
                         encoding="utf-8"
                     )
                 except (OSError, UnicodeError):
-                    missing.append(relative)
+                    unreadable.append(relative)
                     continue
-                if assertion.value.casefold() not in content.casefold():
-                    missing.append(relative)
+                if assertion.kind in {"glob_any_matches", "glob_none_matches"}:
+                    found = re.search(
+                        assertion.value,
+                        content,
+                        re.IGNORECASE | re.DOTALL,
+                    ) is not None
+                else:
+                    found = assertion.value.casefold() in content.casefold()
+                if found:
+                    containing.append(relative)
+            if assertion.kind in {"glob_any_contains", "glob_any_matches"}:
+                return CheckResult(
+                    f"assert:{assertion.path}:{assertion.kind.replace('_', '-')}",
+                    bool(containing),
+                    f"matched {len(matches)} files; expected text found in {containing}; "
+                    f"unreadable={unreadable}",
+                )
+            if assertion.kind in {"glob_none_contains", "glob_none_matches"}:
+                return CheckResult(
+                    f"assert:{assertion.path}:{assertion.kind.replace('_', '-')}",
+                    not containing and not unreadable,
+                    f"matched {len(matches)} files; prohibited text found in {containing}; "
+                    f"unreadable={unreadable}",
+                )
+            missing = sorted(set(matches) - set(containing))
             return CheckResult(
                 f"assert:{assertion.path}:glob-contains",
                 bool(matches) and not missing,
@@ -667,7 +727,11 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
 
 def copy_fixture(scenario: Scenario, destination: Path) -> Path:
     source = FIXTURE_ROOT / scenario.fixture
-    workspace = destination / scenario.id
+    workspace_name = scenario.id
+    if scenario.blind_grading:
+        opaque_id = hashlib.sha256(scenario.id.encode("utf-8")).hexdigest()[:12]
+        workspace_name = f"case-{opaque_id}"
+    workspace = destination / workspace_name
     shutil.copytree(source, workspace)
     return workspace
 
@@ -701,23 +765,19 @@ def exercise_fixture_lifecycle(scenario: Scenario) -> tuple[bool, str]:
 
 def build_prompt(scenario: Scenario) -> str:
     starting = "\n".join(f"- {item}" for item in scenario.starting_state)
-    expected = "\n".join(f"- {item}" for item in scenario.expect)
-    prohibited = "\n".join(f"- {item}" for item in scenario.must_not) or "- none beyond the project policy"
-    required_state = "\n".join(f"- {item}" for item in scenario.state_must_include) or "- none"
-    excluded_state = "\n".join(f"- {item}" for item in scenario.state_must_not_include) or "- none"
-    required_report = "\n".join(f"- {item}" for item in scenario.report_must_include) or "- none beyond the scenario request"
-    validation = scenario.verification_command or "Use the smallest validation supported by repository evidence."
-    return f"""You are running an opt-in Agentic Workflow behavioral smoke test in a disposable repository.
+    if scenario.blind_grading:
+        grading_context = """Use the smallest validation supported by repository evidence.
 
-Scenario: {scenario.name}
-
-Starting state:
-{starting}
-
-User request:
-{scenario.request}
-
-Expected observable behavior:
+The evaluator may inspect repository outcomes after the run. Do not infer or ask
+for its hidden grading criteria."""
+    else:
+        expected = "\n".join(f"- {item}" for item in scenario.expect)
+        prohibited = "\n".join(f"- {item}" for item in scenario.must_not) or "- none beyond the project policy"
+        required_state = "\n".join(f"- {item}" for item in scenario.state_must_include) or "- none"
+        excluded_state = "\n".join(f"- {item}" for item in scenario.state_must_not_include) or "- none"
+        required_report = "\n".join(f"- {item}" for item in scenario.report_must_include) or "- none beyond the scenario request"
+        validation = scenario.verification_command or "Use the smallest validation supported by repository evidence."
+        grading_context = f"""Expected observable behavior:
 {expected}
 
 Prohibited observable behavior:
@@ -733,7 +793,18 @@ Details that must appear in the report summary or blockers:
 {required_report}
 
 Repository validation guidance:
-{validation}
+{validation}"""
+    return f"""You are running an opt-in Agentic Workflow behavioral smoke test in a disposable repository.
+
+Scenario: {scenario.name}
+
+Starting state:
+{starting}
+
+User request:
+{scenario.request}
+
+{grading_context}
 
 Work normally within this repository. Do not expose hidden reasoning or chain-of-thought. Before finishing, write a concise observable report to {REPORT_PATH} with this JSON shape:
 {{

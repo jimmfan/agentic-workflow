@@ -66,7 +66,9 @@ unknowns and redundant evidence leaving current state, effort-lock serialization
 under concurrent allocation and retirement, uncommitted transient retirement,
 completed-effort/new-destination separation, explicit historical access, and
 ensuring that an unrelated existing effort neither captures a simple route nor
-gets loaded. The live Wayfinder contracts preserve
+gets loaded. It also checks selective U# promotion for authority-owned,
+external-approval, and cross-area-gating uncertainty without promoting incidental
+fog or requiring an exact child count. The live Wayfinder contracts preserve
 an unrelated effort during reconciliation, keep stale-state audits read-only,
 and require conflicting reconciliation to stop without guessing. Lifecycle
 coverage preserves legacy DEC/IMP/DBG files as opaque project data while current
