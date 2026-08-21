@@ -7,6 +7,17 @@ A decision-ready body of evidence about whether Agentic Workflow provides measur
 ## Notes
 
 - This is an evaluation-planning effort. Do not modify Agentic Workflow product behavior while working this map.
+- The manual EKS focused-Wayfinder comparison is prepared and frozen. A and B
+  preserve the same dirty working-directory snapshot, Agentic Workflow
+  `wayfinder-replace` revision `1ac833d08640ff5eb5246355273c4105fb40e5bf`,
+  package/provider projection, empty initial Wayfinder state, prompt, and
+  `Terra 5.6` Medium model setting; only the selected VS Code agent differs.
+  The [protocol](../../../evals/manual-vscode/eks-focused-wayfinder-v1/protocol.md)
+  also excludes local/Copilot memory and user/organization customization where
+  the host exposes controls. The current Codex host cannot execute and capture
+  the real VS Code custom-agent condition, so the paired live runs and evidence
+  return remain the ready boundary. Supporting source research is
+  [recorded here](../../../docs/focused-wayfinder-eks-experiment-research.md).
 - The human has authorized [T5 — Run controlled ITBench Wayfinder evaluation](tickets/T5-controlled-itbench-wayfinder-evaluation.md). This ticket carries reconnaissance, isolated evaluation-infrastructure work, execution, grading, and reporting inside the map while the product remains frozen.
 - [T5 — Run controlled ITBench Wayfinder evaluation](tickets/T5-controlled-itbench-wayfinder-evaluation.md) is complete. Its full 54-run public-data-derivative campaign found no reliable correctness or reasoning advantage for normal Agentic Workflow or explicit Wayfinder on bounded offline SRE diagnosis, while both workflow treatments increased observed cost. B selected Debugging rather than Wayfinder in all 18 runs; forced Wayfinder created no durable state; Domain Modeling never ran. Exact native entity matching has material controller/child and condition-validity defects, so preserve the primary score and use the blinded adjudication packet before any product decision. The canonical report is [`evals/itbench-wayfinder/reports/evaluation-report.md`](../../../evals/itbench-wayfinder/reports/evaluation-report.md).
 - Canonical evidence remains in [`evals/`](../../../evals/), especially its campaign records, result JSON, and reports. Historical or context-limited runs remain directional evidence and are not deleted or retroactively regraded.
@@ -41,3 +52,10 @@ A decision-ready body of evidence about whether Agentic Workflow provides measur
 - Treating the current small campaigns as a general benchmark of coding-agent intelligence or as statistically conclusive product evidence.
 - Deleting, rewriting, or silently combining historical result JSON produced under different evaluators or fairness conditions.
 - Changing Agentic Workflow or Wayfinder product behavior in response to the smoke; product-design concerns remain separately recorded hypotheses.
+
+## Next work
+
+Run A and B manually in fresh VS Code Copilot chats under the frozen protocol,
+then preserve chat/debug exports and post-run repositories. Evaluate each
+condition independently with the frozen comparison template before comparing
+them; make no Agentic Workflow product change during the pair.
