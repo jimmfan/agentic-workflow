@@ -205,6 +205,15 @@ class LifecycleAcceptanceTests(unittest.TestCase):
     def test_install_creates_only_current_framework_and_empty_state_root(self) -> None:
         self.assert_ok(self.adopt("install"))
         self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
+        self.assertTrue(
+            (self.project / ".agent-workflow/hooks/inject_route_marker_reminder.py").is_file()
+        )
+        self.assertEqual(
+            json.loads(
+                (self.project / ".github/hooks/agentic-workflow-route-marker.json").read_text()
+            )["hooks"]["SessionStart"][0]["command"],
+            "python3 .agent-workflow/hooks/inject_route_marker_reminder.py",
+        )
         self.assertTrue((self.project / ".agent-workflow-state").is_dir())
         self.assertEqual(list((self.project / ".agent-workflow-state").iterdir()), [])
         self.assertFalse((self.project / ".agent-workflow/templates/active-state.md").exists())

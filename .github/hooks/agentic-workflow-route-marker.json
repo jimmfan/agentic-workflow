@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "python3 .agent-workflow/hooks/inject_route_marker_reminder.py",
+        "windows": "py -3 .agent-workflow\\hooks\\inject_route_marker_reminder.py",
+        "timeout": 5
+      }
+    ]
+  }
+}

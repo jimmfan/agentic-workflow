@@ -118,6 +118,10 @@ def expected_mappings() -> list[dict[str, str]]:
     mappings = [
         {"source": "root/AGENTS.md.template", "target": "AGENTS.md"},
         {"source": "root/CLAUDE.md.template", "target": "CLAUDE.md"},
+        {
+            "source": "hooks/vscode-route-marker.json",
+            "target": ".github/hooks/agentic-workflow-route-marker.json",
+        },
     ]
     skills_root = PAYLOAD_ROOT / "skills"
     for skill in sorted(skills_root.glob("*/SKILL.md")):
@@ -129,7 +133,12 @@ def expected_mappings() -> list[dict[str, str]]:
         )
     workflow_root = PAYLOAD_ROOT / "agent-workflow"
     for path in sorted(workflow_root.rglob("*")):
-        if path.is_file() and not path.is_symlink():
+        if (
+            path.is_file()
+            and not path.is_symlink()
+            and "__pycache__" not in path.parts
+            and path.suffix != ".pyc"
+        ):
             relative = path.relative_to(PAYLOAD_ROOT).as_posix()
             target = ".agent-workflow/" + path.relative_to(workflow_root).as_posix()
             mappings.append({"source": relative, "target": target})
@@ -227,7 +236,10 @@ def check_router_contract() -> None:
     normalized_routing = " ".join(routing.split())
     normalized_durable = " ".join(durable.split())
     require("MUST route every request" in agents, "root policy lacks mandatory routing")
-    require("`direct`" in agents and "minimum useful process" in routing, "router lacks the minimum/direct contract")
+    require(
+        "Direct is default" in agents and "minimum useful process" in routing,
+        "router lacks the minimum/direct contract",
+    )
     require("MUST NOT" in agents and "authority" in agents, "root policy lacks the authorization boundary")
     for required in (
         "Direct is default",
@@ -264,6 +276,30 @@ def check_router_contract() -> None:
         "durable-state contract lacks legacy record preservation",
     )
     require("wayfinder-state.md" in agents and "unrelated map" in agents, "root policy lacks Wayfinder loading guidance")
+    require(
+        "## Report the route" not in agents
+        and "[route: router" not in agents,
+        "root policy retains mechanical route-marker reporting",
+    )
+    hook_config = json.loads(
+        (PAYLOAD_ROOT / "hooks" / "vscode-route-marker.json").read_text(encoding="utf-8")
+    )
+    session_start_hooks = hook_config.get("hooks", {}).get("SessionStart")
+    require(
+        isinstance(session_start_hooks, list) and len(session_start_hooks) == 1,
+        "route-marker SessionStart hook is missing",
+    )
+    session_start_hook = session_start_hooks[0]
+    require(
+        isinstance(session_start_hook, dict)
+        and session_start_hook.get("type") == "command"
+        and session_start_hook.get("command")
+        == "python3 .agent-workflow/hooks/inject_route_marker_reminder.py"
+        and session_start_hook.get("windows")
+        == "py -3 .agent-workflow\\hooks\\inject_route_marker_reminder.py"
+        and session_start_hook.get("timeout") == 5,
+        "route-marker SessionStart hook configuration drifted",
+    )
     normalized_wayfinder = " ".join(wayfinder.split())
     for required in (
         "unknowns/",

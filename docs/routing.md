@@ -19,7 +19,7 @@ a weighted complexity score. Explicit use and opt-out remain authoritative.
 
 The compact always-loaded rules live in `payload/root/AGENTS.md.template`.
 Detailed overlap resolution, composition, transitions, provider fallback,
-unclear durable-resume ownership, and route-marker edge cases live in
+unclear durable-resume ownership, and route-marker semantics live in
 `payload/agent-workflow/routing.md`. They load only after the thin gate identifies
 one of those needs, not for Direct work or one obvious selected skill.
 
@@ -27,8 +27,9 @@ Runtime ownership is deliberately split:
 
 | Owner | Runtime responsibility |
 |---|---|
-| Root `AGENTS.md` | Every-request routing, authorization, preservation, truthfulness, progressive-loading gates, and the marker requirement |
+| Root `AGENTS.md` | Every-request routing, authorization, preservation, truthfulness, and progressive-loading gates |
 | `routing.md` | Selection criteria, route transitions, relevant resume, provider resolution, workflow composition, and detailed marker semantics |
+| VS Code SessionStart hook | One-time marker reminder only; it does not select, validate, or enforce a route |
 | `providers.json` | Current host discovery, invocation, availability, configuration, and adapter facts |
 | Provider and local skills | The selected workflow's methodology and its provider-specific execution boundary |
 | State contracts | Storage, identifiers, progressive state loading, conflict handling, reconciliation, and re-entry mechanics |
@@ -110,5 +111,8 @@ marker such as:
 ```
 
 The marker is required observability, not telemetry or proof that work ran, and
-must not trigger additional workflow work. Detailed syntax and terminal outcomes
-remain owned by the installed routing contract.
+must not trigger additional workflow work. Detailed syntax, truthful execution
+semantics, and terminal outcomes remain owned by the installed routing contract.
+The VS Code SessionStart hook supplies the marker reminder once per agent
+session. It avoids a corrective continuation, but does not validate the final
+response or guarantee compliance.

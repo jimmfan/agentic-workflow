@@ -17,6 +17,10 @@
       "target": ".agent-workflow/contracts/wayfinder-state.md"
     },
     {
+      "source": "agent-workflow/hooks/inject_route_marker_reminder.py",
+      "target": ".agent-workflow/hooks/inject_route_marker_reminder.py"
+    },
+    {
       "source": "agent-workflow/providers.json",
       "target": ".agent-workflow/providers.json"
     },
@@ -43,6 +47,10 @@
     {
       "source": "skills/workflow-verification/SKILL.md",
       "target": ".agents/skills/workflow-verification/SKILL.md"
+    },
+    {
+      "source": "hooks/vscode-route-marker.json",
+      "target": ".github/hooks/agentic-workflow-route-marker.json"
     },
     {
       "source": "root/AGENTS.md.template",

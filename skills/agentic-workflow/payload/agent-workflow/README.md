@@ -13,7 +13,9 @@ contents, or remove it.
 ## Contents
 
 - `routing.md`: detailed minimum-workflow selection, composition, invocation,
-  fallback, authorization, evidence, and required route-marker rules.
+  fallback, authorization, evidence, and route-marker semantics.
+- `hooks/inject_route_marker_reminder.py`: VS Code SessionStart reminder for
+  the marker's truthful final-line semantics.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/durable-state.md`: current durable ownership, canonical-artifact,
   legacy-state preservation, and optional project-profile rules.
@@ -26,8 +28,12 @@ contents, or remove it.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
 
-The root policy and `routing.md` are the runtime. No hook, daemon, lifecycle
-controller, or telemetry analyzer is installed.
+The root policy and `routing.md` are the semantic runtime. VS Code consumers
+also receive one small SessionStart hook that gives the model a route-marker
+reminder once per agent session; it does not route, verify execution, or write
+state.
+There is no hook framework, daemon, lifecycle controller, or telemetry
+analyzer.
 
 ## Ownership
 
@@ -81,5 +87,8 @@ Every user-facing final response ends with one compact route marker such as:
 [route: router -> debugging]
 ```
 
-It is instruction-level observability, not telemetry or proof of execution, and
-must not trigger additional workflow work.
+Its meaning remains instruction-level observability, not telemetry or proof of
+execution. In VS Code, the SessionStart hook supplies the reminder once without
+blocking completion; it must not trigger routing or other workflow work. The
+model can still omit or malform a marker, so this is guidance rather than
+enforcement.

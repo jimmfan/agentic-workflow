@@ -16,6 +16,8 @@ subprocess.
 - `test_routing.py` validates representative selection, lazy specialist
   invocation, authorization, Wayfinder resume, and durable-effect decisions
   without requiring one exact trace.
+- `test_session_start_hook.py` exercises the installed VS Code SessionStart
+  reminder output without depending on transcript parsing or Stop-hook blocks.
 - `test_wayfinder_state.py` validates the authored, installed, and generated
   settlement contract plus a deterministic state-transition oracle for
   current-state allocation, effort-lock serialization, reference-safe

@@ -30,8 +30,10 @@ flowchart TD
 ```
 
 The root `AGENTS.md` policy, selected skills, and progressively loaded
-`.agent-workflow/routing.md` are the runtime. There is no lifecycle controller or
-host hook adapter. The root starts Direct, uses installed skill descriptions as
+`.agent-workflow/routing.md` are the semantic runtime. A single optional VS Code
+SessionStart adapter supplies a route-marker reminder once per agent session;
+it does not choose routes, validate their truthfulness, or enforce compliance.
+There is no lifecycle controller or generic hook framework. The root starts Direct, uses installed skill descriptions as
 the cheap selection interface, and loads the detailed router only for unresolved
 ambiguity, composition, material provider fallback, or unclear durable-resume
 ownership. Host sandboxing and approvals remain authoritative. Selection,
@@ -55,6 +57,8 @@ optional U#/E#/F#/D# knowledge live under
 A required response marker such as
 `[route: router -> discovery -> research]` provides sufficient v0 route
 visibility. It is not telemetry, execution evidence, or a routing prerequisite.
+The SessionStart hook provides guidance only, avoiding response interruption and
+transcript parsing.
 
 ## Filesystem ownership
 

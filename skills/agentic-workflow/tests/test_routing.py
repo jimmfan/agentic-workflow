@@ -56,11 +56,13 @@ class RoutingContractTests(unittest.TestCase):
                 for provider in scenario["provider_invocations"]:
                     self.assertTrue({"name", "policy", "invocation", "executed"} <= set(provider))
 
-    def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
+    def test_route_marker_semantics_are_progressively_loaded_and_session_reminded(self) -> None:
         routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        hook = json.loads((PACKAGE_ROOT / "payload/hooks/vscode-route-marker.json").read_text())
         normalized_routing = " ".join(routing.split())
-        self.assertIn("Every user-facing final response MUST end with exactly one", root_policy)
+        self.assertNotIn("## Report the route", root_policy)
+        self.assertNotIn("[route: router", root_policy)
         self.assertIn("Every user-facing final response ends with exactly one", normalized_routing)
         self.assertIn("[route: router → implement → verification]", normalized_routing)
         self.assertIn("<skill>-handoff", normalized_routing)
@@ -68,6 +70,21 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Never reroute, load skills, execute work", normalized_routing)
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".agent-workflow/runtime", routing)
+        self.assertEqual(
+            hook,
+            {
+                "hooks": {
+                    "SessionStart": [
+                        {
+                            "type": "command",
+                            "command": "python3 .agent-workflow/hooks/inject_route_marker_reminder.py",
+                            "windows": "py -3 .agent-workflow\\hooks\\inject_route_marker_reminder.py",
+                            "timeout": 5,
+                        }
+                    ]
+                }
+            },
+        )
 
     def test_project_adr_namespace_defaults_without_overriding_existing_convention(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -454,7 +471,6 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("trivial low-risk edits stay direct", normalized_routing.lower())
         self.assertIn("no safe authorized fallback exists", normalized_routing)
         self.assertIn("report the host-native activity", normalized_routing)
-        self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn("selection did not become equivalent execution", normalized_routing)
         self.assertIn("omit the unavailable provider", normalized_routing)
 
