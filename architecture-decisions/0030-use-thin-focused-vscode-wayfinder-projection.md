@@ -7,10 +7,10 @@
 ## Context
 
 The current Wayfinder runtime is a portable provider projection used by a
-general-purpose agent after routing selects Wayfinder. Phase 1 tests whether a
-native VS Code custom agent with a narrower role and capability set improves
-durable project understanding without adding another methodology, state model,
-or future worker architecture.
+general-purpose agent after Wayfinder is selected. Phase 1 asks whether a native
+VS Code custom agent with a narrower role and capability set improves Wayfinder
+behavior when both conditions use the same canonical methodology and state
+contract. Router selection is not part of that primary causal comparison.
 
 VS Code repository custom agents can allowlist tools but cannot restrict edit
 access by filesystem path. Repository `PreToolUse` hooks can deny recognized
@@ -54,9 +54,13 @@ representations fail open rather than being guessed at.
 Evaluate the hypothesis with the existing behavioral harness. Add blind cases
 for clean resume, stale-state conflict, domain-to-architecture navigation,
 authority, missing knowledge, and implementation readiness, plus deterministic
-allowed/denied guard cases. Run the same behavioral cases against baseline and
-focused adapters when a live VS Code adapter is available; deterministic tests
-do not claim live-editor behavior.
+allowed/denied guard cases. For the primary live comparison, explicitly invoke
+canonical Wayfinder in both conditions: A uses the built-in general Agent and B
+selects the workspace `Wayfinder` agent. Keep every other prompt, model,
+permission, fixture, initial-state, and evaluator input fixed. Neutral prompts
+that let A's router choose whether to use Wayfinder belong to a separate later
+router-vs-focused product experiment. Deterministic tests do not claim
+live-editor behavior.
 
 ## Consequences
 
@@ -73,9 +77,10 @@ should rarely affect them, but this is a host limitation rather than focused
 agent isolation. Universal durable-state protection would require a real
 filesystem or sandbox boundary and is outside Phase 1.
 
-No baseline-versus-focused behavioral conclusion exists until both conditions
-are run in a live host. The deterministic suite establishes packaging, prompt
-boundaries, scenario integrity, and the current recognized hook behavior only.
+No general-Wayfinder-versus-focused-Wayfinder behavioral conclusion exists until
+both conditions are run in a live host with Wayfinder held constant. The
+deterministic suite establishes packaging, prompt boundaries, scenario
+integrity, and the current recognized hook behavior only.
 
 ## Alternatives considered
 

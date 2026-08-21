@@ -11,16 +11,22 @@
 
 The Phase 1 focused Wayfinder is implemented as a thin VS Code repository custom
 agent, not a second Wayfinder implementation. It references the same installed
-canonical Wayfinder runtime and state contract used by the general-agent route.
-The distributable package installs all three pieces: the custom-agent wrapper,
-the state contract, and the provider-projected Wayfinder skill. Therefore a fair
-A/B preparation should install the exact same Agentic Workflow package into both
-frozen EKS copies and vary only the selected VS Code agent: general Agent mode
-for A, `Wayfinder` for B.
+canonical Wayfinder runtime and state contract used by a general-purpose agent
+after Wayfinder is selected. The distributable package installs all three
+pieces: the custom-agent wrapper, the state contract, and the provider-projected
+Wayfinder skill.
+
+The corrected causal comparison must hold that methodology constant. Both EKS
+runs should receive the same prompt explicitly beginning `Use Wayfinder to
+orient yourself...`; A runs it through the built-in general Agent and B through
+the workspace `Wayfinder` custom agent. A prompt that leaves Wayfinder selection
+to the root router instead tests the combined effect of routing plus the focused
+host projection and should be reserved for a separate later experiment.
 
 The source repository records Phase 1 as implemented and deterministically
-verified, but explicitly says no live VS Code baseline-versus-focused run has
-occurred. This Codex environment can inspect the VS Code CLI, but it does not
+verified, but explicitly says no live VS Code
+general-Wayfinder-versus-focused-Wayfinder run has occurred. This Codex
+environment can inspect the VS Code CLI, but it does not
 provide an interactive/capturable VS Code Copilot chat surface, and the installed
 extension inventory does not list GitHub Copilot. The actual custom-agent
 condition should consequently be run manually in VS Code rather than simulated
@@ -34,6 +40,91 @@ here.
   execution environment.
 - **Inference**: an experimental or operational conclusion drawn from those
   facts and observations.
+
+## Corrected causal contrast and prompt audit
+
+The authoritative question for the manual EKS comparison is:
+
+> Does a focused Wayfinder host projection improve Wayfinder behavior compared
+> with a general-purpose agent using the same canonical Wayfinder methodology
+> and state contract?
+
+The exact shared prompt is:
+
+> Use Wayfinder to orient yourself in this repository and tell me where this project currently stands. It is an intentionally incomplete EKS/Terraform learning project. Determine what has actually been established so far, what important uncertainty remains, and what the most useful next boundary is. Do not implement the next exercise.
+
+This explicit selection is consistent with the installed routing contract:
+explicit compatible skill requests select the named skill, explicit Wayfinder
+use is authoritative, and the general agent then reads the state contract before
+the relevant map. Source: [routing selection and re-entry rules](../.agent-workflow/routing.md#L20-L25)
+and [explicit Wayfinder handling](../.agent-workflow/routing.md#L44-L61).
+
+### Audit result in the current working tree
+
+- **Manual protocol corrected.** Its purpose now states the authoritative causal
+  question, says both conditions explicitly use Wayfinder, and excludes router
+  selection from the primary comparison. Its condition table holds the canonical
+  runtime and state contract constant, its exact prompt matches the block above,
+  and its validity rules reject a run that did not actually apply the canonical
+  Wayfinder dependencies. It separately reserves neutral router selection for a
+  later protocol. Sources: [protocol purpose](../evals/manual-vscode/eks-focused-wayfinder-v1/protocol.md#L3-L18),
+  [conditions](../evals/manual-vscode/eks-focused-wayfinder-v1/protocol.md#L54-L70),
+  [exact prompt](../evals/manual-vscode/eks-focused-wayfinder-v1/protocol.md#L94-L100),
+  and [validity and later-experiment boundary](../evals/manual-vscode/eks-focused-wayfinder-v1/protocol.md#L230-L258).
+- **Comparison template corrected.** It now states the causal question before
+  grading, treats Wayfinder use as a controlled constant, validates both the
+  explicit shared prompt and actual canonical runtime/contract use, and asks
+  what benefit is attributable solely to the focused host projection. Sources:
+  [template causal framing](../evals/manual-vscode/eks-focused-wayfinder-v1/comparison-template.md#L1-L10),
+  [validity controls](../evals/manual-vscode/eks-focused-wayfinder-v1/comparison-template.md#L38-L59),
+  and [conclusion fields](../evals/manual-vscode/eks-focused-wayfinder-v1/comparison-template.md#L180-L190).
+- **ADR, focused map, and behavioral documentation corrected.** ADR-0030 now
+  explicitly excludes router selection from the primary causal comparison and
+  reserves neutral prompts for a later router-vs-focused experiment. The focused
+  effort map makes the manual EKS pair the next work and lists canonical
+  Wayfinder use among the fixed inputs. Behavioral-testing documentation makes
+  the same primary/supporting distinction. Sources: [ADR-0030](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md#L7-L13),
+  [ADR evaluation boundary](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md#L54-L63),
+  [focused effort frontier](../.agent-workflow-state/wayfinder/focused-wayfinder-vscode-projection/map.md#L42-L72),
+  and [behavioral comparison boundary](behavioral-testing.md#L120-L148).
+- **Prompt search complete.** A tracked-source search found the exact corrected
+  EKS prompt in the manual protocol and this research note, plus a short prompt
+  pointer in the evaluation-program map. No script, fixture, TOML scenario, or
+  other tracked source embeds either the old full prompt or another EKS prompt
+  variant. The generic live runner only interpolates each separate TOML
+  scenario's request. Sources:
+  [evaluation-program next work](../.agent-workflow-state/wayfinder/evaluation-program/map.md#L62-L68)
+  and [live prompt composition](../skills/agentic-workflow/tests/behavior.py#L797-L805).
+
+### Separate later router-vs-focused experiment
+
+- **The six existing blind behavioral scenarios remain neutral supporting
+  cases.** Their natural-language requests intentionally avoid naming Wayfinder
+  while their fixtures contain relevant current state. A general adapter versus
+  focused adapter run over those prompts also measures automatic routing unless
+  the general adapter separately guarantees Wayfinder execution. Preserve that
+  as a later router-vs-focused experiment; do not treat it as evidence for the
+  corrected manual EKS host-projection claim. Sources:
+  [behavioral comparison description](behavioral-testing.md#L120-L147) and one
+  representative [neutral blind scenario](../skills/agentic-workflow/tests/scenarios/focused-wayfinder-domain-architecture-navigation.toml#L1-L20).
+- **Supporting test documentation is aligned.** Both the behavioral-testing
+  guide and the test README now describe the six neutral cases as supporting
+  behavior coverage and classify a general-agent-versus-focused-agent run over
+  them as the broader router-vs-focused product experiment. The scenarios and
+  fixtures themselves remain unchanged. Sources:
+  [behavioral-testing boundary](behavioral-testing.md#L120-L148) and
+  [test README](../skills/agentic-workflow/tests/README.md#L53-L68).
+- **Product/runtime artifacts need no correction.** The custom agent, canonical
+  runtime, state contract, provider adapter, hooks, and frozen A/B repository
+  contents are already the intended common inputs. The product architecture
+  explicitly says the focused wrapper adds no second methodology and does not
+  change routing, state, or authority semantics. Source:
+  [focused projection architecture](architecture.md#L65-L85).
+- **Inference.** The original non-explicit prompt remains useful only for the
+  later product-level question: whether the focused custom agent outperforms
+  normal general-agent routing plus whatever route it selects. That result cannot
+  isolate the value of focusing Wayfinder because a failure by A to select
+  Wayfinder is itself part of the treatment.
 
 ## 1. Current Phase 1 state
 
@@ -50,19 +141,21 @@ here.
   `.github/agents/wayfinder.agent.md`. It keeps the portable runtime and state
   contract canonical, adds no automatic handoff, allows only `read`, `search`,
   `edit`, and `execute`, and disables subagent invocation. It also says no
-  baseline-versus-focused conclusion exists until both conditions run in a live
-  host. Source: [ADR-0030](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md#L22-L59)
-  and its [live-run limitation](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md#L61-L78).
+  general-Wayfinder-versus-focused-Wayfinder conclusion exists until both
+  conditions run in a live host with Wayfinder held constant. Source:
+  [ADR-0030](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md#L22-L63)
+  and its [live-run limitation](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md#L65-L83).
 - **Repository fact.** The current effort map says the custom agent, hook, and
   distributable artifacts are synchronized and the deterministic gate passed,
   but the behavioral hypothesis remains inconclusive because no live VS Code
-  A/B run was performed. It names a matched general/focused run with model,
-  permissions, fixture revision, and evaluator held fixed as the next work.
-  Source: [focused projection map](../.agent-workflow-state/wayfinder/focused-wayfinder-vscode-projection/map.md#L28-L64).
-- **Repository fact.** The behavioral documentation likewise says the generic
-  command runner cannot select a VS Code custom agent and forbids a comparison
-  claim until a real host adapter supplies both conditions. Source:
-  [Phase 1 comparison contract](behavioral-testing.md#L120-L137).
+  A/B run was performed. It names the prepared manual EKS pair with canonical
+  Wayfinder use, prompt, model, effort, permissions, snapshot, framework version,
+  and initial state held fixed as the next work. Source:
+  [focused projection map](../.agent-workflow-state/wayfinder/focused-wayfinder-vscode-projection/map.md#L42-L72).
+- **Repository fact.** The behavioral documentation now distinguishes the
+  primary matched-Wayfinder EKS comparison from the neutral six-case
+  router-vs-focused experiment and says a real host adapter is required for
+  either. Source: [Phase 1 comparison contract](behavioral-testing.md#L131-L147).
 
 ## 2. What the focused projection carries and derives from
 
@@ -128,12 +221,14 @@ The dependency chain is intentionally short:
 - **Inference.** No Agentic Workflow repository file should differ between A and
   B. Both should contain the custom-agent wrapper, canonical runtime, state
   contract, root policy, hooks, and provider projection produced from the same
-  package bytes. A does not select the wrapper and allows the general agent to
-  route normally; B explicitly selects the `Wayfinder` custom agent. Removing
-  the wrapper from A would add an unnecessary repository-content confound.
+  package bytes. A selects the built-in general Agent but receives the explicit
+  `Use Wayfinder...` prompt; B selects the `Wayfinder` custom agent and receives
+  that identical prompt. Removing the wrapper from A would add an unnecessary
+  repository-content confound.
 - **Inference.** The repository-wide hook is a controlled constant, not part of
   the treatment difference, because it applies in both workspaces. The intended
-  treatment is the focused host wrapper and its tool/role restriction.
+  treatment is only the focused host wrapper and its tool/role restriction, not
+  whether Wayfinder is selected.
 
 ## 3. Installation/bootstrap path for disposable consuming projects
 
@@ -220,9 +315,11 @@ The dependency chain is intentionally short:
 
 - Freeze the EKS source once, duplicate that exact snapshot, and install the
   exact same Agentic Workflow commit into each copy.
-- Keep the custom-agent file present in both copies. Vary only general Agent mode
-  versus explicitly selected `Wayfinder` mode.
-- Use the exact same model, permissions, prompt, and fresh-chat starting state.
+- Keep the custom-agent file present in both copies. Select general Agent mode
+  for A and `Wayfinder` mode for B, but explicitly request Wayfinder in the exact
+  shared prompt so both use the same methodology and state contract.
+- Use the exact same model, permissions, corrected prompt, and fresh-chat
+  starting state.
 - Treat any missing live telemetry as missing evidence rather than reconstructing
   it from the final prose.
 - Do not claim the focused condition ran until VS Code actually selected and

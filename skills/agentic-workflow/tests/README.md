@@ -60,11 +60,12 @@ These JSON catalogs are validated directly by `verify_package.py`. They are not
   scenario without asking for hidden reasoning.
 
 Every scenario marked `live = true` runs by default when the opt-in live command
-is used. Six blind focused-Wayfinder cases can be selected as a fixed comparison
-set for a general agent adapter and a VS Code adapter that selects the focused
-agent. They cover clean resume, stale conflict, domain-to-architecture
-navigation, authority, missing knowledge, and the implementation-ready boundary.
-Live cases are not part of ordinary pull requests.
+is used. Six blind focused-Wayfinder cases cover clean resume, stale conflict,
+domain-to-architecture navigation, authority, missing knowledge, and the
+implementation-ready boundary. Their neutral prompts make a general-agent
+versus focused-agent run a broader router-vs-focused product experiment, not the
+primary host-projection comparison where both conditions explicitly use
+canonical Wayfinder. Live cases are not part of ordinary pull requests.
 
 The broader deterministic catalog also covers Domain Modeling surfacing
 consequential uncertainty, authority-dependent choices asking a concrete human

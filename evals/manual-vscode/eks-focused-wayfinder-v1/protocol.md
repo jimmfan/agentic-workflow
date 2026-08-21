@@ -2,9 +2,14 @@
 
 ## Purpose and stop boundary
 
-Test whether the Phase 1 focused VS Code Wayfinder coordinator provides better
-project orientation and durable coordination than normal Agentic Workflow
-behavior through the general VS Code Copilot Agent.
+Answer one causal question:
+
+> Does a focused Wayfinder host projection improve Wayfinder behavior compared
+> with a general-purpose agent using the same canonical Wayfinder methodology
+> and state contract?
+
+Both conditions explicitly use Wayfinder. The primary comparison does not test
+whether the general router selects Wayfinder.
 
 This is a manual live-host comparison. The current Codex environment cannot
 execute and capture a real VS Code Copilot custom-agent session, so preparation
@@ -53,13 +58,16 @@ including `.github/agents/wayfinder.agent.md`, the canonical Wayfinder skill,
 the Wayfinder state contract, the root router, and the VS Code hooks.
 
 - A selects the built-in general `Agent` in a fresh VS Code Copilot session.
-  The root router decides whether and how to use canonical Wayfinder.
+  The shared prompt explicitly requires it to use the installed canonical
+  Wayfinder runtime and state contract without the focused host wrapper.
 - B selects the workspace `Wayfinder` custom agent in a fresh VS Code Copilot
-  session. The custom agent is a thin host wrapper over the same canonical
-  runtime and state contract.
+  session. The same shared prompt explicitly requires Wayfinder, and the custom
+  agent is a thin host wrapper over the same canonical runtime and state
+  contract.
 
 No repository configuration differs. The treatment is the selected host agent
-and the focused agent's declared tool/role restriction.
+and therefore the focused projection's declared role/tool restriction. Canonical
+Wayfinder selection is a controlled constant.
 
 ## Controlled settings
 
@@ -88,7 +96,7 @@ source snapshot before retrying.
 Paste these four sentences exactly, with no prefix, suffix, file attachment, or
 follow-up hint:
 
-> Orient yourself in this repository and tell me where this project currently stands. It is an intentionally incomplete EKS/Terraform learning project. Determine what has actually been established so far, what important uncertainty remains, and what the most useful next boundary is. Do not implement the next exercise.
+> Use Wayfinder to orient yourself in this repository and tell me where this project currently stands. It is an intentionally incomplete EKS/Terraform learning project. Determine what has actually been established so far, what important uncertainty remains, and what the most useful next boundary is. Do not implement the next exercise.
 
 ## Before running either condition
 
@@ -155,7 +163,9 @@ affected run instead of assuming isolation.
 2. Create a new, empty Copilot chat.
 3. Select the built-in general `Agent`, not `Wayfinder`, `Plan`, `Ask`, or
    another custom agent.
-4. Reconfirm `Terra 5.6 · Medium` and the shared permission level.
+4. Reconfirm `Terra 5.6 · Medium` and the shared permission level. The exact
+   prompt supplies the explicit Wayfinder invocation; do not add a slash
+   command, attachment, or separate instruction.
 5. Paste the exact prompt once and let the agent finish.
 6. Approve only ordinary in-scope prompts required to continue, using the same
    policy intended for B. Do not answer substantive clarification questions or
@@ -225,6 +235,10 @@ changes are not lost.
   than debug logs and repository artifacts.
 - A state-free run is valid if the behavior honestly decided durable state was
   unnecessary; it is not automatically success or failure.
+- Both runs must actually apply the canonical Wayfinder runtime and state
+  contract. If A routes away from Wayfinder or B does not load the selected
+  workspace agent and its canonical dependencies, the primary mechanism was
+  not exercised and the affected run is invalid for this causal comparison.
 - Any implementation of the next exercise, original-repository mutation,
   prompt contamination, model/effort mismatch, reused chat history, or
   simulated focused-agent behavior is a protocol violation and must be
@@ -234,3 +248,11 @@ changes are not lost.
   context, label the run qualified or invalid according to whether the leaked
   content could affect orientation. Do not inspect and hand-delete user-owned
   memories merely to force a clean result.
+
+## Separate later router experiment
+
+A neutral-prompt comparison that lets the general Agent's router decide whether
+to use Wayfinder can test broader product behavior. Preserve that as a separate
+later router-vs-focused experiment with its own protocol and results. Do not
+combine it with, substitute it for, or use it to support this primary Phase 1
+host-projection comparison.

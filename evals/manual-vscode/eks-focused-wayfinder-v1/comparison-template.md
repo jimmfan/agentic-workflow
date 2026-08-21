@@ -4,6 +4,11 @@ Use this only after both runs and their artifacts are frozen. Review each
 condition independently before revealing or using the other condition's
 assessment. Treatment labels do not earn credit.
 
+The causal question is whether the focused Wayfinder host projection improves
+Wayfinder behavior over a general-purpose agent that uses the same canonical
+Wayfinder methodology and state contract. Wayfinder use is a controlled
+constant, not an outcome credited to either condition.
+
 ## Evidence hierarchy
 
 Prefer, in order:
@@ -38,7 +43,7 @@ Complete before semantic grading.
 | --- | --- | --- |
 | Correct isolated workspace |  |  |
 | Fresh empty chat |  |  |
-| Exact prompt only |  |  |
+| Exact shared prompt explicitly invokes Wayfinder |  |  |
 | `Terra 5.6` |  |  |
 | `Medium` reasoning |  |  |
 | Same permission policy |  |  |
@@ -48,6 +53,7 @@ Complete before semantic grading.
 | Organization customization disabled |  |  |
 | Cross-device session history sync disabled |  |  |
 | Intended selected agent |  |  |
+| Canonical Wayfinder runtime/state contract actually used |  |  |
 | No next-exercise implementation |  |  |
 | Original repository unchanged |  |  |
 | Result status: valid / qualified / invalid |  |  |
@@ -176,7 +182,7 @@ reconstruction or prevents a consequential mistake.
 - Plain-English result:
 - Does B improve project orientation over A?
 - Does B improve durable coordination over A?
-- What benefit, if any, is attributable to the focused host/agent condition?
+- What benefit, if any, is attributable solely to the focused host projection?
 - What overhead or regression accompanies that benefit?
 - Important confounders or missing evidence:
 - Result classification: supports hypothesis / does not support hypothesis /

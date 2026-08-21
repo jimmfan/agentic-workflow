@@ -119,7 +119,8 @@ tests when prompt contamination is not the behavior under evaluation.
 
 ## Focused Wayfinder Phase 1 comparison
 
-Six blind scenarios isolate the Phase 1 hypothesis:
+Six blind scenarios cover behavior dimensions relevant to the Phase 1
+hypothesis:
 
 - `focused-wayfinder-clean-resume`
 - `focused-wayfinder-stale-conflict`
@@ -128,13 +129,23 @@ Six blind scenarios isolate the Phase 1 hypothesis:
 - `focused-wayfinder-missing-knowledge`
 - `focused-wayfinder-ready-boundary`
 
-Run the exact same six IDs once with the current general agent adapter and once
-with an adapter that selects `.github/agents/wayfinder.agent.md`. Keep model,
-permissions, fixture revision, and evaluator fixed. The generic command runner
-does not itself select a VS Code custom agent, so no baseline-versus-focused
-claim is valid until a real host adapter supplies both conditions. Expected
-classifications and required content stay in blind evaluator fields rather than
-the live prompt.
+These remain blind supporting behavior cases, but their current neutral prompts
+do not isolate the focused host projection: a general agent can route somewhere
+other than Wayfinder. The primary Phase 1 causal comparison must explicitly use
+canonical Wayfinder in both conditions, with the built-in general Agent in A and
+`.github/agents/wayfinder.agent.md` selected in B. Keep prompt, model,
+permissions, fixture revision, initial state, and evaluator fixed; only the host
+projection may differ. The manual EKS protocol under
+`evals/manual-vscode/eks-focused-wayfinder-v1/` is the current primary live
+comparison.
+
+Running these neutral cases once through a general adapter and once through a
+focused adapter remains a possible separate router-vs-focused product-level
+experiment. It cannot support the primary host-projection causal claim because
+Wayfinder use is not held constant. The generic command runner also cannot
+select a VS Code custom agent, so neither comparison is valid until a real host
+adapter supplies both intended conditions. Expected classifications and
+required content stay in blind evaluator fields rather than the live prompt.
 
 `expect` and `must_not` use a deliberately small vocabulary implemented in
 `tests/behavior.py`. Case-specific assertions support path existence, UTF-8

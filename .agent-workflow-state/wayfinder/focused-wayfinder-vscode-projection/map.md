@@ -42,15 +42,21 @@ artifacts without claiming a live editor run.
   unchanged.
 - Six neutral, blind live scenarios cover clean resume, authoritative stale
   reconciliation, progressive context loading, authority, missing knowledge,
-  and the implementation-ready boundary.
+  and the implementation-ready boundary. They remain supporting behavior cases;
+  a neutral general-agent comparison would also vary router selection and is
+  therefore a separate later product-level experiment.
+- The primary manual EKS A/B is prepared with byte-identical repositories and
+  an exact shared prompt that explicitly requires Wayfinder in both conditions.
+  A uses the built-in general Agent with canonical Wayfinder; B selects the
+  focused workspace Wayfinder agent. This isolates the host projection.
 - Closing Standards and Spec review findings were reconciled. The documented
   package gate passes 138 tests, fixture lifecycle checks preserve all 44
   scenarios, installation status is healthy, and `git diff --check` passes.
 
 ## Blockers and dependencies
 
-- No live VS Code baseline-versus-focused run was performed, so the Phase 1
-  behavioral hypothesis remains inconclusive.
+- No live VS Code general-Wayfinder-versus-focused-Wayfinder run was performed,
+  so the Phase 1 behavioral hypothesis remains inconclusive.
 - Progressive repository loading is currently supported only by the agent's
   public `state_used` report. A live host adapter with tool telemetry is needed
   to prove that unreported files were not opened.
@@ -58,10 +64,12 @@ artifacts without claiming a live editor run.
 
 ## Next work
 
-Run the same six scenario IDs through matched general-agent and focused-agent
-VS Code adapters with the model, permissions, fixture revision, and evaluator
-held fixed. Compare pass/fail outcomes and reported/read context before deciding
-whether the focused projection improves durable project understanding.
+Run the prepared manual EKS pair under
+[`evals/manual-vscode/eks-focused-wayfinder-v1/protocol.md`](../../../evals/manual-vscode/eks-focused-wayfinder-v1/protocol.md).
+Hold canonical Wayfinder use, exact prompt, model, reasoning effort,
+permissions, snapshot, Agentic Workflow version, and initial state fixed; vary
+only the selected general versus focused host agent. Preserve both results and
+grade them independently before comparison.
 
 ## Notes
 
