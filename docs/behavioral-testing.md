@@ -147,6 +147,25 @@ select a VS Code custom agent, so neither comparison is valid until a real host
 adapter supplies both intended conditions. Expected classifications and
 required content stay in blind evaluator fields rather than the live prompt.
 
+## Basic Phase 2 live gate
+
+Basic Phase 2 enables model invocation for the existing focused VS Code
+Wayfinder agent. Deterministic tests establish the frontmatter policy, canonical
+links, absence of child-agent capability, host-neutral portable contracts,
+package projection, update behavior, and state/unrelated-file preservation. They
+do not establish that a live General agent semantically chooses and executes the
+focused child.
+
+The manual protocol at
+`evals/manual-vscode/basic-phase2-wayfinder-smoke-v1/protocol.md` contains six
+fresh-chat cases: explicit plumbing, neutral automatic positive selection,
+negative Direct, negative Debugging, sole durable-state ownership, and human
+authority. It requires visible child-agent UI/tool evidence rather than treating
+a route marker or inline Wayfinder skill read as proof. The protocol also checks
+whether General repeats most of the focused investigation after the child
+returns. It is the remaining Phase 2 acceptance gate, not a new benchmark
+campaign.
+
 `expect` and `must_not` use a deliberately small vocabulary implemented in
 `tests/behavior.py`. Case-specific assertions support path existence, UTF-8
 substring presence/absence, and case-insensitive substring checks or exact

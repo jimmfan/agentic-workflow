@@ -67,12 +67,17 @@ transcript parsing.
 The installed `.github/agents/wayfinder.agent.md` is a small host wrapper around
 the canonical `.agents/skills/wayfinder/SKILL.md` runtime and
 `.agent-workflow/contracts/wayfinder-state.md` mechanics. It adds no second
-methodology or state format. Its allowlist contains only `read`, `search`,
-`edit`, and `execute`. The terminal capability exists solely because the state
+methodology or state format. It is explicitly user-invocable and model-invocable,
+so the General agent can select it when the portable router selects Wayfinder;
+its durable-coordination description is the thin VS Code semantic bridge. Its
+allowlist contains only `read`, `search`, `edit`, and `execute`, and `agents: []`
+prevents further subagent invocation. The terminal capability exists solely because the state
 contract requires atomic creation and removal of the effort mutation-lock
 directory; the agent instructions prohibit using it to write or delete durable
-state. It exposes no web, MCP, extension, or subagent capability. Routing is
-unchanged, and Phase 1 adds no automatic handoff to the custom agent.
+state. It exposes no web, MCP, extension, or child-agent capability. Portable
+routing is unchanged and contains no VS Code invocation mechanics. Setting the
+focused projection's `disable-model-invocation` field back to `true` restores
+the Phase 1 manual-only behavior.
 
 The repository-wide `PreToolUse` hook recognizes only an explicit Delete action
 in the exact current VS Code `apply_patch` schema targeting a Wayfinder effort's
@@ -82,7 +87,8 @@ hooks are Preview, their inputs are tool-specific, unknown representations fail
 open, and hook launch or timeout failure can be non-blocking. Indirect writes,
 shell commands, extension tools, symlink indirection, edits to the hook itself,
 and universal state protection are deliberately outside the guard. See
-[ADR-0030](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md)
+[ADR-0030](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md),
+[ADR-0031](../architecture-decisions/0031-enable-focused-wayfinder-model-invocation.md),
 and the [VS Code host research](vscode-focused-wayfinder-research.md).
 
 ## Filesystem ownership

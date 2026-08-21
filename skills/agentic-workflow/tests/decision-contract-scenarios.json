@@ -389,6 +389,21 @@
     "expected_behavior": "Invoke Implement once with the ready ticket and acceptance criteria, preserve authorization boundaries, and run independent framework Verification without requiring an explicit $implement command."
   },
   {
+    "id": "verification-completed-meaningful-change",
+    "category": "completed-work-verification",
+    "prompt": "Independently verify whether this completed meaningful change satisfies its acceptance criteria and integration boundaries.",
+    "setup": "Implementation is complete, its provider evidence is available for reuse, and no new repository mutation is authorized.",
+    "dominant_activity": "verification",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "local",
+    "executed": true,
+    "repository_state_effect": "read-only",
+    "external_scope": "none",
+    "expected_behavior": "Run independent framework Verification once, reuse valid upstream evidence instead of mechanically repeating it, and report any unmet acceptance criterion without changing implementation."
+  },
+  {
     "id": "discovery-read-only",
     "category": "read-only-discovery",
     "prompt": "Compare these authentication boundaries and recommend one; do not edit the repository.",

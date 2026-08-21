@@ -19,8 +19,13 @@ subprocess.
 - `test_session_start_hook.py` exercises the installed VS Code SessionStart
   reminder output without depending on transcript parsing or Stop-hook blocks.
 - `test_focused_wayfinder_host.py` validates the thin VS Code custom-agent
-  allowlist, canonical-runtime references, distribution mapping, and unchanged
-  Phase 0 SessionStart behavior.
+  user/model invocation policy, allowlist, child-agent prohibition,
+  canonical-runtime references, distribution mapping, Phase 0 SessionStart
+  behavior, and old-projection update preservation.
+- `test_basic_phase2_compatibility.py` retains the frozen-main route/state
+  categories and the authority, unrelated-state, stale-evidence, and lifecycle
+  boundaries. Its injected Direct-to-Wayfinder fault proves that the negative
+  routing assertion detects over-selection.
 - `test_pre_tool_use_guard.py` checks that normal Wayfinder Update patches are
   allowed while explicit current-schema Delete patches under project-owned
   Wayfinder state are denied.
@@ -66,6 +71,12 @@ implementation-ready boundary. Their neutral prompts make a general-agent
 versus focused-agent run a broader router-vs-focused product experiment, not the
 primary host-projection comparison where both conditions explicitly use
 canonical Wayfinder. Live cases are not part of ordinary pull requests.
+
+The smaller Basic Phase 2 manual VS Code gate is documented at
+`evals/manual-vscode/basic-phase2-wayfinder-smoke-v1/protocol.md`. It checks
+actual General-to-focused invocation, positive and negative selection, sole
+durable-state ownership, authority, and duplicated investigation without
+requiring unavailable Agent Debug telemetry.
 
 The broader deterministic catalog also covers Domain Modeling surfacing
 consequential uncertainty, authority-dependent choices asking a concrete human

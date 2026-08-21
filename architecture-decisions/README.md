@@ -25,6 +25,7 @@ current instructions.
 - [ADR-0028 — Use Wayfinder as the sole durable coordinator](0028-use-wayfinder-as-sole-durable-coordinator.md)
 - [ADR-0029 — Preserve material decision context and gate dependent work](0029-preserve-material-decision-context.md)
 - [ADR-0030 — Use a thin focused VS Code Wayfinder projection](0030-use-thin-focused-vscode-wayfinder-projection.md)
+- [ADR-0031 — Enable focused Wayfinder model invocation in VS Code](0031-enable-focused-wayfinder-model-invocation.md)
 
 ## Superseded tombstones
 

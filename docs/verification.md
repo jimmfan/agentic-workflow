@@ -40,6 +40,9 @@ It checks:
   payloads, while checking the VS Code SessionStart reminder and focused
   Wayfinder PreToolUse guard adapters;
 - routing, authorization, durable-state, and provider declaration contracts;
+- frozen-main routing compatibility plus the VS Code Wayfinder model/user
+  invocation, child-agent prohibition, canonical-link, and host-neutrality
+  contracts;
 - thin-router word budgets and deterministic positive/negative escalation
   contracts (not live model-routing proof);
 - local Markdown links plus the lifecycle-acceptance and routing-decision JSON
@@ -100,6 +103,9 @@ The suite prioritizes behavior that matters before 1.0:
 - update completes an exact partial projection, reuses exact existing
   directories, and replaces modified, extra-file, malformed, raw-upstream, or
   older declared directories as one rollback-protected transaction;
+- an update from the manual-only focused Wayfinder projection enables the Basic
+  Phase 2 projection while preserving project-owned state and an unrelated
+  custom agent byte-for-byte;
 - unsafe declared paths block provider mutation, remove deletes only the
   declared projection, and unrelated skill directories are preserved;
 - the unchanged raw Wayfinder snapshot is recognized before the owned runtime

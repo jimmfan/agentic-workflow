@@ -1,9 +1,10 @@
 ---
 name: Wayfinder
-description: Maintain durable project understanding and expose the next safe boundary.
+description: Coordinate durable project understanding when consequential unknowns, decisions, dependencies, blockers, or handoffs need continuity.
 tools: ['read', 'search', 'edit', 'execute']
 agents: []
-disable-model-invocation: true
+user-invocable: true
+disable-model-invocation: false
 target: vscode
 ---
 
