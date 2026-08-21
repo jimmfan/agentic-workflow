@@ -1,0 +1,48 @@
+schema_version = 1
+id = "focused-wayfinder-ready-boundary"
+name = "Notification delivery coordination review"
+fixture = "focused-wayfinder-ready-boundary"
+request = "Advance the active notification-delivery effort to its next safe boundary without implementing product code."
+starting_state = [
+  "The current effort points to a project contract that may settle its remaining coordination question.",
+  "The implementation file is still intentionally incomplete.",
+]
+expect = [
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "repeat_resolved_discovery",
+  "placeholder_infrastructure",
+  "overwrite_project_owned_state",
+]
+live = true
+blind_grading = true
+preserve_paths = ["docs/delivery-contract.md", "delivery.py", "verify.py"]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock",
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock/**",
+  ".agent-workflow-state/wayfinder/notification-delivery/tickets",
+  ".agent-workflow-state/wayfinder/notification-delivery/tickets/**",
+  ".agent-workflow-state/wayfinder/notification-delivery/decisions",
+  ".agent-workflow-state/wayfinder/notification-delivery/decisions/**",
+]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/notification-delivery/map.md",
+]
+report_must_include = [
+  "implementation-ready scope",
+  "delivery.py",
+  "python verify.py",
+]
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-workflow-state/wayfinder/notification-delivery/map.md"
+value = '(?s)docs/delivery-contract\.md.*## Next work.*Implementation.*delivery\.py.*python verify\.py'
+
+[[assertions]]
+kind = "path_not_contains"
+path = "delivery.py"
+value = "json.dumps"

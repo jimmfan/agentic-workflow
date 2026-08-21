@@ -21,6 +21,10 @@
       "target": ".agent-workflow/hooks/inject_route_marker_reminder.py"
     },
     {
+      "source": "agent-workflow/hooks/protect_wayfinder_state.py",
+      "target": ".agent-workflow/hooks/protect_wayfinder_state.py"
+    },
+    {
       "source": "agent-workflow/providers.json",
       "target": ".agent-workflow/providers.json"
     },
@@ -47,6 +51,10 @@
     {
       "source": "skills/workflow-verification/SKILL.md",
       "target": ".agents/skills/workflow-verification/SKILL.md"
+    },
+    {
+      "source": "agents/vscode-wayfinder.agent.md",
+      "target": ".github/agents/wayfinder.agent.md"
     },
     {
       "source": "hooks/vscode-route-marker.json",

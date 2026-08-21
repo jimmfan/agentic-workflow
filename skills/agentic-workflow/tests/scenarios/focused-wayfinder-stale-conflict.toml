@@ -1,0 +1,69 @@
+schema_version = 1
+id = "focused-wayfinder-stale-conflict"
+name = "Deployment mode coordination review"
+fixture = "focused-wayfinder-stale-truth"
+request = "Resume the deployment-mode coordination effort and reconcile it against current project evidence. Do not implement product changes."
+starting_state = [
+  "The effort contains established evidence, a fact, and an accepted decision.",
+  "Current repository configuration may be relevant to those records.",
+]
+expect = [
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "uncertainty_recorded_or_blocked",
+  "project_state_preserved",
+]
+must_not = [
+  "silent_decision_invention",
+  "invent_unknown_answers",
+  "overwrite_project_owned_state",
+]
+live = true
+blind_grading = true
+preserve_paths = [
+  ".agent-workflow-state/wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock",
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock/**",
+  ".agent-workflow-state/active.md",
+  ".agent-workflow-state/wayfinder/deployment-mode/tickets",
+  ".agent-workflow-state/wayfinder/deployment-mode/tickets/**",
+  ".agent-workflow-state/wayfinder/deployment-mode/unknowns",
+  ".agent-workflow-state/wayfinder/deployment-mode/unknowns/**",
+]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/deployment-mode/map.md",
+  ".agent-workflow-state/wayfinder/deployment-mode/evidence/E1-original-deployment-mode.md",
+  ".agent-workflow-state/wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md",
+  ".agent-workflow-state/wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+]
+report_must_include = [
+  "current configuration",
+  "shared",
+  "authority review",
+]
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/deployment-mode/evidence/E*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/deployment-mode/unknowns/U*.md"
+count = 0
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-workflow-state/wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md"
+value = '(?s)# F1: Deployment mode is shared.*- Status: current.*- Supported by:.*\[[^]]+\]\([^)]*config\.txt\).*- Contradicted by: E1.*## Fact.*shared.*## Change note.*dedicated.*shared'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-workflow-state/wayfinder/deployment-mode/map.md"
+value = '(?s)## Current state.*shared.*## Blockers and dependencies.*D1.*authority.*## Next work.*D1'
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-workflow-state/wayfinder/deployment-mode/unknowns"

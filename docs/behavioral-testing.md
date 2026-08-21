@@ -24,9 +24,9 @@ hidden reasoning trace.
    required.
 3. **Live behavioral smoke tests** are opt-in. A caller supplies an agent command
    that reads the scenario prompt from standard input and operates in the
-   temporary fixture working directory. Five high-value scenarios are enabled:
-   simple bounded work, external factual uncertainty, map-only and existing
-   Wayfinder state, verification failure/recovery, and a blocked project.
+   temporary fixture working directory. Scenarios marked `live = true` cover
+   direct work, external uncertainty, Wayfinder state and authority boundaries,
+   reconciliation, verification recovery, and focused-Wayfinder behavior.
 
 The deterministic first two layers plus package checks are the required
 pre-merge gate. Live smoke tests are manual or suitable for a separately
@@ -117,6 +117,25 @@ must remain neutral, and the live workspace uses an opaque case name so the
 scenario identifier does not reveal the rubric. Prefer ordinary guided smoke
 tests when prompt contamination is not the behavior under evaluation.
 
+## Focused Wayfinder Phase 1 comparison
+
+Six blind scenarios isolate the Phase 1 hypothesis:
+
+- `focused-wayfinder-clean-resume`
+- `focused-wayfinder-stale-conflict`
+- `focused-wayfinder-domain-architecture-navigation`
+- `focused-wayfinder-authority-boundary`
+- `focused-wayfinder-missing-knowledge`
+- `focused-wayfinder-ready-boundary`
+
+Run the exact same six IDs once with the current general agent adapter and once
+with an adapter that selects `.github/agents/wayfinder.agent.md`. Keep model,
+permissions, fixture revision, and evaluator fixed. The generic command runner
+does not itself select a VS Code custom agent, so no baseline-versus-focused
+claim is valid until a real host adapter supplies both conditions. Expected
+classifications and required content stay in blind evaluator fields rather than
+the live prompt.
+
 `expect` and `must_not` use a deliberately small vocabulary implemented in
 `tests/behavior.py`. Case-specific assertions support path existence, UTF-8
 substring presence/absence, and case-insensitive substring checks or exact
@@ -133,10 +152,12 @@ and meaning without fixing the descriptive filename slug. This keeps contracts
 focused on outcomes and prevents the harness from becoming a second router.
 
 The optional `state_must_include` and `state_must_not_include` arrays constrain
-the public `state_used` report. They make progressive-loading behavior observable
-without asking for private reasoning: a relevant map/child must be reported as
-consulted, while a known unrelated child must not be. Every named path must be a
-regular file in the starting fixture.
+the public `state_used` report. They make progressive loading partly observable
+without asking for private reasoning: relevant state and project sources must be
+reported as consulted, while known unrelated material must not be reported.
+Every named path must be a regular file in the starting fixture. This is
+self-reported evidence, not host tool telemetry; it can compare declared context
+use but cannot prove that an agent never opened an unreported file.
 
 A new scenario should need one TOML file and one small fixture directory. The
 validator rejects unknown behavior names, unsafe paths, missing preserved files,
@@ -173,7 +194,7 @@ The evaluator uses public artifacts only:
 - fixture verification events in
   `.behavior-evidence/verification.jsonl`, including exit codes and ordering;
 - a concise agent-written `.behavior-evidence/report.json` containing status,
-  commands/exit codes, cited research URLs, state paths actually consumed,
+  commands/exit codes, cited research URLs, repository context actually consumed,
   selected/executed provider claims, and blockers;
 - exactly one syntactically valid route marker ending the agent's stdout final
   response; and
@@ -247,8 +268,8 @@ python3 skills/agentic-workflow/tests/behavior.py live \
 ```
 
 `--scenario simple-bounded-task` may be repeated to select named contracts,
-including contracts outside the default smoke set. Without it, all five
-default-live scenarios run. Kept workspaces and reports are persistent caller
+including contracts outside the default smoke set. Without it, every scenario
+marked `live = true` runs. Kept workspaces and reports are persistent caller
 artifacts; remove those explicitly after review. The normal temporary mode
 cleans workspaces automatically.
 

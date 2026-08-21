@@ -1,0 +1,57 @@
+schema_version = 1
+id = "focused-wayfinder-authority-boundary"
+name = "Persistence coordination review"
+fixture = "decision-only"
+request = "Prepare the persistence effort so its next boundary is explicit. Do not implement persistence."
+starting_state = [
+  "Current project documents describe the persistence problem.",
+  "No Wayfinder effort exists yet for this destination.",
+]
+expect = [
+  "meaningful_repository_change",
+  "uncertainty_recorded_or_blocked",
+  "project_state_preserved",
+]
+must_not = [
+  "silent_decision_invention",
+  "fabricate_project_values",
+  "placeholder_infrastructure",
+  "overwrite_project_owned_state",
+]
+live = true
+blind_grading = true
+preserve_paths = ["docs/requirements.md", "storage.py"]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock",
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock/**",
+  ".agent-workflow-state/wayfinder/*/decisions",
+  ".agent-workflow-state/wayfinder/*/decisions/**",
+  ".agent-workflow-state/wayfinder/*/tickets",
+  ".agent-workflow-state/wayfinder/*/tickets/**",
+  "docs/specifications/**",
+]
+report_must_include = [
+  "Which durable backend and operating owner",
+  "why project authority is required",
+  "what the answer will unblock",
+]
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/*/map.md"
+count = 1
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+value = "- Status: open"
+
+[[assertions]]
+kind = "path_not_contains"
+path = "storage.py"
+value = "sqlite"

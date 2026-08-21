@@ -25,10 +25,10 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_catalog_has_thirty_eight_contracts_and_thirteen_live_smokes(self) -> None:
+    def test_catalog_has_forty_four_contracts_and_nineteen_live_smokes(self) -> None:
         scenarios = behavior.load_scenarios()
-        self.assertEqual(len(scenarios), 38)
-        self.assertEqual(sum(scenario.live for scenario in scenarios), 13)
+        self.assertEqual(len(scenarios), 44)
+        self.assertEqual(sum(scenario.live for scenario in scenarios), 19)
         self.assertEqual(
             {scenario.id for scenario in scenarios},
             {
@@ -70,12 +70,87 @@ class BehaviorContractTests(unittest.TestCase):
                 "wayfinder-accepted-residual-uncertainty",
                 "wayfinder-state-cannot-grant-authority",
                 "wayfinder-unordered-dependencies-no-critical-path",
+                "focused-wayfinder-clean-resume",
+                "focused-wayfinder-stale-conflict",
+                "focused-wayfinder-domain-architecture-navigation",
+                "focused-wayfinder-authority-boundary",
+                "focused-wayfinder-missing-knowledge",
+                "focused-wayfinder-ready-boundary",
             },
         )
         read_only = next(
             scenario for scenario in scenarios if scenario.id == "wayfinder-read-only-stale-state"
         )
         self.assertIn("unresolved", read_only.report_must_include)
+
+    def test_focused_wayfinder_scenarios_are_blind_and_cover_phase_one_boundaries(self) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        focused_ids = {
+            "focused-wayfinder-clean-resume",
+            "focused-wayfinder-stale-conflict",
+            "focused-wayfinder-domain-architecture-navigation",
+            "focused-wayfinder-authority-boundary",
+            "focused-wayfinder-missing-knowledge",
+            "focused-wayfinder-ready-boundary",
+        }
+        self.assertEqual(focused_ids, focused_ids & scenarios.keys())
+
+        neutral_names = {
+            "focused-wayfinder-clean-resume": "Coordination effort review",
+            "focused-wayfinder-stale-conflict": "Deployment mode coordination review",
+            "focused-wayfinder-domain-architecture-navigation": "Active delivery coordination review",
+            "focused-wayfinder-authority-boundary": "Persistence coordination review",
+            "focused-wayfinder-missing-knowledge": "Settlement reconciliation coordination review",
+            "focused-wayfinder-ready-boundary": "Notification delivery coordination review",
+        }
+
+        for scenario_id in focused_ids:
+            scenario = scenarios[scenario_id]
+            prompt = behavior.build_prompt(scenario)
+            with self.subTest(scenario=scenario_id):
+                self.assertTrue(scenario.live)
+                self.assertTrue(scenario.blind_grading)
+                self.assertEqual(scenario.name, neutral_names[scenario_id])
+                for hidden in (
+                    *scenario.expect,
+                    *scenario.must_not,
+                    *scenario.report_must_include,
+                ):
+                    self.assertNotIn(hidden.casefold(), prompt.casefold())
+
+        clean = scenarios["focused-wayfinder-clean-resume"]
+        self.assertTrue(clean.state_must_include)
+        self.assertTrue(clean.state_must_not_include)
+        self.assertIn("repository_unchanged", clean.expect)
+
+        stale = scenarios["focused-wayfinder-stale-conflict"]
+        self.assertTrue(any("decisions/D1" in item.as_posix() for item in stale.preserve_paths))
+        self.assertTrue(any(item.kind == "glob_any_matches" for item in stale.assertions))
+        self.assertTrue(
+            any(
+                item.kind == "glob_count"
+                and "unknowns/U" in item.path.as_posix()
+                and item.count == 0
+                for item in stale.assertions
+            )
+        )
+
+        navigation = scenarios["focused-wayfinder-domain-architecture-navigation"]
+        self.assertTrue(any(item.kind == "path_not_contains" for item in navigation.assertions))
+        self.assertIn(
+            "architecture-decisions/0002-authentication-boundary.md",
+            {item.as_posix() for item in navigation.state_must_not_include},
+        )
+
+        authority = scenarios["focused-wayfinder-authority-boundary"]
+        self.assertTrue(any("decisions" in item for item in authority.forbid_created_globs))
+
+        missing = scenarios["focused-wayfinder-missing-knowledge"]
+        self.assertTrue(any("what remains safe" in item for item in missing.report_must_include))
+
+        ready = scenarios["focused-wayfinder-ready-boundary"]
+        self.assertTrue(any("tickets" in item for item in ready.forbid_created_globs))
+        self.assertTrue(any(item.kind == "path_not_contains" for item in ready.assertions))
 
     def test_wayfinder_methodology_scenarios_cover_structure_convergence_authority_and_handoffs(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}

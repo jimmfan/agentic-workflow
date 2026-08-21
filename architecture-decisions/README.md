@@ -24,6 +24,7 @@ current instructions.
 - [ADR-0027 — Use thin evidence-triggered routing](0027-use-thin-evidence-triggered-routing.md)
 - [ADR-0028 — Use Wayfinder as the sole durable coordinator](0028-use-wayfinder-as-sole-durable-coordinator.md)
 - [ADR-0029 — Preserve material decision context and gate dependent work](0029-preserve-material-decision-context.md)
+- [ADR-0030 — Use a thin focused VS Code Wayfinder projection](0030-use-thin-focused-vscode-wayfinder-projection.md)
 
 ## Superseded tombstones
 

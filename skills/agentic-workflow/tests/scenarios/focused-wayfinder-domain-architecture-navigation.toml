@@ -1,0 +1,78 @@
+schema_version = 1
+id = "focused-wayfinder-domain-architecture-navigation"
+name = "Active delivery coordination review"
+fixture = "focused-wayfinder-domain-architecture"
+request = "Orient the active delivery effort and make its next safe boundary clear. Do not implement product code."
+starting_state = [
+  "The repository documents several domains and multiple accepted architecture decisions.",
+  "One current Wayfinder effort identifies the active product territory.",
+]
+expect = [
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "repeat_resolved_discovery",
+  "overwrite_project_owned_state",
+]
+live = true
+blind_grading = true
+preserve_paths = [
+  "docs/domain.md",
+  "architecture-decisions/0001-export-delivery-ownership.md",
+  "architecture-decisions/0002-authentication-boundary.md",
+  "delivery.py",
+]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock",
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock/**",
+  ".agent-workflow-state/wayfinder/export-reliability/decisions",
+  ".agent-workflow-state/wayfinder/export-reliability/decisions/**",
+  ".agent-workflow-state/wayfinder/export-reliability/tickets",
+  ".agent-workflow-state/wayfinder/export-reliability/tickets/**",
+]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/export-reliability/map.md",
+  "docs/domain.md",
+  "architecture-decisions/0001-export-delivery-ownership.md",
+  "delivery.py",
+]
+state_must_not_include = [
+  "architecture-decisions/0002-authentication-boundary.md",
+]
+report_must_include = [
+  "Export delivery",
+  "Delivery adapter",
+  "0001-export-delivery-ownership.md",
+]
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/export-reliability/map.md"
+value = "Delivery adapter"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-workflow-state/wayfinder/export-reliability/map.md"
+value = "architecture-decisions/0001-export-delivery-ownership.md"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-workflow-state/wayfinder/export-reliability/map.md"
+value = "Authentication"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-workflow-state/wayfinder/export-reliability/map.md"
+value = "0002-authentication-boundary.md"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-workflow-state/wayfinder/export-reliability/map.md"
+value = '(?s)## Next work.*Implementation.*delivery\.py'
+
+[[assertions]]
+kind = "path_not_contains"
+path = "delivery.py"
+value = "return"

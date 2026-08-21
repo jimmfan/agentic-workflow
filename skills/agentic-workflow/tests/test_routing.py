@@ -71,19 +71,15 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".agent-workflow/runtime", routing)
         self.assertEqual(
-            hook,
-            {
-                "hooks": {
-                    "SessionStart": [
-                        {
-                            "type": "command",
-                            "command": "python3 .agent-workflow/hooks/inject_route_marker_reminder.py",
-                            "windows": "py -3 .agent-workflow\\hooks\\inject_route_marker_reminder.py",
-                            "timeout": 5,
-                        }
-                    ]
+            hook["hooks"]["SessionStart"],
+            [
+                {
+                    "type": "command",
+                    "command": "python3 .agent-workflow/hooks/inject_route_marker_reminder.py",
+                    "windows": "py -3 .agent-workflow\\hooks\\inject_route_marker_reminder.py",
+                    "timeout": 5,
                 }
-            },
+            ],
         )
 
     def test_project_adr_namespace_defaults_without_overriding_existing_convention(self) -> None:
@@ -124,6 +120,7 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("maintained set of current decisions", governance)
         self.assertIn("ADR-0028", current)
         self.assertIn("ADR-0029", current)
+        self.assertIn("ADR-0030", current)
         self.assertNotIn("ADR-0012", current)
         self.assertIn("ADR-0012", superseded)
         for filename in (

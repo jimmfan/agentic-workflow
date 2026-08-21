@@ -24,9 +24,13 @@
       "created": true,
       "sha256": "6b34ea8d493efb1844243f1ef029a3219d5a8aeeee636c6a8f00c3a6e0b22ac1"
     },
+    ".github/agents/wayfinder.agent.md": {
+      "created": true,
+      "sha256": "6e76192cccc8399e9ee94cc6bf9a87ca5c3c5229cf0bfd59e45450f58ca949d8"
+    },
     ".github/hooks/agentic-workflow-route-marker.json": {
       "created": true,
-      "sha256": "1afeb53014d18cae9ee0667622e4f43f9c33c6ce8e8a975f6e8e3e541237ebb8"
+      "sha256": "ccf4cd95a7417b59763473511d5356f16c44773f705c2e05ec8015f9fbfe9d87"
     }
   },
   "framework_version": "0.19.1",

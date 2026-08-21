@@ -1,0 +1,44 @@
+schema_version = 1
+id = "focused-wayfinder-clean-resume"
+name = "Coordination effort review"
+fixture = "wayfinder-existing"
+request = "Review the active coordination effort and report where the work should continue. Do not implement or modify repository files."
+starting_state = [
+  "The repository contains more than one Wayfinder effort.",
+  "The relevant effort has durable knowledge children and a stated next boundary.",
+]
+expect = [
+  "task_completed",
+  "repository_unchanged",
+  "existing_state_reused",
+  "project_state_preserved",
+]
+must_not = [
+  "repeat_resolved_discovery",
+  "ignore_persisted_decisions",
+  "overwrite_project_owned_state",
+]
+live = true
+blind_grading = true
+preserve_paths = [
+  ".agent-workflow-state/wayfinder/response-serialization/map.md",
+  ".agent-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".agent-workflow-state/wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
+  ".agent-workflow-state/wayfinder/unrelated-billing-migration/map.md",
+]
+route_must_not_include = ["discovery", "domain-modeling", "implementation"]
+state_must_include = [
+  ".agent-workflow-state/wayfinder/response-serialization/map.md",
+  ".agent-workflow-state/wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
+]
+state_must_not_include = [
+  ".agent-workflow-state/wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".agent-workflow-state/wayfinder/unrelated-billing-migration/map.md",
+]
+report_must_include = [
+  "Response serialization",
+  "compact sorted JSON",
+  "serialize_payload",
+  "telemetry naming",
+  "non-blocking",
+]

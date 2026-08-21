@@ -30,10 +30,12 @@ flowchart TD
 ```
 
 The root `AGENTS.md` policy, selected skills, and progressively loaded
-`.agent-workflow/routing.md` are the semantic runtime. A single optional VS Code
-SessionStart adapter supplies a route-marker reminder once per agent session;
-it does not choose routes, validate their truthfulness, or enforce compliance.
-There is no lifecycle controller or generic hook framework. The root starts Direct, uses installed skill descriptions as
+`.agent-workflow/routing.md` are the semantic runtime. Two small VS Code
+integrations project existing contracts into that host: a `SessionStart`
+route-marker reminder and a focused Wayfinder custom agent with a narrow
+`PreToolUse` state-deletion guard. Neither chooses routes or changes provider,
+state, or authority semantics. There is no lifecycle controller or generic hook
+framework. The root starts Direct, uses installed skill descriptions as
 the cheap selection interface, and loads the detailed router only for unresolved
 ambiguity, composition, material provider fallback, or unclear durable-resume
 ownership. Host sandboxing and approvals remain authoritative. Selection,
@@ -59,6 +61,29 @@ A required response marker such as
 visibility. It is not telemetry, execution evidence, or a routing prerequisite.
 The SessionStart hook provides guidance only, avoiding response interruption and
 transcript parsing.
+
+### Focused VS Code Wayfinder projection
+
+The installed `.github/agents/wayfinder.agent.md` is a small host wrapper around
+the canonical `.agents/skills/wayfinder/SKILL.md` runtime and
+`.agent-workflow/contracts/wayfinder-state.md` mechanics. It adds no second
+methodology or state format. Its allowlist contains only `read`, `search`,
+`edit`, and `execute`. The terminal capability exists solely because the state
+contract requires atomic creation and removal of the effort mutation-lock
+directory; the agent instructions prohibit using it to write or delete durable
+state. It exposes no web, MCP, extension, or subagent capability. Routing is
+unchanged, and Phase 1 adds no automatic handoff to the custom agent.
+
+The repository-wide `PreToolUse` hook recognizes only an explicit Delete action
+in the exact current VS Code `apply_patch` schema targeting a Wayfinder effort's
+`map.md`. Add and Update actions and contract-valid child retirement remain
+available for normal reconciliation. This is defense in depth, not a path ACL:
+hooks are Preview, their inputs are tool-specific, unknown representations fail
+open, and hook launch or timeout failure can be non-blocking. Indirect writes,
+shell commands, extension tools, symlink indirection, edits to the hook itself,
+and universal state protection are deliberately outside the guard. See
+[ADR-0030](../architecture-decisions/0030-use-thin-focused-vscode-wayfinder-projection.md)
+and the [VS Code host research](vscode-focused-wayfinder-research.md).
 
 ## Filesystem ownership
 
@@ -155,6 +180,11 @@ recorded as pre-existing. A different unrecorded file is an unknown collision
 and blocks installation. Once recorded as managed, update may replace it with
 current desired bytes. Removal deletes it only when the framework created it and
 its bytes still match the last-written external hash.
+
+The focused VS Code agent under `.github/agents/` and the combined SessionStart/
+PreToolUse configuration under `.github/hooks/` use this same external-file
+ownership rule. Their executable hook scripts remain reconstructable inside
+`.agent-workflow/hooks/`; durable Wayfinder state remains opaque project data.
 
 An external target removed from the current mapping is derived only from the
 previous local install manifest. Absence is a no-op. An unchanged created copy

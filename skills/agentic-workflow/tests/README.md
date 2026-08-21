@@ -18,6 +18,12 @@ subprocess.
   without requiring one exact trace.
 - `test_session_start_hook.py` exercises the installed VS Code SessionStart
   reminder output without depending on transcript parsing or Stop-hook blocks.
+- `test_focused_wayfinder_host.py` validates the thin VS Code custom-agent
+  allowlist, canonical-runtime references, distribution mapping, and unchanged
+  Phase 0 SessionStart behavior.
+- `test_pre_tool_use_guard.py` checks that normal Wayfinder Update patches are
+  allowed while explicit current-schema Delete patches under project-owned
+  Wayfinder state are denied.
 - `test_wayfinder_state.py` validates the authored, installed, and generated
   settlement contract plus a deterministic state-transition oracle for
   current-state allocation, effort-lock serialization, reference-safe
@@ -53,11 +59,12 @@ These JSON catalogs are validated directly by `verify_package.py`. They are not
   a caller-supplied agent command, captures public evidence, and evaluates the
   scenario without asking for hidden reasoning.
 
-Nine live cases are enabled by default: simple bounded work, external research,
-existing Wayfinder state, read-only stale-state reporting, reconciliation
-conflict handling, evidence/fact contradiction reconciliation, map-only
-continuation with a native `to-tickets` handoff, verification failure/recovery,
-and a blocked project. They are opt-in and not part of ordinary pull requests.
+Every scenario marked `live = true` runs by default when the opt-in live command
+is used. Six blind focused-Wayfinder cases can be selected as a fixed comparison
+set for a general agent adapter and a VS Code adapter that selects the focused
+agent. They cover clean resume, stale conflict, domain-to-architecture
+navigation, authority, missing knowledge, and the implementation-ready boundary.
+Live cases are not part of ordinary pull requests.
 
 The broader deterministic catalog also covers Domain Modeling surfacing
 consequential uncertainty, authority-dependent choices asking a concrete human

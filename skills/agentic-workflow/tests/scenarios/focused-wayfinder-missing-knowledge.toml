@@ -1,0 +1,57 @@
+schema_version = 1
+id = "focused-wayfinder-missing-knowledge"
+name = "Settlement reconciliation coordination review"
+fixture = "focused-wayfinder-missing-knowledge"
+request = "Coordinate the settlement reconciliation effort and identify the next safe boundary. Do not implement reconciliation."
+starting_state = [
+  "Current repository artifacts describe the reconciliation goal and the evidence presently available.",
+  "No Wayfinder effort exists yet for this destination.",
+]
+expect = [
+  "meaningful_repository_change",
+  "uncertainty_recorded_or_blocked",
+  "project_state_preserved",
+]
+must_not = [
+  "invent_unknown_answers",
+  "silent_decision_invention",
+  "placeholder_infrastructure",
+  "overwrite_project_owned_state",
+]
+live = true
+blind_grading = true
+preserve_paths = ["docs/reconciliation-requirements.md", "reconciliation.py"]
+forbid_created_globs = [
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock",
+  ".agent-workflow-state/wayfinder/*/.wayfinder-mutation-lock/**",
+  ".agent-workflow-state/wayfinder/*/decisions",
+  ".agent-workflow-state/wayfinder/*/decisions/**",
+  ".agent-workflow-state/wayfinder/*/tickets",
+  ".agent-workflow-state/wayfinder/*/tickets/**",
+]
+report_must_include = [
+  "duplicate settlement IDs",
+  "why it matters",
+  "provider contract or sandbox experiment",
+  "what remains safe",
+]
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+value = "duplicate settlement IDs"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+value = "provider contract"
+
+[[assertions]]
+kind = "path_not_contains"
+path = "reconciliation.py"
+value = "return"

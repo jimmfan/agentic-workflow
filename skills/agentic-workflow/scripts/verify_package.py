@@ -56,10 +56,12 @@ REQUIRED_PACKAGE_FILES = (
     "runtime-projections/wayfinder.md",
     "tests/behavior.py",
     "payload/VERSION",
+    "payload/agents/vscode-wayfinder.agent.md",
     "payload/distribution/manifest.json",
     "payload/root/AGENTS.md.template",
     "payload/root/CLAUDE.md.template",
     "payload/agent-workflow/routing.md",
+    "payload/agent-workflow/hooks/protect_wayfinder_state.py",
     "payload/agent-workflow/providers.json",
     "payload/agent-workflow/contracts/durable-state.md",
     "payload/agent-workflow/contracts/project-profile.md",
@@ -121,6 +123,10 @@ def expected_mappings() -> list[dict[str, str]]:
         {
             "source": "hooks/vscode-route-marker.json",
             "target": ".github/hooks/agentic-workflow-route-marker.json",
+        },
+        {
+            "source": "agents/vscode-wayfinder.agent.md",
+            "target": ".github/agents/wayfinder.agent.md",
         },
     ]
     skills_root = PAYLOAD_ROOT / "skills"
@@ -299,6 +305,22 @@ def check_router_contract() -> None:
         == "py -3 .agent-workflow\\hooks\\inject_route_marker_reminder.py"
         and session_start_hook.get("timeout") == 5,
         "route-marker SessionStart hook configuration drifted",
+    )
+    pre_tool_use_hooks = hook_config.get("hooks", {}).get("PreToolUse")
+    require(
+        isinstance(pre_tool_use_hooks, list) and len(pre_tool_use_hooks) == 1,
+        "Wayfinder state PreToolUse guard is missing",
+    )
+    pre_tool_use_hook = pre_tool_use_hooks[0]
+    require(
+        isinstance(pre_tool_use_hook, dict)
+        and pre_tool_use_hook.get("type") == "command"
+        and pre_tool_use_hook.get("command")
+        == "python3 .agent-workflow/hooks/protect_wayfinder_state.py"
+        and pre_tool_use_hook.get("windows")
+        == "py -3 .agent-workflow\\hooks\\protect_wayfinder_state.py"
+        and pre_tool_use_hook.get("timeout") == 5,
+        "Wayfinder state PreToolUse guard configuration drifted",
     )
     normalized_wayfinder = " ".join(wayfinder.split())
     for required in (

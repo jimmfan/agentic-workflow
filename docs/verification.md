@@ -37,7 +37,8 @@ It checks:
 - Python syntax, package structure, regular-file modes, and synchronized versions;
 - the exact current source-to-target mapping and synchronized version;
 - absence of deferred controller, generic hook-framework, and observability
-  payloads, while checking the one VS Code SessionStart reminder adapter;
+  payloads, while checking the VS Code SessionStart reminder and focused
+  Wayfinder PreToolUse guard adapters;
 - routing, authorization, durable-state, and provider declaration contracts;
 - thin-router word budgets and deterministic positive/negative escalation
   contracts (not live model-routing proof);
