@@ -1,6 +1,6 @@
 # Wayfinder fresh-agent regression rollback
 
-- Status: current
+- Status: completed
 
 ## Destination
 
@@ -39,6 +39,8 @@ replaced by focused regression coverage. After review-driven refinements, the
 focused tests passed 21/21 again, the complete maintainer gate passed 131/131
 again, and `git diff --check` passed. Standards has no remaining finding; the
 Spec review's only remaining observation was this frontier reconciliation.
+The surgical rollback was committed as `f17a115` and pushed only to
+`fix/wayfinder-fresh-agent-regression`; no PR or merge was created.
 
 ## Blockers and dependencies
 
@@ -49,8 +51,8 @@ preservation constraints remain governed by their existing accepted ADRs.
 
 ## Next work
 
-Inspect and commit the final diff, push only the authorized fix branch, verify
-the remote ref, and then reconcile this map to completed.
+None for this completed effort. A later human-reviewed task may decide whether a
+small current-main live smoke is warranted.
 
 ## Notes
 
