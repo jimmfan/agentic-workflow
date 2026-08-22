@@ -123,8 +123,9 @@ specifications, tickets, or other artifacts outside the effort use
 repository-relative Markdown links with readable labels instead of treating a
 bare number as repository-wide identity.
 
-Accepted, lasting architecture or contract decisions use `/` as
-the default ADR namespace. An existing project instruction may name another
+Accepted, lasting architecture or contract decisions use
+`architecture-decisions/` as the default ADR namespace. An existing project
+instruction may name another
 canonical location; the framework preserves that convention instead of creating
 a parallel namespace or migrating it. Wayfinder `D#` entries remain
 effort-local coordination state and link to the applicable ADR when a decision
