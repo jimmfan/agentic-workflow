@@ -98,7 +98,6 @@ def _route_markers(messages: list[str]) -> list[str]:
 def _framework_kind(path: str) -> str | None:
     normalized = path.replace("\\", "/")
     if any(marker in normalized for marker in (
-        ".agent-wayfinder/project-profile.md",
         ".agent-wayfinder/records/",
         ".agent-wayfinder/archive/",
     )):

@@ -13,9 +13,7 @@ they run. Provider-native artifacts remain canonical in their owning locations.
 Current framework-authored durable state is limited to:
 
 - `.agent-wayfinder/<effort>/`: map-first coordination under the
-  dedicated Wayfinder contract;
-- `.agent-wayfinder/project-profile.md`: an optional advisory cache under
-  the project-profile contract; and
+  dedicated Wayfinder contract; and
 - `.agent-wayfinder/records/IDP-NNNN-<slug>.md`: an optional accepted
   internal-developer-platform opportunity under the narrow rule below.
 
@@ -30,7 +28,6 @@ research, specifications, tickets, learning workspaces, reviews, and other
 artifacts are canonical for their output. Wayfinder stores only consequential
 coordination and readable pointers, never a copied provider body or transcript.
 
-The project profile is a concise cache and command contract, not project truth.
 Agent memory and chat recollection cannot silently supersede repository evidence
 or accepted artifacts.
 
@@ -86,7 +83,7 @@ Approval boundary, constraints, owner, and next review.
 At completion, classify useful lessons as project-specific facts, reusable
 workflow guidance, private learning, or transient observations. Persist only
 evidence-backed material that remains useful at the narrowest appropriate
-scope. Promotion into `AGENTS.md`, a skill, project profile, ADR, or durable
+scope. Promotion into `AGENTS.md`, a skill, ADR, or durable
 state is a separate authorized change with a reviewable diff; raw transcripts
 and private memory are never repository truth.
 

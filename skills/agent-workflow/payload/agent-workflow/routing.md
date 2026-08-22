@@ -99,15 +99,10 @@ consequential state and pointers. Native specifications, tickets, research,
 maps, learning workspaces, reviews, and provider identifiers remain canonical
 where created.
 
-The Implementation adapter supplies accepted scope, canonical artifacts,
-acceptance criteria, and configured commands. Invoked `implement` owns its build
-loop, TDD, and closing Code Review. Framework Verification runs afterward and
-adds only uncovered evidence. No specialist creates DEC, IMP, DBG, or another
-continuity record.
-
-Use `contracts/project-profile.md` only for relevant profile facts or an
-authorized profile update. Do not invent commands or repeat checks merely to
-complete a route.
+The Implementation adapter supplies accepted scope, canonical artifacts, and
+acceptance criteria. Invoked `implement` owns its build loop, TDD, and closing
+Code Review. Framework Verification runs afterward and adds only uncovered
+evidence. No specialist creates DEC, IMP, DBG, or another continuity record.
 
 ## Report the executed route
 

@@ -395,7 +395,6 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = self.adopt("status")
         self.assert_ok(result)
         self.assertIn("Agent Workflow: healthy", result.stdout)
-        self.assertFalse((self.project / ".agent-wayfinder/project-profile.md").exists())
         self.assertFalse((self.project / ".agent-wayfinder/active.md").exists())
         (self.project / ".agent-workflow/routing.md").unlink()
         result = self.adopt("status")

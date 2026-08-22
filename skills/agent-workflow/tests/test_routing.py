@@ -291,35 +291,6 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("If the state contract is unavailable", runtime)
         self.assertIn("do not invent substitute persistence", runtime)
 
-    def test_relevant_project_profile_context_reaches_selected_specialists(self) -> None:
-        scenarios = {
-            item["id"]: item
-            for item in json.loads(
-                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
-            )
-        }
-        for identifier, activity in (
-            ("discovery-uses-project-profile", "discovery"),
-            ("debugging-uses-project-profile", "debugging"),
-            ("implementation-uses-project-profile", "implementation"),
-        ):
-            with self.subTest(identifier=identifier):
-                scenario = scenarios[identifier]
-                self.assertEqual(scenario["dominant_activity"], activity)
-                self.assertIn("project-profile.md", scenario["expected_behavior"])
-                self.assertIn("relevant", scenario["expected_behavior"])
-
-        for relative in (
-            "payload/skills/workflow-discovery/SKILL.md",
-            "payload/skills/workflow-debugging/SKILL.md",
-            "payload/skills/workflow-implementation/SKILL.md",
-        ):
-            with self.subTest(relative=relative):
-                skill = " ".join((PACKAGE_ROOT / relative).read_text().split())
-                self.assertIn(".agent-wayfinder/project-profile.md", skill)
-                self.assertIn(".agent-workflow/contracts/project-profile.md", skill)
-                self.assertIn("only when", skill)
-
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         contract = (

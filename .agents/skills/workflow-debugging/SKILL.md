@@ -14,12 +14,8 @@ resume from its map without creating a DBG or specialist notebook.
 
 1. Define expected and observed behavior, impact, onset, frequency, and last
    known good state.
-2. Read relevant project diagnostics and system context. Read
-   `.agent-wayfinder/project-profile.md` only when its debugging model,
-   verified facts, pointers, or commands materially inform the investigation.
-   Before running a recorded command, read
-   `.agent-workflow/contracts/project-profile.md` and apply its safety gate. The
-   workflow supplies no technology-specific commands.
+2. Read relevant project diagnostics and system context. The workflow supplies
+   no technology-specific commands.
 3. Fix the mutation boundary. Diagnosis-only work uses existing evidence and
    read-only observations; request authorization before adding instrumentation
    or running a mutating check.

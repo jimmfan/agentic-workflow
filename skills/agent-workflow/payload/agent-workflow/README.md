@@ -1,14 +1,13 @@
 # Installed Agent Workflow
 
 This directory is the reconstructable part of Agent Workflow. Its purpose is
-to supply the progressively loaded routing, state, provider, and profile-template
-contracts used by the compact root policy. Install/update may replace every file
-here with current package bytes.
+to supply the progressively loaded routing, state, and provider contracts used
+by the compact root policy. Install/update may replace every file here with
+current package bytes.
 
 There is no current `.agent-workflow/state/` directory. Durable project-owned state
 lives only under sibling `.agent-wayfinder/`. Lifecycle operations ensure that
-directory exists but never create optional profile or Wayfinder state, inventory its
-contents, or remove it.
+directory exists but never seed, inventory, or remove its contents.
 
 ## Contents
 
@@ -16,13 +15,10 @@ contents, or remove it.
   fallback, authorization, evidence, and required route-marker rules.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/durable-state.md`: current durable ownership, canonical-artifact,
-  legacy-state preservation, and optional project-profile rules.
+  legacy-state preservation, and controlled-promotion rules.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   optional U#/E#/F#/D# knowledge, current-state allocation, knowledge
   settlement, effort completion, and progressive loading.
-- `contracts/project-profile.md`: optional advisory project-context rules.
-- `templates/project-profile.md`: source material for an authorized optional
-  project profile.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
 

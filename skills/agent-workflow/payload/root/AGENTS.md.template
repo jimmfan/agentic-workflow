@@ -26,7 +26,7 @@
   choice only for conflict, safety, authority, or request.
 - Never claim unexecuted work.
 - Preserve unrelated work, project state, canonical artifacts, and identifiers.
-  Live source and accepted artifacts outrank profiles, memory, and chat.
+  Live source and accepted artifacts outrank summaries, memory, and chat.
 
 ## When to use Wayfinder
 
@@ -51,8 +51,7 @@ state.
 For selected/resumed Wayfinder, read
 `.agent-workflow/contracts/wayfinder-state.md` before the map. An unrelated map
 never selects Wayfinder. Read `.agent-workflow/contracts/durable-state.md` only
-before current project-state writes, and the project-profile contract
-before profile mutation. Never seed state.
+before current project-state writes. Never seed state.
 
 ## Report the route
 

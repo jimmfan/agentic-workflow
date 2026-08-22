@@ -64,7 +64,6 @@ REQUIRED_PACKAGE_FILES = (
     "payload/agent-workflow/routing.md",
     "payload/agent-workflow/providers.json",
     "payload/agent-workflow/contracts/durable-state.md",
-    "payload/agent-workflow/contracts/project-profile.md",
     "payload/agent-workflow/contracts/wayfinder-state.md",
 )
 REMOVED_RUNTIME_PATHS = (

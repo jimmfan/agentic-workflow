@@ -372,11 +372,9 @@ target-project/
 │   ├── install-manifest.json
 │   ├── providers.json
 │   ├── routing.md
-│   ├── contracts/
-│   └── templates/project-profile.md
+│   └── contracts/
 │
 └── .agent-wayfinder/          # durable project-owned state
-    ├── project-profile.md           # optional
     └── <effort>/
         ├── map.md
         ├── unknowns/

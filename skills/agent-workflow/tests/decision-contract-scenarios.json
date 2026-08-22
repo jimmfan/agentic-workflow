@@ -684,59 +684,5 @@
     "repository_state_effect": "none",
     "external_scope": "none",
     "expected_behavior": "Fail closed for the affected Wayfinder work, report the missing state contract, make no map read or mutation, and create no substitute persistence, tracker, specialist record, or scratch notebook."
-  },
-  {
-    "id": "discovery-uses-project-profile",
-    "category": "specialist-project-profile-context",
-    "prompt": "Choose the release strategy using the project's established constraints and decision checks.",
-    "setup": "Relevant decision factors and a safe evidence command are cached in `.agent-wayfinder/project-profile.md`; unrelated profile sections exist and higher-precedence sources remain canonical.",
-    "dominant_activity": "discovery",
-    "capabilities": [],
-    "provider_invocations": [],
-    "host": "codex",
-    "route_result": "local",
-    "executed": true,
-    "repository_state_effect": "read-only",
-    "external_scope": "none",
-    "expected_behavior": "Read only relevant `.agent-wayfinder/project-profile.md` facts and pointers, verify them against canonical sources when needed, and load `.agent-workflow/contracts/project-profile.md` before running a recorded command."
-  },
-  {
-    "id": "debugging-uses-project-profile",
-    "category": "specialist-project-profile-context",
-    "prompt": "Diagnose the failing queue health check using the project's configured debugging model and commands.",
-    "setup": "Relevant diagnostic paths and a safe reproducer command are cached in `.agent-wayfinder/project-profile.md`; unrelated profile sections exist.",
-    "dominant_activity": "debugging",
-    "capabilities": [],
-    "provider_invocations": [],
-    "host": "codex",
-    "route_result": "local",
-    "executed": true,
-    "repository_state_effect": "read-only",
-    "external_scope": "none",
-    "expected_behavior": "Read only relevant `.agent-wayfinder/project-profile.md` debugging facts and commands, then load `.agent-workflow/contracts/project-profile.md` and apply its safety gate before running a recorded command."
-  },
-  {
-    "id": "implementation-uses-project-profile",
-    "category": "specialist-project-profile-context",
-    "prompt": "Implement the accepted queue fix and use the project's configured checks.",
-    "setup": "The scope is settled and `.agent-wayfinder/project-profile.md` contains relevant paths, constraints, and configured commands plus unrelated advisory context.",
-    "dominant_activity": "implementation",
-    "capabilities": [
-      "verification"
-    ],
-    "provider_invocations": [
-      {
-        "name": "implement",
-        "policy": "implicit",
-        "invocation": "automatic",
-        "executed": true
-      }
-    ],
-    "host": "codex",
-    "route_result": "executed",
-    "executed": true,
-    "repository_state_effect": "repository-write",
-    "external_scope": "none",
-    "expected_behavior": "Pass only relevant `.agent-wayfinder/project-profile.md` facts, pointers, and configured commands into Implementation, and load `.agent-workflow/contracts/project-profile.md` before any recorded command executes."
   }
 ]

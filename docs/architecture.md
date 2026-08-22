@@ -66,7 +66,6 @@ FRAMEWORK-OWNED, RECONSTRUCTABLE
 
 PROJECT-OWNED, DURABLE
 └── .agent-wayfinder/
-    ├── project-profile.md      # optional
     └── <effort>/               # optional map-first U#/E#/F#/D# knowledge state
 
 OPTIONAL, INDEPENDENT
@@ -101,9 +100,9 @@ repair of current managed content.
 `.agent-wayfinder/` and every entry below it are project-owned. Lifecycle
 operations ensure the directory exists during install/update, but never seed,
 inventory, checksum, merge, rewrite, or remove its contents. Missing optional
-profile and Wayfinder files are normal. Legacy record and archive paths are
-preserved as opaque historical project data rather than resumed or migrated by
-current workflows.
+Wayfinder files are normal. Legacy record and archive paths are preserved as
+opaque historical project data rather than resumed or migrated by current
+workflows.
 
 When Wayfinder needs Git-native structured state, its dedicated progressively
 loaded contract configures `.agent-wayfinder/<effort>/` as the
@@ -284,9 +283,8 @@ claims that every host or operating system was exercised live.
 Live source and observed behavior are authoritative for current system facts.
 Accepted repository decisions and documentation own project decisions;
 provider-native artifacts own provider output; `.agent-wayfinder/` owns local
-workflow continuity, including canonical local Wayfinder efforts; an optional
-project profile is only an advisory cache. All of these outrank private agent
-memory and chat recollection.
+workflow continuity, including canonical local Wayfinder efforts. All of these
+outrank private agent memory and chat recollection.
 
 See [Workflow routing](routing.md), [Verification](verification.md), and
 [ADR-0010](../architecture-decisions/0010-separate-lifecycle-safety-and-reconciliation.md) plus
