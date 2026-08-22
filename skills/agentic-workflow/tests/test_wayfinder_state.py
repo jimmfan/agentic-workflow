@@ -218,7 +218,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "project"
             shutil.copytree(fixture, root)
-            effort = root / ".agent-workflow-state/wayfinder/provider-state"
+            effort = root / ".wayfinder/provider-state"
             unknown = effort / "unknowns/U17-provider-tracker-state.md"
             evidence = effort / "evidence/E12-provider-configuration.md"
             with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
@@ -234,7 +234,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             fact.write_text(
                 fact.read_text(encoding="utf-8").replace(
                     "Supported by: E12",
-                    "Supported by: [source.txt](../../../../source.txt)",
+                    "Supported by: [source.txt](../../../source.txt)",
                 ),
                 encoding="utf-8",
             )
@@ -257,7 +257,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue(retire_current_child(effort, evidence))
             self.assertTrue(retire_current_child(effort, unknown))
             self.assertFalse(retire_current_child(effort, evidence))
-            source_link = (fact.parent / "../../../../source.txt").resolve()
+            source_link = (fact.parent / "../../../source.txt").resolve()
             self.assertEqual(source_link, (root / "source.txt").resolve())
             self.assertTrue(source_link.is_file())
             self.assertNotIn("U17", decision.read_text(encoding="utf-8"))
@@ -396,7 +396,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, self.normalized)
 
-        fixture = FIXTURES / "wayfinder-settlement/.agent-workflow-state/wayfinder"
+        fixture = FIXTURES / "wayfinder-settlement/.wayfinder"
         completed = (fixture / "wayfinder-lifecycle-completed/map.md").read_text()
         abandoned = (fixture / "wayfinder-lifecycle-abandoned/map.md").read_text()
         superseded = (fixture / "wayfinder-lifecycle-superseded/map.md").read_text()

@@ -73,7 +73,7 @@ class PreparationAndMutationTests(unittest.TestCase):
             workspace = Path(state["workspace"])
             self.assertNotIn(arc.SOURCE_ROOT, workspace.parents)
             self.assertFalse((workspace / ".agent-workflow").exists())
-            self.assertFalse((workspace / ".agent-workflow-state").exists())
+            self.assertFalse((workspace / ".wayfinder").exists())
             self.assertFalse((workspace / ".agents").exists())
             self.assertFalse((workspace / "AGENTS.md").exists())
             self.assertIsNone(state["workflow_installation"])
@@ -194,7 +194,7 @@ Legacy security group ownership remains unresolved.
         self.assertTrue(all(grade["state_evolution"]["retained_truth"].values()))
         self.assertTrue(grade["mapping_only_respected"])
 
-        unknown = self.workspace / ".agent-workflow-state/wayfinder/arc/unknowns/U1-compute.md"
+        unknown = self.workspace / ".wayfinder/arc/unknowns/U1-compute.md"
         unknown.parent.mkdir(parents=True)
         unknown.write_text("Instance family is unresolved.\n", encoding="utf-8")
         workflow = arc.grade_phase_3(

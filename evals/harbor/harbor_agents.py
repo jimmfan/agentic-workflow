@@ -45,7 +45,7 @@ class _EvaluationCodex(Codex):
 set -eu
 for path in \
   /app/.agent-workflow \
-  /app/.agent-workflow-state \
+  /app/.wayfinder \
   /app/.agents/skills/workflow-debugging \
   /app/.agents/skills/workflow-discovery \
   /app/.agents/skills/workflow-implementation \

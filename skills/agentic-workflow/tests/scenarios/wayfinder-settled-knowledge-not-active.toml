@@ -19,14 +19,14 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-workflow-state/wayfinder/settled-provider-direction/map.md",
+  ".wayfinder/settled-provider-direction/map.md",
 ]
 forbid_created_globs = []
 state_must_include = [
-  ".agent-workflow-state/wayfinder/settled-provider-direction/map.md",
+  ".wayfinder/settled-provider-direction/map.md",
 ]
 state_must_not_include = [
-  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md",
+  ".wayfinder/wayfinder-lifecycle-completed/map.md",
 ]
 report_must_include = [
   "current runtime projection",
@@ -34,4 +34,4 @@ report_must_include = [
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/settled-provider-direction/decisions/D1-use-upstream-runtime.md"
+path = ".wayfinder/settled-provider-direction/decisions/D1-use-upstream-runtime.md"

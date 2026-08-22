@@ -203,7 +203,7 @@ class BehaviorContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(accepted, Path(temporary))
             map_path = next(
-                (workspace / ".agent-workflow-state/wayfinder").glob("*/map.md")
+                (workspace / ".wayfinder").glob("*/map.md")
             )
             evidence_args = {
                 "scenario": accepted,
@@ -263,7 +263,7 @@ class BehaviorContractTests(unittest.TestCase):
 
         no_state = scenarios["wayfinder-assessment-needs-no-state"]
         self.assertIn("repository_unchanged", no_state.expect)
-        self.assertIn(".agent-workflow-state/**", no_state.forbid_created_globs)
+        self.assertIn(".wayfinder/**", no_state.forbid_created_globs)
 
         resume = scenarios["wayfinder-resume-synonymous-wording"]
         self.assertEqual(len(resume.state_must_include), 1)
@@ -360,7 +360,7 @@ class BehaviorContractTests(unittest.TestCase):
         )
         self.assertIn("repository_unchanged", historical.expect)
         self.assertEqual(len(historical.state_must_include), 1)
-        completed_map = behavior.FIXTURE_ROOT / "wayfinder-settlement/.agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md"
+        completed_map = behavior.FIXTURE_ROOT / "wayfinder-settlement/.wayfinder/wayfinder-lifecycle-completed/map.md"
         self.assertIn("docs/wayfinder-lifecycle.md", completed_map.read_text())
         completed_effort = completed_map.parent
         self.assertFalse(any((completed_effort / child).exists() for child in ("unknowns", "evidence", "facts", "decisions")))
@@ -403,7 +403,7 @@ class BehaviorContractTests(unittest.TestCase):
         )
         self.assertEqual(
             [item.as_posix() for item in legacy.state_must_include],
-            [".agent-workflow-state/wayfinder/legacy-dir/map.md"],
+            [".wayfinder/legacy-dir/map.md"],
         )
         ephemeral_state = " ".join(ephemeral.starting_state).lower()
         for transient in ("branch", "ticket", "file", "temporary-task", "chat-title"):
@@ -645,7 +645,7 @@ class BehaviorContractTests(unittest.TestCase):
         )
         self.assertTrue(scenario.live)
         self.assertIn(
-            ".agent-workflow-state/wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+            ".wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
             {path.as_posix() for path in scenario.preserve_paths},
         )
         counts = {
@@ -654,10 +654,10 @@ class BehaviorContractTests(unittest.TestCase):
             if item.kind == "glob_count"
         }
         self.assertEqual(
-            counts[".agent-workflow-state/wayfinder/deployment-mode/evidence/E*.md"], 2
+            counts[".wayfinder/deployment-mode/evidence/E*.md"], 2
         )
         self.assertEqual(
-            counts[".agent-workflow-state/wayfinder/deployment-mode/unknowns/U*.md"], 1
+            counts[".wayfinder/deployment-mode/unknowns/U*.md"], 1
         )
         required_values = {
             item.value
@@ -684,7 +684,7 @@ class BehaviorContractTests(unittest.TestCase):
         fixture_effort = (
             behavior.FIXTURE_ROOT
             / scenario.fixture
-            / ".agent-workflow-state/wayfinder/runtime-rollout"
+            / ".wayfinder/runtime-rollout"
         )
         self.assertEqual(
             [path.relative_to(fixture_effort).as_posix() for path in fixture_effort.rglob("*")],
@@ -734,7 +734,7 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertTrue(content_assertion.path.name.startswith("U1-"))
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
-            unknowns = workspace / ".agent-workflow-state/wayfinder/platform-migration/unknowns"
+            unknowns = workspace / ".wayfinder/platform-migration/unknowns"
             unknowns.mkdir(parents=True)
             stable_unknown = unknowns / "U1-any-clear-slug-is-valid.md"
             stable_unknown.write_text(
@@ -794,7 +794,7 @@ class BehaviorContractTests(unittest.TestCase):
     def test_semantic_glob_assertions_do_not_fix_artifact_filenames_or_counts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             workspace = Path(temporary)
-            unknowns = workspace / ".agent-workflow-state/wayfinder/arc/unknowns"
+            unknowns = workspace / ".wayfinder/arc/unknowns"
             unknowns.mkdir(parents=True)
             (unknowns / "U7-review.md").write_text(
                 "# U7: Has the ADR completed full-team review?\n",
@@ -817,7 +817,7 @@ class BehaviorContractTests(unittest.TestCase):
                 route_components=(),
             )
             pattern = behavior.PurePosixPath(
-                ".agent-workflow-state/wayfinder/arc/unknowns/U*.md"
+                ".wayfinder/arc/unknowns/U*.md"
             )
             any_review = behavior.Assertion(
                 kind="glob_any_contains",

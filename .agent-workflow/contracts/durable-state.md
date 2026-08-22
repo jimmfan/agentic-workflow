@@ -1,7 +1,7 @@
 # Durable project state contract
 
 Repository files, not agent or chat memory, preserve project continuity. All
-durable Agentic Workflow state lives under `.agent-workflow-state/`, outside the
+durable Agentic Workflow state lives under `.wayfinder/`, outside the
 reinstallable `.agent-workflow/` directory. Lifecycle operations treat every
 entry below that root as opaque project-owned data.
 
@@ -12,11 +12,11 @@ they run. Provider-native artifacts remain canonical in their owning locations.
 
 Current framework-authored durable state is limited to:
 
-- `.agent-workflow-state/wayfinder/<effort>/`: map-first coordination under the
+- `.wayfinder/<effort>/`: map-first coordination under the
   dedicated Wayfinder contract;
-- `.agent-workflow-state/project-profile.md`: an optional advisory cache under
+- `.wayfinder/project-profile.md`: an optional advisory cache under
   the project-profile contract; and
-- `.agent-workflow-state/records/IDP-NNNN-<slug>.md`: an optional accepted
+- `.wayfinder/records/IDP-NNNN-<slug>.md`: an optional accepted
   internal-developer-platform opportunity under the narrow rule below.
 
 There is no global active index and no current DEC, IMP, or DBG allocation,
@@ -58,7 +58,7 @@ Allocate one greater than the highest matching ID in both `records/` and
 create the selected path without overwriting. A collision retries with the next
 number. Status is `proposed`, `accepted`, `rejected`, `completed`, or
 `superseded`; completed or superseded records may move to
-`.agent-workflow-state/archive/<year>/`.
+`.wayfinder/archive/<year>/`.
 
 Use this compact shape directly; no separate template or workflow is required:
 

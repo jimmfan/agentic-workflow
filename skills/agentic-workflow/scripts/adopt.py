@@ -20,7 +20,7 @@ PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 DISTRIBUTION_MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
 FRAMEWORK_ROOT = PurePosixPath(".agent-workflow")
-DURABLE_ROOT = PurePosixPath(".agent-workflow-state")
+DURABLE_ROOT = PurePosixPath(".wayfinder")
 INSTALL_MANIFEST = FRAMEWORK_ROOT / "install-manifest.json"
 COMPOSITE_PATHS = {PurePosixPath("AGENTS.md"), PurePosixPath("CLAUDE.md")}
 MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
@@ -314,7 +314,7 @@ def ensure_durable_state(root: Path) -> bool:
         canonical.mkdir(mode=0o755)
         return True
     if canonical.is_symlink() or not canonical.is_dir():
-        raise AdoptionError(".agent-workflow-state must be a regular non-symlink directory")
+        raise AdoptionError(".wayfinder must be a regular non-symlink directory")
     return False
 
 
@@ -496,7 +496,7 @@ def reconcile(root: Path, dry_run: bool, revision: str, verb: str) -> None:
     writes, removals, external, composites, actions = plan_reconciliation(root, mappings, state)
     actions.append("replace reconstructable .agent-workflow with current desired files")
     if not checked_target(root, DURABLE_ROOT).exists():
-        actions.append("create empty durable project-state directory .agent-workflow-state")
+        actions.append("create empty durable project-state directory .wayfinder")
 
     if dry_run:
         print(f"{verb.upper()} PLAN {root}")
@@ -531,7 +531,7 @@ def reconcile(root: Path, dry_run: bool, revision: str, verb: str) -> None:
     if backup is not None:
         shutil.rmtree(backup, ignore_errors=True)
     print(f"OK: Agentic Workflow {verb} completed; current framework state reconciled.")
-    print("OK: Durable project state preserved under .agent-workflow-state/.")
+    print("OK: Durable project state preserved under .wayfinder/.")
 
 
 def status(root: Path) -> int:
@@ -603,7 +603,7 @@ def status(root: Path) -> int:
     if not durable.exists():
         problems.append("REPAIR: durable project-state directory is absent")
     elif durable.is_symlink() or not durable.is_dir():
-        conflicts.append("CONFLICT: .agent-workflow-state is not a regular directory")
+        conflicts.append("CONFLICT: .wayfinder is not a regular directory")
 
     print(f"STATUS {root}")
     print(f"Current package version: {version}")
@@ -665,7 +665,7 @@ def remove(root: Path, dry_run: bool) -> None:
         if framework.is_symlink() or not framework.is_dir():
             raise AdoptionError(".agent-workflow must be a regular non-symlink directory")
         actions.append("remove reconstructable .agent-workflow directory")
-    actions.append("preserve .agent-workflow-state and every file below it")
+    actions.append("preserve .wayfinder and every file below it")
 
     if dry_run:
         print(f"REMOVE PLAN {root}")

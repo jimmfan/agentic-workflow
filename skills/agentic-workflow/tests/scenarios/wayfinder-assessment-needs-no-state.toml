@@ -20,7 +20,7 @@ must_not = [
 live = false
 preserve_paths = ["app.py", "verify.py"]
 forbid_created_globs = [
-  ".agent-workflow-state/**",
+  ".wayfinder/**",
   "planning/**",
   "wayfinder/**",
 ]

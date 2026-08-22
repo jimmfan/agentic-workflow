@@ -98,7 +98,7 @@ so far, Not yet specified, and Out of scope; it loads child decision tickets on
 demand and derives the frontier from open, unblocked, unclaimed children. Its
 default local-Markdown tracker stores those artifacts below `.scratch/`.
 Agentic Workflow deliberately owns its effective runtime and canonical local representation
-under `.agent-workflow-state/wayfinder/` instead, with the map itself as the
+under `.wayfinder/` instead, with the map itself as the
 re-entry point and optional U#/E#/F#/D# knowledge. The map owns current state,
 blockers, dependencies, and next work. Substantial decomposition passes to the
 native `to-tickets` output without a shadow copy. The pinned release remains the

@@ -27,17 +27,17 @@ preserve_paths = [
   "rollout-plan.md",
 ]
 forbid_created_globs = [
-  ".agent-workflow-state/active.md",
-  ".agent-workflow-state/wayfinder/runtime-rollout/tickets",
-  ".agent-workflow-state/wayfinder/runtime-rollout/tickets/**",
-  ".agent-workflow-state/wayfinder/runtime-rollout/unknowns",
-  ".agent-workflow-state/wayfinder/runtime-rollout/unknowns/**",
-  ".agent-workflow-state/wayfinder/runtime-rollout/decisions",
-  ".agent-workflow-state/wayfinder/runtime-rollout/decisions/**",
+  ".wayfinder/active.md",
+  ".wayfinder/runtime-rollout/tickets",
+  ".wayfinder/runtime-rollout/tickets/**",
+  ".wayfinder/runtime-rollout/unknowns",
+  ".wayfinder/runtime-rollout/unknowns/**",
+  ".wayfinder/runtime-rollout/decisions",
+  ".wayfinder/runtime-rollout/decisions/**",
 ]
 route_must_not_include = ["discovery", "implement"]
 state_must_include = [
-  ".agent-workflow-state/wayfinder/runtime-rollout/map.md",
+  ".wayfinder/runtime-rollout/map.md",
 ]
 state_must_not_include = []
 report_must_include = [
@@ -48,32 +48,32 @@ report_must_include = [
 
 [[assertions]]
 kind = "glob_count"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/evidence/E*.md"
+path = ".wayfinder/runtime-rollout/evidence/E*.md"
 count = 1
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/evidence/E1-*.md"
+path = ".wayfinder/runtime-rollout/evidence/E1-*.md"
 value = "Source: release-policy.txt"
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/evidence/E1-*.md"
+path = ".wayfinder/runtime-rollout/evidence/E1-*.md"
 value = "## Observation"
 
 [[assertions]]
 kind = "glob_count"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/facts/F*.md"
+path = ".wayfinder/runtime-rollout/facts/F*.md"
 count = 1
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/facts/F1-*.md"
+path = ".wayfinder/runtime-rollout/facts/F1-*.md"
 value = "Supported by: E1"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/tickets"
+path = ".wayfinder/runtime-rollout/tickets"
 
 [[assertions]]
 kind = "glob_count"
@@ -82,15 +82,15 @@ count = 3
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/map.md"
+path = ".wayfinder/runtime-rollout/map.md"
 value = ".scratch/runtime-rollout/issues/"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/map.md"
+path = ".wayfinder/runtime-rollout/map.md"
 value = "## Next work"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/runtime-rollout/map.md"
+path = ".wayfinder/runtime-rollout/map.md"
 value = "01"

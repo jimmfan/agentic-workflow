@@ -21,48 +21,48 @@ live = true
 blind_grading = true
 preserve_paths = ["README.md", "project-approval.md"]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/*/tickets",
-  ".agent-workflow-state/wayfinder/*/tickets/**",
+  ".wayfinder/*/tickets",
+  ".wayfinder/*/tickets/**",
   ".scratch",
   ".scratch/**",
 ]
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "project-approval.md"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "accepted"
 
 [[assertions]]
 kind = "glob_any_matches"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = '''(?:\bpilot\b[^.!?\n]{0,120}\b(?:may\s+proceed|can\s+proceed|approved\s+to\s+proceed|allowed\s+to\s+proceed|ready|unblocked|not\s+blocked)\b|(?<!not\s)\b(?:ready|unblocked)\b[^.!?\n]{0,120}\bpilot\b)'''
 
 [[assertions]]
 kind = "glob_none_matches"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = '''(?:\bpilot\b[^.!?\n]{0,120}(?<!not\s)\bblocked\b|\bpilot\b[^.!?\n]{0,120}\bnot\s+(?:ready|unblocked)\b|(?<!not\s)\bblocked\b[^.!?\n]{0,120}\bpilot\b|\bnot\s+(?:ready|unblocked)\b[^.!?\n]{0,120}\bpilot\b)'''
 
 [[assertions]]
 kind = "glob_any_matches"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = '''(?:\bproduction\b[^.!?\n]{0,120}(?<!not\s)\bblocked\b|(?<!not\s)\bblocked\b[^.!?\n]{0,120}\bproduction\b)'''
 
 [[assertions]]
 kind = "glob_none_matches"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = '''(?:\bproduction\b[^.!?\n]{0,120}(?<!not\s)\b(?:ready|unblocked)\b|(?<!not\s)\b(?:ready|unblocked)\b[^.!?\n]{0,120}\bproduction\b)'''
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+path = ".wayfinder/*/unknowns/U*.md"
 value = "- Status: open"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+path = ".wayfinder/*/unknowns/U*.md"
 value = "- Status: resolved"

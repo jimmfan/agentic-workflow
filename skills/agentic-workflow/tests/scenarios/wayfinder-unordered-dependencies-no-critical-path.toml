@@ -19,25 +19,25 @@ live = true
 blind_grading = true
 preserve_paths = ["README.md"]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/*/unknowns",
-  ".agent-workflow-state/wayfinder/*/unknowns/**",
-  ".agent-workflow-state/wayfinder/*/tickets",
-  ".agent-workflow-state/wayfinder/*/tickets/**",
+  ".wayfinder/*/unknowns",
+  ".wayfinder/*/unknowns/**",
+  ".wayfinder/*/tickets",
+  ".wayfinder/*/tickets/**",
   ".scratch",
   ".scratch/**",
 ]
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "SDK onboarding"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "independent"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "critical path"

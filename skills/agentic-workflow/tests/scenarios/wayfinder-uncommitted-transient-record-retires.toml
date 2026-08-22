@@ -19,16 +19,16 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-workflow-state/wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
+  ".wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
 ]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/provider-state/allocation.md",
+  ".wayfinder/provider-state/allocation.md",
 ]
 state_must_include = [
-  ".agent-workflow-state/wayfinder/provider-state/map.md",
-  ".agent-workflow-state/wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
-  ".agent-workflow-state/wayfinder/provider-state/evidence/E12-provider-configuration.md",
-  ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md",
+  ".wayfinder/provider-state/map.md",
+  ".wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
+  ".wayfinder/provider-state/evidence/E12-provider-configuration.md",
+  ".wayfinder/provider-state/decisions/D4-use-local-runtime.md",
 ]
 state_must_not_include = []
 report_must_include = [
@@ -38,23 +38,23 @@ report_must_include = [
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/unknowns/U17-provider-tracker-state.md"
+path = ".wayfinder/provider-state/unknowns/U17-provider-tracker-state.md"
 
 [[assertions]]
 kind = "path_not_contains"
-path = ".agent-workflow-state/wayfinder/provider-state/map.md"
+path = ".wayfinder/provider-state/map.md"
 value = "U17"
 
 [[assertions]]
 kind = "path_not_contains"
-path = ".agent-workflow-state/wayfinder/provider-state/evidence/E12-provider-configuration.md"
+path = ".wayfinder/provider-state/evidence/E12-provider-configuration.md"
 value = "U17"
 
 [[assertions]]
 kind = "path_not_contains"
-path = ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md"
+path = ".wayfinder/provider-state/decisions/D4-use-local-runtime.md"
 value = "U17"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/allocation.md"
+path = ".wayfinder/provider-state/allocation.md"

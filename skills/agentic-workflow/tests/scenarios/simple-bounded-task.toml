@@ -20,7 +20,7 @@ live = true
 verification_command = "Run python verify.py after the change."
 preserve_paths = []
 forbid_created_globs = [
-  ".agent-workflow-state/**",
+  ".wayfinder/**",
   "docs/decisions/**",
   "planning/**",
   "wayfinder/**",

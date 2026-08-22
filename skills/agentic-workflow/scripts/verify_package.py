@@ -196,7 +196,7 @@ def check_manifest() -> None:
         require(isinstance(item, dict) and set(item) == {"source", "target"}, "invalid manifest mapping")
         source = safe_relative(item["source"])
         target = safe_relative(item["target"])
-        require(target.parts[0] != ".agent-workflow-state", "manifest must not own durable project state")
+        require(target.parts[0] != ".wayfinder", "manifest must not own durable project state")
         require(".agent-workflow/state" not in target.as_posix(), "manifest must not recreate obsolete workflow state")
         sources.append(source.as_posix())
         targets.append(target.as_posix())
@@ -255,7 +255,7 @@ def check_router_contract() -> None:
         and "according to the coordination threshold" in normalized_routing.lower(),
         "detailed router lacks conditional specialist transitions",
     )
-    require(".agent-workflow-state/" in durable, "durable-state contract lacks the canonical state root")
+    require(".wayfinder/" in durable, "durable-state contract lacks the canonical state root")
     require("no global active index" in durable, "durable-state contract retains a global active index")
     require(
         "Wayfinder is the sole framework-owned durable coordination layer" in normalized_durable,
@@ -274,7 +274,7 @@ def check_router_contract() -> None:
         "decisions/",
         "`map.md` alone is a complete and valid Wayfinder effort",
         "Do not read every",
-        "Do not create or update `.agent-workflow-state/active.md`",
+        "Do not create or update `.wayfinder/active.md`",
         "Facts must link",
         "reciprocal backlinks",
         "mark the F# `disputed`",

@@ -19,35 +19,35 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
+  ".wayfinder/wayfinder-runtime-projection/map.md",
 ]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/tickets",
-  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/tickets/**",
+  ".wayfinder/wayfinder-runtime-projection/tickets",
+  ".wayfinder/wayfinder-runtime-projection/tickets/**",
 ]
 state_must_include = [
-  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
+  ".wayfinder/wayfinder-runtime-projection/map.md",
 ]
 state_must_not_include = [
-  ".agent-workflow-state/wayfinder/provider-projection/map.md",
-  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
-  ".agent-workflow-state/wayfinder/legacy-dir/map.md",
+  ".wayfinder/provider-projection/map.md",
+  ".wayfinder/provider-runtime/map.md",
+  ".wayfinder/legacy-dir/map.md",
 ]
 
 [[assertions]]
 kind = "path_exists"
-path = ".agent-workflow-state/wayfinder/wayfinder-knowledge-settlement/map.md"
+path = ".wayfinder/wayfinder-knowledge-settlement/map.md"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/wayfinder-knowledge-settlement/map.md"
+path = ".wayfinder/wayfinder-knowledge-settlement/map.md"
 value = "# Wayfinder knowledge settlement"
 
 [[assertions]]
 kind = "path_not_contains"
-path = ".agent-workflow-state/wayfinder/wayfinder-knowledge-settlement/map.md"
+path = ".wayfinder/wayfinder-knowledge-settlement/map.md"
 value = "## Identity"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/wayfinder-knowledge-settlement/tickets"
+path = ".wayfinder/wayfinder-knowledge-settlement/tickets"

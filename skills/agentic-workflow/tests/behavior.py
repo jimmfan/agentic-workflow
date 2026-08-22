@@ -504,7 +504,7 @@ def route_visible(evidence: RunEvidence) -> tuple[bool, str]:
 def state_or_decision_changed(evidence: RunEvidence) -> bool:
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
     return any(
-        path.startswith(".agent-workflow-state/") or path.startswith("/")
+        path.startswith(".wayfinder/") or path.startswith("/")
         for path in created | modified
     )
 
@@ -751,13 +751,13 @@ def run_adopt(command: str, workspace: Path) -> subprocess.CompletedProcess[str]
 def exercise_fixture_lifecycle(scenario: Scenario) -> tuple[bool, str]:
     with tempfile.TemporaryDirectory(prefix=f"behavior-{scenario.id}-") as temporary:
         workspace = copy_fixture(scenario, Path(temporary))
-        original = snapshot(workspace / ".agent-workflow-state")
+        original = snapshot(workspace / ".wayfinder")
         for command in ("install", "update", "update", "remove", "install"):
             result = run_adopt(command, workspace)
             if result.returncode != 0:
                 detail = (result.stderr or result.stdout).strip()
                 return False, f"{command} failed: {detail}"
-            current = snapshot(workspace / ".agent-workflow-state")
+            current = snapshot(workspace / ".wayfinder")
             if current != original:
                 return False, f"{command} changed project-owned state"
         return True, "install/update/repeated-update/remove/reinstall preserved project state"

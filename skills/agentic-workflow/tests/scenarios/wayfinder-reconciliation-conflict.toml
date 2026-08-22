@@ -20,20 +20,20 @@ must_not = [
 live = true
 verification_command = "No truthful reconciliation is possible until authoritative regional rollout evidence exists."
 preserve_paths = [
-  ".agent-workflow-state/wayfinder/deployment-rollout/map.md",
-  ".agent-workflow-state/wayfinder/billing-cleanup/map.md",
+  ".wayfinder/deployment-rollout/map.md",
+  ".wayfinder/billing-cleanup/map.md",
   "deployment.py",
 ]
 forbid_created_globs = []
 route_must_not_include = []
 state_must_include = [
-  ".agent-workflow-state/wayfinder/deployment-rollout/map.md",
+  ".wayfinder/deployment-rollout/map.md",
 ]
 state_must_not_include = [
-  ".agent-workflow-state/wayfinder/billing-cleanup/map.md",
+  ".wayfinder/billing-cleanup/map.md",
 ]
 report_must_include = [
-  ".agent-workflow-state/wayfinder/deployment-rollout/map.md",
+  ".wayfinder/deployment-rollout/map.md",
   "deployment.py",
   "partial",
   "complete",

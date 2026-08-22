@@ -28,7 +28,7 @@ when compatible and available; otherwise use normal host implementation unless
 the user required that provider or work is blocked by safety or authorization.
 Never simulate provider execution or claim it ran.
 
-Read `.agent-workflow-state/project-profile.md` only when its verified facts,
+Read `.wayfinder/project-profile.md` only when its verified facts,
 pointers, constraints, or configured commands materially inform the handoff.
 Before running a recorded command, read
 `.agent-workflow/contracts/project-profile.md` and apply its safety gate.

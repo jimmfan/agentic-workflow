@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-explicit-historical-effort-access"
 name = "Explicitly named historical effort remains accessible"
 fixture = "wayfinder-settlement"
-request = "Read the explicitly named .agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md and summarize its outcome without changing files or treating it as current work."
+request = "Read the explicitly named .wayfinder/wayfinder-lifecycle-completed/map.md and summarize its outcome without changing files or treating it as current work."
 starting_state = [
   "The exact safe historical map path is supplied.",
   "The completed effort remains readable but has no current frontier.",
@@ -19,14 +19,14 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md",
+  ".wayfinder/wayfinder-lifecycle-completed/map.md",
 ]
 forbid_created_globs = []
 state_must_include = [
-  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md",
+  ".wayfinder/wayfinder-lifecycle-completed/map.md",
 ]
 state_must_not_include = [
-  ".agent-workflow-state/wayfinder/settled-provider-direction/map.md",
+  ".wayfinder/settled-provider-direction/map.md",
 ]
 report_must_include = [
   "completed",

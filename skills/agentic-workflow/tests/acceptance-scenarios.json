@@ -22,7 +22,7 @@
   {
     "id": "preserve-arbitrary-durable-state",
     "operation": "install-update-remove-reinstall",
-    "expected": "Every project-owned entry under .agent-workflow-state survives byte-for-byte."
+    "expected": "Every project-owned entry under .wayfinder survives byte-for-byte."
   },
   {
     "id": "preserve-composite-project-region",

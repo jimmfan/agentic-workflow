@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-effort = Path(".agent-workflow-state/wayfinder/deployment-mode")
+effort = Path(".wayfinder/deployment-mode")
 evidence = sorted((effort / "evidence").glob("E2-*.md"))
 unknowns = sorted((effort / "unknowns").glob("U1-*.md"))
 fact = (effort / "facts/F1-deployment-mode-is-dedicated.md").read_text()

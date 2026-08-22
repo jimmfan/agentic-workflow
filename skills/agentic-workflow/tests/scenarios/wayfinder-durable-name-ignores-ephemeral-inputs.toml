@@ -19,36 +19,36 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
-  ".agent-workflow-state/wayfinder/provider-projection/map.md",
-  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
-  ".agent-workflow-state/wayfinder/legacy-dir/map.md",
-  ".agent-workflow-state/wayfinder/concurrency-safe-provider-refresh/map.md",
+  ".wayfinder/wayfinder-runtime-projection/map.md",
+  ".wayfinder/provider-projection/map.md",
+  ".wayfinder/provider-runtime/map.md",
+  ".wayfinder/legacy-dir/map.md",
+  ".wayfinder/concurrency-safe-provider-refresh/map.md",
 ]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/current-work",
-  ".agent-workflow-state/wayfinder/current-work/**",
-  ".agent-workflow-state/wayfinder/project-update",
-  ".agent-workflow-state/wayfinder/project-update/**",
-  ".agent-workflow-state/wayfinder/aw-42",
-  ".agent-workflow-state/wayfinder/aw-42/**",
-  ".agent-workflow-state/wayfinder/fix-branch",
-  ".agent-workflow-state/wayfinder/fix-branch/**",
+  ".wayfinder/current-work",
+  ".wayfinder/current-work/**",
+  ".wayfinder/project-update",
+  ".wayfinder/project-update/**",
+  ".wayfinder/aw-42",
+  ".wayfinder/aw-42/**",
+  ".wayfinder/fix-branch",
+  ".wayfinder/fix-branch/**",
 ]
 state_must_include = []
 state_must_not_include = [
-  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
-  ".agent-workflow-state/wayfinder/provider-projection/map.md",
-  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
-  ".agent-workflow-state/wayfinder/legacy-dir/map.md",
-  ".agent-workflow-state/wayfinder/concurrency-safe-provider-refresh/map.md",
+  ".wayfinder/wayfinder-runtime-projection/map.md",
+  ".wayfinder/provider-projection/map.md",
+  ".wayfinder/provider-runtime/map.md",
+  ".wayfinder/legacy-dir/map.md",
+  ".wayfinder/concurrency-safe-provider-refresh/map.md",
 ]
 
 [[assertions]]
 kind = "path_exists"
-path = ".agent-workflow-state/wayfinder/effort-selection-reliability/map.md"
+path = ".wayfinder/effort-selection-reliability/map.md"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/effort-selection-reliability/map.md"
+path = ".wayfinder/effort-selection-reliability/map.md"
 value = "# Effort-selection reliability"

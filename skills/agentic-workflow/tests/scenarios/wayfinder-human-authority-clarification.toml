@@ -22,10 +22,10 @@ live = false
 verification_command = "Confirm the public response asks the authority question and the effort contains no accepted D# or implementation tickets."
 preserve_paths = ["docs/requirements.md", "storage.py"]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/persistence-authority/decisions",
-  ".agent-workflow-state/wayfinder/persistence-authority/decisions/**",
-  ".agent-workflow-state/wayfinder/persistence-authority/tickets",
-  ".agent-workflow-state/wayfinder/persistence-authority/tickets/**",
+  ".wayfinder/persistence-authority/decisions",
+  ".wayfinder/persistence-authority/decisions/**",
+  ".wayfinder/persistence-authority/tickets",
+  ".wayfinder/persistence-authority/tickets/**",
   ".scratch",
   ".scratch/**",
   "docs/specifications/**",
@@ -39,16 +39,16 @@ report_must_include = [
 
 [[assertions]]
 kind = "path_exists"
-path = ".agent-workflow-state/wayfinder/persistence-authority/map.md"
+path = ".wayfinder/persistence-authority/map.md"
 
 [[assertions]]
 kind = "glob_count"
-path = ".agent-workflow-state/wayfinder/persistence-authority/unknowns/U*.md"
+path = ".wayfinder/persistence-authority/unknowns/U*.md"
 count = 1
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/persistence-authority/decisions"
+path = ".wayfinder/persistence-authority/decisions"
 
 [[assertions]]
 kind = "path_not_contains"

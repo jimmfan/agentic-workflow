@@ -15,7 +15,7 @@ resume from its map without creating a DBG or specialist notebook.
 1. Define expected and observed behavior, impact, onset, frequency, and last
    known good state.
 2. Read relevant project diagnostics and system context. Read
-   `.agent-workflow-state/project-profile.md` only when its debugging model,
+   `.wayfinder/project-profile.md` only when its debugging model,
    verified facts, pointers, or commands materially inform the investigation.
    Before running a recorded command, read
    `.agent-workflow/contracts/project-profile.md` and apply its safety gate. The

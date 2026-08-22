@@ -596,9 +596,20 @@ def exact_fact_evidence(workspace: Path, paths: Iterable[str] | None = None) -> 
     return evidence_lines(workspace, candidates, (re.escape(AMI_PARAMETER),))
 
 
+def wayfinder_markdown_paths(workspace: Path) -> list[Path]:
+    root = workspace / ".wayfinder"
+    if not root.is_dir():
+        return []
+    return [
+        path
+        for effort in sorted(root.iterdir())
+        if effort.is_dir() and effort.name not in {"archive", "records"}
+        for path in sorted(effort.rglob("*.md"))
+    ]
+
+
 def wayfinder_blocker_evidence(workspace: Path) -> dict[str, Any]:
-    root = workspace / ".agent-workflow-state" / "wayfinder"
-    paths = [path.relative_to(workspace).as_posix() for path in root.rglob("*.md")] if root.is_dir() else []
+    paths = [path.relative_to(workspace).as_posix() for path in wayfinder_markdown_paths(workspace)]
     blocker_lines = evidence_lines(workspace, paths, (r"^\s*-?\s*Blocked by\s*:",))
     legacy_lines = [
         item
@@ -638,7 +649,7 @@ def grade_phase_1(workspace: Path, before: dict[str, str], condition: str) -> di
         "mapping_only_respected": not terraform_changed,
     }
     if condition in WORKFLOW_CONDITIONS:
-        state_files = [path for path in changed if path.startswith(".agent-workflow-state/wayfinder/")]
+        state_files = [path for path in changed if path.startswith(".wayfinder/")]
         result["wayfinder"] = {
             "exercised": bool(state_files),
             "state_files": state_files,
@@ -1016,7 +1027,7 @@ def event_execution_summary(stdout: str, elapsed_seconds: float) -> dict[str, An
         "wayfinder_observation": {
             "explicit_invocation_observed": bool(re.search(r"\$wayfinder\b", combined_messages)),
             "wayfinder_skill_read": bool(re.search(r"\.agents/skills/wayfinder/SKILL\.md", combined_commands)),
-            "wayfinder_state_read": bool(re.search(r"\.agent-workflow-state/wayfinder", combined_commands)),
+            "wayfinder_state_read": bool(re.search(r"\.wayfinder", combined_commands)),
             "route_to_wayfinder_self_reported": bool(
                 re.search(r"\[route:\s*router\s*→\s*wayfinder", combined_messages, re.I)
             ),
@@ -1211,7 +1222,7 @@ def verify_automatic_workspace(state: dict[str, Any]) -> dict[str, Any]:
             {
                 "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
                 "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
-                "no_agentic_workflow_state_directory": not (workspace / ".agent-workflow-state").exists(),
+                "no_agentic_workflow_state_directory": not (workspace / ".wayfinder").exists(),
                 "no_project_wayfinder_skill": not (
                     workspace / ".agents" / "skills" / "wayfinder"
                 ).exists(),
@@ -1336,7 +1347,7 @@ def audit_auto_isolation(
                 static_checks.update(
                     {
                         "no_agentic_workflow": not (workspace / ".agent-workflow").exists(),
-                        "no_agentic_workflow_state": not (workspace / ".agent-workflow-state").exists(),
+                        "no_agentic_workflow_state": not (workspace / ".wayfinder").exists(),
                         "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
                         "no_wayfinder_skill": not (workspace / ".agents" / "skills" / "wayfinder").exists(),
                     }
@@ -1474,10 +1485,10 @@ def treatment_crossover(
     execution: dict[str, Any],
 ) -> dict[str, Any]:
     state_files = sorted(
-        path for path in snapshot(workspace) if path.startswith(".agent-workflow-state/wayfinder/")
+        path for path in snapshot(workspace) if path.startswith(".wayfinder/")
     )
     changed_state_files = sorted(
-        path for path in changed if path.startswith(".agent-workflow-state/wayfinder/")
+        path for path in changed if path.startswith(".wayfinder/")
     )
     observation = dict(execution.get("wayfinder_observation") or {})
     state_read = bool(state_files) and bool(observation.get("wayfinder_state_read"))

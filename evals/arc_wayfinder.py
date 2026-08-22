@@ -551,7 +551,7 @@ def grade_phase_1(workspace: Path, before: dict[str, str], variant: str) -> dict
         "mapping_only_respected": not terraform_changed and not any(prohibited_choices.values()),
     }
     if variant == "workflow":
-        state_files = [path for path in changed if path.startswith(".agent-workflow-state/wayfinder/")]
+        state_files = [path for path in changed if path.startswith(".wayfinder/")]
         result["wayfinder"] = {
             "exercised": bool(state_files),
             "state_files": state_files,
@@ -1013,7 +1013,7 @@ def verify_automatic_workspace(state: dict[str, Any]) -> dict[str, Any]:
             {
                 "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
                 "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
-                "no_agentic_workflow_state_directory": not (workspace / ".agent-workflow-state").exists(),
+                "no_agentic_workflow_state_directory": not (workspace / ".wayfinder").exists(),
                 "no_project_wayfinder_skill": not (
                     workspace / ".agents" / "skills" / "wayfinder"
                 ).exists(),
@@ -1107,7 +1107,7 @@ def audit_auto_isolation(
             "workspace_is_git_root": git(workspace, "rev-parse", "--show-toplevel").stdout.strip()
             == str(workspace),
             "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
-            "no_agentic_workflow_state_directory": not (workspace / ".agent-workflow-state").exists(),
+            "no_agentic_workflow_state_directory": not (workspace / ".wayfinder").exists(),
             "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
             "no_project_wayfinder_skill": not (workspace / ".agents" / "skills" / "wayfinder").exists(),
             "no_agentic_or_wayfinder_global_match": not inventory[

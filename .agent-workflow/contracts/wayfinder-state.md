@@ -2,7 +2,7 @@
 
 Use this contract only when Wayfinder is selected, including a justified
 mid-task escalation, or a request continues a relevant local Wayfinder effort.
-The existence of an effort under `.agent-workflow-state/wayfinder/` is not a
+The existence of an effort under `.wayfinder/` is not a
 routing signal. Clear, bounded, or unrelated work stays on its minimum useful
 route and does not read or create Wayfinder state.
 
@@ -12,7 +12,7 @@ methodology, while this contract owns the Git-native state and continuation
 mechanics. This is durable project knowledge and coordination state, not an
 issue tracker, specialist notebook, or mirror of `.scratch/` or an external
 tracker.
-Do not create or update `.agent-workflow-state/active.md`; the effort map is the
+Do not create or update `.wayfinder/active.md`; the effort map is the
 only re-entry point.
 
 ## Responsibility boundary
@@ -65,7 +65,7 @@ ambiguity remains, the Wayfinder runtime may select an appropriate specialist;
 this state contract does not own that method. Establish enough structure before
 substantial U/E/F/D state accumulates, then derive the effort's identity,
 readable name, destination, boundary, and stable path from that understanding.
-Do not choose `wayfinder/<effort-name>/` first and rationalize its structure
+Do not choose `.wayfinder/<effort-name>/` first and rationalize its structure
 afterward.
 
 When evidence changes the semantic structure, update the current map's areas,
@@ -126,14 +126,13 @@ implementation continuity record is created.
 All paths below are project-owned durable data:
 
 ```text
-.agent-workflow-state/
-└── wayfinder/
-    └── <effort>/
-        ├── map.md
-        ├── unknowns/       # optional U# files
-        ├── evidence/       # optional E# files
-        ├── facts/          # optional F# files
-        └── decisions/      # optional D# files
+.wayfinder/
+└── <effort>/
+    ├── map.md
+    ├── unknowns/       # optional U# files
+    ├── evidence/       # optional E# files
+    ├── facts/          # optional F# files
+    └── decisions/      # optional D# files
 ```
 
 `map.md` alone is a complete and valid Wayfinder effort. Create each child
@@ -173,7 +172,7 @@ Wayfinder or justifies a scan.
 
 When the user or authoritative context supplies an exact repository-relative
 effort path, verify that it is safe, stays below
-`.agent-workflow-state/wayfinder/`, traverses no symlink, and names a regular
+`.wayfinder/`, traverses no symlink, and names a regular
 `map.md`. Use that path and do not invent a replacement directory.
 
 For a likely resume without an exact path:
@@ -620,7 +619,7 @@ concise reason or outcome, reconcile current canonical links, and replace `Next
 work` with none for that effort. A superseded effort also links the successor or
 governing direction. Do not load historical child
 detail during ordinary effort selection, rename the stable directory, repurpose
-it for a new destination, or move it into `.agent-workflow-state/archive/`;
+it for a new destination, or move it into `.wayfinder/archive/`;
 that path is outside current Wayfinder lifecycle and may contain opaque legacy
 project data.
 

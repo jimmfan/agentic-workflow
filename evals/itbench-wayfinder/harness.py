@@ -794,9 +794,12 @@ def capability_observations(summary: dict[str, Any], workspace: Path) -> dict[st
     for capability, path in CAPABILITY_PATHS.items():
         evidence = [item for item in summary.get("command_events", []) if path in str(item.get("command", ""))]
         invoked = bool(evidence)
-        if capability == "wayfinder" and (workspace / ".agent-workflow-state" / "wayfinder").is_dir():
+        wayfinder_root = workspace / ".wayfinder"
+        if capability == "wayfinder" and wayfinder_root.is_dir() and any(
+            child.is_dir() and (child / "map.md").is_file() for child in wayfinder_root.iterdir()
+        ):
             invoked = True
-            evidence = [*evidence, {"artifact": ".agent-workflow-state/wayfinder"}]
+            evidence = [*evidence, {"artifact": ".wayfinder"}]
         if capability == "domain-modeling" and any((workspace / name).is_file() for name in ("CONTEXT.md", "CONTEXT-MAP.md")):
             invoked = True
             evidence = [*evidence, {"artifact": "CONTEXT.md or CONTEXT-MAP.md"}]

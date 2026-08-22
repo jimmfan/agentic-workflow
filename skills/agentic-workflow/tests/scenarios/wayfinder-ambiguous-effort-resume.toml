@@ -20,18 +20,18 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-workflow-state/wayfinder/provider-projection/map.md",
-  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
+  ".wayfinder/provider-projection/map.md",
+  ".wayfinder/provider-runtime/map.md",
 ]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/provider-work",
-  ".agent-workflow-state/wayfinder/provider-work/**",
+  ".wayfinder/provider-work",
+  ".wayfinder/provider-work/**",
 ]
 state_must_include = [
-  ".agent-workflow-state/wayfinder/provider-projection/map.md",
-  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
+  ".wayfinder/provider-projection/map.md",
+  ".wayfinder/provider-runtime/map.md",
 ]
 state_must_not_include = [
-  ".agent-workflow-state/wayfinder/wayfinder-runtime-projection/map.md",
-  ".agent-workflow-state/wayfinder/legacy-dir/map.md",
+  ".wayfinder/wayfinder-runtime-projection/map.md",
+  ".wayfinder/legacy-dir/map.md",
 ]

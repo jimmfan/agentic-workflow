@@ -16,7 +16,7 @@ while Git retains historical evolution.
 - The working tree was clean at the start of this effort.
 - The current contract allocates each U/E/F/D identifier as one greater than the
   highest current identifier of that type and never renumbers current records.
-- The existing `.agent-workflow-state/archive/` contract belongs to DEC/IMP/DBG
+- The existing `.wayfinder/archive/` contract belongs to DEC/IMP/DBG
   records, not Wayfinder children or effort directories.
 - The accepted design treats numbers as current-state references, not historical
   primary keys. Child files leave current state when they lack independent

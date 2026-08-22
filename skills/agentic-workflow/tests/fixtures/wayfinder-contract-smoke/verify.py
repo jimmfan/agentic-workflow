@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 
 
-effort = Path(".agent-workflow-state/wayfinder/runtime-rollout")
+effort = Path(".wayfinder/runtime-rollout")
 mapping = (effort / "map.md").read_text(encoding="utf-8")
 evidence = sorted((effort / "evidence").glob("E*.md"))
 facts = sorted((effort / "facts").glob("F*.md"))

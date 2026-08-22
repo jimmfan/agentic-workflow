@@ -1,13 +1,13 @@
 # Project profile contract
 
-`.agent-workflow-state/project-profile.md` is optional, project-owned advisory context: a
+`.wayfinder/project-profile.md` is optional, project-owned advisory context: a
 concise cache of verified facts and pointers likely to help future work. It is
 not a versioned structured artifact, chat log, task journal, speculative
 architecture document, README copy, source-of-truth replacement, or place for
 secret values. The profile is not a shell script; an agent may run a recorded
 command only after applying the safety gate below.
 
-Install and update establish the parent `.agent-workflow-state/` directory but
+Install and update establish the parent `.wayfinder/` directory but
 never seed the profile. Lifecycle operations preserve every existing profile
 byte-for-byte during install, update, removal, and reinstall. An authorized
 workflow may use the framework template as a

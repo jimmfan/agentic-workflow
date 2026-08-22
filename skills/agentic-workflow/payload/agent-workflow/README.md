@@ -6,7 +6,7 @@ contracts used by the compact root policy. Install/update may replace every file
 here with current package bytes.
 
 There is no current `.agent-workflow/state/` directory. Durable project-owned state
-lives only under sibling `.agent-workflow-state/`. Lifecycle operations ensure that
+lives only under sibling `.wayfinder/`. Lifecycle operations ensure that
 directory exists but never create optional profile or Wayfinder state, inventory its
 contents, or remove it.
 
@@ -53,7 +53,7 @@ effective body is an Agentic Workflow-owned runtime projection derived from the
 unchanged pinned upstream snapshot.
 
 Local Wayfinder data is a configured project-owned representation under
-`.agent-workflow-state/wayfinder/`, never a distributed template or lifecycle-owned
+`.wayfinder/`, never a distributed template or lifecycle-owned
 tree. A map may stand alone; optional children preserve unresolved questions,
 independently useful evidence, established facts, and committed decisions. The
 map owns current state, blockers, dependencies, and next work. Substantial
@@ -71,7 +71,7 @@ files. `unsafe/conflict` means an external collision, malformed composite, or
 unsafe filesystem boundary needs explicit resolution.
 
 Deleting `.agent-workflow/` and running update/install is a supported reconstruction
-path. `.agent-workflow-state/` must remain in place. On removal, project state,
+path. `.wayfinder/` must remain in place. On removal, project state,
 unrelated skill directories, pre-existing external files, and locally changed
 external files are preserved; declared provider directories are deleted.
 

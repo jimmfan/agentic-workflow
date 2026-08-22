@@ -19,25 +19,25 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-workflow-state/wayfinder/provider-projection/map.md",
+  ".wayfinder/provider-projection/map.md",
 ]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/provider-projection-2",
-  ".agent-workflow-state/wayfinder/provider-projection-2/**",
+  ".wayfinder/provider-projection-2",
+  ".wayfinder/provider-projection-2/**",
 ]
 state_must_include = [
-  ".agent-workflow-state/wayfinder/provider-projection/map.md",
+  ".wayfinder/provider-projection/map.md",
 ]
 state_must_not_include = [
-  ".agent-workflow-state/wayfinder/provider-runtime/map.md",
-  ".agent-workflow-state/wayfinder/legacy-dir/map.md",
+  ".wayfinder/provider-runtime/map.md",
+  ".wayfinder/legacy-dir/map.md",
 ]
 
 [[assertions]]
 kind = "path_exists"
-path = ".agent-workflow-state/wayfinder/provider-projection-observability/map.md"
+path = ".wayfinder/provider-projection-observability/map.md"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/provider-projection-observability/map.md"
+path = ".wayfinder/provider-projection-observability/map.md"
 value = "# Provider projection observability"

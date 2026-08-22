@@ -79,8 +79,8 @@ verification_command = "Run python verify.py after the change."
 preserve_paths = ["project-state/unknowns.md"]
 forbid_created_globs = ["/**"]
 route_must_not_include = ["discovery"]
-state_must_include = [".agent-workflow-state/wayfinder/example/map.md"]
-state_must_not_include = [".agent-workflow-state/wayfinder/example/unknowns/U9-unrelated.md"]
+state_must_include = [".wayfinder/example/map.md"]
+state_must_not_include = [".wayfinder/example/unknowns/U9-unrelated.md"]
 
 [[assertions]]
 kind = "path_contains"
@@ -89,22 +89,22 @@ value = "observable result"
 
 [[assertions]]
 kind = "glob_count"
-path = ".agent-workflow-state/wayfinder/example/unknowns/U*.md"
+path = ".wayfinder/example/unknowns/U*.md"
 count = 1
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-workflow-state/wayfinder/example/unknowns/U1-*.md"
+path = ".wayfinder/example/unknowns/U1-*.md"
 value = "known unresolved question"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/example/unknowns/U*.md"
+path = ".wayfinder/example/unknowns/U*.md"
 value = "external approval"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".agent-workflow-state/wayfinder/example/unknowns/U*.md"
+path = ".wayfinder/example/unknowns/U*.md"
 value = "incidental detail"
 ```
 

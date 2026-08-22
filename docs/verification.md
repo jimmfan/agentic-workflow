@@ -74,7 +74,7 @@ The suite prioritizes behavior that matters before 1.0:
 
 - missing and drifted `.agent-workflow/` files are restored from current desired
   state, and obsolete internal files disappear;
-- arbitrary `.agent-workflow-state/` contents survive install, update, remove, and
+- arbitrary `.wayfinder/` contents survive install, update, remove, and
   reinstall byte-for-byte;
 - canonical local Wayfinder maps and human-edited child Markdown survive the
   same lifecycle sequence without schema validation or normalization;
@@ -145,7 +145,7 @@ If the gate fails:
 4. for a release snapshot refresh issue, run the maintainer command in a
    networked environment with GitHub CLI authentication; ordinary target
    install/update must remain fully offline; and
-5. never delete `.agent-workflow-state/` or unknown external content to make a test
+5. never delete `.wayfinder/` or unknown external content to make a test
    pass.
 
 The deterministic GitHub Actions gate runs on Ubuntu. Native PowerShell and CMD

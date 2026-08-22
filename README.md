@@ -72,7 +72,7 @@ flowchart LR
 
     result --> durable{"Persist state?"}
     durable -->|no| verify
-    durable -->|yes| state[".agent-workflow-state/"]
+    durable -->|yes| state[".wayfinder/"]
 
     state --> resume["Later session"]
     resume --> router
@@ -146,18 +146,17 @@ The practical threshold is whether a careful engineer would start structured not
 A Wayfinder effort can look like:
 
 ```text
-.agent-workflow-state/
-└── wayfinder/
-    └── <effort>/
-        ├── map.md
-        ├── unknowns/
-        │   └── U1-example.md
-        ├── evidence/
-        │   └── E1-example.md
-        ├── facts/
-        │   └── F1-example.md
-        └── decisions/
-            └── D1-example.md
+.wayfinder/
+└── <effort>/
+    ├── map.md
+    ├── unknowns/
+    │   └── U1-example.md
+    ├── evidence/
+    │   └── E1-example.md
+    ├── facts/
+    │   └── F1-example.md
+    └── decisions/
+        └── D1-example.md
 ```
 
 `map.md` stays intentionally low-resolution. It owns current state, blockers,
@@ -355,15 +354,14 @@ target-project/
 │   ├── contracts/
 │   └── templates/project-profile.md
 │
-└── .agent-workflow-state/          # durable project-owned state
+└── .wayfinder/          # durable project-owned state
     ├── project-profile.md           # optional
-    └── wayfinder/
-        └── <effort>/
-            ├── map.md
-            ├── unknowns/
-            ├── evidence/
-            ├── facts/
-            └── decisions/
+    └── <effort>/
+        ├── map.md
+        ├── unknowns/
+        ├── evidence/
+        ├── facts/
+        └── decisions/
 ```
 
 Legacy `DEC`, `IMP`, and `DBG` files under project-owned state remain untouched
@@ -375,7 +373,7 @@ Framework-owned and reconstructable.
 
 Its contents may be repaired or replaced by the framework.
 
-### `.agent-workflow-state/`
+### `.wayfinder/`
 
 Project-owned.
 
@@ -472,7 +470,7 @@ Installation and lifecycle internals are documented separately.
 
 Run the matching command from the installed project's root. Update reconciles
 the core framework and bundled provider skills while preserving durable project
-state under `.agent-workflow-state/`.
+state under `.wayfinder/`.
 
 ```bash
 # macOS, Linux, WSL, or a Linux-based devcontainer

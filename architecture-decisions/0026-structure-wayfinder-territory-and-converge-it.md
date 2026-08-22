@@ -61,7 +61,7 @@ under ADR-0025.
 
 Effort identity, readable name, destination, boundary, major areas, and stable
 path follow that understanding. Agents do not invent
-`wayfinder/<effort-name>/` first and rationalize its structure afterward. The
+`.wayfinder/<effort-name>/` first and rationalize its structure afterward. The
 directory remains only a stable storage key; no I#/X#/O# compatibility syntax,
 identity object, or registry is introduced.
 

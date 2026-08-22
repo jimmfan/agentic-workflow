@@ -21,30 +21,30 @@ live = true
 blind_grading = true
 preserve_paths = ["README.md"]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/*/decisions",
-  ".agent-workflow-state/wayfinder/*/decisions/**",
-  ".agent-workflow-state/wayfinder/*/tickets",
-  ".agent-workflow-state/wayfinder/*/tickets/**",
+  ".wayfinder/*/decisions",
+  ".wayfinder/*/decisions/**",
+  ".wayfinder/*/tickets",
+  ".wayfinder/*/tickets/**",
   ".scratch",
   ".scratch/**",
 ]
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "README.md"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "blocked"
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+path = ".wayfinder/*/unknowns/U*.md"
 value = "- Status: open"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+path = ".wayfinder/*/unknowns/U*.md"
 value = "- Status: resolved"

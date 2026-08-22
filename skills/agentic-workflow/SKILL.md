@@ -15,7 +15,7 @@ usable even when every optional provider is unavailable.
 
 - `.agent-workflow/` is framework-owned and reconstructable. Install/update may
   replace the directory from current package bytes.
-- `.agent-workflow-state/` and every entry under it are project-owned durable data.
+- `.wayfinder/` and every entry under it are project-owned durable data.
   Create the directory when absent during install/update, but never seed,
   inventory, checksum, rewrite, or remove its contents.
 - `AGENTS.md` and `CLAUDE.md` are composite. Replace only the unambiguous managed
@@ -78,7 +78,7 @@ resolving the named filesystem boundary first.
 
 `remove` removes managed composite regions,
 deletes only unchanged external files recorded as framework-created, removes
-`.agent-workflow/`, and preserves `.agent-workflow-state/`, changed/pre-existing
+`.agent-workflow/`, and preserves `.wayfinder/`, changed/pre-existing
 external files, and unrelated skills.
 
 ## Release verification
@@ -101,4 +101,4 @@ python3 scripts/verify_package.py --refresh-manifest --tests
 
 Never refresh metadata to hide an unexplained change, edit install evidence to
 force deletion, call `adopt.py` alone for a public network install, or delete
-`.agent-workflow-state/` as a lifecycle repair.
+`.wayfinder/` as a lifecycle repair.

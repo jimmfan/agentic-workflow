@@ -28,30 +28,30 @@ forbid_created_globs = [
   "issues/**",
 ]
 state_must_include = [
-  ".agent-workflow-state/wayfinder/provider-state/map.md",
-  ".agent-workflow-state/wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
-  ".agent-workflow-state/wayfinder/provider-state/evidence/E12-provider-configuration.md",
-  ".agent-workflow-state/wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
-  ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md",
+  ".wayfinder/provider-state/map.md",
+  ".wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
+  ".wayfinder/provider-state/evidence/E12-provider-configuration.md",
+  ".wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
+  ".wayfinder/provider-state/decisions/D4-use-local-runtime.md",
   "source.txt",
 ]
 state_must_not_include = []
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/unknowns/U17-provider-tracker-state.md"
+path = ".wayfinder/provider-state/unknowns/U17-provider-tracker-state.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/evidence/E12-provider-configuration.md"
+path = ".wayfinder/provider-state/evidence/E12-provider-configuration.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md"
+path = ".wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/decisions/D4-use-local-runtime.md"
+path = ".wayfinder/provider-state/decisions/D4-use-local-runtime.md"
 
 [[assertions]]
 kind = "path_exists"
@@ -69,29 +69,29 @@ value = "Use the local runtime without tracker state"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/provider-state/map.md"
+path = ".wayfinder/provider-state/map.md"
 value = "[Provider runtime](../../../../docs/provider-runtime.md)"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/provider-state/map.md"
+path = ".wayfinder/provider-state/map.md"
 value = "Provider requirements — settled"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/unknowns"
+path = ".wayfinder/provider-state/unknowns"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/evidence"
+path = ".wayfinder/provider-state/evidence"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/facts"
+path = ".wayfinder/provider-state/facts"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/provider-state/decisions"
+path = ".wayfinder/provider-state/decisions"
 
 [[assertions]]
 kind = "path_not_exists"

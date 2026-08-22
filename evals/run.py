@@ -299,7 +299,7 @@ def grade_direct(workspace: Path, before: dict[str, str], variant: str, run_numb
     state_artifacts = [
         path
         for path in changed
-        if path.startswith(".agent-workflow-state/") or path.startswith(".scratch/")
+        if path.startswith(".wayfinder/") or path.startswith(".scratch/")
     ]
     return {
         "scenario": "direct",
@@ -377,7 +377,7 @@ def grade_resume_phase_1(
     )
     requirements_edited = "docs/runner-requirements.md" in changed
     transient_input_edited = "inputs/transient-platform-facts.md" in changed
-    state_files = [path for path in changed if path.startswith(".agent-workflow-state/")]
+    state_files = [path for path in changed if path.startswith(".wayfinder/")]
     safe_tree = not any(
         (
             instance_assignment,

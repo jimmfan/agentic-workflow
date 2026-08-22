@@ -205,8 +205,8 @@ class LifecycleAcceptanceTests(unittest.TestCase):
     def test_install_creates_only_current_framework_and_empty_state_root(self) -> None:
         self.assert_ok(self.adopt("install"))
         self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
-        self.assertTrue((self.project / ".agent-workflow-state").is_dir())
-        self.assertEqual(list((self.project / ".agent-workflow-state").iterdir()), [])
+        self.assertTrue((self.project / ".wayfinder").is_dir())
+        self.assertEqual(list((self.project / ".wayfinder").iterdir()), [])
         self.assertFalse((self.project / ".agent-workflow/templates/active-state.md").exists())
         self.assertFalse((self.project / ".agent-workflow/state/README.md").exists())
         manifest = json.loads((self.project / ".agent-workflow/install-manifest.json").read_text())
@@ -234,7 +234,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_deleted_framework_directory_is_rebuilt_conservatively(self) -> None:
         self.assert_ok(self.adopt("install"))
-        state = self.project / ".agent-workflow-state/custom.txt"
+        state = self.project / ".wayfinder/custom.txt"
         state.write_text("durable project bytes\n")
         shutil.rmtree(self.project / ".agent-workflow")
         self.assert_ok(self.adopt("update"))
@@ -261,7 +261,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertFalse((self.project / ".agent-workflow/state/README.md").exists())
 
     def test_arbitrary_durable_state_survives_update_remove_and_reinstall(self) -> None:
-        state = self.project / ".agent-workflow-state"
+        state = self.project / ".wayfinder"
         (state / "records/nested").mkdir(parents=True)
         (state / "records/nested/data.bin").write_bytes(b"\x00project\xffstate")
         for legacy_name in (
@@ -290,7 +290,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(tree_snapshot(state), original)
 
     def test_human_edited_wayfinder_state_is_opaque_to_lifecycle(self) -> None:
-        effort = self.project / ".agent-workflow-state/wayfinder/custom-effort"
+        effort = self.project / ".wayfinder/custom-effort"
         (effort / "unknowns").mkdir(parents=True)
         (effort / "map.md").write_text(
             "# Personal layout\n\nNo standard headings; keep exactly.\n",
@@ -348,7 +348,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("unknown external content", result.stderr)
         self.assertEqual(collision.read_text(), "project-owned skill\n")
         self.assertFalse((self.project / ".agent-workflow").exists())
-        self.assertFalse((self.project / ".agent-workflow-state").exists())
+        self.assertFalse((self.project / ".wayfinder").exists())
 
     def test_preexisting_exact_external_file_is_preserved_on_remove(self) -> None:
         source = PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
@@ -376,7 +376,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual((outside / "sentinel").read_text(), "safe\n")
 
         (self.project / ".agent-workflow").unlink()
-        (self.project / ".agent-workflow-state").symlink_to(outside, target_is_directory=True)
+        (self.project / ".wayfinder").symlink_to(outside, target_is_directory=True)
         result = self.adopt("install")
         self.assertEqual(result.returncode, 2)
         self.assertEqual((outside / "sentinel").read_text(), "safe\n")
@@ -391,8 +391,8 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = self.adopt("status")
         self.assert_ok(result)
         self.assertIn("Agentic Workflow: healthy", result.stdout)
-        self.assertFalse((self.project / ".agent-workflow-state/project-profile.md").exists())
-        self.assertFalse((self.project / ".agent-workflow-state/active.md").exists())
+        self.assertFalse((self.project / ".wayfinder/project-profile.md").exists())
+        self.assertFalse((self.project / ".wayfinder/active.md").exists())
         (self.project / ".agent-workflow/routing.md").unlink()
         result = self.adopt("status")
         self.assertEqual(result.returncode, 1)
@@ -1361,7 +1361,7 @@ class BootstrapSafetyTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertTrue((project / ".agent-workflow/routing.md").is_file())
-            self.assertTrue((project / ".agent-workflow-state").is_dir())
+            self.assertTrue((project / ".wayfinder").is_dir())
             declaration = json.loads(
                 (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text(encoding="utf-8")
             )

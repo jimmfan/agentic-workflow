@@ -20,45 +20,45 @@ live = true
 blind_grading = true
 preserve_paths = ["README.md"]
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/*/decisions",
-  ".agent-workflow-state/wayfinder/*/decisions/**",
-  ".agent-workflow-state/wayfinder/*/tickets",
-  ".agent-workflow-state/wayfinder/*/tickets/**",
+  ".wayfinder/*/decisions",
+  ".wayfinder/*/decisions/**",
+  ".wayfinder/*/tickets",
+  ".wayfinder/*/tickets/**",
   ".scratch",
   ".scratch/**",
 ]
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "ARC"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "critical path"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "parallel"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "external lead time"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/map.md"
+path = ".wayfinder/*/map.md"
 value = "precise cost model"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+path = ".wayfinder/*/unknowns/U*.md"
 value = "review"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".agent-workflow-state/wayfinder/*/unknowns/U*.md"
+path = ".wayfinder/*/unknowns/U*.md"
 value = "precise cost model"

@@ -316,7 +316,7 @@ class RoutingContractTests(unittest.TestCase):
         ):
             with self.subTest(relative=relative):
                 skill = " ".join((PACKAGE_ROOT / relative).read_text().split())
-                self.assertIn(".agent-workflow-state/project-profile.md", skill)
+                self.assertIn(".wayfinder/project-profile.md", skill)
                 self.assertIn(".agent-workflow/contracts/project-profile.md", skill)
                 self.assertIn("only when", skill)
 

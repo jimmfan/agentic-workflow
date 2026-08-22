@@ -21,21 +21,21 @@ must_not = [
 live = false
 preserve_paths = []
 forbid_created_globs = [
-  ".agent-workflow-state/wayfinder/settled-provider-direction/decisions/D3-*.md",
+  ".wayfinder/settled-provider-direction/decisions/D3-*.md",
 ]
 state_must_include = [
-  ".agent-workflow-state/wayfinder/settled-provider-direction/map.md",
+  ".wayfinder/settled-provider-direction/map.md",
 ]
 state_must_not_include = [
-  ".agent-workflow-state/wayfinder/wayfinder-lifecycle-completed/map.md",
+  ".wayfinder/wayfinder-lifecycle-completed/map.md",
 ]
 
 [[assertions]]
 kind = "glob_count"
-path = ".agent-workflow-state/wayfinder/settled-provider-direction/decisions/D1-*.md"
+path = ".wayfinder/settled-provider-direction/decisions/D1-*.md"
 count = 1
 
 [[assertions]]
 kind = "glob_count"
-path = ".agent-workflow-state/wayfinder/settled-provider-direction/decisions/D2-*.md"
+path = ".wayfinder/settled-provider-direction/decisions/D2-*.md"
 count = 1

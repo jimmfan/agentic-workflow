@@ -22,46 +22,46 @@ preserve_paths = []
 report_must_include = ["Domain Modeling"]
 forbid_created_globs = [
   ".scratch/**",
-  ".agent-workflow-state/active.md",
-  ".agent-workflow-state/wayfinder/policy-execution-migration/tickets/**",
+  ".wayfinder/active.md",
+  ".wayfinder/policy-execution-migration/tickets/**",
 ]
 
 [[assertions]]
 kind = "path_exists"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+path = ".wayfinder/policy-execution-migration/map.md"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+path = ".wayfinder/policy-execution-migration/map.md"
 value = "Policy intake"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+path = ".wayfinder/policy-execution-migration/map.md"
 value = "Policy evaluation"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+path = ".wayfinder/policy-execution-migration/map.md"
 value = "Execution runtime"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/map.md"
+path = ".wayfinder/policy-execution-migration/map.md"
 value = "depends on"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/unknowns"
+path = ".wayfinder/policy-execution-migration/unknowns"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/evidence"
+path = ".wayfinder/policy-execution-migration/evidence"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/facts"
+path = ".wayfinder/policy-execution-migration/facts"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-workflow-state/wayfinder/policy-execution-migration/decisions"
+path = ".wayfinder/policy-execution-migration/decisions"
