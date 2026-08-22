@@ -1,0 +1,26 @@
+{
+  "approval_policy": "never",
+  "campaign_id": "wayfinder-fresh-agent-continuation-v1",
+  "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+  "critical_sha256": {
+    ".agents/skills/wayfinder/SKILL.md": "8a1cbf6f1ad12be66611576802d6b16d1c4416afe919c14cd3399f8ceeeacb4f",
+    "evals/campaigns/wayfinder-fresh-agent-continuation-v1.json": "c0d59150e33660a31d6a48855b684d2c139de0631c8cd84b82b2a36ec45eb889",
+    "evals/scenarios/resume/fixture/README.md": "60a27a5644d323da68393e63ca88d24f00507a2bf12d9d82173b076f3b7fba84",
+    "evals/scenarios/resume/fixture/docs/runner-requirements.md": "41fee739b8e8592ca24282ecde9cd8ecff2ceb7abb121bc66bbbea9955bb01cf",
+    "evals/scenarios/resume/fixture/inputs/transient-platform-facts.md": "28841d85d02ffc10f736bb86b6199a9a8e18560f55a6189ef83705cacb4483b3",
+    "evals/scenarios/resume/fixture/terraform/main.tf": "372c83a9a779be2dfe7f9cdc209874f52b5113a7ecb76a31b6ce9def11f8bf91",
+    "evals/scenarios/resume/fixture/terraform/outputs.tf": "48740c4791fc6fcf940ca830c13b03cdc424b79788288babe2836f76c6348e8f",
+    "evals/scenarios/resume/fixture/terraform/variables.tf": "2af9dcb2e8ddf65e736512fd4889102be4d64bd2322685425e690b3b921d44fa",
+    "evals/scenarios/resume/phase-2-mutation/docs/decisions/D1-runner-architecture.md": "42eb560693ad436d0b9718073f4ae3d63d741ef010337f44f6edb287942e4137",
+    "evals/scenarios/wayfinder-fresh-agent-continuation-v1/matched-old-wayfinder.patch": "a52fd7950385e0041aa9e72e4a322ee83d9234dec5ecf3476705abbd7ce032da",
+    "evals/wayfinder_fresh_agent_continuation.py": "c050e531f1be62497658d42da1200385f9f39fa9c1a966ba3adfc9155efb464d",
+    "skills/agent-workflow/payload/agent-workflow/contracts/wayfinder-state.md": "019c9b406c79713897ae58f4b6e8f41733987e2d596021847c7927cb84c74e85",
+    "skills/agent-workflow/runtime-projections/wayfinder.md": "20996ef61b6f72e9c66b28f30abdaa93b09440a30bce4137185a15fe03e92838"
+  },
+  "frozen_at": "2026-08-22T17:45:10.704720+00:00",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "rule": "Any critical-file mismatch invalidates execution; never refreeze this campaign after live evidence.",
+  "sandbox": "workspace-write",
+  "schema_version": 1
+}

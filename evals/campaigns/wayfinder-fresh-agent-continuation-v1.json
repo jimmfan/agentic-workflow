@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "campaign_id": "wayfinder-fresh-agent-continuation-v1",
+  "research_question": "Does the fresh-agent continuation instruction refinement causally improve fresh-session continuation over a matched old-Wayfinder control and a generic durable handoff?",
+  "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+  "conditions": {
+    "A": {
+      "name": "generic-durable-handoff",
+      "agent_workflow": false,
+      "control_delta_removed": false
+    },
+    "B": {
+      "name": "matched-old-wayfinder",
+      "agent_workflow": true,
+      "control_delta_removed": true
+    },
+    "C": {
+      "name": "fresh-agent-wayfinder",
+      "agent_workflow": true,
+      "control_delta_removed": false
+    }
+  },
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "sandbox": "workspace-write",
+  "approval_policy": "never",
+  "codex_cli_version": "codex-cli 0.144.6",
+  "network_policy": "No external infrastructure mutation. Evaluated processes inherit no cloud variables and prompts require repository-only work.",
+  "environment_policy": "Each phase uses codex exec --ephemeral with a unique auth-only CODEX_HOME, ignored user config and rules, an empty inherited shell environment, and a separate fixture Git repository.",
+  "execution_order": ["A:1", "B:1", "C:1", "A:2", "B:2", "C:2"],
+  "prompts": {
+    "A": {
+      "1": "Add the runner infrastructure described in this repository. Work as far as you safely can. Do not ask questions unless no further useful progress is possible. Before finishing, leave a concise repository-native durable handoff containing only the facts, unresolved decisions, dependencies, and next work a fresh engineer needs to continue correctly. Do not implement decisions the repository has not made.",
+      "2": "Continue the runner infrastructure work from the current repository state. Review the repository, determine the appropriate next work, and make changes that are now safe and justified. Validate the result as far as the repository and available tooling safely permit. Do not rely on prior conversation context or make external infrastructure changes."
+    },
+    "B": {
+      "1": "$wayfinder Add the runner infrastructure described in this repository. Work as far as you safely can. Do not ask questions unless no further useful progress is possible. Leave durable Wayfinder state for later continuation. Do not implement decisions the repository has not made.",
+      "2": "$wayfinder Continue the runner infrastructure work from the current repository state. Review the repository, determine the appropriate next work, and make changes that are now safe and justified. Validate the result as far as the repository and available tooling safely permit. Do not rely on prior conversation context or make external infrastructure changes."
+    },
+    "C": {
+      "1": "$wayfinder Add the runner infrastructure described in this repository. Work as far as you safely can. Do not ask questions unless no further useful progress is possible. Leave durable Wayfinder state for later continuation. Do not implement decisions the repository has not made.",
+      "2": "$wayfinder Continue the runner infrastructure work from the current repository state. Review the repository, determine the appropriate next work, and make changes that are now safe and justified. Validate the result as far as the repository and available tooling safely permit. Do not rely on prior conversation context or make external infrastructure changes."
+    }
+  },
+  "fixture": "evals/scenarios/resume",
+  "control_patch": "evals/scenarios/wayfinder-fresh-agent-continuation-v1/matched-old-wayfinder.patch",
+  "primitive_dimensions": [
+    "phase_1_safe_useful_progress",
+    "exact_fact_preserved",
+    "unknowns_not_guessed",
+    "phase_2_exact_fact_recovered",
+    "phase_2_decision_applied",
+    "implementation_correctness",
+    "verification_quality",
+    "durable_state_size_and_structure",
+    "procedural_history",
+    "files_read_before_first_write",
+    "tool_actions",
+    "tokens",
+    "elapsed_time"
+  ],
+  "prohibited_overall_score": true,
+  "repetitions": 1,
+  "stop_after_smoke": true
+}

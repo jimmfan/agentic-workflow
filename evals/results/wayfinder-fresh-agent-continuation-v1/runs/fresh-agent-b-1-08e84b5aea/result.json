@@ -1,0 +1,451 @@
+{
+  "campaign_id": "wayfinder-fresh-agent-continuation-v1",
+  "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+  "completed_at": "2026-08-22T17:58:02.255832+00:00",
+  "condition": "B",
+  "condition_name": "matched-old-wayfinder",
+  "fresh_execution_ids": [
+    "01a02a97-044e-75f3-90e1-1d41b594e932",
+    "01a02a9c-0159-7f42-adaf-1137c2fd0413"
+  ],
+  "fresh_processes_distinct": true,
+  "phase_1": {
+    "ai_workflow_state_files_created_or_changed": [
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U1-approved-runner-instance-family.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md"
+    ],
+    "ai_workflow_state_used": true,
+    "claimed_complete": null,
+    "durable_state": {
+      "byte_count": 3812,
+      "classifier_note": "Conservative lexical indicator, not a semantic quality score.",
+      "exact_fact_occurrences": 1,
+      "file_count": 4,
+      "line_count": 84,
+      "paths": [
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U1-approved-runner-instance-family.md",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md"
+      ],
+      "procedural_history_evidence": [],
+      "procedural_history_line_count": 0
+    },
+    "elapsed_seconds": null,
+    "execution": {
+      "cached_input_tokens": 350208,
+      "codex_home_isolation": {
+        "pre_execution_inventory": {
+          "auth_contents_or_digest_recorded": false,
+          "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agent-workflow-fresh-agent-continuation-v1/fresh-agent-b-1-08e84b5aea/ephemeral-codex-homes/codex-home-92274867304747e79be1ef4240da4063",
+          "config_ignored_by_cli_flag": true,
+          "contains_only_auth_material": true,
+          "files": [
+            {
+              "kind": "file",
+              "path": "auth.json",
+              "size": 3975
+            }
+          ],
+          "rules_ignored_by_cli_flag": true,
+          "unexpected_files": []
+        },
+        "removed_after_process": true,
+        "temporary_bytes_removed": 43516206,
+        "unique_per_process": true
+      },
+      "command": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--strict-config",
+        "-m",
+        "gpt-5.6-terra",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "-c",
+        "approval_policy=\"never\"",
+        "-c",
+        "shell_environment_policy.inherit=\"none\"",
+        "-s",
+        "workspace-write",
+        "-C",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agent-workflow-fresh-agent-continuation-v1/fresh-agent-b-1-08e84b5aea/repo",
+        "--json",
+        "<prompt-via-stdin>"
+      ],
+      "commands_observed": [
+        "/bin/zsh -lc \"pwd && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md && sed -n '1,300p' .agent-workflow/contracts/wayfinder-state.md && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+        "/bin/zsh -lc \"pwd && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md && sed -n '1,300p' .agent-workflow/contracts/wayfinder-state.md && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+        "/bin/zsh -lc \"rg -n \\\"\\\" .agents/skills/wayfinder/SKILL.md .agent-workflow/contracts/wayfinder-state.md && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | head -240\"",
+        "/bin/zsh -lc \"rg -n \\\"\\\" .agents/skills/wayfinder/SKILL.md .agent-workflow/contracts/wayfinder-state.md && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | head -240\"",
+        "/bin/zsh -lc 'i=0; while IFS= read -r line; do i=$((i+1)); if [ $i -ge 139 ] && [ $i -le 430 ]; then print -r -- \"$i:$line\"; fi; done < .agent-workflow/contracts/wayfinder-state.md\ni=0; rg --files -g '\"'\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | while IFS= read -r path; do i=\"'$((i+1)); print -r -- \"$path\"; [ $i -ge 240 ] && break; done'",
+        "/bin/zsh -lc 'i=0; while IFS= read -r line; do i=$((i+1)); if [ $i -ge 139 ] && [ $i -le 430 ]; then print -r -- \"$i:$line\"; fi; done < .agent-workflow/contracts/wayfinder-state.md\ni=0; rg --files -g '\"'\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | while IFS= read -r path; do i=\"'$((i+1)); print -r -- \"$path\"; [ $i -ge 240 ] && break; done'",
+        "/bin/zsh -lc 'i=0; while IFS= read -r line; do i=$((i+1)); if [ $i -ge 425 ] && [ $i -le 690 ]; then print -r -- \"$i:$line\"; fi; done < .agent-workflow/contracts/wayfinder-state.md\nprint -r -- '\"'WAYFINDER_DIRS'\nif [ -d .agent-wayfinder ]; then for p in .agent-wayfinder/*; do [ -d \\\"\"'$p\" ] && print -r -- \"$p\"; done; fi\nprint -r -- '\"'ROOT_FILES'\nrg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"'\nprint -r -- 'GIT'\ngit status --short && git log -5 --oneline\"",
+        "/bin/zsh -lc 'i=0; while IFS= read -r line; do i=$((i+1)); if [ $i -ge 425 ] && [ $i -le 690 ]; then print -r -- \"$i:$line\"; fi; done < .agent-workflow/contracts/wayfinder-state.md\nprint -r -- '\"'WAYFINDER_DIRS'\nif [ -d .agent-wayfinder ]; then for p in .agent-wayfinder/*; do [ -d \\\"\"'$p\" ] && print -r -- \"$p\"; done; fi\nprint -r -- '\"'ROOT_FILES'\nrg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"'\nprint -r -- 'GIT'\ngit status --short && git log -5 --oneline\"",
+        "/bin/zsh -lc \"print -r -- 'FILES'\nrg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"'\nprint -r -- 'README'\nrg -n '' README.md\nprint -r -- 'RUNNER_REQUIREMENTS'\nrg -n '' docs/runner-requirements.md\nprint -r -- 'TERRAFORM_MAIN'\nrg -n '' terraform/main.tf\nprint -r -- 'TERRAFORM_VARIABLES'\nrg -n '' terraform/variables.tf\nprint -r -- 'TERRAFORM_OUTPUTS'\nrg -n '' terraform/outputs.tf\nprint -r -- 'INPUT_FACTS'\nrg -n '' inputs/transient-platform-facts.md\nprint -r -- 'GIT'\ngit status --short && git log -5 --oneline\"",
+        "/bin/zsh -lc \"print -r -- 'FILES'\nrg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"'\nprint -r -- 'README'\nrg -n '' README.md\nprint -r -- 'RUNNER_REQUIREMENTS'\nrg -n '' docs/runner-requirements.md\nprint -r -- 'TERRAFORM_MAIN'\nrg -n '' terraform/main.tf\nprint -r -- 'TERRAFORM_VARIABLES'\nrg -n '' terraform/variables.tf\nprint -r -- 'TERRAFORM_OUTPUTS'\nrg -n '' terraform/outputs.tf\nprint -r -- 'INPUT_FACTS'\nrg -n '' inputs/transient-platform-facts.md\nprint -r -- 'GIT'\ngit status --short && git log -5 --oneline\"",
+        "/bin/zsh -lc \"setopt nullglob\nprint -r -- 'MAPS'\nfor p in .agent-wayfinder/*/map.md; do print -r -- \\\"\"'$p\"; done\nprint -r -- '\"'TOOLS'\ncommand -v terraform || true\ncommand -v tofu || true\nmkdir -p .agent-wayfinder/ephemeral-ci-runner-infrastructure\nmkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock\"",
+        "/bin/zsh -lc \"setopt nullglob\nprint -r -- 'MAPS'\nfor p in .agent-wayfinder/*/map.md; do print -r -- \\\"\"'$p\"; done\nprint -r -- '\"'TOOLS'\ncommand -v terraform || true\ncommand -v tofu || true\nmkdir -p .agent-wayfinder/ephemeral-ci-runner-infrastructure\nmkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock\"",
+        "/bin/zsh -lc \"zmodload zsh/files\nmkdir -p .agent-wayfinder/ephemeral-ci-runner-infrastructure\nmkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock\nprint -r -- 'lock acquired'\"",
+        "/bin/zsh -lc \"zmodload zsh/files\nmkdir -p .agent-wayfinder/ephemeral-ci-runner-infrastructure\nmkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock\nprint -r -- 'lock acquired'\"",
+        "/bin/zsh -lc 'zmodload zsh/files\nmkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence\nmkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns'",
+        "/bin/zsh -lc 'zmodload zsh/files\nmkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence\nmkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns'",
+        "/bin/zsh -lc \"print -r -- 'TERRAFORM_MAIN'\nrg -n '' terraform/main.tf\nprint -r -- 'MAP'\nrg -n '' .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md\nprint -r -- 'EVIDENCE'\nrg -n '' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md\nprint -r -- 'UNKNOWNS'\nrg -n '' .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U1-approved-runner-instance-family.md .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md\nzmodload zsh/files\nrmdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock\nprint -r -- 'lock released'\"",
+        "/bin/zsh -lc \"print -r -- 'TERRAFORM_MAIN'\nrg -n '' terraform/main.tf\nprint -r -- 'MAP'\nrg -n '' .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md\nprint -r -- 'EVIDENCE'\nrg -n '' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md\nprint -r -- 'UNKNOWNS'\nrg -n '' .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U1-approved-runner-instance-family.md .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md\nzmodload zsh/files\nrmdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock\nprint -r -- 'lock released'\""
+      ],
+      "continuation_cost": {
+        "cached_input_tokens": 350208,
+        "elapsed_seconds": 118.476,
+        "file_read_count_before_first_observed_write": 13,
+        "files_read_before_first_observed_write": [
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock",
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md",
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md",
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U1-approved-runner-instance-family.md",
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md",
+          ".agent-workflow/contracts/wayfinder-state.md",
+          ".agents/skills/wayfinder/SKILL.md",
+          "docs/runner-requirements.md",
+          "inputs/transient-platform-facts.md",
+          "terraform/main.tf",
+          "terraform/outputs.tf",
+          "terraform/variables.tf",
+          "zsh/files"
+        ],
+        "input_tokens": 387993,
+        "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+        "output_tokens": 5539,
+        "reasoning_tokens": 2018,
+        "repeated_read_path_count": 23,
+        "tool_action_count": 10
+      },
+      "elapsed_seconds": 118.476,
+      "event_count": 27,
+      "execution_id": "01a02a97-044e-75f3-90e1-1d41b594e932",
+      "exit_status": 0,
+      "fresh_context": true,
+      "input_tokens": 387993,
+      "mode": "automatic_ephemeral_codex_exec",
+      "observed_exact_fact_in_tool_output": false,
+      "observed_terraform_apply": false,
+      "output_tokens": 5539,
+      "parent_task_context_supplied": false,
+      "phase": 1,
+      "prompt_sha256": "2eb3f822709b91b4fdab0fe7931c7cb4742283a1f1bf4c0faa81985c63b4e34a",
+      "reasoning_tokens": 2018,
+      "stderr_path": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/artifacts/wayfinder-fresh-agent-continuation-v1/runs/fresh-agent-b-1-08e84b5aea/raw/phase-1.stderr.txt",
+      "stdout_path": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/artifacts/wayfinder-fresh-agent-continuation-v1/runs/fresh-agent-b-1-08e84b5aea/raw/phase-1.jsonl",
+      "tool_action_count": 10,
+      "validation_command_observed": false,
+      "validation_events": [],
+      "wayfinder_observation": {
+        "explicit_invocation_observed": false,
+        "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+        "route_to_wayfinder_self_reported": true,
+        "wayfinder_skill_read": true,
+        "wayfinder_state_read": true
+      }
+    },
+    "files_changed": [
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U1-approved-runner-instance-family.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md",
+      "terraform/main.tf"
+    ],
+    "found_ami_parameter": true,
+    "hard_coded_ami_id": false,
+    "input_tokens": null,
+    "invented_instance_family": false,
+    "invented_isolation_model": false,
+    "output_tokens": null,
+    "preserved_ami_fact_in_durable_repo_state": true,
+    "recorded_instance_family_unknown": true,
+    "recorded_isolation_unknown": true,
+    "replaced_ami_parameter_with_alternative": false,
+    "requirements_edited": false,
+    "safe_useful_progress": true,
+    "stopped_safely": true,
+    "tests_or_validation_run": null,
+    "transient_input_edited": false
+  },
+  "phase_2": {
+    "autoscaling_configured": false,
+    "avoided_public_ip": true,
+    "elapsed_seconds": null,
+    "execution": {
+      "cached_input_tokens": 749312,
+      "codex_home_isolation": {
+        "pre_execution_inventory": {
+          "auth_contents_or_digest_recorded": false,
+          "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agent-workflow-fresh-agent-continuation-v1/fresh-agent-b-1-08e84b5aea/ephemeral-codex-homes/codex-home-501757d05c8048f1a45f5749ba995455",
+          "config_ignored_by_cli_flag": true,
+          "contains_only_auth_material": true,
+          "files": [
+            {
+              "kind": "file",
+              "path": "auth.json",
+              "size": 3975
+            }
+          ],
+          "rules_ignored_by_cli_flag": true,
+          "unexpected_files": []
+        },
+        "removed_after_process": true,
+        "temporary_bytes_removed": 43516206,
+        "unique_per_process": true
+      },
+      "command": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--strict-config",
+        "-m",
+        "gpt-5.6-terra",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "-c",
+        "approval_policy=\"never\"",
+        "-c",
+        "shell_environment_policy.inherit=\"none\"",
+        "-s",
+        "workspace-write",
+        "-C",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agent-workflow-fresh-agent-continuation-v1/fresh-agent-b-1-08e84b5aea/repo",
+        "--json",
+        "<prompt-via-stdin>"
+      ],
+      "commands_observed": [
+        "/bin/zsh -lc \"pwd && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md && sed -n '1,340p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -lc \"pwd && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md && sed -n '1,340p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -lc \"pwd; command -v rg; command -v head; command -v awk; wc -l .agents/skills/wayfinder/SKILL.md .agent-workflow/contracts/wayfinder-state.md; awk '1' .agents/skills/wayfinder/SKILL.md; awk '1' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -lc \"pwd; command -v rg; command -v head; command -v awk; wc -l .agents/skills/wayfinder/SKILL.md .agent-workflow/contracts/wayfinder-state.md; awk '1' .agents/skills/wayfinder/SKILL.md; awk '1' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -lc \"awk 'NR>=1 && NR<=230 {print}' .agent-workflow/contracts/wayfinder-state.md; awk 'NR>=231 && NR<=460 {print}' .agent-workflow/contracts/wayfinder-state.md; awk 'NR>=461 && NR<=687 {print}' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -lc \"awk 'NR>=1 && NR<=230 {print}' .agent-workflow/contracts/wayfinder-state.md; awk 'NR>=231 && NR<=460 {print}' .agent-workflow/contracts/wayfinder-state.md; awk 'NR>=461 && NR<=687 {print}' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -lc \"rg --files -g 'AGENTS.md' -g '\"'!node_modules'\"' -g '\"'!vendor'\"'; printf '\\\\nWayfinder efforts:\\\\n'; if [ -d .agent-wayfinder ]; then rg --files .agent-wayfinder -g 'map.md'; fi; printf '\\\\nRepository top level:\\\\n'; rg --files -g '\"'!node_modules'\"' -g '\"'!vendor'\"' | awk -F/ 'NF==1 {print}' | sort; printf '\\\\nWorktree:\\\\n'; git status --short; printf '\\\\nRecent history:\\\\n'; git log --oneline -8\"",
+        "/bin/zsh -lc \"rg --files -g 'AGENTS.md' -g '\"'!node_modules'\"' -g '\"'!vendor'\"'; printf '\\\\nWayfinder efforts:\\\\n'; if [ -d .agent-wayfinder ]; then rg --files .agent-wayfinder -g 'map.md'; fi; printf '\\\\nRepository top level:\\\\n'; rg --files -g '\"'!node_modules'\"' -g '\"'!vendor'\"' | awk -F/ 'NF==1 {print}' | sort; printf '\\\\nWorktree:\\\\n'; git status --short; printf '\\\\nRecent history:\\\\n'; git log --oneline -8\"",
+        "/bin/zsh -lc \"awk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md; printf '\\\\nTracked repository files:\\\\n'; rg --files -g '\"'!node_modules'\"' -g '\"'!vendor'\"' | sort; printf '\\\\nTerraform diff:\\\\n'; git diff -- terraform/main.tf; printf '\\\\nREADME:\\\\n'; awk '1' README.md; printf '\\\\nCLAUDE:\\\\n'; awk '1' CLAUDE.md\"",
+        "/bin/zsh -lc \"awk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md; printf '\\\\nTracked repository files:\\\\n'; rg --files -g '\"'!node_modules'\"' -g '\"'!vendor'\"' | sort; printf '\\\\nTerraform diff:\\\\n'; git diff -- terraform/main.tf; printf '\\\\nREADME:\\\\n'; awk '1' README.md; printf '\\\\nCLAUDE:\\\\n'; awk '1' CLAUDE.md\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'Requirements:'; awk '1' docs/runner-requirements.md; printf '%s\\\\n' 'Architecture decision:'; awk '1' docs/decisions/D1-runner-architecture.md; printf '%s\\\\n' 'Terraform main:'; awk '1' terraform/main.tf; printf '%s\\\\n' 'Terraform variables:'; awk '1' terraform/variables.tf; printf '%s\\\\n' 'Terraform outputs:'; awk '1' terraform/outputs.tf; printf '%s\\\\n' 'Wayfinder detail:'; rg --files .agent-wayfinder/ephemeral-ci-runner-infrastructure -g '\"'!map.md'\"' | sort | while IFS= read -r f; do printf '\\\\n--- %s ---\\\\n' \\\"\"'$f\"; awk '\"'1' \\\"\"'$f\"; done; printf '\"'%s\\\\n' 'Repository metadata:'; rg --files -g '.terraform.lock.hcl' -g '*.tfvars*' -g 'Makefile' -g 'package.json' -g '.github/**' -g '.gitignore' | sort\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'Requirements:'; awk '1' docs/runner-requirements.md; printf '%s\\\\n' 'Architecture decision:'; awk '1' docs/decisions/D1-runner-architecture.md; printf '%s\\\\n' 'Terraform main:'; awk '1' terraform/main.tf; printf '%s\\\\n' 'Terraform variables:'; awk '1' terraform/variables.tf; printf '%s\\\\n' 'Terraform outputs:'; awk '1' terraform/outputs.tf; printf '%s\\\\n' 'Wayfinder detail:'; rg --files .agent-wayfinder/ephemeral-ci-runner-infrastructure -g '\"'!map.md'\"' | sort | while IFS= read -r f; do printf '\\\\n--- %s ---\\\\n' \\\"\"'$f\"; awk '\"'1' \\\"\"'$f\"; done; printf '\"'%s\\\\n' 'Repository metadata:'; rg --files -g '.terraform.lock.hcl' -g '*.tfvars*' -g 'Makefile' -g 'package.json' -g '.github/**' -g '.gitignore' | sort\"",
+        "/bin/zsh -lc \"wc -l .agents/skills/workflow-implementation/SKILL.md && awk '1' .agents/skills/workflow-implementation/SKILL.md\"",
+        "/bin/zsh -lc \"wc -l .agents/skills/workflow-implementation/SKILL.md && awk '1' .agents/skills/workflow-implementation/SKILL.md\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'Provider configuration:'; awk '1' .agent-workflow/providers.json; printf '%s\\\\n' 'Provider-related files:'; rg --files .agent-workflow | sort; printf '%s\\\\n' 'Terraform availability:'; command -v terraform || true; terraform version 2>/dev/null || true; printf '%s\\\\n' 'Git baseline:'; git diff --check; git status --short\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'Provider configuration:'; awk '1' .agent-workflow/providers.json; printf '%s\\\\n' 'Provider-related files:'; rg --files .agent-workflow | sort; printf '%s\\\\n' 'Terraform availability:'; command -v terraform || true; terraform version 2>/dev/null || true; printf '%s\\\\n' 'Git baseline:'; git diff --check; git status --short\"",
+        "/bin/zsh -lc \"rg --files .agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/implement .agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/code-review .agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/tdd 2>/dev/null | sort; printf '\\\\nImplement skill:\\\\n'; awk '1' .agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/implement/SKILL.md\"",
+        "/bin/zsh -lc \"rg --files .agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/implement .agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/code-review .agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/tdd 2>/dev/null | sort; printf '\\\\nImplement skill:\\\\n'; awk '1' .agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/implement/SKILL.md\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'All files (including ignored):'; rg --files -uu | sort; printf '%s\\\\n' 'Git ignored matches:'; git check-ignore -v inputs/transient-platform-facts.md 2>/dev/null || true; printf '%s\\\\n' 'Platform input:'; if [ -f inputs/transient-platform-facts.md ]; then awk '1' inputs/transient-platform-facts.md; else printf 'not present\\\\n'; fi; printf '%s\\\\n' 'Git history relevant files:'; git log --all --oneline -- docs terraform inputs .agent-wayfinder; printf '%s\\\\n' 'D1 commit:'; git show --format=fuller --stat 8e98114; printf '%s\\\\n' 'D1 diff:'; git show --format= -- docs/decisions/D1-runner-architecture.md 8e98114\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'All files (including ignored):'; rg --files -uu | sort; printf '%s\\\\n' 'Git ignored matches:'; git check-ignore -v inputs/transient-platform-facts.md 2>/dev/null || true; printf '%s\\\\n' 'Platform input:'; if [ -f inputs/transient-platform-facts.md ]; then awk '1' inputs/transient-platform-facts.md; else printf 'not present\\\\n'; fi; printf '%s\\\\n' 'Git history relevant files:'; git log --all --oneline -- docs terraform inputs .agent-wayfinder; printf '%s\\\\n' 'D1 commit:'; git show --format=fuller --stat 8e98114; printf '%s\\\\n' 'D1 diff:'; git show --format= -- docs/decisions/D1-runner-architecture.md 8e98114\"",
+        "/bin/zsh -lc \"if mkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; then printf 'lock acquired\\\\n'; else printf 'lock unavailable\\\\n'; exit 1; fi\nawk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md\nawk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md\nrg -n 'U[12]|approved-runner-(instance-family|node-isolation)' .agent-wayfinder/ephemeral-ci-runner-infrastructure\"",
+        "/bin/zsh -lc \"if mkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; then printf 'lock acquired\\\\n'; else printf 'lock unavailable\\\\n'; exit 1; fi\nawk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md\nawk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md\nrg -n 'U[12]|approved-runner-(instance-family|node-isolation)' .agent-wayfinder/ephemeral-ci-runner-infrastructure\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'Current effort state:'; awk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md; printf '%s\\\\n' 'Current child references:'; rg -n 'U[123]|E1|D1|runner-node-launch-contract' .agent-wayfinder/ephemeral-ci-runner-infrastructure; printf '%s\\\\n' 'Current files:'; rg --files .agent-wayfinder/ephemeral-ci-runner-infrastructure | sort; rmdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; printf '%s\\\\n' 'lock released'\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'Current effort state:'; awk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md; printf '%s\\\\n' 'Current child references:'; rg -n 'U[123]|E1|D1|runner-node-launch-contract' .agent-wayfinder/ephemeral-ci-runner-infrastructure; printf '%s\\\\n' 'Current files:'; rg --files .agent-wayfinder/ephemeral-ci-runner-infrastructure | sort; rmdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; printf '%s\\\\n' 'lock released'\"",
+        "/bin/zsh -lc \"awk '1' .agents/skills/workflow-verification/SKILL.md; printf '\\\\nTerraform formatting check:\\\\n'; terraform fmt -check -recursive; printf '\\\\nTerraform validation:\\\\n'; terraform validate; printf '\\\\nDiff check:\\\\n'; git diff --check; printf '\\\\nStatus:\\\\n'; git status --short\"",
+        "/bin/zsh -lc \"awk '1' .agents/skills/workflow-verification/SKILL.md; printf '\\\\nTerraform formatting check:\\\\n'; terraform fmt -check -recursive; printf '\\\\nTerraform validation:\\\\n'; terraform validate; printf '\\\\nDiff check:\\\\n'; git diff --check; printf '\\\\nStatus:\\\\n'; git status --short\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'Profile presence:'; if [ -f .agent-wayfinder/project-profile.md ]; then awk '1' .agent-wayfinder/project-profile.md; else printf 'No project profile is present.\\\\n'; fi; printf '%s\\\\n' 'Wayfinder link targets:'; for f in docs/decisions/D1-runner-architecture.md docs/runner-requirements.md .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U3-runner-node-launch-contract.md; do test -f \\\"\"'$f\" && printf '\"'ok %s\\\\n' \\\"\"'$f\" || { printf '\"'missing %s\\\\n' \\\"\"'$f\"; exit 1; }; done; printf '\"'%s\\\\n' 'Changed tracked Terraform:'; git diff -- terraform/main.tf; printf '%s\\\\n' 'Wayfinder final diff (untracked baseline shown):'; git diff --no-index -- /dev/null .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md || true; git diff --no-index -- /dev/null .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U3-runner-node-launch-contract.md || true; git diff --no-index -- /dev/null .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md || true\"",
+        "/bin/zsh -lc \"printf '%s\\\\n' 'Profile presence:'; if [ -f .agent-wayfinder/project-profile.md ]; then awk '1' .agent-wayfinder/project-profile.md; else printf 'No project profile is present.\\\\n'; fi; printf '%s\\\\n' 'Wayfinder link targets:'; for f in docs/decisions/D1-runner-architecture.md docs/runner-requirements.md .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U3-runner-node-launch-contract.md; do test -f \\\"\"'$f\" && printf '\"'ok %s\\\\n' \\\"\"'$f\" || { printf '\"'missing %s\\\\n' \\\"\"'$f\"; exit 1; }; done; printf '\"'%s\\\\n' 'Changed tracked Terraform:'; git diff -- terraform/main.tf; printf '%s\\\\n' 'Wayfinder final diff (untracked baseline shown):'; git diff --no-index -- /dev/null .agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md || true; git diff --no-index -- /dev/null .agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U3-runner-node-launch-contract.md || true; git diff --no-index -- /dev/null .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md || true\"",
+        "/bin/zsh -lc \"if mkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; then printf 'lock acquired\\\\n'; else printf 'lock unavailable\\\\n'; exit 1; fi\nawk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md\ngit show --format='%H%n%s' --no-patch 8e98114\"",
+        "/bin/zsh -lc \"if mkdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; then printf 'lock acquired\\\\n'; else printf 'lock unavailable\\\\n'; exit 1; fi\nawk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md\ngit show --format='%H%n%s' --no-patch 8e98114\"",
+        "/bin/zsh -lc \"awk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md; rg -n '\\\\]\\\\([\"'^)]*inputs/transient-platform-facts'\"\\\\.md' .agent-wayfinder || true; rmdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; printf 'lock released\\\\n'; terraform fmt -check -recursive && terraform validate && git diff --check && git status --short\"",
+        "/bin/zsh -lc \"awk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md; rg -n '\\\\]\\\\([\"'^)]*inputs/transient-platform-facts'\"\\\\.md' .agent-wayfinder || true; rmdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; printf 'lock released\\\\n'; terraform fmt -check -recursive && terraform validate && git diff --check && git status --short\""
+      ],
+      "continuation_cost": {
+        "cached_input_tokens": 749312,
+        "elapsed_seconds": 220.39,
+        "file_read_count_before_first_observed_write": 17,
+        "files_read_before_first_observed_write": [
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure",
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock",
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md",
+          ".agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md",
+          ".agent-workflow/contracts/wayfinder-state.md",
+          ".agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/code-review",
+          ".agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/implement",
+          ".agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/implement/SKILL.md",
+          ".agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/tdd",
+          ".agent-workflow/providers.json",
+          ".agents/skills/wayfinder/SKILL.md",
+          "docs/decisions/D1-runner-architecture.md",
+          "docs/runner-requirements.md",
+          "inputs/transient-platform-facts.md",
+          "terraform/main.tf",
+          "terraform/outputs.tf",
+          "terraform/variables.tf"
+        ],
+        "input_tokens": 810662,
+        "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+        "output_tokens": 10270,
+        "reasoning_tokens": 3480,
+        "repeated_read_path_count": 49,
+        "tool_action_count": 18
+      },
+      "elapsed_seconds": 220.39,
+      "event_count": 46,
+      "execution_id": "01a02a9c-0159-7f42-adaf-1137c2fd0413",
+      "exit_status": 0,
+      "fresh_context": true,
+      "input_tokens": 810662,
+      "mode": "automatic_ephemeral_codex_exec",
+      "observed_exact_fact_in_tool_output": false,
+      "observed_terraform_apply": false,
+      "output_tokens": 10270,
+      "parent_task_context_supplied": false,
+      "phase": 2,
+      "prompt_sha256": "81929c3c59598c78b187f170ced2637cf5bc0501b7b6d3b986475e102d3a1661",
+      "reasoning_tokens": 3480,
+      "stderr_path": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/artifacts/wayfinder-fresh-agent-continuation-v1/runs/fresh-agent-b-1-08e84b5aea/raw/phase-2.stderr.txt",
+      "stdout_path": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/artifacts/wayfinder-fresh-agent-continuation-v1/runs/fresh-agent-b-1-08e84b5aea/raw/phase-2.jsonl",
+      "tool_action_count": 18,
+      "validation_command_observed": true,
+      "validation_events": [
+        {
+          "command": "/bin/zsh -lc \"printf '%s\\\\n' 'Provider configuration:'; awk '1' .agent-workflow/providers.json; printf '%s\\\\n' 'Provider-related files:'; rg --files .agent-workflow | sort; printf '%s\\\\n' 'Terraform availability:'; command -v terraform || true; terraform version 2>/dev/null || true; printf '%s\\\\n' 'Git baseline:'; git diff --check; git status --short\"",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -lc \"awk '1' .agents/skills/workflow-verification/SKILL.md; printf '\\\\nTerraform formatting check:\\\\n'; terraform fmt -check -recursive; printf '\\\\nTerraform validation:\\\\n'; terraform validate; printf '\\\\nDiff check:\\\\n'; git diff --check; printf '\\\\nStatus:\\\\n'; git status --short\"",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -lc \"awk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md; rg -n '\\\\]\\\\([\"'^)]*inputs/transient-platform-facts'\"\\\\.md' .agent-wayfinder || true; rmdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; printf 'lock released\\\\n'; terraform fmt -check -recursive && terraform validate && git diff --check && git status --short\"",
+          "exit_code": 0
+        }
+      ],
+      "wayfinder_observation": {
+        "explicit_invocation_observed": false,
+        "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+        "route_to_wayfinder_self_reported": true,
+        "wayfinder_skill_read": true,
+        "wayfinder_state_read": true
+      }
+    },
+    "files_changed": [
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U1-approved-runner-instance-family.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md",
+      ".agent-wayfinder/ephemeral-ci-runner-infrastructure/unknowns/U3-runner-node-launch-contract.md"
+    ],
+    "found_new_architecture_decision": null,
+    "guessed_missing_information": false,
+    "hard_coded_ami_id": false,
+    "implementation_completed": false,
+    "input_tokens": null,
+    "needed_human_correction": null,
+    "output_tokens": null,
+    "reconstruction": {
+      "files_read_before_first_write": [
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md",
+        ".agent-workflow/contracts/wayfinder-state.md",
+        ".agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/code-review",
+        ".agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/implement",
+        ".agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/implement/SKILL.md",
+        ".agent-workflow/provider-snapshots/matt-pocock-skills/skills/engineering/tdd",
+        ".agent-workflow/providers.json",
+        ".agents/skills/wayfinder/SKILL.md",
+        "docs/decisions/D1-runner-architecture.md",
+        "docs/runner-requirements.md",
+        "inputs/transient-platform-facts.md",
+        "terraform/main.tf",
+        "terraform/outputs.tf",
+        "terraform/variables.tf"
+      ],
+      "repository_evidence_reads_before_first_write": [
+        "docs/decisions/D1-runner-architecture.md",
+        "docs/runner-requirements.md",
+        "terraform/main.tf",
+        "terraform/outputs.tf",
+        "terraform/variables.tf"
+      ],
+      "state_path_reads_before_first_write": [
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md",
+        ".agent-wayfinder/ephemeral-ci-runner-infrastructure/map.md"
+      ]
+    },
+    "recovered_exact_ami_parameter": true,
+    "recreated_external_cluster": false,
+    "static_assertions_passed": false,
+    "terraform_fmt_command": [
+      "/opt/homebrew/bin/terraform",
+      "fmt",
+      "-check",
+      "-recursive",
+      "terraform"
+    ],
+    "terraform_fmt_exit_status": 0,
+    "used_dedicated_node_group": false,
+    "used_m7i_family": false,
+    "used_private_subnet_input": true,
+    "used_ssm_parameter_mechanism": true,
+    "validation_passed": false,
+    "verification_quality": {
+      "agent_validation_command_observed": true,
+      "agent_validation_events": [
+        {
+          "command": "/bin/zsh -lc \"printf '%s\\\\n' 'Provider configuration:'; awk '1' .agent-workflow/providers.json; printf '%s\\\\n' 'Provider-related files:'; rg --files .agent-workflow | sort; printf '%s\\\\n' 'Terraform availability:'; command -v terraform || true; terraform version 2>/dev/null || true; printf '%s\\\\n' 'Git baseline:'; git diff --check; git status --short\"",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -lc \"awk '1' .agents/skills/workflow-verification/SKILL.md; printf '\\\\nTerraform formatting check:\\\\n'; terraform fmt -check -recursive; printf '\\\\nTerraform validation:\\\\n'; terraform validate; printf '\\\\nDiff check:\\\\n'; git diff --check; printf '\\\\nStatus:\\\\n'; git status --short\"",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -lc \"awk '1' .agent-wayfinder/ephemeral-ci-runner-infrastructure/evidence/E1-approved-runner-ami-parameter.md; rg -n '\\\\]\\\\([\"'^)]*inputs/transient-platform-facts'\"\\\\.md' .agent-wayfinder || true; rmdir .agent-wayfinder/ephemeral-ci-runner-infrastructure/.wayfinder-mutation-lock; printf 'lock released\\\\n'; terraform fmt -check -recursive && terraform validate && git diff --check && git status --short\"",
+          "exit_code": 0
+        }
+      ],
+      "grader_static_assertions_passed": false,
+      "grader_terraform_fmt_exit_status": 0
+    }
+  },
+  "run_id": "fresh-agent-b-1-08e84b5aea",
+  "schema_version": 1,
+  "workflow_installation": {
+    "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+    "candidate_installed_sha256": "6889f42d4cc3f504a15c642e02d1de35d5bf3d9b917a3ec4ad89d70b47ea7a51",
+    "control_patch_sha256": "a52fd7950385e0041aa9e72e4a322ee83d9234dec5ecf3476705abbd7ce032da",
+    "files_changed_from_candidate": [
+      ".agent-workflow/contracts/wayfinder-state.md",
+      ".agents/skills/wayfinder/SKILL.md"
+    ],
+    "final_installed_sha256": "d01e0a60204a44e9de56dd0f8dce2d48d45d4a7004a200d298eaa3ea7603a097",
+    "framework_version": "0.19.1",
+    "installed_file_sha256": {
+      ".agent-workflow/README.md": "fbfda97a2f1851f31f37084e726da06af86603964c19dccd11f37870361754b3",
+      ".agent-workflow/contracts/durable-state.md": "02e7a602562951e518bd7e817363d3fc25d4d960afa2b9ac7c241db7b6039004",
+      ".agent-workflow/contracts/project-profile.md": "7bbc8a01689165cafe63fabd668d35575f31a568d00112f4bd3dcc45a0b7560a",
+      ".agent-workflow/contracts/wayfinder-state.md": "03456ff4ce3bed684911898fad80a04841e5f566be68ee9ee65b2497048283a2",
+      ".agent-workflow/install-manifest.json": "1aa787a044a14c74d25f2a4cfc4b12c216157fafddc717db4b74d8eb5b5ea622",
+      ".agent-workflow/providers.json": "d7f3c2f63d353acf32d1e53c7a417af3728d8e0a825cd9f346fb765043415ebc",
+      ".agent-workflow/routing.md": "70f78e4a77638634eb7cf63348811ebfcba2da03c11e08eff631d3291e5b3d44",
+      ".agent-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+      ".agents/skills/wayfinder/SKILL.md": "18bbb3e243eaca1d3738f51f2447b441b785ae669ac147533cbc78ef421ab2ef",
+      ".agents/skills/wayfinder/agents/openai.yaml": "57f261c4bb8943d4dee108a2b8b47fd6c5f8a6b7db8568b7caab02881224ee6d",
+      ".agents/skills/workflow-debugging/SKILL.md": "f02b86008901aa8b82726acee16a4d319536b8b739bd8ccdf5675ce5c47cb3fc",
+      ".agents/skills/workflow-discovery/SKILL.md": "bce5c6ca9abcbeb0ec4c777819f1a883cc791c975af6f052b32a832793c0c0b0",
+      ".agents/skills/workflow-implementation/SKILL.md": "901e7c142ebf21e6aca0dc8edaa43adddcd264844d299a6341fff75a29ae6cb9",
+      ".agents/skills/workflow-verification/SKILL.md": "906bc4d8eba12948029adb78652364548f5ff57fc0547d40346171d0d603f716",
+      "AGENTS.md": "9694b726e76c5e5adefacac691024f31478b1fbbb92753123753acb8bd7885b9",
+      "CLAUDE.md": "858e2dbf95635a376844ea39bbd95efca0c9a7f05733402b91f8b7f1f052c4d5"
+    },
+    "provider": "repository-pinned Wayfinder skill",
+    "treatment_markers_present": {
+      "Would a competent fresh agent need this information to continue the work correctly?": false,
+      "fresh-agent continuation": false,
+      "prior agent narrative": false,
+      "procedural history": false
+    }
+  }
+}

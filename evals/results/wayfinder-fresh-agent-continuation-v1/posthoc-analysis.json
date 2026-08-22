@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "campaign_id": "wayfinder-fresh-agent-continuation-v1",
+  "status": "positive_provisional",
+  "causal_claim": "The controlled B/C intervention produced a better observed outcome for C in this sample; one stochastic repetition and recovered runner errors do not establish a reliable causal improvement.",
+  "matched_comparison": {
+    "B": {
+      "implementation_completed": false,
+      "validation_passed": false,
+      "final_state_files": 3,
+      "final_state_lines": 71,
+      "final_state_bytes": 4295,
+      "commands_before_first_file_change": 11,
+      "conservative_path_like_reads_before_first_file_change": 18
+    },
+    "C": {
+      "implementation_completed": true,
+      "validation_passed": true,
+      "final_state_files": 1,
+      "final_state_lines": 61,
+      "final_state_bytes": 2331,
+      "commands_before_first_file_change": 10,
+      "conservative_path_like_reads_before_first_file_change": 16
+    }
+  },
+  "frozen_metric_correction": {
+    "affected_field": "phase_2.execution.continuation_cost.files_read_before_first_observed_write",
+    "reason": "The frozen parser detects writes only inside command strings and does not stop on Codex JSONL file_change events, so it includes some post-write reads.",
+    "disposition": "Retain the immutable raw/frozen result, exclude this field from conclusions, and use the explicitly post-hoc event-order counts above as descriptive evidence only."
+  },
+  "repetition_recommended": true,
+  "recommended_total_repetitions_per_condition": 5,
+  "product_change_recommended_now": false
+}

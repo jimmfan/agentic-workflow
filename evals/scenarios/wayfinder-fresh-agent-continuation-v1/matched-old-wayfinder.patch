@@ -1,0 +1,58 @@
+diff --git a/.agents/skills/wayfinder/SKILL.md b/.agents/skills/wayfinder/SKILL.md
+--- a/.agents/skills/wayfinder/SKILL.md
++++ b/.agents/skills/wayfinder/SKILL.md
+@@ -28,13 +28,7 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
+   detail only when relevant.
+ - The map owns current state, blockers, dependencies, frontier, and next work.
+   Optional U/E/F/D preserves only independently useful knowledge.
+-- Optimize durable state for fresh-agent continuation, not procedural history.
+-  Before persisting, ask: “Would a competent fresh agent need this information
+-  to continue the work correctly?” If not, normally do not persist it.
+-- Prefer current truth: reconcile or retire stale state under the contract.
+-- Resume map / orientation, relevant discrepancy and detail, then direct
+-  evidence; do not eagerly load every artifact. Direct evidence and accepted
+-  artifacts outrank map state or a prior agent narrative.
++- Live source and accepted project artifacts outrank stale map state.
+ - Durable Wayfinder state can record authority; it cannot create authority.
+   Use an actual human or project source, or valid delegated scope, for an
+   authority-owned choice. Keep the question and what it blocks explicit.
+diff --git a/.agent-workflow/contracts/wayfinder-state.md b/.agent-workflow/contracts/wayfinder-state.md
+--- a/.agent-workflow/contracts/wayfinder-state.md
++++ b/.agent-workflow/contracts/wayfinder-state.md
+@@ -32,18 +32,6 @@ These are distinctions, not a mandatory pipeline. Evidence may leave an
+ unknown unresolved, a fact may require no decision, and a decision may be made
+ under uncertainty without manufacturing a fact.
+ 
+-## Fresh-agent continuation and persistence admission
+-
+-Wayfinder preserves current truth for fresh-agent continuation, not a prior
+-agent narrative or procedural history. Repository contents, tests, command
+-output, and other direct evidence outrank the map when they conflict.
+-
+-Before persisting a map note or U/E/F/D item, ask: **Would a competent fresh
+-agent need this information to continue the work correctly?** If not, normally
+-do not persist it. Retire stale, superseded, resolved, or otherwise
+-non-navigational state under the lifecycle rules; retain project-owned evidence
+-or history only when it still has independent durable value.
+-
+ ## Semantic territory and effort identity
+ 
+ U/E/F/D is a knowledge taxonomy, not the effort's problem structure. Every
+@@ -265,13 +253,10 @@ match.
+ 2. Apply the effort naming, selection, and stable-path rules above; do not load
+    every map to resolve a likely resume.
+ 3. Read the relevant `map.md`, including its lifecycle when present, as the
+-   low-resolution map / orientation.
+-4. Identify the current area, discrepancy, or blocker, then follow only links
+-   needed for that question or work. Do not eagerly load every Wayfinder
+-   artifact or every U/E/F/D child. Do not read every U/E/F/D child.
+-5. Inspect repository / direct evidence as needed; it outranks the map or a
+-   prior agent narrative when they conflict.
+-6. Derive the current frontier from the map and any linked native ticket source;
++   low-resolution orientation.
++4. Follow only links needed for the current question or work. Do not read every
++   U/E/F/D child.
++5. Derive the current frontier from the map and any linked native ticket source;
+    do not persist a second frontier or global active index.
+ 
+ An implementation request may consume a coherent next-work scope from the map,

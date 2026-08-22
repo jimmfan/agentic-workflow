@@ -1,0 +1,320 @@
+{
+  "campaign_id": "wayfinder-fresh-agent-continuation-v1",
+  "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+  "completed_at": "2026-08-22T17:54:21.765470+00:00",
+  "condition": "A",
+  "condition_name": "generic-durable-handoff",
+  "fresh_execution_ids": [
+    "01a02a93-cb0e-7d33-80f0-2ecc91307d99",
+    "01a02a9a-5e98-7c32-b8b9-90a76c04feb5"
+  ],
+  "fresh_processes_distinct": true,
+  "phase_1": {
+    "claimed_complete": null,
+    "durable_state": {
+      "byte_count": 1450,
+      "classifier_note": "Conservative lexical indicator, not a semantic quality score.",
+      "exact_fact_occurrences": 0,
+      "file_count": 1,
+      "line_count": 19,
+      "paths": [
+        "HANDOFF.md"
+      ],
+      "procedural_history_evidence": [],
+      "procedural_history_line_count": 0
+    },
+    "elapsed_seconds": null,
+    "execution": {
+      "cached_input_tokens": 246272,
+      "codex_home_isolation": {
+        "pre_execution_inventory": {
+          "auth_contents_or_digest_recorded": false,
+          "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agent-workflow-fresh-agent-continuation-v1/fresh-agent-a-1-3d233aa8cc/ephemeral-codex-homes/codex-home-b58631e4e85545dd967a43c6c82ce2f6",
+          "config_ignored_by_cli_flag": true,
+          "contains_only_auth_material": true,
+          "files": [
+            {
+              "kind": "file",
+              "path": "auth.json",
+              "size": 3975
+            }
+          ],
+          "rules_ignored_by_cli_flag": true,
+          "unexpected_files": []
+        },
+        "removed_after_process": true,
+        "temporary_bytes_removed": 44695398,
+        "unique_per_process": true
+      },
+      "command": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--strict-config",
+        "-m",
+        "gpt-5.6-terra",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "-c",
+        "approval_policy=\"never\"",
+        "-c",
+        "shell_environment_policy.inherit=\"none\"",
+        "-s",
+        "workspace-write",
+        "-C",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agent-workflow-fresh-agent-continuation-v1/fresh-agent-a-1-3d233aa8cc/repo",
+        "--json",
+        "<prompt-via-stdin>"
+      ],
+      "commands_observed": [
+        "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+        "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+        "/bin/zsh -lc \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | head -240\"",
+        "/bin/zsh -lc \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | head -240\"",
+        "/bin/zsh -lc \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"'\"",
+        "/bin/zsh -lc \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"'\"",
+        "/bin/zsh -lc \"rg -n -H '' README.md docs/runner-requirements.md inputs/transient-platform-facts.md terraform/main.tf terraform/variables.tf terraform/outputs.tf && git status --short && git log --oneline -5\"",
+        "/bin/zsh -lc \"rg -n -H '' README.md docs/runner-requirements.md inputs/transient-platform-facts.md terraform/main.tf terraform/variables.tf terraform/outputs.tf && git status --short && git log --oneline -5\"",
+        "/bin/zsh -lc \"rg --files -g 'AGENTS.md' -g '.terraform.lock.hcl' -g '*.tfvars*' -g '*.md' && terraform version\"",
+        "/bin/zsh -lc \"rg --files -g 'AGENTS.md' -g '.terraform.lock.hcl' -g '*.tfvars*' -g '*.md' && terraform version\"",
+        "/bin/zsh -lc \"rg -n -H '' README.md HANDOFF.md terraform/*.tf && rg --files -g '*.tf' -g '*.md'\"",
+        "/bin/zsh -lc \"rg -n -H '' README.md HANDOFF.md terraform/*.tf && rg --files -g '*.tf' -g '*.md'\"",
+        "/bin/zsh -lc 'command -v terraform || true\ncommand -v tofu || true\nrg -n \"runner_(ami_ssm_parameter_name|instance_type|capacity_type|node_role_arn|user_data_base64|security_group_ids|isolation|scaling)\" terraform README.md HANDOFF.md'",
+        "/bin/zsh -lc 'command -v terraform || true\ncommand -v tofu || true\nrg -n \"runner_(ami_ssm_parameter_name|instance_type|capacity_type|node_role_arn|user_data_base64|security_group_ids|isolation|scaling)\" terraform README.md HANDOFF.md'"
+      ],
+      "continuation_cost": {
+        "cached_input_tokens": 246272,
+        "elapsed_seconds": 211.313,
+        "file_read_count_before_first_observed_write": 5,
+        "files_read_before_first_observed_write": [
+          "docs/runner-requirements.md",
+          "inputs/transient-platform-facts.md",
+          "terraform/main.tf",
+          "terraform/outputs.tf",
+          "terraform/variables.tf"
+        ],
+        "input_tokens": 282019,
+        "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+        "output_tokens": 10495,
+        "reasoning_tokens": 2935,
+        "repeated_read_path_count": 5,
+        "tool_action_count": 11
+      },
+      "elapsed_seconds": 211.313,
+      "event_count": 30,
+      "execution_id": "01a02a93-cb0e-7d33-80f0-2ecc91307d99",
+      "exit_status": 0,
+      "fresh_context": true,
+      "input_tokens": 282019,
+      "mode": "automatic_ephemeral_codex_exec",
+      "observed_exact_fact_in_tool_output": false,
+      "observed_terraform_apply": false,
+      "output_tokens": 10495,
+      "parent_task_context_supplied": false,
+      "phase": 1,
+      "prompt_sha256": "e97347e751a44df4e731ff352c55d8bc8d8c303ecd6e6af43d420f44d9c77135",
+      "reasoning_tokens": 2935,
+      "stderr_path": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/artifacts/wayfinder-fresh-agent-continuation-v1/runs/fresh-agent-a-1-3d233aa8cc/raw/phase-1.stderr.txt",
+      "stdout_path": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/artifacts/wayfinder-fresh-agent-continuation-v1/runs/fresh-agent-a-1-3d233aa8cc/raw/phase-1.jsonl",
+      "tool_action_count": 11,
+      "validation_command_observed": false,
+      "validation_events": [],
+      "wayfinder_observation": {
+        "explicit_invocation_observed": false,
+        "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+        "route_to_wayfinder_self_reported": false,
+        "wayfinder_skill_read": false,
+        "wayfinder_state_read": false
+      }
+    },
+    "files_changed": [
+      "HANDOFF.md",
+      "README.md",
+      "terraform/main.tf",
+      "terraform/outputs.tf",
+      "terraform/variables.tf"
+    ],
+    "found_ami_parameter": null,
+    "hard_coded_ami_id": false,
+    "input_tokens": null,
+    "invented_instance_family": false,
+    "invented_isolation_model": true,
+    "output_tokens": null,
+    "preserved_ami_fact_in_durable_repo_state": false,
+    "recorded_instance_family_unknown": true,
+    "recorded_isolation_unknown": false,
+    "replaced_ami_parameter_with_alternative": false,
+    "requirements_edited": false,
+    "safe_useful_progress": false,
+    "stopped_safely": false,
+    "tests_or_validation_run": null,
+    "transient_input_edited": false
+  },
+  "phase_2": {
+    "autoscaling_configured": true,
+    "avoided_public_ip": true,
+    "elapsed_seconds": null,
+    "execution": {
+      "cached_input_tokens": 200704,
+      "codex_home_isolation": {
+        "pre_execution_inventory": {
+          "auth_contents_or_digest_recorded": false,
+          "codex_home": "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agent-workflow-fresh-agent-continuation-v1/fresh-agent-a-1-3d233aa8cc/ephemeral-codex-homes/codex-home-c06dce56b304482c88b76510c7d5385f",
+          "config_ignored_by_cli_flag": true,
+          "contains_only_auth_material": true,
+          "files": [
+            {
+              "kind": "file",
+              "path": "auth.json",
+              "size": 3975
+            }
+          ],
+          "rules_ignored_by_cli_flag": true,
+          "unexpected_files": []
+        },
+        "removed_after_process": true,
+        "temporary_bytes_removed": 44695398,
+        "unique_per_process": true
+      },
+      "command": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--strict-config",
+        "-m",
+        "gpt-5.6-terra",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "-c",
+        "approval_policy=\"never\"",
+        "-c",
+        "shell_environment_policy.inherit=\"none\"",
+        "-s",
+        "workspace-write",
+        "-C",
+        "/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/agent-workflow-fresh-agent-continuation-v1/fresh-agent-a-1-3d233aa8cc/repo",
+        "--json",
+        "<prompt-via-stdin>"
+      ],
+      "commands_observed": [
+        "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+        "/bin/zsh -lc \"pwd && rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,240p'\"",
+        "/bin/zsh -lc \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"'\"",
+        "/bin/zsh -lc \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"'\"",
+        "/bin/zsh -lc \"git status --short && git log --oneline -5 && rg -n -i -C 3 'runner|todo|next|phase|future|implement|requirement' README.md HANDOFF.md docs terraform\"",
+        "/bin/zsh -lc \"git status --short && git log --oneline -5 && rg -n -i -C 3 'runner|todo|next|phase|future|implement|requirement' README.md HANDOFF.md docs terraform\"",
+        "/bin/zsh -lc \"rg -n '\"'^'\"' README.md HANDOFF.md docs/decisions/D1-runner-architecture.md docs/runner-requirements.md terraform/main.tf terraform/variables.tf terraform/outputs.tf\"",
+        "/bin/zsh -lc \"rg -n '\"'^'\"' README.md HANDOFF.md docs/decisions/D1-runner-architecture.md docs/runner-requirements.md terraform/main.tf terraform/variables.tf terraform/outputs.tf\"",
+        "/bin/zsh -lc \"command -v terraform || true\ncommand -v tofu || true\ncommand -v git || true\ncommand -v awk || true\ncommand -v perl || true\nrg -n \\\"runner_instance_type|runner_isolation|m7i|one runner|unresolved\\\" . -g '\"'!*.terraform*'\"'\"",
+        "/bin/zsh -lc \"command -v terraform || true\ncommand -v tofu || true\ncommand -v git || true\ncommand -v awk || true\ncommand -v perl || true\nrg -n \\\"runner_instance_type|runner_isolation|m7i|one runner|unresolved\\\" . -g '\"'!*.terraform*'\"'\"",
+        "/bin/zsh -lc \"rg -n -C 3 'runner_instance_type|runner_isolation|m7i|one runner|unresolved|remaining platform' README.md HANDOFF.md terraform/variables.tf terraform/main.tf docs && rg -n '\"'^'\"\\\\s*(variable|resource|data|output|terraform|validation|lifecycle|dynamic)\\\\b|\"'^'\"\\\\s*\\\\}' terraform/*.tf\"",
+        "/bin/zsh -lc \"rg -n -C 3 'runner_instance_type|runner_isolation|m7i|one runner|unresolved|remaining platform' README.md HANDOFF.md terraform/variables.tf terraform/main.tf docs && rg -n '\"'^'\"\\\\s*(variable|resource|data|output|terraform|validation|lifecycle|dynamic)\\\\b|\"'^'\"\\\\s*\\\\}' terraform/*.tf\"",
+        "/bin/zsh -lc \"rg -n '\"'^'\"' README.md HANDOFF.md docs/runner-requirements.md terraform/variables.tf && rg -n 'associate_public_ip_address|subnet_ids|aws_eks_cluster|aws_ssm_parameter|scaling_config' terraform/main.tf\"",
+        "/bin/zsh -lc \"rg -n '\"'^'\"' README.md HANDOFF.md docs/runner-requirements.md terraform/variables.tf && rg -n 'associate_public_ip_address|subnet_ids|aws_eks_cluster|aws_ssm_parameter|scaling_config' terraform/main.tf\""
+      ],
+      "continuation_cost": {
+        "cached_input_tokens": 200704,
+        "elapsed_seconds": 107.199,
+        "file_read_count_before_first_observed_write": 5,
+        "files_read_before_first_observed_write": [
+          "docs/decisions/D1-runner-architecture.md",
+          "docs/runner-requirements.md",
+          "terraform/main.tf",
+          "terraform/outputs.tf",
+          "terraform/variables.tf"
+        ],
+        "input_tokens": 236159,
+        "measurement_note": "Derived from Codex JSONL events; path extraction is conservative and unknown values remain null.",
+        "output_tokens": 4968,
+        "reasoning_tokens": 1302,
+        "repeated_read_path_count": 15,
+        "tool_action_count": 9
+      },
+      "elapsed_seconds": 107.199,
+      "event_count": 25,
+      "execution_id": "01a02a9a-5e98-7c32-b8b9-90a76c04feb5",
+      "exit_status": 0,
+      "fresh_context": true,
+      "input_tokens": 236159,
+      "mode": "automatic_ephemeral_codex_exec",
+      "observed_exact_fact_in_tool_output": false,
+      "observed_terraform_apply": false,
+      "output_tokens": 4968,
+      "parent_task_context_supplied": false,
+      "phase": 2,
+      "prompt_sha256": "a0cd3459cdf9a54f87592d8f0a8cc196ac2d40fd4c20df6a2c5b9231a43a3c1e",
+      "reasoning_tokens": 1302,
+      "stderr_path": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/artifacts/wayfinder-fresh-agent-continuation-v1/runs/fresh-agent-a-1-3d233aa8cc/raw/phase-2.stderr.txt",
+      "stdout_path": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/artifacts/wayfinder-fresh-agent-continuation-v1/runs/fresh-agent-a-1-3d233aa8cc/raw/phase-2.jsonl",
+      "tool_action_count": 9,
+      "validation_command_observed": false,
+      "validation_events": [],
+      "wayfinder_observation": {
+        "explicit_invocation_observed": false,
+        "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+        "route_to_wayfinder_self_reported": false,
+        "wayfinder_skill_read": false,
+        "wayfinder_state_read": false
+      }
+    },
+    "files_changed": [
+      "HANDOFF.md",
+      "README.md",
+      "docs/runner-requirements.md",
+      "terraform/variables.tf"
+    ],
+    "found_new_architecture_decision": true,
+    "guessed_missing_information": false,
+    "hard_coded_ami_id": false,
+    "implementation_completed": false,
+    "input_tokens": null,
+    "needed_human_correction": null,
+    "output_tokens": null,
+    "reconstruction": {
+      "files_read_before_first_write": [
+        "docs/decisions/D1-runner-architecture.md",
+        "docs/runner-requirements.md",
+        "terraform/main.tf",
+        "terraform/outputs.tf",
+        "terraform/variables.tf"
+      ],
+      "repository_evidence_reads_before_first_write": [
+        "docs/decisions/D1-runner-architecture.md",
+        "docs/runner-requirements.md",
+        "terraform/main.tf",
+        "terraform/outputs.tf",
+        "terraform/variables.tf"
+      ],
+      "state_path_reads_before_first_write": []
+    },
+    "recovered_exact_ami_parameter": false,
+    "recreated_external_cluster": false,
+    "static_assertions_passed": false,
+    "terraform_fmt_command": [
+      "/opt/homebrew/bin/terraform",
+      "fmt",
+      "-check",
+      "-recursive",
+      "terraform"
+    ],
+    "terraform_fmt_exit_status": 0,
+    "used_dedicated_node_group": true,
+    "used_m7i_family": true,
+    "used_private_subnet_input": true,
+    "used_ssm_parameter_mechanism": true,
+    "validation_passed": false,
+    "verification_quality": {
+      "agent_validation_command_observed": false,
+      "agent_validation_events": [],
+      "grader_static_assertions_passed": false,
+      "grader_terraform_fmt_exit_status": 0
+    }
+  },
+  "run_id": "fresh-agent-a-1-3d233aa8cc",
+  "schema_version": 1,
+  "workflow_installation": null
+}

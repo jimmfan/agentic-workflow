@@ -5,7 +5,12 @@ import runpy
 import subprocess
 import unittest
 
-from evals import arc_wayfinder, arc_wayfinder_state_complexity, arc_wayfinder_v2
+from evals import (
+    arc_wayfinder,
+    arc_wayfinder_state_complexity,
+    arc_wayfinder_v2,
+    wayfinder_fresh_agent_continuation,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -72,7 +77,12 @@ class EvaluationStorageTests(unittest.TestCase):
 
     def test_active_harnesses_route_repository_local_raw_output_to_artifacts(self) -> None:
         expected = ROOT / "evals" / "artifacts"
-        modules = [arc_wayfinder, arc_wayfinder_v2, arc_wayfinder_state_complexity]
+        modules = [
+            arc_wayfinder,
+            arc_wayfinder_v2,
+            arc_wayfinder_state_complexity,
+            wayfinder_fresh_agent_continuation,
+        ]
         roots = [module.ARTIFACTS_ROOT for module in modules]
 
         self.assertTrue(all(expected in root.parents for root in roots))

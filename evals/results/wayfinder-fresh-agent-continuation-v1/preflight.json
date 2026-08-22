@@ -1,0 +1,26 @@
+{
+  "campaign_id": "wayfinder-fresh-agent-continuation-v1",
+  "checks": {
+    "baseline_has_no_framework": true,
+    "candidate_retains_treatment": true,
+    "controller_and_grader_outside_workspaces": true,
+    "frozen_evaluator_valid": true,
+    "matched_control_only_changes_treatment_paths": true,
+    "prior_same_runner_isolation_audit_passed": true,
+    "prompts_B_C_identical": true,
+    "separate_git_roots": true
+  },
+  "prior_isolation_audit": "/private/tmp/wayfinder-fresh-agent-eval.f7WybY/evals/results/arc-wayfinder-e2e-v2/context-isolation-audit.json",
+  "prior_isolation_audit_sha256": "78b402ce2a0ec5455be4c7f37d7d8b1f3dcc249c533ea9f5b44ee1f14efa9788",
+  "recorded_at": "2026-08-22T17:45:23.445166+00:00",
+  "runner_controls": [
+    "codex exec --ephemeral",
+    "unique auth-only CODEX_HOME per phase",
+    "--ignore-user-config --ignore-rules --strict-config",
+    "shell_environment_policy.inherit=none",
+    "separate fixture Git roots",
+    "raw traces and graders outside evaluated repositories"
+  ],
+  "schema_version": 1,
+  "status": "passed"
+}
