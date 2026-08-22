@@ -479,24 +479,36 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, self.normalized)
 
-    def test_runtime_and_contract_optimize_for_fresh_agent_current_state(self) -> None:
+    def test_runtime_and_contract_restore_progressive_loading_without_experimental_treatment(self) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         admission_rule = (
             "Would a competent fresh agent need this information to continue the work correctly?"
         )
-        for surface in (runtime, self.normalized):
-            self.assertIn("fresh-agent continuation", surface)
-            self.assertIn(admission_rule, surface)
-            self.assertIn("current truth", surface)
-            self.assertIn("prior agent narrative", surface)
+        for removed_persistence_treatment_phrase in (
+            "fresh-agent continuation",
+            admission_rule,
+            "procedural history",
+            "current truth",
+            "prior agent narrative",
+        ):
+            self.assertNotIn(removed_persistence_treatment_phrase, runtime)
+            self.assertNotIn(removed_persistence_treatment_phrase, self.normalized)
 
-        self.assertIn("procedural history", self.normalized)
-        self.assertIn("map / orientation", self.normalized)
-        self.assertIn("Inspect repository / direct evidence", self.normalized)
         self.assertIn(
-            "do not eagerly load every wayfinder artifact",
-            self.normalized.lower(),
+            "Live source and accepted project artifacts outrank stale map state.",
+            runtime,
         )
+        for progressive_loading_rule in (
+            "Route from the request first",
+            "Read the relevant `map.md`",
+            "low-resolution orientation",
+            "Follow only links needed for the current question or work",
+            "Do not read every U/E/F/D child",
+            "Derive the current frontier from the map and any linked native ticket source",
+        ):
+            self.assertIn(progressive_loading_rule, self.normalized)
+
+        self.assertIn("map owns current state, blockers, dependencies, frontier, and next work", runtime)
         for surface in (runtime, self.normalized):
             self.assertIn(
                 "Durable Wayfinder state can record authority; it cannot create authority.",

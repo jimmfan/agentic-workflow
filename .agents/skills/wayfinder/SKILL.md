@@ -28,13 +28,7 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
   detail only when relevant.
 - The map owns current state, blockers, dependencies, frontier, and next work.
   Optional U/E/F/D preserves only independently useful knowledge.
-- Optimize durable state for fresh-agent continuation, not procedural history.
-  Before persisting, ask: “Would a competent fresh agent need this information
-  to continue the work correctly?” If not, normally do not persist it.
-- Prefer current truth: reconcile or retire stale state under the contract.
-- Resume map / orientation, relevant discrepancy and detail, then direct
-  evidence; do not eagerly load every artifact. Direct evidence and accepted
-  artifacts outrank map state or a prior agent narrative.
+- Live source and accepted project artifacts outrank stale map state.
 - Durable Wayfinder state can record authority; it cannot create authority.
   Use an actual human or project source, or valid delegated scope, for an
   authority-owned choice. Keep the question and what it blocks explicit.
