@@ -27,7 +27,7 @@
     "executed": true,
     "repository_state_effect": "repository-write",
     "external_scope": "none",
-    "expected_behavior": "Make the bounded edit directly and perform only proportionate verification without invoking Implementation or unrelated workflow ceremony."
+    "expected_behavior": "Make the bounded edit directly and perform only proportionate verification without invoking `implement` or unrelated workflow ceremony."
   },
   {
     "id": "three-trivial-items-stay-direct",
@@ -368,8 +368,8 @@
     "id": "implementation-implicit-codex",
     "category": "implementation",
     "prompt": "Implement ready ticket ARC-384 and verify it.",
-    "setup": "The local adapter confirms ready scope and the installed Implement provider has reconciled implicit-invocation metadata in Codex.",
-    "dominant_activity": "implementation",
+    "setup": "The ticket supplies a coherent ready scope and acceptance criteria, and the installed Implement provider has reconciled implicit-invocation metadata in Codex.",
+    "dominant_activity": "implement",
     "capabilities": [
       "verification"
     ],
@@ -383,10 +383,52 @@
     ],
     "host": "codex",
     "route_result": "executed",
+    "expected_marker": "[route: router → implement → verification]",
     "executed": true,
     "repository_state_effect": "repository-write",
     "external_scope": "none",
-    "expected_behavior": "Invoke Implement once with the ready ticket and acceptance criteria, preserve authorization boundaries, and run independent framework Verification without requiring an explicit $implement command."
+    "expected_behavior": "Invoke Implement once with the ready ticket and acceptance criteria, preserve authorization boundaries, and run independent framework Verification exactly once without requiring an explicit $implement command or loading a local implementation wrapper."
+  },
+  {
+    "id": "implementation-provider-unavailable-fallback",
+    "category": "implementation-provider-fallback",
+    "prompt": "Implement and verify the coherent ready queue fix.",
+    "setup": "The scope and acceptance criteria are settled, but the active host cannot invoke the configured Implement provider; authorized host-native implementation can satisfy the request.",
+    "dominant_activity": "host-native-implementation",
+    "capabilities": [
+      "verification"
+    ],
+    "provider_invocations": [
+      {
+        "name": "implement",
+        "policy": "unavailable",
+        "invocation": "not-invoked",
+        "executed": false
+      }
+    ],
+    "host": "host-neutral",
+    "route_result": "host-native-fallback",
+    "expected_marker": "[route: router → direct → verification]",
+    "executed": true,
+    "repository_state_effect": "repository-write",
+    "external_scope": "none",
+    "expected_behavior": "Use the authorized host-native implementation path without simulating or claiming Implement, then run framework Verification exactly once and report only the activity that executed."
+  },
+  {
+    "id": "implementation-unresolved-decision-stays-out",
+    "category": "implementation-decision-boundary",
+    "prompt": "Implement the account-deletion flow now.",
+    "setup": "The scope still depends on a material unresolved retention-policy choice owned by project authority; no independent implementation slice is ready.",
+    "dominant_activity": "direct",
+    "capabilities": [],
+    "provider_invocations": [],
+    "host": "host-neutral",
+    "route_result": "blocked",
+    "expected_marker": "[route: router → direct]",
+    "executed": true,
+    "repository_state_effect": "none",
+    "external_scope": "none",
+    "expected_behavior": "Surface the concrete authority-owned retention question directly and do not invoke Implement, use host-native implementation, load Discovery without a material need for tradeoff analysis, or run Verification before that implementation boundary is settled."
   },
   {
     "id": "verification-completed-meaningful-change",
@@ -499,7 +541,7 @@
     "category": "wayfinder-to-implementation",
     "prompt": "Implement and verify the ready next scope from the named migration map.",
     "setup": "The selected map has no material uncertainty in its current frontier and supplies scope plus acceptance criteria; Implement is available.",
-    "dominant_activity": "implementation",
+    "dominant_activity": "implement",
     "capabilities": [
       "verification"
     ],
@@ -513,10 +555,11 @@
     ],
     "host": "codex",
     "route_result": "executed",
+    "expected_marker": "[route: router → implement → verification]",
     "executed": true,
     "repository_state_effect": "repository-write",
     "external_scope": "none",
-    "expected_behavior": "Pass the ready scope by reference from Wayfinder to Implementation, invoke Implement once, run Verification, reconcile any consequential result into the map, and create no IMP or replacement execution record."
+    "expected_behavior": "Pass the ready scope by reference from Wayfinder directly to Implement, invoke it once, run Verification exactly once, reconcile any consequential result into the map, and create no IMP or replacement execution record."
   },
   {
     "id": "wayfinder-resumes-interrupted-specialist",
@@ -720,7 +763,7 @@
     "category": "specialist-project-profile-context",
     "prompt": "Implement the accepted queue fix and use the project's configured checks.",
     "setup": "The scope is settled and `.agent-wayfinder/project-profile.md` contains relevant paths, constraints, and configured commands plus unrelated advisory context.",
-    "dominant_activity": "implementation",
+    "dominant_activity": "implement",
     "capabilities": [
       "verification"
     ],
@@ -734,9 +777,10 @@
     ],
     "host": "codex",
     "route_result": "executed",
+    "expected_marker": "[route: router → implement → verification]",
     "executed": true,
     "repository_state_effect": "repository-write",
     "external_scope": "none",
-    "expected_behavior": "Pass only relevant `.agent-wayfinder/project-profile.md` facts, pointers, and configured commands into Implementation, and load `.agent-workflow/contracts/project-profile.md` before any recorded command executes."
+    "expected_behavior": "Pass only relevant `.agent-wayfinder/project-profile.md` facts, pointers, and configured commands to Implement, and load `.agent-workflow/contracts/project-profile.md` before any recorded command executes."
   }
 ]

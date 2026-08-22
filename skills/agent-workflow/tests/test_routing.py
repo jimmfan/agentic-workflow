@@ -218,15 +218,16 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("issue-tracker", skills["to-spec"]["requires_configuration"])
         self.assertIn("issue-tracker", skills["to-tickets"]["requires_configuration"])
 
-    def test_specialist_workflows_are_stateless_and_keep_their_methods(self) -> None:
+    def test_specialist_workflows_are_stateless_and_implementation_has_no_wrapper(self) -> None:
         discovery = (
             PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
         ).read_text()
         debugging = (
             PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
         ).read_text()
-        implementation = (
-            PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+        routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
+        wayfinder = (
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
         ).read_text()
         durable = (
             PACKAGE_ROOT / "payload/agent-workflow/contracts/durable-state.md"
@@ -234,15 +235,20 @@ class RoutingContractTests(unittest.TestCase):
 
         discovery = " ".join(discovery.split())
         debugging = " ".join(debugging.split())
-        implementation = " ".join(implementation.split())
+        routing = " ".join(routing.split())
+        wayfinder = " ".join(wayfinder.split())
         durable = " ".join(durable.split())
 
         self.assertIn("without creating DEC", discovery)
         self.assertIn("Compare viable alternatives", discovery)
         self.assertIn("without creating a DBG", debugging)
         self.assertIn("Form 3–5 ranked, falsifiable hypotheses", debugging)
-        self.assertIn("Create no IMP or replacement record", implementation)
-        self.assertIn("Invoke `workflow-verification` once", implementation)
+        self.assertFalse(
+            (PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md").exists()
+        )
+        self.assertIn("invoke the resolved `implement` provider once", routing)
+        self.assertIn("Framework Verification runs once", routing)
+        self.assertIn("No implementation continuity record is created", wayfinder)
         self.assertIn("not a current framework re-entry point", durable)
 
     def test_domain_modeling_selection_covers_standalone_discovery_and_wayfinder_boundaries(self) -> None:
@@ -301,7 +307,7 @@ class RoutingContractTests(unittest.TestCase):
         for identifier, activity in (
             ("discovery-uses-project-profile", "discovery"),
             ("debugging-uses-project-profile", "debugging"),
-            ("implementation-uses-project-profile", "implementation"),
+            ("implementation-uses-project-profile", "implement"),
         ):
             with self.subTest(identifier=identifier):
                 scenario = scenarios[identifier]
@@ -312,13 +318,18 @@ class RoutingContractTests(unittest.TestCase):
         for relative in (
             "payload/skills/workflow-discovery/SKILL.md",
             "payload/skills/workflow-debugging/SKILL.md",
-            "payload/skills/workflow-implementation/SKILL.md",
         ):
             with self.subTest(relative=relative):
                 skill = " ".join((PACKAGE_ROOT / relative).read_text().split())
                 self.assertIn(".agent-wayfinder/project-profile.md", skill)
                 self.assertIn(".agent-workflow/contracts/project-profile.md", skill)
                 self.assertIn("only when", skill)
+
+        root_policy = " ".join(
+            (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text().split()
+        )
+        self.assertIn("relevant project-profile facts/commands", root_policy)
+        self.assertIn("read its contract before mutation or execution", root_policy)
 
     def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -406,7 +417,12 @@ class RoutingContractTests(unittest.TestCase):
         self.assertEqual(by_id["wayfinder-with-debugging-evidence"]["capabilities"], ["debugging"])
         self.assertEqual(by_id["wayfinder-direct-decision-resolution"]["capabilities"], [])
         self.assertEqual(by_id["wayfinder-with-discovery"]["capabilities"], ["discovery"])
+        self.assertEqual(by_id["wayfinder-ready-implementation-handoff"]["dominant_activity"], "implement")
         self.assertEqual(by_id["wayfinder-ready-implementation-handoff"]["capabilities"], ["verification"])
+        self.assertEqual(
+            by_id["wayfinder-ready-implementation-handoff"]["expected_marker"],
+            "[route: router → implement → verification]",
+        )
         self.assertEqual(by_id["wayfinder-resumes-interrupted-specialist"]["capabilities"], ["debugging"])
         self.assertEqual(by_id["wayfinder-with-prototype"]["capabilities"], ["prototype"])
         for scenario_id in (
@@ -442,6 +458,21 @@ class RoutingContractTests(unittest.TestCase):
         self.assertTrue(fallback["executed"])
         self.assertEqual(fallback["expected_marker"], "[route: router → direct]")
         self.assertIn("actual host-native activity", fallback["expected_behavior"])
+
+        implementation_fallback = by_id["implementation-provider-unavailable-fallback"]
+        self.assertEqual(implementation_fallback["dominant_activity"], "host-native-implementation")
+        self.assertFalse(implementation_fallback["provider_invocations"][0]["executed"])
+        self.assertEqual(implementation_fallback["capabilities"].count("verification"), 1)
+        self.assertEqual(
+            implementation_fallback["expected_marker"],
+            "[route: router → direct → verification]",
+        )
+
+        unresolved = by_id["implementation-unresolved-decision-stays-out"]
+        self.assertEqual(unresolved["dominant_activity"], "direct")
+        self.assertEqual(unresolved["provider_invocations"], [])
+        self.assertNotIn("verification", unresolved["capabilities"])
+        self.assertEqual(unresolved["expected_marker"], "[route: router → direct]")
 
         three_items = by_id["three-trivial-items-stay-direct"]
         self.assertEqual(three_items["dominant_activity"], "direct")
@@ -505,7 +536,6 @@ class RoutingContractTests(unittest.TestCase):
         selected_skills = [
             PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md",
             PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md",
-            PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md",
             PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md",
             REPOSITORY_ROOT / ".agents/skills/domain-modeling/SKILL.md",
             REPOSITORY_ROOT / ".agents/skills/implement/SKILL.md",
@@ -531,7 +561,6 @@ class RoutingContractTests(unittest.TestCase):
         state = PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
         discovery = PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
         debugging = PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
-        implementation = PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
         verification = PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md"
         research = REPOSITORY_ROOT / ".agents/skills/research/SKILL.md"
         prototype = REPOSITORY_ROOT / ".agents/skills/prototype/SKILL.md"
@@ -549,7 +578,6 @@ class RoutingContractTests(unittest.TestCase):
                 root,
                 runtime,
                 state,
-                implementation,
                 implement,
                 verification,
             ],
@@ -562,7 +590,7 @@ class RoutingContractTests(unittest.TestCase):
                 research,
                 prototype,
                 domain_modeling,
-                implementation,
+                implement,
                 verification,
             ],
         }

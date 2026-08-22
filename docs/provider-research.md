@@ -79,8 +79,8 @@ The local framework retains only materially distinct boundaries:
 
 - bounded Discovery for local consequential decisions;
 - diagnosis-only Debugging;
-- an Implementation adapter that supplies accepted project context without
-  copying the provider's method; and
+- routing that supplies accepted project context directly to `implement` or its
+  authorized host-native fallback without copying the provider's method; and
 - Verification for project acceptance and integration evidence.
 
 The provider `implement` skill owns its TDD and closing Code Review stages. The

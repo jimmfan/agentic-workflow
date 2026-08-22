@@ -134,8 +134,9 @@ authority’s explicit acceptance of the remaining uncertainty for that boundary
 The U# then remains factually unanswered and does not become resolved; the
 acceptance unblocks only the named boundary. Reconcile and shrink the map, then
 hand off one or more ready scopes without advancing work that remains
-dependency-blocked. Each Implementation handoff consumes one coherent scope and
-its acceptance criteria; Verification follows execution. Use `to-tickets` only
+dependency-blocked. Each implementation handoff consumes one coherent scope and
+its acceptance criteria; `implement` or its authorized host-native fallback
+executes it, and Verification follows execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
 deliverable sessions, and link its native frontier without a shadow copy.
 

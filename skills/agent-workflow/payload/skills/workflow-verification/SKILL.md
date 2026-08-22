@@ -54,6 +54,7 @@ Confirm as applicable that:
 Completion requires every required acceptance criterion to pass or an explicit
 authorized limitation. A failed optional provider check is a diagnostic, not a
 reason to reject otherwise valid host-native evidence or to claim the provider
-ran. Return implementation defects to
-`workflow-implementation`, decision defects to `workflow-discovery`, and an
-unexplained symptom to `workflow-debugging` with the most useful next check.
+ran. Return implementation defects to `implement` when it executed, otherwise
+to the authorized host-native implementation path; return decision defects to
+`workflow-discovery`, and an unexplained symptom to `workflow-debugging` with
+the most useful next check.

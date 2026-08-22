@@ -37,10 +37,6 @@
       "target": ".agents/skills/workflow-discovery/SKILL.md"
     },
     {
-      "source": "skills/workflow-implementation/SKILL.md",
-      "target": ".agents/skills/workflow-implementation/SKILL.md"
-    },
-    {
       "source": "skills/workflow-verification/SKILL.md",
       "target": ".agents/skills/workflow-verification/SKILL.md"
     },
@@ -53,6 +49,6 @@
       "target": "CLAUDE.md"
     }
   ],
-  "framework_version": "0.19.1",
+  "framework_version": "0.20.0",
   "schema_version": 6
 }

@@ -7,7 +7,7 @@
   - unexplained causal failure → consider Debugging
   - consequential choice needing alternative analysis → consider Discovery
   - substantive sourced external uncertainty → consider Research
-  - ready substantial change → Implementation
+  - ready substantial change → `implement`
   - completed meaningful change → Verification
   - durable coordination across sessions, handoffs, owners, or interacting
     state → assess Wayfinder using the criteria below
@@ -46,13 +46,13 @@ Single unknowns and routine/implementation work use Direct or applicable
 workflows. Honor Wayfinder use and opt-out. Read-only work changes no
 state.
 
-## Load state only when selected
+## Load state
 
-For selected/resumed Wayfinder, read
+For Wayfinder, read
 `.agent-workflow/contracts/wayfinder-state.md` before the map. An unrelated map
 never selects Wayfinder. Read `.agent-workflow/contracts/durable-state.md` only
-before current project-state writes, and the project-profile contract
-before profile mutation. Never seed state.
+before current project-state writes. Use relevant project-profile facts/commands; read
+its contract before mutation or execution. Never seed state.
 
 ## Report the route
 

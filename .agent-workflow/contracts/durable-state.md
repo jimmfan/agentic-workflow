@@ -6,9 +6,10 @@ reinstallable `.agent-workflow/` directory. Lifecycle operations treat every
 entry below that root as opaque project-owned data.
 
 Wayfinder is the sole framework-owned durable coordination layer. Discovery,
-Debugging, Implementation, Research, Prototype, Domain Modeling, Teach, TDD,
-Verification, and Review create no framework continuity record merely because
-they run. Provider-native artifacts remain canonical in their owning locations.
+Debugging, Research, Prototype, Domain Modeling, Teach, TDD, Verification,
+Review, `implement`, and host-native implementation create no framework
+continuity record merely because they run. Provider-native artifacts remain
+canonical in their owning locations.
 
 Current framework-authored durable state is limited to:
 

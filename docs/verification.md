@@ -126,7 +126,7 @@ not the current Wayfinder acceptance contract; do not edit or reuse that frozen
 grader to claim coverage of the map-first U/E/F/D model.
 
 The routing catalog separately covers direct work, standalone Discovery,
-direct and specialist-backed Wayfinder frontiers, Wayfinder-to-Implementation
+direct and specialist-backed Wayfinder frontiers, Wayfinder-to-`implement`
 handoff, interrupted-specialist re-entry from the map, host-native fallback,
 explicit provider handoff, external read scope, and provider-artifact
 ownership. It is an executable contract check, not proof that a live editor or

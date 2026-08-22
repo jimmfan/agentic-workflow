@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-20
+- Last amended: 2026-08-22
 - Supersedes: ADR-0012
 - Amends: ADR-0011, ADR-0023, ADR-0026, and ADR-0027
 - Preserves: ADR-0022 and ADR-0025
@@ -18,9 +19,9 @@ second persistence path for standalone specialists.
 The specialist skills also have stronger method ownership than Wayfinder:
 Discovery compares viable alternatives, Debugging runs a falsifiable causal
 loop, Research produces primary-source findings, Prototype learns through a
-disposable artifact, Domain Modeling sharpens concepts, and Implementation owns
-the execution boundary. Repeating those methods in Wayfinder would increase
-context and create drift.
+disposable artifact, and Domain Modeling sharpens concepts. The provider
+`implement` owns its build method. Repeating those methods in Wayfinder would
+increase context and create drift.
 
 Existing deterministic and live evaluation evidence does not prove that more
 structured state improves outcomes. Historical Wayfinder trajectories often
@@ -55,12 +56,15 @@ conclusions, relevant artifact pointers, resolution mode when useful, blockers,
 dependencies, and next work. Obvious specialist dispatch from a selected map
 does not require the detailed router.
 
-Implementation remains a transition to execution. It consumes one coherent
-canonical map, decision, specification, or native ticket; invokes the selected
-implementation provider once; and hands the integrated result to Verification.
-It is neither a Wayfinder reasoning mechanism nor an owner of durable workflow
-state. If interrupted execution needs continuity not already supplied by a
-canonical artifact, Wayfinder records only the consequential return frontier.
+Ready implementation transitions directly to `implement`, or to authorized
+host-native implementation when that provider is unavailable. The route consumes
+one coherent canonical map, decision, specification, or native ticket; invokes
+the selected provider at most once; and hands meaningful completed work to
+Verification once. It is neither a Wayfinder reasoning mechanism nor an owner
+of durable workflow state. If interrupted execution needs continuity not already
+supplied by a canonical artifact, Wayfinder records only the consequential
+return frontier. No separate local implementation wrapper or continuity record
+is introduced.
 
 Stop allocating, resuming, validating, conflicting, or archiving DEC, IMP, and
 DBG records. Remove their templates and runtime rules. Do not replace them with

@@ -574,7 +574,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "coherent ready frontier",
             "one or more ready scopes",
             "without advancing work that remains dependency-blocked",
-            "Each Implementation handoff",
+            "Each implementation handoff",
         ):
             self.assertIn(required, runtime)
 

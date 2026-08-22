@@ -59,8 +59,8 @@ explicitly requires that provider or a real configuration boundary prevents
 host-native progress. Never simulate provider execution.
 
 Three seams are intentionally explicit. Trivial local, low-risk edits remain
-Direct even though they mutate files; Implementation is for ready work where its
-orchestration and integration verification add material value. A selected
+Direct even though they mutate files; coherent ready work routes to `implement`
+or its authorized host-native fallback and then integration Verification. A selected
 provider operation with missing configuration returns the exact setup handoff
 when no authorized host-native equivalent can deliver the requested outcome.
 After a successful host-native fallback, the route marker reports what actually
@@ -95,8 +95,9 @@ Within a selected effort, continue directly when the frontier is clear. Load
 Discovery, Debugging, Research, Prototype, Domain Modeling, Grilling, or human
 clarification only when that method materially improves resolution. Specialists
 remain stateless from the framework's perspective and return only consequential
-results for reconciliation. Implementation is a ready-scope execution handoff,
-followed by Verification, not a Wayfinder reasoning method or continuity record.
+results for reconciliation. `implement` or its authorized host-native fallback
+is a ready-scope execution handoff, followed by Verification, not a Wayfinder
+reasoning method or continuity record.
 
 After meaningful implementation or a causal fix, gather acceptance evidence not
 already supplied by the selected provider. Do not repeat provider-owned TDD or

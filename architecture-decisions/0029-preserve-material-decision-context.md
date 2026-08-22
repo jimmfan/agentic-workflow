@@ -68,8 +68,9 @@ checklist.
 After consequential U# is answered or explicitly dispositioned, Wayfinder
 reconciles and shrinks the canonical map, exposes the coherent ready frontier,
 and may hand off one or more independently ready scopes. It does not advance
-dependency-blocked work. Each Implementation invocation still consumes one
-coherent scope; substantial execution graphs remain owned by `to-tickets`.
+dependency-blocked work. Each `implement` or authorized host-native
+implementation invocation still consumes one coherent scope; substantial
+execution graphs remain owned by `to-tickets`.
 
 This decision does not promise complete information or correct decisions. It
 requires sufficient context for the responsible authority to proceed honestly,

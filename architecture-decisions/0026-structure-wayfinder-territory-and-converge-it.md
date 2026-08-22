@@ -74,14 +74,14 @@ A semantic area is settled when no consequential uncertainty remains
 undispositioned there and every durable outcome has reached its proper canonical
 project owner or the workflow that owns the resulting work. Depending on the
 result, that owner may be an ADR, specification, project documentation or
-source, `to-tickets`, Implementation, another project-native artifact, or no
-separate artifact. Not every area or D# becomes an ADR, and not every area
-becomes a ticket.
+source, `to-tickets`, `implement` or its authorized host-native fallback,
+another project-native artifact, or no separate artifact. Not every area or D#
+becomes an ADR, and not every area becomes a ticket.
 
 Settlement exposes a coherent ready frontier rather than requiring one global
 next action. The frontier may contain one or more independently ready scopes,
-each handed to Implementation coherently, while dependency-blocked work remains
-behind its unresolved boundary.
+each handed coherently to `implement` or its authorized host-native fallback,
+while dependency-blocked work remains behind its unresolved boundary.
 
 Settlement reconciles the current map and its canonical pointers, then retires
 U/E/F/D records as their independent navigational value disappears. New evidence

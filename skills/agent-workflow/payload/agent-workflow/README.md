@@ -60,8 +60,9 @@ map owns current state, blockers, dependencies, and next work. Substantial
 decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling remain stateless
-specialists. Implementation is an execution handoff. Legacy DEC, IMP, and DBG
-files remain untouched historical project data and are not resumed.
+specialists. Ready implementation routes directly to `implement` or its
+authorized host-native fallback, followed by Verification. Legacy DEC, IMP, and
+DBG files remain untouched historical project data and are not resumed.
 
 ## Status and recovery
 

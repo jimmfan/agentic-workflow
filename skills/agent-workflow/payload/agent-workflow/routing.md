@@ -31,7 +31,7 @@ resolves overlaps:
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
 | Settled scope needs a specification | `to-spec` | Its artifact remains canonical |
 | Approved work needs ordered independent sessions | `to-tickets` | Its tickets and frontier remain canonical |
-| One coherent ready implementation | Implementation, then `implement` | Trivial low-risk edits stay Direct; meaningful work ends with Verification |
+| One coherent ready implementation | `implement` | Trivial low-risk edits stay Direct; use authorized host-native implementation when the provider is unavailable; meaningful work ends with Verification |
 | Explicit bounded test-first work | `tdd` | The provider owns its loop |
 | Completion audit or meaningful finished change | Verification | Add only uncovered acceptance or integration evidence |
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
@@ -57,15 +57,18 @@ DEC/IMP/DBG files are historical evidence, not current re-entry points.
 
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 only relevant children. Do not load `contracts/durable-state.md` merely for a
-Wayfinder write. Implementation may consume a coherent map scope, settled D#,
-specification, or native ticket without rerunning Wayfinder.
+Wayfinder write. `implement` or its authorized host-native fallback may consume
+a coherent map scope, settled D#, specification, or native ticket without
+rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses
 the Wayfinder threshold; a selected Wayfinder frontier may use Discovery once
 without changing durable ownership. The same rule applies to Debugging and
-other specialists. Meaningful Implementation runs Verification once. New causal
-uncertainty returns to Debugging; a material unresolved choice returns to
-Discovery or Wayfinder according to the coordination threshold.
+other specialists. Meaningful `implement` or host-native implementation runs
+Verification once. New causal uncertainty returns to Debugging. A material
+unresolved choice stays Direct unless Discovery's tradeoff analysis helps or
+durable coordination may help; assess Wayfinder according to the coordination
+threshold and resolve the choice before implementation begins.
 
 Discovery owns bounded consequential choice and tradeoff analysis. Compose
 Domain Modeling when structural ambiguity materially affects that analysis or
@@ -99,15 +102,14 @@ consequential state and pointers. Native specifications, tickets, research,
 maps, learning workspaces, reviews, and provider identifiers remain canonical
 where created.
 
-The Implementation adapter supplies accepted scope, canonical artifacts,
-acceptance criteria, and configured commands. Invoked `implement` owns its build
-loop, TDD, and closing Code Review. Framework Verification runs afterward and
-adds only uncovered evidence. No specialist creates DEC, IMP, DBG, or another
-continuity record.
-
-Use `contracts/project-profile.md` only for relevant profile facts or an
-authorized profile update. Do not invent commands or repeat checks merely to
-complete a route.
+For one coherent ready scope, invoke the resolved `implement` provider once with
+accepted scope, canonical artifacts, acceptance criteria, and configured
+commands. When it cannot run, use the authorized host-native implementation
+fallback without simulating or claiming the provider. Invoked `implement` owns
+its build loop, TDD, and closing Code Review. Framework Verification runs once
+after meaningful provider or host-native implementation and adds only uncovered
+evidence. No implementation continuity record is created, and no specialist
+creates DEC, IMP, DBG, or another continuity record.
 
 ## Report the executed route
 
@@ -118,10 +120,10 @@ only workflows and composed capabilities that executed, in effective-use order:
 [route: router → implement → verification]
 ```
 
-Use compact labels: `workflow-discovery`, `workflow-debugging`,
-`workflow-implementation`, and `workflow-verification` become `discovery`,
-`debugging`, `implement`, and `verification`. Use `direct` when no named local
-workflow or installed skill ran.
+Use compact labels: `workflow-discovery`, `workflow-debugging`, and
+`workflow-verification` become `discovery`, `debugging`, and `verification`.
+The upstream provider keeps the `implement` label. Use `direct` when no named
+local workflow or installed skill ran.
 
 Use a terminal suffix only when selection did not become equivalent execution:
 

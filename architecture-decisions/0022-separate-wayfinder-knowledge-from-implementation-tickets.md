@@ -37,10 +37,10 @@ supporting evidence or direct authoritative sources; reciprocal evidence
 backlinks are optional.
 
 `map.md` owns current state, blockers, dependencies, and the smallest coherent
-next work. Implementation may consume that scope directly. When remaining work
-needs dependency ordering or independently deliverable sessions, Wayfinder hands
-off to `to-tickets` and links its canonical native frontier. Wayfinder does not
-create or mirror T# work items.
+next work. `implement` or its authorized host-native fallback may consume that
+scope directly. When remaining work needs dependency ordering or independently
+deliverable sessions, Wayfinder hands off to `to-tickets` and links its canonical
+native frontier. Wayfinder does not create or mirror T# work items.
 
 When evidence conflicts with an F#, preserve the evidence. Mark the fact
 disputed and surface or reopen the relevant U# while the conflict remains. Once

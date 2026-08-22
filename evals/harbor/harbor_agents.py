@@ -48,7 +48,6 @@ for path in \
   /app/.agent-wayfinder \
   /app/.agents/skills/workflow-debugging \
   /app/.agents/skills/workflow-discovery \
-  /app/.agents/skills/workflow-implementation \
   /app/.agents/skills/workflow-verification
 do
   if [ -e "$path" ] || [ -L "$path" ]; then
@@ -131,7 +130,6 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "grep -Fq '<!-- agent-workflow:managed-begin -->' /app/AGENTS.md\n"
                 "test -f /app/.agents/skills/workflow-debugging/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-discovery/SKILL.md\n"
-                "test -f /app/.agents/skills/workflow-implementation/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-verification/SKILL.md\n"
                 "python3 -c 'import json; p=json.load(open(\"/app/.agent-workflow/install-manifest.json\")); "
                 "print(json.dumps({\"source_revision\": p.get(\"source_revision\"), "
@@ -165,7 +163,6 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "    for name in (\n"
                 "        'workflow-debugging',\n"
                 "        'workflow-discovery',\n"
-                "        'workflow-implementation',\n"
                 "        'workflow-verification',\n"
                 "    )\n"
                 ")\n"

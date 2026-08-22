@@ -129,9 +129,9 @@ independently deliverable sessions, hand it to `to-tickets`. That workflow owns
 its native ticket artifacts and frontier. Wayfinder links the resulting native
 artifact from `map.md`; it does not duplicate those work items in Wayfinder.
 Each independently ready scope may pass directly from the map, a settled D#, or
-another accepted specification to Implementation and Verification. Each
-Implementation handoff still consumes one coherent scope at a time. No
-implementation continuity record is created.
+another accepted specification to `implement` or its authorized host-native
+fallback and then Verification. Each implementation handoff still consumes one
+coherent scope at a time. No implementation continuity record is created.
 
 ## Ownership and locations
 
@@ -547,9 +547,10 @@ undispositioned for that area and every durable outcome has either reached its
 proper canonical owner or been handed to the workflow that owns the resulting
 work. Canonical outcomes may be an ADR for a lasting consequential decision, a
 specification, project documentation or source, `to-tickets` for substantial
-decomposition, Implementation for one or more independently ready scopes handed
-off coherently one at a time, another project-native artifact, or no separate
-artifact when the result has no independent long-term value. Settlement does
+decomposition, `implement` or its authorized host-native fallback for one or
+more independently ready scopes handed off coherently one at a time, another
+project-native artifact, or no separate artifact when the result has no
+independent long-term value. Settlement does
 not require every area or D# to become an ADR or ticket.
 
 As an area settles, reconcile its current map description, fog, blockers,
@@ -618,7 +619,7 @@ ordinary highest-current-plus-one rule.
 Answer or explicitly disposition consequential U#, reconcile and shrink the
 map, then expose the coherent ready frontier and hand off one or more ready
 scopes without advancing dependency-blocked work. Independent ready work need
-not wait for unrelated blocked work, but each Implementation invocation
+not wait for unrelated blocked work, but each implementation invocation
 consumes one coherent scope at a time.
 
 To complete an effort, confirm its destination is reached, no consequential
