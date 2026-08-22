@@ -10,6 +10,7 @@ from evals import (
     arc_wayfinder_state_complexity,
     arc_wayfinder_v2,
     wayfinder_fresh_agent_continuation,
+    wayfinder_fresh_agent_continuation_v2,
 )
 
 
@@ -82,6 +83,7 @@ class EvaluationStorageTests(unittest.TestCase):
             arc_wayfinder_v2,
             arc_wayfinder_state_complexity,
             wayfinder_fresh_agent_continuation,
+            wayfinder_fresh_agent_continuation_v2,
         ]
         roots = [module.ARTIFACTS_ROOT for module in modules]
 

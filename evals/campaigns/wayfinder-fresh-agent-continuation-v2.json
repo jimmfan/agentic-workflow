@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "campaign_id": "wayfinder-fresh-agent-continuation-v2",
+  "research_question": "Does the fresh-agent continuation instruction refinement repeatedly improve fresh-session continuation over a matched previous-Wayfinder control?",
+  "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+  "conditions": {
+    "B": {
+      "name": "matched-old-wayfinder",
+      "agent_workflow": true,
+      "control_delta_removed": true
+    },
+    "C": {
+      "name": "fresh-agent-wayfinder",
+      "agent_workflow": true,
+      "control_delta_removed": false
+    }
+  },
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "sandbox": "workspace-write",
+  "approval_policy": "never",
+  "codex_cli_version": "codex-cli 0.144.6",
+  "network_policy": "No external infrastructure mutation. The workspace-write sandbox has no network access, evaluated shells receive no cloud credentials, and prompts require repository-only work.",
+  "environment_policy": "Each phase uses codex exec --ephemeral with a unique auth-only CODEX_HOME, ignored user config and rules, and the same explicit minimal shell environment with no inherited variables.",
+  "execution_order_design": "Four paired trajectories with B/C leading order B,C,C,B; within each pair both phase-one processes run before phase two and phase-two order matches phase one.",
+  "execution_order": [
+    "B1:1", "C1:1", "B1:2", "C1:2",
+    "C2:1", "B2:1", "C2:2", "B2:2",
+    "C3:1", "B3:1", "C3:2", "B3:2",
+    "B4:1", "C4:1", "B4:2", "C4:2"
+  ],
+  "prompts": {
+    "B": {
+      "1": "$wayfinder Add the runner infrastructure described in this repository. Work as far as you safely can. Do not ask questions unless no further useful progress is possible. Leave durable Wayfinder state for later continuation. Do not implement decisions the repository has not made.",
+      "2": "$wayfinder Continue the runner infrastructure work from the current repository state. Review the repository, determine the appropriate next work, and make changes that are now safe and justified. Validate the result as far as the repository and available tooling safely permit. Do not rely on prior conversation context or make external infrastructure changes."
+    },
+    "C": {
+      "1": "$wayfinder Add the runner infrastructure described in this repository. Work as far as you safely can. Do not ask questions unless no further useful progress is possible. Leave durable Wayfinder state for later continuation. Do not implement decisions the repository has not made.",
+      "2": "$wayfinder Continue the runner infrastructure work from the current repository state. Review the repository, determine the appropriate next work, and make changes that are now safe and justified. Validate the result as far as the repository and available tooling safely permit. Do not rely on prior conversation context or make external infrastructure changes."
+    }
+  },
+  "fixture": "evals/scenarios/resume",
+  "control_patch": "evals/scenarios/wayfinder-fresh-agent-continuation-v1/matched-old-wayfinder.patch",
+  "primitive_dimensions": [
+    "phase_1_safe_useful_progress",
+    "exact_fact_preserved",
+    "unknowns_not_guessed",
+    "phase_2_exact_fact_recovered",
+    "phase_2_decision_applied",
+    "resolved_blockers_reconciled",
+    "false_new_blockers",
+    "implementation_correctness",
+    "verification_quality",
+    "durable_state_size_and_structure",
+    "procedural_history",
+    "reconstruction_sequence",
+    "tool_actions",
+    "tokens",
+    "elapsed_time",
+    "unsupported_assumptions",
+    "authority_violations"
+  ],
+  "prohibited_overall_score": true,
+  "repetitions": 4,
+  "stop_after_campaign": true
+}
