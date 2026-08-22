@@ -1,6 +1,6 @@
 # Fresh-agent continuation replication
 
-- Status: current
+- Status: completed
 
 ## Destination
 
@@ -51,14 +51,14 @@ shown a repeatable advantage. No product behavior changed.
 
 ## Blockers and dependencies
 
-None for this campaign. The remaining publication step is the authorized commit
-and push to the experiment branch only.
+None. Harness and result commits were pushed only to
+`experiment/wayfinder-fresh-agent-continuation`.
 
 ## Next work
 
-Publish the verified result. Do not automatically run further repetitions.
-If a later adoption decision needs a more stable failure estimate, preregister a
-larger matched campaign as a separate effort.
+No further action is required for this campaign. Do not automatically run
+further repetitions. If a later adoption decision needs a more stable failure
+estimate, preregister a larger matched campaign as a separate effort.
 
 ## Notes
 
