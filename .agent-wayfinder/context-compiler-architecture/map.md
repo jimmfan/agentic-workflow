@@ -1,6 +1,6 @@
 # Fresh-agent continuation evaluation
 
-- Status: current
+- Status: completed
 
 ## Destination
 
@@ -59,6 +59,11 @@ first file change. Raw stderr also records asymmetric recovered process/patch
 failures, so additional matched repetitions are warranted after fixing runner
 noise.
 
+Evaluation harness, compact evidence, report, and this map were committed as
+`2ec0f77` and pushed only to
+`origin/experiment/wayfinder-fresh-agent-continuation`. The remote `main` ref
+remained at candidate `911c248` through the push.
+
 ## Blockers and dependencies
 
 No experiment blocker remains. Product adoption remains intentionally unsettled:
@@ -67,10 +72,9 @@ recommendations rather than product changes.
 
 ## Next work
 
-Verify the frozen evidence package and report, commit only experiment artifacts,
-and push the detached commit to `experiment/wayfinder-fresh-agent-continuation`.
-Recommend four additional randomized/counterbalanced repetitions after runner
-noise and the trace parser are fixed; do not run them in this campaign.
+None for this completed smoke. A separate follow-up may fix runner noise and the
+trace parser, then run four additional randomized/counterbalanced repetitions;
+do not append them to this frozen campaign.
 
 ## Notes
 
