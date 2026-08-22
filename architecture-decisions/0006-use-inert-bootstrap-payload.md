@@ -12,7 +12,7 @@ source organization to target layout.
 
 ## Decision
 
-Keep only the outer `agentic-workflow/SKILL.md` active. Store installable policy
+Keep only the outer `agent-workflow/SKILL.md` active. Store installable policy
 as `payload/root/AGENTS.md.template`, workflow resources under
 `payload/skills`, and other repository data under inert payload paths. Record an
 explicit source and target for every framework-owned file in the distribution

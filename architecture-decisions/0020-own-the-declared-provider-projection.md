@@ -10,7 +10,7 @@
 
 ## Context
 
-Agentic Workflow routes to a reviewed set of 14 Matt Pocock skills shared by
+Agent Workflow routes to a reviewed set of 14 Matt Pocock skills shared by
 Codex and GitHub Copilot through `.agents/skills/`. The raw upstream snapshot is
 pinned and valuable, but several effective host contracts differ intentionally:
 Wayfinder uses project-local state, and routed Wayfinder, To Spec, To Tickets,
@@ -67,7 +67,7 @@ and the exact retained path, but does not falsely report that the committed
 target mutation failed.
 
 The Wayfinder adapter validates the upstream source and projects the
-Agentic Workflow-owned runtime defined by ADR-0023. That runtime keeps the
+Agent Workflow-owned runtime defined by ADR-0023. That runtime keeps the
 useful destination, map, fog, frontier, and readable-name methodology while it
 maps consequential unresolved questions to U# and
 recognizes optional E#, F#, and D# knowledge while keeping `map.md` valid alone.

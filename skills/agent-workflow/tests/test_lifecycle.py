@@ -38,6 +38,7 @@ def run_script(
     *arguments: object,
     env: dict[str, str] | None = None,
     encoding: str = "utf-8",
+    cwd: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(script), *(str(item) for item in arguments)],
@@ -46,6 +47,7 @@ def run_script(
         encoding=encoding,
         errors="strict",
         env=env,
+        cwd=cwd,
     )
 
 
@@ -1386,7 +1388,10 @@ class BootstrapSafetyTests(unittest.TestCase):
             self.assertEqual(help_result.returncode, 0, help_result.stdout + help_result.stderr)
             self.assertIn("{install,update,status,remove}", help_result.stdout)
 
-            for command in ("install", "update", "status"):
+            install = run_script(CLI, "install", "--archive-url", archive_url, cwd=project)
+            self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
+
+            for command in ("update", "status"):
                 with self.subTest(command=command):
                     result = run_script(CLI, command, project, "--archive-url", archive_url)
                     self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

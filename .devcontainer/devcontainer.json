@@ -1,5 +1,5 @@
 {
-  "name": "Agentic Workflow (Python 3.14 + uv + Codex)",
+  "name": "Agent Workflow (Python 3.14 + uv + Codex)",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".",
@@ -14,7 +14,7 @@
     }
   },
   "mounts": [
-    "source=agentic-workflow-instructions-codex-home,target=/home/vscode/.codex,type=volume"
+    "source=agent-workflow-instructions-codex-home,target=/home/vscode/.codex,type=volume"
   ],
   "remoteEnv": {
     "CODEX_HOME": "/home/vscode/.codex"
@@ -41,7 +41,7 @@
         "python.testing.unittestArgs": [
           "-v",
           "-s",
-          "skills/agentic-workflow/tests",
+          "skills/agent-workflow/tests",
           "-p",
           "test_*.py"
         ]

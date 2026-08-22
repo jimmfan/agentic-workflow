@@ -13,7 +13,7 @@ dependency-derived frontier work, and progressive loading of child detail. Its
 configured issue tracker owns physical storage. The upstream local-Markdown
 default uses `.scratch/<effort>/map.md` and child issue files.
 
-Agentic Workflow already reserves `.agent-workflow-state/` for project-owned
+Agent Workflow already reserves `.agent-workflow-state/` for project-owned
 durable continuity and guarantees that lifecycle operations never own its
 contents. Keeping local Wayfinder state elsewhere would split durable planning
 across ownership roots, while pointing to it through a separate global index
@@ -31,7 +31,7 @@ bodies only when relevant. ADR-0022 moves executable work out of the current
 representation; substantial decomposition belongs to `to-tickets`.
 
 Matt Pocock's pinned provider remains the methodological origin and reviewed
-provenance. Under ADR-0023, Agentic Workflow owns the derived effective runtime,
+provenance. Under ADR-0023, Agent Workflow owns the derived effective runtime,
 this local storage and re-entry contract, and effort selection. The local tree is the native
 configured representation, not a mirror of `.scratch/` or an external tracker.
 The relevant effort map is the re-entry point. ADR-0012 later removes the global

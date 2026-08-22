@@ -8,7 +8,7 @@
 
 ## Context
 
-Agentic Workflow maintained two framework continuity models. Wayfinder used one
+Agent Workflow maintained two framework continuity models. Wayfinder used one
 map plus optional U/E/F/D knowledge, while bounded Discovery, Debugging, and
 Implementation could allocate DEC, DBG, and IMP records with their own IDs,
 statuses, resume targets, conflicts, and archive rules. Supporting work inside

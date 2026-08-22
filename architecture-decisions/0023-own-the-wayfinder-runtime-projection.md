@@ -7,7 +7,7 @@
 
 ## Context
 
-The effective Wayfinder skill combined an authoritative Agentic Workflow
+The effective Wayfinder skill combined an authoritative Agent Workflow
 local-state block with the complete pinned upstream issue-tracker runtime. The
 block overrode storage, item identity, claiming, blocking, resolution,
 continuation, concurrency, implementation handoff, and lifecycle behavior in
@@ -15,7 +15,7 @@ the body that followed it. This was no longer a narrow persistence adapter: a
 consuming agent received two specifications and had to apply precedence across
 contradictory operational rules.
 
-Agentic Workflow's map-first U/E/F/D contract and native `to-tickets` boundary
+Agent Workflow's map-first U/E/F/D contract and native `to-tickets` boundary
 are materially distinct from the upstream tracker implementation, but the
 upstream destination, map, fog, frontier, readable-name, and progressive-
 resolution methodology remains valuable and must remain attributed. Runtime
@@ -27,14 +27,14 @@ The local contract also called an effort directory a short stable slug without
 fully specifying how a fresh session should match an existing effort, choose a
 durable readable name, or create a stable new path. Repository history was
 searched for `I/X/O`, `I#`, `X#`, `O#`, and surrounding identity, destination,
-scope, and outcome vocabulary. No released Agentic Workflow record syntax or
+scope, and outcome vocabulary. No released Agent Workflow record syntax or
 canonical I/X/O meanings were found. The durable historical concepts that were
 found are the map H1 effort name, Destination, Not yet specified, Out of scope,
 progressive candidate loading, and stable slugs.
 
 ## Decision
 
-Agentic Workflow owns the effective Wayfinder runtime projection. Matt
+Agent Workflow owns the effective Wayfinder runtime projection. Matt
 Pocock's pinned Wayfinder remains the unchanged methodological source,
 acknowledged influence, reviewed release input, and future reference. The
 effective runtime is intentionally derived rather than byte-equivalent.
@@ -61,7 +61,7 @@ staging, the adapter:
 1. validates the declared pinned source metadata and upstream body fingerprint;
 2. retains the compatible upstream frontmatter provenance;
 3. applies the existing reviewed invocation-metadata changes; and
-4. replaces the upstream body with the Agentic Workflow-owned body.
+4. replaces the upstream body with the Agent Workflow-owned body.
 
 The runtime body lives outside Python so it can be reviewed as instructions.
 The raw snapshot, its metadata, and license remain byte-for-byte unchanged.

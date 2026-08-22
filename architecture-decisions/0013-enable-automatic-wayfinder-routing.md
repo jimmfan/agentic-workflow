@@ -7,7 +7,7 @@
 
 ## Context
 
-Agentic Workflow owns minimum-workflow routing, but the pinned Wayfinder v1.2.3
+Agent Workflow owns minimum-workflow routing, but the pinned Wayfinder v1.2.3
 metadata disables model invocation in both shared `SKILL.md` metadata and Codex
 `agents/openai.yaml` metadata. Its discovery descriptions also limit the skill
 to a huge effort beyond one session. The framework declaration mirrored the
@@ -37,7 +37,7 @@ non-mutating. A new map starts with only useful current state and grows lazily.
 
 Declare Wayfinder `implicit` for Codex and GitHub Copilot and `unavailable` for
 Claude Code, which has no native provider projection. Remove Wayfinder's setup
-prerequisites because Agentic Workflow's local state contract already configures
+prerequisites because Agent Workflow's local state contract already configures
 the canonical tracker representation.
 
 Adapt the pinned provider during fresh installation and later lifecycle updates.
@@ -47,8 +47,8 @@ with one owned runtime while retaining these invocation semantics. The declared
 provider projection is framework-owned and reconciled by normal lifecycle
 operations.
 
-Agentic Workflow preserves Wayfinder's methodology but permits implicit
-invocation because Agentic Workflow owns workflow routing.
+Agent Workflow preserves Wayfinder's methodology but permits implicit
+invocation because Agent Workflow owns workflow routing.
 
 ## Consequences
 
@@ -59,7 +59,7 @@ invocable skill may also be named directly.
 
 The framework initially diverged from four upstream metadata scalars, and
 ADR-0020 later added a prepended local-mode block. ADR-0023 supersedes that
-dual-spec body with one concise Agentic Workflow-owned runtime projection while
+dual-spec body with one concise Agent Workflow-owned runtime projection while
 retaining the recognized pinned snapshot as provenance. The invocation and
 body adaptations are reviewable in the provider declaration and mechanically
 reapplied after fresh install or update, so they are not one-off edits to a

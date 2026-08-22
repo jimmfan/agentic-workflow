@@ -1,7 +1,7 @@
 # Development container
 
 This development container supplies the complete toolchain needed to develop
-and verify Agentic Workflow without changing the macOS host's Python setup. It
+and verify Agent Workflow without changing the macOS host's Python setup. It
 uses Python 3.14 on Debian Bookworm, `uv`, Git, the GitHub CLI version whose
 `gh skill` interface is the project's live-tested provider baseline, and an
 exactly pinned Codex extension with a persistent project-specific login volume.
@@ -13,7 +13,7 @@ virtual environment or run a package sync. `uv` remains available for running
 Python commands and for future dependency work if the project contract changes.
 
 Codex stores its login and local state in the Docker volume
-`agentic-workflow-instructions-codex-home`, mounted at `/home/vscode/.codex`.
+`agent-workflow-instructions-codex-home`, mounted at `/home/vscode/.codex`.
 The image configures file-backed credential storage through
 `/etc/codex/config.toml`; credentials are never copied into the image or
 repository. `bubblewrap` and an unprivileged user namespace provide Codex's
@@ -55,14 +55,14 @@ repository root**. It is read-only for tracked repository files and removes its
 temporary test directories automatically:
 
 ```bash
-python3 skills/agentic-workflow/scripts/verify_package.py --tests
+python3 skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
 To run that same gate through `uv` without inventing a package or virtual
 environment, use this equivalent command in the **same Dev Container terminal**:
 
 ```bash
-uv run --no-project python skills/agentic-workflow/scripts/verify_package.py --tests
+uv run --no-project python skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
 Provider installation and update additionally require GitHub authentication.
@@ -90,7 +90,7 @@ gh auth logout --hostname github.com
 
 Open Codex in the **VS Code window attached to this Dev Container** and sign in
 when prompted. That login persistently writes only to the
-`agentic-workflow-instructions-codex-home` Docker volume. A container rebuild
+`agent-workflow-instructions-codex-home` Docker volume. A container rebuild
 remounts the same volume, so it should not require another login.
 
 Verify the extension from a **VS Code terminal inside this Dev Container**:
@@ -117,7 +117,7 @@ Codex sign-in first.
 
 Container builds consume local Docker image/cache space. Live GitHub CLI login
 stores credentials in the container user's configuration; Codex login stores
-credentials in `agentic-workflow-instructions-codex-home`. Rebuilding the
+credentials in `agent-workflow-instructions-codex-home`. Rebuilding the
 container reapplies its configuration and preserves that volume. To stop using
 the container, reopen the repository locally from the VS Code Command Palette.
 
@@ -126,7 +126,7 @@ confirming that no remaining container needs it, remove that persistent login
 and state from the **macOS host Terminal** with:
 
 ```bash
-docker volume rm agentic-workflow-instructions-codex-home
+docker volume rm agent-workflow-instructions-codex-home
 ```
 
 This permanently deletes only this project's copied or newly created Codex
@@ -134,7 +134,7 @@ login and local state; it does not affect the separate ARC/EKS Codex volume.
 Verify removal from the **same macOS host Terminal** with:
 
 ```bash
-if docker volume inspect agentic-workflow-instructions-codex-home >/dev/null 2>&1; then
+if docker volume inspect agent-workflow-instructions-codex-home >/dev/null 2>&1; then
   echo 'ERROR: Codex volume still exists.'
   exit 1
 else

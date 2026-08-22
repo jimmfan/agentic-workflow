@@ -5,7 +5,7 @@
 
 ## Context
 
-Agentic Workflow distinguishes provider execution, repository evidence, and
+Agent Workflow distinguishes provider execution, repository evidence, and
 user authorization, but no current architecture decision directly governs a
 choice whose substance requires human or project authority. Without an explicit
 boundary, an agent can correctly avoid a D# yet still smuggle an assumed answer

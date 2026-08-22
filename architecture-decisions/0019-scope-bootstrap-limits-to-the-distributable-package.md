@@ -7,7 +7,7 @@
 ## Context
 
 The public bootstrap downloads GitHub's archive for the whole source repository
-but extracts only `skills/agentic-workflow`. Its single 500-member limit was
+but extracts only `skills/agent-workflow`. Its single 500-member limit was
 checked against every repository entry before package selection. Unrelated
 evaluation and documentation growth therefore made normal install and update
 fail even though the distributable package remained within its reviewed bounds.
@@ -21,7 +21,7 @@ publishing contract yet.
 ## Decision
 
 Stream the source archive instead of materializing its complete member list.
-Apply the 500-member limit to entries inside `skills/agentic-workflow`, which is
+Apply the 500-member limit to entries inside `skills/agent-workflow`, which is
 the subtree bootstrap processes and extracts. Retain a separate 10,000-member
 whole-archive parsing ceiling as an emergency resource-exhaustion bound.
 

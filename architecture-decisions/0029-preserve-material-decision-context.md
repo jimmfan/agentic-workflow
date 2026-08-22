@@ -7,7 +7,7 @@
 
 ## Context
 
-Agentic Workflow is an agent-context system: its value is not merely recording
+Agent Workflow is an agent-context system: its value is not merely recording
 activity, but preserving the material context that humans and later agents need
 to make or evaluate responsible project decisions. ADR-0025 establishes who may
 decide, ADR-0026 explains how Wayfinder territory converges, and ADR-0028 makes
@@ -23,7 +23,7 @@ one blocked area does not serialize the whole effort.
 
 ## Decision
 
-Agentic Workflow preserves material decision context so a later developer can
+Agent Workflow preserves material decision context so a later developer can
 make or evaluate the decision responsibly. A precise question becomes U# when
 preserving the question or its eventual answer could materially improve a later
 developer’s ability to make or evaluate a decision.
