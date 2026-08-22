@@ -56,6 +56,15 @@ before current project-state writes, and the project-profile contract
 before profile mutation. Never seed state.
 <!-- agent-workflow:managed-end -->
 
+## External action notifications
+
+When progress is blocked on an action I must take outside Codex—such as
+trusting a workspace, approving a permission, authenticating, or clicking a UI
+control—tell me immediately instead of waiting silently. State that work is
+paused, name the exact app, window, and control, give the single exact action
+required, and ask me to confirm when complete. Also explicitly tell me when a
+requested action has taken effect or no further action is needed.
+
 <!-- agent-workflow:project-instructions -->
 I’d use this as the **entire source-repository amendment below the installed/dogfood section**. It keeps the high-value constraints while pushing details into progressively loaded docs/contracts.
 
