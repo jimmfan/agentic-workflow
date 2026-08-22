@@ -124,7 +124,7 @@ repository-relative Markdown links with readable labels instead of treating a
 bare number as repository-wide identity.
 
 Accepted, lasting architecture or contract decisions use
-`architecture-decisions/` as the default ADR namespace. An existing project
+`architecture-decision/` as the default ADR namespace. An existing project
 instruction may name another
 canonical location; the framework preserves that convention instead of creating
 a parallel namespace or migrating it. Wayfinder `D#` entries remain
