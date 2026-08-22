@@ -36,6 +36,42 @@ agent-workflow remove
 Each lifecycle command uses the current directory by default and accepts an
 optional project path.
 
+### Start with Wayfinder
+
+Open the project root in VS Code, start a new GitHub Copilot Chat, and paste the
+prompt below. If you already know the specific effort you want to map, replace
+"the repository's current development effort" with that goal.
+
+```text
+Use the installed Agent Workflow and explicitly start Wayfinder for this
+repository's current development effort.
+
+First inspect the project instructions, relevant accepted architecture
+decisions and documentation, repository structure, current Git state, and the
+source and tests relevant to the effort. Then create a lightweight
+`.agent-wayfinder/<stable-effort-name>/map.md` that will help developers and
+future agents resume the work without depending on this chat.
+
+Record only durable, evidence-backed coordination context:
+
+- the goal and scope boundary;
+- the important areas and relationships in the effort;
+- established facts with pointers to their authoritative sources;
+- consequential unknowns, decisions, dependencies, and blockers; and
+- a concise ready frontier describing what can happen next.
+
+Create linked unknown, evidence, fact, or decision files only when the detail
+needs independent provenance or would make the map difficult to scan. Treat
+live source and accepted project artifacts as more authoritative than
+assumptions, chat history, or stale Wayfinder state. Do not copy the transcript,
+invent requirements, or implement product changes during this first pass.
+
+If the current effort cannot be inferred confidently, ask me one concrete scope
+question before creating the Wayfinder state. When finished, summarize what you
+created, what remains uncertain, and the best next prompt for continuing the
+work.
+```
+
 ## The idea
 
 A lot of engineering work looks something like this:
