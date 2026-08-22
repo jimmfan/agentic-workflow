@@ -57,17 +57,23 @@ before profile mutation. Never seed state.
 
 ## Report the route
 
-Every user-facing final response MUST end with exactly one marker as its final
-line:
-
-`[route: router → <executed path or terminal outcome>]`
-
-Use `direct` when no workflow or skill ran and include only what executed. If
-selection did not become equivalent execution, use the routing contract's
-terminal outcome. The marker never triggers work.
+End each user-facing final response with exactly one truthful
+`[route: router → <executed path or terminal outcome>]` line. Report only what
+executed; use `direct` if no workflow or skill ran. If selection did
+not become equivalent execution, report the routing contract's terminal outcome.
+Never reroute or work merely to produce the marker.
 <!-- agent-workflow:managed-end -->
 
 <!-- agent-workflow:project-instructions -->
+## External action notifications
+
+When progress is blocked on an action I must take outside Codex—such as
+trusting a workspace, approving a permission, authenticating, or clicking a UI
+control—tell me immediately instead of waiting silently. State that work is
+paused, name the exact app, window, and control, give the single exact action
+required, and ask me to confirm when complete. Also explicitly tell me when a
+requested action has taken effect or no further action is needed.
+
 I’d use this as the **entire source-repository amendment below the installed/dogfood section**. It keeps the high-value constraints while pushing details into progressively loaded docs/contracts.
 
 # Agentic Workflow source repository

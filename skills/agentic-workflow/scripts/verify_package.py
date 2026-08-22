@@ -55,7 +55,6 @@ REQUIRED_PACKAGE_FILES = (
     "scripts/verify_package.py",
     "runtime-projections/wayfinder.md",
     "tests/behavior.py",
-    "payload/VERSION",
     "payload/distribution/manifest.json",
     "payload/root/AGENTS.md.template",
     "payload/root/CLAUDE.md.template",
@@ -108,9 +107,7 @@ def package_path(value: object, label: str) -> Path:
 
 def version() -> str:
     package_version = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
-    payload_version = (PAYLOAD_ROOT / "VERSION").read_text(encoding="utf-8").strip()
     require(SEMVER.fullmatch(package_version) is not None, "VERSION must use x.y.z")
-    require(package_version == payload_version, "package and payload VERSION files differ")
     return package_version
 
 
@@ -156,6 +153,11 @@ def check_structure() -> None:
     for relative in REQUIRED_PACKAGE_FILES:
         path = PACKAGE_ROOT / relative
         require(path.is_file() and not path.is_symlink(), f"missing or unsafe package file: {relative}")
+    duplicate_version = PAYLOAD_ROOT / "VERSION"
+    require(
+        not duplicate_version.exists() and not duplicate_version.is_symlink(),
+        "payload/VERSION must remain absent; package VERSION is the single source of truth",
+    )
     for path in REMOVED_RUNTIME_PATHS:
         require(
             not path.is_symlink()

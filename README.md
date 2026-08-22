@@ -540,6 +540,7 @@ The current design follows these constraints:
 * [Behavioral testing](docs/behavioral-testing.md)
 * [Verification](docs/verification.md)
 * [Provider research](docs/provider-research.md)
+* [Focused Wayfinder VS Code experiment history](docs/focused-wayfinder-vscode-experiment-history.md)
 
 ## Acknowledgments
 

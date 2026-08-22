@@ -59,8 +59,10 @@ class RoutingContractTests(unittest.TestCase):
     def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
         routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        normalized_root = " ".join(root_policy.split())
         normalized_routing = " ".join(routing.split())
-        self.assertIn("Every user-facing final response MUST end with exactly one", root_policy)
+        self.assertIn("End each user-facing final response with exactly one truthful", normalized_root)
+        self.assertIn("Never reroute or work merely to produce the marker", normalized_root)
         self.assertIn("Every user-facing final response ends with exactly one", normalized_routing)
         self.assertIn("[route: router → implement → verification]", normalized_routing)
         self.assertIn("<skill>-handoff", normalized_routing)
@@ -68,6 +70,33 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Never reroute, load skills, execute work", normalized_routing)
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".agent-workflow/runtime", routing)
+
+    def test_focused_vscode_experiment_is_not_product_behavior(self) -> None:
+        removed_repository_paths = (
+            ".agent-workflow/hooks/inject_route_marker_reminder.py",
+            ".agent-workflow/hooks/protect_wayfinder_state.py",
+            ".github/agents/wayfinder.agent.md",
+            ".github/copilot-instructions.md",
+            ".github/hooks/agentic-workflow-route-marker.json",
+        )
+        removed_package_paths = (
+            "payload/agent-workflow/hooks/inject_route_marker_reminder.py",
+            "payload/agent-workflow/hooks/protect_wayfinder_state.py",
+            "payload/agents/vscode-wayfinder.agent.md",
+            "payload/hooks/vscode-route-marker.json",
+            "payload/root/vscode-copilot-instructions.md.template",
+        )
+
+        for relative in removed_repository_paths:
+            self.assertFalse((REPOSITORY_ROOT / relative).exists(), relative)
+        for relative in removed_package_paths:
+            self.assertFalse((PACKAGE_ROOT / relative).exists(), relative)
+
+        state_contract = (
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
+        ).read_text()
+        self.assertIn(".wayfinder-mutation-lock/", state_contract)
+        self.assertIn("atomically creating", state_contract)
 
     def test_project_adr_namespace_defaults_without_overriding_existing_convention(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()

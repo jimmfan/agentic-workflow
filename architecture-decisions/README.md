@@ -37,3 +37,9 @@ current instructions.
 - ADR-0015 — Effective local-mode Wayfinder adapter; superseded and consolidated into ADR-0020.
 - ADR-0017 — Routed provider invocation adapters; superseded and consolidated into ADR-0020.
 - ADR-0018 — Bundled pinned provider snapshot; superseded and consolidated into ADR-0020.
+- ADR-0030 — Thin focused VS Code Wayfinder projection; experimental on
+  `wayfinder-replace`, completed without adoption after mixed explicit-agent
+  evidence and failed automatic-delegation gates.
+- ADR-0031 — Focused Wayfinder model invocation in VS Code; experimental on
+  `wayfinder-replace`, not adopted because invocation required an always-loaded
+  parent bridge and still produced duplicated investigation and invalid state.

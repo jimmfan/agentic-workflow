@@ -59,8 +59,9 @@ PUBLIC_ROOT = Path(tempfile.gettempdir()) / f"itbench-aa-public-{DATASET_REVISIO
 CONTROL_ROOT = Path(tempfile.gettempdir()) / f".{CAMPAIGN_ID}-controller-{DATASET_REVISION[:12]}"
 RUN_ROOT = Path(tempfile.gettempdir()) / f".{CAMPAIGN_ID}-runs-{DATASET_REVISION[:12]}"
 
-ADOPT_SCRIPT = SOURCE_ROOT / "skills" / "agentic-workflow" / "scripts" / "adopt.py"
-PAYLOAD_ROOT = SOURCE_ROOT / "skills" / "agentic-workflow" / "payload"
+PACKAGE_ROOT = SOURCE_ROOT / "skills" / "agentic-workflow"
+ADOPT_SCRIPT = PACKAGE_ROOT / "scripts" / "adopt.py"
+PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 PROJECT_SKILLS_ROOT = SOURCE_ROOT / ".agents" / "skills"
 
 NEUTRAL_PROMPT = """Diagnose the Kubernetes SRE incident represented by the read-only offline
@@ -338,7 +339,7 @@ def product_fingerprint() -> dict[str, Any]:
         "source_git_sha": command_output(["git", "rev-parse", "HEAD"], cwd=SOURCE_ROOT),
         "source_git_describe": command_output(["git", "describe", "--tags", "--always", "--dirty"], cwd=SOURCE_ROOT),
         "source_git_status": git_status,
-        "framework_version": (PAYLOAD_ROOT / "VERSION").read_text(encoding="utf-8").strip(),
+        "framework_version": (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip(),
         "payload_tree_sha256": payload_hash,
         "payload_file_sha256": payload_files,
         "projected_skills_tree_sha256": skills_hash,

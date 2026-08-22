@@ -976,6 +976,15 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(verify.returncode, 1)
         self.assertIn("manifest is stale", verify.stderr)
 
+    def test_verifier_rejects_duplicate_payload_version(self) -> None:
+        package_copy = self.copy_package("duplicate-payload-version")
+        (package_copy / "payload/VERSION").write_text("0.0.0\n", encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("payload/VERSION must remain absent", verify.stderr)
+
     def test_verifier_rejects_incomplete_provider_declarations(self) -> None:
         package_copy = self.copy_package("provider-declaration")
         declaration = package_copy / "payload/agent-workflow/providers.json"

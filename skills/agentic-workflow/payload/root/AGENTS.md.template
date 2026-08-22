@@ -56,11 +56,8 @@ before profile mutation. Never seed state.
 
 ## Report the route
 
-Every user-facing final response MUST end with exactly one marker as its final
-line:
-
-`[route: router → <executed path or terminal outcome>]`
-
-Use `direct` when no workflow or skill ran and include only what executed. If
-selection did not become equivalent execution, use the routing contract's
-terminal outcome. The marker never triggers work.
+End each user-facing final response with exactly one truthful
+`[route: router → <executed path or terminal outcome>]` line. Report only what
+executed; use `direct` if no workflow or skill ran. If selection did
+not become equivalent execution, report the routing contract's terminal outcome.
+Never reroute or work merely to produce the marker.
