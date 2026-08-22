@@ -1,0 +1,22 @@
+{
+  "scenario": "B",
+  "condition": "direct",
+  "repetition": 2,
+  "run_kind": "controlled_live_synthetic",
+  "status": "completed",
+  "model": "gpt-5.4",
+  "reasoning_effort": "high",
+  "session": "ephemeral",
+  "sandbox": "read-only",
+  "elapsed_seconds": 71,
+  "usage": {
+    "input_tokens": 93019,
+    "cached_input_tokens": 82176,
+    "output_tokens": 3545,
+    "reasoning_output_tokens": 1024
+  },
+  "tool_count": 13,
+  "failed_tool_count": 1,
+  "output_sha256": "c250bcbf1a3f67349408ec52d963bcafb1a85e1232cf6379c357083ad4390df1",
+  "evidence_path": "codebase-design-eval/runs/direct/scenario-b-r2.md"
+}

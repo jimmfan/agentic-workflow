@@ -1,0 +1,1 @@
+"""Quote total package."""

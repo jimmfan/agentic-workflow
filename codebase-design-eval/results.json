@@ -1,0 +1,344 @@
+{
+  "baseline": {
+    "main_commit": "b722b0b1eba1bcdf52a818e06279082edbcb978d",
+    "main_commit_date": "2026-08-20T01:43:36-04:00",
+    "main_commit_subject": "wayfinder-replace",
+    "branch": "review/codebase-design-eval",
+    "codebase_design": {
+      "provider": "mattpocock/skills",
+      "pinned_version": "v1.2.3",
+      "provider_resolved_commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "provider_upstream_tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+      "skill_tree_sha_from_frontmatter": "20b7cd1dd1fe5b0bd37ba72649f3a29375574b5b",
+      "file_sha256": {
+        ".agents/skills/codebase-design/SKILL.md": "ce0e9c199fd99e101192764587232cce64aacfab2a75a0d4a56df8dbab13ec41",
+        ".agents/skills/codebase-design/DEEPENING.md": "125e6b77413ad2bc7cf7a772bc74336d580a50f9e797db2178ed133d62333d06",
+        ".agents/skills/codebase-design/DESIGN-IT-TWICE.md": "09f9948ea7636a4d3704c5ab909762e876c0b39849eefb14d2e03a398cc9c7e7"
+      }
+    },
+    "synthetic_runner": {
+      "cli": "codex-cli 0.144.6",
+      "model": "gpt-5.4",
+      "reasoning_effort": "high",
+      "session": "fresh ephemeral session per run",
+      "sandbox": "read-only",
+      "user_config": "ignored",
+      "project_agents_in_workspace": false,
+      "repetitions_per_condition_scenario": 2
+    },
+    "qualitative_reviewer": "Primary Codex agent; exact serving model identifier was not exposed",
+    "environment": "macOS, zsh, isolated Git worktree from local main"
+  },
+  "skill_findings": [
+    {
+      "classification": "useful principle",
+      "finding": "Judge depth by caller leverage and maintenance locality rather than implementation line count.",
+      "behavioral_evidence": "Vanilla used this well in A and recognized parse_rules as deep in C."
+    },
+    {
+      "classification": "useful heuristic",
+      "finding": "The deletion test exposes pass-through layers and duplicated caller knowledge.",
+      "behavioral_evidence": "Both vanilla repetitions correctly consolidated A and preserved B because deletion would redistribute real domain logic."
+    },
+    {
+      "classification": "dangerous absolute",
+      "finding": "Mandatory glossary replacement can conflict with canonical project/domain language.",
+      "behavioral_evidence": "Not reproduced: both vanilla B runs preserved Approval Policy, Stock Ledger, and Checkout Plan."
+    },
+    {
+      "classification": "dangerous absolute",
+      "finding": "The instruction that in-process modules are always deepenable and should be merged ignores legitimate cohesion, ownership, domain, and independent-evolution boundaries.",
+      "behavioral_evidence": "Not reproduced: both vanilla B runs preserved all legitimate in-process modules."
+    },
+    {
+      "classification": "dangerous absolute",
+      "finding": "The lower-level test deletion rule lacks a coverage-equivalence and diagnostic-value gate.",
+      "behavioral_evidence": "Broad failure not reproduced: every vanilla run preserved parser edge-case tests. Narrower concern reproduced: both vanilla C runs weakened the exact validator error-propagation assertion."
+    },
+    {
+      "classification": "context-dependent recommendation",
+      "finding": "Adapter count is evidence about variation but does not determine whether an ownership, trust, protocol, lifecycle, deployment, or failure seam is real.",
+      "behavioral_evidence": "Vanilla did not invent adapters in B or C and preserved documented seams."
+    },
+    {
+      "classification": "context-dependent recommendation",
+      "finding": "Design It Twice may help consequential open choices but automatic 3+ agent expansion is disproportionate for obvious or routine changes.",
+      "behavioral_evidence": "Not tested directly because the common prompt prohibited sub-agent use for all conditions."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "A",
+      "name": "genuinely overengineered architecture",
+      "fixture": "codebase-design-eval/fixtures/a-overengineered/",
+      "execution": "controlled_live_synthetic",
+      "discriminator": "Consolidate most pass-through quote layers while retaining one public operation and its behavior tests."
+    },
+    {
+      "id": "B",
+      "name": "legitimate modular architecture",
+      "fixture": "codebase-design-eval/fixtures/b-legitimate-modules/",
+      "execution": "controlled_live_synthetic",
+      "discriminator": "Preserve Compliance, Inventory, and Checkout modules despite in-process deployment because ownership, domain meaning, and independent evolution are explicit."
+    },
+    {
+      "id": "C",
+      "name": "testing trap",
+      "fixture": "codebase-design-eval/fixtures/c-testing-trap/",
+      "execution": "controlled_live_synthetic",
+      "discriminator": "Preserve higher-level behavior tests and focused parser tests for independently meaningful edge cases and validation callers."
+    },
+    {
+      "id": "D",
+      "name": "Agentic Workflow baseline",
+      "fixture": ".",
+      "execution": "qualitative_non_controlled",
+      "discriminator": "Find evidence-backed structure issues without forcing glossary replacement, in-process merging, or a generic provider architecture."
+    }
+  ],
+  "runs": [
+    {
+      "scenario": "A", "condition": "direct", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only",
+      "outcome_observations": ["Consolidated all shallow quote layers and preserved QuoteApplication.execute plus behavior tests."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Used concrete pass-through and duplicate-packaging evidence."],
+      "measurements": {"elapsed_seconds": 85, "input_tokens": 92855, "cached_input_tokens": 76032, "output_tokens": 4174, "reasoning_output_tokens": 1647, "tool_count": 21, "failed_tool_count": 2},
+      "evidence_paths": ["codebase-design-eval/runs/direct/scenario-a-r1.md", "codebase-design-eval/runs/direct/scenario-a-r1.json"]
+    },
+    {
+      "scenario": "A", "condition": "direct", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only",
+      "outcome_observations": ["Consolidated all shallow quote layers and preserved the public operation and tested rules."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Distinguished demonstrated issues from optional private-helper/value-object choices."],
+      "measurements": {"elapsed_seconds": 87, "input_tokens": 70021, "cached_input_tokens": 54144, "output_tokens": 4503, "reasoning_output_tokens": 1730, "tool_count": 19, "failed_tool_count": 0},
+      "evidence_paths": ["codebase-design-eval/runs/direct/scenario-a-r2.md", "codebase-design-eval/runs/direct/scenario-a-r2.json"]
+    },
+    {
+      "scenario": "A", "condition": "vanilla", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, unmodified vanilla skill",
+      "outcome_observations": ["Consolidated the quote cluster behind QuoteApplication.execute and kept behavior tests."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Applied deletion, depth, and in-process dependency language precisely."],
+      "measurements": {"elapsed_seconds": 119, "input_tokens": 110671, "cached_input_tokens": 88832, "output_tokens": 6066, "reasoning_output_tokens": 2740, "tool_count": 23, "failed_tool_count": 1},
+      "evidence_paths": ["codebase-design-eval/runs/vanilla/scenario-a-r1.md", "codebase-design-eval/runs/vanilla/scenario-a-r1.json"]
+    },
+    {
+      "scenario": "A", "condition": "vanilla", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, unmodified vanilla skill",
+      "outcome_observations": ["Consolidated the quote cluster and rejected new seams or lower-level tests."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Correctly recognized a shallow in-process cluster."],
+      "measurements": {"elapsed_seconds": 125, "input_tokens": 157952, "cached_input_tokens": 138240, "output_tokens": 6216, "reasoning_output_tokens": 2619, "tool_count": 29, "failed_tool_count": 2},
+      "evidence_paths": ["codebase-design-eval/runs/vanilla/scenario-a-r2.md", "codebase-design-eval/runs/vanilla/scenario-a-r2.json"]
+    },
+    {
+      "scenario": "A", "condition": "guarded", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, guarded candidate",
+      "outcome_observations": ["Reached the same consolidation and preserved the public behavior seam."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["The new preservation guards did not rationalize shallow layers."],
+      "measurements": {"elapsed_seconds": 86, "input_tokens": 129566, "cached_input_tokens": 114304, "output_tokens": 4393, "reasoning_output_tokens": 1007, "tool_count": 23, "failed_tool_count": 1},
+      "evidence_paths": ["codebase-design-eval/runs/guarded/scenario-a-r1.md", "codebase-design-eval/runs/guarded/scenario-a-r1.json"]
+    },
+    {
+      "scenario": "A", "condition": "guarded", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, guarded candidate",
+      "outcome_observations": ["Reached the same consolidation and rejected speculative seams."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Preserved project terms while using design vocabulary analytically."],
+      "measurements": {"elapsed_seconds": 105, "input_tokens": 84663, "cached_input_tokens": 71552, "output_tokens": 5488, "reasoning_output_tokens": 2079, "tool_count": 23, "failed_tool_count": 0},
+      "evidence_paths": ["codebase-design-eval/runs/guarded/scenario-a-r2.md", "codebase-design-eval/runs/guarded/scenario-a-r2.json"]
+    },
+    {
+      "scenario": "B", "condition": "direct", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only",
+      "outcome_observations": ["Preserved all legitimate module boundaries and canonical terms; suggested direct module tests and harness cleanup."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Treated ownership, change reason, and domain meaning as boundary evidence."],
+      "measurements": {"elapsed_seconds": 70, "input_tokens": 110488, "cached_input_tokens": 92800, "output_tokens": 3418, "reasoning_output_tokens": 826, "tool_count": 16, "failed_tool_count": 2},
+      "evidence_paths": ["codebase-design-eval/runs/direct/scenario-b-r1.md", "codebase-design-eval/runs/direct/scenario-b-r1.json"]
+    },
+    {
+      "scenario": "B", "condition": "direct", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only",
+      "outcome_observations": ["Preserved boundaries and uniquely identified mixed compliance/fulfillment semantics in CheckoutPlan.explanation_code."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Found a plausible cross-domain result leak without merging modules."],
+      "measurements": {"elapsed_seconds": 71, "input_tokens": 93019, "cached_input_tokens": 82176, "output_tokens": 3545, "reasoning_output_tokens": 1024, "tool_count": 13, "failed_tool_count": 1},
+      "evidence_paths": ["codebase-design-eval/runs/direct/scenario-b-r2.md", "codebase-design-eval/runs/direct/scenario-b-r2.json"]
+    },
+    {
+      "scenario": "B", "condition": "vanilla", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, unmodified vanilla skill",
+      "outcome_observations": ["Preserved ApprovalPolicy, StockLedger, CheckoutPlanner, and project terminology."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Used locality and deletion tests to override the literal in-process merger risk."],
+      "measurements": {"elapsed_seconds": 106, "input_tokens": 200965, "cached_input_tokens": 183424, "output_tokens": 5248, "reasoning_output_tokens": 2401, "tool_count": 18, "failed_tool_count": 2},
+      "evidence_paths": ["codebase-design-eval/runs/vanilla/scenario-b-r1.md", "codebase-design-eval/runs/vanilla/scenario-b-r1.json"]
+    },
+    {
+      "scenario": "B", "condition": "vanilla", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, unmodified vanilla skill",
+      "outcome_observations": ["Preserved all legitimate modules and canonical terms; rejected hypothetical ports."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Recognized each module as non-pass-through with real locality."],
+      "measurements": {"elapsed_seconds": 97, "input_tokens": 84860, "cached_input_tokens": 71552, "output_tokens": 4874, "reasoning_output_tokens": 2543, "tool_count": 16, "failed_tool_count": 0},
+      "evidence_paths": ["codebase-design-eval/runs/vanilla/scenario-b-r2.md", "codebase-design-eval/runs/vanilla/scenario-b-r2.json"]
+    },
+    {
+      "scenario": "B", "condition": "guarded", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, guarded candidate",
+      "outcome_observations": ["Preserved all legitimate modules and project terms; rejected both merging and speculative ports."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Applied explicit ownership/domain/evolution guards."],
+      "measurements": {"elapsed_seconds": 72, "input_tokens": 80508, "cached_input_tokens": 66944, "output_tokens": 3587, "reasoning_output_tokens": 1157, "tool_count": 16, "failed_tool_count": 0},
+      "evidence_paths": ["codebase-design-eval/runs/guarded/scenario-b-r1.md", "codebase-design-eval/runs/guarded/scenario-b-r1.json"]
+    },
+    {
+      "scenario": "B", "condition": "guarded", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, guarded candidate",
+      "outcome_observations": ["Preserved all legitimate modules and treated a packaging issue as non-architectural."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Separated in-process deployment from seam justification."],
+      "measurements": {"elapsed_seconds": 72, "input_tokens": 142352, "cached_input_tokens": 128000, "output_tokens": 3484, "reasoning_output_tokens": 864, "tool_count": 14, "failed_tool_count": 2},
+      "evidence_paths": ["codebase-design-eval/runs/guarded/scenario-b-r2.md", "codebase-design-eval/runs/guarded/scenario-b-r2.json"]
+    },
+    {
+      "scenario": "C", "condition": "direct", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only",
+      "outcome_observations": ["Preserved production modules and every existing test; added missing validator success and escaped-colon coverage."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Kept parser tests for shared user-visible grammar and diagnostic value."],
+      "measurements": {"elapsed_seconds": 110, "input_tokens": 55132, "cached_input_tokens": 47104, "output_tokens": 5819, "reasoning_output_tokens": 3893, "tool_count": 10, "failed_tool_count": 0},
+      "evidence_paths": ["codebase-design-eval/runs/direct/scenario-c-r1.md", "codebase-design-eval/runs/direct/scenario-c-r1.json"]
+    },
+    {
+      "scenario": "C", "condition": "direct", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only",
+      "outcome_observations": ["Preserved production modules and every existing test; proposed only missing parser cases."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Kept lower-level tests because they are cheaper and more diagnostic than engine tests."],
+      "measurements": {"elapsed_seconds": 99, "input_tokens": 129062, "cached_input_tokens": 118272, "output_tokens": 5028, "reasoning_output_tokens": 2643, "tool_count": 18, "failed_tool_count": 2},
+      "evidence_paths": ["codebase-design-eval/runs/direct/scenario-c-r2.md", "codebase-design-eval/runs/direct/scenario-c-r2.json"]
+    },
+    {
+      "scenario": "C", "condition": "vanilla", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, unmodified vanilla skill",
+      "outcome_observations": ["Preserved parser and engine tests and the production seams; recommended loosening the validator exact-message assertion."],
+      "problematic_behaviors": ["Would remove useful proof that the authoring interface preserves a precise user-visible parser error."],
+      "useful_behaviors": ["Recognized parse_rules as deep and preserved focused grammar tests."],
+      "measurements": {"elapsed_seconds": 133, "input_tokens": 149815, "cached_input_tokens": 133632, "output_tokens": 6914, "reasoning_output_tokens": 3444, "tool_count": 22, "failed_tool_count": 2},
+      "evidence_paths": ["codebase-design-eval/runs/vanilla/scenario-c-r1.md", "codebase-design-eval/runs/vanilla/scenario-c-r1.json"]
+    },
+    {
+      "scenario": "C", "condition": "vanilla", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, unmodified vanilla skill",
+      "outcome_observations": ["Preserved parser and engine tests and the production seams; again recommended loosening the validator exact-message assertion."],
+      "problematic_behaviors": ["Consistently weakened a useful adapter-level regression assertion as duplicate coverage."],
+      "useful_behaviors": ["Did not apply the blanket lower-level deletion rule to parser tests."],
+      "measurements": {"elapsed_seconds": 120, "input_tokens": 135390, "cached_input_tokens": 118784, "output_tokens": 6024, "reasoning_output_tokens": 3316, "tool_count": 20, "failed_tool_count": 0},
+      "evidence_paths": ["codebase-design-eval/runs/vanilla/scenario-c-r2.md", "codebase-design-eval/runs/vanilla/scenario-c-r2.json"]
+    },
+    {
+      "scenario": "C", "condition": "guarded", "repetition": 1,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, guarded candidate",
+      "outcome_observations": ["Preserved parser/engine tests and production seams but recommended loosening the validator exact-message assertion."],
+      "problematic_behaviors": ["The candidate did not prevent the same adapter-test weakening in this repetition."],
+      "useful_behaviors": ["Preserved lower-level parser tests for concentrated grammar hazards."],
+      "measurements": {"elapsed_seconds": 106, "input_tokens": 85333, "cached_input_tokens": 70528, "output_tokens": 5555, "reasoning_output_tokens": 2812, "tool_count": 20, "failed_tool_count": 0},
+      "evidence_paths": ["codebase-design-eval/runs/guarded/scenario-c-r1.md", "codebase-design-eval/runs/guarded/scenario-c-r1.json"]
+    },
+    {
+      "scenario": "C", "condition": "guarded", "repetition": 2,
+      "model_settings": "gpt-5.4, high, ephemeral, read-only, guarded candidate",
+      "outcome_observations": ["Preserved every existing test and production seam; proposed only a validator success case and harness fix."],
+      "problematic_behaviors": [],
+      "useful_behaviors": ["Applied the candidate's coverage/diagnostic-equivalence guard correctly."],
+      "measurements": {"elapsed_seconds": 121, "input_tokens": 196642, "cached_input_tokens": 178816, "output_tokens": 5869, "reasoning_output_tokens": 2760, "tool_count": 21, "failed_tool_count": 5},
+      "evidence_paths": ["codebase-design-eval/runs/guarded/scenario-c-r2.md", "codebase-design-eval/runs/guarded/scenario-c-r2.json"]
+    }
+  ],
+  "comparison": {
+    "controlled_live_synthetic_comparison": true,
+    "synthetic_run_count": 18,
+    "direct": "Correct primary decision in all six runs; preserved all existing C tests; one B run uniquely found a mixed-domain result leak.",
+    "vanilla": "Correct primary decision in all six runs and did not reproduce feared B merging/renaming or parser-test deletion. Both C runs weakened one useful validator assertion.",
+    "guarded": "Correct primary decision in all six runs. It retained A's simplification but did not reliably fix C and showed no decision-quality advantage over vanilla/direct.",
+    "scenario_d": "Qualitative/non-controlled only; no material Agentic Workflow rewrite found.",
+    "run_to_run_instability": {
+      "A": "Low; only private-helper/value-object details varied.",
+      "B": "Primary boundary decision stable; secondary test/harness/domain-result findings varied.",
+      "C": "Primary seam/parser-test decision stable. Validator-test advice was stable within direct and vanilla but split across guarded repetitions."
+    },
+    "secondary_measurement_means": {
+      "direct": {"elapsed_seconds": 87.0, "input_tokens": 91762.8, "output_tokens": 4414.5, "reasoning_output_tokens": 1960.5, "tool_count": 16.2},
+      "vanilla": {"elapsed_seconds": 116.7, "input_tokens": 139942.2, "output_tokens": 5890.3, "reasoning_output_tokens": 2843.8, "tool_count": 21.3},
+      "guarded": {"elapsed_seconds": 93.7, "input_tokens": 119844.0, "output_tokens": 4729.3, "reasoning_output_tokens": 1779.8, "tool_count": 19.5}
+    },
+    "improvements_clearly_supported": [
+      "Vanilla's deletion/leverage vocabulary produced sound reasoning on genuinely shallow A.",
+      "Guarded did not blunt A and semantically removes risky absolutes."
+    ],
+    "concerns_clearly_supported": [
+      "Vanilla took longer and produced more output/tool calls than direct in every matched synthetic run.",
+      "Both vanilla C repetitions weakened a useful exact error-propagation assertion.",
+      "Guarded did not reliably fix that behavior and had no primary outcome advantage."
+    ],
+    "concerns_not_reproduced": [
+      "Vanilla did not merge B's legitimate in-process modules.",
+      "Vanilla did not replace B's canonical domain terminology.",
+      "No condition deleted C's focused parser tests or merged them into engine-only coverage.",
+      "No condition invented replacement ports/adapters or gratuitous production rewrites."
+    ],
+    "unresolved_questions": [
+      "Behavior on larger, ambiguous, multi-language repositories.",
+      "Whether Codebase Design ever improves a primary design decision over strong direct reasoning.",
+      "Design It Twice outcome/cost because sub-agents were prohibited uniformly.",
+      "Live direct/vanilla/guarded behavior on the real Agentic Workflow repository.",
+      "Whether a more surgical guard can preserve vanilla while reliably protecting adapter-level tests."
+    ]
+  },
+  "qualitative_repository_evidence": {
+    "scenario": "D",
+    "status": "completed_non_controlled",
+    "outcome": "No material rewrite justified. lifecycle.py owns a real orchestration/failure seam; providers.py is already deep behind a small CLI; the explicit Wayfinder adapter should not become a generic framework before a second use case.",
+    "evidence_paths": ["codebase-design-eval/analysis/repository-scenario-d.md"],
+    "unexecuted_live_conditions": ["direct", "vanilla", "guarded"],
+    "approval_status": "Narrow D-only hosted execution request rejected because the exact repository payload and destination were not explicitly authorized."
+  },
+  "wayfinder_recommendation": {
+    "current_vanilla": "Do not broadly favor or automatically compose it. Keep it available for explicit, concrete module-interface/seam/deepening intent.",
+    "guarded_candidate": "Do not adopt from this experiment.",
+    "broader_agentic_workflow_use": "Not supported: direct matched every primary synthetic outcome with lower observed cost.",
+    "general_routing_cue": "Do not add a new always-loaded cue; the existing skill description is sufficient for explicit architecture intent.",
+    "positive_selection_signals_for_future_selective_use": [
+      "Multiple pass-through layers repeat parameters, ordering, validation, or error knowledge.",
+      "Callers coordinate internals because no coherent behavioral surface exists.",
+      "The unresolved frontier is specifically a consequential interface or seam-placement choice.",
+      "A review could remove meaningful Wayfinder territory or planned work rather than add another analysis layer."
+    ],
+    "negative_selection_signals": [
+      "Modules are separated by established domain language, ownership, independent evolution, trust, lifecycle, deployment, or failure semantics.",
+      "The task is routine implementation, causal debugging, external research, or primarily domain/terminology clarification.",
+      "No observed caller or maintenance problem is attributable to current module shape.",
+      "The change would rename canonical concepts, broaden scope, alter compatibility, or delete tests without authority and equivalent evidence.",
+      "The interface choice is obvious enough that Design It Twice would add synthesis cost without changing the decision."
+    ]
+  },
+  "recommendation": {
+    "production_action": "keep vanilla at current narrow explicit-intent availability; do not promote it more frequently, add it to automatic Wayfinder composition, or adopt the guarded candidate",
+    "next_experiment": "Test a genuinely ambiguous interface decision and, only with explicit payload authorization, run Scenario D as fresh direct/vanilla/guarded sessions."
+  },
+  "limitations": [
+    "Synthetic fixtures are small, intentionally discriminating, and do not represent all repositories.",
+    "Grading used a fixed rubric but was not blinded.",
+    "No deterministic sampling seed was available; two repetitions only estimate instability.",
+    "The common prompt prohibited sub-agents, so Design It Twice fan-out quality/cost was not exercised.",
+    "CLI state/model-cache warnings occurred but did not prevent final outputs; their effect on timing is unknown.",
+    "Input token counts include cached context and tool output and varied widely, so measurements are secondary.",
+    "Scenario D is qualitative/non-controlled; no real repository content was sent to separate hosted sessions.",
+    "The guarded candidate was not installed into Agentic Workflow and must not be treated as a production-tested skill."
+  ]
+}

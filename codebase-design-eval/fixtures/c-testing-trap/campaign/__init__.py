@@ -1,0 +1,1 @@
+"""Campaign rule package."""
