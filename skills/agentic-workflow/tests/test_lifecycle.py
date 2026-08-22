@@ -335,6 +335,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assert_ok(self.adopt("remove"))
         self.assertEqual((self.project / "AGENTS.md").read_bytes(), project_policy)
         self.assertFalse((self.project / "CLAUDE.md").exists())
+        self.assertFalse((self.project / ".github/copilot-instructions.md").exists())
 
     def test_malformed_composite_boundary_stops_without_partial_mutation(self) -> None:
         self.assert_ok(self.adopt("install"))
@@ -984,6 +985,15 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         verify = run_script(package_copy / "scripts/verify_package.py")
         self.assertEqual(verify.returncode, 1)
         self.assertIn("manifest is stale", verify.stderr)
+
+    def test_verifier_rejects_duplicate_payload_version(self) -> None:
+        package_copy = self.copy_package("duplicate-payload-version")
+        (package_copy / "payload/VERSION").write_text("0.0.0\n", encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("payload/VERSION must remain absent", verify.stderr)
 
     def test_verifier_rejects_incomplete_provider_declarations(self) -> None:
         package_copy = self.copy_package("provider-declaration")

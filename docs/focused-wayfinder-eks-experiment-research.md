@@ -129,13 +129,12 @@ and [explicit Wayfinder handling](../.agent-workflow/routing.md#L44-L61).
 ## 1. Current Phase 1 state
 
 - **Repository fact.** `wayfinder-replace` currently points at commit
-  `1ac833d08640ff5eb5246355273c4105fb40e5bf`. The package and payload versions
-  are both `0.19.1`. The installed manifest also reports framework version
-  `0.19.1`, although this source checkout was installed from the local package
-  and therefore records `unreleased-local-package` rather than the Git commit as
-  its own installed source revision. Sources: `git rev-parse HEAD`,
+  `1ac833d08640ff5eb5246355273c4105fb40e5bf`. The package version was `0.19.1`,
+  and the installed manifest also reports framework version `0.19.1`, although
+  this source checkout was installed from the local package and therefore
+  records `unreleased-local-package` rather than the Git commit as its own
+  installed source revision. Sources: `git rev-parse HEAD`,
   [`skills/agentic-workflow/VERSION`](../skills/agentic-workflow/VERSION),
-  [`skills/agentic-workflow/payload/VERSION`](../skills/agentic-workflow/payload/VERSION),
   and [the installed manifest](../.agent-workflow/install-manifest.json#L27-L38).
 - **Repository fact.** ADR-0030 accepts one thin custom agent at
   `.github/agents/wayfinder.agent.md`. It keeps the portable runtime and state

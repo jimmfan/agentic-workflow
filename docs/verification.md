@@ -83,7 +83,8 @@ The suite prioritizes behavior that matters before 1.0:
   reinstall byte-for-byte;
 - canonical local Wayfinder maps and human-edited child Markdown survive the
   same lifecycle sequence without schema validation or normalization;
-- project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
+- project regions in `AGENTS.md`, `CLAUDE.md`, and
+  `.github/copilot-instructions.md` survive update and removal;
 - malformed composite markers and unknown external collisions stop before
   partial mutation;
 - symlink/root/archive traversal boundaries remain enforced;
@@ -104,8 +105,8 @@ The suite prioritizes behavior that matters before 1.0:
   directories, and replaces modified, extra-file, malformed, raw-upstream, or
   older declared directories as one rollback-protected transaction;
 - an update from the manual-only focused Wayfinder projection enables the Basic
-  Phase 2 projection while preserving project-owned state and an unrelated
-  custom agent byte-for-byte;
+  Phase 2 projection and managed parent-delegation instruction while preserving
+  project-owned instructions, state, and an unrelated custom agent byte-for-byte;
 - unsafe declared paths block provider mutation, remove deletes only the
   declared projection, and unrelated skill directories are preserved;
 - the unchanged raw Wayfinder snapshot is recognized before the owned runtime

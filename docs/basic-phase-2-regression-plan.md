@@ -78,6 +78,10 @@ These deltas are not regressions relative to `main`.
   VS Code. The portable router and canonical Wayfinder methodology do not gain
   VS Code-specific invocation semantics.
 - Disabling model invocation in that one projection is the rollback switch.
+- Live evidence showed eligibility metadata and description were insufficient
+  alone. The corrected host projection also installs one VS Code General-parent
+  instruction that delegates only after Wayfinder semantic selection and
+  consumes the focused result without substantial duplicate investigation.
 
 ## Test seams
 

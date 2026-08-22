@@ -7,19 +7,19 @@ A decision-ready body of evidence about whether Agentic Workflow provides measur
 ## Notes
 
 - This is an evaluation-planning effort. Do not modify Agentic Workflow product behavior while working this map.
-- The manual EKS focused-Wayfinder comparison is prepared and frozen. A and B
-  preserve the same dirty working-directory snapshot, Agentic Workflow
-  `wayfinder-replace` revision `1ac833d08640ff5eb5246355273c4105fb40e5bf`,
-  package/provider projection, empty initial Wayfinder state, prompt, and
-  `Terra 5.6` Medium model setting. The corrected shared prompt explicitly
-  requires Wayfinder in both conditions: A uses the built-in general Agent with
-  canonical Wayfinder, while B selects the focused workspace Wayfinder agent.
-  The focused host projection is the sole intended treatment difference.
-  The [protocol](../../../evals/manual-vscode/eks-focused-wayfinder-v1/protocol.md)
-  also excludes local/Copilot memory and user/organization customization where
-  the host exposes controls. The current Codex host cannot execute and capture
-  the real VS Code custom-agent condition, so the paired live runs and evidence
-  return remain the ready boundary. Supporting source research is
+- The manual EKS focused-Wayfinder comparison is complete and canonical at
+  [`evals/manual-vscode/eks-focused-wayfinder-v1/`](../../../evals/manual-vscode/eks-focused-wayfinder-v1/).
+  Raw chat exports preserve A, the superseded invalid B run, and the corrected
+  focused B run; the [evaluation report](../../../evals/manual-vscode/eks-focused-wayfinder-v1/evaluation-report.md)
+  excludes the superseded run. A and corrected B both distinguished repository
+  teaching material from demonstrated runtime milestones and selected Part 1
+  local verification before EKS. Focused B improved provenance, important-
+  unknown framing, selectivity, and observed cost, but added an unnecessary
+  terminal/approval flow that violated its lock-only execute instruction. The
+  result is mixed with medium confidence. Both exports resolved to GPT-5.6 Luna
+  rather than the preregistered Terra model, so the pair is invalid against the
+  exact model protocol but remains informative about the host projection under
+  a controlled actual model. Supporting source research is
   [recorded here](../../../docs/focused-wayfinder-eks-experiment-research.md).
   Neutral prompts that let A's router decide whether to select Wayfinder remain
   eligible only for a separate later router-vs-focused product experiment and
@@ -61,8 +61,6 @@ A decision-ready body of evidence about whether Agentic Workflow provides measur
 
 ## Next work
 
-Run A and B manually in fresh VS Code Copilot chats with the exact shared
-`Use Wayfinder to orient yourself...` prompt under the frozen protocol, then
-preserve chat/debug exports and post-run repositories. Evaluate each condition
-independently with the frozen comparison template before comparing them; make
-no Agentic Workflow product change during the pair.
+No further EKS focused-projection run is authorized. Preserve the completed
+mixed result without changing product behavior from it. T1 remains a separate
+ready evaluation only when separately authorized.

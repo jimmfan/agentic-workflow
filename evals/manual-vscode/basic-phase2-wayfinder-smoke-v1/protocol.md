@@ -35,6 +35,80 @@ case's temporary directory. Record the initial
 `git diff --no-index` or file snapshot if the fixture is not a Git repository;
 the relevant evidence is the post-run file diff, not repository history.
 
+## Autonomous live-host practice
+
+Automate this protocol through the real VS Code host when the local environment
+supports it. Do not substitute another agent CLI for the acceptance boundary.
+Keep the automation disposable and prefer a small shell/Python observer over a
+new repository test framework.
+
+Before opening test workspaces:
+
+1. record the source branch, exact commit, and initial `git status`;
+2. run `code --version` and `code chat --help`;
+3. confirm Copilot Chat, Agent mode, the workspace `Wayfinder` agent, model
+   invocation, and agent hooks are available; and
+4. prepare one isolated workspace and one fresh chat per case. Install passive
+   observer files before taking the disposable workspace's baseline so they do
+   not appear as product mutations.
+
+The first opening of a disposable workspace can raise **Trust Folder &
+Continue**, **Trust Authors**, memory-read approval, or **Allow in This
+Session** prompts. These are environment gates, not product failures. Never
+click or bypass them with brittle GUI automation. If a person must act, notify
+them immediately with the exact VS Code window and control, pause only the
+affected case, and confirm when the prompt is cleared. Do not wait silently.
+
+`code chat -r` targets the active/reused VS Code window, not a workspace path.
+Before every submission, confirm the intended disposable workspace is the
+active window. Use `code --status`, the visible title/path, and the subsequent
+hook session root as cross-checks. If a prompt lands in another case, exclude
+that session, record the protocol deviation and any contamination, and rerun in
+a new chat in the correct workspace. Never reinterpret a mistargeted run as the
+intended case.
+
+Use passive workspace hooks for `SessionStart`, `SubagentStart`,
+`SubagentStop`, and `Stop`; add `PreToolUse` only when needed to distinguish
+parent work before and after focused execution. Record at least timestamp,
+session ID, agent ID, agent type, event, and tool name when the event exposes
+them. The primary positive evidence is a documented `SubagentStart` whose
+`agent_type` is exactly `Wayfinder`; negative cases require its absence. Count
+parent tool calls between `SubagentStop` and `Stop` when evaluating duplicate
+investigation. Transcript content and final self-report are supporting evidence,
+not substitutes for hooks and filesystem/state assertions.
+
+After a state-writing case, inspect the actual diff and validate semantic
+contracts, including the allowed child statuses:
+
+- unknown: `open | resolved`;
+- fact: `current | disputed | stale`; and
+- decision: `accepted | superseded`.
+
+Also verify that focused Wayfinder exclusively owned framework state mutation,
+authority-owned choices remain unresolved, and no competing continuity store
+or implementation artifact appeared. A valid `SubagentStart` does not make an
+invalid state diff pass.
+
+VS Code's local chat-session artifacts may expose the resolved model, root
+prompt/context tokens, root completion tokens, elapsed time, credits, and a
+subagent credit value. They may omit separate subagent prompt/completion tokens.
+Use `N/O` for unavailable fields, do not estimate them, and do not add root and
+subagent values unless the host documents that they are disjoint. Treat these
+artifacts as secondary and version-specific.
+
+When the requested rerun combines existing cases but the repository has no
+canonical combined prompt, preserve the individual case semantics, record the
+exact synthesized prompt, and label comparisons as directional rather than
+exact. Do not silently promote the synthesized prompt into a replacement case.
+
+After capturing evidence, close only the VS Code windows proven to belong to
+the disposable workspaces, then remove the exact temporary roots. Verify that
+pre-existing/source windows remain open, the original repository has no
+unexpected changes, observer files and mutation locks are absent, and
+`git diff --check` still passes. If the bounded correction's stop-loss fires,
+stop testing or redesign work as directed; do not grow the observer into
+orchestration machinery.
+
 ## A. Explicit plumbing
 
 - Fixture: `wayfinder-existing`

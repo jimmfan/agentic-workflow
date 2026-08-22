@@ -44,6 +44,15 @@ class PromptTests(unittest.TestCase):
         self.assertNotIn("domain-modeling", prompt_c.lower())
 
 
+class ProductFingerprintTests(unittest.TestCase):
+    def test_framework_version_uses_the_package_source_of_truth(self) -> None:
+        fingerprint = harness.product_fingerprint()
+
+        expected = (harness.PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        self.assertEqual(fingerprint["framework_version"], expected)
+        self.assertFalse((harness.PAYLOAD_ROOT / "VERSION").exists())
+
+
 class MatcherTests(unittest.TestCase):
     def parse(self, text: str) -> dict:
         with tempfile.TemporaryDirectory() as directory:

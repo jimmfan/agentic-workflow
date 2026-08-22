@@ -27,7 +27,7 @@
   {
     "id": "preserve-composite-project-region",
     "operation": "install-update-remove",
-    "expected": "Managed AGENTS.md and CLAUDE.md regions change while project bytes remain unchanged."
+    "expected": "Managed AGENTS.md, CLAUDE.md, and VS Code Copilot instruction regions change while project bytes remain unchanged."
   },
   {
     "id": "reject-unknown-external-collision",

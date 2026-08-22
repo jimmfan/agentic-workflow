@@ -13,9 +13,15 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 PAYLOAD_AGENT = PACKAGE_ROOT / "payload/agents/vscode-wayfinder.agent.md"
 INSTALLED_AGENT = REPOSITORY_ROOT / ".github/agents/wayfinder.agent.md"
+PARENT_INSTRUCTIONS = (
+    PACKAGE_ROOT / "payload/root/vscode-copilot-instructions.md.template"
+)
+INSTALLED_PARENT_INSTRUCTIONS = REPOSITORY_ROOT / ".github/copilot-instructions.md"
 HOOK_CONFIG = PACKAGE_ROOT / "payload/hooks/vscode-route-marker.json"
 MANIFEST = PACKAGE_ROOT / "payload/distribution/manifest.json"
 ADOPT = PACKAGE_ROOT / "scripts/adopt.py"
+MANAGED_BEGIN = "<!-- agent-workflow:managed-begin -->\n"
+MANAGED_END = "<!-- agent-workflow:managed-end -->\n"
 
 
 def frontmatter_fields(payload: str) -> dict[str, str]:
@@ -47,6 +53,26 @@ class FocusedWayfinderHostTests(unittest.TestCase):
         payload = PAYLOAD_AGENT.read_text(encoding="utf-8")
         self.assertEqual(payload, INSTALLED_AGENT.read_text(encoding="utf-8"))
         self.assert_model_and_user_invocable(PAYLOAD_AGENT)
+
+    def test_vscode_parent_instruction_requires_focused_invocation_and_result_consumption(self) -> None:
+        expected = PARENT_INSTRUCTIONS.read_text(encoding="utf-8").rstrip("\n") + "\n"
+        installed = INSTALLED_PARENT_INSTRUCTIONS.read_text(encoding="utf-8")
+        self.assertTrue(installed.startswith(MANAGED_BEGIN))
+        managed_end = installed.index(MANAGED_END)
+        self.assertEqual(installed[len(MANAGED_BEGIN):managed_end], expected)
+
+        normalized = " ".join(expected.split())
+        self.assertIn("semantic routing selects Wayfinder", normalized)
+        self.assertIn("invoke that exact agent as a subagent", normalized)
+        self.assertIn("instead of loading or executing the Wayfinder skill inline", normalized)
+        self.assertIn("consume its coordination result", normalized)
+        self.assertIn("Do not substantially repeat", normalized)
+        for exception in ("missing evidence", "conflicts", "lacks support"):
+            self.assertIn(exception, normalized)
+        for negative_route in ("Direct", "Debugging"):
+            self.assertIn(negative_route, normalized)
+        self.assertIn("model invocation is disabled", normalized)
+        self.assertIn("portable Wayfinder path", normalized)
 
     def test_invocation_contract_rejects_disabled_temporary_variant(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -128,6 +154,10 @@ class FocusedWayfinderHostTests(unittest.TestCase):
             "agents/vscode-wayfinder.agent.md",
         )
         self.assertEqual(
+            mappings[".github/copilot-instructions.md"],
+            "root/vscode-copilot-instructions.md.template",
+        )
+        self.assertEqual(
             mappings[".agent-workflow/hooks/protect_wayfinder_state.py"],
             "agent-workflow/hooks/protect_wayfinder_state.py",
         )
@@ -169,10 +199,14 @@ class FocusedWayfinderHostTests(unittest.TestCase):
             unrelated.write_bytes(b"---\nname: Local reviewer\n---\n\nKeep me.\n")
             expected_state = b"# Human-owned state\n\nKeep byte-for-byte.\n"
             expected_unrelated = b"---\nname: Local reviewer\n---\n\nKeep me.\n"
+            copilot_instructions = project / ".github/copilot-instructions.md"
+            copilot_instructions.write_bytes(b"# Project Copilot policy\n\nKeep byte-for-byte.\n")
+            expected_copilot_project = b"# Project Copilot policy\n\nKeep byte-for-byte.\n"
 
             def assert_human_files_preserved() -> None:
                 self.assertEqual(state.read_bytes(), expected_state)
                 self.assertEqual(unrelated.read_bytes(), expected_unrelated)
+                self.assertTrue(copilot_instructions.read_bytes().endswith(expected_copilot_project))
 
             old_package = root / "old-package"
             shutil.copytree(PACKAGE_ROOT, old_package)
@@ -203,7 +237,9 @@ class FocusedWayfinderHostTests(unittest.TestCase):
             removed = run_adopt(ADOPT, "remove", project)
             self.assertEqual(removed.returncode, 0, removed.stdout + removed.stderr)
             self.assertFalse(projected.exists())
-            assert_human_files_preserved()
+            self.assertEqual(copilot_instructions.read_bytes(), expected_copilot_project)
+            self.assertEqual(state.read_bytes(), expected_state)
+            self.assertEqual(unrelated.read_bytes(), expected_unrelated)
 
             reinstalled = run_adopt(ADOPT, "install", project)
             self.assertEqual(reinstalled.returncode, 0, reinstalled.stdout + reinstalled.stderr)

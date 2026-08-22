@@ -57,6 +57,10 @@
       "target": ".github/agents/wayfinder.agent.md"
     },
     {
+      "source": "root/vscode-copilot-instructions.md.template",
+      "target": ".github/copilot-instructions.md"
+    },
+    {
       "source": "hooks/vscode-route-marker.json",
       "target": ".github/hooks/agentic-workflow-route-marker.json"
     },
@@ -69,6 +73,6 @@
       "target": "CLAUDE.md"
     }
   ],
-  "framework_version": "0.19.2",
+  "framework_version": "0.19.3",
   "schema_version": 6
 }

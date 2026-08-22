@@ -32,10 +32,10 @@ flowchart TD
 The root `AGENTS.md` policy, selected skills, and progressively loaded
 `.agent-workflow/routing.md` are the semantic runtime. Two small VS Code
 integrations project existing contracts into that host: a `SessionStart`
-route-marker reminder and a focused Wayfinder custom agent with a narrow
-`PreToolUse` state-deletion guard. Neither chooses routes or changes provider,
-state, or authority semantics. There is no lifecycle controller or generic hook
-framework. The root starts Direct, uses installed skill descriptions as
+route-marker reminder, a managed General-parent delegation instruction, and a
+focused Wayfinder custom agent with a narrow `PreToolUse` state-deletion guard.
+They do not change portable route, state, or authority semantics. There is no
+lifecycle controller or generic hook framework. The root starts Direct, uses installed skill descriptions as
 the cheap selection interface, and loads the detailed router only for unresolved
 ambiguity, composition, material provider fallback, or unclear durable-resume
 ownership. Host sandboxing and approvals remain authoritative. Selection,
@@ -67,9 +67,11 @@ transcript parsing.
 The installed `.github/agents/wayfinder.agent.md` is a small host wrapper around
 the canonical `.agents/skills/wayfinder/SKILL.md` runtime and
 `.agent-workflow/contracts/wayfinder-state.md` mechanics. It adds no second
-methodology or state format. It is explicitly user-invocable and model-invocable,
-so the General agent can select it when the portable router selects Wayfinder;
-its durable-coordination description is the thin VS Code semantic bridge. Its
+methodology or state format. It is explicitly user-invocable and model-invocable.
+A managed `.github/copilot-instructions.md` rule tells the built-in General
+parent to invoke exact `Wayfinder` after portable semantic routing selects it
+and to consume the returned coordination result without duplicate investigation
+unless specific evidence requires re-checking. Its
 allowlist contains only `read`, `search`, `edit`, and `execute`, and `agents: []`
 prevents further subagent invocation. The terminal capability exists solely because the state
 contract requires atomic creation and removal of the effort mutation-lock
@@ -96,7 +98,7 @@ and the [VS Code host research](vscode-focused-wayfinder-research.md).
 ```text
 FRAMEWORK-OWNED, RECONSTRUCTABLE
 ├── .agent-workflow/
-├── managed AGENTS.md and CLAUDE.md regions
+├── managed AGENTS.md, CLAUDE.md, and .github/copilot-instructions.md regions
 └── recorded agent integration files at required external paths
 
 PROJECT-OWNED, DURABLE

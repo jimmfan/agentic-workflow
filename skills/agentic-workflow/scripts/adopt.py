@@ -22,7 +22,11 @@ DISTRIBUTION_MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
 FRAMEWORK_ROOT = PurePosixPath(".agent-workflow")
 DURABLE_ROOT = PurePosixPath(".agent-workflow-state")
 INSTALL_MANIFEST = FRAMEWORK_ROOT / "install-manifest.json"
-COMPOSITE_PATHS = {PurePosixPath("AGENTS.md"), PurePosixPath("CLAUDE.md")}
+COMPOSITE_PATHS = {
+    PurePosixPath("AGENTS.md"),
+    PurePosixPath("CLAUDE.md"),
+    PurePosixPath(".github/copilot-instructions.md"),
+}
 MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
 MANAGED_END = b"<!-- agent-workflow:managed-end -->\n"
 PROJECT_BEGIN = b"\n<!-- agent-workflow:project-instructions -->\n"

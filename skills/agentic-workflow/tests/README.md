@@ -19,9 +19,10 @@ subprocess.
 - `test_session_start_hook.py` exercises the installed VS Code SessionStart
   reminder output without depending on transcript parsing or Stop-hook blocks.
 - `test_focused_wayfinder_host.py` validates the thin VS Code custom-agent
-  user/model invocation policy, allowlist, child-agent prohibition,
-  canonical-runtime references, distribution mapping, Phase 0 SessionStart
-  behavior, and old-projection update preservation.
+  user/model invocation policy, the General parent delegation/result-consumption
+  instruction, allowlist, child-agent prohibition, canonical-runtime references,
+  distribution mapping, Phase 0 SessionStart behavior, and old-projection update
+  preservation.
 - `test_basic_phase2_compatibility.py` retains the frozen-main route/state
   categories and the authority, unrelated-state, stale-evidence, and lifecycle
   boundaries. Its injected Direct-to-Wayfinder fault proves that the negative

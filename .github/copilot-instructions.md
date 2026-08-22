@@ -1,0 +1,21 @@
+<!-- agent-workflow:managed-begin -->
+# VS Code parent-agent projection
+
+When acting as the built-in General parent in VS Code, route from the root
+policy before considering subagents. If that semantic routing selects
+Wayfinder and the workspace `Wayfinder` custom agent is available for model
+invocation, invoke that exact agent as a subagent instead of loading or
+executing the Wayfinder skill inline in General.
+
+After `Wayfinder` returns, consume its coordination result and continue from
+that result. Do not substantially repeat the child's repository or durable-state
+investigation unless the returned result identifies missing evidence, conflicts
+with current authoritative source, or lacks support required for the requested
+conclusion. Direct, Debugging, and every other non-Wayfinder route keep their
+existing behavior and do not invoke `Wayfinder` merely because it is available.
+
+If the focused agent is unavailable or model invocation is disabled, use the
+portable Wayfinder path in General and report that host fallback truthfully.
+<!-- agent-workflow:managed-end -->
+
+<!-- agent-workflow:project-instructions -->

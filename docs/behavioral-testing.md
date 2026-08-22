@@ -150,9 +150,11 @@ required content stay in blind evaluator fields rather than the live prompt.
 ## Basic Phase 2 live gate
 
 Basic Phase 2 enables model invocation for the existing focused VS Code
-Wayfinder agent. Deterministic tests establish the frontmatter policy, canonical
-links, absence of child-agent capability, host-neutral portable contracts,
-package projection, update behavior, and state/unrelated-file preservation. They
+Wayfinder agent and supplies one VS Code General-parent instruction for
+delegation and result consumption. Deterministic tests establish that instruction,
+the frontmatter policy, canonical links, absence of child-agent capability,
+host-neutral portable contracts, package projection, update behavior, and
+state/unrelated-file preservation. They
 do not establish that a live General agent semantically chooses and executes the
 focused child.
 
