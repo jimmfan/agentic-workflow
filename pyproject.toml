@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-workflow"
+dynamic = ["version"]
+description = "A small stateful workflow layer for coding agents"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+agent-workflow = "agent_workflow.cli:main"
+
+[tool.setuptools]
+package-dir = { agent_workflow = "skills/agent-workflow" }
+packages = ["agent_workflow", "agent_workflow.scripts"]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { file = ["skills/agent-workflow/VERSION"] }
+
+[tool.setuptools.package-data]
+agent_workflow = [
+  "SKILL.md",
+  "VERSION",
+  "payload/**/*",
+  "provider-snapshots/**/*",
+  "runtime-projections/*.md",
+]

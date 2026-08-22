@@ -224,13 +224,13 @@ and [GitHub's cloud-agent skills guide](https://docs.github.com/en/copilot/how-t
   and [VS Code agent-loop boundary](https://code.visualstudio.com/docs/agents/concepts/language-models)
   support this inference.
 
-## 5. Current Agentic Workflow repository artifacts
+## 5. Current Agent Workflow repository artifacts
 
 - **[Repository-observed]** The provider declaration maps Codex invocation to
   `agents/openai.yaml:policy.allow_implicit_invocation`, Copilot invocation to
   `SKILL.md:disable-model-invocation`, and currently marks Claude Code
   unavailable because the project has no `.claude/skills` projection. See the
-  checked-in [`providers.json`](../skills/agentic-workflow/payload/agent-workflow/providers.json).
+  checked-in [`providers.json`](../skills/agent-workflow/payload/agent-workflow/providers.json).
 - **[Repository-observed]** Installed provider skills such as `implement`,
   `to-spec`, and `to-tickets` carry both user-only declarations:
   `disable-model-invocation: true` in `SKILL.md` and
@@ -240,8 +240,8 @@ and [GitHub's cloud-agent skills guide](https://docs.github.com/en/copilot/how-t
 - **[Repository-observed]** The declared Wayfinder adapter intentionally flips
   both spellings to implicit (`disable-model-invocation: false` and
   `allow_implicit_invocation: true`) while replacing the recognized upstream
-  body with the Agentic Workflow-owned runtime projection.
-  See [`providers.py`](../skills/agentic-workflow/scripts/providers.py) and the
+  body with the Agent Workflow-owned runtime projection.
+  See [`providers.py`](../skills/agent-workflow/scripts/providers.py) and the
   installed provider files under `.agents/skills/wayfinder/`.
 - **[Repository-observed]** Provider validation checks the Copilot policy from
   `SKILL.md` and the Codex policy from `agents/openai.yaml`. Installation stages
@@ -249,11 +249,11 @@ and [GitHub's cloud-agent skills guide](https://docs.github.com/en/copilot/how-t
   result, and moves the directory into `.agents/skills`; same-named existing
   directories are not overwritten. See `validate_staged_skill`,
   `adapter_plan`, and `stage_and_project_missing` in
-  [`providers.py`](../skills/agentic-workflow/scripts/providers.py).
+  [`providers.py`](../skills/agent-workflow/scripts/providers.py).
 - **[Inferred]** The present dual metadata is not redundant for the currently
   claimed Codex and Copilot surfaces. Removing either declaration would discard
   the documented user-only control for one host family. The repository's
-  [provider declaration](../skills/agentic-workflow/payload/agent-workflow/providers.json)
+  [provider declaration](../skills/agent-workflow/payload/agent-workflow/providers.json)
   and the host contracts above support that conclusion.
 
 ## 6. Small manual live-host matrix

@@ -162,14 +162,14 @@ The next actionable work can proceed with the SSM AMI lookup and IAM permissions
         self.assertTrue(grade["continuity"]["exact_fact_trusted_or_consumed"])
 
     def test_phase_3_records_exact_blocker_evidence_without_forcing_boolean(self) -> None:
-        state = self.workspace / ".wayfinder/arc/tickets/T1.md"
+        state = self.workspace / ".agent-wayfinder/arc/tickets/T1.md"
         state.parent.mkdir(parents=True)
         state.write_text(
             "# T1\n\n- Status: ready\n- Blocked by: none\n\nLegacy ownership remains unresolved and non-blocking.\n",
             encoding="utf-8",
         )
         evidence = arc.wayfinder_blocker_evidence(self.workspace)
-        self.assertEqual(evidence["all_blocked_by_lines"][0]["path"], ".wayfinder/arc/tickets/T1.md")
+        self.assertEqual(evidence["all_blocked_by_lines"][0]["path"], ".agent-wayfinder/arc/tickets/T1.md")
         self.assertTrue(evidence["legacy_explicitly_non_blocking"])
         self.assertTrue(evidence["manual_interpretation_required"])
 
@@ -280,7 +280,7 @@ resource "aws_iam_role_policy_attachment" "cni" {
         self.assertEqual(summary["validation_events"][0]["exit_code"], 0)
 
     def test_treatment_crossover_is_primitive_and_condition_specific(self) -> None:
-        state = self.workspace / ".wayfinder/arc/map.md"
+        state = self.workspace / ".agent-wayfinder/arc/map.md"
         state.parent.mkdir(parents=True)
         state.write_text("# ARC\n", encoding="utf-8")
         execution = {
@@ -296,7 +296,7 @@ resource "aws_iam_role_policy_attachment" "cni" {
         result = arc.treatment_crossover(
             "B",
             self.workspace,
-            [".wayfinder/arc/map.md"],
+            [".agent-wayfinder/arc/map.md"],
             execution,
         )
         self.assertTrue(result["treatment_crossover_observed"])

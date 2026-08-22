@@ -1,0 +1,102 @@
+schema_version = 1
+id = "wayfinder-resolved-unknown-without-promotion"
+name = "Settled semantic area moves to canonical ownership and shrinks"
+fixture = "wayfinder-reference-settlement"
+request = "Resume the named provider-state effort and settle its Provider requirements area. U17 is answered, source.txt is authoritative, and the project-owner choice in D4 is accepted. Move the durable fact and choice into concise canonical docs/provider-runtime.md, update map.md to link that owner and mark the area settled, then retire redundant U17, E12, F8, and D4 plus empty child directories. Create no ADR or ticket."
+starting_state = [
+  "This effort currently contains U17, E12, F8, and D4.",
+  "Provider requirements is an active semantic area whose source-supported fact and project-authorized choice are ready for canonical project documentation.",
+  "Once docs/provider-runtime.md and the map carry the durable outcome, no U/E/F/D child retains independent navigational value; Git history is not a retirement prerequisite.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "invent_unknown_answers",
+  "overwrite_project_owned_state",
+  "unnecessary_planning_artifacts",
+]
+live = false
+preserve_paths = ["source.txt"]
+forbid_created_globs = [
+  "architecture-decisions",
+  "architecture-decisions/**",
+  "issues",
+  "issues/**",
+]
+state_must_include = [
+  ".agent-wayfinder/provider-state/map.md",
+  ".agent-wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
+  ".agent-wayfinder/provider-state/evidence/E12-provider-configuration.md",
+  ".agent-wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
+  ".agent-wayfinder/provider-state/decisions/D4-use-local-runtime.md",
+  "source.txt",
+]
+state_must_not_include = []
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/unknowns/U17-provider-tracker-state.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/evidence/E12-provider-configuration.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/decisions/D4-use-local-runtime.md"
+
+[[assertions]]
+kind = "path_exists"
+path = "docs/provider-runtime.md"
+
+[[assertions]]
+kind = "path_contains"
+path = "docs/provider-runtime.md"
+value = "provider_requires_tracker_state=false"
+
+[[assertions]]
+kind = "path_contains"
+path = "docs/provider-runtime.md"
+value = "Use the local runtime without tracker state"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/provider-state/map.md"
+value = "[Provider runtime](../../../../docs/provider-runtime.md)"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/provider-state/map.md"
+value = "Provider requirements — settled"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/unknowns"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/evidence"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/facts"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "architecture-decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "issues"

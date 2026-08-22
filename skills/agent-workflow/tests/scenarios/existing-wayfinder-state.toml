@@ -1,0 +1,57 @@
+schema_version = 1
+id = "existing-wayfinder-state"
+name = "Existing Wayfinder decisions are consumed and affected state is reconciled"
+fixture = "wayfinder-existing"
+request = "Implement the next actionable slice from the existing Wayfinder map and verify it. Preserve unresolved non-blocking unknowns."
+starting_state = [
+  "A canonical local Wayfinder map points to a settled D1 serialization decision.",
+  "The map states the actionable implementation slice under Next work.",
+  "A separate U1 telemetry naming unknown remains explicitly non-blocking.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "verification_performed",
+  "unresolved_unknowns_preserved",
+]
+must_not = [
+  "repeat_resolved_discovery",
+  "ignore_persisted_decisions",
+  "invent_unknown_answers",
+]
+live = true
+verification_command = "Run python verify.py after implementing serialize_payload."
+preserve_paths = [
+  ".agent-wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".agent-wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
+  ".agent-wayfinder/unrelated-billing-migration/map.md",
+]
+forbid_created_globs = [
+  "docs/decisions/**",
+  ".agent-wayfinder/active.md",
+  ".agent-wayfinder/response-serialization/unknowns/U2*.md",
+  ".agent-wayfinder/response-serialization/decisions/D2*.md",
+  ".agent-wayfinder/response-serialization/tickets",
+  ".agent-wayfinder/response-serialization/tickets/**",
+  ".scratch/**",
+]
+route_must_not_include = ["discovery", "wayfinder"]
+state_must_include = [
+  ".agent-wayfinder/response-serialization/map.md",
+  ".agent-wayfinder/response-serialization/decisions/D1-use-compact-sorted-json.md",
+]
+state_must_not_include = [
+  ".agent-wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".agent-wayfinder/unrelated-billing-migration/map.md",
+]
+
+[[assertions]]
+kind = "path_not_contains"
+path = "service.py"
+value = "NotImplementedError"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-wayfinder/response-serialization/map.md"
+value = "Implement `serialize_payload` in `service.py` using D1"

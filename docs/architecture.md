@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Agentic Workflow is a thin instruction router over host capability and optional,
+Agent Workflow is a thin instruction router over host capability and optional,
 replaceable skills. Its core job is reliable minimum-workflow selection while
 preserving authorization and project-owned data. It is not a general runtime,
 package manager, hook framework, analytics system, or second representation of
@@ -50,7 +50,7 @@ their method materially helps the current frontier. Provider-native tickets,
 specifications, research, reviews, and learning artifacts remain canonical;
 Wayfinder stores only consequential coordination and pointers. Its maps and
 optional U#/E#/F#/D# knowledge live under
-`.wayfinder/`.
+`.agent-wayfinder/`.
 
 A required response marker such as
 `[route: router -> discovery -> research]` provides sufficient v0 route
@@ -65,7 +65,7 @@ FRAMEWORK-OWNED, RECONSTRUCTABLE
 └── recorded agent integration files at required external paths
 
 PROJECT-OWNED, DURABLE
-└── .wayfinder/
+└── .agent-wayfinder/
     ├── project-profile.md      # optional
     └── <effort>/               # optional map-first U#/E#/F#/D# knowledge state
 
@@ -98,7 +98,7 @@ repair of current managed content.
 
 ### Durable project state
 
-`.wayfinder/` and every entry below it are project-owned. Lifecycle
+`.agent-wayfinder/` and every entry below it are project-owned. Lifecycle
 operations ensure the directory exists during install/update, but never seed,
 inventory, checksum, merge, rewrite, or remove its contents. Missing optional
 profile and Wayfinder files are normal. Legacy record and archive paths are
@@ -106,7 +106,7 @@ preserved as opaque historical project data rather than resumed or migrated by
 current workflows.
 
 When Wayfinder needs Git-native structured state, its dedicated progressively
-loaded contract configures `.wayfinder/<effort>/` as the
+loaded contract configures `.agent-wayfinder/<effort>/` as the
 canonical local representation. It creates no global index, shadow `.scratch/`
 tree, persisted frontier, lifecycle database, or external-tracker sync. The map
 itself is the re-entry point and may carry one compact current/completed/
@@ -177,7 +177,7 @@ projection or validation failure still never invalidates a successful core
 operation.
 
 Wayfinder is the explicit exception to normal provider-method ownership.
-Agentic Workflow owns a concise effective runtime derived from Matt Pocock's
+Agent Workflow owns a concise effective runtime derived from Matt Pocock's
 Wayfinder methodology; the pinned raw snapshot remains unchanged as reviewed
 provenance and reference. During staging, one explicit adapter validates that
 recognized input, retains compatible provenance frontmatter, applies the
@@ -241,7 +241,7 @@ and provider skills do not change a healthy core exit status.
 
 `remove` strips composite regions,
 deletes only safely recorded external files, removes `.agent-workflow/`, preserves
-`.wayfinder/`, and removes only the declared provider projection.
+`.agent-wayfinder/`, and removes only the declared provider projection.
 
 ## Verification boundary
 
@@ -283,7 +283,7 @@ claims that every host or operating system was exercised live.
 
 Live source and observed behavior are authoritative for current system facts.
 Accepted repository decisions and documentation own project decisions;
-provider-native artifacts own provider output; `.wayfinder/` owns local
+provider-native artifacts own provider output; `.agent-wayfinder/` owns local
 workflow continuity, including canonical local Wayfinder efforts; an optional
 project profile is only an advisory cache. All of these outrank private agent
 memory and chat recollection.

@@ -33,8 +33,8 @@ RESULTS_ROOT = EVAL_ROOT / "results" / CAMPAIGN_ID
 ARTIFACTS_ROOT = EVAL_ROOT / "artifacts" / CAMPAIGN_ID
 FREEZE_PATH = RESULTS_ROOT / "frozen-evaluator.json"
 ISOLATION_AUDIT_PATH = RESULTS_ROOT / "context-isolation-audit.json"
-RUN_ROOT = Path(tempfile.gettempdir()) / "agentic-workflow-arc-wayfinder-e2e-v2"
-ADOPT_SCRIPT = SOURCE_ROOT / "skills" / "agentic-workflow" / "scripts" / "adopt.py"
+RUN_ROOT = Path(tempfile.gettempdir()) / "agent-workflow-arc-wayfinder-e2e-v2"
+ADOPT_SCRIPT = SOURCE_ROOT / "skills" / "agent-workflow" / "scripts" / "adopt.py"
 WAYFINDER_SOURCE = SOURCE_ROOT / ".agents" / "skills" / "wayfinder"
 AMI_PARAMETER = "/platform/arc/runner-ami"
 LEGACY_SECURITY_GROUP = "sg-0abc1234def567890"
@@ -55,7 +55,7 @@ SEMANTIC_CLASSIFICATIONS = {
     "absent",
     "ambiguous",
 }
-FRAMEWORK_VERSION_PATH = SOURCE_ROOT / "skills" / "agentic-workflow" / "VERSION"
+FRAMEWORK_VERSION_PATH = SOURCE_ROOT / "skills" / "agent-workflow" / "VERSION"
 SOURCE_CODEX_HOME = (Path.home() / ".codex").resolve()
 
 
@@ -167,7 +167,7 @@ def init_git_repository(workspace: Path) -> str:
         git(
             workspace,
             "-c",
-            "user.name=Agentic Workflow Eval",
+            "user.name=Agent Workflow Eval",
             "-c",
             "user.email=eval@example.invalid",
             "commit",
@@ -186,7 +186,7 @@ def commit_only(workspace: Path, message: str, paths: list[str]) -> str:
         git(
             workspace,
             "-c",
-            "user.name=Agentic Workflow Eval",
+            "user.name=Agent Workflow Eval",
             "-c",
             "user.email=eval@example.invalid",
             "commit",
@@ -313,7 +313,7 @@ def install_workflow(workspace: Path) -> dict[str, Any]:
         ],
         cwd=SOURCE_ROOT,
     )
-    require_success(adoption, "local Agentic Workflow adoption")
+    require_success(adoption, "local Agent Workflow adoption")
     if not WAYFINDER_SOURCE.is_dir():
         raise RuntimeError(f"pinned Wayfinder source is unavailable: {WAYFINDER_SOURCE}")
     destination = workspace / ".agents" / "skills" / "wayfinder"
@@ -437,7 +437,7 @@ def prepare_trio(
     b_digest = states["B"]["workflow_installation"]["installed_artifact_sha256"]
     c_digest = states["C"]["workflow_installation"]["installed_artifact_sha256"]
     if b_digest != c_digest:
-        raise RuntimeError("Conditions B and C do not have identical Agentic Workflow installations")
+        raise RuntimeError("Conditions B and C do not have identical Agent Workflow installations")
     return states
 
 
@@ -597,7 +597,7 @@ def exact_fact_evidence(workspace: Path, paths: Iterable[str] | None = None) -> 
 
 
 def wayfinder_markdown_paths(workspace: Path) -> list[Path]:
-    root = workspace / ".wayfinder"
+    root = workspace / ".agent-wayfinder"
     if not root.is_dir():
         return []
     return [
@@ -649,7 +649,7 @@ def grade_phase_1(workspace: Path, before: dict[str, str], condition: str) -> di
         "mapping_only_respected": not terraform_changed,
     }
     if condition in WORKFLOW_CONDITIONS:
-        state_files = [path for path in changed if path.startswith(".wayfinder/")]
+        state_files = [path for path in changed if path.startswith(".agent-wayfinder/")]
         result["wayfinder"] = {
             "exercised": bool(state_files),
             "state_files": state_files,
@@ -1027,7 +1027,7 @@ def event_execution_summary(stdout: str, elapsed_seconds: float) -> dict[str, An
         "wayfinder_observation": {
             "explicit_invocation_observed": bool(re.search(r"\$wayfinder\b", combined_messages)),
             "wayfinder_skill_read": bool(re.search(r"\.agents/skills/wayfinder/SKILL\.md", combined_commands)),
-            "wayfinder_state_read": bool(re.search(r"\.wayfinder", combined_commands)),
+            "wayfinder_state_read": bool(re.search(r"\.agent-wayfinder", combined_commands)),
             "route_to_wayfinder_self_reported": bool(
                 re.search(r"\[route:\s*router\s*→\s*wayfinder", combined_messages, re.I)
             ),
@@ -1222,7 +1222,7 @@ def verify_automatic_workspace(state: dict[str, Any]) -> dict[str, Any]:
             {
                 "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
                 "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
-                "no_agentic_workflow_state_directory": not (workspace / ".wayfinder").exists(),
+                "no_agentic_workflow_state_directory": not (workspace / ".agent-wayfinder").exists(),
                 "no_project_wayfinder_skill": not (
                     workspace / ".agents" / "skills" / "wayfinder"
                 ).exists(),
@@ -1347,7 +1347,7 @@ def audit_auto_isolation(
                 static_checks.update(
                     {
                         "no_agentic_workflow": not (workspace / ".agent-workflow").exists(),
-                        "no_agentic_workflow_state": not (workspace / ".wayfinder").exists(),
+                        "no_agentic_workflow_state": not (workspace / ".agent-wayfinder").exists(),
                         "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
                         "no_wayfinder_skill": not (workspace / ".agents" / "skills" / "wayfinder").exists(),
                     }
@@ -1380,7 +1380,7 @@ def audit_auto_isolation(
             }
             if condition == "A":
                 probe_checks["no_agentic_or_wayfinder_context_reported"] = not re.search(
-                    r"Agentic Workflow|\bwayfinder\b", response, re.I
+                    r"Agent Workflow|\bwayfinder\b", response, re.I
                 )
             condition_records[condition] = {
                 "condition_name": manifest["conditions"][condition]["name"],
@@ -1430,7 +1430,7 @@ def audit_auto_isolation(
                 "source_auth_modified": False,
                 "conclusion": (
                     "Auto mode may be enabled: all three disposable Git roots were outside the source hierarchy; "
-                    "A contained no Agentic Workflow; B/C had byte-identical installations; each fresh ephemeral "
+                    "A contained no Agent Workflow; B/C had byte-identical installations; each fresh ephemeral "
                     "probe used an auth-only CODEX_HOME and inherited no parent, sibling, controller, or cloud context."
                     if status == "passed"
                     else "Auto mode remains disabled; use manual fresh top-level tasks and investigate the failed checks."
@@ -1485,10 +1485,10 @@ def treatment_crossover(
     execution: dict[str, Any],
 ) -> dict[str, Any]:
     state_files = sorted(
-        path for path in snapshot(workspace) if path.startswith(".wayfinder/")
+        path for path in snapshot(workspace) if path.startswith(".agent-wayfinder/")
     )
     changed_state_files = sorted(
-        path for path in changed if path.startswith(".wayfinder/")
+        path for path in changed if path.startswith(".agent-wayfinder/")
     )
     observation = dict(execution.get("wayfinder_observation") or {})
     state_read = bool(state_files) and bool(observation.get("wayfinder_state_read"))

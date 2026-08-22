@@ -159,7 +159,7 @@ class EvidenceAndGraderTests(unittest.TestCase):
         self.assertEqual(packet["m6i_stale"]["evidence"][0]["path"], "handoff.md")
 
     def test_wayfinder_contract_fields_are_structured(self) -> None:
-        path = self.workspace / ".wayfinder/arc/tickets/T1.md"
+        path = self.workspace / ".agent-wayfinder/arc/tickets/T1.md"
         path.parent.mkdir(parents=True)
         path.write_text("# T1\n\n- Status: ready\n- Blocked by: none\n- Related: D1, U3\n", encoding="utf-8")
         fields = arc.structured_wayfinder_fields(self.workspace)

@@ -109,7 +109,7 @@ Proceed to runs only after the run manifest records all of the following:
 - the exact neutral prompt and structured output schema, identical in A/B/C;
 - the deterministic entity-normalization map and native score implementation;
 - the separately frozen reasoning rubric/evaluator;
-- the frozen Codex model, reasoning effort, CLI/app build, turn/time/token limits, tool permissions, network policy, and condition-specific Agentic Workflow version/configuration;
+- the frozen Codex model, reasoning effort, CLI/app build, turn/time/token limits, tool permissions, network policy, and condition-specific Agent Workflow version/configuration;
 - the Scenario 102 decision: neutral prompt and retain it, or IBM prompt and replace it with 33.
 
 Until those are frozen, this phase is a **no-go for evaluated runs**, not a failure of the benchmark. The snapshots themselves are suitable; the missing AA adapter and IBM prompt contamination are the blockers.

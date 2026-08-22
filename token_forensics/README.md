@@ -2,7 +2,7 @@
 
 `token_forensics` is a local, standard-library-only analyzer for explaining
 token and context pressure in saved agent traces. It is intentionally separate
-from ITBench and Agentic Workflow runtime behavior:
+from ITBench and Agent Workflow runtime behavior:
 
 ```text
 raw trace -> format parser -> normalized trace -> generic analysis -> JSON/text report

@@ -24,10 +24,10 @@ Every phase uses a new ephemeral Codex process and a unique auth-only
 - A is vanilla Codex. The prompts explicitly allow strong repository-native
   continuation notes; the grader rewards equivalent behavior regardless of
   filename or ontology.
-- B installs Agentic Workflow and receives the same neutral prompts as A. No
+- B installs Agent Workflow and receives the same neutral prompts as A. No
   prompt names Wayfinder. Phase 1 must automatically select local Wayfinder and
   create useful state or the smoke stops as unexercised.
-- C installs byte-identical Agentic Workflow artifacts and explicitly invokes
+- C installs byte-identical Agent Workflow artifacts and explicitly invokes
   `$wayfinder` in mapping/reconciliation phases.
 
 The A and B prompts are byte-identical. C differs only where explicit invocation
@@ -49,7 +49,7 @@ before the trio is prepared.
 
 - Stop after phase 1 if B did not create local Wayfinder state without an
   explicit prompt or C did not create it under explicit invocation.
-- Stop if A receives Agentic Workflow artifacts, B/C installations differ, a
+- Stop if A receives Agent Workflow artifacts, B/C installations differ, a
   phase is not a fresh process, or evaluator context reaches an agent.
 - Stop rather than add repetitions if the state is absent, uses an alternate
   store, is unusable on resume, or does not evolve in phase 3.

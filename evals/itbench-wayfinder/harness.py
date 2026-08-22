@@ -59,7 +59,7 @@ PUBLIC_ROOT = Path(tempfile.gettempdir()) / f"itbench-aa-public-{DATASET_REVISIO
 CONTROL_ROOT = Path(tempfile.gettempdir()) / f".{CAMPAIGN_ID}-controller-{DATASET_REVISION[:12]}"
 RUN_ROOT = Path(tempfile.gettempdir()) / f".{CAMPAIGN_ID}-runs-{DATASET_REVISION[:12]}"
 
-PACKAGE_ROOT = SOURCE_ROOT / "skills" / "agentic-workflow"
+PACKAGE_ROOT = SOURCE_ROOT / "skills" / "agent-workflow"
 ADOPT_SCRIPT = PACKAGE_ROOT / "scripts" / "adopt.py"
 PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 PROJECT_SKILLS_ROOT = SOURCE_ROOT / ".agents" / "skills"
@@ -619,7 +619,7 @@ def install_workflow(workspace: Path) -> dict[str, Any]:
         [sys.executable, str(ADOPT_SCRIPT), "install", str(workspace), "--source-revision", "unreleased-local-package"],
         cwd=SOURCE_ROOT,
     )
-    require_success(result, "Agentic Workflow adoption")
+    require_success(result, "Agent Workflow adoption")
     destination_root = workspace / ".agents" / "skills"
     destination_root.mkdir(parents=True, exist_ok=True)
     for source in sorted(PROJECT_SKILLS_ROOT.iterdir()):
@@ -794,12 +794,12 @@ def capability_observations(summary: dict[str, Any], workspace: Path) -> dict[st
     for capability, path in CAPABILITY_PATHS.items():
         evidence = [item for item in summary.get("command_events", []) if path in str(item.get("command", ""))]
         invoked = bool(evidence)
-        wayfinder_root = workspace / ".wayfinder"
+        wayfinder_root = workspace / ".agent-wayfinder"
         if capability == "wayfinder" and wayfinder_root.is_dir() and any(
             child.is_dir() and (child / "map.md").is_file() for child in wayfinder_root.iterdir()
         ):
             invoked = True
-            evidence = [*evidence, {"artifact": ".wayfinder"}]
+            evidence = [*evidence, {"artifact": ".agent-wayfinder"}]
         if capability == "domain-modeling" and any((workspace / name).is_file() for name in ("CONTEXT.md", "CONTEXT-MAP.md")):
             invoked = True
             evidence = [*evidence, {"artifact": "CONTEXT.md or CONTEXT-MAP.md"}]
@@ -1310,7 +1310,7 @@ def audit_isolation(*, codex_executable: str = "codex", timeout: int = 300) -> P
             "controller_conversation_not_reported": isinstance(parsed, dict) and parsed.get("controller_conversation_excerpt") is None,
         }
         if condition == "A":
-            checks["a_has_no_workflow_context"] = not re.search(r"Agentic Workflow|wayfinder|domain-modeling", response, re.I)
+            checks["a_has_no_workflow_context"] = not re.search(r"Agent Workflow|wayfinder|domain-modeling", response, re.I)
         else:
             checks["workflow_installation_present"] = installation is not None and (workspace / "AGENTS.md").is_file()
         raw_root = ARTIFACTS_ROOT / "audit-evidence"

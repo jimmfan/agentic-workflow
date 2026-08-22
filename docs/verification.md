@@ -29,7 +29,7 @@ Linux, WSL, or inside a Linux-based devcontainer. Zsh and similar POSIX shells
 are also expected to work:
 
 ```bash
-python3 skills/agentic-workflow/scripts/verify_package.py --tests
+python3 skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
 It checks:
@@ -51,7 +51,7 @@ It checks:
 Success ends with:
 
 ```text
-OK: Agentic Workflow package verification passed.
+OK: Agent Workflow package verification passed.
 ```
 
 After intentionally adding, removing, or remapping a packaged payload file, or
@@ -59,11 +59,11 @@ changing the framework version, first inspect the diff. Then run this persistent
 refresh from the **source repository root**:
 
 ```bash
-python3 skills/agentic-workflow/scripts/verify_package.py --refresh-manifest --tests
+python3 skills/agent-workflow/scripts/verify_package.py --refresh-manifest --tests
 ```
 
 The refresh rewrites only
-`skills/agentic-workflow/payload/distribution/manifest.json`, then runs the same
+`skills/agent-workflow/payload/distribution/manifest.json`, then runs the same
 gate. Ordinary edits to an already mapped payload file do not require a refresh.
 Revert an unwanted refresh with version control. Do not refresh metadata to
 conceal an unexplained mapping or version difference.
@@ -74,7 +74,7 @@ The suite prioritizes behavior that matters before 1.0:
 
 - missing and drifted `.agent-workflow/` files are restored from current desired
   state, and obsolete internal files disappear;
-- arbitrary `.wayfinder/` contents survive install, update, remove, and
+- arbitrary `.agent-wayfinder/` contents survive install, update, remove, and
   reinstall byte-for-byte;
 - canonical local Wayfinder maps and human-edited child Markdown survive the
   same lifecycle sequence without schema validation or normalization;
@@ -145,7 +145,7 @@ If the gate fails:
 4. for a release snapshot refresh issue, run the maintainer command in a
    networked environment with GitHub CLI authentication; ordinary target
    install/update must remain fully offline; and
-5. never delete `.wayfinder/` or unknown external content to make a test
+5. never delete `.agent-wayfinder/` or unknown external content to make a test
    pass.
 
 The deterministic GitHub Actions gate runs on Ubuntu. Native PowerShell and CMD

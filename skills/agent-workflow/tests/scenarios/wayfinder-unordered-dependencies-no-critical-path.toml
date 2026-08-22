@@ -1,0 +1,43 @@
+schema_version = 1
+id = "wayfinder-unordered-dependencies-no-critical-path"
+name = "SDK onboarding orientation"
+fixture = "wayfinder-unordered-dependencies"
+request = "Use Wayfinder to orient the SDK onboarding refresh described in README.md. Do not publish tickets or edit the guidance."
+starting_state = [
+  "README.md contains the complete current work description.",
+  "Repository-local Wayfinder writes are authorized; implementation is not.",
+]
+expect = [
+  "meaningful_repository_change",
+]
+must_not = [
+  "manufacture_uncertainty",
+  "silent_decision_invention",
+  "overwrite_project_owned_state",
+]
+live = true
+blind_grading = true
+preserve_paths = ["README.md"]
+forbid_created_globs = [
+  ".agent-wayfinder/*/unknowns",
+  ".agent-wayfinder/*/unknowns/**",
+  ".agent-wayfinder/*/tickets",
+  ".agent-wayfinder/*/tickets/**",
+  ".scratch",
+  ".scratch/**",
+]
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "SDK onboarding"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "independent"
+
+[[assertions]]
+kind = "glob_none_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "critical path"

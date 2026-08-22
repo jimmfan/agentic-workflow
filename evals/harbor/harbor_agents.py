@@ -1,4 +1,4 @@
-"""Harbor Codex variants for the paired Agentic Workflow evaluation.
+"""Harbor Codex variants for the paired Agent Workflow evaluation.
 
 Both conditions use Harbor's built-in Codex implementation unchanged.  These
 subclasses add preflight assertions; the workflow condition additionally runs
@@ -16,8 +16,8 @@ from harbor.environments.base import BaseEnvironment, ExecResult
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-WORKFLOW_PACKAGE = REPOSITORY_ROOT / "skills" / "agentic-workflow"
-REMOTE_PACKAGE = "/tmp/agentic-workflow-package"
+WORKFLOW_PACKAGE = REPOSITORY_ROOT / "skills" / "agent-workflow"
+REMOTE_PACKAGE = "/tmp/agent-workflow-package"
 WORKSPACE = "/app"
 
 
@@ -45,25 +45,25 @@ class _EvaluationCodex(Codex):
 set -eu
 for path in \
   /app/.agent-workflow \
-  /app/.wayfinder \
+  /app/.agent-wayfinder \
   /app/.agents/skills/workflow-debugging \
   /app/.agents/skills/workflow-discovery \
   /app/.agents/skills/workflow-implementation \
   /app/.agents/skills/workflow-verification
 do
   if [ -e "$path" ] || [ -L "$path" ]; then
-    echo "unexpected Agentic Workflow path: $path" >&2
+    echo "unexpected Agent Workflow path: $path" >&2
     exit 1
   fi
 done
 for file in /app/AGENTS.md /app/CLAUDE.md
 do
   if [ -f "$file" ] && grep -Fq '<!-- agent-workflow:managed-begin -->' "$file"; then
-    echo "unexpected Agentic Workflow marker: $file" >&2
+    echo "unexpected Agent Workflow marker: $file" >&2
     exit 1
   fi
 done
-echo "clean: Agentic Workflow is absent"
+echo "clean: Agent Workflow is absent"
 """.strip()
         return await self.exec_as_agent(environment, command=command)
 
@@ -92,9 +92,9 @@ class VanillaCodex(_EvaluationCodex):
 
 
 class AgenticWorkflowCodex(_EvaluationCodex):
-    """Condition B: built-in Harbor Codex plus checked-in Agentic Workflow."""
+    """Condition B: built-in Harbor Codex plus checked-in Agent Workflow."""
 
-    condition = "B-agentic-workflow"
+    condition = "B-agent-workflow"
 
     def __init__(self, *args, source_revision: str, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -176,7 +176,7 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 ")\n"
                 "if python_files:\n"
                 "    raise SystemExit(\n"
-                "        'condition B rejected: Agentic Workflow Python contamination: '\n"
+                "        'condition B rejected: Agent Workflow Python contamination: '\n"
                 "        + ', '.join(python_files)\n"
                 "    )\n"
                 "print(json.dumps({\n"

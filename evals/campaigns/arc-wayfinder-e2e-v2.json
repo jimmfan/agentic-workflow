@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "campaign_id": "arc-wayfinder-e2e-v2",
-  "research_question": "What incremental net value does explicit Wayfinder add beyond vanilla durable handoff and Agentic Workflow with the same neutral durable-handoff intent?",
+  "research_question": "What incremental net value does explicit Wayfinder add beyond vanilla durable handoff and Agent Workflow with the same neutral durable-handoff intent?",
   "conditions": {
     "A": {
       "name": "vanilla-neutral-handoff",
@@ -9,12 +9,12 @@
       "explicit_wayfinder_phases": []
     },
     "B": {
-      "name": "agentic-workflow-neutral-handoff",
+      "name": "agent-workflow-neutral-handoff",
       "agentic_workflow": true,
       "explicit_wayfinder_phases": []
     },
     "C": {
-      "name": "agentic-workflow-explicit-wayfinder",
+      "name": "agent-workflow-explicit-wayfinder",
       "agentic_workflow": true,
       "explicit_wayfinder_phases": [1, 3]
     }

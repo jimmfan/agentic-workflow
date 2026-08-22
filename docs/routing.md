@@ -68,11 +68,11 @@ ran and omits the unavailable provider; a terminal suffix is reserved for a
 selection that did not become equivalent execution.
 
 Wayfinder alone owns framework durable coordination under
-`.wayfinder/`.
+`.agent-wayfinder/`.
 Provider-native tickets, specifications, research, reviews, and learning
 artifacts remain canonical; the framework does not mirror them. Local Wayfinder
-uses the configured canonical tree under `.wayfinder/` and its
-effort map as the re-entry point. Its effective skill is an Agentic Workflow-
+uses the configured canonical tree under `.agent-wayfinder/` and its
+effort map as the re-entry point. Its effective skill is an Agent Workflow-
 owned runtime projection derived from and attributed to Matt Pocock's pinned
 Wayfinder methodology. The map owns current state, blockers, dependencies, and
 next work; sparse U#/E#/F#/D# knowledge stays lazy, and new decomposed work belongs

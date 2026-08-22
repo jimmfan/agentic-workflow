@@ -26,7 +26,7 @@ ARTIFACTS_ROOT = EVAL_ROOT / "artifacts" / CAMPAIGN_ID
 FREEZE_PATH = RESULTS_ROOT / "frozen-evaluator.json"
 ISOLATION_AUDIT_PATH = RESULTS_ROOT / "context-isolation-audit.json"
 RUN_ROOT = Path(tempfile.gettempdir()) / CAMPAIGN_ID
-PACKAGE_ROOT = SOURCE_ROOT / "skills" / "agentic-workflow"
+PACKAGE_ROOT = SOURCE_ROOT / "skills" / "agent-workflow"
 
 
 def configure_base() -> None:
@@ -228,15 +228,15 @@ def wayfinder_treatment_observation(
     execution: dict[str, Any],
 ) -> dict[str, Any]:
     all_paths = sorted(base.snapshot(workspace))
-    state_files = [path for path in all_paths if path.startswith(".wayfinder/")]
+    state_files = [path for path in all_paths if path.startswith(".agent-wayfinder/")]
     changed_state_files = sorted(
-        path for path in changed if path.startswith(".wayfinder/")
+        path for path in changed if path.startswith(".agent-wayfinder/")
     )
     alternate_paths = [
         path
         for path in all_paths
         if path.startswith(".scratch/")
-        or path in {".wayfinder/active.md", ".agent-workflow/state/active.md"}
+        or path in {".agent-wayfinder/active.md", ".agent-workflow/state/active.md"}
     ]
     observation = dict(execution.get("wayfinder_observation") or {})
     state_read = bool(state_files) and bool(observation.get("wayfinder_state_read"))
@@ -281,7 +281,7 @@ def finalize_result(
     observations = [phase.get("treatment_crossover", {}) for phase in phases]
     workspace = Path(state["workspace"])
     all_paths = sorted(base.snapshot(workspace))
-    state_files = [path for path in all_paths if path.startswith(".wayfinder/")]
+    state_files = [path for path in all_paths if path.startswith(".agent-wayfinder/")]
     maps = [path for path in state_files if path.endswith("/map.md")]
     unknowns = [path for path in state_files if "/unknowns/U" in path]
     decisions = [path for path in state_files if "/decisions/D" in path]
@@ -410,7 +410,7 @@ def self_check() -> int:
     if [phase for phase, prompt in manifest["prompts"]["C"].items() if "$wayfinder" in prompt] != ["1", "3"]:
         raise RuntimeError("explicit condition C must invoke Wayfinder only in phases 1 and 3")
     skill = (SOURCE_ROOT / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8")
-    if skill.count("agentic-workflow:wayfinder-local-state-v1:begin") != 1:
+    if skill.count("agent-workflow:wayfinder-local-state-v1:begin") != 1:
         raise RuntimeError("the product under test lacks exactly one local-state adapter")
     with tempfile.TemporaryDirectory(prefix="wayfinder-smoke-self-check-") as temporary:
         workspace = Path(temporary) / "repo"

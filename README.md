@@ -1,12 +1,12 @@
-# Agentic Workflow
+# Agent Workflow
 
-Agentic Workflow is an experimental stateful workflow layer for coding agents.
+Agent Workflow is an experimental stateful workflow layer for coding agents.
 
 It is designed to keep clear, bounded work direct while giving longer-running engineering work a project-owned place to record and resume important state across sessions.
 
 The project started from a practical problem: engineering work rarely happens in one clean session. Questions get investigated, decisions depend on what was learned, implementation exposes new unknowns, work gets blocked, and the project gets picked up again later.
 
-Agentic Workflow explores whether explicitly recording that state can help an agent continue work without depending on the previous chat or session.
+Agent Workflow explores whether explicitly recording that state can help an agent continue work without depending on the previous chat or session.
 
 Its core goal is to preserve the material context that humans and later agents
 need to make or evaluate responsible project decisions. Dependent work should
@@ -14,6 +14,27 @@ not cross an unresolved consequential decision boundary, while unrelated ready
 work remains free to proceed.
 
 This project is pre-1.0 and actively evolving.
+
+## Quick Start
+
+Install the persistent CLI from the repository, then install Agent Workflow in
+the current project:
+
+```bash
+uv tool install git+https://github.com/jimmfan/agentic-workflow.git
+agent-workflow install
+```
+
+The same command manages the installed framework:
+
+```bash
+agent-workflow update
+agent-workflow status
+agent-workflow remove
+```
+
+Each lifecycle command uses the current directory by default and accepts an
+optional project path.
 
 ## The idea
 
@@ -39,7 +60,7 @@ An agent may handle each individual step in a separate interaction or session.
 
 The problem this project is focused on is preserving the useful connections between those steps.
 
-Agentic Workflow currently combines two mechanisms:
+Agent Workflow currently combines two mechanisms:
 
 * **Routing** — clear, bounded requests can remain direct; other work can be routed to a relevant workflow.
 * **Durable project state** — work that needs continuity can leave behind structured state for later sessions.
@@ -72,7 +93,7 @@ flowchart LR
 
     result --> durable{"Persist state?"}
     durable -->|no| verify
-    durable -->|yes| state[".wayfinder/"]
+    durable -->|yes| state[".agent-wayfinder/"]
 
     state --> resume["Later session"]
     resume --> router
@@ -146,7 +167,7 @@ The practical threshold is whether a careful engineer would start structured not
 A Wayfinder effort can look like:
 
 ```text
-.wayfinder/
+.agent-wayfinder/
 └── <effort>/
     ├── map.md
     ├── unknowns/
@@ -166,7 +187,7 @@ child directories are optional and created lazily.
 
 Child files are loaded only when needed.
 
-Agentic Workflow's effective Wayfinder is a framework-owned runtime projection
+Agent Workflow's effective Wayfinder is a framework-owned runtime projection
 derived from Matt Pocock's pinned Wayfinder methodology. The unchanged upstream
 snapshot remains reviewed provenance and reference; the effective runtime owns
 the Git-native map, effort-selection, continuation, U/E/F/D, and `to-tickets`
@@ -339,7 +360,7 @@ They are part of what the project needs to evaluate.
 
 ## Ownership boundary
 
-Agentic Workflow separates reconstructable framework files from durable project-owned state.
+Agent Workflow separates reconstructable framework files from durable project-owned state.
 
 ```text
 target-project/
@@ -354,7 +375,7 @@ target-project/
 │   ├── contracts/
 │   └── templates/project-profile.md
 │
-└── .wayfinder/          # durable project-owned state
+└── .agent-wayfinder/          # durable project-owned state
     ├── project-profile.md           # optional
     └── <effort>/
         ├── map.md
@@ -373,7 +394,7 @@ Framework-owned and reconstructable.
 
 Its contents may be repaired or replaced by the framework.
 
-### `.wayfinder/`
+### `.agent-wayfinder/`
 
 Project-owned.
 
@@ -383,13 +404,13 @@ Durable workflow state lives here and is kept separate from reconstructable fram
 
 These are composite project files.
 
-Agentic Workflow manages only its marked region and preserves project-owned content outside that region.
+Agent Workflow manages only its marked region and preserves project-owned content outside that region.
 
 ### Provider artifacts
 
 Provider-native artifacts and identifiers remain canonical in their native locations.
 
-Agentic Workflow references those artifacts rather than creating parallel copies when the provider already owns the information.
+Agent Workflow references those artifacts rather than creating parallel copies when the provider already owns the information.
 
 For supported hosts, the declared Matt Pocock provider inventory is projected
 as a complete set under `.agents/skills/`. Install and update reconcile every
@@ -424,35 +445,31 @@ Direct work remains a valid route.
 
 ## Progressive loading
 
-Agentic Workflow keeps root instructions small and loads detailed workflow guidance and project state only when relevant. Wayfinder follows the same pattern: start from the effort map and load child files as needed.
+Agent Workflow keeps root instructions small and loads detailed workflow guidance and project state only when relevant. Wayfinder follows the same pattern: start from the effort map and load child files as needed.
 
 ## Scope
 
-Agentic Workflow is a project-level workflow and state layer, not a coding-agent runtime or general-purpose memory system. Framework files are replaceable; durable project state remains separate and understandable without the framework.
+Agent Workflow is a project-level workflow and state layer, not a coding-agent runtime or general-purpose memory system. Framework files are replaceable; durable project state remains separate and understandable without the framework.
 
 ## Prerequisites
 
-Run lifecycle commands in a POSIX-style shell in the environment that owns the
-target project: Bash on macOS, Linux, WSL, or inside a Linux-based devcontainer.
-Zsh and similar POSIX shells are also expected to work. Native PowerShell and
-CMD are not supported; Git Bash on native Windows is best-effort. Core
-installation requires Python 3.11 or newer and HTTPS access to GitHub.
-
-Check the Python version in that environment:
-
-```bash
-# macOS, Linux, WSL, or a Linux-based devcontainer
-python3 --version
-```
+Install with `uv` in a POSIX-style shell in the environment that owns the target
+project: Bash or Zsh on macOS, Linux, WSL, or a Linux-based devcontainer. Native
+PowerShell and CMD are not supported; Git Bash on native Windows is best-effort.
+Installation requires HTTPS access to GitHub. The package requires Python 3.11
+or newer; `uv` manages the tool environment.
 
 ## Install
 
-From the root of the project where you want to use Agentic Workflow:
+From the root of the project where you want to use Agent Workflow:
 
 ```bash
-# macOS, Linux, WSL, or a Linux-based devcontainer
-python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))"
+agent-workflow install
 ```
+
+Use `agent-workflow install /path/to/project` for an explicit target. Install
+and update also accept `--dry-run` and `--ref`; run `agent-workflow --help` for
+the complete command syntax.
 
 Then start a new coding-agent session from the project root so it can discover the installed project instructions and skills.
 
@@ -470,17 +487,16 @@ Installation and lifecycle internals are documented separately.
 
 Run the matching command from the installed project's root. Update reconciles
 the core framework and bundled provider skills while preserving durable project
-state under `.wayfinder/`.
+state under `.agent-wayfinder/`.
 
 ```bash
-# macOS, Linux, WSL, or a Linux-based devcontainer
-python3 -c "from urllib.request import urlopen; exec(compile(urlopen('https://raw.githubusercontent.com/jimmfan/agentic-workflow/main/skills/agentic-workflow/scripts/bootstrap.py', timeout=30).read(), 'agentic-workflow-bootstrap.py', 'exec'))" update
+agent-workflow update
 ```
 
 Append `--dry-run` to preview an install or update without changing the target.
-The same bootstrap accepts `status` for a read-only health check and `remove`
-to remove reconstructable framework files while preserving project-owned
-durable state.
+Use `agent-workflow status` for a read-only health check and
+`agent-workflow remove` to remove reconstructable framework files while
+preserving project-owned durable state.
 
 ## Experimental status
 
@@ -542,8 +558,8 @@ The current design follows these constraints:
 
 ## Acknowledgments
 
-Agentic Workflow uses [Matt Pocock's Skills for Real Engineers](https://github.com/mattpocock/skills) as an optional provider and has been influenced by its emphasis on small, composable agent skills that are loaded only when relevant.
+Agent Workflow uses [Matt Pocock's Skills for Real Engineers](https://github.com/mattpocock/skills) as an optional provider and has been influenced by its emphasis on small, composable agent skills that are loaded only when relevant.
 
-Agentic Workflow's routing, durable project state, Wayfinder model, and cross-session continuity are separate experiments and are not part of Matt's skills project.
+Agent Workflow's routing, durable project state, Wayfinder model, and cross-session continuity are separate experiments and are not part of Matt's skills project.
 
-Agentic Workflow is available under the [MIT License](LICENSE).
+Agent Workflow is available under the [MIT License](LICENSE).

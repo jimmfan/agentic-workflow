@@ -8,7 +8,7 @@
 
 Keep the custom Python bootstrap for this release. `gh skill` is a promising
 future replacement for transport, and it does avoid downloading or enumerating
-unrelated repository content when given the exact `skills/agentic-workflow`
+unrelated repository content when given the exact `skills/agent-workflow`
 path. It is not currently an equivalent transport for this package, however.
 The immediate archive-limit design remains a separate decision; the narrowest
 current-code option is to distinguish package-entry limits from a larger,
@@ -27,11 +27,11 @@ The scoped member-limit fix remains the practical response to the current
 failure. Reconsider a package-only asset when the project establishes real,
 tagged releases.
 
-The decisive incompatibility is byte preservation. Agentic Workflow contains
+The decisive incompatibility is byte preservation. Agent Workflow contains
 other, intentionally inert `SKILL.md` files inside its payload and bundled
 provider snapshot. GitHub CLI 2.97.0 injects source metadata into **every** file
 whose basename is `SKILL.md` while recursively installing the outer skill, not
-only into the outer `skills/agentic-workflow/SKILL.md`. The relevant condition
+only into the outer `skills/agent-workflow/SKILL.md`. The relevant condition
 is visible in the versioned
 [`installSkill` implementation](https://github.com/cli/cli/blob/v2.97.0/internal/skills/installer/installer.go#L232-L285).
 That changes the bundled provider bytes, makes the snapshot checksum fail, and
@@ -85,7 +85,7 @@ change, not a narrow fix for the current bootstrap failure.
 ### Exact subtree installation
 
 **Documented and source-inspected.** The install command accepts an exact path
-such as `skills/agentic-workflow`; GitHub explicitly recommends exact paths for
+such as `skills/agent-workflow`; GitHub explicitly recommends exact paths for
 large repositories because they avoid a full repository traversal.
 [The install manual](https://cli.github.com/manual/gh_skill_install) describes
 the syntax and optimization. The implementation looks up the named directory,
@@ -100,11 +100,11 @@ commit `eb8e425bbfc55426949cbfbe0a7ec6955f210dab` into a disposable custom
 directory:
 
 ```text
-gh skill install jimmfan/agentic-workflow skills/agentic-workflow \
+gh skill install jimmfan/agentic-workflow skills/agent-workflow \
   --dir <temporary-directory> --force
 ```
 
-All 93 files tracked under `skills/agentic-workflow` at that `main` commit were
+All 93 files tracked under `skills/agent-workflow` at that `main` commit were
 present. The installed root manifest contained `github-repo`, `github-path`,
 `github-ref`, and `github-tree-sha` metadata. The installed package's
 `verify_package.py` passed, and its `adopt.py install` followed by `status`
@@ -125,7 +125,7 @@ GitHub's Copilot documentation agrees that project skills may live in
 Current Codex documentation lists repository `.agents/skills` and user
 `$HOME/.agents/skills`, not `~/.codex/skills`
 ([OpenAI's current Codex skill-location table](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)).
-Therefore the shared **project** path required by Agentic Workflow is compatible,
+Therefore the shared **project** path required by Agent Workflow is compatible,
 but GitHub CLI 2.97.0's Codex **user** path should not be treated as verified
 against the current Codex contract. An explicit project `--dir .agents/skills`
 would avoid host-registry drift but would not solve the nested metadata rewrite.
@@ -163,11 +163,11 @@ recorded package path.
 the package and reported it up to date:
 
 ```text
-gh skill update agentic-workflow --dir <temporary-directory> --dry-run
+gh skill update agent-workflow --dir <temporary-directory> --dry-run
 ```
 
 This confirms that the injected metadata is sufficient for normal update
-discovery. It does not solve Agentic Workflow's versioning contract:
+discovery. It does not solve Agent Workflow's versioning contract:
 
 - an unpinned update has no `--ref` option and can switch from default-branch
   tracking to latest-release tracking when the repository starts publishing
@@ -179,7 +179,7 @@ discovery. It does not solve Agentic Workflow's versioning contract:
 
 ## Byte-preservation failure on the current branch
 
-Agentic Workflow's outer skill is intentionally a distribution container. It
+Agent Workflow's outer skill is intentionally a distribution container. It
 contains:
 
 - four inert workflow manifests under `payload/skills/*/SKILL.md`; and
@@ -193,7 +193,7 @@ injector adds repository, ref, tree SHA, and path to the manifest
 ([installer](https://github.com/cli/cli/blob/v2.97.0/internal/skills/installer/installer.go#L247-L282),
 [metadata injector](https://github.com/cli/cli/blob/v2.97.0/internal/skills/frontmatter/frontmatter.go#L60-L89)).
 Because the installer passes the outer selected skill's path and tree SHA, each
-nested manifest receives provenance for `skills/agentic-workflow`, not for its
+nested manifest receives provenance for `skills/agent-workflow`, not for its
 actual inner provider or payload identity.
 
 The disposable current-branch installation established these effects:
@@ -237,7 +237,7 @@ temporary directory before invoking the transactional lifecycle code.
 
 These gaps do not imply that `gh skill` is generally unsafe; its public contract
 warns users to review unverified skill content. They do mean it is not an
-equivalent implementation of Agentic Workflow's accepted pre-execution limits
+equivalent implementation of Agent Workflow's accepted pre-execution limits
 and failure boundary.
 
 ## Platform and prerequisite assessment
@@ -318,8 +318,8 @@ If tagged Releases are adopted later, use this narrow model:
 1. A release workflow checks out an already-created version tag, verifies that
    the tag, `VERSION`, and resolved commit agree, and runs the normal release
    gate before producing anything.
-2. It creates one archive from the tagged `skills/agentic-workflow` subtree,
-   retaining `skills/agentic-workflow` in the archive path so the current
+2. It creates one archive from the tagged `skills/agent-workflow` subtree,
+   retaining `skills/agent-workflow` in the archive path so the current
    extraction boundary can recognize it. `git archive` supports selecting a
    subtree and records the referenced commit in its tar metadata; when given a
    commit or tag it also uses the recorded commit time instead of wall-clock
@@ -467,11 +467,11 @@ true:
 3. initial installation has an acceptable partial-failure recovery story;
 4. package-level count and size resource bounds are provided by the CLI or are
    deliberately replaced by an accepted security decision;
-5. pinned update semantics match Agentic Workflow's release policy; and
+5. pinned update semantics match Agent Workflow's release policy; and
 6. requiring a recent preview GitHub CLI is acceptable for all supported
    adoption environments.
 
 Until then, `gh skill` remains appropriate for maintainer-controlled provider
 snapshot refreshes, where its metadata injection is explicitly verified and
 removed for provenance comparison, but not for transporting the composite
-Agentic Workflow bootstrap package to consumers.
+Agent Workflow bootstrap package to consumers.

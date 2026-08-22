@@ -36,7 +36,7 @@ requests.
 ## Related deterministic catalogs
 
 The TOML files described below are the only scenarios loaded by `behavior.py`.
-Two separate JSON catalogs live directly under `skills/agentic-workflow/tests/`:
+Two separate JSON catalogs live directly under `skills/agent-workflow/tests/`:
 
 - `acceptance-scenarios.json` is a concise index of lifecycle product acceptance
   cases exercised by the lifecycle suite; and
@@ -51,7 +51,7 @@ validate every TOML scenario and fixture reference.
 ## Human-authored scenario format
 
 Scenarios are TOML files under
-`skills/agentic-workflow/tests/scenarios/`. TOML is readable and available in
+`skills/agent-workflow/tests/scenarios/`. TOML is readable and available in
 Python 3.11 without another dependency. A maintainer normally supplies:
 
 ```toml
@@ -79,8 +79,8 @@ verification_command = "Run python verify.py after the change."
 preserve_paths = ["project-state/unknowns.md"]
 forbid_created_globs = ["/**"]
 route_must_not_include = ["discovery"]
-state_must_include = [".wayfinder/example/map.md"]
-state_must_not_include = [".wayfinder/example/unknowns/U9-unrelated.md"]
+state_must_include = [".agent-wayfinder/example/map.md"]
+state_must_not_include = [".agent-wayfinder/example/unknowns/U9-unrelated.md"]
 
 [[assertions]]
 kind = "path_contains"
@@ -89,22 +89,22 @@ value = "observable result"
 
 [[assertions]]
 kind = "glob_count"
-path = ".wayfinder/example/unknowns/U*.md"
+path = ".agent-wayfinder/example/unknowns/U*.md"
 count = 1
 
 [[assertions]]
 kind = "glob_contains"
-path = ".wayfinder/example/unknowns/U1-*.md"
+path = ".agent-wayfinder/example/unknowns/U1-*.md"
 value = "known unresolved question"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".wayfinder/example/unknowns/U*.md"
+path = ".agent-wayfinder/example/unknowns/U*.md"
 value = "external approval"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".wayfinder/example/unknowns/U*.md"
+path = ".agent-wayfinder/example/unknowns/U*.md"
 value = "incidental detail"
 ```
 
@@ -152,7 +152,7 @@ contracts, not evidence that an unrun model obeyed them.
 
 ## Fixtures and reset
 
-Fixtures live under `skills/agentic-workflow/tests/fixtures/`. They contain only
+Fixtures live under `skills/agent-workflow/tests/fixtures/`. They contain only
 the minimum repository evidence and validation command needed to make the
 starting state understandable. They do not copy framework payload files.
 
@@ -203,21 +203,21 @@ The fast behavioral contract suite is deterministic and read-only outside
 temporary directories:
 
 ```bash
-python3 -B -m unittest discover -s skills/agentic-workflow/tests -p 'test_behavior_*.py' -v
+python3 -B -m unittest discover -s skills/agent-workflow/tests -p 'test_behavior_*.py' -v
 ```
 
 The fixture lifecycle exercise is also deterministic and uses only disposable
 temporary copies:
 
 ```bash
-python3 skills/agentic-workflow/tests/behavior.py fixtures
+python3 skills/agent-workflow/tests/behavior.py fixtures
 ```
 
 The full required pre-merge gate runs package/static checks plus every
 deterministic unit, lifecycle, routing, and fixture test:
 
 ```bash
-python3 skills/agentic-workflow/scripts/verify_package.py --tests
+python3 skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
 For a live run, use an environment with the chosen agent executable, model
@@ -231,19 +231,19 @@ ends with exactly one route marker without depending on a host-specific event
 stream. Run:
 
 ```bash
-python3 skills/agentic-workflow/tests/behavior.py live \
+python3 skills/agent-workflow/tests/behavior.py live \
   --agent-command-json '["/absolute/path/to/your-agent-adapter"]' \
-  --output /tmp/agentic-workflow-live-report.json
+  --output /tmp/agent-workflow-live-report.json
 ```
 
 If the agent CLI needs explicit paths, the JSON command may use the placeholders
 `{workspace}`, `{prompt_file}`, and `{report_file}`. For example:
 
 ```bash
-python3 skills/agentic-workflow/tests/behavior.py live \
+python3 skills/agent-workflow/tests/behavior.py live \
   --agent-command-json '["/absolute/path/to/your-agent-adapter", "--workspace", "{workspace}", "--prompt", "{prompt_file}"]' \
-  --keep-workspaces /tmp/agentic-workflow-live \
-  --output /tmp/agentic-workflow-live-report.json
+  --keep-workspaces /tmp/agent-workflow-live \
+  --output /tmp/agent-workflow-live-report.json
 ```
 
 `--scenario simple-bounded-task` may be repeated to select named contracts,

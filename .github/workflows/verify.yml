@@ -24,4 +24,4 @@ jobs:
           python-version: "3.11"
 
       - name: Run deterministic behavior and release gate
-        run: python skills/agentic-workflow/scripts/verify_package.py --tests
+        run: python skills/agent-workflow/scripts/verify_package.py --tests

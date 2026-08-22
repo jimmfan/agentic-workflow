@@ -76,7 +76,7 @@ requested action has taken effect or no further action is needed.
 
 I’d use this as the **entire source-repository amendment below the installed/dogfood section**. It keeps the high-value constraints while pushing details into progressively loaded docs/contracts.
 
-# Agentic Workflow source repository
+# Agent Workflow source repository
 
 ## Pre-1.0 engineering priority
 
@@ -97,7 +97,7 @@ Do not preserve complexity merely because it already exists.
 
 ## Scope
 
-These instructions apply specifically to agents modifying the **Agentic Workflow source repository**.
+These instructions apply specifically to agents modifying the **Agent Workflow source repository**.
 
 The installed routing policy above intentionally applies here so this project exercises its own workflow behavior.
 
@@ -121,13 +121,13 @@ If an ADR and current repository behavior appear inconsistent, investigate the d
 
 ## Architecture boundary
 
-Agentic Workflow is a thin orchestration layer over host capabilities and curated, replaceable skills.
+Agent Workflow is a thin orchestration layer over host capabilities and curated, replaceable skills.
 
 Keep the project centered on routing, provider integration, safe framework delivery, authorization boundaries, durable coordination where the framework genuinely owns it, and integration verification.
 
 Prefer existing host or provider capabilities when they satisfy the required contract.
 
-Do not create parallel Agentic Workflow representations of artifacts or behavior already canonically owned by a provider or host.
+Do not create parallel Agent Workflow representations of artifacts or behavior already canonically owned by a provider or host.
 
 Do not copy or lightly rewrite upstream functionality merely for naming, wording, or stylistic preferences.
 
@@ -168,11 +168,11 @@ Pre-1.0 is a reason to change bad designs quickly, not a reason to accumulate mi
 
 ## Testing and verification
 
-Test Agentic Workflow's contracts and boundaries rather than reproducing provider internals.
+Test Agent Workflow's contracts and boundaries rather than reproducing provider internals.
 
 Prefer deterministic tests for normal development. Keep live-agent evaluation opt-in, benchmark-specific, scheduled, or release-gated.
 
-When benchmark tests evaluate Agentic Workflow and Wayfinder remains an active part of the project, consider Wayfinder among the routes or variants being evaluated rather than silently excluding it.
+When benchmark tests evaluate Agent Workflow and Wayfinder remains an active part of the project, consider Wayfinder among the routes or variants being evaluated rather than silently excluding it.
 
 Follow the current repository verification documentation for applicable checks.
 

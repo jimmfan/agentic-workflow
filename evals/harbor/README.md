@@ -1,7 +1,7 @@
 # Harbor evaluation harness
 
 This directory contains the frozen harness for a three-task paired evaluation
-of Agentic Workflow with Harbor. The scored experiment is paused at the
+of Agent Workflow with Harbor. The scored experiment is paused at the
 condition-B provider gate. No scored B trial has started.
 
 The gate report is
@@ -11,7 +11,7 @@ Task selection and external-source research are recorded in
 
 ## Frozen environment
 
-- Agentic Workflow: `0.11.1` from Git commit
+- Agent Workflow: `0.11.1` from Git commit
   `37e35b0be95b1b835f460af15187c91d915ca4dc`
 - Harbor: `0.21.0`
 - Codex CLI: `0.144.6`

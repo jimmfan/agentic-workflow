@@ -1,0 +1,43 @@
+schema_version = 1
+id = "unrelated-wayfinder-state"
+name = "Unrelated Wayfinder state does not capture a simple request"
+fixture = "wayfinder-unrelated"
+request = "Change greeting() to return exactly 'hello, world!' and validate the change."
+starting_state = [
+  "The requested code edit is explicit, local, and low risk.",
+  "A durable database-migration Wayfinder effort exists but is unrelated.",
+]
+expect = [
+  "task_completed",
+  "meaningful_repository_change",
+  "appropriate_validation",
+  "project_state_preserved",
+]
+must_not = [
+  "unnecessary_planning_artifacts",
+  "manufacture_uncertainty",
+  "overwrite_project_owned_state",
+]
+live = false
+verification_command = "Run python verify.py after changing only the greeting implementation."
+preserve_paths = [
+  ".agent-wayfinder/database-migration/map.md",
+  ".agent-wayfinder/database-migration/decisions/D1-preserve-rollback.md",
+]
+forbid_created_globs = [
+  ".agent-wayfinder/**",
+  ".agent-wayfinder/active.md",
+  "docs/decisions/**",
+  "planning/**",
+]
+route_must_not_include = ["discovery", "wayfinder"]
+state_must_include = []
+state_must_not_include = [
+  ".agent-wayfinder/database-migration/map.md",
+  ".agent-wayfinder/database-migration/decisions/D1-preserve-rollback.md",
+]
+
+[[assertions]]
+kind = "path_contains"
+path = "app.py"
+value = "hello, world!"

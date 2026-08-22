@@ -1,0 +1,43 @@
+schema_version = 1
+id = "wayfinder-read-only-stale-state"
+name = "Read-only audit reports stale Wayfinder state without repair"
+fixture = "wayfinder-stale-conflict"
+request = "Audit the deployment rollout state against current source without changing files. Report the exact stale or conflicting claim and the authoritative evidence that does and does not resolve it. Do not inspect unrelated efforts."
+starting_state = [
+  "The deployment-rollout map is the named relevant effort and contains conflicting rollout-coverage claims.",
+  "deployment.py proves the feature is enabled but does not prove regional rollout completion.",
+  "A separate billing-cleanup effort is unrelated.",
+]
+expect = [
+  "task_completed",
+  "repository_unchanged",
+  "existing_state_reused",
+  "project_state_preserved",
+]
+must_not = [
+  "overwrite_project_owned_state",
+  "invent_unknown_answers",
+]
+live = true
+verification_command = "This is a read-only audit; compare the named map with deployment.py and report the unresolved rollout-coverage conflict."
+preserve_paths = [
+  ".agent-wayfinder/deployment-rollout/map.md",
+  ".agent-wayfinder/billing-cleanup/map.md",
+  "deployment.py",
+]
+forbid_created_globs = []
+route_must_not_include = ["wayfinder"]
+state_must_include = [
+  ".agent-wayfinder/deployment-rollout/map.md",
+]
+state_must_not_include = [
+  ".agent-wayfinder/billing-cleanup/map.md",
+]
+report_must_include = [
+  ".agent-wayfinder/deployment-rollout/map.md",
+  "deployment.py",
+  "partial",
+  "complete",
+  "region",
+  "unresolved",
+]

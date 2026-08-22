@@ -1,0 +1,40 @@
+schema_version = 1
+id = "external-factual-uncertainty"
+name = "External fact is researched without project discovery"
+fixture = "external-fact"
+request = "Replace the TODO in runtime-policy.md with the latest stable Python minor release and its current upstream support status. Cite an official Python source."
+starting_state = [
+  "The requested documentation edit is otherwise straightforward.",
+  "The required version and support status are current external facts.",
+]
+expect = [
+  "task_completed",
+  "meaningful_repository_change",
+  "external_fact_researched",
+  "appropriate_validation",
+]
+must_not = [
+  "invent_external_fact",
+  "full_discovery_for_lookup",
+  "unnecessary_planning_artifacts",
+]
+live = true
+verification_command = "Run python verify.py after updating the policy."
+preserve_paths = []
+forbid_created_globs = [
+  ".agent-wayfinder/**",
+  "docs/decisions/**",
+  "planning/**",
+  "wayfinder/**",
+]
+route_must_not_include = ["discovery", "wayfinder"]
+
+[[assertions]]
+kind = "path_not_contains"
+path = "runtime-policy.md"
+value = "TODO"
+
+[[assertions]]
+kind = "path_contains"
+path = "runtime-policy.md"
+value = "python.org"

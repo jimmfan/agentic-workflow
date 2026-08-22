@@ -1,6 +1,6 @@
-# Agentic Workflow evaluation spike
+# Agent Workflow evaluation spike
 
-These evaluations answer narrow questions about Agentic Workflow, not general coding-agent intelligence:
+These evaluations answer narrow questions about Agent Workflow, not general coding-agent intelligence:
 
 1. Does installing the workflow avoid interfering with a simple, bounded retry-helper task?
 2. Does repository-owned workflow state improve continuity when useful evidence disappears between completely fresh agent sessions?
@@ -55,7 +55,7 @@ Result JSON is grouped by campaign under `evals/results/CAMPAIGN/`. Each campaig
 | [`2026-08-15-three-paired-trials`](results/2026-08-15-three-paired-trials/campaign.md) | Repeatability after evaluator refinement | Historical directional evidence; context isolation not guaranteed | Every task had potential delegated-source exposure; one run has confirmed context contamination | [Three paired trials](reports/2026-08-15-direct-resume-three-paired-trials.md) |
 | [`2026-08-15-context-isolated-resume`](results/2026-08-15-context-isolated-resume/campaign.md) | Context-isolated Resume decision-boundary rerun | Completed primary Resume evidence; two known limitations, no confirmed contamination | Concurrent execution; two brief interrupted old-conversation starts with no file changes | [Context-isolated Resume rerun](reports/2026-08-15-context-isolated-resume-rerun.md) |
 | [`arc-wayfinder-e2e-v1`](results/arc-wayfinder-e2e-v1/campaign.md) | Four-phase neutral durable-handoff versus explicit Wayfinder smoke campaign | First clean A/B smoke pair completed | One pair; frozen grader has documented semantic false positives | [ARC Wayfinder v1](reports/2026-08-15-arc-wayfinder-e2e-v1.md) |
-| [`arc-wayfinder-e2e-v2`](results/arc-wayfinder-e2e-v2/campaign.md) | Corrected four-phase vanilla, normal Agentic Workflow, and explicit Wayfinder smoke | Completed; no final-outcome advantage | Neutral Agentic Workflow crossed into Wayfinder; semantic classifier retained defects | [ARC Wayfinder v2](reports/2026-08-15-arc-wayfinder-e2e-v2.md) |
+| [`arc-wayfinder-e2e-v2`](results/arc-wayfinder-e2e-v2/campaign.md) | Corrected four-phase vanilla, normal Agent Workflow, and explicit Wayfinder smoke | Completed; no final-outcome advantage | Neutral Agent Workflow crossed into Wayfinder; semantic classifier retained defects | [ARC Wayfinder v2](reports/2026-08-15-arc-wayfinder-e2e-v2.md) |
 | [`arc-wayfinder-state-complexity-v1`](results/arc-wayfinder-state-complexity-v1/campaign.md) | Six-phase branching state, selective blockers, and partial supersession smoke | Completed; valid through Phase 5 and W1 supersession | W4 fixture omitted required alarm semantics, confounding final completion | [State-complexity v1](reports/2026-08-15-arc-wayfinder-state-complexity-v1.md) |
 
 The three-paired-trials campaign is the strongest completed evidence for the narrow Direct non-interference question, but it is not clean causal evidence for Resume. The completed context-isolated Resume campaign is the primary Resume evidence: four runs are clean at the observable context boundary and two have disclosed non-mutating protocol limitations. Its results show a small, inconsistent workflow safe-stop advantage and no workflow continuity advantage.
@@ -70,7 +70,7 @@ The three-paired-trials campaign is the strongest completed evidence for the nar
 
 Every run copies the same scenario fixture into a newly allocated directory under the host temporary directory, initializes a normal Git repository, commits the starting state, and records a content snapshot outside the agent-visible repository.
 
-The `baseline` variant receives only the fixture and `.git`; it receives no Agentic Workflow policy, skill, installation, or state artifact.
+The `baseline` variant receives only the fixture and `.git`; it receives no Agent Workflow policy, skill, installation, or state artifact.
 
 The `workflow` variant is prepared from the same fixture, then the harness invokes this checkout's real `adopt.py install` core-adoption path with the `unreleased-local-package` revision before making the setup commit. This installs the local source under evaluation. It intentionally does not invoke the higher-level provider installer, because optional provider downloads would introduce network and availability differences merely to prepare a fixture. Framework-created setup files are in the setup snapshot and are excluded from post-setup agent-change counts.
 
@@ -78,7 +78,7 @@ That exclusion remains part of these historical neutral Direct/Resume conditions
 do not silently turn them into provider-enabled trials. ADR-0020 removes the
 former network confounder for new provider-focused campaigns: a future harness
 may invoke the normal lifecycle fully offline, but it must declare that condition
-explicitly and record the Agentic Workflow revision, upstream commit, effective
+explicitly and record the Agent Workflow revision, upstream commit, effective
 provider/Wayfinder hash, and `network_provider_install_attempted=false`.
 
 Control state, prompts, and result metadata live outside the temporary repository. The Phase 2 mutation is copied only from `evals/scenarios/resume/phase-2-mutation`, and that source does not contain the AMI parameter.
@@ -95,7 +95,7 @@ For every paired baseline/workflow comparison, manually select the same coding a
 
 ## Run one direct trial
 
-The purpose of these commands is to create a pristine fixture, let one fresh agent work on it, and then grade only post-setup changes. Run them in the **macOS host Terminal from this source repository root** (`/Users/james/Desktop/projects/agentic-workflow-instructions`). Preparation and grading persist temporary workspaces and result JSON; they do not modify the framework.
+The purpose of these commands is to create a pristine fixture, let one fresh agent work on it, and then grade only post-setup changes. Run them in the **macOS host Terminal from this source repository root** (`/Users/james/Desktop/projects/agent-workflow-instructions`). Preparation and grading persist temporary workspaces and result JSON; they do not modify the framework.
 
 Choose one campaign ID for the complete experiment. Preparation requires it so future output cannot fall back into an ambiguous flat directory.
 
@@ -169,14 +169,14 @@ Expected success ends with `OK`. If it fails, the first failing test is the most
 The repository's full maintainer gate is also read-only and runs from the same location:
 
 ```bash
-python3 skills/agentic-workflow/scripts/verify_package.py --tests
+python3 skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
-Expected success ends with `OK: Agentic Workflow package verification passed.`
+Expected success ends with `OK: Agent Workflow package verification passed.`
 
 ## Results, side effects, and cleanup
 
-Completed result JSON is stored under `evals/results/CAMPAIGN/`. Temporary run repositories and control files remain under the host path printed by the harness (normally `/tmp/agentic-workflow-evals/RUN_ID`) so manual sessions can resume safely. Continuation reads the campaign from that control state, so the later grading command does not need a repeated `--campaign` argument.
+Completed result JSON is stored under `evals/results/CAMPAIGN/`. Temporary run repositories and control files remain under the host path printed by the harness (normally `/tmp/agent-workflow-evals/RUN_ID`) so manual sessions can resume safely. Continuation reads the campaign from that control state, so the later grading command does not need a repeated `--campaign` argument.
 
 After reviewing a completed run, remove its temporary workspace with this persistent cleanup command from the **macOS host Terminal at the source repository root**:
 
@@ -194,4 +194,4 @@ Cleanup permanently removes only the guarded temporary run directory; the result
 - Static Terraform grading intentionally accepts reasonable layouts, so it proves the requested observable properties rather than full provider-schema validity. If `terraform` is installed, the grader additionally runs offline `terraform fmt -check`; it does not download providers for `terraform validate`.
 - Phase 1 inspection and completion claims cannot be inferred safely from repository keywords, so those observations remain `null` without execution metadata.
 - The workflow variant evaluates the local core router and bundled local workflows. Optional upstream provider installation is excluded equally from setup to avoid network-dependent contamination.
-- These targeted cases favor Agentic Workflow in the narrow sense that continuity is a claimed framework capability. The direct case deliberately disadvantages unnecessary workflow ceremony to expose its cost. Neither case establishes general model quality or statistical significance.
+- These targeted cases favor Agent Workflow in the narrow sense that continuity is a claimed framework capability. The direct case deliberately disadvantages unnecessary workflow ceremony to expose its cost. Neither case establishes general model quality or statistical significance.

@@ -1,0 +1,54 @@
+schema_version = 1
+id = "wayfinder-durable-name-ignores-ephemeral-inputs"
+name = "Durable effort naming ignores ephemeral task labels"
+fixture = "wayfinder-effort-selection"
+request = "Use Wayfinder to map effort-selection reliability. The current branch is codex/current-work, ticket AW-42 mentions providers.py, the temporary task says 'fix branch', and the chat title is 'Project update'. Durable repository-local state writes are authorized."
+starting_state = [
+  "Wayfinder is explicitly selected and no existing effort has this destination.",
+  "Branch, ticket, file, temporary-task, and chat-title labels are all present but none defines the durable effort.",
+  "Generic catch-all names such as Current work and Project update are invalid durable names.",
+]
+expect = [
+  "task_completed",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "overwrite_project_owned_state",
+  "unnecessary_planning_artifacts",
+]
+live = false
+preserve_paths = [
+  ".agent-wayfinder/wayfinder-runtime-projection/map.md",
+  ".agent-wayfinder/provider-projection/map.md",
+  ".agent-wayfinder/provider-runtime/map.md",
+  ".agent-wayfinder/legacy-dir/map.md",
+  ".agent-wayfinder/concurrency-safe-provider-refresh/map.md",
+]
+forbid_created_globs = [
+  ".agent-wayfinder/current-work",
+  ".agent-wayfinder/current-work/**",
+  ".agent-wayfinder/project-update",
+  ".agent-wayfinder/project-update/**",
+  ".agent-wayfinder/aw-42",
+  ".agent-wayfinder/aw-42/**",
+  ".agent-wayfinder/fix-branch",
+  ".agent-wayfinder/fix-branch/**",
+]
+state_must_include = []
+state_must_not_include = [
+  ".agent-wayfinder/wayfinder-runtime-projection/map.md",
+  ".agent-wayfinder/provider-projection/map.md",
+  ".agent-wayfinder/provider-runtime/map.md",
+  ".agent-wayfinder/legacy-dir/map.md",
+  ".agent-wayfinder/concurrency-safe-provider-refresh/map.md",
+]
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-wayfinder/effort-selection-reliability/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/effort-selection-reliability/map.md"
+value = "# Effort-selection reliability"

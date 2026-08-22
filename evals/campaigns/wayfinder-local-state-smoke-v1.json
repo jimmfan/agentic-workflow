@@ -9,12 +9,12 @@
       "explicit_wayfinder_phases": []
     },
     "B": {
-      "name": "agentic-workflow-automatic-wayfinder",
+      "name": "agent-workflow-automatic-wayfinder",
       "agentic_workflow": true,
       "explicit_wayfinder_phases": []
     },
     "C": {
-      "name": "agentic-workflow-explicit-wayfinder",
+      "name": "agent-workflow-explicit-wayfinder",
       "agentic_workflow": true,
       "explicit_wayfinder_phases": [1, 3]
     }

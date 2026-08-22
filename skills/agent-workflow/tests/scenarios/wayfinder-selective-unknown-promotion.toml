@@ -1,0 +1,64 @@
+schema_version = 1
+id = "wayfinder-selective-unknown-promotion"
+name = "ARC platform delivery"
+fixture = "wayfinder-selective-promotion"
+request = "Use Wayfinder to orient the ARC platform delivery described in README.md. Do not publish implementation tickets or change the source documents."
+starting_state = [
+  "README.md is the current repository evidence for this assessment.",
+  "Repository-local Wayfinder writes are authorized; external mutations are not.",
+]
+expect = [
+  "uncertainty_recorded_or_blocked",
+  "meaningful_repository_change",
+]
+must_not = [
+  "silent_decision_invention",
+  "invent_unknown_answers",
+  "overwrite_project_owned_state",
+]
+live = true
+blind_grading = true
+preserve_paths = ["README.md"]
+forbid_created_globs = [
+  ".agent-wayfinder/*/decisions",
+  ".agent-wayfinder/*/decisions/**",
+  ".agent-wayfinder/*/tickets",
+  ".agent-wayfinder/*/tickets/**",
+  ".scratch",
+  ".scratch/**",
+]
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "ARC"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "critical path"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "parallel"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "external lead time"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "precise cost model"
+
+[[assertions]]
+kind = "glob_any_contains"
+path = ".agent-wayfinder/*/unknowns/U*.md"
+value = "review"
+
+[[assertions]]
+kind = "glob_none_contains"
+path = ".agent-wayfinder/*/unknowns/U*.md"
+value = "precise cost model"

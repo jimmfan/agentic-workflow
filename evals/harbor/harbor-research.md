@@ -11,13 +11,13 @@ one task at a time, with one attempt, one concurrent trial, and no retries.
 
 For the paired comparison, prepare a fresh host workspace for every
 task/condition pair and bind-mount it at `/app` for both conditions. Leave the A
-workspace empty. Install the current checked-out Agentic Workflow into the B
+workspace empty. Install the current checked-out Agent Workflow into the B
 workspace with its supported lifecycle command before Harbor starts. This uses
 Harbor's normal Codex agent and the product's normal install surface; it does not
 rewrite prompts or alter the benchmark.
 
 There is one required stop-gate. SlopCodeBench runs pinned `scb-check==0.1.0`
-against all Python files under `/app`. The core Agentic Workflow payload contains
+against all Python files under `/app`. The core Agent Workflow payload contains
 no Python files, so its Markdown/JSON files do not directly affect those metrics.
 Before running, nevertheless assert that the *completed* B install, including
 optional provider skills, has no `*.py` files. If it does, stop: B would have a
@@ -31,7 +31,7 @@ require a forbidden verifier change.
 | Harbor | `0.21.0` | Latest stable PyPI/GitHub release found on the research date. An unpinned install would not define the runner precisely. |
 | Harbor source | tag `v0.21.0`, commit `64afbbcb62165950301e1a6407c729aa26d844ff` | Immutable source reference for CLI and result behavior. |
 | SlopCodeBench Harbor dataset | `gabeorlanski/slopcodebench@3` | Harbor numeric revisions are immutable. Revision 3 resolves to content hash `73a17cda817d37ce3352d18c272c40a3f6b623061023bee365b4df74adcd11b5` and dataset-version UUID `4e4a46a5-fe29-45cf-b0e2-06b1bef7ccc7`. |
-| Agentic Workflow | repository commit `37e35b0be95b1b835f460af15187c91d915ca4dc` and payload version `0.11.1` at research time | Record both in the run manifest. Refuse to silently continue if the checkout changes before execution; either use this commit or deliberately update the manifest and report. |
+| Agent Workflow | repository commit `37e35b0be95b1b835f460af15187c91d915ca4dc` and payload version `0.11.1` at research time | Record both in the run manifest. Refuse to silently continue if the checkout changes before execution; either use this commit or deliberately update the manifest and report. |
 | Codex CLI | `0.144.6`, supplied as `--ak version=0.144.6` | This was the locally installed current version observed during research. If the experiment deliberately chooses another version, pin and record it; if omitted, Harbor installs `@latest`. |
 | Reasoning | `--ak reasoning_effort=high` | This matches the local Codex configuration observed during research and Harbor's current Codex default; the explicit value prevents default drift. |
 | Model | `-m gpt-5.6-sol` for all six trials | This matches the local Codex configuration observed during research. Harbor passes the final path component to Codex and records the model in `agent_info.model_info`. |
@@ -126,7 +126,7 @@ provider access, use the exact same file in A and B, archive its non-secret
 contents, and pin its hash.
 
 Harbor supports `--skill`, but that mechanism copies/registers skill directories
-into the agent's home. It cannot install Agentic Workflow's root `AGENTS.md` and
+into the agent's home. It cannot install Agent Workflow's root `AGENTS.md` and
 `.agent-workflow/` routing contract, so it is not a faithful B condition.
 `--extra-instruction-path` appends content to each benchmark instruction and
 would change prompt presentation. Do not use it for B.
@@ -144,20 +144,20 @@ tasks or conditions. A must begin empty. Install B from the pinned current
 checkout with the repository's supported lifecycle entrypoint:
 
 ```bash
-python3 skills/agentic-workflow/scripts/lifecycle.py install \
+python3 skills/agent-workflow/scripts/lifecycle.py install \
   evals/harbor/workspaces/<task>/B \
   --source-revision 37e35b0be95b1b835f460af15187c91d915ca4dc
 
-python3 skills/agentic-workflow/scripts/lifecycle.py status \
+python3 skills/agent-workflow/scripts/lifecycle.py status \
   evals/harbor/workspaces/<task>/B \
   --source-revision 37e35b0be95b1b835f460af15187c91d915ca4dc
 ```
 
 The lifecycle installer treats optional provider installation as best-effort.
 Capture its output and status. Decide and record before the run whether B means
-core Agentic Workflow or core plus every declared provider; do not silently run
+core Agent Workflow or core plus every declared provider; do not silently run
 a partially installed provider set. The most faithful reading of “current
-Agentic Workflow” is the complete checked-in configuration, so the recommended
+Agent Workflow” is the complete checked-in configuration, so the recommended
 acceptance condition is that all declared provider skills are present.
 
 Run this additional metric-integrity check on each installed B workspace:
@@ -206,7 +206,7 @@ Primary sources:
 - [Harbor 0.21.0 job CLI (`--mounts`, task filters, concurrency, attempts, retries)](https://github.com/harbor-framework/harbor/blob/v0.21.0/src/harbor/cli/jobs.py)
 - [Harbor 0.21.0 multi-step runner](https://github.com/harbor-framework/harbor/blob/v0.21.0/src/harbor/trial/multi_step.py)
 - [Source-owned `scb-check` package description](https://pypi.org/project/scb-check/0.1.0/)
-- [Agentic Workflow lifecycle contract](../../skills/agentic-workflow/SKILL.md)
+- [Agent Workflow lifecycle contract](../../skills/agent-workflow/SKILL.md)
 
 ## Paired-run command shape
 
@@ -338,7 +338,7 @@ integration boundary:
 1. Harbor 0.21.0 starts the task image through Docker.
 2. Exact Codex installation and authentication work.
 3. The `/app` bind mount is writable and persists between task checkpoints.
-4. A starts without Agentic Workflow; B discovers the installed root
+4. A starts without Agent Workflow; B discovers the installed root
    `AGENTS.md` and skill paths without appending text to benchmark instructions.
 5. The verifier runs unchanged and emits `reward.json` plus
    `reward_details.json`.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the small Agentic Workflow baseline/workflow evaluation spike."""
+"""Run the small Agent Workflow baseline/workflow evaluation spike."""
 
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ EVAL_ROOT = Path(__file__).resolve().parent
 SOURCE_ROOT = EVAL_ROOT.parent
 SCENARIO_ROOT = EVAL_ROOT / "scenarios"
 RESULTS_ROOT = EVAL_ROOT / "results"
-RUN_ROOT = Path(tempfile.gettempdir()) / "agentic-workflow-evals"
-ADOPT_SCRIPT = SOURCE_ROOT / "skills" / "agentic-workflow" / "scripts" / "adopt.py"
+RUN_ROOT = Path(tempfile.gettempdir()) / "agent-workflow-evals"
+ADOPT_SCRIPT = SOURCE_ROOT / "skills" / "agent-workflow" / "scripts" / "adopt.py"
 IGNORED_OS_METADATA_NAMES = {".DS_Store", "Thumbs.db"}
 CAMPAIGN_PATTERN = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?")
 
@@ -109,7 +109,7 @@ def init_git_repository(workspace: Path) -> None:
             [
                 "git",
                 "-c",
-                "user.name=Agentic Workflow Eval",
+                "user.name=Agent Workflow Eval",
                 "-c",
                 "user.email=eval@example.invalid",
                 "commit",
@@ -136,7 +136,7 @@ def install_local_workflow(workspace: Path) -> dict[str, Any]:
         ],
         cwd=SOURCE_ROOT,
     )
-    require_success(result, "local Agentic Workflow adoption")
+    require_success(result, "local Agent Workflow adoption")
     return {
         "command": [sys.executable, str(ADOPT_SCRIPT), "install", str(workspace)],
         "exit_status": result.returncode,
@@ -299,7 +299,7 @@ def grade_direct(workspace: Path, before: dict[str, str], variant: str, run_numb
     state_artifacts = [
         path
         for path in changed
-        if path.startswith(".wayfinder/") or path.startswith(".scratch/")
+        if path.startswith(".agent-wayfinder/") or path.startswith(".scratch/")
     ]
     return {
         "scenario": "direct",
@@ -377,7 +377,7 @@ def grade_resume_phase_1(
     )
     requirements_edited = "docs/runner-requirements.md" in changed
     transient_input_edited = "inputs/transient-platform-facts.md" in changed
-    state_files = [path for path in changed if path.startswith(".wayfinder/")]
+    state_files = [path for path in changed if path.startswith(".agent-wayfinder/")]
     safe_tree = not any(
         (
             instance_assignment,
@@ -440,7 +440,7 @@ def mutate_resume_phase_2(workspace: Path) -> None:
             [
                 "git",
                 "-c",
-                "user.name=Agentic Workflow Eval",
+                "user.name=Agent Workflow Eval",
                 "-c",
                 "user.email=eval@example.invalid",
                 "commit",

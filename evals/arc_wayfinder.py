@@ -33,8 +33,8 @@ RESULTS_ROOT = EVAL_ROOT / "results" / CAMPAIGN_ID
 ARTIFACTS_ROOT = EVAL_ROOT / "artifacts" / CAMPAIGN_ID
 FREEZE_PATH = RESULTS_ROOT / "frozen-evaluator.json"
 ISOLATION_AUDIT_PATH = RESULTS_ROOT / "context-isolation-audit.json"
-RUN_ROOT = Path(tempfile.gettempdir()) / "agentic-workflow-arc-wayfinder-evals"
-ADOPT_SCRIPT = SOURCE_ROOT / "skills" / "agentic-workflow" / "scripts" / "adopt.py"
+RUN_ROOT = Path(tempfile.gettempdir()) / "agent-workflow-arc-wayfinder-evals"
+ADOPT_SCRIPT = SOURCE_ROOT / "skills" / "agent-workflow" / "scripts" / "adopt.py"
 WAYFINDER_SOURCE = SOURCE_ROOT / ".agents" / "skills" / "wayfinder"
 AMI_PARAMETER = "/platform/arc/runner-ami"
 LEGACY_SECURITY_GROUP = "sg-0abc1234def567890"
@@ -156,7 +156,7 @@ def init_git_repository(workspace: Path) -> str:
         git(
             workspace,
             "-c",
-            "user.name=Agentic Workflow Eval",
+            "user.name=Agent Workflow Eval",
             "-c",
             "user.email=eval@example.invalid",
             "commit",
@@ -175,7 +175,7 @@ def commit_only(workspace: Path, message: str, paths: list[str]) -> str:
         git(
             workspace,
             "-c",
-            "user.name=Agentic Workflow Eval",
+            "user.name=Agent Workflow Eval",
             "-c",
             "user.email=eval@example.invalid",
             "commit",
@@ -277,7 +277,7 @@ def context_inventory() -> dict[str, Any]:
         entries.append(entry)
         if path.name in {"AGENTS.md", "CLAUDE.md"}:
             instruction_entries.append(entry)
-        if "Agentic Workflow" in text or re.search(r"name:\s*wayfinder\b|\$wayfinder\b", text, re.I):
+        if "Agent Workflow" in text or re.search(r"name:\s*wayfinder\b|\$wayfinder\b", text, re.I):
             agentic_matches.append(relative)
     aggregate = digest_bytes(json.dumps(entries, sort_keys=True).encode())
     instruction_aggregate = digest_bytes(json.dumps(instruction_entries, sort_keys=True).encode())
@@ -315,7 +315,7 @@ def verify_context_isolation_audit() -> dict[str, Any]:
         )
     if current["agentic_workflow_or_wayfinder_matches"]:
         raise RuntimeError(
-            "automatic execution is disabled because global skill/instruction context now contains Agentic Workflow or Wayfinder"
+            "automatic execution is disabled because global skill/instruction context now contains Agent Workflow or Wayfinder"
         )
     if audit.get("frozen_evaluator_sha256") != file_digest(FREEZE_PATH):
         raise RuntimeError(
@@ -336,7 +336,7 @@ def install_workflow(workspace: Path) -> dict[str, Any]:
         ],
         cwd=SOURCE_ROOT,
     )
-    require_success(adoption, "local Agentic Workflow adoption")
+    require_success(adoption, "local Agent Workflow adoption")
     if not WAYFINDER_SOURCE.is_dir():
         raise RuntimeError(f"pinned Wayfinder source is unavailable: {WAYFINDER_SOURCE}")
     destination = workspace / ".agents" / "skills" / "wayfinder"
@@ -551,7 +551,7 @@ def grade_phase_1(workspace: Path, before: dict[str, str], variant: str) -> dict
         "mapping_only_respected": not terraform_changed and not any(prohibited_choices.values()),
     }
     if variant == "workflow":
-        state_files = [path for path in changed if path.startswith(".wayfinder/")]
+        state_files = [path for path in changed if path.startswith(".agent-wayfinder/")]
         result["wayfinder"] = {
             "exercised": bool(state_files),
             "state_files": state_files,
@@ -1013,7 +1013,7 @@ def verify_automatic_workspace(state: dict[str, Any]) -> dict[str, Any]:
             {
                 "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
                 "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
-                "no_agentic_workflow_state_directory": not (workspace / ".wayfinder").exists(),
+                "no_agentic_workflow_state_directory": not (workspace / ".agent-wayfinder").exists(),
                 "no_project_wayfinder_skill": not (
                     workspace / ".agents" / "skills" / "wayfinder"
                 ).exists(),
@@ -1107,7 +1107,7 @@ def audit_auto_isolation(
             "workspace_is_git_root": git(workspace, "rev-parse", "--show-toplevel").stdout.strip()
             == str(workspace),
             "no_agentic_workflow_directory": not (workspace / ".agent-workflow").exists(),
-            "no_agentic_workflow_state_directory": not (workspace / ".wayfinder").exists(),
+            "no_agentic_workflow_state_directory": not (workspace / ".agent-wayfinder").exists(),
             "no_project_agents_policy": not (workspace / "AGENTS.md").exists(),
             "no_project_wayfinder_skill": not (workspace / ".agents" / "skills" / "wayfinder").exists(),
             "no_agentic_or_wayfinder_global_match": not inventory[
@@ -1168,15 +1168,15 @@ def audit_auto_isolation(
                 },
                 "conclusion": (
                     "Auto mode may be enabled: the disposable vanilla Git root was outside the source tree, "
-                    "contained no Agentic Workflow artifacts, the reviewed Codex-home instruction/skill inventory "
-                    "contained no Agentic Workflow or Wayfinder match, and the ephemeral probe did not inherit the "
+                    "contained no Agent Workflow artifacts, the reviewed Codex-home instruction/skill inventory "
+                    "contained no Agent Workflow or Wayfinder match, and the ephemeral probe did not inherit the "
                     "parent AGENTS canary or report controller/router context."
                     if status == "passed"
                     else "Auto mode remains disabled; use manual fresh top-level tasks and investigate the failed checks."
                 ),
                 "limitations": [
                     "The probe is behavioral evidence plus static inventory, not a formal proof of every undocumented Codex context channel.",
-                    "A CODEX_HOME change, global AGENTS.md/CLAUDE.md change, or newly detected Agentic Workflow/Wayfinder marker invalidates this audit and blocks auto mode; unrelated plugin-cache churn is recorded but does not cross the tested isolation boundary.",
+                    "A CODEX_HOME change, global AGENTS.md/CLAUDE.md change, or newly detected Agent Workflow/Wayfinder marker invalidates this audit and blocks auto mode; unrelated plugin-cache churn is recorded but does not cross the tested isolation boundary.",
                     "The evaluated repositories and prompts remain the authoritative isolation boundary; raw probe events are retained for review.",
                 ],
             },

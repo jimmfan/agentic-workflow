@@ -6,15 +6,15 @@ Campaign ID: `itbench-wayfinder-v1`
 
 ## Research question
 
-Does the frozen current Agentic Workflow improve Codex diagnosis of Kubernetes
+Does the frozen current Agent Workflow improve Codex diagnosis of Kubernetes
 incidents under causal uncertainty, and does explicit Wayfinder invocation add
 value beyond the workflow's normal routing?
 
 The three primary conditions are:
 
-- A — vanilla Codex, with no Agentic Workflow instructions, skills, routing, or
+- A — vanilla Codex, with no Agent Workflow instructions, skills, routing, or
   durable state exposed;
-- B — the frozen current Agentic Workflow and complete capability projection,
+- B — the frozen current Agent Workflow and complete capability projection,
   with no explicit Wayfinder or Domain Modeling request; and
 - C — the byte-identical frozen workflow installation used by B, with explicit
   `$wayfinder` invocation and no independent Domain Modeling request.
@@ -102,7 +102,7 @@ rubric.
 - Timeout: 1,800 seconds per run.
 - No automatic retry for a completed or timed-out agent run. Infrastructure
   launch failure before model execution may be retried once and must be marked.
-- Each run gets a fresh Git workspace. A contains no Agentic Workflow files.
+- Each run gets a fresh Git workspace. A contains no Agent Workflow files.
   B and C receive byte-identical installations made from the frozen working-tree
   product snapshot.
 - Raw JSONL, stderr, workspace snapshot, final diagnosis, elapsed time, token

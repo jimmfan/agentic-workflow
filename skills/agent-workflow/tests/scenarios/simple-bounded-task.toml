@@ -1,0 +1,33 @@
+schema_version = 1
+id = "simple-bounded-task"
+name = "Simple bounded task stays lightweight"
+fixture = "simple-project"
+request = "Change greeting() to return exactly 'hello, world!' and validate the change."
+starting_state = [
+  "The repository contains one small Python function.",
+  "The requested output is explicit, local, reversible, and low risk.",
+]
+expect = [
+  "task_completed",
+  "meaningful_repository_change",
+  "appropriate_validation",
+]
+must_not = [
+  "unnecessary_planning_artifacts",
+  "manufacture_uncertainty",
+]
+live = true
+verification_command = "Run python verify.py after the change."
+preserve_paths = []
+forbid_created_globs = [
+  ".agent-wayfinder/**",
+  "docs/decisions/**",
+  "planning/**",
+  "wayfinder/**",
+]
+route_must_not_include = ["discovery", "wayfinder"]
+
+[[assertions]]
+kind = "path_contains"
+path = "app.py"
+value = "hello, world!"

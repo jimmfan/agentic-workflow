@@ -10,7 +10,7 @@ package manager.
 ## Current reviewed provider
 
 The declaration in
-`skills/agentic-workflow/payload/agent-workflow/providers.json` currently names
+`skills/agent-workflow/payload/agent-workflow/providers.json` currently names
 `mattpocock/skills` at tag `v1.2.3`, resolved and recorded as commit
 `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`. It maps planning, learning,
 research, specification, tickets, implementation, TDD, and Code Review
@@ -19,12 +19,12 @@ invocation policies, and configuration requirements.
 
 Codex and GitHub Copilot discover these project skills under `.agents/skills`.
 Setup, Teach, and Triage remain user-only and require exact `$skill-name` or
-`/skill-name` invocation. Agentic Workflow adapts Wayfinder, To Spec, To
+`/skill-name` invocation. Agent Workflow adapts Wayfinder, To Spec, To
 Tickets, and Implement for implicit invocation because they are normal router
 destinations. Claude does not receive a `.claude/skills` projection in this
 release, so the router uses host-native fallback there.
 
-Wayfinder also carries a method-body adaptation for Agentic Workflow's canonical
+Wayfinder also carries a method-body adaptation for Agent Workflow's canonical
 local state. The other three routed skills need only an activation-metadata
 overlay: their upstream method bodies remain unchanged.
 
@@ -56,7 +56,7 @@ available projections:
   documents the same field and default independently.
 - Claude Code documents the same `disable-model-invocation` spelling as a
   Claude Code extension that hides a user-only skill from Claude until explicit
-  `/skill-name` invocation. Agentic Workflow does not currently project provider
+  `/skill-name` invocation. Agent Workflow does not currently project provider
   skills to `.claude/skills`, so this release still marks provider execution
   unavailable there rather than claiming that retained frontmatter alone makes
   the provider available. See the
@@ -97,8 +97,8 @@ Wayfinder v1.2.3 defines a low-resolution map with Destination, Notes, Decisions
 so far, Not yet specified, and Out of scope; it loads child decision tickets on
 demand and derives the frontier from open, unblocked, unclaimed children. Its
 default local-Markdown tracker stores those artifacts below `.scratch/`.
-Agentic Workflow deliberately owns its effective runtime and canonical local representation
-under `.wayfinder/` instead, with the map itself as the
+Agent Workflow deliberately owns its effective runtime and canonical local representation
+under `.agent-wayfinder/` instead, with the map itself as the
 re-entry point and optional U#/E#/F#/D# knowledge. The map owns current state,
 blockers, dependencies, and next work. Substantial decomposition passes to the
 native `to-tickets` output without a shadow copy. The pinned release remains the
@@ -175,7 +175,7 @@ broader external scope.
 
 A provider pin change is a source release decision, not an automatic target
 upgrade. Generate a candidate outside the package with
-`python3 skills/agentic-workflow/scripts/refresh_provider_snapshot.py <output>`;
+`python3 skills/agent-workflow/scripts/refresh_provider_snapshot.py <output>`;
 the maintainer-only command verifies that the annotated tag still resolves to
 the declared commit, that the root and each installed skill tree belong to that
 commit, and that referenced local resources stay within each selected skill
