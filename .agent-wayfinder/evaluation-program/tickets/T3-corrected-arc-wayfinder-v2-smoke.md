@@ -64,6 +64,7 @@ The frozen semantic classifier also retained material misclassifications that
 require manual interpretation. Preserve the frozen machine evidence; repair
 treatment separation and semantic grading only in a new campaign.
 
-Canonical report:
-[`evals/reports/2026-08-15-arc-wayfinder-e2e-v2.md`](../../../../evals/reports/2026-08-15-arc-wayfinder-e2e-v2.md).
-Repetitions and automatic-routing changes remain deferred for human review.
+The original report and machine bundle remain available from Git history at
+`911c248`; they were removed from the current tree by a later user-authorized
+pre-1.0 repository cleanup. Repetitions and automatic-routing changes remain
+deferred for human review.

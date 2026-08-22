@@ -6,7 +6,7 @@ __pycache__/
 /evals/artifacts/*
 !/evals/artifacts/README.md
 
-# Guards for historical/frozen harnesses that still receive an old result root.
+# Guards for historical/frozen harnesses that may leave local raw output behind.
 /evals/itbench-wayfinder/**/results/runs/*/raw/
 /evals/itbench-wayfinder/**/results/runs/*/workspace/
 /evals/itbench-wayfinder/**/results/runs/*/attempts/

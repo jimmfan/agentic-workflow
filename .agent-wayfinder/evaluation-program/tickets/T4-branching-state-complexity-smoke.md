@@ -26,8 +26,7 @@ Completed one isolated six-phase trajectory per condition: A
 `arc-state-a-1-174f804555` and B `arc-state-b-1-de289d15a9`. All twelve fresh
 ephemeral agents had unique execution IDs and exited 0. The frozen evaluator,
 successful isolation audit, phase JSONL, snapshots, result JSON, manual review,
-and report are preserved under
-[`evals/results/arc-wayfinder-state-complexity-v1/`](../../../../evals/results/arc-wayfinder-state-complexity-v1/).
+and report were preserved in the original campaign bundle.
 
 Both arms passed every valid comparison through Phase 5 and the Phase 6 W1
 partial supersession. Vanilla matched explicit Wayfinder while using materially
@@ -36,10 +35,10 @@ less observed runtime, tokens, tools, reading, and state maintenance.
 The intended W4 comparison is confounded by a post-freeze fixture/grader defect:
 the evaluator supplied only an SNS destination while omitting required alarm
 metric semantics, and the frozen acceptance check rewarded B's unsupported
-invented values. A safely declined to invent them. Results remain unchanged and
-are qualified in the [final report](../../../../evals/reports/2026-08-15-arc-wayfinder-state-complexity-v1.md),
-[manual review](../../../../evals/results/arc-wayfinder-state-complexity-v1/manual-review.md),
-and [issues](../../../../evals/results/arc-wayfinder-state-complexity-v1/product-issues.md).
+invented values. A safely declined to invent them. The unchanged original
+report, manual review, issues, and machine evidence remain available from Git
+history at `911c248`; the current-tree bundle was removed by a later
+user-authorized pre-1.0 repository cleanup.
 
 No repetition, automatic-routing change, Wayfinder change, or other product
 change was performed. The next decision is human-reviewed.

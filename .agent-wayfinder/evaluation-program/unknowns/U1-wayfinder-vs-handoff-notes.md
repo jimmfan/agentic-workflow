@@ -36,7 +36,8 @@ On genuinely long-lived work with uncertainty, changing decisions, and interrupt
 
 ## Resolution
 
-Keep open. Preserve v1, v2, and the qualified T4 result. T4 found no valid
+Keep open. Preserve the qualified conclusions from v1, v2, and T4; their
+original artifacts remain available from Git history at `911c248`. T4 found no valid
 Wayfinder outcome advantage and shows that one strong handoff remained
 sufficient in one harder trajectory, but its W4 defect prevents the intended
 final comparison and one pair is not repeatable evidence. No repetition is

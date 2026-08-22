@@ -38,4 +38,6 @@ Implementation + Verification. B completed the final slice and respected every
 phase boundary. A completed it but implemented prematurely during the mapping
 phase. C's implementation is correct on manual inspection, but the frozen
 grader missed its one-hop Terraform local indirection; no repetitions were run.
-See `evals/results/wayfinder-local-state-smoke-v1/evaluation-report.md`.
+The original evaluation report and machine bundle remain available from Git
+history at `911c248`; the current-tree bundle was removed by a later
+user-authorized pre-1.0 repository cleanup.

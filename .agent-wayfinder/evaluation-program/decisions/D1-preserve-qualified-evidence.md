@@ -1,10 +1,15 @@
-# D1: Preserve and qualify every evaluation campaign
+# D1: Preserve and qualify retained evaluation evidence
 
 - Related: U3, T1, T2
 
 ## Decision
 
-Retain every existing campaign in its original evaluator context. Classify preliminary, potentially exposed, contaminated, limited, and clean-at-the-observable-boundary evidence explicitly; do not delete, retroactively regrade, or silently pool unlike campaigns.
+Retain current evaluation evidence in its original evaluator context. Classify
+preliminary, potentially exposed, contaminated, limited, and
+clean-at-the-observable-boundary evidence explicitly. Do not retroactively
+regrade, rewrite, or silently pool unlike campaigns. A later user-authorized
+repository cleanup may remove obsolete current-tree artifacts when the original
+bytes remain recoverable from Git history.
 
 ## Why
 
@@ -21,3 +26,10 @@ Keeping these categories visible preserves learning without overstating causal c
 - Campaign-local reports and JSON remain canonical for their evaluator version.
 - Cross-campaign summaries must carry evidence-quality labels and explain evaluator changes.
 - Contamination is a limitation to disclose, not grounds to erase history.
+
+## Change note
+
+On 2026-08-22, the responsible user authorized removal of obsolete frozen
+campaign artifacts whose product snapshots contained a retired pre-1.0 runtime
+concept. Their contents were not rewritten; the complete original bundles
+remain available from Git history at `911c248`.

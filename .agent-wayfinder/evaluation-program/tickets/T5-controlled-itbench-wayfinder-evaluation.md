@@ -45,5 +45,6 @@ Relative to A, B used 58% more elapsed time and 42% more input tokens; C used
 no durable state; its net contribution was `mixed` in 15/18 grades and
 `not_observable` in 3/18. Domain Modeling was never invoked.
 
-Canonical report:
-`evals/itbench-wayfinder/reports/evaluation-report.md`.
+The original report and machine evidence remain available from Git history at
+`911c248`; the current-tree bundle was removed by a later user-authorized
+pre-1.0 repository cleanup.
