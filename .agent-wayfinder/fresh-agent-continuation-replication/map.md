@@ -35,37 +35,30 @@ Its artifacts under `evals/results/wayfinder-fresh-agent-continuation-v1/` and
 the v1 campaign, prompt, fixture, treatment, grader, and raw evidence are
 immutable historical evidence.
 
-The v2 harness is implemented on
-`experiment/wayfinder-fresh-agent-continuation`. It archives the product and
-fixture from `911c248c`, creates eight separate Git roots, reuses the reviewed
-v1 control patch, and mechanically rejects any B/C difference outside the two
-treatment paths. V1 paths are checked against branch baseline `46a08a9` and
-remain unchanged.
+The frozen v2 campaign completed all 16 fresh live phases in the preregistered
+B/C order. Preflight passed exact candidate/runtime, treatment-only diff,
+byte-identical prompts, identical explicit environments, separate Git roots,
+candidate fixture/grader provenance, and v1 immutability. Raw evidence remains
+locally preserved; compact results and frozen-rubric semantic reviews are under
+`evals/results/wayfinder-fresh-agent-continuation-v2/`.
 
-The corrected JSONL parser ends the reconstruction window on the first
-`file_change` event. Each Codex process receives a unique auth-only
-`CODEX_HOME`; spawned agent shells inherit nothing and receive only an explicit
-fixed PATH, empty run-scoped HOME, locale, terminal, and pager values. Login
-shells and workspace-write network access are disabled. The frozen semantic
-rubric keeps correctness and state-quality review separate from efficiency.
-
-Focused v2/storage tests, all 92 evaluation tests, and all 132 package tests
-pass. No live evaluated process has started and no frozen v2 result exists yet.
+V2 observed correct completion in B 4/4 and C 3/4. C2 lost the exact AMI fact
+that phase one had preserved and manufactured a replacement required input.
+Across the separate descriptive v1+v2 view, completion is tied B 4/5 and C 4/5,
+while exact fact recovery is B 5/5 and C 4/5. Because v2 reverses the one-run v1
+direction, the classification is **Unresolved**: the exact refinement has not
+shown a repeatable advantage. No product behavior changed.
 
 ## Blockers and dependencies
 
-- Live execution remains blocked on the pre-live two-axis review, committing the
-  reviewed harness, freezing all inputs, and passing recorded preflight.
-- Once the first evaluated run starts, the campaign is immutable. Any further
-  harness defect must be recorded rather than repaired unless it invalidates
-  the campaign, in which case execution stops.
+None for this campaign. The remaining publication step is the authorized commit
+and push to the experiment branch only.
 
 ## Next work
 
-Complete the Standards and Spec review. Resolve any findings, commit the
-reviewed harness, freeze the candidate/treatment/prompts/fixture/mutation/grader/
-rubric/parser/environment/runtime/order, and run recorded preflight immediately
-before the first trajectory.
+Publish the verified result. Do not automatically run further repetitions.
+If a later adoption decision needs a more stable failure estimate, preregister a
+larger matched campaign as a separate effort.
 
 ## Notes
 
@@ -78,6 +71,11 @@ before the first trajectory.
 - Preserve machine-reviewable treatment and environment equality evidence,
   unique execution/thread identifiers, raw evidence, primitive per-run results,
   and the preregistered order.
+
+- Canonical report:
+  [`evals/results/wayfinder-fresh-agent-continuation-v2/report.md`](../../evals/results/wayfinder-fresh-agent-continuation-v2/report.md).
+- Frozen evaluator, preflight, summary, and per-run evidence sit beside the
+  report. The harness is frozen at commit `f5ddbd0`.
 
 The preregistered leading order is B, C, C, B across four paired repetitions;
 within each pair both phase-one processes precede phase two and phase-two order

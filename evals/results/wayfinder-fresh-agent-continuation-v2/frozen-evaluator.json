@@ -1,0 +1,104 @@
+{
+  "approval_policy": "never",
+  "campaign_id": "wayfinder-fresh-agent-continuation-v2",
+  "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+  "candidate_product_sha256": {
+    ".agent-workflow/contracts/wayfinder-state.md": "019c9b406c79713897ae58f4b6e8f41733987e2d596021847c7927cb84c74e85",
+    ".agents/skills/wayfinder/SKILL.md": "8a1cbf6f1ad12be66611576802d6b16d1c4416afe919c14cd3399f8ceeeacb4f",
+    "skills/agent-workflow/VERSION": "1e2014bb4df1afe535af98f048e6e3772508e5273c142f83b9fc747b40f9cf4d",
+    "skills/agent-workflow/scripts/adopt.py": "92595fc415112889377df26d533e2f12846a63c76e98f2dd2d43f1e0bc468eba"
+  },
+  "candidate_tree_fingerprint": {
+    "aggregate_sha256": "e627f5e96652d4b1e63f2c38427fa7ba5afbb299927043cf54c19da28c203bb8",
+    "regular_file_count": 793
+  },
+  "codex_cli_version": "codex-cli 0.144.6",
+  "codex_executable": "/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex",
+  "critical_sha256": {
+    "evals/arc_wayfinder_v2.py": "5a4f51dede35d72596d3fe82ada173bf762c0f9f7c43287fde9fcf4321f94df1",
+    "evals/campaigns/wayfinder-fresh-agent-continuation-v2.json": "77881b437dced1c3fd1df0389faf79e5ab1d64fec80a73a26fb8082ee6ba1e7a",
+    "evals/run.py": "aba793d6639defb6da568a754866acc0bf61cddc95c73d13ffc24a553d59620e",
+    "evals/scenarios/resume/fixture/README.md": "60a27a5644d323da68393e63ca88d24f00507a2bf12d9d82173b076f3b7fba84",
+    "evals/scenarios/resume/fixture/docs/runner-requirements.md": "41fee739b8e8592ca24282ecde9cd8ecff2ceb7abb121bc66bbbea9955bb01cf",
+    "evals/scenarios/resume/fixture/inputs/transient-platform-facts.md": "28841d85d02ffc10f736bb86b6199a9a8e18560f55a6189ef83705cacb4483b3",
+    "evals/scenarios/resume/fixture/terraform/main.tf": "372c83a9a779be2dfe7f9cdc209874f52b5113a7ecb76a31b6ce9def11f8bf91",
+    "evals/scenarios/resume/fixture/terraform/outputs.tf": "48740c4791fc6fcf940ca830c13b03cdc424b79788288babe2836f76c6348e8f",
+    "evals/scenarios/resume/fixture/terraform/variables.tf": "2af9dcb2e8ddf65e736512fd4889102be4d64bd2322685425e690b3b921d44fa",
+    "evals/scenarios/resume/phase-2-mutation/docs/decisions/D1-runner-architecture.md": "42eb560693ad436d0b9718073f4ae3d63d741ef010337f44f6edb287942e4137",
+    "evals/scenarios/wayfinder-fresh-agent-continuation-v1/matched-old-wayfinder.patch": "a52fd7950385e0041aa9e72e4a322ee83d9234dec5ecf3476705abbd7ce032da",
+    "evals/scenarios/wayfinder-fresh-agent-continuation-v2/semantic-review-rubric.json": "456a0edf2cb0df48483060408ae41e393bfb07df6ebe82dddac0d749fc71f7e2",
+    "evals/wayfinder_fresh_agent_continuation_v2.py": "3572eb5f28a9d892dd8d616b15bba1259b621f754dd5292fc2e9c7fcb1e4ff3d"
+  },
+  "environment": {
+    "agent_home_and_codex_home_are_run_scoped": true,
+    "agent_shell_policy": {
+      "inherit": "none",
+      "set": {
+        "GIT_PAGER": "cat",
+        "HOME": "<UNIQUE_EMPTY_AGENT_HOME>",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "NO_COLOR": "1",
+        "PAGER": "cat",
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "SHELL": "/bin/zsh",
+        "TERM": "dumb",
+        "TMPDIR": "/private/tmp"
+      }
+    },
+    "codex_process": {
+      "CODEX_HOME": "<UNIQUE_AUTH_ONLY_CODEX_HOME>",
+      "HOME": "<UNIQUE_AUTH_ONLY_CODEX_HOME>",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "NO_COLOR": "1",
+      "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      "TERM": "dumb",
+      "TMPDIR": "/private/tmp"
+    }
+  },
+  "execution_order": [
+    "B1:1",
+    "C1:1",
+    "B1:2",
+    "C1:2",
+    "C2:1",
+    "B2:1",
+    "C2:2",
+    "B2:2",
+    "C3:1",
+    "B3:1",
+    "C3:2",
+    "B3:2",
+    "B4:1",
+    "C4:1",
+    "B4:2",
+    "C4:2"
+  ],
+  "frozen_at": "2026-08-22T19:28:20.455439+00:00",
+  "model": "gpt-5.6-terra",
+  "prompts_sha256": {
+    "B": {
+      "1": "2eb3f822709b91b4fdab0fe7931c7cb4742283a1f1bf4c0faa81985c63b4e34a",
+      "2": "81929c3c59598c78b187f170ced2637cf5bc0501b7b6d3b986475e102d3a1661"
+    },
+    "C": {
+      "1": "2eb3f822709b91b4fdab0fe7931c7cb4742283a1f1bf4c0faa81985c63b4e34a",
+      "2": "81929c3c59598c78b187f170ced2637cf5bc0501b7b6d3b986475e102d3a1661"
+    }
+  },
+  "reasoning_effort": "medium",
+  "rule": "Any critical-file, candidate-product, runtime, prompt, environment, or order mismatch invalidates execution; never refreeze after live evidence.",
+  "sandbox": "workspace-write",
+  "schema_version": 1,
+  "source_git_sha": "f5ddbd0d7ebc642708e0280c376ec0a079c100ba",
+  "v1_base_git_sha": "46a08a9b0df004b218591503a22ebdcebe516fbc",
+  "v1_immutable_paths": [
+    ".agent-wayfinder/context-compiler-architecture/map.md",
+    "evals/wayfinder_fresh_agent_continuation.py",
+    "evals/tests/test_wayfinder_fresh_agent_continuation.py",
+    "evals/campaigns/wayfinder-fresh-agent-continuation-v1.json",
+    "evals/scenarios/wayfinder-fresh-agent-continuation-v1",
+    "evals/results/wayfinder-fresh-agent-continuation-v1"
+  ]
+}

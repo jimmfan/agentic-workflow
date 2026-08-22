@@ -1,0 +1,93 @@
+{
+  "campaign_id": "wayfinder-fresh-agent-continuation-v2",
+  "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+  "checks": {
+    "balanced_preregistered_order": true,
+    "bc_diff_is_treatment_only": true,
+    "candidate_retains_treatment": true,
+    "candidate_sha_exact": true,
+    "codex_cli_version_exact": true,
+    "environment_policy_identical": true,
+    "exact_runtime": true,
+    "fixture_and_grader_match_candidate": true,
+    "frozen_evaluator_valid": true,
+    "matched_control_only_changes_treatment_paths": true,
+    "prompts_B_C_byte_identical": true,
+    "separate_git_roots": true,
+    "v1_artifacts_unchanged": true
+  },
+  "environment": {
+    "agent_home_and_codex_home_are_run_scoped": true,
+    "agent_shell_policy": {
+      "inherit": "none",
+      "set": {
+        "GIT_PAGER": "cat",
+        "HOME": "<UNIQUE_EMPTY_AGENT_HOME>",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "NO_COLOR": "1",
+        "PAGER": "cat",
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "SHELL": "/bin/zsh",
+        "TERM": "dumb",
+        "TMPDIR": "/private/tmp"
+      }
+    },
+    "codex_process": {
+      "CODEX_HOME": "<UNIQUE_AUTH_ONLY_CODEX_HOME>",
+      "HOME": "<UNIQUE_AUTH_ONLY_CODEX_HOME>",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "NO_COLOR": "1",
+      "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      "TERM": "dumb",
+      "TMPDIR": "/private/tmp"
+    }
+  },
+  "execution_order": [
+    "B1:1",
+    "C1:1",
+    "B1:2",
+    "C1:2",
+    "C2:1",
+    "B2:1",
+    "C2:2",
+    "B2:2",
+    "C3:1",
+    "B3:1",
+    "C3:2",
+    "B3:2",
+    "B4:1",
+    "C4:1",
+    "B4:2",
+    "C4:2"
+  ],
+  "prompt_sha256": {
+    "B": {
+      "1": "2eb3f822709b91b4fdab0fe7931c7cb4742283a1f1bf4c0faa81985c63b4e34a",
+      "2": "81929c3c59598c78b187f170ced2637cf5bc0501b7b6d3b986475e102d3a1661"
+    },
+    "C": {
+      "1": "2eb3f822709b91b4fdab0fe7931c7cb4742283a1f1bf4c0faa81985c63b4e34a",
+      "2": "81929c3c59598c78b187f170ced2637cf5bc0501b7b6d3b986475e102d3a1661"
+    }
+  },
+  "recorded_at": "2026-08-22T19:28:57.513171+00:00",
+  "runner_controls": [
+    "codex exec --ephemeral",
+    "unique auth-only CODEX_HOME per phase",
+    "unique empty agent HOME per phase",
+    "--ignore-user-config --ignore-rules --strict-config",
+    "shell_environment_policy.inherit=none plus explicit set values",
+    "allow_login_shell=false",
+    "workspace-write network_access=false",
+    "separate fixture Git roots",
+    "raw traces and graders outside evaluated repositories"
+  ],
+  "schema_version": 1,
+  "status": "passed",
+  "treatment_paths": [
+    ".agent-workflow/contracts/wayfinder-state.md",
+    ".agents/skills/wayfinder/SKILL.md"
+  ]
+}

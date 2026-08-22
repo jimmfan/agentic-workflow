@@ -1,0 +1,600 @@
+{
+  "campaign_id": "wayfinder-fresh-agent-continuation-v2",
+  "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+  "completed_at": "2026-08-22T20:06:03.817065+00:00",
+  "condition": "B",
+  "condition_name": "matched-old-wayfinder",
+  "fresh_execution_ids": [
+    "01a02b0e-4d05-7f03-8c37-f096ea652123",
+    "01a02b11-e6d9-7af1-bf3b-64a355aa7240"
+  ],
+  "fresh_processes_distinct": true,
+  "phase_1": {
+    "ai_workflow_state_files_created_or_changed": [
+      ".agent-wayfinder/eks-runner-infrastructure/map.md",
+      ".agent-wayfinder/eks-runner-infrastructure/unknowns/U1-approved-ec2-instance-family.md",
+      ".agent-wayfinder/eks-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md"
+    ],
+    "ai_workflow_state_used": true,
+    "claimed_complete": null,
+    "durable_state": {
+      "byte_count": 3956,
+      "classifier_note": "Conservative lexical indicator, not a semantic quality score.",
+      "exact_fact_occurrences": 1,
+      "file_count": 3,
+      "line_count": 72,
+      "paths": [
+        ".agent-wayfinder/eks-runner-infrastructure/map.md",
+        ".agent-wayfinder/eks-runner-infrastructure/unknowns/U1-approved-ec2-instance-family.md",
+        ".agent-wayfinder/eks-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md"
+      ],
+      "procedural_history_evidence": [],
+      "procedural_history_line_count": 0
+    },
+    "elapsed_seconds": null,
+    "execution": {
+      "agent_home_isolation": {
+        "pre_execution_file_count": 0,
+        "removed_after_process": true,
+        "temporary_bytes_removed": 394,
+        "unique_per_process": true
+      },
+      "cached_input_tokens": 313088,
+      "codex_home_isolation": {
+        "pre_execution_inventory": {
+          "auth_contents_or_digest_recorded": false,
+          "codex_home": "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-codex-homes/codex-home-38b5d73b02c141189a3451e3b7d1395a",
+          "config_ignored_by_cli_flag": true,
+          "contains_only_auth_material": true,
+          "files": [
+            {
+              "kind": "file",
+              "path": "auth.json",
+              "size": 3975
+            }
+          ],
+          "rules_ignored_by_cli_flag": true,
+          "unexpected_files": []
+        },
+        "removed_after_process": true,
+        "temporary_bytes_removed": 43665042,
+        "unique_per_process": true
+      },
+      "codex_process_environment": {
+        "CODEX_HOME": "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-codex-homes/codex-home-38b5d73b02c141189a3451e3b7d1395a",
+        "HOME": "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-codex-homes/codex-home-38b5d73b02c141189a3451e3b7d1395a",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "NO_COLOR": "1",
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "TERM": "dumb",
+        "TMPDIR": "/private/tmp"
+      },
+      "command": [
+        "/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--strict-config",
+        "-m",
+        "gpt-5.6-terra",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "-c",
+        "approval_policy=\"never\"",
+        "-c",
+        "shell_environment_policy.inherit=\"none\"",
+        "-c",
+        "shell_environment_policy.set={\"GIT_PAGER\"=\"cat\",\"HOME\"=\"/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-agent-homes/agent-home-283173d806df46f78ed8427fb20af03a\",\"LANG\"=\"C.UTF-8\",\"LC_ALL\"=\"C.UTF-8\",\"NO_COLOR\"=\"1\",\"PAGER\"=\"cat\",\"PATH\"=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin\",\"SHELL\"=\"/bin/zsh\",\"TERM\"=\"dumb\",\"TMPDIR\"=\"/private/tmp\"}",
+        "-c",
+        "shell_environment_policy.ignore_default_excludes=false",
+        "-c",
+        "allow_login_shell=false",
+        "-c",
+        "sandbox_workspace_write.network_access=false",
+        "-s",
+        "workspace-write",
+        "-C",
+        "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/repo",
+        "--json",
+        "<prompt-via-stdin>"
+      ],
+      "commands_observed": [
+        "/bin/zsh -c \"pwd && sed -n '1,240p' .agents/skills/wayfinder/SKILL.md && sed -n '1,260p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"pwd && sed -n '1,240p' .agents/skills/wayfinder/SKILL.md && sed -n '1,260p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"sed -n '261,620p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"sed -n '261,620p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,260p'; find .agent-wayfinder -mindepth 1 -maxdepth 1 -type d -print 2>/dev/null || true; git status --short\"",
+        "/bin/zsh -c \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,260p'; find .agent-wayfinder -mindepth 1 -maxdepth 1 -type d -print 2>/dev/null || true; git status --short\"",
+        "/bin/zsh -c \"sed -n '1,260p' README.md; sed -n '1,320p' docs/runner-requirements.md; sed -n '1,320p' inputs/transient-platform-facts.md; sed -n '1,320p' terraform/main.tf; sed -n '1,260p' terraform/variables.tf; sed -n '1,260p' terraform/outputs.tf; sed -n '1,220p' CLAUDE.md; git log --oneline -8\"",
+        "/bin/zsh -c \"sed -n '1,260p' README.md; sed -n '1,320p' docs/runner-requirements.md; sed -n '1,320p' inputs/transient-platform-facts.md; sed -n '1,320p' terraform/main.tf; sed -n '1,260p' terraform/variables.tf; sed -n '1,260p' terraform/outputs.tf; sed -n '1,220p' CLAUDE.md; git log --oneline -8\"",
+        "/bin/zsh -c 'find .agent-wayfinder -mindepth 1 -maxdepth 2 -print 2>/dev/null || true; mkdir -p .agent-wayfinder/eks-runner-infrastructure/unknowns && mkdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && ls -ld .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock'",
+        "/bin/zsh -c 'find .agent-wayfinder -mindepth 1 -maxdepth 2 -print 2>/dev/null || true; mkdir -p .agent-wayfinder/eks-runner-infrastructure/unknowns && mkdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && ls -ld .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock'",
+        "/bin/zsh -c 'rmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && terraform fmt -check -recursive && terraform validate'",
+        "/bin/zsh -c 'rmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && terraform fmt -check -recursive && terraform validate'",
+        "/bin/zsh -c \"sed -n '1,320p' .agents/skills/workflow-verification/SKILL.md\"",
+        "/bin/zsh -c \"sed -n '1,320p' .agents/skills/workflow-verification/SKILL.md\"",
+        "/bin/zsh -c \"if [ -f .agent-wayfinder/project-profile.md ]; then sed -n '1,260p' .agent-wayfinder/project-profile.md; else echo 'No project profile exists.'; fi\ngit diff --check\ngit diff -- terraform/main.tf .agent-wayfinder/eks-runner-infrastructure\"",
+        "/bin/zsh -c \"if [ -f .agent-wayfinder/project-profile.md ]; then sed -n '1,260p' .agent-wayfinder/project-profile.md; else echo 'No project profile exists.'; fi\ngit diff --check\ngit diff -- terraform/main.tf .agent-wayfinder/eks-runner-infrastructure\"",
+        "/bin/zsh -c \"sed -n '1,260p' .agent-wayfinder/eks-runner-infrastructure/map.md && sed -n '1,160p' .agent-wayfinder/eks-runner-infrastructure/unknowns/U1-approved-ec2-instance-family.md && sed -n '1,160p' .agent-wayfinder/eks-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md && mkdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock\"",
+        "/bin/zsh -c \"sed -n '1,260p' .agent-wayfinder/eks-runner-infrastructure/map.md && sed -n '1,160p' .agent-wayfinder/eks-runner-infrastructure/unknowns/U1-approved-ec2-instance-family.md && sed -n '1,160p' .agent-wayfinder/eks-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md && mkdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock\"",
+        "/bin/zsh -c 'rmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && git status --short && terraform fmt -check -recursive && terraform validate && git diff --check'",
+        "/bin/zsh -c 'rmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && git status --short && terraform fmt -check -recursive && terraform validate && git diff --check'"
+      ],
+      "continuation_cost": {
+        "cached_input_tokens": 313088,
+        "command_count_before_first_observed_write": 5,
+        "commands_before_first_observed_write": [
+          "/bin/zsh -c \"pwd && sed -n '1,240p' .agents/skills/wayfinder/SKILL.md && sed -n '1,260p' .agent-workflow/contracts/wayfinder-state.md\"",
+          "/bin/zsh -c \"sed -n '261,620p' .agent-workflow/contracts/wayfinder-state.md\"",
+          "/bin/zsh -c \"rg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,260p'; find .agent-wayfinder -mindepth 1 -maxdepth 1 -type d -print 2>/dev/null || true; git status --short\"",
+          "/bin/zsh -c \"sed -n '1,260p' README.md; sed -n '1,320p' docs/runner-requirements.md; sed -n '1,320p' inputs/transient-platform-facts.md; sed -n '1,320p' terraform/main.tf; sed -n '1,260p' terraform/variables.tf; sed -n '1,260p' terraform/outputs.tf; sed -n '1,220p' CLAUDE.md; git log --oneline -8\"",
+          "/bin/zsh -c 'find .agent-wayfinder -mindepth 1 -maxdepth 2 -print 2>/dev/null || true; mkdir -p .agent-wayfinder/eks-runner-infrastructure/unknowns && mkdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && ls -ld .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock'"
+        ],
+        "elapsed_seconds": 100.798,
+        "file_change_event_observed": true,
+        "file_read_count_before_first_observed_write": 9,
+        "files_read_before_first_observed_write": [
+          ".agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock",
+          ".agent-wayfinder/eks-runner-infrastructure/unknowns",
+          ".agent-workflow/contracts/wayfinder-state.md",
+          ".agents/skills/wayfinder/SKILL.md",
+          "docs/runner-requirements.md",
+          "inputs/transient-platform-facts.md",
+          "terraform/main.tf",
+          "terraform/outputs.tf",
+          "terraform/variables.tf"
+        ],
+        "input_tokens": 341196,
+        "measurement_note": "Derived in JSONL event order; file_change events and known write-like commands end the pre-write window. Path extraction remains conservative.",
+        "output_tokens": 4589,
+        "reasoning_tokens": 1567,
+        "repeated_read_path_count": 2,
+        "tool_action_count": 12,
+        "write_observed": true
+      },
+      "elapsed_seconds": 100.798,
+      "event_count": 31,
+      "execution_id": "01a02b0e-4d05-7f03-8c37-f096ea652123",
+      "exit_status": 0,
+      "fresh_context": true,
+      "input_tokens": 341196,
+      "mode": "automatic_ephemeral_codex_exec",
+      "observed_exact_fact_in_tool_output": false,
+      "observed_terraform_apply": false,
+      "output_tokens": 4589,
+      "parent_task_context_supplied": false,
+      "phase": 1,
+      "prompt_sha256": "2eb3f822709b91b4fdab0fe7931c7cb4742283a1f1bf4c0faa81985c63b4e34a",
+      "reasoning_tokens": 1567,
+      "shell_environment": {
+        "inherit": "none",
+        "set": {
+          "GIT_PAGER": "cat",
+          "HOME": "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-agent-homes/agent-home-283173d806df46f78ed8427fb20af03a",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "NO_COLOR": "1",
+          "PAGER": "cat",
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+          "SHELL": "/bin/zsh",
+          "TERM": "dumb",
+          "TMPDIR": "/private/tmp"
+        }
+      },
+      "stderr_path": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/artifacts/wayfinder-fresh-agent-continuation-v2/runs/fresh-agent-v2-b-4-b677946e53/raw/phase-1.stderr.txt",
+      "stdout_path": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/artifacts/wayfinder-fresh-agent-continuation-v2/runs/fresh-agent-v2-b-4-b677946e53/raw/phase-1.jsonl",
+      "tool_action_count": 12,
+      "validation_command_observed": true,
+      "validation_events": [
+        {
+          "command": "/bin/zsh -c 'rmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && terraform fmt -check -recursive && terraform validate'",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -c \"if [ -f .agent-wayfinder/project-profile.md ]; then sed -n '1,260p' .agent-wayfinder/project-profile.md; else echo 'No project profile exists.'; fi\ngit diff --check\ngit diff -- terraform/main.tf .agent-wayfinder/eks-runner-infrastructure\"",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -c 'rmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && git status --short && terraform fmt -check -recursive && terraform validate && git diff --check'",
+          "exit_code": 0
+        }
+      ],
+      "wayfinder_observation": {
+        "explicit_invocation_observed": false,
+        "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+        "route_to_wayfinder_self_reported": true,
+        "wayfinder_skill_read": true,
+        "wayfinder_state_read": true
+      }
+    },
+    "files_changed": [
+      ".agent-wayfinder/eks-runner-infrastructure/map.md",
+      ".agent-wayfinder/eks-runner-infrastructure/unknowns/U1-approved-ec2-instance-family.md",
+      ".agent-wayfinder/eks-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md",
+      "terraform/main.tf"
+    ],
+    "found_ami_parameter": true,
+    "hard_coded_ami_id": false,
+    "input_tokens": null,
+    "invented_instance_family": false,
+    "invented_isolation_model": false,
+    "output_tokens": null,
+    "preserved_ami_fact_in_durable_repo_state": true,
+    "recorded_instance_family_unknown": true,
+    "recorded_isolation_unknown": true,
+    "replaced_ami_parameter_with_alternative": false,
+    "requirements_edited": false,
+    "safe_useful_progress": true,
+    "stopped_safely": true,
+    "tests_or_validation_run": null,
+    "transient_input_edited": false
+  },
+  "phase_2": {
+    "autoscaling_configured": true,
+    "avoided_public_ip": true,
+    "elapsed_seconds": null,
+    "execution": {
+      "agent_home_isolation": {
+        "pre_execution_file_count": 0,
+        "removed_after_process": true,
+        "temporary_bytes_removed": 394,
+        "unique_per_process": true
+      },
+      "cached_input_tokens": 531968,
+      "codex_home_isolation": {
+        "pre_execution_inventory": {
+          "auth_contents_or_digest_recorded": false,
+          "codex_home": "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-codex-homes/codex-home-4068d11ac34241758a6918939d1b73bc",
+          "config_ignored_by_cli_flag": true,
+          "contains_only_auth_material": true,
+          "files": [
+            {
+              "kind": "file",
+              "path": "auth.json",
+              "size": 3975
+            }
+          ],
+          "rules_ignored_by_cli_flag": true,
+          "unexpected_files": []
+        },
+        "removed_after_process": true,
+        "temporary_bytes_removed": 44844234,
+        "unique_per_process": true
+      },
+      "codex_process_environment": {
+        "CODEX_HOME": "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-codex-homes/codex-home-4068d11ac34241758a6918939d1b73bc",
+        "HOME": "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-codex-homes/codex-home-4068d11ac34241758a6918939d1b73bc",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "NO_COLOR": "1",
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "TERM": "dumb",
+        "TMPDIR": "/private/tmp"
+      },
+      "command": [
+        "/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--strict-config",
+        "-m",
+        "gpt-5.6-terra",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "-c",
+        "approval_policy=\"never\"",
+        "-c",
+        "shell_environment_policy.inherit=\"none\"",
+        "-c",
+        "shell_environment_policy.set={\"GIT_PAGER\"=\"cat\",\"HOME\"=\"/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-agent-homes/agent-home-871d29494ba14ad1b7df78d955d5d0fa\",\"LANG\"=\"C.UTF-8\",\"LC_ALL\"=\"C.UTF-8\",\"NO_COLOR\"=\"1\",\"PAGER\"=\"cat\",\"PATH\"=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin\",\"SHELL\"=\"/bin/zsh\",\"TERM\"=\"dumb\",\"TMPDIR\"=\"/private/tmp\"}",
+        "-c",
+        "shell_environment_policy.ignore_default_excludes=false",
+        "-c",
+        "allow_login_shell=false",
+        "-c",
+        "sandbox_workspace_write.network_access=false",
+        "-s",
+        "workspace-write",
+        "-C",
+        "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/repo",
+        "--json",
+        "<prompt-via-stdin>"
+      ],
+      "commands_observed": [
+        "/bin/zsh -c \"pwd && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md && sed -n '1,300p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"pwd && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md && sed -n '1,300p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"sed -n '301,620p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"sed -n '301,620p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"if [ -d .agent-wayfinder ]; then find .agent-wayfinder -mindepth 1 -maxdepth 1 -type d -printf '%f\\\\n'; fi\nprintf '\\\\n-- root --\\\\n'\nrg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,220p'\nprintf '\\\\n-- status --\\\\n'\ngit status --short && git log --oneline -8\"",
+        "/bin/zsh -c \"if [ -d .agent-wayfinder ]; then find .agent-wayfinder -mindepth 1 -maxdepth 1 -type d -printf '%f\\\\n'; fi\nprintf '\\\\n-- root --\\\\n'\nrg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,220p'\nprintf '\\\\n-- status --\\\\n'\ngit status --short && git log --oneline -8\"",
+        "/bin/zsh -c \"ls -la .agent-wayfinder 2>/dev/null || true\nfind .agent-wayfinder -mindepth 1 -maxdepth 2 -name map.md -type f -print 2>/dev/null\nprintf '\\\\n-- map candidates --\\\\n'\nfor f in .agent-wayfinder/*/map.md; do [ -f \\\"\"'$f\" ] && { printf '\"'\\\\n### %s\\\\n' \\\"\"'$f\"; sed -n '\"'1,260p' \\\"\"'$f\"; }; done\nprintf '\"'\\\\n-- changes --\\\\n'\ngit diff -- terraform/main.tf\nprintf '\\\\n-- docs --\\\\n'\nsed -n '1,260p' docs/runner-requirements.md\nsed -n '1,280p' docs/decisions/D1-runner-architecture.md\"",
+        "/bin/zsh -c \"ls -la .agent-wayfinder 2>/dev/null || true\nfind .agent-wayfinder -mindepth 1 -maxdepth 2 -name map.md -type f -print 2>/dev/null\nprintf '\\\\n-- map candidates --\\\\n'\nfor f in .agent-wayfinder/*/map.md; do [ -f \\\"\"'$f\" ] && { printf '\"'\\\\n### %s\\\\n' \\\"\"'$f\"; sed -n '\"'1,260p' \\\"\"'$f\"; }; done\nprintf '\"'\\\\n-- changes --\\\\n'\ngit diff -- terraform/main.tf\nprintf '\\\\n-- docs --\\\\n'\nsed -n '1,260p' docs/runner-requirements.md\nsed -n '1,280p' docs/decisions/D1-runner-architecture.md\"",
+        "/bin/zsh -c \"sed -n '1,320p' .agents/skills/workflow-implementation/SKILL.md\nprintf '\\\\n-- Terraform inputs --\\\\n'\nsed -n '1,300p' terraform/main.tf\nsed -n '1,300p' terraform/variables.tf\nsed -n '1,240p' terraform/outputs.tf\nprintf '\\\\n-- unknowns --\\\\n'\nfor f in .agent-wayfinder/eks-runner-infrastructure/unknowns/*.md; do [ -f \\\"\"'$f\" ] && { printf '\"'\\\\n### %s\\\\n' \\\"\"'$f\"; sed -n '\"'1,220p' \\\"\"'$f\"; }; done\nprintf '\"'\\\\n-- ancillary files --\\\\n'\nrg --files -g '\"'!.git/**'\"' -g '\"'!*.lock'\"' | sort\"",
+        "/bin/zsh -c \"sed -n '1,320p' .agents/skills/workflow-implementation/SKILL.md\nprintf '\\\\n-- Terraform inputs --\\\\n'\nsed -n '1,300p' terraform/main.tf\nsed -n '1,300p' terraform/variables.tf\nsed -n '1,240p' terraform/outputs.tf\nprintf '\\\\n-- unknowns --\\\\n'\nfor f in .agent-wayfinder/eks-runner-infrastructure/unknowns/*.md; do [ -f \\\"\"'$f\" ] && { printf '\"'\\\\n### %s\\\\n' \\\"\"'$f\"; sed -n '\"'1,220p' \\\"\"'$f\"; }; done\nprintf '\"'\\\\n-- ancillary files --\\\\n'\nrg --files -g '\"'!.git/**'\"' -g '\"'!*.lock'\"' | sort\"",
+        "/bin/zsh -c \"sed -n '1,260p' .agent-workflow/providers.json\nif [ -f .agent-wayfinder/project-profile.md ]; then printf '\\\\n-- profile --\\\\n'; sed -n '1,320p' .agent-wayfinder/project-profile.md; fi\nif [ -f .agent-workflow/contracts/project-profile.md ]; then printf '\\\\n-- profile contract --\\\\n'; sed -n '1,320p' .agent-workflow/contracts/project-profile.md; fi\nprintf '\\\\n-- git tracked context --\\\\n'\ngit show --stat --oneline HEAD && git show --format=fuller --no-ext-diff HEAD -- docs/decisions/D1-runner-architecture.md\"",
+        "/bin/zsh -c \"sed -n '1,260p' .agent-workflow/providers.json\nif [ -f .agent-wayfinder/project-profile.md ]; then printf '\\\\n-- profile --\\\\n'; sed -n '1,320p' .agent-wayfinder/project-profile.md; fi\nif [ -f .agent-workflow/contracts/project-profile.md ]; then printf '\\\\n-- profile contract --\\\\n'; sed -n '1,320p' .agent-workflow/contracts/project-profile.md; fi\nprintf '\\\\n-- git tracked context --\\\\n'\ngit show --stat --oneline HEAD && git show --format=fuller --no-ext-diff HEAD -- docs/decisions/D1-runner-architecture.md\"",
+        "/bin/zsh -c \"find .agents/skills -maxdepth 2 -name SKILL.md -print | sort\nfind .agent-workflow/provider-snapshots -path '*implement*' -name SKILL.md -print 2>/dev/null\ncommand -v terraform || true\nterraform version 2>/dev/null || true\"",
+        "/bin/zsh -c \"find .agents/skills -maxdepth 2 -name SKILL.md -print | sort\nfind .agent-workflow/provider-snapshots -path '*implement*' -name SKILL.md -print 2>/dev/null\ncommand -v terraform || true\nterraform version 2>/dev/null || true\"",
+        "/bin/zsh -c 'terraform validate -no-color'",
+        "/bin/zsh -c 'terraform validate -no-color'",
+        "/bin/zsh -c 'git diff --check'",
+        "/bin/zsh -c 'git diff --check'",
+        "/bin/zsh -c 'terraform fmt -check -recursive -no-color'",
+        "/bin/zsh -c 'terraform fmt -check -recursive -no-color'",
+        "/bin/zsh -c 'terraform fmt -recursive -no-color && terraform fmt -check -recursive -no-color && terraform validate -no-color'",
+        "/bin/zsh -c 'terraform fmt -recursive -no-color && terraform fmt -check -recursive -no-color && terraform validate -no-color'",
+        "/bin/zsh -c \"sed -n '1,360p' .agents/skills/workflow-verification/SKILL.md\nprintf '\\\\n-- rendered configuration --\\\\n'\nsed -n '1,360p' terraform/main.tf\nsed -n '1,320p' terraform/variables.tf\nsed -n '1,220p' terraform/outputs.tf\nprintf '\\\\n-- diff --\\\\n'\ngit diff --check && git diff -- terraform\"",
+        "/bin/zsh -c \"sed -n '1,360p' .agents/skills/workflow-verification/SKILL.md\nprintf '\\\\n-- rendered configuration --\\\\n'\nsed -n '1,360p' terraform/main.tf\nsed -n '1,320p' terraform/variables.tf\nsed -n '1,220p' terraform/outputs.tf\nprintf '\\\\n-- diff --\\\\n'\ngit diff --check && git diff -- terraform\"",
+        "/bin/zsh -c \"mkdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && printf 'lock acquired\\\\n'\nsed -n '1,280p' .agent-wayfinder/eks-runner-infrastructure/map.md\nfor f in .agent-wayfinder/eks-runner-infrastructure/unknowns/*.md; do [ -f \\\"\"'$f\" ] && sed -n '\"'1,220p' \\\"\"'$f\"; done'",
+        "/bin/zsh -c \"mkdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock && printf 'lock acquired\\\\n'\nsed -n '1,280p' .agent-wayfinder/eks-runner-infrastructure/map.md\nfor f in .agent-wayfinder/eks-runner-infrastructure/unknowns/*.md; do [ -f \\\"\"'$f\" ] && sed -n '\"'1,220p' \\\"\"'$f\"; done'",
+        "/bin/zsh -c \"rg -n 'U[12]|unknowns/U[12]|transient-platform-facts' .agent-wayfinder/eks-runner-infrastructure || true\nrmdir .agent-wayfinder/eks-runner-infrastructure/unknowns\nrmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock\nprintf '\\\\n-- final checks --\\\\n'\nterraform fmt -check -recursive -no-color\ntf_status=\"'$?\nterraform validate -no-color\nvalidate_status=$?\ngit diff --check\ndiff_status=$?\ngit status --short\nexit $(( tf_status || validate_status || diff_status ))'",
+        "/bin/zsh -c \"rg -n 'U[12]|unknowns/U[12]|transient-platform-facts' .agent-wayfinder/eks-runner-infrastructure || true\nrmdir .agent-wayfinder/eks-runner-infrastructure/unknowns\nrmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock\nprintf '\\\\n-- final checks --\\\\n'\nterraform fmt -check -recursive -no-color\ntf_status=\"'$?\nterraform validate -no-color\nvalidate_status=$?\ngit diff --check\ndiff_status=$?\ngit status --short\nexit $(( tf_status || validate_status || diff_status ))'"
+      ],
+      "continuation_cost": {
+        "cached_input_tokens": 531968,
+        "command_count_before_first_observed_write": 8,
+        "commands_before_first_observed_write": [
+          "/bin/zsh -c \"pwd && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md && sed -n '1,300p' .agent-workflow/contracts/wayfinder-state.md\"",
+          "/bin/zsh -c \"sed -n '301,620p' .agent-workflow/contracts/wayfinder-state.md\"",
+          "/bin/zsh -c \"if [ -d .agent-wayfinder ]; then find .agent-wayfinder -mindepth 1 -maxdepth 1 -type d -printf '%f\\\\n'; fi\nprintf '\\\\n-- root --\\\\n'\nrg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,220p'\nprintf '\\\\n-- status --\\\\n'\ngit status --short && git log --oneline -8\"",
+          "/bin/zsh -c \"ls -la .agent-wayfinder 2>/dev/null || true\nfind .agent-wayfinder -mindepth 1 -maxdepth 2 -name map.md -type f -print 2>/dev/null\nprintf '\\\\n-- map candidates --\\\\n'\nfor f in .agent-wayfinder/*/map.md; do [ -f \\\"\"'$f\" ] && { printf '\"'\\\\n### %s\\\\n' \\\"\"'$f\"; sed -n '\"'1,260p' \\\"\"'$f\"; }; done\nprintf '\"'\\\\n-- changes --\\\\n'\ngit diff -- terraform/main.tf\nprintf '\\\\n-- docs --\\\\n'\nsed -n '1,260p' docs/runner-requirements.md\nsed -n '1,280p' docs/decisions/D1-runner-architecture.md\"",
+          "/bin/zsh -c \"sed -n '1,320p' .agents/skills/workflow-implementation/SKILL.md\nprintf '\\\\n-- Terraform inputs --\\\\n'\nsed -n '1,300p' terraform/main.tf\nsed -n '1,300p' terraform/variables.tf\nsed -n '1,240p' terraform/outputs.tf\nprintf '\\\\n-- unknowns --\\\\n'\nfor f in .agent-wayfinder/eks-runner-infrastructure/unknowns/*.md; do [ -f \\\"\"'$f\" ] && { printf '\"'\\\\n### %s\\\\n' \\\"\"'$f\"; sed -n '\"'1,220p' \\\"\"'$f\"; }; done\nprintf '\"'\\\\n-- ancillary files --\\\\n'\nrg --files -g '\"'!.git/**'\"' -g '\"'!*.lock'\"' | sort\"",
+          "/bin/zsh -c \"sed -n '1,260p' .agent-workflow/providers.json\nif [ -f .agent-wayfinder/project-profile.md ]; then printf '\\\\n-- profile --\\\\n'; sed -n '1,320p' .agent-wayfinder/project-profile.md; fi\nif [ -f .agent-workflow/contracts/project-profile.md ]; then printf '\\\\n-- profile contract --\\\\n'; sed -n '1,320p' .agent-workflow/contracts/project-profile.md; fi\nprintf '\\\\n-- git tracked context --\\\\n'\ngit show --stat --oneline HEAD && git show --format=fuller --no-ext-diff HEAD -- docs/decisions/D1-runner-architecture.md\"",
+          "/bin/zsh -c \"find .agents/skills -maxdepth 2 -name SKILL.md -print | sort\nfind .agent-workflow/provider-snapshots -path '*implement*' -name SKILL.md -print 2>/dev/null\ncommand -v terraform || true\nterraform version 2>/dev/null || true\"",
+          "/bin/zsh -c 'terraform validate -no-color'"
+        ],
+        "elapsed_seconds": 174.935,
+        "file_change_event_observed": true,
+        "file_read_count_before_first_observed_write": 14,
+        "files_read_before_first_observed_write": [
+          ".agent-wayfinder/eks-runner-infrastructure/unknowns",
+          ".agent-wayfinder/project-profile.md",
+          ".agent-workflow/contracts/project-profile.md",
+          ".agent-workflow/contracts/wayfinder-state.md",
+          ".agent-workflow/provider-snapshots",
+          ".agent-workflow/providers.json",
+          ".agents/skills",
+          ".agents/skills/wayfinder/SKILL.md",
+          ".agents/skills/workflow-implementation/SKILL.md",
+          "docs/decisions/D1-runner-architecture.md",
+          "docs/runner-requirements.md",
+          "terraform/main.tf",
+          "terraform/outputs.tf",
+          "terraform/variables.tf"
+        ],
+        "input_tokens": 573917,
+        "measurement_note": "Derived in JSONL event order; file_change events and known write-like commands end the pre-write window. Path extraction remains conservative.",
+        "output_tokens": 8025,
+        "reasoning_tokens": 2837,
+        "repeated_read_path_count": 5,
+        "tool_action_count": 17,
+        "write_observed": true
+      },
+      "elapsed_seconds": 174.935,
+      "event_count": 42,
+      "execution_id": "01a02b11-e6d9-7af1-bf3b-64a355aa7240",
+      "exit_status": 0,
+      "fresh_context": true,
+      "input_tokens": 573917,
+      "mode": "automatic_ephemeral_codex_exec",
+      "observed_exact_fact_in_tool_output": false,
+      "observed_terraform_apply": false,
+      "output_tokens": 8025,
+      "parent_task_context_supplied": false,
+      "phase": 2,
+      "prompt_sha256": "81929c3c59598c78b187f170ced2637cf5bc0501b7b6d3b986475e102d3a1661",
+      "reasoning_tokens": 2837,
+      "shell_environment": {
+        "inherit": "none",
+        "set": {
+          "GIT_PAGER": "cat",
+          "HOME": "/private/tmp/agent-workflow-fresh-agent-continuation-v2/fresh-agent-v2-b-4-b677946e53/ephemeral-agent-homes/agent-home-871d29494ba14ad1b7df78d955d5d0fa",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "NO_COLOR": "1",
+          "PAGER": "cat",
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+          "SHELL": "/bin/zsh",
+          "TERM": "dumb",
+          "TMPDIR": "/private/tmp"
+        }
+      },
+      "stderr_path": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/artifacts/wayfinder-fresh-agent-continuation-v2/runs/fresh-agent-v2-b-4-b677946e53/raw/phase-2.stderr.txt",
+      "stdout_path": "/Users/james/Desktop/projects/agentic-wayfinder-auto/evals/artifacts/wayfinder-fresh-agent-continuation-v2/runs/fresh-agent-v2-b-4-b677946e53/raw/phase-2.jsonl",
+      "tool_action_count": 17,
+      "validation_command_observed": true,
+      "validation_events": [
+        {
+          "command": "/bin/zsh -c 'terraform validate -no-color'",
+          "exit_code": 1
+        },
+        {
+          "command": "/bin/zsh -c 'git diff --check'",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -c 'terraform fmt -check -recursive -no-color'",
+          "exit_code": 3
+        },
+        {
+          "command": "/bin/zsh -c 'terraform fmt -recursive -no-color && terraform fmt -check -recursive -no-color && terraform validate -no-color'",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -c \"sed -n '1,360p' .agents/skills/workflow-verification/SKILL.md\nprintf '\\\\n-- rendered configuration --\\\\n'\nsed -n '1,360p' terraform/main.tf\nsed -n '1,320p' terraform/variables.tf\nsed -n '1,220p' terraform/outputs.tf\nprintf '\\\\n-- diff --\\\\n'\ngit diff --check && git diff -- terraform\"",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -c \"rg -n 'U[12]|unknowns/U[12]|transient-platform-facts' .agent-wayfinder/eks-runner-infrastructure || true\nrmdir .agent-wayfinder/eks-runner-infrastructure/unknowns\nrmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock\nprintf '\\\\n-- final checks --\\\\n'\nterraform fmt -check -recursive -no-color\ntf_status=\"'$?\nterraform validate -no-color\nvalidate_status=$?\ngit diff --check\ndiff_status=$?\ngit status --short\nexit $(( tf_status || validate_status || diff_status ))'",
+          "exit_code": 0
+        }
+      ],
+      "wayfinder_observation": {
+        "explicit_invocation_observed": false,
+        "instrumentation_note": "Raw JSONL exposes commands and messages but not hidden provider-dispatch internals.",
+        "route_to_wayfinder_self_reported": true,
+        "wayfinder_skill_read": true,
+        "wayfinder_state_read": true
+      }
+    },
+    "files_changed": [
+      ".agent-wayfinder/eks-runner-infrastructure/map.md",
+      ".agent-wayfinder/eks-runner-infrastructure/unknowns/U1-approved-ec2-instance-family.md",
+      ".agent-wayfinder/eks-runner-infrastructure/unknowns/U2-approved-runner-node-isolation-model.md",
+      "terraform/main.tf",
+      "terraform/outputs.tf",
+      "terraform/variables.tf"
+    ],
+    "final_durable_state": {
+      "byte_count": 2406,
+      "classifier_note": "Conservative lexical indicator, not a semantic quality score.",
+      "exact_fact_occurrences": 1,
+      "file_count": 1,
+      "line_count": 44,
+      "paths": [
+        ".agent-wayfinder/eks-runner-infrastructure/map.md"
+      ],
+      "procedural_history_evidence": [],
+      "procedural_history_line_count": 0
+    },
+    "found_new_architecture_decision": true,
+    "guessed_missing_information": false,
+    "hard_coded_ami_id": false,
+    "implementation_completed": true,
+    "input_tokens": null,
+    "needed_human_correction": null,
+    "output_tokens": null,
+    "reconstruction": {
+      "commands_before_first_write": [
+        "/bin/zsh -c \"pwd && sed -n '1,260p' .agents/skills/wayfinder/SKILL.md && sed -n '1,300p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"sed -n '301,620p' .agent-workflow/contracts/wayfinder-state.md\"",
+        "/bin/zsh -c \"if [ -d .agent-wayfinder ]; then find .agent-wayfinder -mindepth 1 -maxdepth 1 -type d -printf '%f\\\\n'; fi\nprintf '\\\\n-- root --\\\\n'\nrg --files -g '\"'!*node_modules*'\"' -g '\"'!*.lock'\"' | sed -n '1,220p'\nprintf '\\\\n-- status --\\\\n'\ngit status --short && git log --oneline -8\"",
+        "/bin/zsh -c \"ls -la .agent-wayfinder 2>/dev/null || true\nfind .agent-wayfinder -mindepth 1 -maxdepth 2 -name map.md -type f -print 2>/dev/null\nprintf '\\\\n-- map candidates --\\\\n'\nfor f in .agent-wayfinder/*/map.md; do [ -f \\\"\"'$f\" ] && { printf '\"'\\\\n### %s\\\\n' \\\"\"'$f\"; sed -n '\"'1,260p' \\\"\"'$f\"; }; done\nprintf '\"'\\\\n-- changes --\\\\n'\ngit diff -- terraform/main.tf\nprintf '\\\\n-- docs --\\\\n'\nsed -n '1,260p' docs/runner-requirements.md\nsed -n '1,280p' docs/decisions/D1-runner-architecture.md\"",
+        "/bin/zsh -c \"sed -n '1,320p' .agents/skills/workflow-implementation/SKILL.md\nprintf '\\\\n-- Terraform inputs --\\\\n'\nsed -n '1,300p' terraform/main.tf\nsed -n '1,300p' terraform/variables.tf\nsed -n '1,240p' terraform/outputs.tf\nprintf '\\\\n-- unknowns --\\\\n'\nfor f in .agent-wayfinder/eks-runner-infrastructure/unknowns/*.md; do [ -f \\\"\"'$f\" ] && { printf '\"'\\\\n### %s\\\\n' \\\"\"'$f\"; sed -n '\"'1,220p' \\\"\"'$f\"; }; done\nprintf '\"'\\\\n-- ancillary files --\\\\n'\nrg --files -g '\"'!.git/**'\"' -g '\"'!*.lock'\"' | sort\"",
+        "/bin/zsh -c \"sed -n '1,260p' .agent-workflow/providers.json\nif [ -f .agent-wayfinder/project-profile.md ]; then printf '\\\\n-- profile --\\\\n'; sed -n '1,320p' .agent-wayfinder/project-profile.md; fi\nif [ -f .agent-workflow/contracts/project-profile.md ]; then printf '\\\\n-- profile contract --\\\\n'; sed -n '1,320p' .agent-workflow/contracts/project-profile.md; fi\nprintf '\\\\n-- git tracked context --\\\\n'\ngit show --stat --oneline HEAD && git show --format=fuller --no-ext-diff HEAD -- docs/decisions/D1-runner-architecture.md\"",
+        "/bin/zsh -c \"find .agents/skills -maxdepth 2 -name SKILL.md -print | sort\nfind .agent-workflow/provider-snapshots -path '*implement*' -name SKILL.md -print 2>/dev/null\ncommand -v terraform || true\nterraform version 2>/dev/null || true\"",
+        "/bin/zsh -c 'terraform validate -no-color'"
+      ],
+      "files_read_before_first_write": [
+        ".agent-wayfinder/eks-runner-infrastructure/unknowns",
+        ".agent-wayfinder/project-profile.md",
+        ".agent-workflow/contracts/project-profile.md",
+        ".agent-workflow/contracts/wayfinder-state.md",
+        ".agent-workflow/provider-snapshots",
+        ".agent-workflow/providers.json",
+        ".agents/skills",
+        ".agents/skills/wayfinder/SKILL.md",
+        ".agents/skills/workflow-implementation/SKILL.md",
+        "docs/decisions/D1-runner-architecture.md",
+        "docs/runner-requirements.md",
+        "terraform/main.tf",
+        "terraform/outputs.tf",
+        "terraform/variables.tf"
+      ],
+      "repository_evidence_reads_before_first_write": [
+        "docs/decisions/D1-runner-architecture.md",
+        "docs/runner-requirements.md",
+        "terraform/main.tf",
+        "terraform/outputs.tf",
+        "terraform/variables.tf"
+      ],
+      "state_path_reads_before_first_write": [
+        ".agent-wayfinder/eks-runner-infrastructure/unknowns",
+        ".agent-wayfinder/project-profile.md"
+      ]
+    },
+    "recovered_exact_ami_parameter": true,
+    "recreated_external_cluster": false,
+    "static_assertions_passed": true,
+    "terraform_fmt_command": [
+      "/opt/homebrew/bin/terraform",
+      "fmt",
+      "-check",
+      "-recursive",
+      "terraform"
+    ],
+    "terraform_fmt_exit_status": 0,
+    "used_dedicated_node_group": true,
+    "used_m7i_family": true,
+    "used_private_subnet_input": true,
+    "used_ssm_parameter_mechanism": true,
+    "validation_passed": true,
+    "verification_quality": {
+      "agent_validation_command_observed": true,
+      "agent_validation_events": [
+        {
+          "command": "/bin/zsh -c 'terraform validate -no-color'",
+          "exit_code": 1
+        },
+        {
+          "command": "/bin/zsh -c 'git diff --check'",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -c 'terraform fmt -check -recursive -no-color'",
+          "exit_code": 3
+        },
+        {
+          "command": "/bin/zsh -c 'terraform fmt -recursive -no-color && terraform fmt -check -recursive -no-color && terraform validate -no-color'",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -c \"sed -n '1,360p' .agents/skills/workflow-verification/SKILL.md\nprintf '\\\\n-- rendered configuration --\\\\n'\nsed -n '1,360p' terraform/main.tf\nsed -n '1,320p' terraform/variables.tf\nsed -n '1,220p' terraform/outputs.tf\nprintf '\\\\n-- diff --\\\\n'\ngit diff --check && git diff -- terraform\"",
+          "exit_code": 0
+        },
+        {
+          "command": "/bin/zsh -c \"rg -n 'U[12]|unknowns/U[12]|transient-platform-facts' .agent-wayfinder/eks-runner-infrastructure || true\nrmdir .agent-wayfinder/eks-runner-infrastructure/unknowns\nrmdir .agent-wayfinder/eks-runner-infrastructure/.wayfinder-mutation-lock\nprintf '\\\\n-- final checks --\\\\n'\nterraform fmt -check -recursive -no-color\ntf_status=\"'$?\nterraform validate -no-color\nvalidate_status=$?\ngit diff --check\ndiff_status=$?\ngit status --short\nexit $(( tf_status || validate_status || diff_status ))'",
+          "exit_code": 0
+        }
+      ],
+      "grader_static_assertions_passed": true,
+      "grader_terraform_fmt_exit_status": 0
+    }
+  },
+  "repetition": 4,
+  "run_id": "fresh-agent-v2-b-4-b677946e53",
+  "schema_version": 1,
+  "workflow_installation": {
+    "bc_differences": [
+      ".agent-workflow/contracts/wayfinder-state.md",
+      ".agents/skills/wayfinder/SKILL.md"
+    ],
+    "candidate_git_sha": "911c248c91bbeb0e0ad62f4329b9089f992b6005",
+    "candidate_installed_sha256": "6889f42d4cc3f504a15c642e02d1de35d5bf3d9b917a3ec4ad89d70b47ea7a51",
+    "control_patch_sha256": "a52fd7950385e0041aa9e72e4a322ee83d9234dec5ecf3476705abbd7ce032da",
+    "files_changed_from_candidate": [
+      ".agent-workflow/contracts/wayfinder-state.md",
+      ".agents/skills/wayfinder/SKILL.md"
+    ],
+    "final_installed_sha256": "d01e0a60204a44e9de56dd0f8dce2d48d45d4a7004a200d298eaa3ea7603a097",
+    "framework_version": "0.19.1",
+    "installed_file_sha256": {
+      ".agent-workflow/README.md": "fbfda97a2f1851f31f37084e726da06af86603964c19dccd11f37870361754b3",
+      ".agent-workflow/contracts/durable-state.md": "02e7a602562951e518bd7e817363d3fc25d4d960afa2b9ac7c241db7b6039004",
+      ".agent-workflow/contracts/project-profile.md": "7bbc8a01689165cafe63fabd668d35575f31a568d00112f4bd3dcc45a0b7560a",
+      ".agent-workflow/contracts/wayfinder-state.md": "03456ff4ce3bed684911898fad80a04841e5f566be68ee9ee65b2497048283a2",
+      ".agent-workflow/install-manifest.json": "1aa787a044a14c74d25f2a4cfc4b12c216157fafddc717db4b74d8eb5b5ea622",
+      ".agent-workflow/providers.json": "d7f3c2f63d353acf32d1e53c7a417af3728d8e0a825cd9f346fb765043415ebc",
+      ".agent-workflow/routing.md": "70f78e4a77638634eb7cf63348811ebfcba2da03c11e08eff631d3291e5b3d44",
+      ".agent-workflow/templates/project-profile.md": "85db0b455f4995035c45a8f87cb50c30edc2c7028bee53a9e6343852bbb31d4b",
+      ".agents/skills/wayfinder/SKILL.md": "18bbb3e243eaca1d3738f51f2447b441b785ae669ac147533cbc78ef421ab2ef",
+      ".agents/skills/wayfinder/agents/openai.yaml": "57f261c4bb8943d4dee108a2b8b47fd6c5f8a6b7db8568b7caab02881224ee6d",
+      ".agents/skills/workflow-debugging/SKILL.md": "f02b86008901aa8b82726acee16a4d319536b8b739bd8ccdf5675ce5c47cb3fc",
+      ".agents/skills/workflow-discovery/SKILL.md": "bce5c6ca9abcbeb0ec4c777819f1a883cc791c975af6f052b32a832793c0c0b0",
+      ".agents/skills/workflow-implementation/SKILL.md": "901e7c142ebf21e6aca0dc8edaa43adddcd264844d299a6341fff75a29ae6cb9",
+      ".agents/skills/workflow-verification/SKILL.md": "906bc4d8eba12948029adb78652364548f5ff57fc0547d40346171d0d603f716",
+      "AGENTS.md": "9694b726e76c5e5adefacac691024f31478b1fbbb92753123753acb8bd7885b9",
+      "CLAUDE.md": "858e2dbf95635a376844ea39bbd95efca0c9a7f05733402b91f8b7f1f052c4d5"
+    },
+    "provider": "repository-pinned Wayfinder skill",
+    "treatment_markers_present": {
+      "Would a competent fresh agent need this information to continue the work correctly?": false,
+      "fresh-agent continuation": false,
+      "prior agent narrative": false,
+      "procedural history": false
+    }
+  }
+}
