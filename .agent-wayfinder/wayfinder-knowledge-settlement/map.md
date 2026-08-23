@@ -77,9 +77,9 @@ None for this effort.
 
 ## Decisions so far
 
-- Use current-state identifiers plus map-owned effort status. ADR-0011 explicitly
-  rejects lifetime-uniqueness bookkeeping, tombstones, registries, archive trees,
-  event logs, and lifecycle databases.
+- Use current-state identifiers plus map-owned effort status. ADR-0011 owns the
+  architectural current-navigation model; the Wayfinder state contract owns the
+  exact identifier and retirement mechanics.
 - Retain the transient effort mutation lock because it is the smallest single
   mechanism that prevents readable-slug allocation collisions and makes
   reference-safe retirement atomic; do not turn it into durable state.
