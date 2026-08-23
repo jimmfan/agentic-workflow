@@ -10,11 +10,12 @@ Keep the custom Python bootstrap for this release. `gh skill` is a promising
 future replacement for transport, and it does avoid downloading or enumerating
 unrelated repository content when given the exact `skills/agent-workflow`
 path. It is not currently an equivalent transport for this package, however.
-The immediate archive-limit design remains a separate decision; the narrowest
-current-code option is to distinguish package-entry limits from a larger,
-streamed whole-archive parsing limit. That transitional design was subsequently
-accepted and is recorded in
-[ADR-0019](../architecture-decisions/0019-scope-bootstrap-limits-to-the-distributable-package.md).
+The immediate archive-limit design remains an implementation concern; the
+narrowest current-code option is to distinguish package-entry limits from a
+larger, streamed whole-archive parsing limit. The current boundary is described
+in [Architecture and ownership](architecture.md#lifecycle-and-bootstrap-boundary)
+and enforced by bootstrap source and tests. Its pre-consolidation ADR remains
+available in Git at `fb51c4a`.
 
 A package-only GitHub Release asset is the strongest future replacement for
 the full-repository source archive, but it is not the smallest safe change now.
@@ -45,8 +46,9 @@ tracked files as the branch, but running `lifecycle.py install` from that copy
 installed the core and four local workflow skills, then correctly warned that
 the optional provider projection could not be installed because
 `bundled provider snapshot checksum differs from the declaration`. The package
-therefore cannot currently preserve the complete routed provider behavior required by
-[ADR-0020](../architecture-decisions/0020-own-the-declared-provider-projection.md).
+therefore cannot currently preserve the declared provider projection described
+in [Architecture and ownership](architecture.md#provider-boundary) and governed
+by [ADR-0010](../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md).
 
 Do not replace bootstrap with `gh skill` unless either GitHub CLI gains a mode
 that injects metadata only into the selected skill's root manifest, or Agentic

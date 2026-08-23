@@ -36,6 +36,8 @@ It checks:
 
 - Python syntax, package structure, regular-file modes, and synchronized versions;
 - the exact current source-to-target mapping and synchronized version;
+- absence of literal root-policy files and host customization trees in the
+  activation-sensitive payload namespace;
 - absence of deferred controller, hook, and observability payloads;
 - routing, authorization, durable-state, and provider declaration contracts;
 - thin-router word budgets and deterministic positive/negative escalation

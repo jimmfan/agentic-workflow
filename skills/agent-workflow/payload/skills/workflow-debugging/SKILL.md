@@ -41,7 +41,8 @@ stop with the evidence needed next.
 3. Instrument only authorized boundaries that distinguish a named hypothesis.
    Tag temporary instrumentation, change one variable at a time, and avoid
    broad sensitive logging.
-4. Run only configured project diagnostics and update rankings from observed
+4. Run only diagnostics documented by the project or available in the current
+   repository environment, and update rankings from observed
    results; do not stack speculative changes.
 5. Identify the root cause or bound the uncertainty and name the next useful
    check.

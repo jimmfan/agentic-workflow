@@ -103,7 +103,9 @@ re-entry point and optional U#/E#/F#/D# knowledge. The map owns current state,
 blockers, dependencies, and next work. Substantial decomposition passes to the
 native `to-tickets` output without a shadow copy. The pinned release remains the
 methodological source and reviewed provenance, while the local runtime is an
-intentional derived projection; see ADR-0011, ADR-0020, ADR-0022, and ADR-0023.
+intentional derived projection; see
+[ADR-0010](../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md)
+and [ADR-0011](../architecture-decisions/0011-use-map-first-wayfinder-state.md).
 
 The pinned upstream Wayfinder metadata disables model invocation in `SKILL.md`
 and `agents/openai.yaml`, while its discovery descriptions retain the upstream

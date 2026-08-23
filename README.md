@@ -134,7 +134,7 @@ flowchart LR
     state --> resume["Later session"]
     resume --> router
 
-    state -.-> wfstate["wayfinder/stable-effort-slug/"]
+    state -.-> wfstate["<stable-effort-slug>/"]
     wfstate -.-> map["map.md"]
     wfstate -.-> unknowns["unknowns/U#.md"]
     wfstate -.-> evidence["evidence/E#.md"]

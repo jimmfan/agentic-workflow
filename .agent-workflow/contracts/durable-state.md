@@ -31,12 +31,12 @@ coordination and readable pointers, never a copied provider body or transcript.
 Agent memory and chat recollection cannot silently supersede repository evidence
 or accepted artifacts.
 
-Use `architecture-decision/` as the default Architecture Decision Record (ADR)
+Use `architecture-decisions/` as the default Architecture Decision Record (ADR)
 namespace. Preserve an existing project convention instead of creating a
 parallel namespace or migrating it. Treat ADRs as maintained current decisions,
-not an append-only workflow log. Keep a concise index when several ADRs exist,
-preserve superseded tombstones, and retain the only recoverable rationale for a
-consequential choice.
+not an append-only workflow log. Keep a concise index when several ADRs exist
+and retain rationale for consequential current choices; Git preserves obsolete
+pre-1.0 decision history without requiring tombstone files.
 
 Do not promote every workflow choice. Create or update an ADR only when a
 lasting architecture or contract decision warrants it. A current Wayfinder D#

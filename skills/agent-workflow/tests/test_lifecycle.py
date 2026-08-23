@@ -988,6 +988,24 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
         self.assertIn("payload/VERSION must remain absent", verify.stderr)
 
+    def test_verifier_rejects_activation_sensitive_payload_paths(self) -> None:
+        cases = (
+            ("literal-root-policy", "payload/root/AGENTS.md"),
+            ("literal-nested-policy", "payload/skills/example/CLAUDE.md"),
+            ("host-customization-tree", "payload/.agents/skills/example/SKILL.md"),
+        )
+        for name, relative in cases:
+            with self.subTest(relative=relative):
+                package_copy = self.copy_package(name)
+                path = package_copy / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("activation-sensitive fixture\n", encoding="utf-8")
+
+                verify = run_script(package_copy / "scripts/verify_package.py")
+
+                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+                self.assertIn("activation-sensitive payload path", verify.stderr)
+
     def test_verifier_rejects_incomplete_provider_declarations(self) -> None:
         package_copy = self.copy_package("provider-declaration")
         declaration = package_copy / "payload/agent-workflow/providers.json"

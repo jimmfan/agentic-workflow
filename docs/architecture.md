@@ -2,59 +2,51 @@
 
 ## Purpose
 
-Agent Workflow is a thin instruction router over host capability and optional,
+Agent Workflow is a thin instruction router over host capability and curated,
 replaceable skills. Its core job is reliable minimum-workflow selection while
-preserving authorization and project-owned data. It is not a general runtime,
-package manager, hook framework, analytics system, or second representation of
-provider artifacts.
+preserving authorization and project-owned data. It is not a general agent
+runtime, package manager, hook framework, analytics system, or second
+representation of provider artifacts.
 
-This boundary addresses two current problems: agents otherwise load too much
-process for simple work, and lifecycle machinery can mistake missing historical
-files for corruption. The expected result is direct handling for bounded work,
-progressive loading for consequential work, and update behavior that converges
-to current desired state.
+The architecture optimizes for two pre-1.0 priorities:
 
-## Runtime boundary
+1. do not destroy project-owned or user-owned data; and
+2. make core routing behavior reliable.
+
+## System topology
 
 ```mermaid
 flowchart TD
-    request["User intent"] --> router["Root instruction router"]
-    router --> direct["Direct"]
-    router --> dominant["One dominant workflow or activity"]
-    dominant --> capabilities["Only materially useful capabilities"]
-    capabilities --> provider{"Optional provider available and invocable?"}
+    request["User intent"] --> router["Small root router"]
+    router --> direct["Direct work"]
+    router --> workflow["One dominant workflow"]
+    workflow --> capability["Only useful supporting capabilities"]
+    capability --> provider{"Provider invocable?"}
     provider -->|yes| native["Provider-native method and artifact"]
     provider -->|no| fallback["Host-native fallback or exact handoff"]
-    native --> evidence["Truthful completion evidence"]
+    direct --> evidence["Truthful result and evidence"]
+    native --> evidence
     fallback --> evidence
+    workflow -. consequential continuity .-> wayfinder["Wayfinder map"]
 ```
 
-The root `AGENTS.md` policy, selected skills, and progressively loaded
-`.agent-workflow/routing.md` are the runtime. There is no lifecycle controller or
-host hook adapter. The root starts Direct, uses installed skill descriptions as
-the cheap selection interface, and loads the detailed router only for unresolved
-ambiguity, composition, material provider fallback, or unclear durable-resume
-ownership. Host sandboxing and approvals remain authoritative. Selection,
-provider invocation, authorization, execution, and completion evidence remain
-distinct.
+The root `AGENTS.md`, selected skills, and progressively loaded
+`.agent-workflow/routing.md` form the instruction runtime. There is no lifecycle
+controller, background daemon, telemetry service, or host hook enforcing the
+route.
 
-The router may reclassify work after it starts. Item count prompts assessment but
-does not select Wayfinder. Any hard continuity/conflict/authority/provenance
-signal or at least two softer interaction/dependency/reconstruction signals may
-cross the durable threshold. Bounded work remains Direct or in its existing
-workflow, and read-only work does not gain durable state authority.
+Routing begins Direct and classifies from user intent plus cheap installed-skill
+descriptions. Detailed routing loads only when ownership, composition, provider
+fallback, handoff, or durable re-entry is materially unclear. Routing may change
+as evidence emerges. Selection, provider invocation, authorization, execution,
+and completion evidence remain distinct; host sandboxing and approvals remain
+authoritative.
 
-Wayfinder is the framework's sole durable coordination layer. It resumes from
-its effort map and lazily delegates reasoning to stateless specialists only when
-their method materially helps the current frontier. Provider-native tickets,
-specifications, research, reviews, and learning artifacts remain canonical;
-Wayfinder stores only consequential coordination and pointers. Its maps and
-optional U#/E#/F#/D# knowledge live under
-`.agent-wayfinder/`.
-
-A required response marker such as
-`[route: router -> discovery -> research]` provides sufficient v0 route
-visibility. It is not telemetry, execution evidence, or a routing prerequisite.
+Wayfinder is the framework's sole durable coordination model. It keeps only
+consequential continuity and pointers, while specialists retain their methods
+and native artifacts. Specifications, tickets, research, reviews, learning
+workspaces, and other provider outputs remain canonical in their native
+locations.
 
 ## Filesystem ownership
 
@@ -62,236 +54,134 @@ visibility. It is not telemetry, execution evidence, or a routing prerequisite.
 FRAMEWORK-OWNED, RECONSTRUCTABLE
 ├── .agent-workflow/
 ├── managed AGENTS.md and CLAUDE.md regions
-└── recorded agent integration files at required external paths
+├── required mapped integration files
+└── declared provider names under .agents/skills/
 
 PROJECT-OWNED, DURABLE
 └── .agent-wayfinder/
-    └── <effort>/               # optional map-first U#/E#/F#/D# knowledge state
+    ├── <effort>/               # map-first Wayfinder coordination
+    └── records/                # optional accepted canonical records such as IDP
 
 OPTIONAL, INDEPENDENT
-└── upstream provider directories under .agents/skills/
+└── unrelated local skill directories under .agents/skills/
 ```
 
-### Reconstructable framework state
+### Reconstructable framework output
 
-`.agent-workflow/` contains only files derived from the current package plus its
-small install manifest. It is disposable. Install and update stage a new current
-directory and replace the old one as a unit. Missing, modified, obsolete, or
-extra files inside it need no historical checksum investigation.
+`.agent-workflow/` is derived from the current package and may be replaced as a
+unit. Missing, modified, obsolete, or extra files inside it do not require
+historical checksum investigation. The current distribution manifest provides
+an explicit source-to-target map rather than a historical ownership database.
 
-The distribution manifest contains only the current framework version and
-source-to-target install map. Runtime reads actual source bytes. Ordinary
-content edits require no metadata refresh; adding, removing, or remapping a
-packaged file requires an explicit map refresh. There is no retired path catalog
-or duplicate payload checksum inventory.
+The supported bootstrap and adoption path stores distributable root policies
+under non-active template names. A maintainer check rejects literal root-policy
+files and top-level host-customization trees inside the payload. Adoption
+activates framework resources by projecting their explicit mappings into the
+repository locations recognized by supported hosts.
 
-The target-local schema-1 install manifest contains only:
+`AGENTS.md` and `CLAUDE.md` are composite files. Lifecycle operations replace
+only their unambiguous managed region and preserve project-region bytes. Other
+required external paths use minimal recorded evidence so unknown or subsequently
+modified content is preserved rather than overwritten or deleted.
 
-- framework version and source revision;
-- external required files with a created flag and last-written hash; and
-- composite paths with the fact that the framework created the file.
+### Project-owned durable state
 
-External hashes exist only to avoid deleting a pre-existing or subsequently
-modified file during removal. They are not an integrity system and do not block
-repair of current managed content.
+`.agent-wayfinder/` and every entry below it are project-owned. Install and
+update may establish the root when absent, but lifecycle operations never seed,
+inventory, validate, checksum, merge, migrate, rewrite, or remove its contents.
 
-### Durable project state
+Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
+Their `map.md` is the low-resolution re-entry point; optional U/E/F/D detail
+loads only when relevant. The map represents current navigation and should
+converge as lasting outcomes move to canonical owners. Exact allocation,
+locking, selection, settlement, retirement, and reference behavior is owned by
+the progressively loaded Wayfinder state contract and its tests.
 
-`.agent-wayfinder/` and every entry below it are project-owned. Lifecycle
-operations ensure the directory exists during install/update, but never seed,
-inventory, checksum, merge, rewrite, or remove its contents. Missing optional
-Wayfinder files are normal. Legacy record and archive paths are preserved as
-opaque historical project data rather than resumed or migrated by current
-workflows.
+The optional `.agent-wayfinder/records/IDP-...` form is an accepted project
+opportunity artifact, not a second framework coordination notebook. Existing
+legacy DEC, DBG, IMP, record, archive, and active-index files remain opaque
+historical project data. Current workflows neither resume nor migrate them.
 
-When Wayfinder needs Git-native structured state, its dedicated progressively
-loaded contract configures `.agent-wayfinder/<effort>/` as the
-canonical local representation. It creates no global index, shadow `.scratch/`
-tree, persisted frontier, lifecycle database, or external-tracker sync. The map
-itself is the re-entry point and may carry one compact current/completed/
-abandoned/superseded status. U/E/F/D identifiers are stable references only
-within current state; Git preserves historical states that actually enter Git
-but is not a retirement gate. Human Wayfinder state remains opaque project data
-to lifecycle code. Atomic creation of one empty transient per-effort lock
-directory serializes map and child mutations, preventing different readable
-slugs from concurrently claiming the same number and making reference-safe
-retirement indivisible without durable allocation state.
+Accepted lasting architecture decisions use `architecture-decisions/` by
+default unless a consuming project already declares another convention.
+Wayfinder decisions may link an ADR but do not become a parallel source of
+project policy.
 
-Bare U#/E#/F#/D# references are effort-local current-state shorthand. Readable
-child filenames are canonical paths; durable references from ADRs,
-specifications, tickets, or other artifacts outside the effort use
-repository-relative Markdown links with readable labels instead of treating a
-bare number as repository-wide identity.
+## Provider boundary
 
-Accepted, lasting architecture or contract decisions use
-`architecture-decision/` as the default ADR namespace. An existing project
-instruction may name another
-canonical location; the framework preserves that convention instead of creating
-a parallel namespace or migrating it. Wayfinder `D#` entries remain
-effort-local coordination state and link to the applicable ADR when a decision
-is promoted. Legacy `DEC-NNNN`, `IMP-NNNN`, and `DBG-NNNN` files are historical
-project data, not current workflow records.
+`.agent-workflow/providers.json` declares the reviewed upstream provider
+identity, bundled snapshot, license, supported-host invocation policy, adapters,
+and configuration requirements. The release projects only that finite declared
+set. Declared names are reconstructable and repairable; unrelated local skill
+directories are preserved.
 
-### Composite root policies
+Provider reconciliation stages and validates the complete declared projection
+before replacing it. Provider failure does not invalidate a successful core
+lifecycle operation. Exact snapshot hashes, adapter preconditions, staging,
+comparison, and cleanup behavior are implementation and test details.
 
-`AGENTS.md` and `CLAUDE.md` use one managed region followed by one project region.
-On a first install, an unmarked existing file becomes project-region bytes.
-Update replaces only the parsed managed region. Duplicate, partial, or reordered
-markers are ambiguous and stop before any write. Removal strips the managed
-region and restores the project bytes; a composite created from nothing is
-deleted when its project region is empty.
+Wayfinder is a deliberate derived-runtime exception. The raw pinned snapshot
+remains unchanged as reviewed provenance, while the effective installed body
+uses one coherent map-first operational model rather than layering local state
+rules over conflicting upstream tracker mechanics. Useful upstream destination,
+map, fog, frontier, readable-name, and progressive-resolution concepts remain.
 
-This boundary eliminates encoded restoration blobs.
+Provider instructions never authorize commits, publication, tracker mutation,
+or broader external access. An unavailable or non-invocable provider normally
+falls back to truthful host-native work unless the user specifically requires
+that provider or a real safety boundary prevents fallback.
 
-### Other external integrations
+## Lifecycle and bootstrap boundary
 
-Required local skill files live under `.agents/skills` because hosts discover
-them there. A missing target is created. Exact pre-existing bytes are reused but
-recorded as pre-existing. A different unrecorded file is an unknown collision
-and blocks installation. Once recorded as managed, update may replace it with
-current desired bytes. Removal deletes it only when the framework created it and
-its bytes still match the last-written external hash.
+The public bootstrap resolves an immutable source revision and validates archive
+shape and resource bounds before executing package code. `adopt.py` preflights
+project-data, composite, external-path, and filesystem conflicts before applying
+current desired state. `lifecycle.py` runs core reconciliation before the
+independent optional-provider operation.
 
-An external target removed from the current mapping is derived only from the
-previous local install manifest. Absence is a no-op. An unchanged created copy
-is removed; changed or uncertain content is preserved and then forgotten. This
-is sufficient for v0 and avoids a historical retirement database.
+`status` is read-only. `remove` deletes only safely owned reconstructable output,
+strips managed composite regions, and preserves `.agent-wayfinder/` plus unknown
+or modified external content. Transactions protect current data but do not claim
+database-style crash semantics.
 
-## Optional providers
-
-`.agent-workflow/providers.json` maps routed capabilities to a reviewed upstream
-tag, resolved commit, tag object, upstream tree, MIT license, and checksummed
-snapshot. The release contains only the 14 declared skill directories, not the
-upstream repository. Runtime installation copies that snapshot into a temporary
-same-filesystem staging root, applies the declared adapters there, validates the
-complete effective projection, and reconciles all missing or different declared
-directories together. It does not require GitHub CLI, Git, npm, npx,
-authentication, or network access.
-
-The finite declared set is framework-owned reconstructable output. An exact
-effective directory is reused; a missing, malformed, older, raw-upstream, or
-locally modified declared directory is repairable and replaced from staging.
-Unsafe paths such as symlinks or non-directories block all provider changes
-before mutation. Unrelated `.agents/skills/` directories are preserved. A
-projection or validation failure still never invalidates a successful core
-operation.
-
-Wayfinder is the explicit exception to normal provider-method ownership.
-Agent Workflow owns a concise effective runtime derived from Matt Pocock's
-Wayfinder methodology; the pinned raw snapshot remains unchanged as reviewed
-provenance and reference. During staging, one explicit adapter validates that
-recognized input, retains compatible provenance frontmatter, applies the
-reviewed host-invocation metadata, and replaces the upstream tracker body with
-the package-owned runtime body.
-
-The owned runtime retains destination, low-resolution map, fog, frontier,
-readable-name, and progressive-resolution concepts while defining project-owned
-map-first U/E/F/D state, effort selection, continuation, concurrency, and the
-`to-tickets` boundary. It does not append issue assignment, tracker blocking,
-resolution comments, required tracker setup, or `.scratch/` fallback mechanics.
-A Claude model inside GitHub Copilot uses this shared host projection; native
-Claude Code remains unavailable because no native projection exists for that
-host.
-
-The framework keeps no target ownership database, installed-file history,
-quarantine store, or automatic upgrade engine.
-The declaration itself is the narrow ownership boundary. The maintainer gate
-binds the snapshot checksum, provenance, and license to the reviewed release;
-end-user lifecycle operations do not repeat that release bookkeeping. Runtime
-checks only the inventory, safe filesystem shape, references, and adapter
-preconditions needed to build a usable projection. Exact effective-tree
-comparison identifies work needed to converge. Update replaces declared drift,
-and remove deletes exactly the declared directories transactionally. A cleanup
-failure after the target transaction commits is a warning with a
-recovery-directory path, not a false transaction failure. These constraints
-avoid a general package manager while keeping providers reliably repairable.
-
-Capability routing and invocation policy remain distinct. An absent or
-user-only provider normally falls back to truthful host-native work. An exact
-handoff is used only when the user explicitly requires the provider or the host
-cannot cross a real configuration boundary. Provider instructions never grant
-permission to commit, publish, mutate a tracker, or broaden an external scope.
-
-## Lifecycle and transaction boundary
-
-The public bootstrap owns only consumer download safety:
-
-- immutable revision resolution;
-- bounded compressed archive bytes and streamed whole-archive parsing;
-- a tighter member limit for the distributable package plus per-file and
-  aggregate package-size limits;
-- rejection of corrupt archives, traversal, absolute paths, duplicates, links,
-  special entries, and unreviewed modes; and
-- presence of the minimum lifecycle entrypoints and mapping metadata.
-
-`adopt.py` preflights durable-state conflicts, composite boundaries, external
-collisions, and target symlinks before mutation. External writes are snapshotted
-and atomic; the new `.agent-workflow/` tree is staged and swapped. A detected
-operation failure restores prior external bytes and the prior reconstructable
-directory where possible. These transactions protect current data; the project
-does not claim crash-safe database semantics.
-
-`lifecycle.py` runs core reconciliation first and optional provider installation
-second. The transactions are intentionally independent, so provider failure
-cannot roll back or invalidate the core.
-
-`status` is read-only. It reports `healthy`, `repairable`, or
-`unsafe/conflict` for core reconciliation. Missing optional project-state files
-and provider skills do not change a healthy core exit status.
-
-`remove` strips composite regions,
-deletes only safely recorded external files, removes `.agent-workflow/`, preserves
-`.agent-wayfinder/`, and removes only the declared provider projection.
+Current execution uses Python 3.11+ standard-library APIs on POSIX-style shells
+for macOS, Linux, WSL, and Linux-based devcontainers. Native PowerShell and CMD
+are not supported. These runtime and transport facts are current compatibility
+documentation rather than architecture decisions.
 
 ## Verification boundary
 
-`verify_package.py` is a maintainer/CI/release gate, not an adoption prerequisite.
-It checks the current explicit mapping and version, safe package paths and modes,
-routing/provider contracts, documentation links, scenario catalogs, and the
-acceptance suite. A stale file inventory or mapping can fail CI without making
-safe current mapped package bytes unavailable to an end user.
+`verify_package.py` is a maintainer, CI, and release gate; bootstrap does not run
+it for consumers. It checks package structure and activation-sensitive payload
+paths, explicit mappings, routing and provider contracts, deterministic
+scenarios, local documentation links, and the test suite.
 
-Tests prioritize four boundaries:
+Tests focus on observable boundaries:
 
-1. route selection, invocation truthfulness, and authorization;
-2. project-owned data and composite/external collision safety;
-3. basic install, update, status, remove, and archive smoke behavior; and
-4. provider-failure isolation.
+- route selection, invocation truthfulness, and authorization;
+- preservation of project-owned state and ambiguous external content;
+- install, update, status, remove, and bootstrap behavior;
+- coherent Wayfinder state and provider projection; and
+- isolation of optional-provider failure from core lifecycle success.
 
-They do not reproduce provider internals or maintain obsolete controller and
-telemetry contracts.
-
-## Portability
-
-Supported execution environments use POSIX-style shells on macOS, Linux, WSL,
-and Linux-based devcontainers. Bash is the primary shell contract; Zsh and
-similar POSIX shells are expected to work. Native PowerShell and CMD are not
-supported. Git Bash on native Windows is best-effort and does not justify
-Windows-specific machinery.
-
-Lifecycle code uses Python 3.11+ standard-library filesystem APIs and
-`PurePosixPath` for package identities. It does not require Git, a daemon,
-database, container runtime, or a particular editor layout. CLI messages are
-ASCII; dynamic text is emitted with backslash replacement on restrictive
-consoles.
-
-Live validation on one platform is reported separately from portability by
-design. Archive fixtures and temporary-project tests are hermetic evidence, not
-claims that every host or operating system was exercised live.
+Live-model evaluations remain opt-in evidence rather than deterministic release
+requirements.
 
 ## State precedence
 
 Live source and observed behavior are authoritative for current system facts.
-Accepted repository decisions and documentation own project decisions;
-provider-native artifacts own provider output; `.agent-wayfinder/` owns local
-workflow continuity, including canonical local Wayfinder efforts. All of these
-outrank private agent memory and chat recollection.
+Accepted ADRs and project documentation own project decisions. Provider-native
+artifacts own provider output. `.agent-wayfinder/` owns local workflow
+continuity. These sources outrank summaries, private agent memory, and chat
+recollection.
 
-See [Workflow routing](routing.md), [Verification](verification.md), and
-[ADR-0010](../architecture-decisions/0010-separate-lifecycle-safety-and-reconciliation.md) plus
-[ADR-0011](../architecture-decisions/0011-use-project-owned-wayfinder-state.md),
-[ADR-0013](../architecture-decisions/0013-enable-automatic-wayfinder-routing.md), and
-[ADR-0020](../architecture-decisions/0020-own-the-declared-provider-projection.md), plus
-[ADR-0016](../architecture-decisions/0016-reconcile-relevant-wayfinder-state-at-completion.md) and
-[ADR-0022](../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md), and
-[ADR-0028](../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md).
+Current architectural rationale is intentionally limited to:
+
+- [ADR-0010 — Framework output and project-owned state](../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md)
+- [ADR-0011 — Map-first Wayfinder state](../architecture-decisions/0011-use-map-first-wayfinder-state.md)
+- [ADR-0025 — Authority at consequential boundaries](../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md)
+- [ADR-0027 — Direct-first progressive routing](../architecture-decisions/0027-use-direct-first-progressive-routing.md)
+- [ADR-0028 — Wayfinder as sole durable coordinator](../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md)
+
+See also [Workflow routing](routing.md) and [Verification](verification.md) for
+current operational detail.

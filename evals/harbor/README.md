@@ -68,11 +68,12 @@ Both infrastructure smokes passed. The B smoke proved that the task image lacks
 the new provider gate after `circuit_eval` checkpoint 1 completed; its raw
 artifacts remain under the ignored `evals/harbor/jobs/` tree.
 
-That result is historical evidence for the runtime dependency removed by
-ADR-0020. New package archives carry the exact 14-skill projection, so Harbor no
-longer needs `gh skill`, GitHub authentication, or provider-network access for
-task setup. Before resuming `slopcodebench-b.yaml`, run a new install-only smoke
-to verify the archive reaches `14 ready, 0 repairable, 0 blocked` and records
+That result is historical evidence for the runtime dependency removed by the
+current bundled provider projection. New package archives carry the exact
+14-skill projection, so Harbor no longer needs `gh skill`, GitHub
+authentication, or provider-network access for task setup. Before resuming
+`slopcodebench-b.yaml`, run a new install-only smoke to verify the archive
+reaches `14 ready, 0 repairable, 0 blocked` and records
 `network_provider_install_attempted=false`. The host still needs `uv` for the
 SlopCodeBench dataset aggregate metric. No benchmark was rerun as part of the
 vendoring implementation.

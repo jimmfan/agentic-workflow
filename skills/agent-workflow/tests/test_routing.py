@@ -106,61 +106,58 @@ class RoutingContractTests(unittest.TestCase):
         normalized_policy = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
         self.assertNotIn("architecture-decision/", normalized_policy)
-        self.assertIn("Use `architecture-decision/` as the default", normalized_contract)
+        self.assertNotIn("architecture-decision/", normalized_contract)
+        self.assertIn("Use `architecture-decisions/` as the default", normalized_contract)
         self.assertIn("Preserve an existing project convention", normalized_contract)
         self.assertIn("instead of creating a parallel namespace", normalized_contract)
         self.assertIn("Do not promote every workflow choice", normalized_contract)
         self.assertIn("A current Wayfinder D# may link that ADR", normalized_contract)
         self.assertIn("maintained current decisions", normalized_contract)
-        self.assertIn("only recoverable rationale", normalized_contract)
+        self.assertIn("Git preserves obsolete pre-1.0 decision history", normalized_contract)
 
-    def test_adr_index_separates_current_records_from_superseded_history(self) -> None:
+    def test_adr_index_contains_only_current_decisions_and_git_history_note(self) -> None:
         index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
-        current, superseded = index.split("## Superseded tombstones", 1)
-        for identifier in (
-            "ADR-0002",
-            "ADR-0003",
-            "ADR-0005",
-            "ADR-0007",
-            "ADR-0009",
-            "ADR-0012",
-        ):
-            self.assertNotIn(identifier, current)
-            self.assertIn(identifier, superseded)
-        governance = (
-            REPOSITORY_ROOT
-            / "architecture-decisions/0021-maintain-compact-current-decision-context.md"
-        ).read_text()
-        self.assertIn("- Status: accepted", governance)
-        self.assertIn("Treat a choice the user explicitly resolves as settled", governance)
-        self.assertIn("maintained set of current decisions", governance)
-        self.assertIn("ADR-0028", current)
-        self.assertIn("ADR-0029", current)
-        self.assertNotIn("ADR-0012", current)
-        self.assertIn("ADR-0012", superseded)
-        for filename in (
-            "0002-use-checksummed-copy-adoption.md",
-            "0003-use-internal-reference-inspired-workflows.md",
-            "0005-add-decomposition-and-independent-review.md",
-            "0007-orchestrate-pinned-upstream-skills.md",
-            "0009-use-host-neutral-lifecycle-controller.md",
-            "0012-remove-global-active-index.md",
-        ):
-            self.assertNotIn(f"]({filename})", superseded)
+        decision_root = REPOSITORY_ROOT / "architecture-decisions"
+        current_files = {
+            path.name for path in decision_root.glob("*.md") if path.name != "README.md"
+        }
+        expected_files = {
+            "0010-separate-framework-output-from-project-owned-state.md",
+            "0011-use-map-first-wayfinder-state.md",
+            "0025-preserve-authority-at-consequential-boundaries.md",
+            "0027-use-direct-first-progressive-routing.md",
+            "0028-use-wayfinder-as-sole-durable-coordinator.md",
+        }
+        self.assertEqual(current_files, expected_files)
+        for identifier in ("ADR-0010", "ADR-0011", "ADR-0025", "ADR-0027", "ADR-0028"):
+            self.assertIn(identifier, index)
+        self.assertIn("previous complete set remains available in Git", index)
+        self.assertIn("fb51c4a", index)
+        self.assertNotIn("Superseded tombstones", index)
+
+        source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text()
+        self.assertIn("Keep `architecture-decisions/` small", source_policy)
+        self.assertIn("Git preserves historical evolution", source_policy)
+        root_template = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        self.assertNotIn("Keep `architecture-decisions/` small", root_template)
 
     def test_decision_context_goal_blocks_only_dependent_work(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         normalized_root = " ".join(root_policy.split())
         decision = (
             REPOSITORY_ROOT
-            / "architecture-decisions/0029-preserve-material-decision-context.md"
+            / "architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md"
         ).read_text()
         normalized_decision = " ".join(decision.split())
-        convergence = (
+        map_decision = (
             REPOSITORY_ROOT
-            / "architecture-decisions/0026-structure-wayfinder-territory-and-converge-it.md"
+            / "architecture-decisions/0011-use-map-first-wayfinder-state.md"
         ).read_text()
-        normalized_convergence = " ".join(convergence.split())
+        normalized_map_decision = " ".join(map_decision.split())
+        state_contract = (
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
+        ).read_text()
+        normalized_state_contract = " ".join(state_contract.split())
 
         self.assertIn(
             "MUST NOT cross a consequential decision boundary without required "
@@ -176,27 +173,31 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("independent work may continue", normalized_root)
         self.assertIn("why authority is required", normalized_root)
         for required in (
-            "agent-context system",
             "consequential decision boundary",
-            "material evidence, approval, or authority",
+            "required evidence, approval, or authority remains unresolved",
             "Independent work may continue",
-            "responsible authority explicitly accepts the remaining uncertainty",
-            "Durable Wayfinder state can record authority; it cannot create authority",
-            "The resolution method determines what evidence or authority is sufficient to answer the question",
-            "Deferred / not implemented",
-            "claims, leases, or ownership machinery",
-            "mandatory dependency-graph infrastructure",
-            "tracker-backed decision lifecycle",
-            "does not promise complete information or correct decisions",
+            "explicitly accept residual uncertainty for one named boundary",
+            "does not answer the underlying unknown",
+            "do not expand authority",
         ):
             self.assertIn(required, normalized_decision)
+        for required in (
+            "low-resolution semantic territory",
+            "current navigation rather than permanent identities",
+            "current state converges and shrinks",
+            "material dependencies are answered or explicitly dispositioned",
+            "owns scoped reconciliation",
+            "one coherent operational model",
+        ):
+            self.assertIn(required, normalized_map_decision)
         self.assertIn(
-            "A semantic area is settled when no consequential uncertainty remains undispositioned there",
-            normalized_convergence,
+            "The resolution method determines what evidence or authority is sufficient",
+            normalized_state_contract,
         )
+        self.assertIn("Durable Wayfinder state can record authority", normalized_state_contract)
         self.assertIn(
-            "has no consequential in-scope uncertainty left undispositioned",
-            normalized_convergence,
+            "A semantic area is settled when no consequential uncertainty remains",
+            normalized_state_contract,
         )
 
     def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(self) -> None:
@@ -569,12 +570,14 @@ class RoutingContractTests(unittest.TestCase):
     def test_thin_router_and_sole_coordinator_decisions_are_current(self) -> None:
         decision = (
             REPOSITORY_ROOT
-            / "architecture-decisions/0027-use-thin-evidence-triggered-routing.md"
+            / "architecture-decisions/0027-use-direct-first-progressive-routing.md"
         ).read_text()
         index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
         self.assertIn("- Status: accepted", decision)
-        self.assertIn("deterministic", decision.lower())
-        self.assertIn("model-based grading", decision.lower())
+        self.assertIn("Begin with the simplest reasonable route", decision)
+        self.assertIn("Routing is not frozen at the first prompt", decision)
+        self.assertIn("progressively load deeper", decision)
+        self.assertNotIn("model-based grading", decision.lower())
         self.assertIn("ADR-0027", index)
         coordinator = (
             REPOSITORY_ROOT

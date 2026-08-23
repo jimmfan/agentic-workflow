@@ -2,117 +2,70 @@
 
 - Status: accepted
 - Date: 2026-08-20
-- Supersedes: ADR-0012
-- Amends: ADR-0011, ADR-0023, ADR-0026, and ADR-0027
-- Preserves: ADR-0022 and ADR-0025
+- Consolidated: 2026-08-22
 
 ## Context
 
-Agent Workflow maintained two framework continuity models. Wayfinder used one
-map plus optional U/E/F/D knowledge, while bounded Discovery, Debugging, and
-Implementation could allocate DEC, DBG, and IMP records with their own IDs,
-statuses, resume targets, conflicts, and archive rules. Supporting work inside
-Wayfinder already avoided those records, making their remaining value largely a
-second persistence path for standalone specialists.
+Agent Workflow previously maintained separate DEC, DBG, and IMP continuity
+systems alongside Wayfinder. Those systems created competing resume identities,
+statuses, archive rules, and lifecycle behavior. Specialists already own better
+methods and native artifacts than a coordinator could reproduce, so copying
+their procedures into Wayfinder would increase context and create drift.
 
-The specialist skills also have stronger method ownership than Wayfinder:
-Discovery compares viable alternatives, Debugging runs a falsifiable causal
-loop, Research produces primary-source findings, Prototype learns through a
-disposable artifact, Domain Modeling sharpens concepts, and Implementation owns
-the execution boundary. Repeating those methods in Wayfinder would increase
-context and create drift.
-
-Existing deterministic and live evaluation evidence does not prove that more
-structured state improves outcomes. Historical Wayfinder trajectories often
-used more instructions, reads, tools, and tokens than one strong durable
-handoff, sometimes without an outcome advantage. The defensible target is not
-mandatory specialist use; it is one small coordination owner plus progressive
-method loading.
+The project needs one small coordination owner, not mandatory durable state for
+every method that might help during an effort.
 
 ## Decision
 
-Wayfinder is the sole framework-owned durable coordination layer. It owns:
+Wayfinder is the sole framework-owned durable coordination model. It persists
+only consequential cross-session coordination: destination and scope, semantic
+territory, current blockers and dependencies, useful frontier and next work,
+optional current knowledge, and readable pointers to canonical artifacts.
 
-- destination, semantic territory, and scope boundary;
-- map-first current state, blockers, dependencies, frontier, and next work;
-- optional current U/E/F/D knowledge;
-- progressive effort and child loading;
-- reconciliation, convergence, settlement, and lifecycle; and
-- readable pointers and handoffs to canonical project or provider artifacts.
+Discovery, Debugging, Research, Prototype, Domain Modeling, Implementation,
+Verification, and other specialists own their methods and native outputs. They
+remain stateless from the framework's perspective and do not create competing
+continuity notebooks merely because they run. Direct reasoning remains valid;
+load only a specialist whose method materially helps the current frontier.
 
-Direct reasoning remains valid inside and outside Wayfinder. Encountering a
-decision, failure, research question, prototype opportunity, or domain ambiguity
-does not by itself load a specialist. Continue directly when the frontier can be
-resolved safely without extra methodology. Load only the smallest specialist
-whose method would materially improve resolution, and do not load several
-specialists speculatively.
+Native artifacts retain their own durable ownership. In particular,
+`to-tickets` owns executable decomposition and its frontier; Wayfinder may link
+that output but never mirrors T# work as a second ticket/status surface.
+Specifications, research, reviews, learning workspaces, and optional accepted
+IDP opportunity records are likewise canonical outputs rather than competing
+framework coordination models.
 
-Discovery, Debugging, Research, Prototype, Domain Modeling, and other supporting
-activities are stateless from the framework's perspective. They own their
-methods and native artifacts, while Wayfinder persists only consequential
-coordination needed to resume: unresolved frontier, useful evidence or
-conclusions, relevant artifact pointers, resolution mode when useful, blockers,
-dependencies, and next work. Obvious specialist dispatch from a selected map
-does not require the detailed router.
-
-Implementation remains a transition to execution. It consumes one coherent
-canonical map, decision, specification, or native ticket; invokes the selected
-implementation provider once; and hands the integrated result to Verification.
-It is neither a Wayfinder reasoning mechanism nor an owner of durable workflow
-state. If interrupted execution needs continuity not already supplied by a
-canonical artifact, Wayfinder records only the consequential return frontier.
-
-Stop allocating, resuming, validating, conflicting, or archiving DEC, IMP, and
-DBG records. Remove their templates and runtime rules. Do not replace them with
-another specialist record, active index, scratch tree, or lifecycle system.
-
-Existing DEC, IMP, DBG, active-index, record, and archive files remain opaque
-project-owned historical data. Lifecycle operations preserve them and no
-automatic migration or compatibility parser is added. A project owner may
-manually reconcile still-relevant current work into Wayfinder or another
-canonical artifact.
-
-The general durable-state contract remains only for shared project-state rules
-that still have owners, including canonical-source precedence, ADR conventions,
-controlled promotion, the optional IDP opportunity record, and legacy data
-preservation. Wayfinder writes load only the Wayfinder contract.
+When interrupted work lacks a sufficient canonical artifact, Wayfinder records
+only the consequential return frontier and pointers. Existing DEC, DBG, IMP,
+active-index, record, and archive files remain opaque project-owned historical
+data. Current workflows neither resume nor migrate them, and no compatibility
+parser or replacement specialist record is added.
 
 ## Consequences
 
 Fresh sessions have one framework re-entry model. Standalone specialist work is
-ephemeral unless it crosses the Wayfinder threshold, and supporting specialist
-work cannot create a second notebook. Decision and causal methodology remain in
-their specialist skills rather than being approximated in the coordinator.
+ephemeral unless it crosses the Wayfinder threshold, while specialist
+methodology stays in the skill that owns it.
 
-The change intentionally breaks automatic DEC/IMP/DBG resume before 1.0.
-Existing bytes survive, but current agents treat them as historical evidence.
-An interrupted bounded specialist task that genuinely needs cross-session
-continuity now pays for a map; ordinary single-session work becomes smaller.
+This decision does not require Wayfinder's current Markdown representation.
+Representation and re-entry are governed separately by ADR-0011, so either
+choice may change without silently changing the other.
 
-Decision frontiers can become more expensive if Discovery is loaded
-automatically. Deterministic contracts therefore require both direct Wayfinder
-decision resolution and lazy Discovery composition, and context budgets include
-both paths. Research, Prototype, and Domain Modeling remain optional because
-their native methods and artifacts are deliberately heavier than direct work.
-
-The owned Wayfinder runtime retains a compact dispatch vocabulary because the
-coordinator must recognize when a specialist may help. It does not copy the
-specialist's procedure. Detailed routing remains available for ambiguous
-ownership, provider fallback, and material handoff questions.
+Exact specialist lists, legacy record mechanics, implementation handoffs,
+context budgets, and evaluation outcomes belong in runtime instructions,
+contracts, tests, and history rather than this decision.
 
 ## Alternatives considered
 
-- Keep DEC only for bounded decisions: rejected because cross-session decision
-  continuity already satisfies the Wayfinder threshold and would retain two
-  decision namespaces.
-- Keep DBG for detailed diagnostic logs: rejected because Debugging methodology
-  remains intact and only consequential evidence belongs in durable
-  coordination; raw transcripts are not project state.
-- Keep IMP for interruption recovery: rejected because canonical maps,
-  specifications, tickets, source, and Verification evidence already supply the
-  implementation boundary, while Wayfinder covers exceptional continuity.
-- Always invoke the specialist matching the frontier type: rejected because it
-  would merely move context cost into routine composition and make Direct less
-  reliable.
+- Retain specialist-specific durable notebooks: rejected because they create
+  competing continuity models for work that already crosses the Wayfinder
+  threshold.
+- Copy specialist methods into Wayfinder: rejected because the coordinator
+  would become large and drift from the native method owner.
 - Add a generic specialist-result or handoff record: rejected because the map
-  and native artifacts already carry the needed pointers and next work.
+  and native artifacts already carry the required pointers and next work.
+
+## Reconsideration trigger
+
+Reconsider if a specialist demonstrates a durable coordination need that cannot
+be represented safely as a native artifact plus a concise Wayfinder pointer.

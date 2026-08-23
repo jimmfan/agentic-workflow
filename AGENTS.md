@@ -118,6 +118,16 @@ When an accepted decision changes, update the ADR and affected contracts, implem
 
 If an ADR and current repository behavior appear inconsistent, investigate the discrepancy rather than silently choosing either one.
 
+Keep `architecture-decisions/` small. Create or retain an ADR only for an
+architecturally significant choice that can reasonably be reconsidered
+independently and whose rationale would otherwise be lost. Before adding one,
+check whether an existing ADR already owns the boundary. Put current system
+shape in `docs/architecture.md` and exact required behavior in contracts,
+source, and tests. Do not create ADRs for experiments, bug fixes, dependency or
+version updates, numeric limits, path cleanup, benchmark results, or routine
+implementation mechanics. Consolidate or remove obsolete pre-1.0 decisions;
+Git preserves historical evolution.
+
 ## Architecture boundary
 
 Agent Workflow is a thin orchestration layer over host capabilities and curated, replaceable skills.

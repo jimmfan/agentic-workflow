@@ -185,6 +185,21 @@ def check_structure() -> None:
     require(not (REPOSITORY_ROOT / "docs" / "observability.md").exists(), "obsolete observability documentation remains")
 
 
+def check_inert_payload() -> None:
+    for path in PAYLOAD_ROOT.rglob("*"):
+        if path.name in {"AGENTS.md", "CLAUDE.md"}:
+            relative = path.relative_to(PACKAGE_ROOT)
+            raise VerificationError(
+                f"activation-sensitive payload path must remain absent: {relative}"
+            )
+    for directory in (".agents", ".github"):
+        path = PAYLOAD_ROOT / directory
+        require(
+            not path.exists() and not path.is_symlink(),
+            f"activation-sensitive payload path must remain absent: payload/{directory}",
+        )
+
+
 def check_manifest() -> None:
     try:
         actual = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -701,6 +716,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             refresh_manifest()
         for check in (
             check_structure,
+            check_inert_payload,
             check_manifest,
             check_filesystem,
             check_router_contract,
