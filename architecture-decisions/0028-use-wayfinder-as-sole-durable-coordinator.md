@@ -6,11 +6,11 @@
 
 ## Context
 
-Agent Workflow previously maintained separate DEC, DBG, and IMP continuity
-systems alongside Wayfinder. Those systems created competing resume identities,
-statuses, archive rules, and lifecycle behavior. Specialists already own better
-methods and native artifacts than a coordinator could reproduce, so copying
-their procedures into Wayfinder would increase context and create drift.
+Agent Workflow previously maintained specialist-specific continuity systems
+alongside Wayfinder. Those systems created competing resume identities,
+statuses, and lifecycle behavior. Specialists already own better methods and
+native artifacts than a coordinator could reproduce, so copying their
+procedures into Wayfinder would increase context and create drift.
 
 The project needs one small coordination owner, not mandatory durable state for
 every method that might help during an effort.
@@ -22,24 +22,21 @@ only consequential cross-session coordination: destination and scope, semantic
 territory, current blockers and dependencies, useful frontier and next work,
 optional current knowledge, and readable pointers to canonical artifacts.
 
-Discovery, Debugging, Research, Prototype, Domain Modeling, Implementation,
-Verification, and other specialists own their methods and native outputs. They
-remain stateless from the framework's perspective and do not create competing
-continuity notebooks merely because they run. Direct reasoning remains valid;
-load only a specialist whose method materially helps the current frontier.
+Specialists own their methods and native outputs. They remain stateless from the
+framework's perspective and do not create competing continuity notebooks merely
+because they run. Direct reasoning remains valid; load only a specialist whose
+method materially helps the current frontier.
 
 Native artifacts retain their own durable ownership. In particular,
 `to-tickets` owns executable decomposition and its frontier; Wayfinder may link
 that output but never mirrors T# work as a second ticket/status surface.
-Specifications, research, reviews, learning workspaces, and optional accepted
-IDP opportunity records are likewise canonical outputs rather than competing
-framework coordination models.
+Other specialist-native or accepted project artifacts are likewise canonical
+outputs rather than competing framework coordination models.
 
 When interrupted work lacks a sufficient canonical artifact, Wayfinder records
-only the consequential return frontier and pointers. Existing DEC, DBG, IMP,
-active-index, record, and archive files remain opaque project-owned historical
-data. Current workflows neither resume nor migrate them, and no compatibility
-parser or replacement specialist record is added.
+only the consequential return frontier and pointers. Retired specialist
+continuity remains project-owned historical data governed by the durable-state
+contract, not a current coordination model.
 
 ## Consequences
 
@@ -51,7 +48,7 @@ This decision does not require Wayfinder's current Markdown representation.
 Representation and re-entry are governed separately by ADR-0011, so either
 choice may change without silently changing the other.
 
-Exact specialist lists, legacy record mechanics, implementation handoffs,
+Exact specialist integrations, legacy mechanics, implementation handoffs,
 context budgets, and evaluation outcomes belong in runtime instructions,
 contracts, tests, and history rather than this decision.
 
