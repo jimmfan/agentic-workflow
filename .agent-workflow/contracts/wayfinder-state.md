@@ -32,6 +32,15 @@ These are distinctions, not a mandatory pipeline. Evidence may leave an
 unknown unresolved, a fact may require no decision, and a decision may be made
 under uncertainty without manufacturing a fact.
 
+Git/session observations such as the current branch, HEAD commit, dirty
+working-tree status, or ahead/behind status are execution context, not normal
+durable state. Inspect this information when useful for safe execution, but
+normally do not persist it because it is likely to become stale as work
+proceeds. Persist it when it represents a durable constraint or dependency,
+such as work is authorized only on a named branch, a branch must remain
+untouched, a particular commit is the required baseline, or another branch
+contains implementation required for continuation.
+
 ## Semantic territory and effort identity
 
 U/E/F/D is a knowledge taxonomy, not the effort's problem structure. Every

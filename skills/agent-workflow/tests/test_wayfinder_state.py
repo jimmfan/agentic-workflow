@@ -515,6 +515,43 @@ class WayfinderStateContractTests(unittest.TestCase):
                 surface,
             )
 
+    def test_runtime_and_contract_exclude_volatile_git_observations_but_keep_constraints(self) -> None:
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        for runtime_rule in (
+            "Inspect Git/session state when useful for safe execution",
+            "do not normally persist volatile observations",
+            "Retain durable Git constraints and dependencies under the state contract",
+        ):
+            self.assertIn(runtime_rule, runtime)
+
+        for volatile_observation in (
+            "current branch",
+            "HEAD commit",
+            "dirty working-tree status",
+            "ahead/behind status",
+        ):
+            self.assertIn(volatile_observation, self.normalized)
+        for durable_constraint in (
+            "work is authorized only on a named branch",
+            "a branch must remain untouched",
+            "a particular commit is the required baseline",
+            "another branch contains implementation required for continuation",
+        ):
+            self.assertIn(durable_constraint, self.normalized)
+
+        self.assertIn("Inspect this information when useful for safe execution", self.normalized)
+        self.assertIn("normally do not persist", self.normalized)
+        self.assertIn(
+            "Persist it when it represents a durable constraint or dependency",
+            self.normalized,
+        )
+
+        self.assertNotIn(
+            "Would a competent fresh agent need this information to continue the work correctly?",
+            runtime,
+        )
+        self.assertNotIn("generic persistence-admission policy", self.contract)
+
     def test_runtime_and_contract_distinguish_map_fog_from_durable_unknowns(self) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         for required in (

@@ -18,6 +18,9 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 - The map owns current state, blockers, dependencies, frontier, and next work.
   Optional U/E/F/D preserves only independently useful knowledge.
 - Live source and accepted project artifacts outrank stale map state.
+- Inspect Git/session state when useful for safe execution, but do not normally
+  persist volatile observations. Retain durable Git constraints and
+  dependencies under the state contract.
 - Durable Wayfinder state can record authority; it cannot create authority.
   Use an actual human or project source, or valid delegated scope, for an
   authority-owned choice. Keep the question and what it blocks explicit.
