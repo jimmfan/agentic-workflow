@@ -45,9 +45,10 @@ The surgical rollback was committed as `f17a115` and pushed only to
 ## Blockers and dependencies
 
 None. The user's 2026-08-22 request in this task explicitly authorizes a commit
-and push only to `fix/wayfinder-fresh-agent-regression`. Projection ownership is
-governed by accepted ADR-0023; state/lifecycle, authority, current path, and
-preservation constraints remain governed by their existing accepted ADRs.
+and push only to `fix/wayfinder-fresh-agent-regression`. The coherent runtime and
+state representation are now governed by ADR-0011; lifecycle preservation and
+authority remain governed by ADR-0010 and ADR-0025. Exact paths remain contract
+facts.
 
 ## Next work
 

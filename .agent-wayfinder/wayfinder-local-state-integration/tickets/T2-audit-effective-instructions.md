@@ -27,9 +27,9 @@ the broader cleanup is deferred as a separate decision.
 ## Follow-up
 
 On 2026-08-18, the separately reviewed targeted cleanup was implemented in the
-[runtime routing contract](../../../../skills/agent-workflow/payload/agent-workflow/routing.md),
-[always-loaded policy](../../../../skills/agent-workflow/payload/root/AGENTS.md.template),
-and [routing documentation](../../../../docs/routing.md). It keeps route
+[runtime routing contract](../../../skills/agent-workflow/payload/agent-workflow/routing.md),
+[always-loaded policy](../../../skills/agent-workflow/payload/root/AGENTS.md.template),
+and [routing documentation](../../../docs/routing.md). It keeps route
 selection, transition, provider resolution, composition, continuity, and route
 reporting in the router while leaving universal policy, provider facts,
 provider methodology, and state mechanics with their existing owners. Focused

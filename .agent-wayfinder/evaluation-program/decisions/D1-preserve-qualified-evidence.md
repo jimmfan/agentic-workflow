@@ -15,9 +15,9 @@ bytes remain recoverable from Git history.
 
 The repository already records three campaigns with materially different evidence quality:
 
-- [`2026-08-15-initial-spike`](../../../../evals/results/2026-08-15-initial-spike/campaign.md): one run per cell, earlier Direct evaluator, execution metadata unavailable, and no established clean context boundary. Its initial findings are preliminary and directional.
-- [`2026-08-15-three-paired-trials`](../../../../evals/results/2026-08-15-three-paired-trials/campaign.md): three pairs per scenario after evaluator refinement. All runs had possible delegated-source exposure and one Resume workflow run has confirmed contamination. It is historical/directional evidence, though it remains the strongest completed evidence for the narrow Direct non-interference question.
-- [`2026-08-15-context-isolated-resume`](../../../../evals/results/2026-08-15-context-isolated-resume/campaign.md): three baseline and three workflow Resume runs with distinct Phase 1 and Phase 2 conversations. Four runs are clean at the observable context boundary; two baseline runs have disclosed brief interrupted old-conversation starts with no recorded mutation. Concurrent execution limits timing inference.
+- [`2026-08-15-initial-spike`](../../../evals/results/2026-08-15-initial-spike/campaign.md): one run per cell, earlier Direct evaluator, execution metadata unavailable, and no established clean context boundary. Its initial findings are preliminary and directional.
+- [`2026-08-15-three-paired-trials`](../../../evals/results/2026-08-15-three-paired-trials/campaign.md): three pairs per scenario after evaluator refinement. All runs had possible delegated-source exposure and one Resume workflow run has confirmed contamination. It is historical/directional evidence, though it remains the strongest completed evidence for the narrow Direct non-interference question.
+- [`2026-08-15-context-isolated-resume`](../../../evals/results/2026-08-15-context-isolated-resume/campaign.md): three baseline and three workflow Resume runs with distinct Phase 1 and Phase 2 conversations. Four runs are clean at the observable context boundary; two baseline runs have disclosed brief interrupted old-conversation starts with no recorded mutation. Concurrent execution limits timing inference.
 
 Keeping these categories visible preserves learning without overstating causal confidence.
 

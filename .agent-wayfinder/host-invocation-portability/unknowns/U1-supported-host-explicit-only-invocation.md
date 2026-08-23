@@ -11,7 +11,7 @@ Do Codex, GitHub Copilot, and Claude Code preserve the upstream distinction betw
 
 ## Evidence
 
-- [Host invocation portability research](../../../../docs/host-invocation-portability-research.md) establishes from current primary sources that the Agent Skills specification does not standardize invocation policy; Codex uses machine/harness-owned `agents/openai.yaml`; and GitHub Copilot VS Code/CLI plus Claude Code document `SKILL.md:disable-model-invocation`.
+- [Host invocation portability research](../../../docs/host-invocation-portability-research.md) establishes from current primary sources that the Agent Skills specification does not standardize invocation policy; Codex uses machine/harness-owned `agents/openai.yaml`; and GitHub Copilot VS Code/CLI plus Claude Code document `SKILL.md:disable-model-invocation`.
 - Repository inspection confirmed that user-only provider skills carry both host controls and that installation preserves whole provider directories except for the declared, fingerprinted Wayfinder adapter.
 - `providers.py status .` reported all 14 provider skills present and the Wayfinder adapter ready.
 - Two deterministic lifecycle regressions now reject a staged user-only skill if either the Copilot or Codex control is missing.

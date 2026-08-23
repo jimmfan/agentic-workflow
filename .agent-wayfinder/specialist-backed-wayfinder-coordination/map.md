@@ -25,7 +25,7 @@ alone preserves the consequential coordination needed to resume.
 
 ## Current state
 
-- [ADR-0028](../../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md)
+- [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md)
   owns the completed architecture: Wayfinder coordinates durable state,
   specialists own methods, and Direct remains valid.
 - Runtime wording was simplified without changing the root gate, Wayfinder

@@ -65,10 +65,8 @@ None for this effort.
 
 ## Notes
 
-- [Wayfinder state contract](../../../.agent-workflow/contracts/wayfinder-state.md)
-- [ADR-0022](../../../architecture-decisions/0022-separate-wayfinder-knowledge-from-implementation-tickets.md)
-- [ADR-0023](../../../architecture-decisions/0023-own-the-wayfinder-runtime-projection.md)
-- [ADR-0024](../../../architecture-decisions/0024-use-current-state-wayfinder-identifiers.md)
+- [Wayfinder state contract](../../.agent-workflow/contracts/wayfinder-state.md)
+- [ADR-0011 — Use map-first Wayfinder state](../../architecture-decisions/0011-use-map-first-wayfinder-state.md)
 - Git is the history mechanism; this effort introduces no second archive,
   registry, event log, allocation database, or global maintenance sweep.
 - The repository audit found no workflow that consumes repository-lifetime
@@ -79,7 +77,7 @@ None for this effort.
 
 ## Decisions so far
 
-- Use current-state identifiers plus map-owned effort status. ADR-0024 explicitly
+- Use current-state identifiers plus map-owned effort status. ADR-0011 explicitly
   rejects lifetime-uniqueness bookkeeping, tombstones, registries, archive trees,
   event logs, and lifecycle databases.
 - Retain the transient effort mutation lock because it is the smallest single

@@ -26,12 +26,12 @@ Does maintaining project truth across multiple Wayfinder map/U/D/T artifacts cre
 - Fresh Wayfinder implementation agents observed 20/21/24 files before first
   writes in Phases 2/4/6, versus 11/6/12 for the single handoff. These are
   directional reconstruction-cost observations from one trajectory.
-- [ADR-0016 — Reconcile relevant Wayfinder state at completion](../../../../docs/decisions/0016-reconcile-relevant-wayfinder-state-at-completion.md) assigns the acting agent responsibility for bounded reconciliation when authorized mutating work materially changes this effort. The rule addresses the observed ownership gap without adding automation or treating the evaluation state as product truth.
+- [ADR-0011 — Use map-first Wayfinder state](../../../architecture-decisions/0011-use-map-first-wayfinder-state.md) assigns the acting agent responsibility for bounded reconciliation when authorized mutating work materially changes this effort. The rule addresses the observed ownership gap without adding automation or treating the evaluation state as product truth.
 - Behavioral contracts now cover successful reconciliation, preservation and progressive exclusion of an unrelated effort, non-mutating stale-state reporting, and blocking on unresolved conflicting state. The deterministic 65-test release gate passes, but the two new live-agent scenarios were not executed; this establishes acceptance intent and fixture safety, not ordinary-agent reliability.
 
 ## Resolution
 
-Keep open. ADR-0016 resolves who owns reconciliation and when it is part of
+Keep open. ADR-0011 resolves who owns reconciliation and when it is part of
 completion; it does not resolve whether the structured state has acceptable net
 value or whether ordinary agent reconciliation is reliable in practice. The
 program incident and T4 show real synchronization surface, while T4 also shows

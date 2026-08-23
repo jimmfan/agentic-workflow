@@ -33,12 +33,12 @@ None. The experiment is complete and requires no current product work.
 
 None. Reopen only if host capabilities and repeated evidence satisfy the revisit
 triggers in the
-[experiment history](../../../docs/focused-wayfinder-vscode-experiment-history.md).
+[experiment history](../../docs/focused-wayfinder-vscode-experiment-history.md).
 
 ## Notes
 
 - The decision-relevant evidence and final interpretation are summarized in the
-  [focused Wayfinder VS Code experiment history](../../../docs/focused-wayfinder-vscode-experiment-history.md).
+  [focused Wayfinder VS Code experiment history](../../docs/focused-wayfinder-vscode-experiment-history.md).
 - Full protocols, reports, and raw chat exports remain on
   `wayfinder-replace` at `7a8ad8fd28527cbbbdc65551703f67a03ee22568`.
 - The generic `.wayfinder-mutation-lock/` contract remains governing and was not
