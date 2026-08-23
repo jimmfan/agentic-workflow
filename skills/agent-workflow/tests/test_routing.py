@@ -112,8 +112,14 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("instead of creating a parallel namespace", normalized_contract)
         self.assertIn("Do not promote every workflow choice", normalized_contract)
         self.assertIn("A current Wayfinder D# may link that ADR", normalized_contract)
-        self.assertIn("maintained current decisions", normalized_contract)
-        self.assertIn("Git preserves obsolete pre-1.0 decision history", normalized_contract)
+        self.assertIn("maintained consequential decisions", normalized_contract)
+        self.assertIn(
+            "follow the project's existing convention for superseded or historical decisions",
+            normalized_contract,
+        )
+        self.assertNotIn("pre-1.0 decision history", normalized_contract)
+        self.assertNotIn("without requiring tombstone files", normalized_contract)
+        self.assertNotIn("Consolidate or remove obsolete pre-1.0 decisions", root_policy)
 
     def test_adr_index_contains_only_current_decisions_and_git_history_note(self) -> None:
         index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()

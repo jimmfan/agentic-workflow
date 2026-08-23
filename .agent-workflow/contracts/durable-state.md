@@ -33,10 +33,10 @@ or accepted artifacts.
 
 Use `architecture-decisions/` as the default Architecture Decision Record (ADR)
 namespace. Preserve an existing project convention instead of creating a
-parallel namespace or migrating it. Treat ADRs as maintained current decisions,
-not an append-only workflow log. Keep a concise index when several ADRs exist
-and retain rationale for consequential current choices; Git preserves obsolete
-pre-1.0 decision history without requiring tombstone files.
+parallel namespace or migrating it. Treat ADRs as maintained consequential
+decisions rather than routine workflow logs. Keep a concise index when several
+ADRs exist, retain rationale for consequential choices, and follow the project's
+existing convention for superseded or historical decisions.
 
 Do not promote every workflow choice. Create or update an ADR only when a
 lasting architecture or contract decision warrants it. A current Wayfinder D#
