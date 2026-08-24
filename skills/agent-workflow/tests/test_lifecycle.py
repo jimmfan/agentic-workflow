@@ -741,6 +741,27 @@ class LifecycleAcceptanceTests(unittest.TestCase):
                 self.assertIn("disable-model-invocation: true", skill_text)
                 self.assertIn("allow_implicit_invocation: false", openai_text)
 
+    def test_grilling_discovery_adapter_preserves_explicit_and_adds_implicit_cues(self) -> None:
+        result = run_script(PROVIDERS, "install", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        skill_text = (
+            self.project / ".agents/skills/grilling/SKILL.md"
+        ).read_text(encoding="utf-8")
+        openai_text = (
+            self.project / ".agents/skills/grilling/agents/openai.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "Grill the user through interdependent human/project-owned decisions whose answers "
+            "materially shape downstream choices.",
+            skill_text,
+        )
+        self.assertIn("explicitly asks to be grilled or stress-test", skill_text)
+        self.assertIn(
+            'short_description: "Resolve interdependent decisions through structured questions"',
+            openai_text,
+        )
+
     def test_provider_status_is_nonzero_while_declared_projection_is_incomplete(self) -> None:
         result = run_script(PROVIDERS, "status", self.project)
 
@@ -1095,6 +1116,21 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
         self.assertIn("implement must declare the implicit-invocation adapter", verify.stderr)
+
+    def test_verifier_requires_grilling_discovery_adapter(self) -> None:
+        package_copy = self.copy_package("grilling-discovery-adapter-declaration")
+        declaration = package_copy / "payload/agent-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        grilling = next(
+            item for item in raw["provider"]["skills"] if item["name"] == "grilling"
+        )
+        grilling.pop("agentic_workflow_adapter")
+        declaration.write_text(json.dumps(raw), encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("grilling must declare the discovery adapter", verify.stderr)
 
     def test_verifier_rejects_corrupt_provider_snapshot_and_provenance(self) -> None:
         package_copy = self.copy_package("provider-snapshot-integrity")

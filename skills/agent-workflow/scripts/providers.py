@@ -51,6 +51,9 @@ class Provider:
 
 WAYFINDER_ADAPTER = "wayfinder-runtime-projection-v1"
 IMPLICIT_INVOCATION_ADAPTER = "implicit-invocation-v1"
+GRILLING_DISCOVERY_ADAPTER = "grilling-discovery-v1"
+
+
 def configure_console() -> None:
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
@@ -170,6 +173,8 @@ def load_provider() -> Provider:
                         for character in upstream_body_sha256
                     )
                 )
+            elif adapter_name == GRILLING_DISCOVERY_ADAPTER:
+                valid = set(adapter) == {"name"} and name == "grilling"
             else:
                 valid = (
                     adapter_name == IMPLICIT_INVOCATION_ADAPTER
@@ -289,6 +294,8 @@ def adapter_plan(
         return []
     if skill.adapter == IMPLICIT_INVOCATION_ADAPTER:
         return implicit_invocation_adapter_plan(root, skill, repository, version)
+    if skill.adapter == GRILLING_DISCOVERY_ADAPTER:
+        return grilling_discovery_adapter_plan(root, skill, repository, version)
     if (
         skill.adapter != WAYFINDER_ADAPTER
         or skill.upstream_body_sha256 is None
@@ -448,6 +455,72 @@ def implicit_invocation_adapter_plan(
         if original.count(upstream_line) != 1 or adapted_line in original:
             raise ProviderError(
                 f"provider skill {skill.name} has unexpected invocation metadata in "
+                f"{path.relative_to(directory)}"
+            )
+        desired = original.replace(upstream_line, adapted_line, 1)
+        plan.append((path, original, desired))
+    return plan
+
+
+def grilling_discovery_adapter_plan(
+    root: Path,
+    skill: ProviderSkill,
+    repository: str,
+    version: str,
+) -> list[tuple[Path, bytes, bytes]]:
+    """Project Grilling's implicit and explicit host discovery cues."""
+    if destination_state(root, skill.name) != "present":
+        raise ProviderError(f"provider skill {skill.name} is not safe to adapt")
+
+    directory = root / ".agents" / "skills" / skill.name
+    skill_path = directory / "SKILL.md"
+    openai_path = directory / "agents" / "openai.yaml"
+    if skill_path.is_symlink() or not skill_path.is_file():
+        raise ProviderError(f"provider skill {skill.name} instructions are missing or unsafe")
+    if openai_path.is_symlink() or not openai_path.is_file():
+        raise ProviderError(f"provider skill {skill.name} Codex metadata is missing or unsafe")
+
+    original_skill = skill_path.read_bytes()
+    if not original_skill.startswith(b"---\n"):
+        raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
+    separator = original_skill.find(b"\n---\n", 4)
+    if separator < 0:
+        raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
+    frontmatter = original_skill[4:separator]
+    required_source = (
+        f"    github-path: {skill.path}\n".encode("utf-8"),
+        f"    github-pinned: {version}\n".encode("utf-8"),
+        f"    github-repo: https://github.com/{repository}\n".encode("utf-8"),
+    )
+    if any(frontmatter.count(line) != 1 for line in required_source):
+        raise ProviderError(f"provider skill {skill.name} has incompatible source metadata")
+
+    replacements = (
+        (
+            skill_path,
+            (
+                "description: Grill the user relentlessly about a plan, decision, or idea. Use "
+                "when the user wants to stress-test their thinking, or uses any 'grill' trigger "
+                "phrases.\n"
+            ).encode("utf-8"),
+            (
+                "description: Grill the user through interdependent human/project-owned decisions "
+                "whose answers materially shape downstream choices. Also use when the user explicitly "
+                "asks to be grilled or stress-test a plan, decision, or idea.\n"
+            ).encode("utf-8"),
+        ),
+        (
+            openai_path,
+            b'  short_description: "Stress-test thinking a round of questions at a time"\n',
+            b'  short_description: "Resolve interdependent decisions through structured questions"\n',
+        ),
+    )
+    plan: list[tuple[Path, bytes, bytes]] = []
+    for path, upstream_line, adapted_line in replacements:
+        original = path.read_bytes()
+        if original.count(upstream_line) != 1 or adapted_line in original:
+            raise ProviderError(
+                f"provider skill {skill.name} has unexpected discovery metadata in "
                 f"{path.relative_to(directory)}"
             )
         desired = original.replace(upstream_line, adapted_line, 1)

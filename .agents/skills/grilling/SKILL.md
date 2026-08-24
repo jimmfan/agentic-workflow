@@ -1,5 +1,5 @@
 ---
-description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.
+description: Grill the user through interdependent human/project-owned decisions whose answers materially shape downstream choices. Also use when the user explicitly asks to be grilled or stress-test a plan, decision, or idea.
 metadata:
     github-path: skills/productivity/grilling
     github-pinned: v1.2.3

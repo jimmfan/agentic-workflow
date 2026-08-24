@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 import unittest
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -18,6 +19,7 @@ PRE_DECOMPOSITION_CONTEXT = {
     "wayfinder-implementation": (52822, 7462),
     "multi-front": (79626, 11294),
 }
+ROUTING_TABLE_COVERAGE_EXCEPTIONS: dict[str, str] = {}
 
 
 def instruction_profile(paths: list[Path]) -> tuple[int, int]:
@@ -28,6 +30,61 @@ def instruction_profile(paths: list[Path]) -> tuple[int, int]:
 
 
 class RoutingContractTests(unittest.TestCase):
+    def test_every_normally_model_invokable_skill_has_a_routing_selection_cue(self) -> None:
+        declaration = json.loads(
+            (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text()
+        )
+        provider_skills = {
+            item["name"]
+            for item in declaration["provider"]["skills"]
+            if "implicit" in item["invocation"].values()
+        }
+        framework_skills = set()
+        for path in (PACKAGE_ROOT / "payload/skills").glob("*/SKILL.md"):
+            match = re.search(r"^name: (\S+)$", path.read_text(), re.MULTILINE)
+            self.assertIsNotNone(match, path)
+            framework_skills.add(match.group(1))
+        normally_invokable = provider_skills | framework_skills
+
+        routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
+        table = routing.split("| Signal | Selection | Boundary |", 1)[1].split(
+            "Normal intent may select", 1
+        )[0]
+        selection_cells = [
+            line.split("|")[2]
+            for line in table.splitlines()
+            if line.startswith("|") and not line.startswith("|---")
+        ]
+        normalized_selections = [
+            re.sub(r"[^a-z0-9]+", " ", cell.lower()).strip()
+            for cell in selection_cells
+        ]
+        missing = set()
+        for name in normally_invokable:
+            selection_label = re.sub(
+                r"[^a-z0-9]+", " ", name.removeprefix("workflow-").lower()
+            ).strip()
+            cue = re.compile(rf"(?:^| ){re.escape(selection_label)}(?:$| )")
+            if not any(cue.search(selection) for selection in normalized_selections):
+                missing.add(name)
+
+        self.assertTrue(
+            all(reason.strip() for reason in ROUTING_TABLE_COVERAGE_EXCEPTIONS.values())
+        )
+        self.assertTrue(set(ROUTING_TABLE_COVERAGE_EXCEPTIONS) <= missing)
+        self.assertEqual(missing - set(ROUTING_TABLE_COVERAGE_EXCEPTIONS), set())
+
+    def test_explicit_compatible_skill_selection_still_takes_precedence(self) -> None:
+        routing = " ".join(
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
+        )
+
+        self.assertIn(
+            "Explicit compatible skill request | Named skill | Honor unless authorization, "
+            "safety, or compatibility blocks it",
+            routing,
+        )
+
     def test_decision_catalog_covers_core_routes_and_authorization(self) -> None:
         scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
         dominant = {item["dominant_activity"] for item in scenarios}
@@ -279,6 +336,52 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertIn("Discovery owns bounded consequential choice", routing)
         self.assertIn("reorganizing the domain would materially improve", routing)
+
+    def test_grilling_resolves_interdependent_human_decisions_not_simple_unknowns(self) -> None:
+        routing = " ".join(
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
+        )
+
+        self.assertIn(
+            "Interdependent human/project-owned decisions materially shape downstream choices "
+            "| Direct or `grilling`",
+            routing,
+        )
+        self.assertIn(
+            "factual unknowns and one straightforward clarification use the minimum sufficient method",
+            routing,
+        )
+
+    def test_prototype_answers_design_questions_not_ordinary_implementation(self) -> None:
+        routing = " ".join(
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
+        )
+
+        self.assertIn(
+            "Throwaway implementation would answer a design or behavior question "
+            "| Direct or `prototype`",
+            routing,
+        )
+        self.assertIn(
+            "Ordinary production implementation stays Direct or with its dominant workflow",
+            routing,
+        )
+
+    def test_codebase_design_materially_improves_module_design_not_every_refactor(self) -> None:
+        routing = " ".join(
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
+        )
+
+        self.assertIn(
+            "Module interface, seam, depth, locality, or testability needs explicit design "
+            "| Direct or `codebase-design`",
+            routing,
+        )
+        self.assertIn(
+            "when its vocabulary materially improves the design; ordinary edits and refactors "
+            "stay Direct or with their dominant workflow",
+            routing,
+        )
 
     def test_missing_wayfinder_contract_fails_closed_without_substitute_state(self) -> None:
         scenarios = {

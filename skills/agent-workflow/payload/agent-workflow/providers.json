@@ -176,6 +176,9 @@
           "codex": "implicit",
           "github-copilot": "implicit"
         },
+        "agentic_workflow_adapter": {
+          "name": "grilling-discovery-v1"
+        },
         "name": "grilling",
         "path": "skills/productivity/grilling",
         "requires_configuration": []

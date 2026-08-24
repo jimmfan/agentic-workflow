@@ -17,8 +17,9 @@ select a workflow.
 3. Confirm the host can invoke each selected provider operation.
 4. Execute only authorized actions.
 
-Installed skill descriptions are the first selection interface. This table
-resolves overlaps:
+Installed skill descriptions are the first selection interface. Before making
+or acting on a consequential choice, resolve any material unresolved
+prerequisite using the minimum sufficient method. This table resolves overlaps:
 
 | Signal | Selection | Boundary |
 |---|---|---|
@@ -26,7 +27,10 @@ resolves overlaps:
 | Sustained learning intent | `teach` | Ordinary questions stay Direct |
 | Durable coordination threshold crossed | `wayfinder` | Structured project state must materially improve continuity |
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
+| Interdependent human/project-owned decisions materially shape downstream choices | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual unknowns and one straightforward clarification use the minimum sufficient method |
 | Domain concepts, vocabulary, boundaries, responsibilities, or relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the model materially helps; ordinary vocabulary lookup stays Direct |
+| Throwaway implementation would answer a design or behavior question | Direct or `prototype` | Ordinary production implementation stays Direct or with its dominant workflow |
+| Module interface, seam, depth, locality, or testability needs explicit design | Direct or `codebase-design` | Load Codebase Design only when its vocabulary materially improves the design; ordinary edits and refactors stay Direct or with their dominant workflow |
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis does not authorize a fix |
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
 | Settled scope needs a specification | `to-spec` | Its artifact remains canonical |

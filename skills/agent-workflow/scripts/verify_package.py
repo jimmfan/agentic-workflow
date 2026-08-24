@@ -444,6 +444,8 @@ def check_provider_declaration() -> None:
                     and adapter.get("projection_source") == "runtime-projections/wayfinder.md"
                     and name == "wayfinder"
                 )
+            elif adapter_name == "grilling-discovery-v1":
+                valid_adapter = set(adapter) == {"name"} and name == "grilling"
             else:
                 valid_adapter = (
                     set(adapter) == {"name"}
@@ -589,6 +591,15 @@ def check_provider_declaration() -> None:
             and skill.get("invocation", {}).get("github-copilot") == "implicit",
             f"{name} must declare the implicit-invocation adapter",
         )
+    grilling = next((item for item in skills if item.get("name") == "grilling"), None)
+    require(
+        isinstance(grilling, dict)
+        and grilling.get("agentic_workflow_adapter", {}).get("name")
+        == "grilling-discovery-v1"
+        and grilling.get("invocation", {}).get("codex") == "implicit"
+        and grilling.get("invocation", {}).get("github-copilot") == "implicit",
+        "grilling must declare the discovery adapter",
+    )
 
 
 def check_scenario_catalogs() -> None:
