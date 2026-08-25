@@ -40,6 +40,11 @@ _ABSOLUTE_ROOTS = (
     "/var/",
     "/workspace/",
 )
+_CURRENT_WAYFINDER_PATH = re.compile(
+    r"^[^/]+/(?:map\.md|facts\.md|decisions\.md|"
+    r"unknowns/U[1-9][0-9]*-[^/]+\.md|"
+    r"evidence/E[1-9][0-9]*-[^/]+\.md)$"
+)
 
 
 def _clip(value: str | None, limit: int = 400) -> str | None:
@@ -113,7 +118,9 @@ def _framework_kind(path: str) -> str | None:
             or relative.startswith(("records/", "archive/", "active-index."))
         ):
             return None
-        return "wayfinder_state"
+        if _CURRENT_WAYFINDER_PATH.fullmatch(relative):
+            return "wayfinder_state"
+        return None
     if "/.agents/skills/" in normalized or normalized.startswith(".agents/skills/"):
         return "skill"
     if "/.codex/skills/" in normalized or normalized.startswith(".codex/skills/"):

@@ -77,6 +77,14 @@ def historical_fd_present(effort: Path, kind: str) -> bool:
     return any(directory.iterdir())
 
 
+def require_no_historical_fd(effort: Path, kind: str) -> None:
+    if historical_fd_present(effort, kind):
+        raise UnsafeWayfinderState(
+            f"manual reconciliation required before current {kind} ledger "
+            "mutation because historical per-record state is present"
+        )
+
+
 def readable_slug(title: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
 
@@ -108,19 +116,17 @@ def create_current_record(
     with effort_mutation_lock(effort, attempts=lock_attempts):
         path = effort / LEDGER_PATHS[kind]
         sections = ledger_sections(effort, kind)
-        if historical_fd_present(effort, kind):
-            raise UnsafeWayfinderState(
-                f"historical per-record {kind} requires manual reconciliation; "
-                "manual reconciliation required before a current ledger write"
-            )
+        require_no_historical_fd(effort, kind)
         identifier = max((item[0] for item in sections), default=0) + 1
         observed = path.read_bytes() if path.exists() else None
         existing = observed.decode("utf-8") if observed is not None else ""
         if before_final_write is not None:
             before_final_write()
+        require_no_historical_fd(effort, kind)
         current = path.read_bytes() if path.exists() else None
         if current != observed:
             raise UnsafeWayfinderState("ledger changed before write")
+        require_no_historical_fd(effort, kind)
         prefix = existing.rstrip() if existing else f"# {LEDGER_TITLES[kind]}"
         content = (
             f"{prefix}\n\n## {kind}{identifier} — {title}\n\n"
@@ -178,11 +184,7 @@ def retire_ledger_section(
 ) -> bool:
     path = effort / LEDGER_PATHS[kind]
     with effort_mutation_lock(effort, attempts=lock_attempts):
-        if historical_fd_present(effort, kind):
-            raise UnsafeWayfinderState(
-                f"historical per-record {kind} requires manual reconciliation; "
-                "manual reconciliation required before a current ledger write"
-            )
+        require_no_historical_fd(effort, kind)
         if not path.exists():
             return False
         original = path.read_text(encoding="utf-8")
@@ -209,6 +211,7 @@ def retire_ledger_section(
         }
         if before_final_check is not None:
             before_final_check()
+        require_no_historical_fd(effort, kind)
         if current_markdown(effort) != observed_current:
             raise UnsafeWayfinderState("current state changed during reconciliation")
         if any(
@@ -225,6 +228,7 @@ def retire_ledger_section(
             known_references,
         ):
             raise UnsafeWayfinderState("current references appeared during reconciliation")
+        require_no_historical_fd(effort, kind)
         if len(sections) == 1:
             path.unlink()
         else:
@@ -516,6 +520,69 @@ class WayfinderStateContractTests(unittest.TestCase):
                 (historical / "F7-history.md").read_bytes(), b"opaque history\n"
             )
             self.assertTrue((effort / "decisions.md").is_file())
+
+    def test_new_historical_fd_at_mutation_boundary_blocks_the_write(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            append_effort = root / "append"
+            append_effort.mkdir()
+            (append_effort / "map.md").write_text(
+                "# Concurrent append\n", encoding="utf-8"
+            )
+            appended_history = append_effort / "facts/F9-history.md"
+
+            def add_history_before_append() -> None:
+                appended_history.parent.mkdir()
+                appended_history.write_bytes(b"opaque concurrent history\n")
+
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "manual reconciliation required"
+            ):
+                create_current_record(
+                    append_effort,
+                    "F",
+                    "Blocked",
+                    "Blocked.\n",
+                    before_final_write=add_history_before_append,
+                )
+
+            self.assertFalse((append_effort / "facts.md").exists())
+            self.assertEqual(
+                appended_history.read_bytes(), b"opaque concurrent history\n"
+            )
+
+            retire_effort = root / "retire"
+            retire_effort.mkdir()
+            (retire_effort / "map.md").write_text(
+                "# Concurrent retirement\n", encoding="utf-8"
+            )
+            ledger = retire_effort / "facts.md"
+            ledger.write_text(
+                "# Facts\n\n## F1 — Current fact\n\n"
+                "- Source: source.md\n\nCurrent.\n",
+                encoding="utf-8",
+            )
+            ledger_before = ledger.read_bytes()
+            retired_history = retire_effort / "facts/opaque.bin"
+
+            def add_history_before_retirement() -> None:
+                retired_history.parent.mkdir()
+                retired_history.write_bytes(b"opaque concurrent bytes\n")
+
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "manual reconciliation required"
+            ):
+                retire_ledger_section(
+                    retire_effort,
+                    "F",
+                    1,
+                    before_final_check=add_history_before_retirement,
+                )
+
+            self.assertEqual(ledger.read_bytes(), ledger_before)
+            self.assertEqual(
+                retired_history.read_bytes(), b"opaque concurrent bytes\n"
+            )
 
     def test_ledger_retirement_removes_only_the_reconciled_section_and_empty_ledger(
         self,
@@ -947,6 +1014,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "`facts.md` and `decisions.md` ledgers are the only current F#/D# representation",
             "Per-record facts/F# and decisions/D# files are opaque historical project data",
             "never allocate, edit, retire, or automatically migrate them",
+            "applies to every selected effort",
             "fail closed for that affected write and report that manual reconciliation is required",
             "Retiring a fact or decision removes only its selected H2 section",
             "Remove an otherwise empty `facts.md` or `decisions.md`",
@@ -962,6 +1030,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "When legacy F#/D# is selected",
         ):
             self.assertNotIn(forbidden, self.contract)
+        self.assertNotIn("If an explicitly resumed effort", self.contract)
 
     def test_contract_protects_sensitive_data_and_treats_pre_current_state_as_history(
         self,

@@ -62,16 +62,30 @@ class CodexParserTests(unittest.TestCase):
 
 
 class GenericAnalysisTests(unittest.TestCase):
-    def test_legacy_wayfinder_paths_are_observed_without_becoming_current_state(
+    def test_only_supported_wayfinder_paths_become_current_state(
         self,
     ) -> None:
-        paths = (
+        current_paths = (
             ".agent-wayfinder/current-effort/map.md",
+            ".agent-wayfinder/current-effort/facts.md",
+            ".agent-wayfinder/current-effort/decisions.md",
+            ".agent-wayfinder/current-effort/unknowns/U3-open-question.md",
+            ".agent-wayfinder/current-effort/evidence/E2-test-output.md",
+        )
+        historical_paths = (
             ".agent-wayfinder/records/IDP-0001-platform-friction.md",
             ".agent-wayfinder/archive/2025/DEC-0002-retired-choice.md",
             ".agent-wayfinder/active.md",
             ".agent-wayfinder/active-index.json",
+            ".agent-wayfinder/current-effort/facts/F1-old-fact.md",
+            ".agent-wayfinder/current-effort/decisions/D2-old-decision.md",
+            ".agent-wayfinder/current-effort/DEC-0003-old-choice.md",
+            ".agent-wayfinder/current-effort/IMP-0004-old-work.md",
+            ".agent-wayfinder/current-effort/DBG-0005-old-failure.md",
+            ".agent-wayfinder/current-effort/IDP-0006-old-opportunity.md",
+            ".agent-wayfinder/current-effort/private-memory.md",
         )
+        paths = current_paths + historical_paths
         trace = NormalizedTrace(
             source_path=Path("legacy-state-trace.jsonl"),
             source_format="codex-exec-jsonl",
@@ -86,6 +100,7 @@ class GenericAnalysisTests(unittest.TestCase):
                     "completed",
                     0,
                     combined_output_bytes=10,
+                    changed_paths=(("modified", path),),
                 )
                 for index, path in enumerate(paths, start=1)
             ],
@@ -95,7 +110,8 @@ class GenericAnalysisTests(unittest.TestCase):
         repository = summary["heuristic"]["repository"]
         framework = summary["heuristic"]["framework"]
 
-        self.assertEqual(framework["wayfinder_files_read"], [paths[0]])
+        self.assertEqual(framework["wayfinder_files_read"], sorted(current_paths))
+        self.assertEqual(framework["wayfinder_files_written"], sorted(current_paths))
         self.assertNotIn("other_durable_state_read", framework)
         self.assertNotIn("other_durable_state_written", framework)
         self.assertTrue(set(paths) <= set(repository["paths_observed"]))

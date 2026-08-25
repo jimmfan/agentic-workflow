@@ -344,9 +344,9 @@ representation. Per-record facts/F# and decisions/D# files are opaque
 historical project data. Wayfinder may read them only when directly relevant as
 history and must never allocate, edit, retire, or automatically migrate them.
 
-This safety boundary is per type. If an explicitly resumed effort has a
-nonempty historical `facts/` directory, current fact-ledger append and
-retirement require project-owned reconciliation; the same rule applies from a
+This safety boundary is per type and applies to every selected effort. A
+nonempty historical `facts/` directory blocks current fact-ledger append and
+retirement until project-owned reconciliation; the same rule applies from a
 nonempty historical `decisions/` directory to decision-ledger writes. Preserve
 all bytes, fail closed for that affected write and report that manual
 reconciliation is required. Historical facts do not block an unrelated
