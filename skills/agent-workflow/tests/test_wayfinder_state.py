@@ -175,6 +175,11 @@ def rewrite_markdown_links(
     migrated_targets: dict[Path, tuple[Path, str]],
     rebase_all: bool,
 ) -> str:
+    def relative_destination(document: Path, target: Path) -> str:
+        return Path(
+            os.path.relpath(target.resolve(), document.parent.resolve())
+        ).as_posix()
+
     def replace(match: re.Match[str]) -> str:
         raw = match.group(2)
         if (
@@ -191,14 +196,17 @@ def rewrite_markdown_links(
             separator = "#"
         elif not rebase_all:
             return match.group(0)
-        rewritten = Path(
-            os.path.relpath(target, destination.parent.resolve())
-        ).as_posix()
+        rewritten = relative_destination(destination, target)
         if separator:
             rewritten += f"#{fragment}"
         return f"{match.group(1)}{rewritten}{match.group(3)}"
 
-    return MARKDOWN_LINK_DESTINATION.sub(replace, text)
+    rewritten = MARKDOWN_LINK_DESTINATION.sub(replace, text)
+    for legacy_target, (ledger_target, anchor) in migrated_targets.items():
+        old_path = relative_destination(source, legacy_target)
+        new_path = relative_destination(destination, ledger_target)
+        rewritten = rewritten.replace(old_path, f"{new_path}#{anchor}")
+    return rewritten
 
 
 def ledger_references(
@@ -543,6 +551,15 @@ def retire_current_child(
     with effort_mutation_lock(effort, attempts=lock_attempts):
         if not target.exists():
             return False
+        match = CURRENT_ID.fullmatch(target.name)
+        if (
+            match is not None
+            and match.group(1) in LEDGER_PATHS
+            and selected_representation(effort, match.group(1)) == "mixed"
+        ):
+            raise UnsafeWayfinderState(
+                f"mixed current {match.group(1)} representations"
+            )
         references = references_to(effort, target)
         if references:
             raise UnsafeWayfinderState(f"current references remain: {references}")
@@ -705,6 +722,10 @@ class WayfinderStateContractTests(unittest.TestCase):
                 UnsafeWayfinderState, "mixed current F representations"
             ):
                 retire_ledger_section(effort, "F", 2)
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "mixed current F representations"
+            ):
+                retire_current_child(effort, legacy / "F7-legacy.md")
             self.assertEqual(read_current_ids(effort, "F"), [2, 7])
 
     def test_ledger_retirement_removes_only_the_reconciled_section_and_empty_ledger(
@@ -891,7 +912,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             unrelated.write_bytes(b"\x00owner\xff")
             external = docs / "spec.md"
             external.write_text(
-                "[Decision](../.agent-wayfinder/effort/decisions/D2-use-ledger.md)\n",
+                "[Decision](../.agent-wayfinder/effort/decisions/D2-use-ledger.md)\n"
+                "Current fact path: "
+                "../.agent-wayfinder/effort/facts/F4-established.md\n",
                 encoding="utf-8",
             )
             preserved = {
@@ -903,7 +926,12 @@ class WayfinderStateContractTests(unittest.TestCase):
                 migrate_legacy_to_ledger(effort, "F", authorized=False)
             self.assertTrue((facts / "F4-established.md").is_file())
 
-            migrate_legacy_to_ledger(effort, "F", authorized=True)
+            migrate_legacy_to_ledger(
+                effort,
+                "F",
+                authorized=True,
+                known_references=[external],
+            )
             migrate_legacy_to_ledger(
                 effort,
                 "D",
@@ -933,6 +961,14 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertIn("decisions.md#d2--use-ledger", map_path.read_text(encoding="utf-8"))
             self.assertIn(
                 "../.agent-wayfinder/effort/decisions.md#d2--use-ledger",
+                external.read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "../.agent-wayfinder/effort/facts.md#f4--established",
+                external.read_text(encoding="utf-8"),
+            )
+            self.assertNotIn(
+                "../.agent-wayfinder/effort/facts/F4-established.md",
                 external.read_text(encoding="utf-8"),
             )
             self.assertFalse(facts.exists())

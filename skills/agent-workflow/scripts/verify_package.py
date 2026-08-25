@@ -377,6 +377,37 @@ def check_router_contract() -> None:
             required in normalized_wayfinder,
             f"Wayfinder state contract lacks required boundary: {required}",
         )
+    representation = normalized_wayfinder.partition(
+        "## Representation selection and legacy state"
+    )[2].partition("## The low-resolution map")[0].lower()
+    require(
+        all(
+            marker in representation
+            for marker in (
+                "independently",
+                "read-only",
+                "fail closed",
+                "user authorization",
+                "known current references",
+                "install, update, status, remove, reinstall",
+            )
+        ),
+        "Wayfinder representation section lacks independent selection or safety",
+    )
+    settlement = normalized_wayfinder.partition(
+        "## Knowledge settlement and effort completion"
+    )[2].partition("## Contradictions and revision")[0].lower()
+    require(
+        all(
+            marker in settlement
+            for marker in (
+                "known current canonical references outside the effort",
+                "selected h2 section",
+                "otherwise empty",
+            )
+        ),
+        "Wayfinder settlement section lacks reference-safe ledger retirement",
+    )
     combined = agents + routing + durable + wayfinder
     require(
         "runtime/README.md" not in combined
