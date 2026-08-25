@@ -149,6 +149,15 @@ for macOS, Linux, WSL, and Linux-based devcontainers. Native PowerShell and CMD
 are not supported. These runtime and transport facts are current compatibility
 documentation rather than architecture decisions.
 
+The package is distributed through the repository-owned Python bootstrap rather
+than `gh skill`. GitHub CLI 2.97.0 rewrites every nested `SKILL.md` during a
+recursive skill install, which changes bundled provider bytes and assigns the
+outer package's provenance to inner skills; the current installer behavior is
+visible in GitHub CLI's versioned
+[`installSkill` implementation](https://github.com/cli/cli/blob/v2.97.0/internal/skills/installer/installer.go#L232-L285).
+Changing transports therefore requires demonstrated byte preservation for the
+complete package, not merely successful installation of the outer skill.
+
 ## Verification boundary
 
 `verify_package.py` is a maintainer, CI, and release gate; bootstrap does not run

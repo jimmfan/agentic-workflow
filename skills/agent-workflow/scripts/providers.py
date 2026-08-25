@@ -348,72 +348,21 @@ def adapter_plan(
         return grilling_discovery_adapter_plan(root, skill, repository, version)
     if skill.adapter == RESEARCH_OUTPUT_ADAPTER:
         return research_output_adapter_plan(root, skill, repository, version)
-    if (
-        skill.adapter != WAYFINDER_ADAPTER
-        or skill.upstream_body_sha256 is None
-        or skill.projection_source is None
-    ):
+    if skill.adapter != WAYFINDER_ADAPTER:
         raise ProviderError(
             f"provider skill {skill.name} has an unsupported Agent Workflow adapter"
         )
-    if destination_state(root, skill.name) != "present":
-        raise ProviderError(f"provider skill {skill.name} is not safe to adapt")
 
-    directory = root / ".agents" / "skills" / skill.name
-    skill_path = directory / "SKILL.md"
-    if skill_path.is_symlink() or not skill_path.is_file():
-        raise ProviderError(
-            f"provider skill {skill.name} instructions are missing or unsafe"
-        )
-    original_skill = skill_path.read_bytes()
-    if not original_skill.startswith(b"---\n"):
-        raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
-    separator = original_skill.find(b"\n---\n", 4)
-    if separator < 0:
-        raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
-    body_start = separator + len(b"\n---\n")
-    frontmatter = original_skill[4:separator]
-    required_source = (
-        f"    github-path: {skill.path}\n".encode("utf-8"),
-        f"    github-pinned: {version}\n".encode("utf-8"),
-        f"    github-repo: https://github.com/{repository}\n".encode("utf-8"),
+    skill_path, original_skill, desired_skill = method_body_projection(
+        root, skill, repository, version, b"# Wayfinder\n"
     )
-    if any(frontmatter.count(line) != 1 for line in required_source):
-        raise ProviderError(
-            f"provider skill {skill.name} has incompatible source metadata"
-        )
-
-    upstream_body = original_skill[body_start:]
+    directory = skill_path.parent
+    separator = original_skill.find(b"\n---\n", 4)
+    upstream_body = original_skill[separator + len(b"\n---\n") :]
     if b"<!-- agent-workflow:wayfinder-" in upstream_body:
         raise ProviderError(
             f"provider skill {skill.name} has unexpected projection markers"
         )
-    if sha256(upstream_body).hexdigest() != skill.upstream_body_sha256:
-        raise ProviderError(
-            f"provider skill {skill.name} has an unexpected pinned method body"
-        )
-
-    if skill.projection_source.is_symlink() or not skill.projection_source.is_file():
-        raise ProviderError(
-            f"provider skill {skill.name} runtime projection is missing or unsafe"
-        )
-    try:
-        projection_body = skill.projection_source.read_bytes()
-        projection_body.decode("utf-8")
-    except (OSError, UnicodeError) as exc:
-        raise ProviderError(
-            f"cannot read runtime projection for provider skill {skill.name}: {exc}"
-        ) from exc
-    if (
-        not projection_body.startswith(b"# Wayfinder\n")
-        or not projection_body.endswith(b"\n")
-        or b"\n---\n" in projection_body
-    ):
-        raise ProviderError(
-            f"provider skill {skill.name} runtime projection is malformed"
-        )
-
-    desired_skill = original_skill[:body_start] + projection_body
     replacements = (
         (
             skill_path,
@@ -470,13 +419,14 @@ def adapter_plan(
     return plan
 
 
-def research_output_adapter_plan(
+def method_body_projection(
     root: Path,
     skill: ProviderSkill,
     repository: str,
     version: str,
-) -> list[tuple[Path, bytes, bytes]]:
-    """Project Research's chat-first output contract from pinned input."""
+    expected_heading: bytes,
+) -> tuple[Path, bytes, bytes]:
+    """Validate pinned provider input and return its owned body projection."""
     if (
         destination_state(root, skill.name) != "present"
         or skill.upstream_body_sha256 is None
@@ -524,13 +474,26 @@ def research_output_adapter_plan(
             f"cannot read runtime projection for provider skill {skill.name}: {exc}"
         ) from exc
     if (
-        not projection.startswith(b"# Research\n")
+        not projection.startswith(expected_heading)
         or not projection.endswith(b"\n")
         or b"\n---\n" in projection
     ):
         raise ProviderError(
             f"provider skill {skill.name} runtime projection is malformed"
         )
+    return skill_path, original, original[:body_start] + projection
+
+
+def research_output_adapter_plan(
+    root: Path,
+    skill: ProviderSkill,
+    repository: str,
+    version: str,
+) -> list[tuple[Path, bytes, bytes]]:
+    """Project Research's chat-first output contract from pinned input."""
+    skill_path, original, desired = method_body_projection(
+        root, skill, repository, version, b"# Research\n"
+    )
 
     upstream_description = (
         b"description: Investigate a question against high-trust primary sources and "
@@ -543,7 +506,6 @@ def research_output_adapter_plan(
         b"sources and return cited findings in chat. Create a repository artifact only "
         b"when the user explicitly requests durable research output.\n"
     )
-    desired = original[:body_start] + projection
     if desired.count(upstream_description) != 1 or adapted_description in desired:
         raise ProviderError(
             f"provider skill {skill.name} has unexpected discovery metadata"
