@@ -27,8 +27,10 @@ forbid_created_globs = [
   ".agent-wayfinder/wayfinder-lifecycle-completed/unknowns/**",
   ".agent-wayfinder/wayfinder-lifecycle-completed/evidence",
   ".agent-wayfinder/wayfinder-lifecycle-completed/evidence/**",
+  ".agent-wayfinder/wayfinder-lifecycle-completed/facts.md",
   ".agent-wayfinder/wayfinder-lifecycle-completed/facts",
   ".agent-wayfinder/wayfinder-lifecycle-completed/facts/**",
+  ".agent-wayfinder/wayfinder-lifecycle-completed/decisions.md",
   ".agent-wayfinder/wayfinder-lifecycle-completed/decisions",
   ".agent-wayfinder/wayfinder-lifecycle-completed/decisions/**",
   "issues",
@@ -63,6 +65,14 @@ value = "docs/wayfinder-lifecycle.md"
 [[assertions]]
 kind = "path_not_exists"
 path = ".agent-wayfinder/wayfinder-lifecycle-completed/decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/wayfinder-lifecycle-completed/decisions.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/wayfinder-lifecycle-completed/facts.md"
 
 [[assertions]]
 kind = "path_not_exists"

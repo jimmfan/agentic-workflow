@@ -7,9 +7,11 @@
 ## Context
 
 Durable coordination must let a fresh maintainer or agent recover the useful
-shape of an effort without loading a complete activity history. A flat ledger
-loses semantic relationships, while an ever-growing structured notebook becomes
-an organized warehouse. Duplicating canonical project artifacts or an external
+shape of an effort without loading a complete activity history. One
+undifferentiated flat ledger used as the whole coordination model loses semantic
+relationships, while an ever-growing structured notebook becomes an organized
+warehouse. This does not preclude bounded same-type ledgers beneath a map-first
+orientation surface. Duplicating canonical project artifacts or an external
 tracker would create competing sources of truth.
 
 Agent Workflow's map-first model and native `to-tickets` handoff also differ
@@ -25,9 +27,12 @@ state. The current local representation lives under
 
 The map is low-resolution semantic territory, not a type ledger. It preserves
 the destination, substantive boundary, major areas, current state, material
-blockers and dependencies, and useful next frontier. Optional child knowledge
-exists only when it is independently useful; a map-only effort is valid and
-child detail loads progressively.
+blockers and dependencies, and useful next frontier. Optional supporting
+knowledge exists only when durable preservation adds value; a map-only effort
+is valid and supporting detail loads progressively. The contract may
+consolidate small same-type records while keeping independently useful
+coordination or retrieval units separate; that representation remains a
+contract and test detail.
 
 Wayfinder represents current navigation rather than permanent identities or an
 append-only journal. Lasting outcomes move to their canonical owners, current
@@ -63,9 +68,9 @@ Executable decomposition and its native frontier belong to `to-tickets`;
 Wayfinder links that artifact rather than mirroring T# work as a second
 ticket/status surface.
 
-U/E/F/D schemas, numbering, filenames, effort selection, locks, settlement,
-retirement, statuses, templates, and reference rules are contract and test
-details, not architectural commitments.
+U/E/F/D storage topology, schemas, numbering, filenames, effort selection,
+locks, settlement, retirement, statuses, templates, and reference rules are
+contract and test details, not architectural commitments.
 
 ## Alternatives considered
 
@@ -75,9 +80,10 @@ details, not architectural commitments.
   two canonical copies would drift.
 - Layer map-first rules over the upstream tracker runtime: rejected because one
   effective skill must describe one coherent way of operating.
-- Require a database, graph index, external tracker, or strict Markdown schema:
-  rejected because low-resolution maps, links, agent reasoning, and Git cover
-  the current need without making project-owned edits lifecycle failures.
+- Require a database, graph index, external tracker, or lifecycle-wide Markdown
+  schema validation: rejected because low-resolution maps, targeted contract
+  rules, links, agent reasoning, and Git cover the current need without making
+  project-owned edits lifecycle failures.
 
 ## Reconsideration trigger
 

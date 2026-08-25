@@ -22,6 +22,7 @@ blind_grading = true
 verification_command = "Confirm the public response asks the authority question and the effort contains no accepted D# or implementation tickets."
 preserve_paths = ["docs/requirements.md", "storage.py"]
 forbid_created_globs = [
+  ".agent-wayfinder/persistence-authority/decisions.md",
   ".agent-wayfinder/persistence-authority/decisions",
   ".agent-wayfinder/persistence-authority/decisions/**",
   ".agent-wayfinder/persistence-authority/tickets",
@@ -49,6 +50,10 @@ count = 1
 [[assertions]]
 kind = "path_not_exists"
 path = ".agent-wayfinder/persistence-authority/decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/persistence-authority/decisions.md"
 
 [[assertions]]
 kind = "path_not_contains"

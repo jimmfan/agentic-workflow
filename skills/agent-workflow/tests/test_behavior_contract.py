@@ -427,6 +427,13 @@ class BehaviorContractTests(unittest.TestCase):
                 False,
             ),
             (
+                "created-wayfinder-decision-ledger-is-invention",
+                "genuine-unresolved-decision",
+                ".agent-wayfinder/persistence/decisions.md",
+                "must-not:silent_decision_invention",
+                False,
+            ),
+            (
                 "malformed-wayfinder-decision-is-still-invention",
                 "genuine-unresolved-decision",
                 ".agent-wayfinder/persistence/decisions/D1.md",
@@ -506,6 +513,164 @@ class BehaviorContractTests(unittest.TestCase):
         )
         self.assertFalse(progressive.passed)
         self.assertIn("U1-name-telemetry-metric.md", progressive.detail)
+
+    def test_default_wayfinder_fixtures_use_ledgers_and_exact_section_anchors(
+        self,
+    ) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        existing = scenarios["existing-wayfinder-state"]
+        decision_path = behavior.PurePosixPath(
+            ".agent-wayfinder/response-serialization/decisions.md"
+        )
+        self.assertIn(decision_path, existing.state_must_include)
+        self.assertNotIn(
+            behavior.PurePosixPath(
+                ".agent-wayfinder/response-serialization/decisions/"
+                "D1-use-compact-sorted-json.md"
+            ),
+            existing.state_must_include,
+        )
+
+        fixture = behavior.FIXTURE_ROOT / existing.fixture
+        decisions = (fixture / decision_path.as_posix()).read_text(encoding="utf-8")
+        mapping = (
+            fixture / ".agent-wayfinder/response-serialization/map.md"
+        ).read_text(encoding="utf-8")
+        self.assertTrue(decisions.startswith("# Decisions\n\n"))
+        self.assertIn("## D1 — Use compact sorted JSON", decisions)
+        self.assertIn(
+            "decisions.md#d1--use-compact-sorted-json",
+            mapping,
+        )
+        self.assertFalse(
+            (
+                fixture
+                / ".agent-wayfinder/response-serialization/decisions/"
+                "D1-use-compact-sorted-json.md"
+            ).exists()
+        )
+        self.assertFalse(
+            (
+                fixture
+                / ".agent-wayfinder/response-serialization/decisions"
+            ).exists()
+        )
+
+        expected_output_paths = {
+            "wayfinder-contract-smoke": behavior.PurePosixPath(
+                ".agent-wayfinder/runtime-rollout/facts.md"
+            ),
+            "wayfinder-new-effort": behavior.PurePosixPath(
+                ".agent-wayfinder/platform-migration/decisions.md"
+            ),
+        }
+        for scenario_id, output_path in expected_output_paths.items():
+            with self.subTest(scenario=scenario_id):
+                assertions = scenarios[scenario_id].assertions
+                self.assertTrue(
+                    any(
+                        item.path == output_path and item.kind == "path_exists"
+                        for item in assertions
+                    )
+                )
+                self.assertTrue(
+                    any(
+                        item.path.name == "map.md"
+                        and item.kind == "path_contains"
+                        and item.value is not None
+                        and f"{output_path.name}#" in item.value
+                        for item in assertions
+                    )
+                )
+
+    def test_fact_and_decision_contracts_do_not_count_per_record_files(self) -> None:
+        offenders = []
+        for scenario in behavior.load_scenarios():
+            for assertion in scenario.assertions:
+                path = assertion.path.as_posix()
+                if assertion.kind == "glob_count" and (
+                    "/facts/F" in path or "/decisions/D" in path
+                ):
+                    offenders.append(f"{scenario.id}:{path}")
+
+        self.assertEqual(offenders, [])
+
+    def test_negative_knowledge_contracts_cover_root_ledgers(self) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        prohibited_ledgers = {
+            "genuine-unresolved-decision": (
+                ".agent-wayfinder/persistence/decisions.md",
+            ),
+            "wayfinder-contract-smoke": (
+                ".agent-wayfinder/runtime-rollout/decisions.md",
+            ),
+            "wayfinder-completed-effort-new-destination": (
+                ".agent-wayfinder/wayfinder-lifecycle-completed/facts.md",
+                ".agent-wayfinder/wayfinder-lifecycle-completed/decisions.md",
+            ),
+            "wayfinder-domain-modeling-discovery": (
+                ".agent-wayfinder/zero-downtime-platform-cutover/decisions.md",
+            ),
+            "wayfinder-domain-modeling-reorganizes-territory": (
+                ".agent-wayfinder/policy-execution-migration/facts.md",
+                ".agent-wayfinder/policy-execution-migration/decisions.md",
+            ),
+            "wayfinder-human-authority-clarification": (
+                ".agent-wayfinder/persistence-authority/decisions.md",
+            ),
+            "wayfinder-selective-unknown-promotion": (
+                ".agent-wayfinder/arc-platform-delivery/decisions.md",
+            ),
+            "wayfinder-state-cannot-grant-authority": (
+                ".agent-wayfinder/api-authentication/decisions.md",
+            ),
+            "wayfinder-fact-conflict": (
+                ".agent-wayfinder/deployment-mode/facts.md",
+                ".agent-wayfinder/deployment-mode/decisions.md",
+            ),
+            "wayfinder-resolved-unknown-without-promotion": (
+                ".agent-wayfinder/provider-state/facts.md",
+                ".agent-wayfinder/provider-state/decisions.md",
+            ),
+            "wayfinder-uncommitted-transient-record-retires": (
+                ".agent-wayfinder/provider-state/facts.md",
+                ".agent-wayfinder/provider-state/decisions.md",
+            ),
+        }
+        for scenario_id, ledgers in prohibited_ledgers.items():
+            for ledger in ledgers:
+                with self.subTest(scenario=scenario_id, ledger=ledger):
+                    self.assertTrue(
+                        behavior.path_matches_any(
+                            ledger,
+                            scenarios[scenario_id].forbid_created_globs,
+                        ),
+                        ledger,
+                    )
+
+    def test_selected_legacy_fixtures_remain_per_record(self) -> None:
+        paths = (
+            ".agent-wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md",
+            ".agent-wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+            ".agent-wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
+            ".agent-wayfinder/provider-state/decisions/D4-use-local-runtime.md",
+            ".agent-wayfinder/database-migration/decisions/D1-preserve-rollback.md",
+        )
+        fixtures = {
+            "deployment-mode": "wayfinder-fact-conflict",
+            "provider-state": "wayfinder-reference-settlement",
+            "database-migration": "wayfinder-unrelated",
+        }
+        for relative in paths:
+            parts = behavior.PurePosixPath(relative).parts
+            effort = parts[1]
+            ledger = f"{parts[2]}.md"
+            with self.subTest(path=relative):
+                fixture = behavior.FIXTURE_ROOT / fixtures[effort]
+                self.assertTrue((fixture / relative).is_file())
+                self.assertFalse(
+                    (fixture / ".agent-wayfinder" / effort / ledger).exists()
+                )
 
     def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(
         self,

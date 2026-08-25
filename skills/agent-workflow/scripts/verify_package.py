@@ -29,6 +29,8 @@ MINIMUM_PYTHON = (3, 11)
 MANIFEST_SCHEMA = 6
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
 MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
+FENCED_CODE = re.compile(r"(?ms)^```[^\n]*\n.*?^```[ \t]*$")
+INLINE_CODE = re.compile(r"`[^`\n]*`")
 INVOCATION_POLICIES = frozenset({"implicit", "user-only", "unavailable"})
 # Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
 PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
@@ -345,12 +347,12 @@ def check_router_contract() -> None:
     for required in (
         "unknowns/",
         "evidence/",
-        "facts/",
-        "decisions/",
+        "facts.md",
+        "decisions.md",
         "`map.md` alone is a complete and valid Wayfinder effort",
-        "Do not read every",
+        "do not load unrelated ledger sections",
         "Do not create or update `.agent-wayfinder/active.md`",
-        "Facts must link",
+        "Every current fact contains at least one truthful provenance mode",
         "reciprocal backlinks",
         "mark the F# `disputed`",
         "review dependent decisions",
@@ -368,6 +370,10 @@ def check_router_contract() -> None:
         "## Specialist result boundary",
         "continue directly or load one materially useful specialist",
         "No DEC, IMP, DBG, or replacement record is allocated",
+        "Select facts and decisions independently",
+        "permit read-only interpretation but fail closed for writes",
+        "explicit legacy-to-ledger migration requires user authorization",
+        "Retiring a fact or decision removes only its selected H2 section",
     ):
         require(
             required in normalized_wayfinder,
@@ -650,7 +656,8 @@ def check_provider_declaration() -> None:
         "## Establish territory",
         "## Resolve the frontier progressively",
         "## Reconcile and hand off",
-        "Optional U/E/F/D preserves only independently useful knowledge",
+        "Optional F/D ledger sections and U/E artifacts preserve only useful current knowledge",
+        "Create a separate artifact because it is an independently useful coordination or retrieval unit",
         "Specialists own their methods and native artifacts",
         "create no framework continuity record",
         "coherent ready frontier",
@@ -814,7 +821,8 @@ def check_markdown_links() -> None:
             files.extend(path for path in root.rglob("*.md") if path.is_file())
     for path in files:
         text = path.read_text(encoding="utf-8")
-        for destination in MARKDOWN_LINK.findall(text):
+        prose = INLINE_CODE.sub("", FENCED_CODE.sub("", text))
+        for destination in MARKDOWN_LINK.findall(prose):
             destination = destination.split("#", 1)[0]
             if (
                 not destination

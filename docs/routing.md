@@ -75,17 +75,19 @@ uses the configured canonical tree under `.agent-wayfinder/` and its
 effort map as the re-entry point. Its effective skill is an Agent Workflow-
 owned runtime projection derived from and attributed to Matt Pocock's pinned
 Wayfinder methodology. The map owns current state, blockers, dependencies, and
-next work; sparse U#/E#/F#/D# knowledge stays lazy, and new decomposed work belongs
-to native `to-tickets` output. A current effort outranks a similarly named
-completed, abandoned, or superseded effort during likely resume; historical
+next work; sparse F#/D# ledger sections and U#/E# artifacts stay lazy, and new
+decomposed work belongs to native `to-tickets` output. A current effort outranks
+a similarly named completed, abandoned, or superseded effort during likely
+resume; historical
 maps remain accessible when directly named or materially relevant. Legacy DEC,
 IMP, and DBG files remain untouched historical project data and are never
 allocated, resumed, or migrated by current workflows. The router loads the
-Wayfinder contract only
-after Wayfinder is selected or a relevant effort is being resumed, then reads
-the map and only relevant U#/E#/F#/D# children. An unrelated existing map never
-changes a request's route. Diagnosis, review, explanation, and audit requests
-stay read-only unless the user separately authorizes mutation.
+Wayfinder contract only after Wayfinder is selected or a relevant effort is
+being resumed, then reads
+the map and only relevant F#/D# ledger sections or U#/E# artifacts. An unrelated
+existing map never changes a request's route. Diagnosis, review, explanation,
+and audit requests stay read-only unless the user separately authorizes
+mutation.
 
 Normal authorized project work may create a lightweight Wayfinder map without a
 second permission request after the router selects it. A read-only request may

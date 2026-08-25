@@ -60,11 +60,13 @@ Record only durable, evidence-backed coordination context:
 - consequential unknowns, decisions, dependencies, and blockers; and
 - a concise ready frontier describing what can happen next.
 
-Create linked unknown, evidence, fact, or decision files only when the detail
-needs independent provenance or would make the map difficult to scan. Treat
-live source and accepted project artifacts as more authoritative than
-assumptions, chat history, or stale Wayfinder state. Do not copy the transcript,
-invent requirements, or implement product changes during this first pass.
+Create a separate unknown or evidence file only when it is an independently
+useful coordination or retrieval unit. When an established fact or committed
+decision warrants durable representation, record it as an F# or D# section in
+the optional `facts.md` or `decisions.md` ledger. Treat live source and accepted
+project artifacts as more authoritative than assumptions, chat history, or
+stale Wayfinder state. Do not copy the transcript, invent requirements, or
+implement product changes during this first pass.
 
 If the current effort cannot be inferred confidently, ask me one concrete scope
 question before creating the Wayfinder state. When finished, summarize what you
@@ -136,10 +138,10 @@ flowchart LR
 
     state -.-> wfstate["<stable-effort-slug>/"]
     wfstate -.-> map["map.md"]
+    wfstate -.-> facts["facts.md (F# sections)"]
+    wfstate -.-> decisions["decisions.md (D# sections)"]
     wfstate -.-> unknowns["unknowns/U#.md"]
     wfstate -.-> evidence["evidence/E#.md"]
-    wfstate -.-> facts["facts/F#.md"]
-    wfstate -.-> decisions["decisions/D#.md"]
 
 ```
 
@@ -206,22 +208,27 @@ A Wayfinder effort can look like:
 .agent-wayfinder/
 └── <effort>/
     ├── map.md
+    ├── facts.md
+    ├── decisions.md
     ├── unknowns/
     │   └── U1-example.md
-    ├── evidence/
-    │   └── E1-example.md
-    ├── facts/
-    │   └── F1-example.md
-    └── decisions/
-        └── D1-example.md
+    └── evidence/
+        └── E1-example.md
 ```
 
 `map.md` stays intentionally low-resolution. It owns current state, blockers,
 dependencies, and next work, with enough context for a fresh session to locate
-only the relevant detail. A simple effort is valid with `map.md` alone; all
-child directories are optional and created lazily.
+only the relevant detail. It indexes relevant fact and decision detail rather
+than duplicating the ledgers. A simple effort is valid with `map.md` alone;
+every supporting ledger and directory is optional and created lazily. If a
+fresh human or agent must read most supporting artifacts merely to understand
+the current route, the effort is over-decomposed and should be reconciled.
 
-Child files are loaded only when needed.
+The current default consolidates small same-type facts and decisions to reduce
+unnecessary retrieval choices while retaining separate files for independently
+useful unknowns and substantial evidence. Load only the relevant ledger section
+or U#/E# file after orienting from the map. This is the current representation,
+not a claim that one topology is universally best.
 
 Agent Workflow's effective Wayfinder is a framework-owned runtime projection
 derived from Matt Pocock's pinned Wayfinder methodology. The unchanged upstream
@@ -233,8 +240,8 @@ The map gives low-resolution semantic bearings: destination, scope boundary,
 major coherent areas, and important relationships or seams. Existing
 authoritative project structure is reused; when those bearings are genuinely
 unclear, Domain Modeling is the preferred discovery mechanism before substantial
-child state accumulates. The map organizes the territory, while U/E/F/D classify
-current knowledge within it.
+supporting detail accumulates. The map organizes the territory, while U/E/F/D
+classify current knowledge within it.
 
 Establish the destination and enough relevant territory to orient the effort
 before substantial decomposition.
@@ -266,16 +273,26 @@ fact     = a sufficiently established descriptive conclusion
 decision = a committed choice
 ```
 
-This is not a mandatory pipeline. Small facts and observations stay in the map;
-U#/E#/F#/D# files exist only when independent preservation adds value. Facts
-link their evidence or direct authoritative sources, while conflicting evidence
-marks a fact disputed until it is reconciled.
+This is not a mandatory pipeline. A map may retain concise orientation and
+working context without creating a record for every observation. Current facts
+and decisions that warrant F#/D# identity normally use sections in `facts.md`
+and `decisions.md`; U# questions and substantial E# evidence keep separate
+files only when independent preservation adds value. Every durable fact
+identifies at least one truthful provenance mode—a source, an authority, or a
+derivation—and states enough scope or limitation to avoid unjustified
+generalization. A working assumption or agent inference does not become an
+established fact by being written down. Accepted and provisional decisions
+require actual project authority; evidence can support a choice but cannot
+supply that authority.
 
 A precise question becomes U# when preserving the question or its eventual
 answer could materially improve a later developer’s ability to make or evaluate
 a decision. Authority-owned questions, external approvals, and questions that
 gate multiple downstream areas are strong signals. Precision alone is not:
-incidental and easily reconstructed fog stays in the canonical map.
+incidental and easily reconstructed fog stays in the canonical map. A question
+that can be answered safely during authorized development and is not needed to
+start normally remains a concise map validation item rather than a current
+blocker or separate U#.
 
 The resolution method determines what evidence or authority is sufficient to
 answer the question. Existing authoritative evidence can satisfy the method
@@ -285,29 +302,43 @@ evidence. Durable Wayfinder state can record authority; it cannot create
 authority.
 
 When an unknown resolves, the answer and map are reconciled without requiring a
-new evidence, fact, or decision child. U/E/F/D files leave current Wayfinder
-state when they no longer retain independent navigational value. Their numbers
-remain stable while current, but retirement releases them for the ordinary
-highest-current-ID-plus-one rule; Git preserves historical states that actually
-enter Git. Retirement requires current information and references to be
-reconciled, not a prior commit of the retiring child. One empty transient
-per-effort lock serializes map and child mutations so allocation cannot collide
-and retirement cannot race a current-reference edit; it contains no knowledge
-or allocation data.
+new evidence, fact, or decision record. U/E files and F/D ledger sections leave
+current Wayfinder state when they no longer retain independent current value.
+Their numbers remain stable while current, but retirement releases them
+for the ordinary highest-current-ID-plus-one rule; Git preserves historical
+states that actually enter Git. Retirement removes only the selected file or
+ledger section after current information and references are reconciled. One
+empty transient per-effort lock serializes map, ledger, U#, and E# mutations so
+allocation cannot collide and retirement cannot race a current-reference edit;
+it contains no knowledge or allocation data.
 
 An area is settled when it has no consequential uncertainty left undispositioned
 and its durable outcomes have moved to the proper canonical owner or workflow.
 That may be an ADR, specification, documentation or source, `to-tickets`,
 Implementation, another project artifact, or no separate artifact. Not every
 area becomes an ADR or ticket. As areas settle, Wayfinder retires redundant
-children; completed efforts normally shrink toward a concise map, with Git
-preserving history.
+supporting records; completed efforts normally shrink toward a concise map,
+with Git preserving history.
 
 Bare references such as `U17`, `F8`, or `D4` are concise shorthand only inside
-their current Wayfinder effort. Readable child filenames remain the canonical
-paths. ADRs, specifications, tickets, and other artifacts outside the effort use
-repository-relative Markdown links with readable labels when a reference must
-remain durable beyond the current Wayfinder representation.
+their current Wayfinder effort. Readable U#/E# filenames are their canonical
+paths; durable F#/D# links target the exact readable heading in `facts.md` or
+`decisions.md`. ADRs, specifications, tickets, and other artifacts outside the
+effort use repository-relative Markdown links with readable labels when a
+reference must remain durable beyond the current Wayfinder representation.
+
+Existing project-owned `facts/F#-*.md` and `decisions/D#-*.md` records remain a
+valid legacy representation. Facts and decisions select their representation
+independently: a legacy-only type continues using its files, a ledger-only type
+uses its ledger, and simultaneous current records in both forms remain readable
+but block writes until explicitly reconciled. When neither representation
+contains a current record, the first justified record uses the corresponding
+ledger. Migration requires user authority and preserves identifiers, semantic
+content, provenance, authority, scope, limitations, rationale, consequences,
+change notes, current references, and unrelated state without renumbering.
+Install, update, status, remove, and reinstall treat the complete tree as opaque
+project data and never initiate that migration or normalize either
+representation.
 
 Wayfinder does not own implementation work items. When evidence supports it, the
 map concisely shows the critical path, independent parallel work, and material
@@ -354,7 +385,7 @@ investigate
         ↓
 U1 resolved
         ↓
-D1 created
+D1 recorded in decisions.md
         ↓
 smallest next work recorded in map.md
         ↓
@@ -369,7 +400,7 @@ reads relevant project state
         ↓
 recognizes U1 as resolved
         ↓
-reads D1
+reads the D1 ledger section
         ↓
 continues the map's next work
 ```
@@ -413,14 +444,15 @@ target-project/
 └── .agent-wayfinder/          # durable project-owned state
     └── <effort>/
         ├── map.md
+        ├── facts.md
+        ├── decisions.md
         ├── unknowns/
-        ├── evidence/
-        ├── facts/
-        └── decisions/
+        └── evidence/
 ```
 
-Legacy `DEC`, `IMP`, and `DBG` files under project-owned state remain untouched
-historical data. Current workflows neither allocate nor resume them.
+Legacy per-record F#/D# files remain valid current state until explicit
+migration. Legacy `DEC`, `IMP`, and `DBG` files remain untouched historical
+data; current workflows neither allocate nor resume those older artifact types.
 
 ### `.agent-workflow/`
 
@@ -479,7 +511,10 @@ Direct work remains a valid route.
 
 ## Progressive loading
 
-Agent Workflow keeps root instructions small and loads detailed workflow guidance and project state only when relevant. Wayfinder follows the same pattern: start from the effort map and load child files as needed.
+Agent Workflow keeps root instructions small and loads detailed workflow
+guidance and project state only when relevant. Wayfinder follows the same
+pattern: start from the effort map, then retrieve only the relevant facts or
+decisions ledger section or the independently useful U#/E# file.
 
 ## Scope
 

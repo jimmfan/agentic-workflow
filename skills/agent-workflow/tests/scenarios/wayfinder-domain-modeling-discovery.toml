@@ -26,6 +26,7 @@ report_must_include = ["Domain Modeling"]
 forbid_created_globs = [
   ".agent-wayfinder/migration-domain-boundary",
   ".agent-wayfinder/migration-domain-boundary/**",
+  ".agent-wayfinder/zero-downtime-platform-cutover/decisions.md",
   ".agent-wayfinder/zero-downtime-platform-cutover/decisions",
   ".agent-wayfinder/zero-downtime-platform-cutover/decisions/**",
   ".agent-wayfinder/zero-downtime-platform-cutover/consumers",

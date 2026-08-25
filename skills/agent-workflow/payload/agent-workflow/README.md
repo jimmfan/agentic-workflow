@@ -5,9 +5,11 @@ to supply the progressively loaded routing, state, and provider contracts used
 by the compact root policy. Install/update may replace every file here with
 current package bytes.
 
-There is no current `.agent-workflow/state/` directory. Durable project-owned state
-lives only under sibling `.agent-wayfinder/`. Lifecycle operations ensure that
-directory exists but never seed, inventory, or remove its contents.
+There is no current `.agent-workflow/state/` directory. Durable project-owned
+state lives only under sibling `.agent-wayfinder/`. Install and update may
+ensure that directory exists, but every lifecycle command otherwise treats its
+contents as opaque: none seeds, inventories, normalizes, migrates, rewrites, or
+removes them.
 
 ## Contents
 
@@ -17,7 +19,8 @@ directory exists but never seed, inventory, or remove its contents.
 - `contracts/durable-state.md`: current durable ownership, canonical-artifact,
   legacy-state preservation, and controlled-promotion rules.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
-  optional U#/E#/F#/D# knowledge, current-state allocation, knowledge
+  optional F# and D# ledgers, independently useful U#/E# files, current-state
+  allocation, legacy representation selection, explicit migration, knowledge
   settlement, effort completion, and progressive loading.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
@@ -50,10 +53,22 @@ unchanged pinned upstream snapshot.
 
 Local Wayfinder data is a configured project-owned representation under
 `.agent-wayfinder/`, never a distributed template or lifecycle-owned
-tree. A map may stand alone; optional children preserve unresolved questions,
-independently useful evidence, established facts, and committed decisions. The
-map owns current state, blockers, dependencies, and next work. Substantial
-decomposed work belongs to `to-tickets`, not Wayfinder. See
+tree. A map may stand alone. The current default places established F# facts in
+optional `facts.md` and committed D# decisions in optional `decisions.md`, while
+unresolved U# questions and substantial E# evidence earn separate files only
+when they are independently useful coordination or retrieval units. The map
+owns current state, blockers, dependencies, and next work, indexing rather than
+duplicating supporting detail; later work orients there before retrieving only
+a relevant ledger section or U#/E# artifact.
+
+Facts require truthful provenance, and decisions require responsible project
+authority rather than evidence alone.
+
+Existing project-owned per-record F#/D# files remain valid and writable when
+they are the only current representation for that type. A current ledger and
+legacy records of the same type are readable but block writes until explicit
+authorized reconciliation; migration is never a lifecycle side effect.
+Substantial decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling remain stateless
 specialists. Implementation is an execution handoff. Legacy DEC, IMP, and DBG

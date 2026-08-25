@@ -22,6 +22,8 @@ must_not = [
 live = false
 preserve_paths = ["source.txt"]
 forbid_created_globs = [
+  ".agent-wayfinder/provider-state/facts.md",
+  ".agent-wayfinder/provider-state/decisions.md",
   "architecture-decisions",
   "architecture-decisions/**",
   "issues",
@@ -91,7 +93,15 @@ path = ".agent-wayfinder/provider-state/facts"
 
 [[assertions]]
 kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/facts.md"
+
+[[assertions]]
+kind = "path_not_exists"
 path = ".agent-wayfinder/provider-state/decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/decisions.md"
 
 [[assertions]]
 kind = "path_not_exists"

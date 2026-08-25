@@ -8,7 +8,8 @@ import re
 effort = Path(".agent-wayfinder/runtime-rollout")
 mapping = (effort / "map.md").read_text(encoding="utf-8")
 evidence = sorted((effort / "evidence").glob("E*.md"))
-facts = sorted((effort / "facts").glob("F*.md"))
+facts_path = effort / "facts.md"
+facts = facts_path.read_text(encoding="utf-8") if facts_path.is_file() else ""
 native_tickets = sorted(Path(".scratch/runtime-rollout/issues").glob("*.md"))
 wayfinder_text = "\n".join(
     path.read_text(encoding="utf-8") for path in effort.rglob("*.md")
@@ -16,17 +17,25 @@ wayfinder_text = "\n".join(
 
 checks = [
     len(evidence) == 1,
-    len(facts) == 1,
+    bool(facts),
     "Source: release-policy.txt" in evidence[0].read_text(encoding="utf-8")
     if evidence
     else False,
-    "## Observation" in evidence[0].read_text(encoding="utf-8") if evidence else False,
+    "Limitations:" in evidence[0].read_text(encoding="utf-8") if evidence else False,
     "minimum_supported=3.11" in evidence[0].read_text(encoding="utf-8")
     if evidence
     else False,
-    "Supported by: E1" in facts[0].read_text(encoding="utf-8") if facts else False,
-    "## Fact" in facts[0].read_text(encoding="utf-8") if facts else False,
+    "Supports: F1" in evidence[0].read_text(encoding="utf-8") if evidence else False,
+    facts.startswith("# Facts\n"),
+    "## F1 — Python 3.11 is the minimum supported runtime" in facts,
+    "- Status: established" in facts,
+    "- Scope:" in facts,
+    "Derived from: E1" in facts,
+    "Source: release-policy.txt" in facts,
+    "](facts.md#f1--python-311-is-the-minimum-supported-runtime)" in mapping,
+    not (effort / "facts").exists(),
     not (effort / "unknowns").exists(),
+    not (effort / "decisions.md").exists(),
     not (effort / "decisions").exists(),
     not (effort / "tickets").exists(),
     re.search(r"\bT(?:#|[0-9]+)\b", wayfinder_text) is None,

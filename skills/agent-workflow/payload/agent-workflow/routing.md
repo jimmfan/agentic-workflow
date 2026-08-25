@@ -60,9 +60,10 @@ follow a successor. An unrelated map never captures the route. Legacy
 DEC/IMP/DBG files are historical evidence, not current re-entry points.
 
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
-only relevant children. Do not load `contracts/durable-state.md` merely for a
-Wayfinder write. Implementation may consume a coherent map scope, settled D#,
-specification, or native ticket without rerunning Wayfinder.
+only relevant F#/D# ledger sections or U#/E# artifacts. Do not load
+`contracts/durable-state.md` merely for a Wayfinder write. Implementation may
+consume a coherent map scope, settled D#, specification, or native ticket
+without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses
 the Wayfinder threshold; a selected Wayfinder frontier may use Discovery once

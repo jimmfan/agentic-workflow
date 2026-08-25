@@ -60,6 +60,11 @@ FRAMEWORK-OWNED, RECONSTRUCTABLE
 PROJECT-OWNED, DURABLE
 └── .agent-wayfinder/
     ├── <effort>/               # map-first Wayfinder coordination
+    │   ├── map.md
+    │   ├── facts.md            # optional current F# ledger
+    │   ├── decisions.md        # optional current D# ledger
+    │   ├── unknowns/           # optional independent U# files
+    │   └── evidence/           # optional substantial E# files
     └── records/                # optional accepted canonical records such as IDP
 
 OPTIONAL, INDEPENDENT
@@ -91,16 +96,39 @@ update may establish the root when absent, but lifecycle operations never seed,
 inventory, validate, checksum, merge, migrate, rewrite, or remove its contents.
 
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
-Their `map.md` is the low-resolution re-entry point; optional U/E/F/D detail
-loads only when relevant. The map represents current navigation and should
-converge as lasting outcomes move to canonical owners. Exact allocation,
-locking, selection, settlement, retirement, and reference behavior is owned by
-the progressively loaded Wayfinder state contract and its tests.
+Their `map.md` is the low-resolution re-entry point and canonical frontier.
+Optional `facts.md` and `decisions.md` ledgers hold current F# and D# sections;
+independently useful U# questions and substantial E# evidence remain separate
+files. The map indexes relevant detail rather than duplicating those stores.
+After map orientation, only the relevant ledger section or U#/E# file loads. If
+most supporting artifacts are needed merely to recover the current route, the
+effort is over-decomposed and needs reconciliation. This
+intermediate-granularity default reduces unnecessary retrieval decisions
+without treating one topology as universally superior.
+
+Every current fact carries truthful source, authority, or derivation provenance
+and enough scope to avoid unsupported generalization. Accepted and provisional
+decisions require actual project authority; evidence may support a choice but
+does not create that authority. The map represents current navigation and
+should converge as lasting outcomes move to canonical owners. Exact allocation,
+locking, selection, settlement, retirement, migration, and reference behavior
+is owned by the progressively loaded Wayfinder state contract and its tests.
+
+For facts and decisions independently, a legacy-only current representation
+under `facts/F#-*.md` or `decisions/D#-*.md` remains valid and continues in that
+form until an explicit authorized migration. A ledger-only type uses its
+ledger, and the first justified record uses a ledger when neither representation
+contains a current record. Concurrent current ledger and legacy records of the
+same type remain readable but fail closed for writes until explicitly
+reconciled. Lifecycle operations never select, validate, normalize, or migrate
+either representation; they preserve the complete project-owned tree without
+interpreting it.
 
 The optional `.agent-wayfinder/records/IDP-...` form is an accepted project
 opportunity artifact, not a second framework coordination notebook. Existing
 legacy DEC, DBG, IMP, record, archive, and active-index files remain opaque
-historical project data. Current workflows neither resume nor migrate them.
+historical project data. Current workflows neither resume nor migrate those
+older artifact types.
 
 Accepted lasting architecture decisions use `architecture-decisions/` by
 default unless a consuming project already declares another convention.

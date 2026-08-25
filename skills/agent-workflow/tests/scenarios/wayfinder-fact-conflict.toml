@@ -27,6 +27,8 @@ preserve_paths = [
 ]
 forbid_created_globs = [
   ".agent-wayfinder/active.md",
+  ".agent-wayfinder/deployment-mode/facts.md",
+  ".agent-wayfinder/deployment-mode/decisions.md",
   ".agent-wayfinder/deployment-mode/tickets",
   ".agent-wayfinder/deployment-mode/tickets/**",
   ".scratch/**",
@@ -107,3 +109,11 @@ path = ".agent-wayfinder/deployment-mode/tickets"
 [[assertions]]
 kind = "path_not_exists"
 path = ".agent-wayfinder/active.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/deployment-mode/facts.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/deployment-mode/decisions.md"

@@ -584,8 +584,21 @@ def wayfinder_child_changed(evidence: RunEvidence, directory: str) -> bool:
     )
 
 
+def wayfinder_ledger_changed(evidence: RunEvidence, ledger: str) -> bool:
+    created, modified, _deleted = changed_paths(evidence.before, evidence.after)
+    return any(
+        len(parts := PurePosixPath(path).parts) == 3
+        and parts[0] == ".agent-wayfinder"
+        and parts[2] == ledger
+        for path in created | modified
+    )
+
+
 def decision_artifact_changed(evidence: RunEvidence) -> bool:
-    if wayfinder_child_changed(evidence, "decisions"):
+    if (
+        wayfinder_ledger_changed(evidence, "decisions.md")
+        or wayfinder_child_changed(evidence, "decisions")
+    ):
         return True
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
     return any(

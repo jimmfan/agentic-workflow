@@ -105,8 +105,9 @@ The suite prioritizes behavior that matters before 1.0:
   state, and obsolete internal files disappear;
 - arbitrary `.agent-wayfinder/` contents survive install, update, remove, and
   reinstall byte-for-byte;
-- canonical local Wayfinder maps and human-edited child Markdown survive the
-  same lifecycle sequence without schema validation or normalization;
+- canonical local Wayfinder maps, F#/D# ledgers, U#/E# files, and legacy
+  per-record F#/D# files survive the same lifecycle sequence without schema
+  interpretation, normalization, or implicit migration;
 - project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
 - malformed composite markers and unknown external collisions stop before
   partial mutation;
@@ -141,13 +142,29 @@ The suite prioritizes behavior that matters before 1.0:
   removed, or remapped payload file fails the release gate until the explicit
   install map is refreshed.
 
-Behavioral contracts separately cover creating map-first Wayfinder state with
-optional U#/E#/F#/D# children, keeping implementation work-item artifacts out of
-Wayfinder, resuming relevant map state, reconciling affected state after
-implementation, progressively excluding unrelated children and efforts,
-reporting stale state without mutation during read-only work, stopping on
-unresolved reconciliation conflicts, and keeping unrelated efforts out of a
-direct route.
+Wayfinder state contracts separately cover a valid map-only effort; creating and
+appending current F# and D# ledger sections; allocating above the highest current
+same-type identifier; rejecting malformed or duplicate identifiers; and
+retiring only the selected section after bounded reference reconciliation. They
+also cover empty-ledger removal, the shared effort mutation lock,
+reread-before-write conflict handling, separate U#/E# artifacts, readable
+section anchors, and progressive retrieval of relevant detail without an
+arbitrary file count.
+
+Legacy coverage selects facts and decisions independently: a legacy-only type
+continues in its per-record representation, a ledger-only type continues in its
+ledger, and mixed current representations remain readable but block writes
+until explicit reconciliation. Authorized migration preserves identifiers,
+semantic content, provenance, authority, scope, limitations, rationale,
+consequences, change notes, known current references, and unrelated state
+without renumbering. The lifecycle contract forbids migration during install,
+update, status, remove, and reinstall, while preservation integration exercises
+the mutating lifecycle sequence byte-for-byte. The behavioral suite also keeps
+implementation work-item artifacts out of Wayfinder, resumes relevant map
+state, reconciles affected state after implementation, excludes unrelated
+detail and efforts, reports stale state without mutation during read-only work,
+stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
+of a direct route.
 
 The routing catalog separately covers direct work, standalone Discovery,
 direct and specialist-backed Wayfinder frontiers, Wayfinder-to-Implementation

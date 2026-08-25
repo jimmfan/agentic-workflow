@@ -23,6 +23,8 @@ preserve_paths = [
 ]
 forbid_created_globs = [
   ".agent-wayfinder/provider-state/allocation.md",
+  ".agent-wayfinder/provider-state/facts.md",
+  ".agent-wayfinder/provider-state/decisions.md",
 ]
 state_must_include = [
   ".agent-wayfinder/provider-state/map.md",
@@ -58,3 +60,11 @@ value = "U17"
 [[assertions]]
 kind = "path_not_exists"
 path = ".agent-wayfinder/provider-state/allocation.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/facts.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/provider-state/decisions.md"

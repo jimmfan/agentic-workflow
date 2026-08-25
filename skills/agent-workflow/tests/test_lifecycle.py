@@ -317,8 +317,22 @@ class LifecycleAcceptanceTests(unittest.TestCase):
     def test_human_edited_wayfinder_state_is_opaque_to_lifecycle(self) -> None:
         effort = self.project / ".agent-wayfinder/custom-effort"
         (effort / "unknowns").mkdir(parents=True)
+        (effort / "facts").mkdir()
         (effort / "map.md").write_text(
             "# Personal layout\n\nNo standard headings; keep exactly.\n",
+            encoding="utf-8",
+        )
+        (effort / "facts.md").write_text(
+            "# Facts\n\n## F1 — Ledger fact\n\n- Source: source.md\n\nKeep exactly.\n",
+            encoding="utf-8",
+        )
+        (effort / "facts/F2-legacy-fact.md").write_text(
+            "# F2: Legacy fact\n\n- Supported by: source.md\n\nKeep exactly.\n",
+            encoding="utf-8",
+        )
+        (effort / "decisions.md").write_text(
+            "# Decisions\n\n## D1 — Ledger decision\n\n"
+            "- Authority: User\n\nKeep exactly.\n",
             encoding="utf-8",
         )
         (effort / "unknowns/U9-free-form.md").write_text(

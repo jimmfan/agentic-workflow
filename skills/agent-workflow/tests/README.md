@@ -16,10 +16,11 @@ subprocess.
 - `test_routing.py` validates the executable routing, authorization, lazy
   loading, Wayfinder resume, and fail-closed prose contracts.
 - `test_wayfinder_state.py` validates the authored, installed, and generated
-  settlement contract plus a deterministic state-transition oracle for
-  current-state allocation, effort-lock serialization, reference-safe
-  retirement without a Git-history gate, identifier reuse, effort lifecycle,
-  and projection parity.
+  state contract plus a deterministic state-transition oracle for map-only
+  efforts; F#/D# ledger creation, allocation, duplicate rejection, mutation,
+  and retirement; independent U#/E# files; per-type legacy selection and
+  explicit migration; effort-lock serialization; effort lifecycle; progressive
+  retrieval; and projection parity.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
@@ -60,19 +61,26 @@ requests.
 The broader deterministic catalog also covers Domain Modeling surfacing
 consequential uncertainty, authority-dependent choices asking a concrete human
 question without creating downstream work, Wayfinder assessment concluding that
-no durable state is needed, creating canonical map-first state without
-implementation work-item children, optional U#/E#/F#/D# knowledge, resolved
-unknowns and redundant evidence leaving current state, effort-lock serialization
-under concurrent allocation and retirement, uncommitted transient retirement,
-completed-effort/new-destination separation, explicit historical access, and
-ensuring that an unrelated existing effort neither captures a simple route nor
-gets loaded. It also checks selective U# promotion for authority-owned,
-external-approval, and cross-area-gating uncertainty without promoting incidental
-fog or requiring an exact child count. The live Wayfinder contracts preserve
-an unrelated effort during reconciliation, keep stale-state audits read-only,
-and require conflicting reconciliation to stop without guessing. Lifecycle
-coverage preserves legacy DEC/IMP/DBG files as opaque project data while current
-workflow scenarios resume only from Wayfinder or canonical provider artifacts.
+no durable state is needed, and creating canonical map-first state without
+implementation work-item children. Current facts and decisions use optional
+`facts.md` and `decisions.md` ledgers; independent unknowns and substantial
+evidence retain U#/E# files. Tests cover truthful fact provenance, actual
+decision authority, relevant-section retrieval without unrelated detail,
+resolved unknowns and redundant evidence leaving current state, effort-lock
+serialization across maps, ledgers, U#, and E#, and reference-safe targeted
+retirement without requiring a prior commit.
+
+The catalog also covers completed-effort/new-destination separation, explicit
+historical access, and ensuring that an unrelated existing effort neither
+captures a simple route nor gets loaded. Selective U# promotion keeps
+authority-owned, external-approval, and cross-area-gating uncertainty without
+promoting incidental fog or requiring an exact artifact count. The live
+Wayfinder contracts preserve an unrelated effort during reconciliation, keep
+stale-state audits read-only, and require conflicting reconciliation to stop
+without guessing. Lifecycle coverage preserves current legacy per-record F#/D#
+state unchanged until explicit migration and keeps older DEC/IMP/DBG files as
+opaque project data; current workflow scenarios resume only from Wayfinder or
+canonical provider artifacts.
 
 See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema,
 evidence model, commands, side effects, cleanup, and limitations.

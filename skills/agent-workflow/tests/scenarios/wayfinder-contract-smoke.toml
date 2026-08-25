@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-contract-smoke"
 name = "Map-only Wayfinder continuation hands substantial work to To Tickets"
 fixture = "wayfinder-contract-smoke"
-request = "Resume the named runtime-rollout Wayfinder effort as a fresh session. Use its map as the re-entry point. Inspect release-policy.txt and the already approved rollout-plan.md. The policy baseline will constrain several implementation sessions, so preserve exactly one E1 observation with provenance and limitations and one F1 fact supported by E1; do not create U# or D# children for settled or obvious material. Publish the three approved dependency-ordered slices through the configured local to-tickets workflow, link its native frontier from map.md, and leave starting ticket 01 as the single coherent next action. Do not implement the rollout."
+request = "Resume the named runtime-rollout Wayfinder effort as a fresh session. Use its map as the re-entry point. Inspect release-policy.txt and the already approved rollout-plan.md. The policy baseline will constrain several implementation sessions, so preserve one independently useful E1 observation with provenance and limitations and record `F1 — Python 3.11 is the minimum supported runtime` as a section in facts.md supported by E1; link the map directly to the F1 section and do not create U# or D# records for settled or obvious material. Publish the three approved dependency-ordered slices through the configured local to-tickets workflow, link its native frontier from map.md, and leave starting ticket 01 as the single coherent next action. Do not implement the rollout."
 starting_state = [
   "The named effort contains only map.md and is already valid durable Wayfinder state.",
   "release-policy.txt warrants one reusable evidence/fact chain; ordinary fixture instructions do not.",
@@ -32,8 +32,11 @@ forbid_created_globs = [
   ".agent-wayfinder/runtime-rollout/tickets/**",
   ".agent-wayfinder/runtime-rollout/unknowns",
   ".agent-wayfinder/runtime-rollout/unknowns/**",
+  ".agent-wayfinder/runtime-rollout/decisions.md",
   ".agent-wayfinder/runtime-rollout/decisions",
   ".agent-wayfinder/runtime-rollout/decisions/**",
+  ".agent-wayfinder/runtime-rollout/facts",
+  ".agent-wayfinder/runtime-rollout/facts/**",
 ]
 route_must_not_include = ["discovery", "implement"]
 state_must_include = [
@@ -59,17 +62,51 @@ value = "Source: release-policy.txt"
 [[assertions]]
 kind = "glob_contains"
 path = ".agent-wayfinder/runtime-rollout/evidence/E1-*.md"
-value = "## Observation"
-
-[[assertions]]
-kind = "glob_count"
-path = ".agent-wayfinder/runtime-rollout/facts/F*.md"
-count = 1
+value = "Limitations:"
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-wayfinder/runtime-rollout/facts/F1-*.md"
-value = "Supported by: E1"
+path = ".agent-wayfinder/runtime-rollout/evidence/E1-*.md"
+value = "Supports: F1"
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-wayfinder/runtime-rollout/facts.md"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/runtime-rollout/facts.md"
+value = '''\A# Facts\n'''
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/runtime-rollout/facts.md"
+value = "## F1 — Python 3.11 is the minimum supported runtime"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/runtime-rollout/facts.md"
+value = "- Status: established"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/runtime-rollout/facts.md"
+value = "- Scope:"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/runtime-rollout/facts.md"
+value = "- Source: release-policy.txt"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/runtime-rollout/facts.md"
+value = "Derived from: E1"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/runtime-rollout/map.md"
+value = "](facts.md#f1--python-311-is-the-minimum-supported-runtime)"
 
 [[assertions]]
 kind = "path_not_exists"

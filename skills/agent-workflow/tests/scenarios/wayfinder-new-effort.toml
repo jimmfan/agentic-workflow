@@ -5,7 +5,7 @@ fixture = "wayfinder-new"
 request = "Plan our zero-downtime platform migration. Reuse migration-architecture.md for the destination, boundary, major areas, and relationships; that authoritative structure is already clear, so do not rerun Domain Modeling. Preserve unresolved ordering separately and identify concrete work that can begin while part of the plan is blocked."
 starting_state = [
   "Several important pieces of migration state are becoming unreliable to hold only in conversational context.",
-  "migration-architecture.md authoritatively defines consumer inventory, cutover orchestration, rollback, ownership, and their seams; migration ordering remains unresolved.",
+  "migration-architecture.md authoritatively defines consumer inventory, cutover orchestration, rollback, ownership, and their seams; the project owner accepted zero downtime, while migration ordering remains unresolved.",
   "Repository-local durable planning is authorized, but no external tracker mutation is authorized.",
 ]
 expect = [
@@ -46,6 +46,8 @@ forbid_created_globs = [
   "wayfinder/**",
   ".agent-wayfinder/platform-migration/tickets",
   ".agent-wayfinder/platform-migration/tickets/**",
+  ".agent-wayfinder/platform-migration/decisions",
+  ".agent-wayfinder/platform-migration/decisions/**",
 ]
 
 [[assertions]]
@@ -153,14 +155,43 @@ path = ".agent-wayfinder/platform-migration/unknowns/U1-*.md"
 value = "migration order"
 
 [[assertions]]
-kind = "glob_count"
-path = ".agent-wayfinder/platform-migration/decisions/D*.md"
-count = 1
+kind = "path_exists"
+path = ".agent-wayfinder/platform-migration/decisions.md"
 
 [[assertions]]
-kind = "glob_contains"
-path = ".agent-wayfinder/platform-migration/decisions/D1-*.md"
-value = "downtime"
+kind = "glob_any_matches"
+path = ".agent-wayfinder/platform-migration/decisions.md"
+value = '''\A# Decisions\n'''
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/platform-migration/decisions.md"
+value = "## D1 — Use a zero-downtime cutover"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/platform-migration/decisions.md"
+value = "- Status: accepted"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/platform-migration/decisions.md"
+value = "- Authority: Project owner"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/platform-migration/decisions.md"
+value = "- Based on:"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/platform-migration/decisions.md"
+value = "- Consequences:"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/platform-migration/map.md"
+value = "](decisions.md#d1--use-a-zero-downtime-cutover)"
 
 [[assertions]]
 kind = "path_not_exists"

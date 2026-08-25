@@ -16,7 +16,10 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
   before substantial decomposition. Keep `map.md` low-resolution and load
   detail only when relevant.
 - The map owns current state, blockers, dependencies, frontier, and next work.
-  Optional U/E/F/D preserves only independently useful knowledge.
+  Optional F/D ledger sections and U/E artifacts preserve only useful current
+  knowledge.
+- Create a separate artifact because it is an independently useful coordination
+  or retrieval unit, not merely because it belongs to a semantic category.
 - Live source and accepted project artifacts outrank stale map state.
 - Inspect Git/session state when useful for safe execution, but do not normally
   persist volatile observations. Retain durable Git constraints and
@@ -126,5 +129,6 @@ when approved work needs substantial dependency ordering or independently
 deliverable sessions, and link its native frontier without a shadow copy.
 
 Read-only work never mutates state. Follow the state contract for every
-authorized mutation. Legacy project-owned records remain untouched historical
-data.
+authorized mutation. Legacy project-owned records remain valid and use their
+existing representation until an explicit authorized reconciliation changes
+it.

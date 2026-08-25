@@ -7,7 +7,7 @@ it without inventing unresolved telemetry policy.
 
 ## Current state
 
-- [D1 — Use compact sorted JSON](decisions/D1-use-compact-sorted-json.md) is accepted.
+- [D1 — Use compact sorted JSON](decisions.md#d1--use-compact-sorted-json) is accepted.
 - [U1 — Name the telemetry metric](unknowns/U1-name-telemetry-metric.md) remains unresolved and does not constrain response serialization.
 
 ## Blockers and dependencies
@@ -24,7 +24,7 @@ None. D1 settles the only dependency for the current implementation slice.
 
 ## Decisions so far
 
-- [D1 — Use compact sorted JSON](decisions/D1-use-compact-sorted-json.md) — public responses use compact JSON with lexicographically sorted keys.
+- [D1 — Use compact sorted JSON](decisions.md#d1--use-compact-sorted-json) — public responses use compact JSON with lexicographically sorted keys.
 
 ## Not yet specified
 

@@ -57,8 +57,8 @@ before substantial decomposition.
 Use the smallest clear representation: prose, bullets, a compact table, or a
 small diagram are all valid. `## Territory` is a useful default heading, not a
 required schema. Do not create area identifiers, nested domain directories, or
-parallel maps merely to express this structure; the flat optional U/E/F/D
-storage remains canonical.
+parallel maps merely to express this structure; the flat effort layout with
+optional F/D ledgers and independently useful U/E files remains canonical.
 
 Territory is provisional, adaptive, and judgment-based. It helps Wayfinder
 explore relevant areas and seams, challenge incomplete framing, and revise its
@@ -119,7 +119,8 @@ accepted.
 
 `map.md` owns the current state, blockers, dependencies, and next work. It is
 the effort's coordination and re-entry point. Keep enough information there for
-a fresh session to choose the next relevant detail without loading every child.
+a fresh session to choose the next relevant detail without loading every
+supporting record.
 
 When ready work becomes substantial enough to need dependency ordering or
 independently deliverable sessions, hand it to `to-tickets`. That workflow owns
@@ -138,18 +139,31 @@ All paths below are project-owned durable data:
 .agent-wayfinder/
 └── <effort>/
     ├── map.md
-    ├── unknowns/       # optional U# files
-    ├── evidence/       # optional E# files
-    ├── facts/          # optional F# files
-    └── decisions/      # optional D# files
+    ├── facts.md        # optional current F# ledger
+    ├── decisions.md    # optional current D# ledger
+    ├── unknowns/       # optional independent U# files
+    └── evidence/       # optional substantial E# files
 ```
 
-`map.md` alone is a complete and valid Wayfinder effort. Create each child
-directory lazily with its first item, and create an item only when preserving it
-independently has real value. Short-lived observations, obvious repository
-facts, and one-line conclusions normally stay as concise map notes or links.
-Do not turn every source read or test run into an E# and do not extract every
-stable sentence into an F#.
+`map.md` alone is a complete and valid Wayfinder effort. Create `facts.md` or
+`decisions.md` lazily with the first justified current record. Create an
+`unknowns/` or `evidence/` directory lazily with the first record that earns an
+independently named artifact. Create a separate artifact because it is an
+independently useful coordination or retrieval unit, not merely because it
+belongs to a semantic category. A distinct, precise, unresolved, assigned, or
+easy-to-template record does not by itself justify a separate file.
+
+Short-lived observations, obvious repository facts, one-line conclusions, and
+development questions safely answerable during authorized implementation
+normally stay as concise map notes or links. Planned development validation is
+not a current blocker merely because it remains to be performed. Do not turn
+every source read or test run into an E#, extract every stable sentence into an
+F#, or create a separate U# for every item on a human-question list.
+
+The map remains an index and orientation surface rather than a duplicate fact
+or decision store. If a fresh human or agent must read most supporting
+artifacts merely to understand the current route, the effort is over-decomposed
+and should be reconciled.
 
 Create an effort only when repository writes are authorized and structured
 durable notes materially reduce the risk of losing or conflating important
@@ -160,7 +174,7 @@ write.
 Assessment, including assessment after automatic Wayfinder routing, may find
 that no consequential uncertainty or continuity need is worth preserving. In
 that case, report that no durable Wayfinder state is needed and create neither a
-map nor a child merely because Wayfinder was considered or selected.
+map nor a supporting record merely because Wayfinder was considered or selected.
 
 Install, update, status, remove, and reinstall never seed, inventory, checksum,
 validate, migrate, rewrite, or remove Wayfinder state.
@@ -168,92 +182,56 @@ validate, migrate, rewrite, or remove Wayfinder state.
 ## Effort naming, selection, and stable paths
 
 The H1 heading in `map.md` is the durable human-readable effort name. Derive it
-after authoritative context or structural discovery establishes enough of the
-destination, scope boundary, major areas, and relationships to identify the
-effort honestly. Not yet specified and Out of scope distinguish in-scope fog
-from the scope boundary. The effort is recognized from that readable name,
-destination, boundary, semantic territory, and map context. The directory slug
-is only its stable storage key; it is not a separate semantic identity object
-and does not replace the readable name.
+after context establishes the destination, boundary, major areas, and relevant
+relationships. The directory slug is only its stable storage key, not a second
+identity.
 
 Route before inspecting state. An unrelated Wayfinder directory never selects
 Wayfinder or justifies a scan.
 
-When the user or authoritative context supplies an exact repository-relative
-effort path, verify that it is safe, stays below
-`.agent-wayfinder/`, traverses no symlink, and names a regular
-`map.md`. Use that path and do not invent a replacement directory.
+For an exact repository-relative effort path, verify that it stays below
+`.agent-wayfinder/`, traverses no symlink, and names a regular `map.md`; then use
+it without inventing a replacement.
 
-For a likely resume without an exact path:
+For a likely resume without an exact path: List effort directory names, identify
+the smallest plausible candidate set, read only those maps, and compare their
+names, destinations, boundaries, and current state. Resume only a clear match.
 
-1. List effort directory names.
-2. Use the request and directory names to identify the smallest plausible
-   candidate set.
-3. Read only those candidate maps.
-4. Compare their readable effort names, destinations, scope boundaries,
-   current state, and relevant context.
-5. Resume one effort only when one match is sufficiently clear.
+If multiple efforts remain plausible, neither choose nor merge them, create a
+third synonymous effort, or write affected state. Ask the user, or report the
+ambiguity and remain read-only in noninteractive execution.
 
-If multiple efforts remain plausible, do not merge them or choose arbitrarily.
-Do not create a third synonymous effort or write affected state. Ask the user when
-interaction is available. In noninteractive execution, report the ambiguity
-and remain read-only for the affected state.
+Create only when Wayfinder and durable writes are authorized, structured notes
+materially reduce loss or conflation risk, and no effort has the same destination
+and boundary. A branch, ticket, file, command, temporary task description, or
+chat title does not define a new durable effort.
 
-Create a new effort only when Wayfinder is selected, durable writes are
-authorized, structured notes materially reduce the risk of losing or
-conflating important state, no existing effort has the same substantive
-destination and scope boundary, and the destination is materially distinct
-enough to warrant its own map. A branch, ticket, file, command, temporary task
-description, or chat title does not define a new durable effort.
+Choose a durable noun phrase, then derive a lowercase, filesystem-safe,
+hyphen-separated, concise slug without a timestamp or random suffix by default.
 
-Choose a concise human-readable noun phrase that remains sensible across
-sessions and implementation phases. Avoid temporary or generic names such as
-`Current work`, `Project update`, `Fix branch`, and `Miscellaneous`. Derive the
-directory slug once from that name using a simple default: lowercase,
-filesystem-safe, hyphen-separated, concise, and recognizable, with no timestamp
-or random suffix by default. This is an authoring rule, not a generic slugging
-framework.
+Immediately before creating the directory, reread its parent and inspect any new
+plausible map. Resume a colliding slug only for the same effort; otherwise use
+the shortest stable meaningful disambiguator without overwriting or merging.
 
-Immediately before creating the directory, reread the relevant Wayfinder
-directory listing, account for another session having created an effort, and
-inspect any newly appearing plausible map. If the desired slug already exists,
-resume it only when it represents the same effort. When a materially distinct
-effort has a real collision, use the shortest stable meaningful disambiguator;
-do not overwrite or merge the existing state, and avoid hashes or timestamps
-while a readable alternative exists.
+Once created, the effort directory path is stable across wording, branch,
+phase, ticket, and evidence changes. Established awkward or legacy slugs remain
+valid; do not normalize or automatically migrate them.
 
-Once created, the effort directory path is stable. Do not rename it because the
-map title improves, implementation phases or branches change, tickets change,
-or new evidence revises current understanding. Established awkward or legacy
-slugs remain valid and resumable. Preserve clear existing maps without
-normalizing them or automatically migrating project-owned state.
+Continue while the destination and boundary remain intact. A different endpoint,
+bringing previously out-of-scope work inside the boundary, a misleading old
+map, or a new destination after completion requires a fresh effort. Never reuse
+a historical directory for an unrelated destination.
 
-Continue the same effort when wording becomes more precise, evidence changes,
-implementation advances, unknowns resolve, or decisions are superseded while
-the substantive destination and scope boundary remain intact. A materially
-different endpoint, bringing previously out-of-scope work inside the boundary,
-a change that would make the old map misleading as low-resolution orientation,
-or a new destination after the original one completes normally requires a
-fresh effort. Do not reuse a completed, abandoned, or superseded directory for
-an unrelated destination.
-
-Maps may carry one lifecycle line immediately below the H1:
-`- Status: current | completed | abandoned | superseded`. `current` means the
-destination remains a legitimate continuation target. The other values are
-historical: `completed` reached the destination, `abandoned` stopped without
-reaching it, and `superseded` was replaced by a materially different effort or
-authoritative direction. A superseded map links its successor or governing
-artifact. This single line is the effort lifecycle representation; do not add a
-metadata file, directory move, archive tree, registry, or state machine.
+Maps may carry `- Status: current | completed | abandoned | superseded` below the
+H1. Current remains resumable; historical statuses record reached, stopped, or
+replaced destinations, and superseded maps link their successor. This single
+line is the effort lifecycle representation; add no lifecycle registry or move.
 
 During likely resume, an explicit `current` match outranks a similarly named
 historical match. Read a historical map when it is directly named, explicitly
-requested, needed to follow a successor, or otherwise materially relevant; its
-children do not become part of normal loading merely because the effort once
-matched. An older map without a status remains valid. Infer its lifecycle only
-when its current state, outcome, and next work make that unambiguous; otherwise
-do not silently classify, normalize, or let it displace an explicit current
-match.
+requested, or materially relevant; do not load its supporting records by
+default. An older map without a status remains valid. Infer lifecycle only when
+unambiguous, and never let it displace an explicit current match.
 
 ## Progressive loading
 
@@ -263,8 +241,9 @@ match.
    every map to resolve a likely resume.
 3. Read the relevant `map.md`, including its lifecycle when present, as the
    low-resolution orientation.
-4. Follow only links needed for the current question or work. Do not read every
-   U/E/F/D child.
+4. Follow only links needed for the current question or work. Retrieve the
+   linked F# or D# section from its ledger, or the linked U#/E# file; do not
+   load unrelated ledger sections or every U/E artifact.
 5. Derive the current frontier from the map and any linked native ticket source;
    do not persist a second frontier or global active index.
 
@@ -277,19 +256,26 @@ implementation.
 ## Identifiers and links
 
 Use per-type positive identifiers within an effort: `U#`, `E#`, `F#`, and
-`D#`. Keep the numeric prefix plus a readable filename slug, such as
-`U17-node-group-isolation.md`; do not reduce child filenames to bare numbers.
-The identifier is a stable handle within the current Wayfinder representation,
-not a repository-lifetime primary key. Never renumber an existing current
-record, and never allow two current records of one type to share a number.
-Numeric uniqueness is scoped to current same-type records within that effort.
+`D#`. U# and E# keep the numeric prefix plus a readable filename slug, such as
+`U17-node-group-isolation.md`; do not reduce their filenames to bare numbers.
+F# and D# use H2 ledger headings with the identifier, an em dash, and a readable
+title, such as `## D4 — Use a dedicated node group`. The identifier is a stable
+handle within the current Wayfinder representation, not a repository-lifetime
+primary key. Never renumber an existing current record, and never allow two
+current records of one type to share a number. Numeric uniqueness is scoped to
+current same-type records within that effort.
 
 A bare U#/E#/F#/D# identifier is effort-local current-state shorthand. Inside
-the selected effort's map and children, concise statements such as
+the selected effort's map and records, concise statements such as
 `U17 resolved by F8` and `D4 follows from F8` are valid when the effort context
-is unambiguous. The readable filename, such as
-`decisions/D4-use-dedicated-node-group.md`, is the child's canonical filesystem
-path; the bare number is not durable repository-wide identity.
+is unambiguous. A U#/E# readable filename is its canonical filesystem path. A
+current F#/D# durable link uses a readable label and the exact ledger heading,
+for example `[D4 — Use a dedicated node group](decisions.md#d4--use-a-dedicated-node-group)`.
+The anchor convention is the ordinary Markdown heading form: lowercase the
+heading text, remove punctuation including the em dash, and replace each space
+with `-`; the spaces on both sides of the removed em dash therefore produce
+`--`. Do not add hidden IDs, registries, or metadata. Renaming a current ledger
+heading requires reconciling affected current links.
 
 Assign one greater than the highest currently present identifier of that type,
 or `1` when none exists. Do not search for or deliberately recycle interior
@@ -299,43 +285,76 @@ distinguishes historical meanings that actually entered Git.
 
 When a canonical artifact outside the selected effort needs a reference that
 survives beyond the current Wayfinder representation, use a repository-relative
-Markdown link with a readable label to the child path or to a longer-lived
-canonical artifact. Do not rely on bare prose such as `See D4` as permanent
-repository-wide identity. An external canonical artifact need not retain a
-reference to a temporary U/E/F/D child that has no independent current value;
-reconcile or remove any known current reference before retiring that child.
+Markdown link with a readable label to the exact ledger section, U#/E# file, or
+a longer-lived canonical artifact. Do not rely on bare prose such as `See D4`
+as permanent repository-wide identity. An external canonical artifact need not
+retain a reference to a temporary current record that has no independent value;
+reconcile or remove any known current reference before retiring that record.
 Do not scan the repository or Git history merely to find historical bare
 identifiers. Retirement remains bounded to the selected effort and known current
 canonical references that would otherwise become broken or misleading.
 
 Within the effort, use repository-relative Markdown links and readable titles
-when a path is useful. Facts must link the evidence artifacts or direct
-authoritative sources that justify them. Evidence may optionally name facts it
-supports or contradicts, but reciprocal backlinks are not required; requiring
-both directions creates synchronization work without improving provenance.
+when a path is useful. Every current fact contains at least one truthful
+provenance mode: `Source`, `Authority`, or `Derived from`. Multiple modes may
+appear when genuinely applicable; omit inapplicable fields instead of leaving
+empty ceremony. A repeated agent-authored summary is not an independent source
+unless it is itself an accepted canonical authority artifact. Scope and
+limitations prevent unjustified generalization. Evidence may optionally name
+facts it supports or contradicts, but reciprocal backlinks are not required.
 Decisions should link the facts, evidence, unknowns, ADRs, or policies that
 materially constrained the choice.
 
 Git is the history mechanism. Do not add an event log, revision files, a graph
 index, or another versioning scheme.
 
-Serialize every map or child mutation for an effort by atomically creating the
-empty `<effort>/.wayfinder-mutation-lock/` directory. Hold it through the
-affected reads, writes, and removals, then remove it. The lock contains no data,
-is not durable Wayfinder state, and must not be committed. If it already exists,
-wait through host coordination or stop conservatively; never steal or guess that
-a lock is stale. If atomic directory creation is unavailable, do not mutate the
-effort.
+Serialize every map, ledger, U#, or E# mutation for an effort by atomically
+creating the empty `<effort>/.wayfinder-mutation-lock/` directory. Hold it
+through the affected reads, writes, and removals, then remove it. The lock
+contains no data, is not durable Wayfinder state, and must not be committed. If
+it already exists, wait through host coordination or stop conservatively;
+never steal or guess that a lock is stale. If atomic directory creation is
+unavailable, do not mutate the effort.
 
-Under that lock, allocation rereads the relevant child directory, rejects
-duplicate current numbers, recomputes the candidate, and creates the child
-without overwriting any path. The same single lock also makes a retirement's
-final reference scan and removal indivisible with compliant map and child edits.
-Readable slugs make exact-path no-overwrite insufficient for allocation, while
-rereads alone cannot close the check-to-remove retirement race. Before editing
-an existing child or the map, reread it and the directly affected current state.
-If concurrent edits disagree, preserve both claims and reconcile explicitly
-rather than choosing silently.
+Under that lock, allocation rereads the selected F#/D# ledger or U#/E#
+directory, parses current identifiers, rejects malformed or duplicate current
+identifiers, and recomputes one greater than the highest current same-type
+identifier. Append a new F#/D# section without replacing another section;
+create a U#/E# file without overwriting any path. Before every write, reread the
+ledger, map, target, and directly affected current state. The same single lock
+makes retirement's final reference scan and removal indivisible with compliant
+state edits. If concurrent edits disagree, preserve both claims and reconcile
+explicitly rather than choosing silently.
+
+## Representation selection and legacy state
+
+Select facts and decisions independently:
+
+- when a ledger contains current records and no legacy current records exist,
+  use the ledger;
+- when a nonempty legacy `facts/` or `decisions/` directory contains current
+  records and the corresponding ledger has none, continue that legacy
+  representation;
+- when neither representation contains a current record, create the ledger on
+  the first justified F# or D#; and
+- when both representations contain current same-type records, permit read-only
+  interpretation but fail closed for writes until an explicit authorized
+  reconciliation chooses one representation.
+
+An empty legacy directory or a header-only ledger is not a second current
+representation. Existing legacy `facts/F#-readable-name.md` and
+`decisions/D#-readable-name.md` records remain valid, readable, and safely
+maintainable. Do not normalize them opportunistically.
+
+An explicit legacy-to-ledger migration requires user authorization and the
+effort mutation lock. Preserve current IDs and semantic content, including
+provenance, authority, scope, limitations, rationale, consequences, and change
+notes. Update all known current references before removing the old files.
+Reject duplicate identifiers and unresolved conflicts; preserve unrelated
+state; do not renumber. Create no archive, tombstone, registry, high-water file,
+or migration log: Git owns history. Install, update, status, remove, reinstall,
+provider repair, and projection regeneration never trigger migration,
+normalization, or rewriting of project-owned Wayfinder state.
 
 ## The low-resolution map
 
@@ -374,7 +393,7 @@ linked native ticket frontier.>
 
 ## Decisions so far
 
-- D1 — Title (`decisions/D1-title.md`) — one-line gist
+- [D1 — Title](decisions.md#d1--title) — one-line gist
 
 ## Not yet specified
 
@@ -387,54 +406,39 @@ U# tracking.>
 ```
 
 `Territory` is optional when the same bearings are already clear elsewhere in
-the map. The map may summarize small facts and evidence inline. Promote detail
-to a child
-only when it is likely to be reused, disputed, independently revised, too large
-for low-resolution orientation, or important enough to require provenance.
-Keep the coherent ready frontier concise. List one or more independently ready
-scopes only when the dependency structure makes that distinction genuinely
-useful, and never include dependency-blocked work. If work has been decomposed
-by `to-tickets`, link its canonical frontier rather than restating every ticket.
+the map. Keep small facts inline; promote reusable, disputed, independently
+revised, provenance-sensitive, or oversized detail. Keep the coherent ready
+frontier concise, list one or more independently ready scopes only when useful,
+exclude dependency-blocked work, and link rather than copy a native ticket
+frontier.
 
 The ready frontier is the set of coherent scopes whose material decision
 dependencies are answered or explicitly dispositioned and can therefore
-proceed now. Explicit disposition means the responsible authority canonically
-accepted the remaining uncertainty for a named boundary; it is not an agent's
-assumption or a generic waiver.
+proceed now. Explicit disposition is responsible-authority acceptance of
+remaining uncertainty for a named boundary, never an agent assumption.
 
-When evidence establishes execution order, keep the navigation shape concise:
-surface the critical path, independent parallel work, and any off-path
-dependency whose external lead time materially affects the route. Never
-manufacture a critical path from an unordered backlog or incomplete dependency
-evidence.
+When evidence establishes execution order, surface the critical path,
+independent parallel work, and any off-path dependency with material external
+lead time. Never manufacture a critical path from an unordered backlog or
+incomplete dependency evidence.
 
 Map uncertainty broadly, then promote selectively. A precise question becomes
 U# when preserving the question or its eventual answer could materially improve
-a later developer’s ability to make or evaluate a decision. Apply that judgment
-within the current destination and relevant territory. Materiality is more
-likely when losing the question or answer could cause a later developer to make
-a different consequential decision, mistake an assumption for fact, repeat
-substantial investigation, miss a required authority, owner, or approval, or
-advance dependent work prematurely. Human or project authority, an external
-owner or approval, and effects across multiple downstream areas or a meaningful
-seam are strong signals, not a mandatory checklist.
+a later developer’s ability to make or evaluate a decision. Human or project
+authority, an external owner or approval, expensive reconstruction, premature
+dependent work, or multiple downstream areas or a meaningful seam are strong
+signals, not a checklist.
 
-Ask the substantive project question when project knowledge determines whether
-the question or answer is material; do not ask merely whether to create a U#.
-Keep incidental, routine, easily reconstructed, or merely unspecified detail in
-the map; ordinary research or debugging fog usually remains there or with its
-selected specialist. Precision alone is insufficient. Never create a U# from a
-template, precision, or item count alone. A temporary U# is useful only when
-separate preservation improves current coordination or later continuation; do
-not create and immediately retire one as process ceremony. Precise low-value
-fog may remain under `Not yet specified`; vague fog may become a U# later if
-sharpening it reveals continuation value. Out-of-scope work does not become
-next work unless the destination is deliberately redrawn.
+Ask substantive project questions, not whether to create U#. Keep incidental,
+routine, easily reconstructed, or merely unspecified detail in the map.
+Precision alone is insufficient. Never create a U# from a template, precision,
+or item count alone, or as create-and-retire ceremony. Keep low-value fog under
+`Not yet specified`; out-of-scope work stays out until the destination changes.
 
-## Optional child files
+## Knowledge records and artifacts
 
 These are permissive authoring shapes, not lifecycle schemas. Omit inapplicable
-fields and rename headings when clarity improves.
+fields instead of creating empty ceremony.
 
 Use U# when a question is consequential enough to track independently:
 
@@ -456,6 +460,14 @@ Use U# when a question is consequential enough to track independently:
 links.>
 ```
 
+A separate U# earns its file when preserving the detailed question or eventual
+answer materially improves coordination or later continuation, especially
+through substantial reasoning or tradeoffs, distinct authority or external
+ownership, material external lead time, multiple downstream dependencies,
+expensive reconstruction, or consequential risk from acting prematurely.
+Human-question lists, planned development validation, and ordinary unspecified
+detail need not each become U# files.
+
 Use E# when an observation needs durable provenance, scope, limitations, or
 independent reuse:
 
@@ -465,58 +477,59 @@ independent reuse:
 - Observed: YYYY-MM-DD
 - Source: <repository-relative link, command/result, or cited primary source>
 - Scope: <where this evidence applies>
-- Related: U1, F1
+- Supports: <relevant F#/D#/U#>
+- Limitations: <sampling, uncertainty, or conflict>
 
-## Observation
-
-<What was observed, without promoting it beyond what the source establishes.>
-
-## Limitations
-
-<Important uncertainty, sampling limits, or conflicting evidence.>
+<Observation, method, result, and only the detail needed to reuse or evaluate
+it.>
 ```
 
-Use F# when a descriptive conclusion is established enough to rely on across
-sessions and retaining its evidence chain matters:
+A simple source link normally belongs directly on its fact. Evidence earns an
+artifact when its observations, methods, calculations, provenance,
+limitations, conflict, or reuse value require independent preservation.
+
+Use an H2 section in `facts.md` when a descriptive conclusion is established
+enough to rely on across sessions and retaining it adds value:
 
 ```markdown
-# F1: <Established conclusion>
+## F1 — <Established descriptive conclusion>
 
-- Status: current | disputed | stale
+- Status: established | disputed | stale
 - Scope: <where and when the conclusion applies>
-- Supported by: E1, <or direct authoritative source>
-- Contradicted by: none
+- Source: <canonical URL or repo/path:lines>
+- Authority: <named authority or canonical authority artifact, date, forum>
+- Derived from: <supporting F#/E#/source and concise derivation>
+- Limitations: <material limitation, when applicable>
 
-## Fact
-
-<The scoped conclusion.>
-
-## Change note
-
-<Only when revised: what changed and why.>
+<Concise scoped conclusion.>
 ```
 
-Use D# for a committed choice, not for a descriptive conclusion:
+A fact must contain at least one truthful `Source`, `Authority`, or
+`Derived from`. Working assumptions are not facts; keep them in the map or an
+appropriate U# with `Assumed:` and `Settled by:`. An agent-created inference
+does not become established merely because it is placed in the ledger.
+
+Use an H2 section in `decisions.md` for a committed choice, not for a
+descriptive conclusion:
 
 ```markdown
-# D1: <Choice>
+## D1 — <Committed choice>
 
-- Status: accepted | superseded
-- Authority: <user, accepted policy, or canonical ADR>
-- Related: U1, F1
+- Status: accepted | provisional | superseded
+- Authority: <named person, responsible project role, or accepted authority artifact; include date and forum where applicable>
+- Based on: <facts, evidence, unknowns, policies, ADRs, or other decisive sources>
+- Revisit when: <required for provisional; optional otherwise>
+- Consequences: <concise material consequences>
 
-## Decision
-
-<The choice now in force.>
-
-## Why and consequences
-
-<Decisive context, tradeoffs, and important constraints.>
-
-## Change note
-
-<Only when changed: what changed and why.>
+<The choice, decisive rationale, tradeoffs, and explicit remaining uncertainty.>
 ```
+
+`accepted` is a current committed choice. `provisional` is an explicitly
+adopted temporary choice with a real revisit condition, not a proposal or agent
+recommendation. Keep a `superseded` decision only while it adds current
+navigational value. Accepted and provisional decisions require actual project
+authority. Evidence can support a choice but cannot create authority. A
+proposal, inferred preference, or working assumption does not become D#.
 
 A resolved U# need not create F# or D#. An E# need not create F#. A routine
 source read, transient command output, or fact obvious from current source does
@@ -539,29 +552,16 @@ Git preserves historical evolution.
 A semantic area is settled when no consequential uncertainty remains
 undispositioned for that area and every durable outcome has either reached its
 proper canonical owner or been handed to the workflow that owns the resulting
-work. Canonical outcomes may be an ADR for a lasting consequential decision, a
-specification, project documentation or source, `to-tickets` for substantial
-decomposition, Implementation for one or more independently ready scopes handed
-off coherently one at a time, another project-native artifact, or no separate
-artifact when the result has no independent long-term value. Settlement does
-not require every area or D# to become an ADR or ticket.
+work. Owners include ADRs, specifications, project documentation or source,
+`to-tickets`, Implementation, another native artifact, or no separate artifact.
+Settlement does not require every area or D# to become an ADR or ticket.
 
-As an area settles, reconcile its current map description, fog, blockers,
-dependencies, frontier, and canonical links. Retain U/E/F/D only while those
-children still add independent current navigational value. The map may show
-which areas remain active or settled in ordinary prose; do not add required area
-IDs, per-area lifecycle files, or another state hierarchy.
+As an area settles, reconcile its map, fog, blockers, dependencies, frontier,
+and links. Retain U/E/F/D only while currently useful; add no area IDs,
+per-area lifecycle files, or state hierarchy.
 
-When a U# is answered:
-
-1. state the answer unambiguously in the U# or, when the child no longer adds
-   value, as a compact resolution in the map;
-2. mark an existing U# `resolved` and remove it from unresolved fog, blockers,
-   and frontier work;
-3. reconcile current state, dependencies, next work, and any affected links in
-   the map; and
-4. retain or create E#, F#, or D# only when that record keeps independent
-   provenance, descriptive, or project-authority value.
+When a U# is answered, state the answer, mark it `resolved`, reconcile the map
+and links, and retain it or related E#/F#/D# only for remaining current value.
 
 Answer the consequential U#, or canonically record the responsible authority’s
 explicit acceptance of the remaining uncertainty for that boundary. In the
@@ -572,42 +572,43 @@ boundary from blockers. Other dependencies remain blocked, and the U# remains
 while it still has independent navigational value.
 
 The map may be the entire current result. Resolution does not require
-U# -> E# -> F# -> D#, and no child is created merely to record that settlement
-happened. Repeating reconciliation against the same answer changes neither the
-map nor its current children.
+U# -> E# -> F# -> D#, and creates no ceremonial record.
 
-U/E/F/D files are current durable knowledge, not historical allocation markers.
-A resolved U# may leave the representation once its answer is unambiguous in
-current state and it has no remaining navigational value. Evidence remains only
-while its provenance, scope, limitations, or observation is independently
-useful. Facts remain only while their established descriptive conclusion and
-support chain are useful. Decisions remain only while the committed choice is
-current or still needed to navigate current authority. Git owns historical
-investigation and removed child content.
+U/E files and F/D ledger sections are current durable knowledge, not historical
+allocation markers. Retain each only for current navigational, provenance,
+descriptive, or authority value; Git owns retired history.
 
-Before removing a child, inspect the selected effort's map and current child
-files for references to its identifier or path, and reconcile any known current
-canonical reference outside the effort that would otherwise become broken or
-misleading. Reconcile every current dependency first: replace the reference with
-a current canonical source or successor, preserve the child when its provenance
-or meaning is still required, and never leave a dangling current link. A fact
-that still depends on an E# is evidence that the E# remains independently useful
-unless the fact can truthfully link the authoritative source directly. Do not
-scan or reconcile unrelated efforts, the whole repository, or Git history.
+Before retiring a record, inspect the selected effort's map, ledgers, U#/E#
+files, and known current canonical references outside the effort for references
+to its identifier, path, or heading anchor. Reconcile every current dependency
+first: replace the reference with a current canonical source or successor,
+preserve the record when its provenance or meaning is still required, and never
+leave a dangling current link. A fact that still depends on an E# is evidence
+that the E# remains independently useful unless the fact can truthfully link
+the authoritative source directly. Do not scan or reconcile unrelated efforts,
+the whole repository, or Git history.
 
 Removal is allowed once all independently useful current information is
 preserved and every current reference is reconciled truthfully. There is no
-requirement that the child's exact contents already exist in Git. Git preserves
+requirement that the record's exact contents already exist in Git. Git preserves
 states that actually entered Git; transient navigation artifacts may disappear
 without first becoming historical records.
 
 Under the effort mutation lock, immediately before removal, reread the target,
-map, and current children and confirm no current reference or independently
-useful information still depends on the child. If participating state changed
-before the lock was acquired, retry from the new current state rather than
-overwriting it. Remove the child before releasing the lock; an empty child
-directory may then disappear. The retired number becomes available through the
-ordinary highest-current-plus-one rule.
+map, ledgers, U#/E# files, and directly affected current state and confirm no
+current reference or independently useful information still depends on the
+record. If participating state changed before the lock was acquired, retry from
+the new current state rather than overwriting it. Retiring a fact or decision
+removes only its selected H2 section after reconciliation; preserve every other
+section byte-for-byte where practical. Remove an otherwise empty `facts.md` or
+`decisions.md` instead of leaving an empty required shell. Retiring a U# or E#
+removes only its file, and an empty artifact directory may then disappear. The
+retired number becomes available through the ordinary highest-current-plus-one
+rule.
+
+Do not implement automatic ledger sharding or use an arbitrary F#/D# file-count
+rule. A future explicit refactor may split an unwieldy ledger by coherent
+domain; this contract does not pre-build that machinery.
 
 Answer or explicitly disposition consequential U#, reconcile and shrink the
 map, then expose the coherent ready frontier and hand off one or more ready
@@ -617,7 +618,7 @@ consumes one coherent scope at a time.
 
 To complete an effort, confirm its destination is reached, no consequential
 uncertainty remains undispositioned in any in-scope area, durable outcomes are
-canonically owned or handed off, and redundant child knowledge is retired.
+canonically owned or handed off, and redundant supporting knowledge is retired.
 Completed efforts should normally shrink to a concise map with the outcome and
 canonical pointers. Then set the map status to `completed`, record the outcome,
 reconcile current canonical links, and replace `Next work` with none for that
@@ -626,13 +627,13 @@ effort.
 To abandon or supersede an effort, set the corresponding status, record the
 concise reason or outcome, reconcile current canonical links, and replace `Next
 work` with none for that effort. A superseded effort also links the successor or
-governing direction. Do not load historical child
+governing direction. Do not load historical supporting
 detail during ordinary effort selection, rename the stable directory, repurpose
 it for a new destination, or move it into `.agent-wayfinder/archive/`;
 that path is outside current Wayfinder lifecycle and may contain opaque legacy
 project data.
 
-Legacy maps and children require no repository-wide migration. Existing
+Legacy maps and records require no repository-wide migration. Existing
 U/E/F/D statuses retain their meanings. When authorized work on the relevant
 effort supplies enough evidence, add the lifecycle line or settle only the
 directly affected records; otherwise preserve the state and treat ambiguous
@@ -663,7 +664,7 @@ same D# or points to the canonical superseding ADR; Git retains history.
 During authorized mutating work, an existing effort is relevant when the
 request or progressively loaded context connects the work to it. If work
 materially changes a represented fact, decision, dependency, status, result, or
-next action, reconcile the affected map and only the directly affected children
+next action, reconcile the affected map and only the directly affected records
 before claiming completion. This needs no separate request.
 
 Do not globally scan for related efforts. Compare the selected state with
