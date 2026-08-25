@@ -6,14 +6,23 @@ from evals import routing_smoke
 
 
 class RoutingSmokeTests(unittest.TestCase):
-    def test_model_visible_catalog_does_not_reveal_fixture_word_count(self) -> None:
+    def test_model_visible_catalog_exposes_only_names_and_byte_sizes(self) -> None:
+        case = routing_smoke.load_cases()["direct"]
+        catalog = routing_smoke.resource_catalog(case)
         prompt = routing_smoke.build_prompt(
-            routing_smoke.load_cases()["direct"],
+            case,
             host="codex",
             loaded={},
             decisions=[],
         )
-        self.assertNotIn('"words": 5', prompt)
+
+        self.assertTrue(catalog)
+        self.assertTrue(all(set(entry) == {"name", "bytes"} for entry in catalog))
+        for resource_name in case["available_resources"]:
+            resource_text = routing_smoke.resource_path(case, resource_name).read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn(resource_text.strip(), prompt)
         self.assertIn("MUST request provider metadata before completing", prompt)
 
     def test_direct_case_requests_only_target_then_completes_direct(self) -> None:
@@ -201,7 +210,7 @@ class RoutingSmokeTests(unittest.TestCase):
                 {"schema_version": 1},
             )
 
-    def test_cost_budget_stops_before_two_dollars(self) -> None:
+    def test_cost_budget_reports_a_post_call_limit_overrun(self) -> None:
         budget = routing_smoke.CostBudget(
             max_usd=2.0,
             input_per_million=5.0,

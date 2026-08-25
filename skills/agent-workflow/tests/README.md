@@ -10,12 +10,11 @@ subprocess.
 ## Deterministic contract and unit tests
 
 - `test_behavior_contract.py` validates the TOML scenario contract, behavior
-  vocabulary, fixture size, observable evaluator, required route-marker syntax,
-  demand-driven Wayfinder creation and provider claims, progressive Wayfinder
-  state inputs, and live command protocol using a deterministic fake agent.
-- `test_routing.py` validates representative selection, lazy specialist
-  invocation, authorization, Wayfinder resume, and durable-effect decisions
-  without requiring one exact trace.
+  vocabulary, blind-rubric isolation, adversarial evaluator cases, required
+  route-marker syntax, progressive Wayfinder state inputs, and live command
+  protocol using a deterministic fake agent.
+- `test_routing.py` validates the executable routing, authorization, lazy
+  loading, Wayfinder resume, and fail-closed prose contracts.
 - `test_wayfinder_state.py` validates the authored, installed, and generated
   settlement contract plus a deterministic state-transition oracle for
   current-state allocation, effort-lock serialization, reference-safe
@@ -24,21 +23,21 @@ subprocess.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
-## Static product catalogs
+## Static product catalog
 
 - `acceptance-scenarios.json` indexes lifecycle product acceptance cases.
-- `decision-contract-scenarios.json` supplies representative routing decisions
-  to `test_routing.py`.
 
-These JSON catalogs are validated directly by `verify_package.py`. They are not
-`behavior.py` scenarios and do not use the fixture-backed TOML schema.
+This JSON catalog is validated directly by `verify_package.py`. It is not a
+`behavior.py` scenario and does not use the fixture-backed TOML schema. Routing
+behavior is exercised by the prose-contract tests here and the separate
+evaluation harness under `evals/` rather than a hand-authored answer catalog.
 
 ## Deterministic fixture and lifecycle integration
 
 - `test_behavior_fixtures.py` copies fixtures to temporary workspaces, checks
   reset behavior, proves install leaves Wayfinder state unseeded, verifies
   implementation fixtures begin red, detects a destructive state mutation, and
-  runs install/update/repeated-update/remove/reinstall against every fixture.
+  runs install/update/repeated-update/remove/reinstall once per unique fixture.
 - `test_lifecycle.py` retains focused archive, composite, collision,
   provider-isolation, cp1252, and current-state reconciliation coverage.
 
@@ -51,11 +50,12 @@ These JSON catalogs are validated directly by `verify_package.py`. They are not
   a caller-supplied agent command, captures public evidence, and evaluates the
   scenario without asking for hidden reasoning.
 
-Nine live cases are enabled by default: simple bounded work, external research,
-existing Wayfinder state, read-only stale-state reporting, reconciliation
-conflict handling, evidence/fact contradiction reconciliation, map-only
-continuation with a native `to-tickets` handoff, verification failure/recovery,
-and a blocked project. They are opt-in and not part of ordinary pull requests.
+The default live set covers bounded direct work, external research, existing
+Wayfinder state, blocked authority, read-only and writable reconciliation,
+evidence/fact contradiction, map-only continuation with a native `to-tickets`
+handoff, selective uncertainty, unordered work, verification failure/recovery,
+and a blocked project. Live cases are opt-in and not part of ordinary pull
+requests.
 
 The broader deterministic catalog also covers Domain Modeling surfacing
 consequential uncertainty, authority-dependent choices asking a concrete human

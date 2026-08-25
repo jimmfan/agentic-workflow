@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-domain-modeling-revises-territory"
 name = "Authoritative evidence lets Domain Modeling revise existing territory"
 fixture = "wayfinder-territory-invalidation"
-request = "Resume `.agent-wayfinder/policy-execution-migration/map.md`. The accepted architecture.md materially invalidates the map's combined control-service territory. Revise the same map around the Policy control plane, Execution data plane, Audit boundary, and their relationships, using the preferred structural fallback when it materially helps. Do not preserve the stale structure or create a replacement effort."
+request = "Resume `.agent-wayfinder/policy-execution-migration/map.md` and reconcile it against the accepted architecture.md. Do not preserve contradicted structure, create a replacement effort, or implement the migration."
 starting_state = [
   "The selected current map has a coherent but now-invalid combined-service territory.",
   "architecture.md is authoritative and materially changes boundaries, responsibilities, and relationships.",
@@ -21,7 +21,6 @@ must_not = [
 live = false
 verification_command = "Confirm that the existing map was revised in place to match architecture.md, the stale combined-service structure is gone, and no parallel effort was created."
 preserve_paths = ["architecture.md"]
-report_must_include = ["Domain Modeling"]
 forbid_created_globs = [
   ".scratch/**",
   ".agent-wayfinder/active.md",

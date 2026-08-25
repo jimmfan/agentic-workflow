@@ -62,7 +62,7 @@
   {
     "id": "project-owned-wayfinder-runtime",
     "operation": "install-update-status-remove",
-    "expected": "Recognized pinned Wayfinder input produces the Agent Workflow-owned runtime body and activation metadata idempotently; raw, legacy-prepend, stale, or safely replaceable declared content is repairable and remove deletes the declared directory."
+    "expected": "Recognized pinned Wayfinder input produces the Agent Workflow-owned runtime body and activation metadata idempotently; raw, stale, or safely replaceable declared content is repairable and remove deletes the declared directory."
   },
   {
     "id": "reject-unknown-wayfinder-method-body",

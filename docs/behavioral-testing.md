@@ -15,8 +15,8 @@ hidden reasoning trace.
 ## Three layers
 
 1. **Contract/unit tests** validate TOML schema, supported behavior vocabulary,
-   fixture size, evaluator failure modes, required route-marker syntax, and the
-   command-runner protocol.
+   blind-rubric isolation, evaluator failure modes, required route-marker
+   syntax, and the command-runner protocol.
 2. **Fixture/integration tests** copy every consuming-project fixture into a new
    temporary directory. They exercise install, update, repeated update, remove,
    and reinstall, comparing project-owned state after every operation. Fixture
@@ -24,9 +24,10 @@ hidden reasoning trace.
    required.
 3. **Live behavioral smoke tests** are opt-in. A caller supplies an agent command
    that reads the scenario prompt from standard input and operates in the
-   temporary fixture working directory. Five high-value scenarios are enabled:
-   simple bounded work, external factual uncertainty, map-only and existing
-   Wayfinder state, verification failure/recovery, and a blocked project.
+   temporary fixture working directory. The default set spans direct work,
+   research, blocked authority, read-only and writable reconciliation,
+   uncertainty handling, native work handoff, verification recovery, and clean
+   blocking.
 
 The deterministic first two layers plus package checks are the required
 pre-merge gate. Live smoke tests are manual or suitable for a separately
@@ -36,17 +37,17 @@ requests.
 ## Related deterministic catalogs
 
 The TOML files described below are the only scenarios loaded by `behavior.py`.
-Two separate JSON catalogs live directly under `skills/agent-workflow/tests/`:
+One separate JSON catalog lives directly under `skills/agent-workflow/tests/`:
 
 - `acceptance-scenarios.json` is a concise index of lifecycle product acceptance
-  cases exercised by the lifecycle suite; and
-- `decision-contract-scenarios.json` supplies representative routing decisions
-  to `test_routing.py`.
+  cases exercised by the lifecycle suite.
 
-These JSON files are deterministic product catalogs, not fixture-backed or live
-behavioral scenarios, so they do not use the TOML schema. The package verifier
-checks their catalog schemas directly, then invokes `behavior.py validate` to
-validate every TOML scenario and fixture reference.
+This JSON file is a deterministic product catalog, not a fixture-backed or live
+behavioral scenario, so it does not use the TOML schema. The package verifier
+checks its schema directly, then invokes `behavior.py validate` to validate
+every TOML scenario and fixture reference. Routing decisions are tested against
+the canonical prose contract and in the opt-in routing evaluation rather than a
+duplicate hand-authored answer key.
 
 ## Human-authored scenario format
 

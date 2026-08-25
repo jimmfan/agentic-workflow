@@ -26,6 +26,9 @@ jobs:
       - name: Run deterministic behavior and release gate
         run: python skills/agent-workflow/scripts/verify_package.py --tests
 
+      - name: Run deterministic evaluation-tooling tests
+        run: python -m unittest discover -s evals/tests -p 'test_*.py' -v
+
   release-tag:
     name: Tag verified release
     needs: deterministic-pre-merge-gate

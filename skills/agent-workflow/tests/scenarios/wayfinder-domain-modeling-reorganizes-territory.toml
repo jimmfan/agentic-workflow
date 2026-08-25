@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-domain-modeling-reorganizes-territory"
 name = "Domain Modeling improves mappable but poorly organized territory"
 fixture = "wayfinder-reorganize-territory"
-request = "Use Wayfinder for the policy execution migration. The destination is mappable and progress is not blocked, but the repository conflates intake, evaluation, and execution as one policy service. Reorganize responsibilities and relationships because doing so would materially improve the map. Establish useful territory before creating any U/E/F/D children."
+request = "Use Wayfinder to orient the policy execution migration described by the repository. Do not implement it or publish tickets."
 starting_state = [
   "The destination and scope are sufficiently clear to map directly.",
   "The current flat vocabulary hides distinct responsibilities and their dependency.",
@@ -17,6 +17,7 @@ must_not = [
   "silent_decision_invention",
 ]
 live = false
+blind_grading = true
 verification_command = "Confirm that the map organizes intake, evaluation, and execution as distinct related territory without manufacturing U/E/F/D children or a second planning system."
 preserve_paths = []
 report_must_include = ["Domain Modeling"]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -27,8 +28,11 @@ behavior = load_behavior()
 
 class BehaviorFixtureTests(unittest.TestCase):
     def test_every_fixture_survives_full_lifecycle_sequence(self) -> None:
-        for scenario in behavior.load_scenarios():
-            with self.subTest(scenario=scenario.id):
+        scenarios_by_fixture = {
+            scenario.fixture: scenario for scenario in behavior.load_scenarios()
+        }
+        for fixture, scenario in sorted(scenarios_by_fixture.items()):
+            with self.subTest(fixture=fixture):
                 passed, detail = behavior.exercise_fixture_lifecycle(scenario)
                 self.assertTrue(passed, detail)
 
@@ -133,6 +137,24 @@ class BehaviorFixtureTests(unittest.TestCase):
                     )
                     self.assertEqual(
                         result.returncode, 1, result.stdout + result.stderr
+                    )
+                    verification_path = (
+                        workspace / ".behavior-evidence/verification.jsonl"
+                    )
+                    self.assertTrue(
+                        verification_path.is_file(),
+                        f"{name} verifier did not emit observable evidence",
+                    )
+                    events = [
+                        json.loads(line)
+                        for line in verification_path.read_text(
+                            encoding="utf-8"
+                        ).splitlines()
+                        if line.strip()
+                    ]
+                    self.assertEqual(
+                        events,
+                        [{"command": "python verify.py", "exit_code": 1}],
                     )
 
 

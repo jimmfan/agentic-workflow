@@ -1,10 +1,10 @@
 # Release-tag workflow research
 
 Research date: 2026-08-24. External claims below use GitHub- or Git-owned
-primary sources. Repository observations were made on
-`feat/version-release-tags` at `781af366d388ebd8b31c8a45d5c72346b18220a4`;
-the live `origin/main` resolved to the same commit, and
-`git ls-remote --tags origin` returned no tags.
+primary sources. Initial repository observations were made at
+`781af366d388ebd8b31c8a45d5c72346b18220a4`. Before integration, live
+`origin/main` had advanced to `7a181d2b200e25d113591abe774a7a88f6a70089`,
+already declared package version `0.20.0`, and still had no remote tags.
 
 ## Conclusions
 
@@ -68,9 +68,11 @@ the live `origin/main` resolved to the same commit, and
    which is more machinery than Git CLI. A single post-verification job in the
    existing workflow, with full history/tags, strict validation,
    command-scoped identity, a non-force push of only the explicit tag ref, and
-   serialized execution remains the smallest coherent design. The remote
-   currently has no historical tags, so `v0.20.0` can be the first baseline
-   without backfilling or moving any release ref ([live repository tags](https://github.com/jimmfan/agentic-workflow/tags)).
+   serialized execution remains the smallest coherent design. The remote has
+   no historical tags, but `0.20.0` already reached `main` before this workflow.
+   Therefore the next intentional version increase—not a retroactive
+   `v0.20.0`—will establish the first baseline without backfilling or moving any
+   release ref ([live repository tags](https://github.com/jimmfan/agentic-workflow/tags)).
 
 6. **This repository does not currently require action references to be pinned
    to full commit SHAs.** At the researched baseline, the sole workflow used

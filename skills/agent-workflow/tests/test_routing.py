@@ -86,42 +86,6 @@ class RoutingContractTests(unittest.TestCase):
             routing,
         )
 
-    def test_decision_catalog_covers_core_routes_and_authorization(self) -> None:
-        scenarios = json.loads(
-            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
-        )
-        dominant = {item["dominant_activity"] for item in scenarios}
-        results = {item["route_result"] for item in scenarios}
-        effects = {item["repository_state_effect"] for item in scenarios}
-        self.assertTrue({"direct", "debugging", "discovery", "research"} <= dominant)
-        self.assertTrue(
-            {"direct", "local", "host-native-fallback", "user-only-handoff"} <= results
-        )
-        self.assertTrue({"read-only", "none", "repository-write"} <= effects)
-
-    def test_every_scenario_keeps_selection_execution_and_effect_explicit(self) -> None:
-        scenarios = json.loads(
-            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
-        )
-        required = {
-            "id",
-            "prompt",
-            "dominant_activity",
-            "capabilities",
-            "provider_invocations",
-            "route_result",
-            "executed",
-            "repository_state_effect",
-            "expected_behavior",
-        }
-        for scenario in scenarios:
-            with self.subTest(scenario=scenario["id"]):
-                self.assertTrue(required <= set(scenario))
-                for provider in scenario["provider_invocations"]:
-                    self.assertTrue(
-                        {"name", "policy", "invocation", "executed"} <= set(provider)
-                    )
-
     def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
         routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -145,33 +109,6 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Never reroute, load skills, execute work", normalized_routing)
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".agent-workflow/runtime", routing)
-
-    def test_focused_vscode_experiment_is_not_product_behavior(self) -> None:
-        removed_repository_paths = (
-            ".agent-workflow/hooks/inject_route_marker_reminder.py",
-            ".agent-workflow/hooks/protect_wayfinder_state.py",
-            ".github/agents/wayfinder.agent.md",
-            ".github/copilot-instructions.md",
-            ".github/hooks/agent-workflow-route-marker.json",
-        )
-        removed_package_paths = (
-            "payload/agent-workflow/hooks/inject_route_marker_reminder.py",
-            "payload/agent-workflow/hooks/protect_wayfinder_state.py",
-            "payload/agents/vscode-wayfinder.agent.md",
-            "payload/hooks/vscode-route-marker.json",
-            "payload/root/vscode-copilot-instructions.md.template",
-        )
-
-        for relative in removed_repository_paths:
-            self.assertFalse((REPOSITORY_ROOT / relative).exists(), relative)
-        for relative in removed_package_paths:
-            self.assertFalse((PACKAGE_ROOT / relative).exists(), relative)
-
-        state_contract = (
-            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
-        ).read_text()
-        self.assertIn(".wayfinder-mutation-lock/", state_contract)
-        self.assertIn("atomically creating", state_contract)
 
     def test_project_adr_namespace_defaults_without_overriding_existing_convention(
         self,
@@ -201,34 +138,6 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn(
             "Consolidate or remove obsolete pre-1.0 decisions", root_policy
         )
-
-    def test_adr_index_contains_only_current_decisions_and_git_history_note(
-        self,
-    ) -> None:
-        index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
-        decision_root = REPOSITORY_ROOT / "architecture-decisions"
-        current_files = {
-            path.name for path in decision_root.glob("*.md") if path.name != "README.md"
-        }
-        expected_files = {
-            "0010-separate-framework-output-from-project-owned-state.md",
-            "0011-use-map-first-wayfinder-state.md",
-            "0025-preserve-authority-at-consequential-boundaries.md",
-            "0027-use-direct-first-progressive-routing.md",
-            "0028-use-wayfinder-as-sole-durable-coordinator.md",
-        }
-        self.assertEqual(current_files, expected_files)
-        for identifier in ("ADR-0010", "ADR-0011", "ADR-0025", "ADR-0027", "ADR-0028"):
-            self.assertIn(identifier, index)
-        self.assertIn("previous complete set remains available in Git", index)
-        self.assertIn("fb51c4a", index)
-        self.assertNotIn("Superseded tombstones", index)
-
-        source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text()
-        self.assertIn("Keep `architecture-decisions/` small", source_policy)
-        self.assertIn("Git preserves historical evolution", source_policy)
-        root_template = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
-        self.assertNotIn("Keep `architecture-decisions/` small", root_template)
 
     def test_decision_context_goal_blocks_only_dependent_work(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -291,26 +200,6 @@ class RoutingContractTests(unittest.TestCase):
             normalized_state_contract,
         )
 
-    def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(
-        self,
-    ) -> None:
-        scenarios = json.loads(
-            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
-        )
-        scenario = next(
-            item
-            for item in scenarios
-            if item["id"] == "selected-provider-cannot-execute"
-        )
-        provider = scenario["provider_invocations"][0]
-        self.assertEqual(scenario["host"], "github-copilot")
-        self.assertEqual(scenario["route_result"], "host-native-fallback")
-        self.assertFalse(provider["executed"])
-        self.assertIn(
-            "omit Wayfinder from the executed route marker",
-            scenario["expected_behavior"],
-        )
-
     def test_implementation_and_review_do_not_require_tracker_configuration(
         self,
     ) -> None:
@@ -350,102 +239,39 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Invoke `workflow-verification` once", implementation)
         self.assertIn("not a current framework re-entry point", durable)
 
-    def test_domain_modeling_selection_covers_standalone_discovery_and_wayfinder_boundaries(
-        self,
-    ) -> None:
-        scenarios = {
-            item["id"]: item
-            for item in json.loads(
-                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
-            )
-        }
-
-        standalone = scenarios["domain-modeling-standalone"]
-        self.assertEqual(standalone["dominant_activity"], "domain-modeling")
-        self.assertEqual(standalone["capabilities"], [])
-        self.assertTrue(standalone["provider_invocations"][0]["executed"])
-
-        discovery = scenarios["discovery-with-coherent-domain"]
-        self.assertEqual(discovery["dominant_activity"], "discovery")
-        self.assertEqual(discovery["capabilities"], [])
-
-        composed = scenarios["discovery-with-domain-modeling"]
-        self.assertEqual(composed["dominant_activity"], "discovery")
-        self.assertEqual(composed["capabilities"], ["domain-modeling"])
-        self.assertIn("materially affects", composed["expected_behavior"])
-
+    def test_optional_specialists_have_material_selection_boundaries(self) -> None:
         routing = " ".join(
             (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
         )
-        self.assertIn("Discovery owns bounded consequential choice", routing)
-        self.assertIn("reorganizing the domain would materially improve", routing)
-
-    def test_grilling_resolves_interdependent_human_decisions_not_simple_unknowns(
-        self,
-    ) -> None:
-        routing = " ".join(
-            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
-        )
-
-        self.assertIn(
-            "Interdependent human/project-owned decisions materially shape downstream choices "
-            "| Direct or `grilling`",
-            routing,
-        )
-        self.assertIn(
+        required_boundaries = (
+            "Discovery owns bounded consequential choice",
+            "reorganizing the domain would materially improve",
+            (
+                "Interdependent human/project-owned decisions materially shape downstream choices "
+                "| Direct or `grilling`"
+            ),
             "factual unknowns and one straightforward clarification use the minimum sufficient method",
-            routing,
-        )
-
-    def test_prototype_answers_design_questions_not_ordinary_implementation(
-        self,
-    ) -> None:
-        routing = " ".join(
-            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
-        )
-
-        self.assertIn(
-            "Throwaway implementation would answer a design or behavior question "
-            "| Direct or `prototype`",
-            routing,
-        )
-        self.assertIn(
+            (
+                "Throwaway implementation would answer a design or behavior question "
+                "| Direct or `prototype`"
+            ),
             "Ordinary production implementation stays Direct or with its dominant workflow",
-            routing,
+            (
+                "Module interface, seam, depth, locality, or testability needs explicit design "
+                "| Direct or `codebase-design`"
+            ),
+            (
+                "when its vocabulary materially improves the design; ordinary edits and refactors "
+                "stay Direct or with their dominant workflow"
+            ),
         )
-
-    def test_codebase_design_materially_improves_module_design_not_every_refactor(
-        self,
-    ) -> None:
-        routing = " ".join(
-            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
-        )
-
-        self.assertIn(
-            "Module interface, seam, depth, locality, or testability needs explicit design "
-            "| Direct or `codebase-design`",
-            routing,
-        )
-        self.assertIn(
-            "when its vocabulary materially improves the design; ordinary edits and refactors "
-            "stay Direct or with their dominant workflow",
-            routing,
-        )
+        for boundary in required_boundaries:
+            with self.subTest(boundary=boundary):
+                self.assertIn(boundary, routing)
 
     def test_missing_wayfinder_contract_fails_closed_without_substitute_state(
         self,
     ) -> None:
-        scenarios = {
-            item["id"]: item
-            for item in json.loads(
-                (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
-            )
-        }
-        missing = scenarios["wayfinder-missing-state-contract"]
-        self.assertFalse(missing["executed"])
-        self.assertEqual(missing["repository_state_effect"], "none")
-        self.assertIn("no substitute persistence", missing["expected_behavior"])
-
         runtime = " ".join(
             (PACKAGE_ROOT / "runtime-projections/wayfinder.md").read_text().split()
         )
@@ -513,129 +339,6 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("## Identity", contract)
         self.assertNotIn("├── identity", contract)
         self.assertNotIn("identity/unknowns", contract)
-
-    def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(
-        self,
-    ) -> None:
-        scenarios = json.loads(
-            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
-        )
-        by_id = {item["id"]: item for item in scenarios}
-        self.assertTrue(
-            {
-                "wayfinder-implicit-codex",
-                "wayfinder-mid-task-escalation",
-                "wayfinder-one-isolated-unknown-stays-discovery",
-                "wayfinder-explicit-codex",
-                "wayfinder-with-debugging-evidence",
-                "wayfinder-direct-decision-resolution",
-                "wayfinder-with-discovery",
-                "wayfinder-ready-implementation-handoff",
-                "wayfinder-resumes-interrupted-specialist",
-                "wayfinder-reconcile-stale-state",
-                "wayfinder-read-only-boundary",
-                "wayfinder-explicit-opt-out",
-                "wayfinder-with-research",
-                "wayfinder-with-prototype",
-            }
-            <= set(by_id)
-        )
-        for scenario_id in (
-            "wayfinder-implicit-codex",
-            "wayfinder-mid-task-escalation",
-        ):
-            provider = by_id[scenario_id]["provider_invocations"][0]
-            self.assertEqual(provider["policy"], "implicit")
-            self.assertEqual(provider["invocation"], "implicit")
-            self.assertTrue(provider["executed"])
-        self.assertEqual(
-            by_id["wayfinder-with-research"]["provider_invocations"][0]["invocation"],
-            "explicit",
-        )
-        self.assertEqual(
-            by_id["wayfinder-explicit-codex"]["provider_invocations"][0]["invocation"],
-            "explicit",
-        )
-        self.assertEqual(
-            by_id["wayfinder-one-isolated-unknown-stays-discovery"][
-                "dominant_activity"
-            ],
-            "discovery",
-        )
-        self.assertEqual(
-            by_id["wayfinder-one-isolated-unknown-stays-discovery"][
-                "provider_invocations"
-            ],
-            [],
-        )
-        self.assertEqual(
-            by_id["wayfinder-with-debugging-evidence"]["capabilities"], ["debugging"]
-        )
-        self.assertEqual(
-            by_id["wayfinder-direct-decision-resolution"]["capabilities"], []
-        )
-        self.assertEqual(
-            by_id["wayfinder-with-discovery"]["capabilities"], ["discovery"]
-        )
-        self.assertEqual(
-            by_id["wayfinder-ready-implementation-handoff"]["capabilities"],
-            ["verification"],
-        )
-        self.assertEqual(
-            by_id["wayfinder-resumes-interrupted-specialist"]["capabilities"],
-            ["debugging"],
-        )
-        self.assertEqual(
-            by_id["wayfinder-with-prototype"]["capabilities"], ["prototype"]
-        )
-        for scenario_id in (
-            "wayfinder-with-research",
-            "wayfinder-with-prototype",
-            "wayfinder-with-debugging-evidence",
-            "wayfinder-with-discovery",
-            "wayfinder-resumes-interrupted-specialist",
-        ):
-            self.assertIn("reconcile", by_id[scenario_id]["expected_behavior"].lower())
-        self.assertEqual(
-            by_id["wayfinder-reconcile-stale-state"]["repository_state_effect"],
-            "project-owned-wayfinder-state",
-        )
-        self.assertEqual(
-            by_id["wayfinder-read-only-boundary"]["repository_state_effect"],
-            "read-only",
-        )
-        self.assertEqual(
-            by_id["wayfinder-explicit-opt-out"]["provider_invocations"], []
-        )
-
-    def test_catalog_covers_routing_seams_that_previously_relied_on_prose(self) -> None:
-        scenarios = json.loads(
-            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
-        )
-        by_id = {item["id"]: item for item in scenarios}
-
-        trivial_edit = by_id["trivial-local-edit-stays-direct"]
-        self.assertEqual(trivial_edit["dominant_activity"], "direct")
-        self.assertEqual(trivial_edit["provider_invocations"], [])
-        self.assertEqual(trivial_edit["repository_state_effect"], "repository-write")
-
-        setup_handoff = by_id["setup-user-only-copilot"]
-        self.assertEqual(setup_handoff["route_result"], "user-only-handoff")
-        self.assertFalse(setup_handoff["executed"])
-
-        fallback = by_id["selected-provider-cannot-execute"]
-        self.assertEqual(fallback["route_result"], "host-native-fallback")
-        self.assertTrue(fallback["executed"])
-        self.assertEqual(fallback["expected_marker"], "[route: router → direct]")
-        self.assertIn("actual host-native activity", fallback["expected_behavior"])
-
-        three_items = by_id["three-trivial-items-stay-direct"]
-        self.assertEqual(three_items["dominant_activity"], "direct")
-        self.assertEqual(three_items["provider_invocations"], [])
-
-        soft_signals = by_id["wayfinder-two-soft-signals"]
-        self.assertEqual(soft_signals["dominant_activity"], "wayfinder")
-        self.assertTrue(soft_signals["provider_invocations"][0]["executed"])
 
     def test_external_read_scope_is_always_loaded_policy(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -798,26 +501,6 @@ class RoutingContractTests(unittest.TestCase):
             - measured["wayfinder-decision"][0],
             discovery.stat().st_size,
         )
-
-    def test_thin_router_and_sole_coordinator_decisions_are_current(self) -> None:
-        decision = (
-            REPOSITORY_ROOT
-            / "architecture-decisions/0027-use-direct-first-progressive-routing.md"
-        ).read_text()
-        index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
-        self.assertIn("- Status: accepted", decision)
-        self.assertIn("Begin with the simplest reasonable route", decision)
-        self.assertIn("Routing is not frozen at the first prompt", decision)
-        self.assertIn("progressively load deeper", decision)
-        self.assertNotIn("model-based grading", decision.lower())
-        self.assertIn("ADR-0027", index)
-        coordinator = (
-            REPOSITORY_ROOT
-            / "architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md"
-        ).read_text()
-        self.assertIn("- Status: accepted", coordinator)
-        self.assertIn("sole framework-owned durable coordination", coordinator)
-        self.assertIn("ADR-0028", index)
 
 
 if __name__ == "__main__":

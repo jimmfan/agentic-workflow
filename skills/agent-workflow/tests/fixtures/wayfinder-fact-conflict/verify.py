@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import json
 from pathlib import Path
 
 
@@ -25,4 +28,13 @@ checks = [
     not (effort / "tickets").exists(),
 ]
 
-raise SystemExit(0 if all(checks) else 1)
+passed = all(checks)
+root = Path(".behavior-evidence")
+root.mkdir(exist_ok=True)
+with (root / "verification.jsonl").open("a", encoding="utf-8") as stream:
+    stream.write(
+        json.dumps({"command": "python verify.py", "exit_code": 0 if passed else 1})
+        + "\n"
+    )
+print("PASS: fact conflict reconciled" if passed else f"FAIL: checks={checks}")
+raise SystemExit(0 if passed else 1)

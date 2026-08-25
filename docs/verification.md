@@ -42,8 +42,7 @@ It checks:
 - routing, authorization, durable-state, and provider declaration contracts;
 - thin-router word budgets and deterministic positive/negative escalation
   contracts (not live model-routing proof);
-- local Markdown links plus the lifecycle-acceptance and routing-decision JSON
-  catalog schemas;
+- local Markdown links plus the lifecycle-acceptance JSON catalog schema;
 - lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and
   stale-release-metadata tests;
 - human-authored TOML behavioral scenario schema and fixture references; and
@@ -56,6 +55,16 @@ Success ends with:
 OK: Agent Workflow package verification passed.
 ```
 
+The pre-merge CI job then runs the repository evaluation-tooling tests as a
+separate deterministic, network-free step:
+
+```bash
+python3 -m unittest discover -s evals/tests -p 'test_*.py' -v
+```
+
+They remain separate because `evals/` is repository tooling, not part of the
+distributable package.
+
 ## Release tags
 
 `skills/agent-workflow/VERSION` is the human-controlled release switch. Ordinary
@@ -66,8 +75,9 @@ tag on that exact verified commit.
 The release job accepts only the package's `x.y.z` format, requires the version
 to be greater than every existing semantic release tag, and refuses to reuse or
 move an existing `vX.Y.Z` tag. It serializes release attempts and pushes only
-the new tag without force. `v0.20.0` is the first trustworthy release-tag
-baseline; earlier history is intentionally not backfilled.
+the new tag without force. The first version increase after this workflow
+reaches `main` will establish the first trustworthy release-tag baseline;
+earlier history is intentionally not backfilled.
 
 Changing the package version also requires the distribution-manifest refresh
 described below. Do not create the release tag manually while preparing a

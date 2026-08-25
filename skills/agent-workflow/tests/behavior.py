@@ -53,7 +53,6 @@ EXPECTATIONS = {
 }
 
 PROHIBITIONS = {
-    "claim_unexecuted_provider",
     "unnecessary_planning_artifacts",
     "manufacture_uncertainty",
     "invent_external_fact",
@@ -559,10 +558,32 @@ def route_visible(evidence: RunEvidence) -> tuple[bool, str]:
     )
 
 
-def state_or_decision_changed(evidence: RunEvidence) -> bool:
+def wayfinder_record_changed(
+    evidence: RunEvidence,
+    directory: str,
+    identifier: str,
+) -> bool:
+    created, modified, _deleted = changed_paths(evidence.before, evidence.after)
+    record_name = re.compile(rf"{re.escape(identifier)}[1-9][0-9]*(?:-[^/]*)?\.md")
+    return any(
+        len(parts := PurePosixPath(path).parts) == 4
+        and parts[0] == ".agent-wayfinder"
+        and parts[2] == directory
+        and record_name.fullmatch(parts[3]) is not None
+        for path in created | modified
+    )
+
+
+def decision_artifact_changed(evidence: RunEvidence) -> bool:
+    if wayfinder_record_changed(evidence, "decisions", "D"):
+        return True
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
     return any(
-        path.startswith(".agent-wayfinder/") or path.startswith("/")
+        path.endswith(".md")
+        and (
+            path.startswith("architecture-decisions/")
+            or path.startswith("docs/decisions/")
+        )
         for path in created | modified
     )
 
@@ -700,15 +721,6 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         for item in report_list(evidence.report, "blockers")
         if isinstance(item, str) and item
     )
-    providers_executed_raw = evidence.report.get("providers_executed")
-    providers_executed = tuple(
-        item
-        for item in report_list(evidence.report, "providers_executed")
-        if isinstance(item, str) and item
-    )
-    provider_evidence_valid = isinstance(providers_executed_raw, list) and len(
-        providers_executed
-    ) == len(providers_executed_raw)
     state_used = existing_reported_paths(evidence, "state_used")
     required_state = {item.as_posix() for item in evidence.scenario.state_must_include}
     excluded_state = {
@@ -775,8 +787,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         "external_fact_researched": (bool(sources), f"research sources={len(sources)}"),
         "uncertainty_recorded_or_blocked": (
             (status == "blocked" and bool(blockers))
-            or state_or_decision_changed(evidence),
-            "specific blockers reported or durable uncertainty recorded",
+            or wayfinder_record_changed(evidence, "unknowns", "U"),
+            "specific blockers reported or a current U# was created or updated",
         ),
         "existing_state_reused": (
             bool(state_used),
@@ -809,21 +821,19 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         results.append(CheckResult(f"expect:{expectation}", passed, detail))
 
     prohibition_checks: dict[str, tuple[bool, str]] = {
-        "claim_unexecuted_provider": (
-            provider_evidence_valid and not providers_executed,
-            f"reported executed providers={list(providers_executed)}",
-        ),
         "unnecessary_planning_artifacts": (forbidden_ok, forbidden_detail),
-        "manufacture_uncertainty": (status != "blocked", f"agent status={status!r}"),
+        "manufacture_uncertainty": (
+            not wayfinder_record_changed(evidence, "unknowns", "U"),
+            "no current U# was created or updated",
+        ),
         "invent_external_fact": (
             status != "success" or bool(sources),
             f"research sources={len(sources)}",
         ),
         "full_discovery_for_lookup": (route_ok and forbidden_ok, route_detail),
         "silent_decision_invention": (
-            (status == "blocked" and bool(blockers))
-            or state_or_decision_changed(evidence),
-            "specific blockers were reported or uncertainty was recorded",
+            not decision_artifact_changed(evidence),
+            "no D# or canonical project decision artifact was created or updated",
         ),
         "repeat_resolved_discovery": (
             route_ok and forbidden_ok and preserved_ok,
@@ -841,12 +851,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
             f"status={status!r}; {verification_detail}",
         ),
         "fabricate_project_values": (
-            forbidden_ok
-            and (
-                (status == "blocked" and bool(blockers))
-                or state_or_decision_changed(evidence)
-            ),
-            f"status={status!r}; {forbidden_detail}",
+            forbidden_ok,
+            forbidden_detail,
         ),
         "placeholder_infrastructure": (forbidden_ok, forbidden_detail),
         "invent_unknown_answers": (preserved_ok, preserved_detail),
@@ -900,6 +906,9 @@ def exercise_fixture_lifecycle(scenario: Scenario) -> tuple[bool, str]:
 
 def build_prompt(scenario: Scenario) -> str:
     starting = "\n".join(f"- {item}" for item in scenario.starting_state)
+    scenario_name = (
+        "Opaque behavioral case" if scenario.blind_grading else scenario.name
+    )
     if scenario.blind_grading:
         grading_context = """Use the smallest validation supported by repository evidence.
 
@@ -945,7 +954,7 @@ Repository validation guidance:
 {validation}"""
     return f"""You are running an opt-in Agent Workflow behavioral smoke test in a disposable repository.
 
-Scenario: {scenario.name}
+Scenario: {scenario_name}
 
 Starting state:
 {starting}
@@ -964,7 +973,6 @@ Work normally within this repository. Do not expose hidden reasoning or chain-of
   "research_sources": ["https://source.example/when-used"],
   "state_used": ["repository-relative state, source, or decision path actually used"],
   "providers_selected": ["provider selected by routing, if any"],
-  "providers_executed": ["provider actually invoked, if any"],
   "blockers": ["specific unresolved blocker when blocked"]
 }}
 Use empty arrays when a category is not applicable. This report is public test evidence, not private reasoning.

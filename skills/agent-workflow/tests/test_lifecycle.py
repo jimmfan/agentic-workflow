@@ -27,8 +27,6 @@ VERIFIER = PACKAGE_ROOT / "scripts" / "verify_package.py"
 MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
 MANAGED_END = b"<!-- agent-workflow:managed-end -->\n"
 PROJECT_BEGIN = b"\n<!-- agent-workflow:project-instructions -->\n"
-WAYFINDER_ADAPTER_BEGIN = "<!-- agent-workflow:wayfinder-local-state-v1:begin -->\n"
-WAYFINDER_ADAPTER_END = "<!-- agent-workflow:wayfinder-local-state-v1:end -->\n\n"
 IMPLICIT_INVOCATION_SKILLS = ("to-spec", "to-tickets", "implement")
 USER_ONLY_SKILLS = ("setup-matt-pocock-skills", "teach", "triage")
 
@@ -609,6 +607,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         finally:
             sys.path.remove(scripts_path)
         original_state = module.projection_state
+        declared_count = len(module.load_provider().skills)
         calls = 0
 
         def make_ready_destination_unsafe(
@@ -617,7 +616,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             nonlocal calls
             state = original_state(root, staged, skill)
             calls += 1
-            if calls == 14:
+            if calls == declared_count:
                 shutil.rmtree(self.project / ".agents/skills/wayfinder")
                 (self.project / ".agents/skills/wayfinder").write_text("unsafe\n")
             return state
@@ -851,9 +850,18 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self,
     ) -> None:
         result = run_script(PROVIDERS, "status", self.project)
+        declaration = json.loads(
+            (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        declared_count = len(declaration["provider"]["skills"])
 
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-        self.assertIn("0 ready, 14 repairable, 0 blocked", result.stdout)
+        self.assertIn(
+            f"0 ready, {declared_count} repairable, 0 blocked",
+            result.stdout,
+        )
 
     def test_lifecycle_status_reports_incomplete_provider_projection_without_failing_core(
         self,
@@ -872,66 +880,33 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = run_script(PROVIDERS, "install", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        skill_text = (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertNotIn(WAYFINDER_ADAPTER_BEGIN, skill_text)
-        self.assertNotIn(WAYFINDER_ADAPTER_END, skill_text)
-        self.assertIn("framework-owned runtime projection", skill_text)
-        normalized_skill = " ".join(skill_text.split())
-        self.assertIn(
-            "derived from Matt Pocock's Wayfinder methodology", normalized_skill
-        )
-        self.assertIn("## Core invariants", normalized_skill)
-        self.assertIn("## Resolve the frontier progressively", normalized_skill)
-        self.assertIn(
-            "Specialists own their methods and native artifacts", normalized_skill
-        )
-        self.assertIn("create no framework continuity record", normalized_skill)
-        self.assertIn(
-            "Optional U/E/F/D preserves only independently useful knowledge",
-            normalized_skill,
-        )
-        self.assertIn("Verification follows execution", normalized_skill)
-        self.assertIn("Use `to-tickets`", normalized_skill)
-        self.assertNotIn(".wayfinder-mutation-lock", normalized_skill)
-        self.assertNotIn("highest currently present", normalized_skill)
-        for incompatible in (
-            "shared map on the repo's issue tracker",
-            "labelled `wayfinder:map`",
-            "Each ticket is a **child issue**",
-            "Each ticket carries a `wayfinder:<type>` label",
-            "A session **claims** a ticket by assigning it",
-            "tracker's **native** dependency relationship",
-            "run `/setup-matt-pocock-skills`",
-            "default to the local-markdown tracker",
-            "post the answer as a **resolution comment**",
-            "**close** the issue",
-        ):
-            self.assertNotIn(incompatible, skill_text)
-        self.assertIn(
-            "disable-model-invocation: false",
-            (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(
+        skill_path = self.project / ".agents/skills/wayfinder/SKILL.md"
+        skill_text = skill_path.read_text(encoding="utf-8")
+        frontmatter, body = skill_text[4:].split("\n---\n", 1)
+        self.assertEqual(
+            body,
+            (PACKAGE_ROOT / "runtime-projections/wayfinder.md").read_text(
                 encoding="utf-8"
             ),
+        )
+        self.assertIn(
+            "disable-model-invocation: false",
+            frontmatter,
         )
         self.assertIn(
             "description: Keep a lightweight structured map",
-            (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(
-                encoding="utf-8"
-            ),
+            frontmatter,
         )
+        openai_text = (
+            self.project / ".agents/skills/wayfinder/agents/openai.yaml"
+        ).read_text(encoding="utf-8")
         self.assertIn(
             "allow_implicit_invocation: true",
-            (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(
-                encoding="utf-8"
-            ),
+            openai_text,
         )
         self.assertIn(
             'short_description: "Keep a lightweight map of complicated work"',
-            (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(
-                encoding="utf-8"
-            ),
+            openai_text,
         )
 
     def test_unadapted_upstream_wayfinder_is_repaired_for_model_invocation(
@@ -951,45 +926,6 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             (destination / "SKILL.md").read_text(encoding="utf-8"),
         )
         self.assertTrue((self.project / ".agents/skills/research/SKILL.md").is_file())
-
-    def test_legacy_prepend_wayfinder_projection_is_repaired_to_owned_runtime(
-        self,
-    ) -> None:
-        source = PACKAGE_ROOT / "provider-snapshots/matt-pocock-skills/skills/wayfinder"
-        destination = self.project / ".agents/skills/wayfinder"
-        destination.parent.mkdir(parents=True)
-        shutil.copytree(source, destination)
-        skill_path = destination / "SKILL.md"
-        upstream = skill_path.read_text(encoding="utf-8")
-        frontmatter, body = upstream.split("\n---\n", 1)
-        legacy = (
-            frontmatter.replace(
-                "disable-model-invocation: true",
-                "disable-model-invocation: false",
-            )
-            + "\n---\n"
-            + WAYFINDER_ADAPTER_BEGIN
-            + "## Agent Workflow local mode (authoritative)\n\nLegacy overlay.\n\n"
-            + WAYFINDER_ADAPTER_END
-            + body
-        )
-        skill_path.write_text(legacy, encoding="utf-8")
-        openai = destination / "agents/openai.yaml"
-        openai.write_text(
-            openai.read_text(encoding="utf-8").replace(
-                "allow_implicit_invocation: false",
-                "allow_implicit_invocation: true",
-            ),
-            encoding="utf-8",
-        )
-
-        result = run_script(PROVIDERS, "install", self.project)
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        repaired = skill_path.read_text(encoding="utf-8")
-        self.assertIn("framework-owned runtime projection", repaired)
-        self.assertNotIn(WAYFINDER_ADAPTER_BEGIN, repaired)
-        self.assertNotIn("shared map on the repo's issue tracker", repaired)
 
     def test_stale_owned_wayfinder_projection_is_repaired_to_current_runtime(
         self,
@@ -1341,29 +1277,6 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
                 self.assertFalse(output.exists())
 
-    def test_provider_refresh_console_escapes_unrepresentable_output_path(self) -> None:
-        package_copy = self.copy_package("refresh-console")
-        driver = Path(self.temporary.name) / "refresh-console-driver.py"
-        driver.write_text(
-            "import importlib.util\n"
-            "import sys\n"
-            f"path = {str(package_copy / 'scripts/refresh_provider_snapshot.py')!r}\n"
-            "sys.path.insert(0, str(__import__('pathlib').Path(path).parent))\n"
-            "spec = importlib.util.spec_from_file_location('refresh_console', path)\n"
-            "module = importlib.util.module_from_spec(spec)\n"
-            "spec.loader.exec_module(module)\n"
-            "module.generate = lambda output: print(f'Generated {output}')\n"
-            "raise SystemExit(module.main(['/tmp/provider-snow-\\u96ea']))\n",
-            encoding="utf-8",
-        )
-        env = os.environ.copy()
-        env["PYTHONIOENCODING"] = "cp1252"
-
-        result = run_script(driver, env=env, encoding="cp1252")
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("\\u96ea", result.stdout)
-
     def test_verifier_ignores_existing_cache_and_does_not_add_cache_files(self) -> None:
         package_copy = self.copy_package("verifier-bytecode")
         cache = package_copy / "scripts/__pycache__"
@@ -1396,17 +1309,23 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         with self.assertRaisesRegex(snapshot_module.SnapshotTreeError, "escape"):
             snapshot_module.validate_local_references(skill)
 
-    def test_verifier_rejects_removed_subsystem_recreated_as_a_file(self) -> None:
-        package_copy = self.copy_package("removed-runtime")
-        removed_path = package_copy / "payload/hosts"
-        if removed_path.exists():
-            removed_path.rmdir()
-        removed_path.write_text("retired runtime payload\n", encoding="utf-8")
+    def test_verifier_rejects_forbidden_payload_paths(self) -> None:
+        forbidden_paths = (
+            "payload/agent-workflow/runtime/controller.py",
+            "payload/agent-workflow/observability/events.py",
+            "payload/hosts",
+        )
+        for index, relative in enumerate(forbidden_paths):
+            with self.subTest(path=relative):
+                package_copy = self.copy_package(f"forbidden-payload-{index}")
+                forbidden = package_copy / relative
+                forbidden.parent.mkdir(parents=True, exist_ok=True)
+                forbidden.write_text("forbidden runtime payload\n", encoding="utf-8")
 
-        verify = run_script(package_copy / "scripts/verify_package.py")
+                verify = run_script(package_copy / "scripts/verify_package.py")
 
-        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("deferred v0 subsystem remains packaged", verify.stderr)
+                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+                self.assertIn("deferred v0 subsystem remains packaged", verify.stderr)
 
     def test_verifier_distinguishes_json_catalogs_from_toml_scenarios(self) -> None:
         package_copy = self.copy_package("scenario-layers")

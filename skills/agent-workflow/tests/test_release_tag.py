@@ -97,28 +97,17 @@ class ReleaseTagPolicyTests(unittest.TestCase):
         self.assertIn("no release tag requested", result.stdout)
         self.assertEqual(self.repository.git("tag", "--list").stdout, "")
 
-    def test_increased_version_is_accepted(self) -> None:
-        commit = self.repository.commit_version("0.20.0")
+    def test_lower_version_is_rejected(self) -> None:
+        self.repository.create_tag("v0.20.0")
+        commit = self.repository.commit_version("0.19.9")
 
         result = self.repository.run_release(commit)
 
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("Created annotated v0.20.0", result.stdout)
-
-    def test_equal_or_lower_version_is_rejected(self) -> None:
-        for version in ("0.20.0", "0.19.9"):
-            with self.subTest(version=version), tempfile.TemporaryDirectory() as directory:
-                repository = ReleaseRepository(Path(directory))
-                repository.create_tag("v0.20.0")
-                commit = repository.commit_version(version)
-
-                result = repository.run_release(commit)
-
-                self.assertNotEqual(result.returncode, 0)
-                if version == "0.20.0":
-                    self.assertIn("already exists", result.stdout)
-                else:
-                    self.assertIn("must be greater than highest release tag v0.20.0", result.stdout)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "must be greater than highest release tag v0.20.0",
+            result.stdout,
+        )
 
     def test_existing_tag_reuse_is_rejected(self) -> None:
         self.repository.create_tag("v0.20.0")
@@ -143,7 +132,10 @@ class ReleaseTagPolicyTests(unittest.TestCase):
         result = self.repository.run_release(commit)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        tag_object_type = self.repository.git("cat-file", "-t", "v0.20.0").stdout.strip()
+        self.assertIn("Created annotated v0.20.0", result.stdout)
+        tag_object_type = self.repository.git(
+            "cat-file", "-t", "v0.20.0"
+        ).stdout.strip()
         target = self.repository.git("rev-parse", "v0.20.0^{}").stdout.strip()
         remote_target = self.repository.git(
             "--git-dir",
@@ -160,7 +152,9 @@ class ReleaseWorkflowTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.workflow = WORKFLOW.read_text(encoding="utf-8")
-        cls.verify_job, cls.release_job = cls.workflow.split("\n  release-tag:\n", maxsplit=1)
+        cls.verify_job, cls.release_job = cls.workflow.split(
+            "\n  release-tag:\n", maxsplit=1
+        )
 
     def test_tagging_job_requires_successful_verification(self) -> None:
         self.assertIn("needs: deterministic-pre-merge-gate", self.release_job)

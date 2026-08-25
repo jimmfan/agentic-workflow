@@ -80,7 +80,12 @@ def semantic_tags() -> list[tuple[tuple[int, int, int], str]]:
 
 
 def tag_exists(tag: str) -> bool:
-    return git("show-ref", "--verify", "--quiet", f"refs/tags/{tag}", check=False).returncode == 0
+    return (
+        git(
+            "show-ref", "--verify", "--quiet", f"refs/tags/{tag}", check=False
+        ).returncode
+        == 0
+    )
 
 
 def create_and_push_tag(tag: str, commit: str) -> None:
@@ -101,8 +106,12 @@ def create_and_push_tag(tag: str, commit: str) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--before", required=True, help="push event's previous commit SHA")
-    parser.add_argument("--commit", required=True, help="exact verified github.sha commit")
+    parser.add_argument(
+        "--before", required=True, help="push event's previous commit SHA"
+    )
+    parser.add_argument(
+        "--commit", required=True, help="exact verified github.sha commit"
+    )
     return parser
 
 
@@ -120,7 +129,9 @@ def main(argv: Iterable[str] | None = None) -> int:
         tag = f"v{version_text}"
 
         if tag_exists(tag):
-            raise ReleaseError(f"release tag {tag} already exists and will not be reused or moved")
+            raise ReleaseError(
+                f"release tag {tag} already exists and will not be reused or moved"
+            )
 
         existing = semantic_tags()
         if existing:
@@ -131,7 +142,9 @@ def main(argv: Iterable[str] | None = None) -> int:
                 )
 
         create_and_push_tag(tag, commit)
-        print(f"Created annotated {tag} at verified commit {commit} and pushed only that tag.")
+        print(
+            f"Created annotated {tag} at verified commit {commit} and pushed only that tag."
+        )
         return 0
     except ReleaseError as exc:
         print(f"ERROR: {exc}")

@@ -708,7 +708,7 @@ def check_provider_declaration() -> None:
     )
 
 
-def check_scenario_catalogs() -> None:
+def check_acceptance_catalog() -> None:
     tests = PACKAGE_ROOT / "tests"
 
     acceptance_name = "acceptance-scenarios.json"
@@ -729,66 +729,6 @@ def check_scenario_catalogs() -> None:
     require(
         len(acceptance_ids) == len(set(acceptance_ids)),
         f"duplicate case id in {acceptance_name}",
-    )
-
-    decision_name = "decision-contract-scenarios.json"
-    decisions = json.loads((tests / decision_name).read_text(encoding="utf-8"))
-    require(
-        isinstance(decisions, list) and decisions,
-        f"{decision_name} must contain decisions",
-    )
-    required_strings = (
-        "id",
-        "category",
-        "prompt",
-        "setup",
-        "dominant_activity",
-        "host",
-        "route_result",
-        "repository_state_effect",
-        "external_scope",
-        "expected_behavior",
-    )
-    decision_ids: list[str] = []
-    for item in decisions:
-        require(isinstance(item, dict), f"invalid decision in {decision_name}")
-        for field in required_strings:
-            require(
-                isinstance(item.get(field), str) and bool(item[field].strip()),
-                f"{decision_name} decision needs a non-empty {field}",
-            )
-        require(
-            isinstance(item.get("capabilities"), list)
-            and all(isinstance(value, str) and value for value in item["capabilities"]),
-            f"{decision_name} decision needs a capabilities array",
-        )
-        invocations = item.get("provider_invocations")
-        require(
-            isinstance(invocations, list),
-            f"{decision_name} decision needs provider_invocations",
-        )
-        for invocation in invocations:
-            require(
-                isinstance(invocation, dict),
-                f"invalid provider invocation in {decision_name}",
-            )
-            require(
-                all(
-                    isinstance(invocation.get(field), str)
-                    and bool(invocation[field].strip())
-                    for field in ("name", "policy", "invocation")
-                )
-                and isinstance(invocation.get("executed"), bool),
-                f"invalid provider invocation in {decision_name}",
-            )
-        require(
-            isinstance(item.get("executed"), bool),
-            f"{decision_name} decision needs executed",
-        )
-        decision_ids.append(item["id"])
-    require(
-        len(decision_ids) == len(set(decision_ids)),
-        f"duplicate decision id in {decision_name}",
     )
 
 
@@ -882,7 +822,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             check_filesystem,
             check_router_contract,
             check_provider_declaration,
-            check_scenario_catalogs,
+            check_acceptance_catalog,
             check_behavior_scenarios,
             check_markdown_links,
         ):

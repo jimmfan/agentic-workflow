@@ -509,21 +509,10 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, self.normalized)
 
-    def test_runtime_and_contract_restore_progressive_loading_without_experimental_treatment(
+    def test_runtime_and_contract_define_progressive_loading_and_authority(
         self,
     ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        admission_rule = "Would a competent fresh agent need this information to continue the work correctly?"
-        for removed_persistence_treatment_phrase in (
-            "fresh-agent continuation",
-            admission_rule,
-            "procedural history",
-            "current truth",
-            "prior agent narrative",
-        ):
-            self.assertNotIn(removed_persistence_treatment_phrase, runtime)
-            self.assertNotIn(removed_persistence_treatment_phrase, self.normalized)
-
         self.assertIn(
             "Live source and accepted project artifacts outrank stale map state.",
             runtime,
@@ -582,12 +571,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Persist it when it represents a durable constraint or dependency",
             self.normalized,
         )
-
-        self.assertNotIn(
-            "Would a competent fresh agent need this information to continue the work correctly?",
-            runtime,
-        )
-        self.assertNotIn("generic persistence-admission policy", self.contract)
 
     def test_runtime_and_contract_distinguish_map_fog_from_durable_unknowns(
         self,
