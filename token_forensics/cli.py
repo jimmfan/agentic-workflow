@@ -19,8 +19,12 @@ def parser() -> argparse.ArgumentParser:
     )
     value.add_argument("trace", type=Path, help="Codex exec or rollout JSONL file")
     value.add_argument("--label", help="human-report title")
-    value.add_argument("--json-out", type=Path, help="write compact machine-readable summary")
-    value.add_argument("--text-out", type=Path, help="write concise human-readable summary")
+    value.add_argument(
+        "--json-out", type=Path, help="write compact machine-readable summary"
+    )
+    value.add_argument(
+        "--text-out", type=Path, help="write concise human-readable summary"
+    )
     value.add_argument(
         "--large-tool-output-bytes",
         type=int,

@@ -47,7 +47,9 @@ def run_gh(gh: str, arguments: list[str]) -> str:
         errors="backslashreplace",
     )
     if result.returncode != 0:
-        detail = " ".join(part.strip() for part in (result.stdout, result.stderr) if part.strip())
+        detail = " ".join(
+            part.strip() for part in (result.stdout, result.stderr) if part.strip()
+        )
         raise RefreshError(f"gh {' '.join(arguments[:2])} failed: {detail}")
     return result.stdout
 
@@ -90,7 +92,10 @@ def load_declaration() -> tuple[str, str, str, str, str, list[tuple[str, str]]]:
         raise RefreshError("provider resolved commit must be a full Git object ID")
     if not isinstance(tag_object, str) or GIT_OBJECT.fullmatch(tag_object) is None:
         raise RefreshError("provider tag object must be a full Git object ID")
-    if not isinstance(upstream_tree, str) or GIT_OBJECT.fullmatch(upstream_tree) is None:
+    if (
+        not isinstance(upstream_tree, str)
+        or GIT_OBJECT.fullmatch(upstream_tree) is None
+    ):
         raise RefreshError("provider upstream tree must be a full Git object ID")
     if not isinstance(skills_raw, list):
         raise RefreshError("provider skills must be an array")
@@ -100,20 +105,36 @@ def load_declaration() -> tuple[str, str, str, str, str, list[tuple[str, str]]]:
             raise RefreshError("provider skill entry is incomplete")
         path = safe_path(item.get("path"), f"path for {item['name']}")
         if path.name != item["name"]:
-            raise RefreshError(f"provider skill path does not match its name: {item['name']}")
+            raise RefreshError(
+                f"provider skill path does not match its name: {item['name']}"
+            )
         skills.append((item["name"], path.as_posix()))
     return repository, version, commit, tag_object, upstream_tree, skills
 
 
-def verify_tag(gh: str, repository: str, version: str, commit: str, tag_object: str) -> None:
+def verify_tag(
+    gh: str, repository: str, version: str, commit: str, tag_object: str
+) -> None:
     reference = api_json(gh, f"repos/{repository}/git/ref/tags/{version}")
     target = reference.get("object")
-    if not isinstance(target, dict) or target.get("type") != "tag" or target.get("sha") != tag_object:
-        raise RefreshError("upstream tag reference no longer matches the declared annotated tag object")
+    if (
+        not isinstance(target, dict)
+        or target.get("type") != "tag"
+        or target.get("sha") != tag_object
+    ):
+        raise RefreshError(
+            "upstream tag reference no longer matches the declared annotated tag object"
+        )
     tag = api_json(gh, f"repos/{repository}/git/tags/{tag_object}")
     tagged = tag.get("object")
-    if not isinstance(tagged, dict) or tagged.get("type") != "commit" or tagged.get("sha") != commit:
-        raise RefreshError("upstream tag object no longer resolves to the declared commit")
+    if (
+        not isinstance(tagged, dict)
+        or tagged.get("type") != "commit"
+        or tagged.get("sha") != commit
+    ):
+        raise RefreshError(
+            "upstream tag object no longer resolves to the declared commit"
+        )
 
 
 def git_blob_sha(content: bytes) -> str:
@@ -163,12 +184,16 @@ def expected_skill_files(
             continue
         if not path.startswith(prefix):
             continue
-        relative = safe_path(path[len(prefix) :], f"upstream entry for {skill_path}").as_posix()
+        relative = safe_path(
+            path[len(prefix) :], f"upstream entry for {skill_path}"
+        ).as_posix()
         entry_type = raw.get("type")
         mode = raw.get("mode")
         if entry_type == "tree":
             if mode != "040000" or relative in directories:
-                raise RefreshError(f"upstream skill tree has an unsupported directory: {path}")
+                raise RefreshError(
+                    f"upstream skill tree has an unsupported directory: {path}"
+                )
             directories.add(relative)
             continue
         sha = raw.get("sha")
@@ -193,31 +218,45 @@ def validate_installed_skill_against_tree(
     version: str,
     tree_entries: list[object],
 ) -> None:
-    skill_tree, expected_directories, expected_files = expected_skill_files(skill_path, tree_entries)
+    skill_tree, expected_directories, expected_files = expected_skill_files(
+        skill_path, tree_entries
+    )
     actual_directories: set[str] = set()
     actual_files: dict[str, Path] = {}
     for path in sorted(skill_root.rglob("*")):
         relative = path.relative_to(skill_root).as_posix()
         if path.is_symlink():
-            raise RefreshError(f"installed skill contains a symlink: {skill_path}/{relative}")
+            raise RefreshError(
+                f"installed skill contains a symlink: {skill_path}/{relative}"
+            )
         if path.is_dir():
             actual_directories.add(relative)
             continue
         if not path.is_file() or relative in actual_files:
-            raise RefreshError(f"installed skill contains an unsupported entry: {skill_path}/{relative}")
+            raise RefreshError(
+                f"installed skill contains an unsupported entry: {skill_path}/{relative}"
+            )
         actual_files[relative] = path
-    if actual_directories != expected_directories or set(actual_files) != set(expected_files):
-        raise RefreshError(f"installed skill differs from the pinned commit tree: {skill_path}")
+    if actual_directories != expected_directories or set(actual_files) != set(
+        expected_files
+    ):
+        raise RefreshError(
+            f"installed skill differs from the pinned commit tree: {skill_path}"
+        )
 
     metadata = installer_metadata(repository, version, skill_path, skill_tree)
     for relative, expected_sha in expected_files.items():
         content = actual_files[relative].read_bytes()
         if relative == "SKILL.md":
             if content.count(metadata) != 1:
-                raise RefreshError(f"installed skill has unexpected provenance metadata: {skill_path}")
+                raise RefreshError(
+                    f"installed skill has unexpected provenance metadata: {skill_path}"
+                )
             content = content.replace(metadata, b"", 1)
         if git_blob_sha(content) != expected_sha:
-            raise RefreshError(f"installed skill differs from the pinned commit tree: {skill_path}/{relative}")
+            raise RefreshError(
+                f"installed skill differs from the pinned commit tree: {skill_path}/{relative}"
+            )
 
 
 def generate(output: Path) -> None:
@@ -226,28 +265,45 @@ def generate(output: Path) -> None:
     if output.exists() or output.is_symlink():
         raise RefreshError(f"output must not already exist: {output}")
     if not output.parent.is_dir() or output.parent.is_symlink():
-        raise RefreshError(f"output parent must be an existing safe directory: {output.parent}")
+        raise RefreshError(
+            f"output parent must be an existing safe directory: {output.parent}"
+        )
     gh = shutil.which("gh")
     if gh is None:
-        raise RefreshError("GitHub CLI with `gh skill` is required for maintainer refresh")
+        raise RefreshError(
+            "GitHub CLI with `gh skill` is required for maintainer refresh"
+        )
     repository, version, commit, tag_object, upstream_tree, skills = load_declaration()
     verify_tag(gh, repository, version, commit, tag_object)
     commit_response = api_json(gh, f"repos/{repository}/git/commits/{commit}")
     commit_tree = commit_response.get("tree")
     if not isinstance(commit_tree, dict) or commit_tree.get("sha") != upstream_tree:
         raise RefreshError("upstream commit tree no longer matches the declaration")
-    tree_response = api_json(gh, f"repos/{repository}/git/trees/{upstream_tree}?recursive=1")
+    tree_response = api_json(
+        gh, f"repos/{repository}/git/trees/{upstream_tree}?recursive=1"
+    )
     tree_entries = tree_response.get("tree")
     if not isinstance(tree_entries, list) or tree_response.get("truncated") is True:
         raise RefreshError("upstream recursive tree is missing or truncated")
-    with tempfile.TemporaryDirectory(prefix="agent-workflow-provider-refresh-", dir=output.parent) as temporary:
+    with tempfile.TemporaryDirectory(
+        prefix="agent-workflow-provider-refresh-", dir=output.parent
+    ) as temporary:
         generated = Path(temporary) / "snapshot"
         skills_root = generated / "skills"
         skills_root.mkdir(parents=True)
         for name, path in skills:
             run_gh(
                 gh,
-                ["skill", "install", repository, path, "--pin", version, "--dir", str(skills_root)],
+                [
+                    "skill",
+                    "install",
+                    repository,
+                    path,
+                    "--pin",
+                    version,
+                    "--dir",
+                    str(skills_root),
+                ],
             )
             installed = skills_root / name / "SKILL.md"
             if installed.is_symlink() or not installed.is_file():
@@ -264,9 +320,13 @@ def generate(output: Path) -> None:
         expected = {name for name, _path in skills}
         actual = {path.name for path in skills_root.iterdir()}
         if actual != expected:
-            raise RefreshError("generated provider inventory differs from the declaration")
+            raise RefreshError(
+                "generated provider inventory differs from the declaration"
+            )
 
-        license_response = api_json(gh, f"repos/{repository}/contents/LICENSE?ref={commit}")
+        license_response = api_json(
+            gh, f"repos/{repository}/contents/LICENSE?ref={commit}"
+        )
         content = license_response.get("content")
         if not isinstance(content, str):
             raise RefreshError("upstream license response lacks content")
@@ -302,7 +362,13 @@ def main(argv: Iterable[str] | None = None) -> int:
         args = build_parser().parse_args(argv)
         generate(args.output.resolve())
         return 0
-    except (SnapshotTreeError, OSError, UnicodeError, json.JSONDecodeError, RefreshError) as exc:
+    except (
+        SnapshotTreeError,
+        OSError,
+        UnicodeError,
+        json.JSONDecodeError,
+        RefreshError,
+    ) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 

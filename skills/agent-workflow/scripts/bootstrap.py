@@ -79,14 +79,18 @@ def resolve_revision(ref: str) -> str:
     try:
         value = json.loads(request_bytes(url).decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise BootstrapError(f"GitHub returned an invalid commit response for {ref!r}") from exc
+        raise BootstrapError(
+            f"GitHub returned an invalid commit response for {ref!r}"
+        ) from exc
     revision = value.get("sha") if isinstance(value, dict) else None
     if not isinstance(revision, str) or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
         raise BootstrapError(f"GitHub did not resolve {ref!r} to a commit")
     return revision
 
 
-def select_source(action: str, target: Path, ref: str, archive_url: Optional[str]) -> Tuple[str, str]:
+def select_source(
+    action: str, target: Path, ref: str, archive_url: Optional[str]
+) -> Tuple[str, str]:
     if archive_url:
         revision = ref if re.fullmatch(r"[0-9a-f]{40}", ref) else LOCAL_SOURCE_REVISION
         return revision, archive_url
@@ -114,7 +118,11 @@ def ensure_directory(path: Path, package: Path) -> None:
 
 def reviewed_archive_mode(member: tarfile.TarInfo, relative: PurePosixPath) -> int:
     mode = stat.S_IMODE(member.mode)
-    expected = 0o755 if member.isdir() or relative.as_posix() in EXECUTABLE_PACKAGE_PATHS else 0o644
+    expected = (
+        0o755
+        if member.isdir() or relative.as_posix() in EXECUTABLE_PACKAGE_PATHS
+        else 0o644
+    )
     allowed = ARCHIVE_MODE_VARIANTS[expected]
     if mode not in allowed:
         kind = "directory" if member.isdir() else "file"
@@ -157,31 +165,50 @@ def extract_package(archive: bytes, destination: Path) -> Path:
                     or ".." in relative.parts
                     or "." in relative.parts
                 ):
-                    raise BootstrapError(f"archive contains an unsafe package path: {member.name}")
-                if member.issym() or member.islnk() or not (member.isdir() or member.isfile()):
-                    raise BootstrapError(f"archive contains an unsupported package entry: {member.name}")
+                    raise BootstrapError(
+                        f"archive contains an unsafe package path: {member.name}"
+                    )
+                if (
+                    member.issym()
+                    or member.islnk()
+                    or not (member.isdir() or member.isfile())
+                ):
+                    raise BootstrapError(
+                        f"archive contains an unsupported package entry: {member.name}"
+                    )
                 mode = reviewed_archive_mode(member, relative)
                 target = package.joinpath(*relative.parts)
                 if target in seen:
-                    raise BootstrapError(f"archive contains duplicate package path: {relative}")
+                    raise BootstrapError(
+                        f"archive contains duplicate package path: {relative}"
+                    )
                 seen.add(target)
                 if member.isdir():
                     ensure_directory(target, package)
                     continue
-                if member.size > MAX_MEMBER_BYTES or total + member.size > MAX_ARCHIVE_BYTES:
-                    raise BootstrapError(f"archive package content is too large: {relative}")
+                if (
+                    member.size > MAX_MEMBER_BYTES
+                    or total + member.size > MAX_ARCHIVE_BYTES
+                ):
+                    raise BootstrapError(
+                        f"archive package content is too large: {relative}"
+                    )
                 source = opened.extractfile(member)
                 if source is None:
                     raise BootstrapError(f"cannot read archive member: {relative}")
                 data = source.read(MAX_MEMBER_BYTES + 1)
                 if len(data) != member.size:
-                    raise BootstrapError(f"archive member size changed while reading: {relative}")
+                    raise BootstrapError(
+                        f"archive member size changed while reading: {relative}"
+                    )
                 total += len(data)
                 ensure_directory(target.parent, package)
                 target.write_bytes(data)
                 target.chmod(mode)
     except tarfile.TarError as exc:
-        raise BootstrapError(f"download is not a valid gzip tar archive: {exc}") from exc
+        raise BootstrapError(
+            f"download is not a valid gzip tar archive: {exc}"
+        ) from exc
     if not seen:
         raise BootstrapError("archive does not contain skills/agent-workflow")
     return package
@@ -208,10 +235,19 @@ def validate_runtime_package(package: Path) -> None:
             ) from exc
 
 
-def run_package(package: Path, action: str, target: Path, dry_run: bool, revision: str) -> int:
+def run_package(
+    package: Path, action: str, target: Path, dry_run: bool, revision: str
+) -> int:
     validate_runtime_package(package)
     lifecycle = package / "scripts" / "lifecycle.py"
-    command = [sys.executable, str(lifecycle), action, str(target), "--source-revision", revision]
+    command = [
+        sys.executable,
+        str(lifecycle),
+        action,
+        str(target),
+        "--source-revision",
+        revision,
+    ]
     if dry_run:
         command.append("--dry-run")
     return subprocess.run(command).returncode
@@ -219,10 +255,23 @@ def run_package(package: Path, action: str, target: Path, dry_run: bool, revisio
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", nargs="?", default="install", choices=("install", "update", "status", "remove"))
+    parser.add_argument(
+        "action",
+        nargs="?",
+        default="install",
+        choices=("install", "update", "status", "remove"),
+    )
     parser.add_argument("target", nargs="?", default=Path.cwd(), type=Path)
-    parser.add_argument("--dry-run", action="store_true", help="show the operation without changing files")
-    parser.add_argument("--ref", default=DEFAULT_REF, help="Git tag, branch, or commit for install/update")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="show the operation without changing files",
+    )
+    parser.add_argument(
+        "--ref",
+        default=DEFAULT_REF,
+        help="Git tag, branch, or commit for install/update",
+    )
     parser.add_argument("--archive-url", help=argparse.SUPPRESS)
     return parser.parse_args(argv)
 
@@ -233,10 +282,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     target = args.target.expanduser().absolute()
     if target.is_symlink() or not target.is_dir():
-        raise BootstrapError(f"target must be an existing regular non-symlink directory: {target}")
+        raise BootstrapError(
+            f"target must be an existing regular non-symlink directory: {target}"
+        )
     if target == Path(target.anchor):
         raise BootstrapError("refusing to operate on a filesystem root")
-    revision, archive_url = select_source(args.action, target, args.ref, args.archive_url)
+    revision, archive_url = select_source(
+        args.action, target, args.ref, args.archive_url
+    )
     archive = request_bytes(archive_url)
     with tempfile.TemporaryDirectory(prefix="agent-workflow-") as temporary:
         package = extract_package(archive, Path(temporary))

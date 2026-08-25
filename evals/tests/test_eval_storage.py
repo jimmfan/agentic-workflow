@@ -34,12 +34,16 @@ def is_raw_artifact(path: str) -> bool:
     return (
         "__pycache__" in parts
         or "raw" in parts
-        or "snapshots" in parts and "runs" in parts
-        or "workspace" in parts and "runs" in parts
-        or "attempts" in parts and "runs" in parts
+        or "snapshots" in parts
+        and "runs" in parts
+        or "workspace" in parts
+        and "runs" in parts
+        or "attempts" in parts
+        and "runs" in parts
         or name in {"reasoning-grader.jsonl", "reasoning-grader.stderr.txt"}
         or "audit-evidence" in parts
-        or "isolation-audit" in parts and name.endswith((".jsonl", ".stderr.txt"))
+        or "isolation-audit" in parts
+        and name.endswith((".jsonl", ".stderr.txt"))
     )
 
 

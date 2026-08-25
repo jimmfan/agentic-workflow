@@ -24,7 +24,9 @@ DEVCONTAINER_CONFIG = Path(".devcontainer/devcontainer.json")
 def run(command: Sequence[str]) -> str:
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:
-        detail = result.stderr.strip() or result.stdout.strip() or "no diagnostic output"
+        detail = (
+            result.stderr.strip() or result.stdout.strip() or "no diagnostic output"
+        )
         raise RuntimeError(f"{' '.join(command)} failed: {detail}")
     return result.stdout
 
@@ -43,7 +45,9 @@ def require_codex_configuration() -> None:
             f"CODEX_HOME must be {EXPECTED_CODEX_HOME}; found {configured_home!r}"
         )
     if not EXPECTED_CODEX_HOME.is_dir() or not os.access(EXPECTED_CODEX_HOME, os.W_OK):
-        raise RuntimeError(f"Codex state directory is missing or not writable: {EXPECTED_CODEX_HOME}")
+        raise RuntimeError(
+            f"Codex state directory is missing or not writable: {EXPECTED_CODEX_HOME}"
+        )
     home_mode = stat.S_IMODE(EXPECTED_CODEX_HOME.stat().st_mode)
     if home_mode != 0o700:
         raise RuntimeError(
@@ -51,7 +55,9 @@ def require_codex_configuration() -> None:
         )
 
     if not CODEX_SYSTEM_CONFIG.is_file():
-        raise RuntimeError(f"Codex system configuration is missing: {CODEX_SYSTEM_CONFIG}")
+        raise RuntimeError(
+            f"Codex system configuration is missing: {CODEX_SYSTEM_CONFIG}"
+        )
     config_text = CODEX_SYSTEM_CONFIG.read_text(encoding="utf-8")
     if not re.search(
         r'^\s*cli_auth_credentials_store\s*=\s*"file"\s*$',
@@ -64,7 +70,9 @@ def require_codex_configuration() -> None:
     if auth_file.exists():
         auth_mode = stat.S_IMODE(auth_file.stat().st_mode)
         if auth_mode != 0o600:
-            raise RuntimeError(f"Codex auth.json must have mode 600; found {auth_mode:03o}")
+            raise RuntimeError(
+                f"Codex auth.json must have mode 600; found {auth_mode:03o}"
+            )
 
     devcontainer = json.loads(DEVCONTAINER_CONFIG.read_text(encoding="utf-8"))
     extensions = devcontainer["customizations"]["vscode"]["extensions"]
@@ -94,7 +102,9 @@ def main() -> int:
     gh_output = run([gh, "--version"])
     match = re.search(r"gh version ([0-9]+)\.([0-9]+)\.([0-9]+)", gh_output)
     if match is None:
-        raise RuntimeError(f"could not parse GitHub CLI version from: {gh_output.strip()!r}")
+        raise RuntimeError(
+            f"could not parse GitHub CLI version from: {gh_output.strip()!r}"
+        )
     gh_version = tuple(int(part) for part in match.groups())
     if gh_version < MINIMUM_GH_VERSION:
         found = ".".join(str(part) for part in gh_version)
@@ -102,10 +112,13 @@ def main() -> int:
         raise RuntimeError(f"GitHub CLI {required} or newer is required; found {found}")
 
     gh_skill_help = run([gh, "skill", "install", "--help"])
-    missing_options = [option for option in ("--pin", "--scope") if option not in gh_skill_help]
+    missing_options = [
+        option for option in ("--pin", "--scope") if option not in gh_skill_help
+    ]
     if missing_options:
         raise RuntimeError(
-            "gh skill install is missing required options: " + ", ".join(missing_options)
+            "gh skill install is missing required options: "
+            + ", ".join(missing_options)
         )
 
     require_codex_configuration()

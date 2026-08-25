@@ -17,9 +17,13 @@ wayfinder_text = "\n".join(
 checks = [
     len(evidence) == 1,
     len(facts) == 1,
-    "Source: release-policy.txt" in evidence[0].read_text(encoding="utf-8") if evidence else False,
+    "Source: release-policy.txt" in evidence[0].read_text(encoding="utf-8")
+    if evidence
+    else False,
     "## Observation" in evidence[0].read_text(encoding="utf-8") if evidence else False,
-    "minimum_supported=3.11" in evidence[0].read_text(encoding="utf-8") if evidence else False,
+    "minimum_supported=3.11" in evidence[0].read_text(encoding="utf-8")
+    if evidence
+    else False,
     "Supported by: E1" in facts[0].read_text(encoding="utf-8") if facts else False,
     "## Fact" in facts[0].read_text(encoding="utf-8") if facts else False,
     not (effort / "unknowns").exists(),
@@ -27,10 +31,18 @@ checks = [
     not (effort / "tickets").exists(),
     re.search(r"\bT(?:#|[0-9]+)\b", wayfinder_text) is None,
     len(native_tickets) == 3,
-    "Blocked by:** None" in native_tickets[0].read_text(encoding="utf-8") if native_tickets else False,
-    "Blocked by:** 01" in native_tickets[1].read_text(encoding="utf-8") if len(native_tickets) > 1 else False,
-    "Blocked by:** 01" in native_tickets[2].read_text(encoding="utf-8") if len(native_tickets) > 2 else False,
-    "02" in native_tickets[2].read_text(encoding="utf-8") if len(native_tickets) > 2 else False,
+    "Blocked by:** None" in native_tickets[0].read_text(encoding="utf-8")
+    if native_tickets
+    else False,
+    "Blocked by:** 01" in native_tickets[1].read_text(encoding="utf-8")
+    if len(native_tickets) > 1
+    else False,
+    "Blocked by:** 01" in native_tickets[2].read_text(encoding="utf-8")
+    if len(native_tickets) > 2
+    else False,
+    "02" in native_tickets[2].read_text(encoding="utf-8")
+    if len(native_tickets) > 2
+    else False,
     ".scratch/runtime-rollout/issues/" in mapping,
     "## Next work" in mapping,
     "01" in mapping,

@@ -31,11 +31,15 @@ def _shape(command: str) -> str:
     return value[:1000]
 
 
-def _command_record(tool: ToolInvocation, *, count: int | None = None) -> dict[str, Any]:
+def _command_record(
+    tool: ToolInvocation, *, count: int | None = None
+) -> dict[str, Any]:
     value: dict[str, Any] = {
         "tool_type": tool.tool_type,
         "command": _clip(tool.command),
-        "command_sha256": hashlib.sha256((tool.command or tool.name).encode()).hexdigest(),
+        "command_sha256": hashlib.sha256(
+            (tool.command or tool.name).encode()
+        ).hexdigest(),
     }
     if count is not None:
         value["count"] = count
@@ -43,7 +47,10 @@ def _command_record(tool: ToolInvocation, *, count: int | None = None) -> dict[s
 
 
 def _is_failed(tool: ToolInvocation) -> bool:
-    return tool.exit_code not in {None, 0} or (tool.status or "").casefold() in {"failed", "error"}
+    return tool.exit_code not in {None, 0} or (tool.status or "").casefold() in {
+        "failed",
+        "error",
+    }
 
 
 def _repeated_exact(tools: list[ToolInvocation]) -> list[dict[str, Any]]:
@@ -75,7 +82,10 @@ def _near_identical(tools: list[ToolInvocation]) -> list[dict[str, Any]]:
             if _exact_key(other.command or "") == exact:
                 continue
             other_shape = _shape(other.command or "")
-            if shape == other_shape or SequenceMatcher(None, shape, other_shape).ratio() >= 0.94:
+            if (
+                shape == other_shape
+                or SequenceMatcher(None, shape, other_shape).ratio() >= 0.94
+            ):
                 group.append(other)
                 used.add(other_index)
         if len(group) > 1:
@@ -97,14 +107,22 @@ def analyze_tools(
     failures = [tool for tool in tools if _is_failed(tool)]
     largest = sorted(tools, key=lambda item: item.output_bytes, reverse=True)[:10]
 
-    stdout_observable = bool(tools) and all(tool.stdout_bytes is not None for tool in tools)
-    stderr_observable = bool(tools) and all(tool.stderr_bytes is not None for tool in tools)
+    stdout_observable = bool(tools) and all(
+        tool.stdout_bytes is not None for tool in tools
+    )
+    stderr_observable = bool(tools) and all(
+        tool.stderr_bytes is not None for tool in tools
+    )
     measured = {
         "calls": len(tools),
         "type_counts": dict(sorted(Counter(tool.tool_type for tool in tools).items())),
         "output_bytes": sum(tool.output_bytes for tool in tools),
-        "stdout_bytes": sum(tool.stdout_bytes or 0 for tool in tools) if stdout_observable else None,
-        "stderr_bytes": sum(tool.stderr_bytes or 0 for tool in tools) if stderr_observable else None,
+        "stdout_bytes": sum(tool.stdout_bytes or 0 for tool in tools)
+        if stdout_observable
+        else None,
+        "stderr_bytes": sum(tool.stderr_bytes or 0 for tool in tools)
+        if stderr_observable
+        else None,
         "combined_output_bytes": sum(tool.combined_output_bytes or 0 for tool in tools),
         "output_channel_note": (
             "stdout and stderr reported separately"
@@ -193,7 +211,10 @@ def analyze_tools(
                 f"{thresholds.repeated_command_count} times.",
             }
         )
-    if any(item["count"] >= thresholds.repeated_failed_command_count for item in failed_exact):
+    if any(
+        item["count"] >= thresholds.repeated_failed_command_count
+        for item in failed_exact
+    ):
         warnings.append(
             {
                 "code": "repeated_failed_command",

@@ -13,8 +13,12 @@ _PATH = re.compile(
     r"(?<![A-Za-z0-9_])(?:/[^\s'\";|&<>]+|(?:\.{1,2}/)?(?:[A-Za-z0-9_.@+-]+/)+[A-Za-z0-9_.@+-]+|[A-Za-z0-9_.-]+\.(?:jsonl?|md|txt|toml|ya?ml|py|tsv|csv|log))"
 )
 _SEARCH = re.compile(r"(?:^|[\s;/'\"])(?:rg|grep|find|fd)(?:\s|$)")
-_READ = re.compile(r"(?:^|[\s;/'\"])(?:cat|sed|head|tail|less|jq|awk|perl|python3?)(?:\s|$)")
-_BOUND = re.compile(r"(?:--max-count(?:=|\s)|(?:^|\s)-m\s*\d|(?:^|[|;]\s*)head\b|(?:^|[|;]\s*)tail\b)")
+_READ = re.compile(
+    r"(?:^|[\s;/'\"])(?:cat|sed|head|tail|less|jq|awk|perl|python3?)(?:\s|$)"
+)
+_BOUND = re.compile(
+    r"(?:--max-count(?:=|\s)|(?:^|\s)-m\s*\d|(?:^|[|;]\s*)head\b|(?:^|[|;]\s*)tail\b)"
+)
 _EXECUTABLES = {
     "/bin/bash",
     "/bin/sh",
@@ -75,7 +79,11 @@ def _is_read(command: str | None) -> bool:
 
 def _looks_like_file(path: str) -> bool:
     name = path.rsplit("/", 1)[-1]
-    return "." in name and not name.startswith(".") or name in {"AGENTS.md", "CLAUDE.md", "SKILL.md"}
+    return (
+        "." in name
+        and not name.startswith(".")
+        or name in {"AGENTS.md", "CLAUDE.md", "SKILL.md"}
+    )
 
 
 def _skill_name(path: str) -> str | None:
@@ -97,10 +105,13 @@ def _route_markers(messages: list[str]) -> list[str]:
 
 def _framework_kind(path: str) -> str | None:
     normalized = path.replace("\\", "/")
-    if any(marker in normalized for marker in (
-        ".agent-wayfinder/records/",
-        ".agent-wayfinder/archive/",
-    )):
+    if any(
+        marker in normalized
+        for marker in (
+            ".agent-wayfinder/records/",
+            ".agent-wayfinder/archive/",
+        )
+    ):
         return "durable_workflow_state"
     if ".agent-wayfinder/" in normalized:
         return "wayfinder_state"
@@ -108,7 +119,9 @@ def _framework_kind(path: str) -> str | None:
         return "skill"
     if "/.codex/skills/" in normalized or normalized.startswith(".codex/skills/"):
         return "skill"
-    if ".agent-workflow/" in normalized or normalized.endswith(("AGENTS.md", "CLAUDE.md")):
+    if ".agent-workflow/" in normalized or normalized.endswith(
+        ("AGENTS.md", "CLAUDE.md")
+    ):
         return "framework_instruction"
     return None
 
@@ -137,7 +150,10 @@ def analyze_context(
             file_targets = [path for path in paths if _looks_like_file(path)]
             if not file_targets or "--files" in (tool.command or ""):
                 broad_searches.append(_tool_record(tool))
-            if not _BOUND.search(tool.command or "") and tool.output_bytes >= thresholds.large_tool_output_bytes:
+            if (
+                not _BOUND.search(tool.command or "")
+                and tool.output_bytes >= thresholds.large_tool_output_bytes
+            ):
                 unbounded_searches.append(_tool_record(tool))
 
     changed: list[tuple[str, str, ToolInvocation]] = []
@@ -162,9 +178,13 @@ def analyze_context(
             "note": "tool output is associated with this command, not attributed exactly to this file",
         }
         for path, tools in observations.items()
-        if any(tool.output_bytes >= thresholds.large_tool_output_bytes for tool in tools)
+        if any(
+            tool.output_bytes >= thresholds.large_tool_output_bytes for tool in tools
+        )
     ]
-    large_reads.sort(key=lambda item: item["associated_tool_output_bytes"], reverse=True)
+    large_reads.sort(
+        key=lambda item: item["associated_tool_output_bytes"], reverse=True
+    )
 
     framework_paths: dict[str, set[str]] = defaultdict(set)
     framework_tools: dict[str, set[str]] = defaultdict(set)
@@ -182,10 +202,17 @@ def analyze_context(
             framework_writes[category].add(path)
 
     def output_bytes_for(category: str) -> int:
-        return sum(tool_by_id[identifier].output_bytes for identifier in framework_tools[category])
+        return sum(
+            tool_by_id[identifier].output_bytes
+            for identifier in framework_tools[category]
+        )
 
     skill_names = sorted(
-        {name for path in framework_paths["skill"] if (name := _skill_name(path)) is not None}
+        {
+            name
+            for path in framework_paths["skill"]
+            if (name := _skill_name(path)) is not None
+        }
     )
     markers = _route_markers(trace.agent_messages)
     marker_text = " ".join(markers).casefold()
@@ -204,7 +231,9 @@ def analyze_context(
         "likely_unbounded_searches": unbounded_searches,
         "file_detection_note": "best-effort inference from command text; not a complete filesystem access trace",
     }
-    skill_files = sorted(path for path in framework_paths["skill"] if _looks_like_file(path))
+    skill_files = sorted(
+        path for path in framework_paths["skill"] if _looks_like_file(path)
+    )
     framework = {
         "instruction_files_observed": sorted(framework_paths["framework_instruction"]),
         "instruction_output_bytes_observed": output_bytes_for("framework_instruction"),
@@ -217,7 +246,9 @@ def analyze_context(
         "wayfinder_files_written": sorted(framework_writes["wayfinder_state"]),
         "wayfinder_output_bytes_observed": output_bytes_for("wayfinder_state"),
         "other_durable_state_read": sorted(framework_paths["durable_workflow_state"]),
-        "other_durable_state_written": sorted(framework_writes["durable_workflow_state"]),
+        "other_durable_state_written": sorted(
+            framework_writes["durable_workflow_state"]
+        ),
         "byte_note": "bytes are tool-output bytes associated with commands that name these paths, not token counts or exact per-file bytes",
     }
 
@@ -245,7 +276,10 @@ def analyze_context(
     }
 
     warnings: list[dict[str, Any]] = []
-    if any(item["observations"] >= thresholds.repeated_resource_count for item in repeated_reads):
+    if any(
+        item["observations"] >= thresholds.repeated_resource_count
+        for item in repeated_reads
+    ):
         warnings.append(
             {
                 "code": "repeated_resource_observation",
@@ -261,8 +295,12 @@ def analyze_context(
                 "message": "A broad search emitted a large result without an observable output bound.",
             }
         )
-    framework_tool_ids = framework_tools["framework_instruction"] | framework_tools["skill"]
-    framework_bytes = sum(tool_by_id[identifier].output_bytes for identifier in framework_tool_ids)
+    framework_tool_ids = (
+        framework_tools["framework_instruction"] | framework_tools["skill"]
+    )
+    framework_bytes = sum(
+        tool_by_id[identifier].output_bytes for identifier in framework_tool_ids
+    )
     if framework_bytes >= thresholds.large_framework_output_bytes:
         warnings.append(
             {

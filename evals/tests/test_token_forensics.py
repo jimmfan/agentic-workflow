@@ -55,7 +55,9 @@ class CodexParserTests(unittest.TestCase):
 
         self.assertIsNone(summary["measured"]["tokens"]["input"])
         self.assertEqual(summary["measured"]["tools"]["calls"], 1)
-        self.assertTrue(any(item["code"] == "parse_warning" for item in summary["warnings"]))
+        self.assertTrue(
+            any(item["code"] == "parse_warning" for item in summary["warnings"])
+        )
         self.assertIn("unknown / unavailable", human_text(summary))
 
 
@@ -68,7 +70,14 @@ class GenericAnalysisTests(unittest.TestCase):
             codex_turns_started=1,
             codex_turns_completed=1,
             usage_observations=[
-                UsageObservation(1, 1, "per_turn", input_tokens=20, cached_input_tokens=5, output_tokens=2)
+                UsageObservation(
+                    1,
+                    1,
+                    "per_turn",
+                    input_tokens=20,
+                    cached_input_tokens=5,
+                    output_tokens=2,
+                )
             ],
             tool_invocations=[
                 ToolInvocation(
@@ -87,7 +96,9 @@ class GenericAnalysisTests(unittest.TestCase):
         summary = analyze_trace(trace, Thresholds(large_tool_output_bytes=10))
 
         self.assertEqual(summary["measured"]["tokens"]["input"], 20)
-        self.assertTrue(any(item["code"] == "large_tool_output" for item in summary["warnings"]))
+        self.assertTrue(
+            any(item["code"] == "large_tool_output" for item in summary["warnings"])
+        )
         self.assertNotIn("itbench", json_text(summary).casefold())
 
     def test_repeated_reads_commands_failures_and_large_output_warning(self) -> None:
@@ -123,12 +134,16 @@ class GenericAnalysisTests(unittest.TestCase):
         self.assertIn("repeated_command", codes)
         self.assertIn("repeated_failed_command", codes)
         self.assertIn("repeated_resource_observation", codes)
-        self.assertEqual(summary["heuristic"]["repository"]["repeated_reads"][0]["observations"], 3)
+        self.assertEqual(
+            summary["heuristic"]["repository"]["repeated_reads"][0]["observations"], 3
+        )
 
     def test_reports_are_valid_and_concise(self) -> None:
         summary = analyze_trace(parse_codex_trace(FIXTURES / "codex-exec.jsonl"))
 
-        self.assertEqual(json.loads(json_text(summary))["schema_version"], "token-forensics/v1")
+        self.assertEqual(
+            json.loads(json_text(summary))["schema_version"], "token-forensics/v1"
+        )
         report = human_text(summary, label="Fixture")
         self.assertIn("Fixture", report)
         self.assertIn("TOKENS", report)
@@ -152,7 +167,10 @@ class GenericAnalysisTests(unittest.TestCase):
             )
 
             self.assertEqual(exit_code, 0)
-            self.assertEqual(json.loads(json_path.read_text())["schema_version"], "token-forensics/v1")
+            self.assertEqual(
+                json.loads(json_path.read_text())["schema_version"],
+                "token-forensics/v1",
+            )
             self.assertIn("TOKENS", text_path.read_text())
 
 

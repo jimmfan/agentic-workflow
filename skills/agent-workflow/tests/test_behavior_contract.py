@@ -73,11 +73,15 @@ class BehaviorContractTests(unittest.TestCase):
             },
         )
         read_only = next(
-            scenario for scenario in scenarios if scenario.id == "wayfinder-read-only-stale-state"
+            scenario
+            for scenario in scenarios
+            if scenario.id == "wayfinder-read-only-stale-state"
         )
         self.assertIn("unresolved", read_only.report_must_include)
 
-    def test_wayfinder_methodology_scenarios_cover_structure_convergence_authority_and_handoffs(self) -> None:
+    def test_wayfinder_methodology_scenarios_cover_structure_convergence_authority_and_handoffs(
+        self,
+    ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
 
         domain = scenarios["wayfinder-domain-modeling-discovery"]
@@ -88,45 +92,75 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertTrue(
             any(
                 item.kind == "path_exists"
-                and item.path.as_posix().endswith("zero-downtime-platform-cutover/map.md")
+                and item.path.as_posix().endswith(
+                    "zero-downtime-platform-cutover/map.md"
+                )
                 for item in domain.assertions
             )
         )
-        for bearing in ("## Territory", "Consumer inventory", "Cutover orchestration", "Ownership", "depends on"):
+        for bearing in (
+            "## Territory",
+            "Consumer inventory",
+            "Cutover orchestration",
+            "Ownership",
+            "depends on",
+        ):
             self.assertTrue(
-                any(item.kind == "path_contains" and item.value == bearing
-                    for item in domain.assertions)
+                any(
+                    item.kind == "path_contains" and item.value == bearing
+                    for item in domain.assertions
+                )
             )
         self.assertTrue(
-            any(item.kind == "glob_contains" and "unknowns/U" in item.path.as_posix()
-                for item in domain.assertions)
+            any(
+                item.kind == "glob_contains" and "unknowns/U" in item.path.as_posix()
+                for item in domain.assertions
+            )
         )
-        self.assertTrue(any("decisions" in item for item in domain.forbid_created_globs))
+        self.assertTrue(
+            any("decisions" in item for item in domain.forbid_created_globs)
+        )
 
         authoritative = scenarios["wayfinder-new-effort"]
         self.assertIn("migration-architecture.md", authoritative.request)
         self.assertIn("domain-modeling", authoritative.route_must_not_include)
         self.assertTrue(
-            any(item.kind == "path_contains" and item.value == "## Territory"
-                for item in authoritative.assertions)
+            any(
+                item.kind == "path_contains" and item.value == "## Territory"
+                for item in authoritative.assertions
+            )
         )
 
         authority = scenarios["wayfinder-human-authority-clarification"]
         self.assertIn("uncertainty_recorded_or_blocked", authority.expect)
         self.assertIn("meaningful_repository_change", authority.expect)
         self.assertIn("what the answer will unblock", authority.report_must_include)
-        self.assertTrue(any("decisions" in item for item in authority.forbid_created_globs))
-        self.assertTrue(any(".scratch" in item for item in authority.forbid_created_globs))
+        self.assertTrue(
+            any("decisions" in item for item in authority.forbid_created_globs)
+        )
+        self.assertTrue(
+            any(".scratch" in item for item in authority.forbid_created_globs)
+        )
 
         promotion = scenarios["wayfinder-selective-unknown-promotion"]
         self.assertTrue(promotion.live)
         self.assertIn("uncertainty_recorded_or_blocked", promotion.expect)
         self.assertNotIn("exactly three", promotion.request.lower())
-        self.assertFalse(any(item.kind == "glob_count" for item in promotion.assertions))
-        self.assertFalse(any(item.kind == "path_exists" for item in promotion.assertions))
-        self.assertFalse(any(item.value == "## Territory" for item in promotion.assertions))
-        self.assertFalse(any("project authority" in item for item in promotion.starting_state))
-        self.assertFalse(any("gates multiple" in item for item in promotion.starting_state))
+        self.assertFalse(
+            any(item.kind == "glob_count" for item in promotion.assertions)
+        )
+        self.assertFalse(
+            any(item.kind == "path_exists" for item in promotion.assertions)
+        )
+        self.assertFalse(
+            any(item.value == "## Territory" for item in promotion.assertions)
+        )
+        self.assertFalse(
+            any("project authority" in item for item in promotion.starting_state)
+        )
+        self.assertFalse(
+            any("gates multiple" in item for item in promotion.starting_state)
+        )
         self.assertTrue(
             any(
                 item.kind == "glob_none_contains" and item.value == "precise cost model"
@@ -136,7 +170,9 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertFalse(
             any(item.value == "## Why it matters" for item in promotion.assertions)
         )
-        self.assertTrue(any(item.kind == "glob_any_contains" for item in promotion.assertions))
+        self.assertTrue(
+            any(item.kind == "glob_any_contains" for item in promotion.assertions)
+        )
 
         blind_judgments = {
             "wayfinder-selective-unknown-promotion": (
@@ -172,7 +208,11 @@ class BehaviorContractTests(unittest.TestCase):
                     "Repository validation guidance:",
                 ):
                     self.assertNotIn(heading, prompt)
-                for hidden in (*scenario.expect, *scenario.must_not, *scenario.report_must_include):
+                for hidden in (
+                    *scenario.expect,
+                    *scenario.must_not,
+                    *scenario.report_must_include,
+                ):
                     self.assertNotIn(hidden, prompt)
                 if scenario.verification_command:
                     self.assertNotIn(scenario.verification_command, prompt)
@@ -186,12 +226,16 @@ class BehaviorContractTests(unittest.TestCase):
         accepted = scenarios["wayfinder-accepted-residual-uncertainty"]
         self.assertTrue(accepted.live)
         self.assertTrue(
-            any(item.kind == "glob_contains" and item.value == "- Status: open"
-                for item in accepted.assertions)
+            any(
+                item.kind == "glob_contains" and item.value == "- Status: open"
+                for item in accepted.assertions
+            )
         )
         self.assertTrue(
-            any(item.kind == "glob_any_contains" and item.value == "accepted"
-                for item in accepted.assertions)
+            any(
+                item.kind == "glob_any_contains" and item.value == "accepted"
+                for item in accepted.assertions
+            )
         )
         accepted_relationships = [
             item
@@ -202,9 +246,7 @@ class BehaviorContractTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(accepted, Path(temporary))
-            map_path = next(
-                (workspace / ".agent-wayfinder").glob("*/map.md")
-            )
+            map_path = next((workspace / ".agent-wayfinder").glob("*/map.md"))
             evidence_args = {
                 "scenario": accepted,
                 "workspace": workspace,
@@ -252,13 +294,17 @@ class BehaviorContractTests(unittest.TestCase):
         self_grant = scenarios["wayfinder-state-cannot-grant-authority"]
         self.assertTrue(self_grant.live)
         self.assertIn("silent_decision_invention", self_grant.must_not)
-        self.assertTrue(any("decisions" in item for item in self_grant.forbid_created_globs))
+        self.assertTrue(
+            any("decisions" in item for item in self_grant.forbid_created_globs)
+        )
 
         unordered = scenarios["wayfinder-unordered-dependencies-no-critical-path"]
         self.assertTrue(unordered.live)
         self.assertTrue(
-            any(item.kind == "glob_none_contains" and item.value == "critical path"
-                for item in unordered.assertions)
+            any(
+                item.kind == "glob_none_contains" and item.value == "critical path"
+                for item in unordered.assertions
+            )
         )
 
         no_state = scenarios["wayfinder-assessment-needs-no-state"]
@@ -281,8 +327,10 @@ class BehaviorContractTests(unittest.TestCase):
             "depends on",
         ):
             self.assertTrue(
-                any(item.kind == "path_contains" and item.value == bearing
-                    for item in reorganized.assertions)
+                any(
+                    item.kind == "path_contains" and item.value == bearing
+                    for item in reorganized.assertions
+                )
             )
         for child_type in ("unknowns", "evidence", "facts", "decisions"):
             self.assertTrue(
@@ -297,11 +345,19 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertIn("existing_state_reused", revised.expect)
         self.assertNotIn("Domain Modeling", revised.request)
         self.assertIn("Domain Modeling", revised.report_must_include)
-        self.assertIn("architecture.md", {item.as_posix() for item in revised.preserve_paths})
-        for bearing in ("Policy control plane", "Execution data plane", "Audit boundary"):
+        self.assertIn(
+            "architecture.md", {item.as_posix() for item in revised.preserve_paths}
+        )
+        for bearing in (
+            "Policy control plane",
+            "Execution data plane",
+            "Audit boundary",
+        ):
             self.assertTrue(
-                any(item.kind == "path_contains" and item.value == bearing
-                    for item in revised.assertions)
+                any(
+                    item.kind == "path_contains" and item.value == bearing
+                    for item in revised.assertions
+                )
             )
         self.assertTrue(
             any(
@@ -312,21 +368,39 @@ class BehaviorContractTests(unittest.TestCase):
         )
 
         tickets = scenarios["wayfinder-contract-smoke"]
-        self.assertTrue(any("/tickets" in item for item in tickets.forbid_created_globs))
         self.assertTrue(
-            any(item.kind == "glob_count" and item.path.as_posix().endswith("issues/*.md")
-                and item.count == 3 for item in tickets.assertions)
+            any("/tickets" in item for item in tickets.forbid_created_globs)
+        )
+        self.assertTrue(
+            any(
+                item.kind == "glob_count"
+                and item.path.as_posix().endswith("issues/*.md")
+                and item.count == 3
+                for item in tickets.assertions
+            )
         )
 
-    def test_settlement_scenarios_cover_resolution_history_and_effort_completion(self) -> None:
+    def test_settlement_scenarios_cover_resolution_history_and_effort_completion(
+        self,
+    ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
         resolved = scenarios["wayfinder-resolved-unknown-without-promotion"]
         settled = scenarios["wayfinder-settled-knowledge-not-active"]
         new_destination = scenarios["wayfinder-completed-effort-new-destination"]
         historical = scenarios["wayfinder-explicit-historical-effort-access"]
 
-        self.assertTrue(any(item.kind == "path_not_exists" and "U17" in item.path.as_posix() for item in resolved.assertions))
-        self.assertTrue(any(item.kind == "path_not_exists" and "E12" in item.path.as_posix() for item in resolved.assertions))
+        self.assertTrue(
+            any(
+                item.kind == "path_not_exists" and "U17" in item.path.as_posix()
+                for item in resolved.assertions
+            )
+        )
+        self.assertTrue(
+            any(
+                item.kind == "path_not_exists" and "E12" in item.path.as_posix()
+                for item in resolved.assertions
+            )
+        )
         for child_type in ("unknowns", "evidence", "facts", "decisions"):
             self.assertTrue(
                 any(
@@ -337,36 +411,52 @@ class BehaviorContractTests(unittest.TestCase):
             )
         self.assertTrue(
             any(
-                item.kind == "path_exists" and item.path.as_posix() == "docs/provider-runtime.md"
+                item.kind == "path_exists"
+                and item.path.as_posix() == "docs/provider-runtime.md"
                 for item in resolved.assertions
             )
         )
         self.assertTrue(
             any(
-                item.kind == "path_contains" and item.value == "Provider requirements — settled"
+                item.kind == "path_contains"
+                and item.value == "Provider requirements — settled"
                 for item in resolved.assertions
             )
         )
         self.assertTrue(
-            any(item.kind == "path_not_exists" and "D1" in item.path.as_posix()
-                for item in settled.assertions)
+            any(
+                item.kind == "path_not_exists" and "D1" in item.path.as_posix()
+                for item in settled.assertions
+            )
         )
         self.assertTrue(
             any(
                 item.kind == "path_exists"
-                and item.path.as_posix().endswith("wayfinder-lifecycle-validation/map.md")
+                and item.path.as_posix().endswith(
+                    "wayfinder-lifecycle-validation/map.md"
+                )
                 for item in new_destination.assertions
             )
         )
         self.assertIn("repository_unchanged", historical.expect)
         self.assertEqual(len(historical.state_must_include), 1)
-        completed_map = behavior.FIXTURE_ROOT / "wayfinder-settlement/.agent-wayfinder/wayfinder-lifecycle-completed/map.md"
+        completed_map = (
+            behavior.FIXTURE_ROOT
+            / "wayfinder-settlement/.agent-wayfinder/wayfinder-lifecycle-completed/map.md"
+        )
         self.assertIn("docs/wayfinder-lifecycle.md", completed_map.read_text())
         completed_effort = completed_map.parent
-        self.assertFalse(any((completed_effort / child).exists() for child in ("unknowns", "evidence", "facts", "decisions")))
+        self.assertFalse(
+            any(
+                (completed_effort / child).exists()
+                for child in ("unknowns", "evidence", "facts", "decisions")
+            )
+        )
         self.assertTrue(
-            any(item.kind == "path_not_exists" and item.path.as_posix() == "issues"
-                for item in new_destination.assertions)
+            any(
+                item.kind == "path_not_exists" and item.path.as_posix() == "issues"
+                for item in new_destination.assertions
+            )
         )
 
         concurrent = scenarios["wayfinder-concurrent-allocation-recheck"]
@@ -375,11 +465,15 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertIn("task_completed", transient.expect)
         self.assertIn("meaningful_repository_change", transient.expect)
         self.assertTrue(
-            any(item.kind == "path_not_exists" and "U17" in item.path.as_posix()
-                for item in transient.assertions)
+            any(
+                item.kind == "path_not_exists" and "U17" in item.path.as_posix()
+                for item in transient.assertions
+            )
         )
 
-    def test_effort_selection_scenarios_cover_resume_creation_naming_and_stability(self) -> None:
+    def test_effort_selection_scenarios_cover_resume_creation_naming_and_stability(
+        self,
+    ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
         synonym = scenarios["wayfinder-resume-synonymous-wording"]
         ambiguous = scenarios["wayfinder-ambiguous-effort-resume"]
@@ -391,13 +485,17 @@ class BehaviorContractTests(unittest.TestCase):
         refinement = scenarios["wayfinder-title-refinement-keeps-path"]
 
         self.assertIn("existing_state_reused", synonym.expect)
-        self.assertTrue(any("wayfinder-runtime" in item for item in synonym.forbid_created_globs))
+        self.assertTrue(
+            any("wayfinder-runtime" in item for item in synonym.forbid_created_globs)
+        )
         self.assertIn("blocked_cleanly", ambiguous.expect)
         self.assertEqual(len(ambiguous.state_must_include), 2)
         self.assertTrue(
             any(
                 item.kind == "path_exists"
-                and item.path.as_posix().endswith("wayfinder-knowledge-settlement/map.md")
+                and item.path.as_posix().endswith(
+                    "wayfinder-knowledge-settlement/map.md"
+                )
                 for item in distinct.assertions
             )
         )
@@ -408,13 +506,17 @@ class BehaviorContractTests(unittest.TestCase):
         ephemeral_state = " ".join(ephemeral.starting_state).lower()
         for transient in ("branch", "ticket", "file", "temporary-task", "chat-title"):
             self.assertIn(transient, ephemeral_state)
-        self.assertTrue(any("current-work" in item for item in ephemeral.forbid_created_globs))
+        self.assertTrue(
+            any("current-work" in item for item in ephemeral.forbid_created_globs)
+        )
         self.assertIn("existing_state_reused", concurrent.expect)
         self.assertIn("newly appearing", " ".join(concurrent.starting_state))
         self.assertTrue(
             any(
                 item.kind == "path_exists"
-                and item.path.as_posix().endswith("provider-projection-observability/map.md")
+                and item.path.as_posix().endswith(
+                    "provider-projection-observability/map.md"
+                )
                 for item in collision.assertions
             )
         )
@@ -428,8 +530,12 @@ class BehaviorContractTests(unittest.TestCase):
         )
 
     def test_scenarios_reject_unknown_behavior_vocabulary(self) -> None:
-        source = (behavior.SCENARIO_ROOT / "simple-bounded-task.toml").read_text(encoding="utf-8")
-        invalid = source.replace('"task_completed"', '"implementation_route_exactly"', 1)
+        source = (behavior.SCENARIO_ROOT / "simple-bounded-task.toml").read_text(
+            encoding="utf-8"
+        )
+        invalid = source.replace(
+            '"task_completed"', '"implementation_route_exactly"', 1
+        )
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "simple-bounded-task.toml"
             path.write_text(invalid, encoding="utf-8")
@@ -445,9 +551,13 @@ class BehaviorContractTests(unittest.TestCase):
                 self.assertLessEqual(len(files), 8)
                 self.assertTrue(all(path.stat().st_size < 12_000 for path in files))
 
-    def test_live_runner_requires_one_valid_marker_at_end_of_final_response(self) -> None:
+    def test_live_runner_requires_one_valid_marker_at_end_of_final_response(
+        self,
+    ) -> None:
         scenario = next(
-            item for item in behavior.load_scenarios() if item.id == "simple-bounded-task"
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "simple-bounded-task"
         )
         agent_source = textwrap.dedent(
             """
@@ -492,9 +602,13 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertEqual(evidence.route_components, ("direct",))
         self.assertTrue(all(result.passed for result in results), results)
 
-    def test_route_visibility_rejects_missing_duplicate_malformed_and_nonfinal_markers(self) -> None:
+    def test_route_visibility_rejects_missing_duplicate_malformed_and_nonfinal_markers(
+        self,
+    ) -> None:
         scenario = next(
-            item for item in behavior.load_scenarios() if item.id == "simple-bounded-task"
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "simple-bounded-task"
         )
         cases = {
             "missing": "done",
@@ -569,7 +683,9 @@ class BehaviorContractTests(unittest.TestCase):
 
     def test_self_report_does_not_replace_observed_verification(self) -> None:
         scenario = next(
-            item for item in behavior.load_scenarios() if item.id == "meaningful-implementation"
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "meaningful-implementation"
         )
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
@@ -593,9 +709,13 @@ class BehaviorContractTests(unittest.TestCase):
         failed_names = {result.name for result in results if not result.passed}
         self.assertIn("expect:verification_performed", failed_names)
 
-    def test_progressive_state_contract_rejects_loading_an_unrelated_child(self) -> None:
+    def test_progressive_state_contract_rejects_loading_an_unrelated_child(
+        self,
+    ) -> None:
         scenario = next(
-            item for item in behavior.load_scenarios() if item.id == "existing-wayfinder-state"
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "existing-wayfinder-state"
         )
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
@@ -620,13 +740,19 @@ class BehaviorContractTests(unittest.TestCase):
                 route_components=(),
             )
             results = behavior.evaluate(evidence)
-        progressive = next(result for result in results if result.name == "state-loading:progressive")
+        progressive = next(
+            result for result in results if result.name == "state-loading:progressive"
+        )
         self.assertFalse(progressive.passed)
         self.assertIn("U1-name-telemetry-metric.md", progressive.detail)
 
-    def test_wayfinder_new_effort_is_demand_driven_and_allows_implicit_provider_execution(self) -> None:
+    def test_wayfinder_new_effort_is_demand_driven_and_allows_implicit_provider_execution(
+        self,
+    ) -> None:
         scenario = next(
-            item for item in behavior.load_scenarios() if item.id == "wayfinder-new-effort"
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-new-effort"
         )
         request = scenario.request.lower()
         self.assertNotIn("$wayfinder", request)
@@ -639,9 +765,13 @@ class BehaviorContractTests(unittest.TestCase):
             any("/tickets" in pattern for pattern in scenario.forbid_created_globs)
         )
 
-    def test_wayfinder_fact_conflict_exercises_evidence_fact_and_decision_boundaries(self) -> None:
+    def test_wayfinder_fact_conflict_exercises_evidence_fact_and_decision_boundaries(
+        self,
+    ) -> None:
         scenario = next(
-            item for item in behavior.load_scenarios() if item.id == "wayfinder-fact-conflict"
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-fact-conflict"
         )
         self.assertTrue(scenario.live)
         self.assertIn(
@@ -653,12 +783,8 @@ class BehaviorContractTests(unittest.TestCase):
             for item in scenario.assertions
             if item.kind == "glob_count"
         }
-        self.assertEqual(
-            counts[".agent-wayfinder/deployment-mode/evidence/E*.md"], 2
-        )
-        self.assertEqual(
-            counts[".agent-wayfinder/deployment-mode/unknowns/U*.md"], 1
-        )
+        self.assertEqual(counts[".agent-wayfinder/deployment-mode/evidence/E*.md"], 2)
+        self.assertEqual(counts[".agent-wayfinder/deployment-mode/unknowns/U*.md"], 1)
         required_values = {
             item.value
             for item in scenario.assertions
@@ -679,7 +805,9 @@ class BehaviorContractTests(unittest.TestCase):
 
     def test_wayfinder_contract_smoke_starts_map_only_and_routes_work_out(self) -> None:
         scenario = next(
-            item for item in behavior.load_scenarios() if item.id == "wayfinder-contract-smoke"
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-contract-smoke"
         )
         fixture_effort = (
             behavior.FIXTURE_ROOT
@@ -687,7 +815,10 @@ class BehaviorContractTests(unittest.TestCase):
             / ".agent-wayfinder/runtime-rollout"
         )
         self.assertEqual(
-            [path.relative_to(fixture_effort).as_posix() for path in fixture_effort.rglob("*")],
+            [
+                path.relative_to(fixture_effort).as_posix()
+                for path in fixture_effort.rglob("*")
+            ],
             ["map.md"],
         )
         self.assertTrue(scenario.live)
@@ -707,7 +838,9 @@ class BehaviorContractTests(unittest.TestCase):
             ),
             1,
         )
-        self.assertTrue(any("/tickets" in pattern for pattern in scenario.forbid_created_globs))
+        self.assertTrue(
+            any("/tickets" in pattern for pattern in scenario.forbid_created_globs)
+        )
         self.assertTrue(
             any(
                 item.kind == "glob_count"
@@ -717,9 +850,13 @@ class BehaviorContractTests(unittest.TestCase):
             )
         )
 
-    def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(self) -> None:
+    def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(
+        self,
+    ) -> None:
         scenario = next(
-            item for item in behavior.load_scenarios() if item.id == "wayfinder-new-effort"
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-new-effort"
         )
         count_assertion = next(
             item
@@ -754,8 +891,12 @@ class BehaviorContractTests(unittest.TestCase):
                 verification=(),
                 route_components=(),
             )
-            self.assertTrue(behavior.evaluate_assertion(evidence, count_assertion).passed)
-            self.assertTrue(behavior.evaluate_assertion(evidence, content_assertion).passed)
+            self.assertTrue(
+                behavior.evaluate_assertion(evidence, count_assertion).passed
+            )
+            self.assertTrue(
+                behavior.evaluate_assertion(evidence, content_assertion).passed
+            )
 
             (unknowns / "U2-unjustified-extra.md").write_text(
                 "# U2: Unjustified extra unknown\n",
@@ -773,7 +914,9 @@ class BehaviorContractTests(unittest.TestCase):
                 verification=(),
                 route_components=(),
             )
-            self.assertFalse(behavior.evaluate_assertion(evidence, count_assertion).passed)
+            self.assertFalse(
+                behavior.evaluate_assertion(evidence, count_assertion).passed
+            )
 
             stable_unknown.unlink()
             evidence = behavior.RunEvidence(
@@ -788,10 +931,16 @@ class BehaviorContractTests(unittest.TestCase):
                 verification=(),
                 route_components=(),
             )
-            self.assertTrue(behavior.evaluate_assertion(evidence, count_assertion).passed)
-            self.assertFalse(behavior.evaluate_assertion(evidence, content_assertion).passed)
+            self.assertTrue(
+                behavior.evaluate_assertion(evidence, count_assertion).passed
+            )
+            self.assertFalse(
+                behavior.evaluate_assertion(evidence, content_assertion).passed
+            )
 
-    def test_semantic_glob_assertions_do_not_fix_artifact_filenames_or_counts(self) -> None:
+    def test_semantic_glob_assertions_do_not_fix_artifact_filenames_or_counts(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             workspace = Path(temporary)
             unknowns = workspace / ".agent-wayfinder/arc/unknowns"
@@ -816,9 +965,7 @@ class BehaviorContractTests(unittest.TestCase):
                 verification=(),
                 route_components=(),
             )
-            pattern = behavior.PurePosixPath(
-                ".agent-wayfinder/arc/unknowns/U*.md"
-            )
+            pattern = behavior.PurePosixPath(".agent-wayfinder/arc/unknowns/U*.md")
             any_review = behavior.Assertion(
                 kind="glob_any_contains",
                 path=pattern,

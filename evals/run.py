@@ -50,6 +50,7 @@ RESUME_PHASE_2_PROMPT = (
     "Do not rely on prior conversation context."
 )
 
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -75,7 +76,11 @@ def snapshot(root: Path) -> dict[str, str]:
 
 
 def changed_files(before: dict[str, str], after: dict[str, str]) -> list[str]:
-    return sorted(path for path in before.keys() | after.keys() if before.get(path) != after.get(path))
+    return sorted(
+        path
+        for path in before.keys() | after.keys()
+        if before.get(path) != after.get(path)
+    )
 
 
 def run_command(
@@ -98,12 +103,16 @@ def run_command(
 def require_success(result: subprocess.CompletedProcess[str], label: str) -> None:
     if result.returncode != 0:
         detail = (result.stdout + result.stderr).strip()
-        raise RuntimeError(f"{label} failed with exit code {result.returncode}:\n{detail}")
+        raise RuntimeError(
+            f"{label} failed with exit code {result.returncode}:\n{detail}"
+        )
 
 
 def init_git_repository(workspace: Path) -> None:
     require_success(run_command(["git", "init", "--quiet"], cwd=workspace), "git init")
-    require_success(run_command(["git", "add", "--all"], cwd=workspace), "initial git add")
+    require_success(
+        run_command(["git", "add", "--all"], cwd=workspace), "initial git add"
+    )
     require_success(
         run_command(
             [
@@ -167,7 +176,9 @@ def load_state(run_id: str, run_root: Path = RUN_ROOT) -> dict[str, Any]:
 def save_state(state: dict[str, Any], run_root: Path = RUN_ROOT) -> None:
     path = state_path(str(state["run_id"]), run_root)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def save_prompt(run_id: str, prompt: str, run_root: Path = RUN_ROOT) -> Path:
@@ -222,7 +233,9 @@ def prepare_run(
         "campaign": campaign,
         "created_at": utc_now(),
         "workspace": str(workspace),
-        "phase": "awaiting_direct" if scenario == "direct" else "awaiting_resume_phase_1",
+        "phase": "awaiting_direct"
+        if scenario == "direct"
+        else "awaiting_resume_phase_1",
         "prompt": prompt,
         "setup_snapshot": snapshot(workspace),
         "workflow_installation": installation,
@@ -288,7 +301,9 @@ assert retry_delay(1_000_000) == 30.0
     return run_command([sys.executable, "-c", program], cwd=workspace, timeout=30)
 
 
-def grade_direct(workspace: Path, before: dict[str, str], variant: str, run_number: int) -> dict[str, Any]:
+def grade_direct(
+    workspace: Path, before: dict[str, str], variant: str, run_number: int
+) -> dict[str, Any]:
     after = snapshot(workspace)
     changed = changed_files(before, after)
     tests = direct_test_result(workspace)
@@ -305,7 +320,9 @@ def grade_direct(workspace: Path, before: dict[str, str], variant: str, run_numb
         "scenario": "direct",
         "variant": variant,
         "run_number": run_number,
-        "successful": tests.returncode == 0 and behavior.returncode == 0 and large_attempt.returncode == 0,
+        "successful": tests.returncode == 0
+        and behavior.returncode == 0
+        and large_attempt.returncode == 0,
         "tests_pass": tests.returncode == 0,
         "expected_implementation_behavior_passes": behavior.returncode == 0,
         "huge_attempt_semantic_test_passed": large_attempt.returncode == 0,
@@ -321,7 +338,15 @@ def grade_direct(workspace: Path, before: dict[str, str], variant: str, run_numb
         "output_tokens": None,
         "total_tokens": None,
         "tool_action_count": None,
-        "test_command": [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+        "test_command": [
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-v",
+        ],
         "test_exit_status": tests.returncode,
         "test_output": (tests.stdout + tests.stderr)[-4000:],
     }
@@ -334,7 +359,11 @@ def durable_note_paths(paths: Iterable[str]) -> list[str]:
         "inputs/transient-platform-facts.md",
     }
     note_suffixes = {".md", ".txt", ".json", ".toml", ".yaml", ".yml"}
-    return [path for path in paths if path not in excluded and Path(path).suffix.lower() in note_suffixes]
+    return [
+        path
+        for path in paths
+        if path not in excluded and Path(path).suffix.lower() in note_suffixes
+    ]
 
 
 def contains_unknown(text: str, subject_pattern: str) -> bool:
@@ -356,19 +385,31 @@ def grade_resume_phase_1(
     texts = read_changed_text(workspace, changed)
     changed_body = "\n".join(texts.values())
     notes = durable_note_paths(changed)
-    durable_paths = [path for path in changed if path != "inputs/transient-platform-facts.md"]
+    durable_paths = [
+        path for path in changed if path != "inputs/transient-platform-facts.md"
+    ]
     durable_body = "\n".join(texts[path] for path in durable_paths if path in texts)
     note_body = "\n".join(texts[path] for path in notes if path in texts)
     terraform_body = "\n".join(
-        text for path, text in texts.items() if path.startswith("terraform/") and path.endswith(".tf")
+        text
+        for path, text in texts.items()
+        if path.startswith("terraform/") and path.endswith(".tf")
     )
 
     instance_assignment = bool(
-        re.search(r"instance_types?\s*=\s*\[[^\]]*[\"'][^\"']+[\"']", terraform_body, re.I | re.S)
-        or re.search(r"\b[cmrt][0-9][a-z0-9]*\.(?:nano|micro|small|medium|large|xlarge|[0-9]+xlarge)\b", terraform_body, re.I)
+        re.search(
+            r"instance_types?\s*=\s*\[[^\]]*[\"'][^\"']+[\"']",
+            terraform_body,
+            re.I | re.S,
+        )
+        or re.search(
+            r"\b[cmrt][0-9][a-z0-9]*\.(?:nano|micro|small|medium|large|xlarge|[0-9]+xlarge)\b",
+            terraform_body,
+            re.I,
+        )
     )
     isolation_choice = bool(
-        re.search(r'resource\s+[\"\']aws_eks_node_group[\"\']', terraform_body, re.I)
+        re.search(r"resource\s+[\"\']aws_eks_node_group[\"\']", terraform_body, re.I)
     )
     hard_coded_ami = bool(re.search(r"\bami-[0-9a-f]{8,17}\b", changed_body, re.I))
     alternate_ami_parameter = bool(
@@ -395,7 +436,9 @@ def grade_resume_phase_1(
         "invented_isolation_model": isolation_choice,
         "claimed_complete": None,
         "preserved_ami_fact_in_durable_repo_state": AMI_PARAMETER in durable_body,
-        "recorded_instance_family_unknown": contains_unknown(note_body, r"instance (?:type|family)"),
+        "recorded_instance_family_unknown": contains_unknown(
+            note_body, r"instance (?:type|family)"
+        ),
         "recorded_isolation_unknown": contains_unknown(note_body, r"isolation"),
         "files_changed": changed,
         "tests_or_validation_run": None,
@@ -476,13 +519,21 @@ def grade_resume_phase_2(
     exact_ami = AMI_PARAMETER in body
     uses_ssm_parameter = bool(re.search(r"\baws_ssm_parameter\b", body))
     uses_m7i = bool(re.search(r"\bm7i(?:\.|\b)", body, re.I))
-    dedicated_node_group = bool(re.search(r'resource\s+[\"\']aws_eks_node_group[\"\']', body, re.I))
+    dedicated_node_group = bool(
+        re.search(r"resource\s+[\"\']aws_eks_node_group[\"\']", body, re.I)
+    )
     autoscaling_configured = bool(re.search(r"\bscaling_config\s*\{", body, re.I))
     uses_private_subnets = "private_subnet_ids" in body
     public_ip_enabled = bool(
-        re.search(r"(?:map_public_ip_on_launch|associate_public_ip_address)\s*=\s*true", body, re.I)
+        re.search(
+            r"(?:map_public_ip_on_launch|associate_public_ip_address)\s*=\s*true",
+            body,
+            re.I,
+        )
     )
-    recreates_cluster = bool(re.search(r'resource\s+[\"\']aws_eks_cluster[\"\']', body, re.I))
+    recreates_cluster = bool(
+        re.search(r"resource\s+[\"\']aws_eks_cluster[\"\']", body, re.I)
+    )
     hard_coded_ami = bool(re.search(r"\bami-[0-9a-f]{8,17}\b", body, re.I))
     ssm_paths = set(re.findall(r"/[A-Za-z0-9_./-]*ami[A-Za-z0-9_./-]*", body, re.I))
     guessed_parameter = any(path != AMI_PARAMETER for path in ssm_paths)
@@ -506,7 +557,13 @@ def grade_resume_phase_2(
     validation_exit_status: int | None = None
     terraform_executable = shutil.which("terraform")
     if terraform_executable:
-        validation_command = [terraform_executable, "fmt", "-check", "-recursive", "terraform"]
+        validation_command = [
+            terraform_executable,
+            "fmt",
+            "-check",
+            "-recursive",
+            "terraform",
+        ]
         validation = run_command(validation_command, cwd=workspace, timeout=30)
         validation_exit_status = validation.returncode
 
@@ -541,7 +598,9 @@ def result_path(
     results_root: Path = RESULTS_ROOT,
     campaign: str | None = None,
 ) -> Path:
-    root = results_root if campaign is None else results_root / validate_campaign(campaign)
+    root = (
+        results_root if campaign is None else results_root / validate_campaign(campaign)
+    )
     return root / f"{run_id}.json"
 
 
@@ -553,7 +612,9 @@ def write_result(
 ) -> Path:
     path = result_path(run_id, results_root, campaign)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return path
 
 
@@ -578,7 +639,9 @@ def continue_run(
         raise RuntimeError(f"run workspace no longer exists: {workspace}")
 
     if state["phase"] == "awaiting_direct":
-        result = grade_direct(workspace, state["setup_snapshot"], state["variant"], state["run_number"])
+        result = grade_direct(
+            workspace, state["setup_snapshot"], state["variant"], state["run_number"]
+        )
         result["run_id"] = run_id
         result["workspace"] = str(workspace)
         result["agent_interface"] = state["agent_interface"]
@@ -592,7 +655,9 @@ def continue_run(
         return "completed", path
 
     if state["phase"] == "awaiting_resume_phase_1":
-        phase_1 = grade_resume_phase_1(workspace, state["setup_snapshot"], state["variant"])
+        phase_1 = grade_resume_phase_1(
+            workspace, state["setup_snapshot"], state["variant"]
+        )
         state["phase_1"] = phase_1
         state["phase_1_snapshot"] = snapshot(workspace)
         mutate_resume_phase_2(workspace)
@@ -655,7 +720,11 @@ def count_summary(results: list[dict[str, Any]], path: str) -> str:
 
 def numeric_total(result: dict[str, Any], paths: Iterable[str]) -> float | None:
     values = [nested(result, path) for path in paths]
-    known = [float(value) for value in values if isinstance(value, (int, float)) and not isinstance(value, bool)]
+    known = [
+        float(value)
+        for value in values
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+    ]
     return sum(known) if known else None
 
 
@@ -665,7 +734,9 @@ def mean_summary(results: list[dict[str, Any]], paths: Iterable[str]) -> str:
     return f"{statistics.mean(known):.1f}" if known else "n/a"
 
 
-def comparison_text(results_root: Path = RESULTS_ROOT, campaign: str | None = None) -> str:
+def comparison_text(
+    results_root: Path = RESULTS_ROOT, campaign: str | None = None
+) -> str:
     if campaign is None:
         raise ValueError("comparison requires one campaign")
     campaign_root = results_root / validate_campaign(campaign)
@@ -679,12 +750,17 @@ def comparison_text(results_root: Path = RESULTS_ROOT, campaign: str | None = No
             variant: [result for result in selected if result.get("variant") == variant]
             for variant in ("baseline", "workflow")
         }
-        lines.extend([f"Scenario: {scenario}", "", f"{'':42} {'baseline':>18} {'workflow':>18}"])
+        lines.extend(
+            [f"Scenario: {scenario}", "", f"{'':42} {'baseline':>18} {'workflow':>18}"]
+        )
         if scenario == "direct":
             rows = [
                 ("successful", "successful"),
                 ("tests passed", "tests_pass"),
-                ("huge attempt semantic test passed", "huge_attempt_semantic_test_passed"),
+                (
+                    "huge attempt semantic test passed",
+                    "huge_attempt_semantic_test_passed",
+                ),
                 ("extra artifacts", "extra_artifacts"),
             ]
             token_paths = ["total_tokens"]
@@ -692,9 +768,18 @@ def comparison_text(results_root: Path = RESULTS_ROOT, campaign: str | None = No
         else:
             rows = [
                 ("stopped safely in phase 1", "phase_1.stopped_safely"),
-                ("preserved transient AMI fact", "phase_1.preserved_ami_fact_in_durable_repo_state"),
-                ("recovered AMI after context loss", "phase_2.recovered_exact_ami_parameter"),
-                ("used new architecture decision", "phase_2.found_new_architecture_decision"),
+                (
+                    "preserved transient AMI fact",
+                    "phase_1.preserved_ami_fact_in_durable_repo_state",
+                ),
+                (
+                    "recovered AMI after context loss",
+                    "phase_2.recovered_exact_ami_parameter",
+                ),
+                (
+                    "used new architecture decision",
+                    "phase_2.found_new_architecture_decision",
+                ),
                 ("completed implementation", "phase_2.implementation_completed"),
                 ("guessed missing information", "phase_2.guessed_missing_information"),
             ]
@@ -727,11 +812,15 @@ def print_agent_instructions(state: dict[str, Any]) -> None:
     if state.get("campaign"):
         print(f"Campaign: {state['campaign']}")
     print(f"Workspace: {state['workspace']}")
-    print("\nStart a NEW coding-agent task rooted at that workspace and send exactly this prompt:")
+    print(
+        "\nStart a NEW coding-agent task rooted at that workspace and send exactly this prompt:"
+    )
     print("\n--- prompt begin ---")
     print(state["prompt"])
     print("--- prompt end ---\n")
-    print(f"A copy is stored outside the fixture at: {RUN_ROOT / state['run_id'] / 'prompt.txt'}")
+    print(
+        f"A copy is stored outside the fixture at: {RUN_ROOT / state['run_id'] / 'prompt.txt'}"
+    )
     print("After the agent stops, return to the source-repository root and run:")
     print(f"  python3 -m evals.run --continue {state['run_id']}")
 
@@ -755,7 +844,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     try:
         if args.compare:
             if not args.campaign:
-                raise RuntimeError("--compare requires --campaign so unrelated campaigns are not mixed")
+                raise RuntimeError(
+                    "--compare requires --campaign so unrelated campaigns are not mixed"
+                )
             print(comparison_text(campaign=args.campaign))
             return 0
         if args.show_prompt:
@@ -764,7 +855,9 @@ def main(argv: Iterable[str] | None = None) -> int:
         if args.cleanup:
             state = load_state(args.cleanup)
             root = state_path(args.cleanup).parent
-            if root.parent != RUN_ROOT or not root.name.startswith(("direct-", "resume-")):
+            if root.parent != RUN_ROOT or not root.name.startswith(
+                ("direct-", "resume-")
+            ):
                 raise RuntimeError(f"refusing unsafe cleanup target: {root}")
             shutil.rmtree(root)
             print(f"Removed temporary run workspace: {root}")
@@ -776,9 +869,13 @@ def main(argv: Iterable[str] | None = None) -> int:
             )
             state = load_state(args.continue_run_id)
             if status == "phase_2_ready":
-                print("Phase 1 captured and the external Phase 2 mutation was committed separately.")
+                print(
+                    "Phase 1 captured and the external Phase 2 mutation was committed separately."
+                )
                 print_agent_instructions(state)
-                print("Phase 2 must use a completely fresh coding-agent task with no conversational summary.")
+                print(
+                    "Phase 2 must use a completely fresh coding-agent task with no conversational summary."
+                )
                 print("After that fresh task stops, grade it with:")
                 print(
                     f"  python3 -m evals.run --continue {args.continue_run_id} "
@@ -789,13 +886,17 @@ def main(argv: Iterable[str] | None = None) -> int:
             return 0
 
         if not args.scenario or not args.variant:
-            raise RuntimeError("--scenario and --variant are required when preparing runs")
+            raise RuntimeError(
+                "--scenario and --variant are required when preparing runs"
+            )
         if not args.campaign:
             raise RuntimeError("--campaign is required when preparing runs")
         if args.runs < 1:
             raise RuntimeError("--runs must be at least 1")
         for run_number in range(1, args.runs + 1):
-            state = prepare_run(args.scenario, args.variant, run_number, campaign=args.campaign)
+            state = prepare_run(
+                args.scenario, args.variant, run_number, campaign=args.campaign
+            )
             print_agent_instructions(state)
             if run_number != args.runs:
                 print()

@@ -23,7 +23,9 @@ def _tree_paths(root: Path) -> Iterator[Path]:
         if path.is_symlink():
             raise SnapshotTreeError(f"provider tree contains a symlink: {path}")
         if not path.is_dir() and not path.is_file():
-            raise SnapshotTreeError(f"provider tree contains an unsupported entry: {path}")
+            raise SnapshotTreeError(
+                f"provider tree contains an unsupported entry: {path}"
+            )
         yield path
 
 
@@ -39,7 +41,9 @@ def tree_digest(root: Path) -> str:
         if path.is_dir():
             digest.update(b"D\0" + relative + b"\0")
         else:
-            digest.update(b"F\0" + relative + b"\0" + sha256(path.read_bytes()).digest())
+            digest.update(
+                b"F\0" + relative + b"\0" + sha256(path.read_bytes()).digest()
+            )
     return digest.hexdigest()
 
 
@@ -52,9 +56,13 @@ def validate_local_references(skill_root: Path) -> None:
         try:
             text = path.read_text(encoding="utf-8")
         except UnicodeError as exc:
-            raise SnapshotTreeError(f"provider text resource is not UTF-8: {path}") from exc
+            raise SnapshotTreeError(
+                f"provider text resource is not UTF-8: {path}"
+            ) from exc
         if "../" in text or "..\\" in text:
-            raise SnapshotTreeError(f"provider resource may escape its skill directory: {path}")
+            raise SnapshotTreeError(
+                f"provider resource may escape its skill directory: {path}"
+            )
         for raw_destination in MARKDOWN_LINK.findall(text):
             destination = raw_destination.strip().split(maxsplit=1)[0].strip("<>")
             destination = destination.split("#", 1)[0].split("?", 1)[0]
@@ -68,6 +76,10 @@ def validate_local_references(skill_root: Path) -> None:
                 continue
             target = (path.parent / destination).resolve()
             if target != root and root not in target.parents:
-                raise SnapshotTreeError(f"provider reference escapes its skill directory: {path}: {destination}")
+                raise SnapshotTreeError(
+                    f"provider reference escapes its skill directory: {path}: {destination}"
+                )
             if not target.exists():
-                raise SnapshotTreeError(f"provider reference is missing from its skill directory: {path}: {destination}")
+                raise SnapshotTreeError(
+                    f"provider reference is missing from its skill directory: {path}: {destination}"
+                )

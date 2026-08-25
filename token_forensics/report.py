@@ -90,7 +90,10 @@ def human_text(summary: dict[str, Any], *, label: str | None = None) -> str:
             _line("Unique paths observed", _count(repository["unique_paths_observed"])),
             _line("Repeated reads", _count(len(repository["repeated_reads"]))),
             _line("Broad searches", _count(len(repository["broad_searches"]))),
-            _line("Likely unbounded searches", _count(len(repository["likely_unbounded_searches"]))),
+            _line(
+                "Likely unbounded searches",
+                _count(len(repository["likely_unbounded_searches"])),
+            ),
         ]
     )
     if heuristic["potential_context_pressure"]:
@@ -104,17 +107,33 @@ def human_text(summary: dict[str, Any], *, label: str | None = None) -> str:
     lines.extend(["", "FRAMEWORK ACTIVITY (HEURISTIC)"])
     lines.extend(
         [
-            _line("Instruction files", _count(len(framework["instruction_files_observed"]))),
+            _line(
+                "Instruction files",
+                _count(len(framework["instruction_files_observed"])),
+            ),
             _line("Skill files", _count(len(framework["skill_files_observed"]))),
-            _line("Skill output observed", _bytes(framework["skill_output_bytes_observed"])),
-            _line("Wayfinder files read", _count(len(framework["wayfinder_files_read"]))),
-            _line("Wayfinder files written", _count(len(framework["wayfinder_files_written"]))),
+            _line(
+                "Skill output observed",
+                _bytes(framework["skill_output_bytes_observed"]),
+            ),
+            _line(
+                "Wayfinder files read", _count(len(framework["wayfinder_files_read"]))
+            ),
+            _line(
+                "Wayfinder files written",
+                _count(len(framework["wayfinder_files_written"])),
+            ),
         ]
     )
     if framework["skill_names_observed"]:
-        lines.append("- Skill files observed: " + ", ".join(framework["skill_names_observed"]))
+        lines.append(
+            "- Skill files observed: " + ", ".join(framework["skill_names_observed"])
+        )
     if framework["skills_materially_invoked"]:
-        lines.append("- Skills materially invoked: " + ", ".join(framework["skills_materially_invoked"]))
+        lines.append(
+            "- Skills materially invoked: "
+            + ", ".join(framework["skills_materially_invoked"])
+        )
     if framework["route_markers"]:
         lines.append("- Route markers: " + ", ".join(framework["route_markers"]))
 

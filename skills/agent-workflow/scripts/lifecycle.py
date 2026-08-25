@@ -27,7 +27,9 @@ def configure_console() -> None:
                 pass
 
 
-def run(script: Path, arguments: list[str], *, capture: bool = False) -> subprocess.CompletedProcess[str]:
+def run(
+    script: Path, arguments: list[str], *, capture: bool = False
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(script), *arguments],
         text=True,
@@ -79,7 +81,10 @@ def status(target: Path, revision: str) -> int:
             file=sys.stderr,
         )
     elif provider.returncode != 0:
-        print("WARNING: Optional provider status is unavailable; core status is unchanged.", file=sys.stderr)
+        print(
+            "WARNING: Optional provider status is unavailable; core status is unchanged.",
+            file=sys.stderr,
+        )
     return core.returncode
 
 
@@ -112,7 +117,9 @@ def main(argv: Iterable[str] | None = None) -> int:
             return 2
         return status(args.target, args.source_revision)
     if args.command in {"install", "update"}:
-        return install_or_update(args.command, args.target, args.dry_run, args.source_revision)
+        return install_or_update(
+            args.command, args.target, args.dry_run, args.source_revision
+        )
     return remove(args.target, args.dry_run, args.source_revision)
 
 

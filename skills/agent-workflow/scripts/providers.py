@@ -74,7 +74,9 @@ def package_path(value: object, label: str) -> Path:
     if not isinstance(value, str) or not value or "\\" in value:
         raise ProviderError(f"invalid {label}: {value!r}")
     relative = PurePosixPath(value)
-    if relative.is_absolute() or any(part in {"", ".", ".."} for part in relative.parts):
+    if relative.is_absolute() or any(
+        part in {"", ".", ".."} for part in relative.parts
+    ):
         raise ProviderError(f"invalid {label}: {value!r}")
     return PACKAGE_ROOT.joinpath(*relative.parts)
 
@@ -109,7 +111,9 @@ def load_provider() -> Provider:
     if not isinstance(version, str) or not version:
         raise ProviderError("provider version must be a non-empty pinned tag")
     if not is_sha(resolved_commit, 40):
-        raise ProviderError("provider resolved commit must be a 40-character Git object ID")
+        raise ProviderError(
+            "provider resolved commit must be a 40-character Git object ID"
+        )
     if not isinstance(snapshot, dict):
         raise ProviderError("provider snapshot declaration is incomplete")
     snapshot_root = package_path(snapshot.get("path"), "provider snapshot path")
@@ -131,31 +135,44 @@ def load_provider() -> Provider:
         if not isinstance(path, str):
             raise ProviderError(f"provider skill {name} needs a path")
         relative = PurePosixPath(path)
-        if relative.is_absolute() or any(part in {"", ".", ".."} for part in relative.parts):
+        if relative.is_absolute() or any(
+            part in {"", ".", ".."} for part in relative.parts
+        ):
             raise ProviderError(f"provider skill {name} has an unsafe path")
         invocation = item.get("invocation")
         if not isinstance(invocation, dict) or set(invocation) != set(hosts):
-            raise ProviderError(f"provider skill {name} invocation hosts differ from declaration")
+            raise ProviderError(
+                f"provider skill {name} invocation hosts differ from declaration"
+            )
         if not all(
-            isinstance(policy, str) and policy in {"implicit", "user-only", "unavailable"}
+            isinstance(policy, str)
+            and policy in {"implicit", "user-only", "unavailable"}
             for policy in invocation.values()
         ):
-            raise ProviderError(f"provider skill {name} has an invalid invocation policy")
+            raise ProviderError(
+                f"provider skill {name} has an invalid invocation policy"
+            )
         requirements = item.get("requires_configuration")
         if (
             not isinstance(requirements, list)
             or not all(isinstance(requirement, str) for requirement in requirements)
             or len(requirements) != len(set(requirements))
-            or not all(requirement in configuration_names for requirement in requirements)
+            or not all(
+                requirement in configuration_names for requirement in requirements
+            )
         ):
-            raise ProviderError(f"provider skill {name} has invalid configuration requirements")
+            raise ProviderError(
+                f"provider skill {name} has invalid configuration requirements"
+            )
         adapter = item.get("agentic_workflow_adapter")
         adapter_name: str | None = None
         upstream_body_sha256: str | None = None
         projection_source: Path | None = None
         if adapter is not None:
             if not isinstance(adapter, dict):
-                raise ProviderError(f"provider skill {name} has an invalid Agent Workflow adapter")
+                raise ProviderError(
+                    f"provider skill {name} has an invalid Agent Workflow adapter"
+                )
             adapter_name = adapter.get("name")
             if adapter_name == WAYFINDER_ADAPTER:
                 upstream_body_sha256 = adapter.get("upstream_body_sha256")
@@ -164,7 +181,8 @@ def load_provider() -> Provider:
                     f"provider skill {name} projection source",
                 )
                 valid = (
-                    set(adapter) == {"name", "projection_source", "upstream_body_sha256"}
+                    set(adapter)
+                    == {"name", "projection_source", "upstream_body_sha256"}
                     and name == "wayfinder"
                     and isinstance(upstream_body_sha256, str)
                     and len(upstream_body_sha256) == 64
@@ -176,12 +194,13 @@ def load_provider() -> Provider:
             elif adapter_name == GRILLING_DISCOVERY_ADAPTER:
                 valid = set(adapter) == {"name"} and name == "grilling"
             else:
-                valid = (
-                    adapter_name == IMPLICIT_INVOCATION_ADAPTER
-                    and set(adapter) == {"name"}
-                )
+                valid = adapter_name == IMPLICIT_INVOCATION_ADAPTER and set(
+                    adapter
+                ) == {"name"}
             if not valid:
-                raise ProviderError(f"provider skill {name} has an unsupported Agent Workflow adapter")
+                raise ProviderError(
+                    f"provider skill {name} has an unsupported Agent Workflow adapter"
+                )
         if adapter_name and (
             invocation.get("codex") != "implicit"
             or invocation.get("github-copilot") != "implicit"
@@ -243,15 +262,21 @@ def validate_staged_skill(
     version: str,
 ) -> None:
     if destination_state(root, skill.name) != "present":
-        raise ProviderError(f"staged provider skill {skill.name} is missing or unusable")
+        raise ProviderError(
+            f"staged provider skill {skill.name} is missing or unusable"
+        )
     directory = root / ".agents" / "skills" / skill.name
     skill_file = directory / "SKILL.md"
     try:
         text = skill_file.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as exc:
-        raise ProviderError(f"cannot read staged provider skill {skill.name}: {exc}") from exc
+        raise ProviderError(
+            f"cannot read staged provider skill {skill.name}: {exc}"
+        ) from exc
     if not text.startswith("---\n") or "\n---\n" not in text[4:]:
-        raise ProviderError(f"staged provider skill {skill.name} lacks valid frontmatter")
+        raise ProviderError(
+            f"staged provider skill {skill.name} lacks valid frontmatter"
+        )
     frontmatter = text[4 : text.index("\n---\n", 4)]
     required = (
         f"name: {skill.name}",
@@ -260,7 +285,9 @@ def validate_staged_skill(
         f"    github-repo: https://github.com/{repository}",
     )
     if any(line not in frontmatter.splitlines() for line in required):
-        raise ProviderError(f"staged provider skill {skill.name} has incompatible source metadata")
+        raise ProviderError(
+            f"staged provider skill {skill.name} has incompatible source metadata"
+        )
 
     openai = directory / "agents" / "openai.yaml"
     if openai.is_symlink() or not openai.is_file():
@@ -268,19 +295,35 @@ def validate_staged_skill(
     try:
         openai_text = openai.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as exc:
-        raise ProviderError(f"cannot read Codex metadata for {skill.name}: {exc}") from exc
+        raise ProviderError(
+            f"cannot read Codex metadata for {skill.name}: {exc}"
+        ) from exc
 
     github_policy = skill.invocation["github-copilot"]
-    if github_policy == "user-only" and "disable-model-invocation: true" not in frontmatter:
-        raise ProviderError(f"staged provider skill {skill.name} lacks GitHub Copilot user-only metadata")
+    if (
+        github_policy == "user-only"
+        and "disable-model-invocation: true" not in frontmatter
+    ):
+        raise ProviderError(
+            f"staged provider skill {skill.name} lacks GitHub Copilot user-only metadata"
+        )
     if github_policy == "implicit" and "disable-model-invocation: true" in frontmatter:
-        raise ProviderError(f"staged provider skill {skill.name} blocks GitHub Copilot implicit invocation")
+        raise ProviderError(
+            f"staged provider skill {skill.name} blocks GitHub Copilot implicit invocation"
+        )
 
     codex_policy = skill.invocation["codex"]
-    if codex_policy == "user-only" and "allow_implicit_invocation: false" not in openai_text:
-        raise ProviderError(f"staged provider skill {skill.name} lacks Codex user-only metadata")
+    if (
+        codex_policy == "user-only"
+        and "allow_implicit_invocation: false" not in openai_text
+    ):
+        raise ProviderError(
+            f"staged provider skill {skill.name} lacks Codex user-only metadata"
+        )
     if codex_policy == "implicit" and "allow_implicit_invocation: false" in openai_text:
-        raise ProviderError(f"staged provider skill {skill.name} blocks Codex implicit invocation")
+        raise ProviderError(
+            f"staged provider skill {skill.name} blocks Codex implicit invocation"
+        )
 
 
 def adapter_plan(
@@ -301,14 +344,18 @@ def adapter_plan(
         or skill.upstream_body_sha256 is None
         or skill.projection_source is None
     ):
-        raise ProviderError(f"provider skill {skill.name} has an unsupported Agent Workflow adapter")
+        raise ProviderError(
+            f"provider skill {skill.name} has an unsupported Agent Workflow adapter"
+        )
     if destination_state(root, skill.name) != "present":
         raise ProviderError(f"provider skill {skill.name} is not safe to adapt")
 
     directory = root / ".agents" / "skills" / skill.name
     skill_path = directory / "SKILL.md"
     if skill_path.is_symlink() or not skill_path.is_file():
-        raise ProviderError(f"provider skill {skill.name} instructions are missing or unsafe")
+        raise ProviderError(
+            f"provider skill {skill.name} instructions are missing or unsafe"
+        )
     original_skill = skill_path.read_bytes()
     if not original_skill.startswith(b"---\n"):
         raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
@@ -323,16 +370,24 @@ def adapter_plan(
         f"    github-repo: https://github.com/{repository}\n".encode("utf-8"),
     )
     if any(frontmatter.count(line) != 1 for line in required_source):
-        raise ProviderError(f"provider skill {skill.name} has incompatible source metadata")
+        raise ProviderError(
+            f"provider skill {skill.name} has incompatible source metadata"
+        )
 
     upstream_body = original_skill[body_start:]
     if b"<!-- agent-workflow:wayfinder-" in upstream_body:
-        raise ProviderError(f"provider skill {skill.name} has unexpected projection markers")
+        raise ProviderError(
+            f"provider skill {skill.name} has unexpected projection markers"
+        )
     if sha256(upstream_body).hexdigest() != skill.upstream_body_sha256:
-        raise ProviderError(f"provider skill {skill.name} has an unexpected pinned method body")
+        raise ProviderError(
+            f"provider skill {skill.name} has an unexpected pinned method body"
+        )
 
     if skill.projection_source.is_symlink() or not skill.projection_source.is_file():
-        raise ProviderError(f"provider skill {skill.name} runtime projection is missing or unsafe")
+        raise ProviderError(
+            f"provider skill {skill.name} runtime projection is missing or unsafe"
+        )
     try:
         projection_body = skill.projection_source.read_bytes()
         projection_body.decode("utf-8")
@@ -345,7 +400,9 @@ def adapter_plan(
         or not projection_body.endswith(b"\n")
         or b"\n---\n" in projection_body
     ):
-        raise ProviderError(f"provider skill {skill.name} runtime projection is malformed")
+        raise ProviderError(
+            f"provider skill {skill.name} runtime projection is malformed"
+        )
 
     desired_skill = original_skill[:body_start] + projection_body
     replacements = (
@@ -374,8 +431,8 @@ def adapter_plan(
             directory / "agents" / "openai.yaml",
             (
                 (
-                    b"  short_description: \"Map a large effort as decision tickets\"\n",
-                    b"  short_description: \"Keep a lightweight map of complicated work\"\n",
+                    b'  short_description: "Map a large effort as decision tickets"\n',
+                    b'  short_description: "Keep a lightweight map of complicated work"\n',
                 ),
                 (
                     b"  allow_implicit_invocation: false\n",
@@ -418,9 +475,13 @@ def implicit_invocation_adapter_plan(
     skill_path = directory / "SKILL.md"
     openai_path = directory / "agents" / "openai.yaml"
     if skill_path.is_symlink() or not skill_path.is_file():
-        raise ProviderError(f"provider skill {skill.name} instructions are missing or unsafe")
+        raise ProviderError(
+            f"provider skill {skill.name} instructions are missing or unsafe"
+        )
     if openai_path.is_symlink() or not openai_path.is_file():
-        raise ProviderError(f"provider skill {skill.name} Codex metadata is missing or unsafe")
+        raise ProviderError(
+            f"provider skill {skill.name} Codex metadata is missing or unsafe"
+        )
 
     original_skill = skill_path.read_bytes()
     if not original_skill.startswith(b"---\n"):
@@ -435,7 +496,9 @@ def implicit_invocation_adapter_plan(
         f"    github-repo: https://github.com/{repository}\n".encode("utf-8"),
     )
     if any(frontmatter.count(line) != 1 for line in required_source):
-        raise ProviderError(f"provider skill {skill.name} has incompatible source metadata")
+        raise ProviderError(
+            f"provider skill {skill.name} has incompatible source metadata"
+        )
 
     plan: list[tuple[Path, bytes, bytes]] = []
     replacements = (
@@ -476,9 +539,13 @@ def grilling_discovery_adapter_plan(
     skill_path = directory / "SKILL.md"
     openai_path = directory / "agents" / "openai.yaml"
     if skill_path.is_symlink() or not skill_path.is_file():
-        raise ProviderError(f"provider skill {skill.name} instructions are missing or unsafe")
+        raise ProviderError(
+            f"provider skill {skill.name} instructions are missing or unsafe"
+        )
     if openai_path.is_symlink() or not openai_path.is_file():
-        raise ProviderError(f"provider skill {skill.name} Codex metadata is missing or unsafe")
+        raise ProviderError(
+            f"provider skill {skill.name} Codex metadata is missing or unsafe"
+        )
 
     original_skill = skill_path.read_bytes()
     if not original_skill.startswith(b"---\n"):
@@ -493,7 +560,9 @@ def grilling_discovery_adapter_plan(
         f"    github-repo: https://github.com/{repository}\n".encode("utf-8"),
     )
     if any(frontmatter.count(line) != 1 for line in required_source):
-        raise ProviderError(f"provider skill {skill.name} has incompatible source metadata")
+        raise ProviderError(
+            f"provider skill {skill.name} has incompatible source metadata"
+        )
 
     replacements = (
         (
@@ -535,14 +604,20 @@ def apply_adapter(
     version: str,
 ) -> bool:
     plan = adapter_plan(root, skill, repository, version)
-    changed = [(path, original, desired) for path, original, desired in plan if original != desired]
+    changed = [
+        (path, original, desired)
+        for path, original, desired in plan
+        if original != desired
+    ]
     if not changed:
         return False
     try:
         for path, _original, desired in changed:
             path.write_bytes(desired)
     except OSError as exc:
-        raise ProviderError(f"cannot apply Agent Workflow adapter for {skill.name}: {exc}") from exc
+        raise ProviderError(
+            f"cannot apply Agent Workflow adapter for {skill.name}: {exc}"
+        ) from exc
     return True
 
 
@@ -630,9 +705,15 @@ def replace_projection(
     skills: list[ProviderSkill],
 ) -> list[ProviderSkill]:
     destinations = root / ".agents" / "skills"
-    if destinations.is_symlink() or (destinations.exists() and not destinations.is_dir()):
-        raise ProviderError("optional provider destination became unsafe during staging")
-    states = {skill.name: projection_state(root, staged_skills, skill) for skill in skills}
+    if destinations.is_symlink() or (
+        destinations.exists() and not destinations.is_dir()
+    ):
+        raise ProviderError(
+            "optional provider destination became unsafe during staging"
+        )
+    states = {
+        skill.name: projection_state(root, staged_skills, skill) for skill in skills
+    }
     blocked = [skill.name for skill in skills if states[skill.name] == "blocked"]
     if blocked:
         raise ProviderError(
@@ -664,15 +745,18 @@ def replace_projection(
         rollback_errors = rollback_moves(installed)
         rollback_errors.extend(rollback_moves(backed_up))
         if rollback_errors:
-            detail = f"; rollback incomplete; preserved recovery data at {rollback_root}: " + ", ".join(
-                rollback_errors
+            detail = (
+                f"; rollback incomplete; preserved recovery data at {rollback_root}: "
+                + ", ".join(rollback_errors)
             )
         else:
             detail = "; prior projection restored"
             cleanup_error = cleanup_recovery_directory(rollback_root)
             if cleanup_error:
                 detail += f"; {cleanup_error}"
-        raise ProviderError(f"cannot replace bundled provider skills: {exc}{detail}") from exc
+        raise ProviderError(
+            f"cannot replace bundled provider skills: {exc}{detail}"
+        ) from exc
     cleanup_error = cleanup_recovery_directory(rollback_root)
     if cleanup_error:
         print(
@@ -684,7 +768,9 @@ def replace_projection(
 
 def remove_projection(root: Path, skills: list[ProviderSkill]) -> list[ProviderSkill]:
     destinations = root / ".agents" / "skills"
-    if destinations.is_symlink() or (destinations.exists() and not destinations.is_dir()):
+    if destinations.is_symlink() or (
+        destinations.exists() and not destinations.is_dir()
+    ):
         raise ProviderError("optional provider destination is unsafe")
     present: list[ProviderSkill] = []
     for skill in skills:
@@ -697,7 +783,9 @@ def remove_projection(root: Path, skills: list[ProviderSkill]) -> list[ProviderS
     if not present:
         return []
 
-    removal_root = Path(tempfile.mkdtemp(prefix=".agent-workflow-provider-remove-", dir=root))
+    removal_root = Path(
+        tempfile.mkdtemp(prefix=".agent-workflow-provider-remove-", dir=root)
+    )
     moved: list[tuple[Path, Path]] = []
     try:
         for skill in present:
@@ -708,15 +796,18 @@ def remove_projection(root: Path, skills: list[ProviderSkill]) -> list[ProviderS
     except OSError as exc:
         rollback_errors = rollback_moves(moved)
         if rollback_errors:
-            detail = f"; rollback incomplete; preserved recovery data at {removal_root}: " + ", ".join(
-                rollback_errors
+            detail = (
+                f"; rollback incomplete; preserved recovery data at {removal_root}: "
+                + ", ".join(rollback_errors)
             )
         else:
             detail = "; prior projection restored"
             cleanup_error = cleanup_recovery_directory(removal_root)
             if cleanup_error:
                 detail += f"; {cleanup_error}"
-        raise ProviderError(f"cannot remove bundled provider skills: {exc}{detail}") from exc
+        raise ProviderError(
+            f"cannot remove bundled provider skills: {exc}{detail}"
+        ) from exc
     cleanup_error = cleanup_recovery_directory(removal_root)
     if cleanup_error:
         print(f"WARNING: Provider removal committed; {cleanup_error}", file=sys.stderr)
@@ -725,7 +816,9 @@ def remove_projection(root: Path, skills: list[ProviderSkill]) -> list[ProviderS
 
 def status(root: Path) -> int:
     provider = load_provider()
-    with tempfile.TemporaryDirectory(prefix="agent-workflow-provider-status-") as temporary:
+    with tempfile.TemporaryDirectory(
+        prefix="agent-workflow-provider-status-"
+    ) as temporary:
         staged_skills = prepare_staged_projection(Path(temporary), provider)
         states = {
             skill.name: projection_state(root, staged_skills, skill)
@@ -742,7 +835,9 @@ def status(root: Path) -> int:
         f"Optional provider skills: {ready} ready, {repairable} repairable, {blocked} blocked"
     )
     if repairable:
-        print("INFO: Rerun install or update to restore the complete bundled projection.")
+        print(
+            "INFO: Rerun install or update to restore the complete bundled projection."
+        )
     if blocked:
         names = ", ".join(name for name, state in states.items() if state == "blocked")
         print(f"WARNING: Unsafe provider destinations block lifecycle changes: {names}")
@@ -760,14 +855,23 @@ def install(root: Path, dry_run: bool) -> int:
             skill.name: projection_state(root, staged_skills, skill)
             for skill in provider.skills
         }
-        blocked = [skill for skill in provider.skills if states[skill.name] == "blocked"]
-        repairable = [skill for skill in provider.skills if states[skill.name] == "repairable"]
+        blocked = [
+            skill for skill in provider.skills if states[skill.name] == "blocked"
+        ]
+        repairable = [
+            skill for skill in provider.skills if states[skill.name] == "repairable"
+        ]
         ready = [skill for skill in provider.skills if states[skill.name] == "ready"]
 
         for skill in blocked:
-            print(f"blocked unsafe optional provider skill {skill.name}", file=sys.stderr)
+            print(
+                f"blocked unsafe optional provider skill {skill.name}", file=sys.stderr
+            )
         if blocked:
-            print("WARNING: No provider changes were made because the projection is blocked.", file=sys.stderr)
+            print(
+                "WARNING: No provider changes were made because the projection is blocked.",
+                file=sys.stderr,
+            )
             return 1
         if dry_run:
             for skill in repairable:

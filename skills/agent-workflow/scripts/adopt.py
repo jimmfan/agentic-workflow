@@ -68,7 +68,9 @@ def safe_relative(value: object) -> PurePosixPath:
 
 def validate_revision(value: str) -> str:
     if value != LOCAL_REVISION and REVISION_PATTERN.fullmatch(value) is None:
-        raise AdoptionError("source revision must be a 40-character lowercase Git commit or unreleased-local-package")
+        raise AdoptionError(
+            "source revision must be a 40-character lowercase Git commit or unreleased-local-package"
+        )
     return value
 
 
@@ -134,17 +136,25 @@ def load_distribution() -> tuple[str, list[tuple[PurePosixPath, PurePosixPath]]]
             raise AdoptionError("distribution mappings require only source and target")
         source = safe_relative(item["source"])
         target = safe_relative(item["target"])
-        if target == INSTALL_MANIFEST or target == DURABLE_ROOT or DURABLE_ROOT in target.parents:
+        if (
+            target == INSTALL_MANIFEST
+            or target == DURABLE_ROOT
+            or DURABLE_ROOT in target.parents
+        ):
             raise AdoptionError(f"distribution must not own lifecycle state: {target}")
         source_path = PAYLOAD_ROOT.joinpath(*source.parts)
         if source_path.is_symlink() or not source_path.is_file():
-            raise AdoptionError(f"required current payload source is missing or unsafe: {source}")
+            raise AdoptionError(
+                f"required current payload source is missing or unsafe: {source}"
+            )
         result.append((source, target))
 
     sources = [source for source, _target in result]
     targets = [target for _source, target in result]
     if len(sources) != len(set(sources)) or len(targets) != len(set(targets)):
-        raise AdoptionError("distribution mappings must have unique sources and targets")
+        raise AdoptionError(
+            "distribution mappings must have unique sources and targets"
+        )
     return version, result
 
 
@@ -180,12 +190,20 @@ def load_install_state(root: Path) -> dict[str, object]:
                     raise AdoptionError("invalid external state")
                 created = details.get("created")
                 checksum = details.get("sha256")
-                if not isinstance(created, bool) or not isinstance(checksum, str) or SHA256_PATTERN.fullmatch(checksum) is None:
+                if (
+                    not isinstance(created, bool)
+                    or not isinstance(checksum, str)
+                    or SHA256_PATTERN.fullmatch(checksum) is None
+                ):
                     raise AdoptionError("invalid external state")
                 external[relative.as_posix()] = {"created": created, "sha256": checksum}
             for key, details in composite_raw.items():
                 relative = safe_relative(key)
-                if relative not in COMPOSITE_PATHS or not isinstance(details, dict) or not isinstance(details.get("created"), bool):
+                if (
+                    relative not in COMPOSITE_PATHS
+                    or not isinstance(details, dict)
+                    or not isinstance(details.get("created"), bool)
+                ):
                     raise AdoptionError("invalid composite state")
                 composites[relative.as_posix()] = {"created": details["created"]}
         except AdoptionError:
@@ -204,16 +222,22 @@ def has_any_marker(data: bytes) -> bool:
 
 
 def parse_policy(data: bytes) -> tuple[bytes, bytes]:
-    if data.count(MANAGED_BEGIN) != 1 or data.count(MANAGED_END) != 1 or data.count(PROJECT_BEGIN) != 1:
-        raise AdoptionError("managed policy markers are missing, duplicated, or ambiguous")
+    if (
+        data.count(MANAGED_BEGIN) != 1
+        or data.count(MANAGED_END) != 1
+        or data.count(PROJECT_BEGIN) != 1
+    ):
+        raise AdoptionError(
+            "managed policy markers are missing, duplicated, or ambiguous"
+        )
     if not data.startswith(MANAGED_BEGIN):
         raise AdoptionError("managed policy must start with its managed marker")
     managed_end = data.find(MANAGED_END, len(MANAGED_BEGIN))
     project_begin = data.find(PROJECT_BEGIN, managed_end + len(MANAGED_END))
     if managed_end < 0 or project_begin != managed_end + len(MANAGED_END):
         raise AdoptionError("managed policy markers are out of order")
-    managed = data[len(MANAGED_BEGIN):managed_end]
-    project = data[project_begin + len(PROJECT_BEGIN):]
+    managed = data[len(MANAGED_BEGIN) : managed_end]
+    project = data[project_begin + len(PROJECT_BEGIN) :]
     return managed, project
 
 
@@ -221,7 +245,9 @@ def source_bytes(source: PurePosixPath) -> bytes:
     try:
         return PAYLOAD_ROOT.joinpath(*source.parts).read_bytes()
     except OSError as exc:
-        raise AdoptionError(f"cannot read current payload source {source}: {exc}") from exc
+        raise AdoptionError(
+            f"cannot read current payload source {source}: {exc}"
+        ) from exc
 
 
 def ensure_parent(path: Path, root: Path, created: list[Path]) -> None:
@@ -237,7 +263,9 @@ def ensure_parent(path: Path, root: Path, created: list[Path]) -> None:
         created.append(directory)
 
 
-def atomic_write(path: Path, data: bytes, mode: int, root: Path, created: list[Path]) -> None:
+def atomic_write(
+    path: Path, data: bytes, mode: int, root: Path, created: list[Path]
+) -> None:
     ensure_parent(path, root, created)
     descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     temporary_path = Path(temporary)
@@ -274,12 +302,16 @@ def apply_external_transaction(
             path = checked_target(root, relative)
             if path.exists() or path.is_symlink():
                 if path.is_symlink() or not path.is_file():
-                    raise AdoptionError(f"refusing to remove non-file external target: {relative}")
+                    raise AdoptionError(
+                        f"refusing to remove non-file external target: {relative}"
+                    )
                 path.unlink()
         for relative, data in writes.items():
             prior = snapshots[relative]
             mode = prior[1] if prior is not None else 0o644
-            atomic_write(checked_target(root, relative), data, mode, root, created_directories)
+            atomic_write(
+                checked_target(root, relative), data, mode, root, created_directories
+            )
     except Exception:
         rollback_external(root, snapshots, created_directories)
         raise
@@ -426,7 +458,11 @@ def plan_reconciliation(
                 created = True
             elif has_any_marker(current):
                 _managed, project = parse_policy(current)
-                created = bool(previous.get("created")) if isinstance(previous, dict) else False
+                created = (
+                    bool(previous.get("created"))
+                    if isinstance(previous, dict)
+                    else False
+                )
             else:
                 project = current
                 created = False
@@ -468,7 +504,9 @@ def plan_reconciliation(
             removals.append(relative)
             actions.append(f"remove retired unchanged external integration {relative}")
         else:
-            actions.append(f"preserve retired external content without safe deletion proof {relative}")
+            actions.append(
+                f"preserve retired external content without safe deletion proof {relative}"
+            )
 
     return writes, removals, next_external, next_composites, actions
 
@@ -493,7 +531,9 @@ def verify_reconciled(
 def reconcile(root: Path, dry_run: bool, revision: str, verb: str) -> None:
     version, mappings = load_distribution()
     state = load_install_state(root)
-    writes, removals, external, composites, actions = plan_reconciliation(root, mappings, state)
+    writes, removals, external, composites, actions = plan_reconciliation(
+        root, mappings, state
+    )
     actions.append("replace reconstructable .agent-workflow with current desired files")
     if not checked_target(root, DURABLE_ROOT).exists():
         actions.append("create empty durable project-state directory .agent-wayfinder")
@@ -513,7 +553,9 @@ def reconcile(root: Path, dry_run: bool, revision: str, verb: str) -> None:
     framework_swapped = False
     try:
         durable_created = ensure_durable_state(root)
-        snapshots, created_directories = apply_external_transaction(root, writes, removals)
+        snapshots, created_directories = apply_external_transaction(
+            root, writes, removals
+        )
         backup = swap_framework(root, stage)
         framework_swapped = True
         verify_reconciled(root, mappings)
@@ -570,11 +612,17 @@ def status(root: Path) -> int:
                     if managed != expected.rstrip(b"\n") + b"\n":
                         problems.append(f"REPAIR: stale managed policy region {target}")
             else:
-                problems.append(f"REPAIR: unmarked project policy can be safely composed at {target}")
+                problems.append(
+                    f"REPAIR: unmarked project policy can be safely composed at {target}"
+                )
         elif current is None:
             problems.append(f"REPAIR: missing framework target {target}")
         elif current != expected:
-            if target == FRAMEWORK_ROOT or FRAMEWORK_ROOT in target.parents or target.as_posix() in previous_external:
+            if (
+                target == FRAMEWORK_ROOT
+                or FRAMEWORK_ROOT in target.parents
+                or target.as_posix() in previous_external
+            ):
                 problems.append(f"REPAIR: drifted managed framework target {target}")
             else:
                 conflicts.append(f"CONFLICT: unknown external content at {target}")
@@ -587,17 +635,26 @@ def status(root: Path) -> int:
             manifest_raw = json.loads(manifest_data.decode("utf-8"))
         except (UnicodeError, json.JSONDecodeError):
             manifest_raw = None
-        if not isinstance(manifest_raw, dict) or manifest_raw.get("schema_version") != INSTALL_SCHEMA:
-            problems.append("REPAIR: reconstructable install metadata is stale or malformed")
+        if (
+            not isinstance(manifest_raw, dict)
+            or manifest_raw.get("schema_version") != INSTALL_SCHEMA
+        ):
+            problems.append(
+                "REPAIR: reconstructable install metadata is stale or malformed"
+            )
         elif manifest_raw.get("framework_version") != version:
-            problems.append("REPAIR: installed framework version differs from current package")
+            problems.append(
+                "REPAIR: installed framework version differs from current package"
+            )
 
     if framework.exists() and framework.is_dir() and not framework.is_symlink():
         for path in framework.rglob("*"):
             if path.is_file() and not path.is_symlink():
                 relative = path.relative_to(root).as_posix()
                 if relative not in desired_internal:
-                    problems.append(f"REPAIR: obsolete reconstructable framework file {relative}")
+                    problems.append(
+                        f"REPAIR: obsolete reconstructable framework file {relative}"
+                    )
 
     durable = checked_target(root, DURABLE_ROOT)
     if not durable.exists():
@@ -631,7 +688,9 @@ def remove(root: Path, dry_run: bool) -> None:
     removals: list[PurePosixPath] = []
     actions: list[str] = []
 
-    composite_targets = {target for _source, target in mappings if target in COMPOSITE_PATHS}
+    composite_targets = {
+        target for _source, target in mappings if target in COMPOSITE_PATHS
+    }
     composite_targets |= {safe_relative(key) for key in composite_state}
     for relative in sorted(composite_targets, key=lambda item: item.as_posix()):
         current = read_regular(root, relative)
@@ -645,7 +704,9 @@ def remove(root: Path, dry_run: bool) -> None:
             actions.append(f"remove framework-created composite policy {relative}")
         else:
             writes[relative] = project
-            actions.append(f"remove managed policy region and preserve project bytes in {relative}")
+            actions.append(
+                f"remove managed policy region and preserve project bytes in {relative}"
+            )
 
     for key, details in external_state.items():
         if not isinstance(details, dict):
@@ -656,14 +717,20 @@ def remove(root: Path, dry_run: bool) -> None:
             continue
         if details.get("created") is True and digest(current) == details.get("sha256"):
             removals.append(relative)
-            actions.append(f"remove unchanged framework-created external integration {relative}")
+            actions.append(
+                f"remove unchanged framework-created external integration {relative}"
+            )
         else:
-            actions.append(f"preserve pre-existing or changed external content {relative}")
+            actions.append(
+                f"preserve pre-existing or changed external content {relative}"
+            )
 
     framework = checked_target(root, FRAMEWORK_ROOT)
     if framework.exists() or framework.is_symlink():
         if framework.is_symlink() or not framework.is_dir():
-            raise AdoptionError(".agent-workflow must be a regular non-symlink directory")
+            raise AdoptionError(
+                ".agent-workflow must be a regular non-symlink directory"
+            )
         actions.append("remove reconstructable .agent-workflow directory")
     actions.append("preserve .agent-wayfinder and every file below it")
 
@@ -677,7 +744,9 @@ def remove(root: Path, dry_run: bool) -> None:
     created_directories: list[Path] = []
     backup: Path | None = None
     try:
-        snapshots, created_directories = apply_external_transaction(root, writes, removals)
+        snapshots, created_directories = apply_external_transaction(
+            root, writes, removals
+        )
         if framework.exists():
             backup = Path(tempfile.mkdtemp(prefix=".agent-workflow-remove-", dir=root))
             backup.rmdir()

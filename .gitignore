@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
+*.egg-info/
 
 # Evaluation execution exhaust. Durable inputs, compact results, and reports
 # remain outside this generated boundary and are intentionally tracked.

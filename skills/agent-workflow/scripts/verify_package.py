@@ -96,7 +96,8 @@ def safe_relative(value: str) -> PurePosixPath:
     require(bool(value) and "\\" not in value, f"unsafe manifest path: {value!r}")
     path = PurePosixPath(value)
     require(
-        not path.is_absolute() and all(part not in {"", ".", ".."} for part in path.parts),
+        not path.is_absolute()
+        and all(part not in {"", ".", ".."} for part in path.parts),
         f"unsafe manifest path: {value!r}",
     )
     return path
@@ -154,7 +155,10 @@ def refresh_manifest() -> None:
 def check_structure() -> None:
     for relative in REQUIRED_PACKAGE_FILES:
         path = PACKAGE_ROOT / relative
-        require(path.is_file() and not path.is_symlink(), f"missing or unsafe package file: {relative}")
+        require(
+            path.is_file() and not path.is_symlink(),
+            f"missing or unsafe package file: {relative}",
+        )
     duplicate_version = PAYLOAD_ROOT / "VERSION"
     require(
         not duplicate_version.exists() and not duplicate_version.is_symlink(),
@@ -167,7 +171,10 @@ def check_structure() -> None:
                 not path.exists()
                 or (
                     path.is_dir()
-                    and not any(child.is_file() or child.is_symlink() for child in path.rglob("*"))
+                    and not any(
+                        child.is_file() or child.is_symlink()
+                        for child in path.rglob("*")
+                    )
                 )
             ),
             f"deferred v0 subsystem remains packaged: {path}",
@@ -181,8 +188,14 @@ def check_structure() -> None:
             not (PAYLOAD_ROOT / "agent-workflow/templates" / retired_template).exists(),
             f"retired specialist-state template remains packaged: {retired_template}",
         )
-    require(not (REPOSITORY_ROOT / "docs" / "enforcement.md").exists(), "obsolete controller documentation remains")
-    require(not (REPOSITORY_ROOT / "docs" / "observability.md").exists(), "obsolete observability documentation remains")
+    require(
+        not (REPOSITORY_ROOT / "docs" / "enforcement.md").exists(),
+        "obsolete controller documentation remains",
+    )
+    require(
+        not (REPOSITORY_ROOT / "docs" / "observability.md").exists(),
+        "obsolete observability documentation remains",
+    )
 
 
 def check_inert_payload() -> None:
@@ -205,16 +218,28 @@ def check_manifest() -> None:
         actual = json.loads(MANIFEST.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise VerificationError(f"cannot read distribution manifest: {exc}") from exc
-    require(actual == generated_manifest(), "distribution manifest is stale; run verify_package.py --refresh-manifest")
+    require(
+        actual == generated_manifest(),
+        "distribution manifest is stale; run verify_package.py --refresh-manifest",
+    )
     mappings = actual["framework_owned"]
     sources: list[str] = []
     targets: list[str] = []
     for item in mappings:
-        require(isinstance(item, dict) and set(item) == {"source", "target"}, "invalid manifest mapping")
+        require(
+            isinstance(item, dict) and set(item) == {"source", "target"},
+            "invalid manifest mapping",
+        )
         source = safe_relative(item["source"])
         target = safe_relative(item["target"])
-        require(target.parts[0] != ".agent-wayfinder", "manifest must not own durable project state")
-        require(".agent-workflow/state" not in target.as_posix(), "manifest must not recreate obsolete workflow state")
+        require(
+            target.parts[0] != ".agent-wayfinder",
+            "manifest must not own durable project state",
+        )
+        require(
+            ".agent-workflow/state" not in target.as_posix(),
+            "manifest must not recreate obsolete workflow state",
+        )
         sources.append(source.as_posix())
         targets.append(target.as_posix())
     require(len(sources) == len(set(sources)), "manifest source paths are duplicated")
@@ -228,26 +253,44 @@ def check_filesystem() -> None:
         # local verification fail after an ordinary focused test command.
         if "__pycache__" in path.parts or path.suffix == ".pyc":
             continue
-        require(not path.is_symlink(), f"package contains a symlink: {path.relative_to(PACKAGE_ROOT)}")
+        require(
+            not path.is_symlink(),
+            f"package contains a symlink: {path.relative_to(PACKAGE_ROOT)}",
+        )
         if path.is_file():
             mode = stat.S_IMODE(path.stat().st_mode)
             if os.name != "nt":
-                require(mode == 0o644, f"package file mode must be 0644: {path.relative_to(PACKAGE_ROOT)}")
+                require(
+                    mode == 0o644,
+                    f"package file mode must be 0644: {path.relative_to(PACKAGE_ROOT)}",
+                )
     for script in PACKAGE_ROOT.rglob("*.py"):
         compile(script.read_text(encoding="utf-8"), str(script), "exec")
 
 
 def check_router_contract() -> None:
     agents = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
-    routing = (PAYLOAD_ROOT / "agent-workflow" / "routing.md").read_text(encoding="utf-8")
-    durable = (PAYLOAD_ROOT / "agent-workflow" / "contracts" / "durable-state.md").read_text(encoding="utf-8")
-    wayfinder = (PAYLOAD_ROOT / "agent-workflow" / "contracts" / "wayfinder-state.md").read_text(encoding="utf-8")
+    routing = (PAYLOAD_ROOT / "agent-workflow" / "routing.md").read_text(
+        encoding="utf-8"
+    )
+    durable = (
+        PAYLOAD_ROOT / "agent-workflow" / "contracts" / "durable-state.md"
+    ).read_text(encoding="utf-8")
+    wayfinder = (
+        PAYLOAD_ROOT / "agent-workflow" / "contracts" / "wayfinder-state.md"
+    ).read_text(encoding="utf-8")
     normalized_agents = " ".join(agents.split())
     normalized_routing = " ".join(routing.split())
     normalized_durable = " ".join(durable.split())
     require("MUST route every request" in agents, "root policy lacks mandatory routing")
-    require("`direct`" in agents and "minimum useful process" in routing, "router lacks the minimum/direct contract")
-    require("MUST NOT" in agents and "authority" in agents, "root policy lacks the authorization boundary")
+    require(
+        "`direct`" in agents and "minimum useful process" in routing,
+        "router lacks the minimum/direct contract",
+    )
+    require(
+        "MUST NOT" in agents and "authority" in agents,
+        "root policy lacks the authorization boundary",
+    )
     for required in (
         "Direct is default",
         "encountering the topic alone never forces a specialist",
@@ -258,7 +301,10 @@ def check_router_contract() -> None:
         "Read-only work changes no state",
         "only before current project-state writes",
     ):
-        require(required in normalized_agents, f"thin root router lacks required boundary: {required}")
+        require(
+            required in normalized_agents,
+            f"thin root router lacks required boundary: {required}",
+        )
     require(
         len(agents.split()) <= PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5,
         "thin root router exceeds the prior ambiguity-gate context budget",
@@ -272,17 +318,28 @@ def check_router_contract() -> None:
         and "according to the coordination threshold" in normalized_routing.lower(),
         "detailed router lacks conditional specialist transitions",
     )
-    require(".agent-wayfinder/" in durable, "durable-state contract lacks the canonical state root")
-    require("no global active index" in durable, "durable-state contract retains a global active index")
     require(
-        "Wayfinder is the sole framework-owned durable coordination layer" in normalized_durable,
+        ".agent-wayfinder/" in durable,
+        "durable-state contract lacks the canonical state root",
+    )
+    require(
+        "no global active index" in durable,
+        "durable-state contract retains a global active index",
+    )
+    require(
+        "Wayfinder is the sole framework-owned durable coordination layer"
+        in normalized_durable,
         "durable-state contract lacks sole-coordinator ownership",
     )
     require(
-        "never delete, migrate, rewrite, validate, allocate from, resume, or normalize them" in normalized_durable,
+        "never delete, migrate, rewrite, validate, allocate from, resume, or normalize them"
+        in normalized_durable,
         "durable-state contract lacks legacy record preservation",
     )
-    require("wayfinder-state.md" in agents and "unrelated map" in agents, "root policy lacks Wayfinder loading guidance")
+    require(
+        "wayfinder-state.md" in agents and "unrelated map" in agents,
+        "root policy lacks Wayfinder loading guidance",
+    )
     normalized_wayfinder = " ".join(wayfinder.split())
     for required in (
         "unknowns/",
@@ -317,7 +374,8 @@ def check_router_contract() -> None:
         )
     combined = agents + routing + durable + wayfinder
     require(
-        "runtime/README.md" not in combined and ".agent-workflow/runtime" not in combined,
+        "runtime/README.md" not in combined
+        and ".agent-workflow/runtime" not in combined,
         "router still depends on the removed controller payload",
     )
 
@@ -325,7 +383,10 @@ def check_router_contract() -> None:
 def check_provider_declaration() -> None:
     path = PAYLOAD_ROOT / "agent-workflow" / "providers.json"
     raw = json.loads(path.read_text(encoding="utf-8"))
-    require(isinstance(raw, dict) and raw.get("schema_version") == 7, "unsupported provider declaration")
+    require(
+        isinstance(raw, dict) and raw.get("schema_version") == 7,
+        "unsupported provider declaration",
+    )
     provider = raw.get("provider")
     capabilities = raw.get("capabilities")
     hosts = raw.get("hosts")
@@ -342,14 +403,23 @@ def check_provider_declaration() -> None:
     repository = provider.get("repository")
     provider_version = provider.get("version")
     require(
-        isinstance(repository, str) and re.fullmatch(r"[^/]+/[^/]+", repository) is not None,
+        isinstance(repository, str)
+        and re.fullmatch(r"[^/]+/[^/]+", repository) is not None,
         "invalid provider repository",
     )
     require(
-        isinstance(provider_version, str) and re.fullmatch(r"v\d+\.\d+\.\d+", provider_version) is not None,
+        isinstance(provider_version, str)
+        and re.fullmatch(r"v\d+\.\d+\.\d+", provider_version) is not None,
         "provider version must be pinned",
     )
-    for field in ("name", "repository", "version", "resolved_commit", "tag_object", "upstream_tree"):
+    for field in (
+        "name",
+        "repository",
+        "version",
+        "resolved_commit",
+        "tag_object",
+        "upstream_tree",
+    ):
         require(
             provider.get(field) == REVIEWED_PROVIDER[field],
             f"provider {field} differs from the reviewed release identity",
@@ -383,7 +453,10 @@ def check_provider_declaration() -> None:
         "provider license declaration must identify MIT text",
     )
     license_path = package_path(license_info.get("path"), "provider license path")
-    require(license_path.is_file() and not license_path.is_symlink(), "bundled provider license is missing or unsafe")
+    require(
+        license_path.is_file() and not license_path.is_symlink(),
+        "bundled provider license is missing or unsafe",
+    )
     license_text = license_path.read_text(encoding="utf-8")
     require(
         isinstance(license_info.get("sha256"), str)
@@ -396,28 +469,46 @@ def check_provider_declaration() -> None:
         "provider license checksum differs from the reviewed release identity",
     )
     require(
-        "MIT License" in license_text and "Copyright (c) 2026 Matt Pocock" in license_text,
+        "MIT License" in license_text
+        and "Copyright (c) 2026 Matt Pocock" in license_text,
         "bundled provider license text is incomplete",
     )
     host_names = set(hosts)
-    require(all(isinstance(name, str) and name for name in host_names), "invalid provider host name")
+    require(
+        all(isinstance(name, str) and name for name in host_names),
+        "invalid provider host name",
+    )
     skills = provider.get("skills")
-    require(isinstance(skills, list) and skills, "provider skills must be a non-empty array")
+    require(
+        isinstance(skills, list) and skills, "provider skills must be a non-empty array"
+    )
     names: set[str] = set()
     for item in skills:
         require(isinstance(item, dict), "provider skill entries must be objects")
         name = item.get("name")
-        require(isinstance(name, str) and bool(name) and PurePosixPath(name).name == name, "invalid provider skill name")
+        require(
+            isinstance(name, str) and bool(name) and PurePosixPath(name).name == name,
+            "invalid provider skill name",
+        )
         require(name not in names, f"duplicate provider skill: {name}")
         names.add(name)
         provider_path = item.get("path")
         require(isinstance(provider_path, str), f"provider skill {name} needs a path")
         safe_relative(provider_path)
         invocation = item.get("invocation")
-        require(isinstance(invocation, dict), f"provider skill {name} lacks invocation policy")
-        require(set(invocation) == host_names, f"provider skill {name} invocation hosts differ from declaration")
         require(
-            all(isinstance(policy, str) and policy in INVOCATION_POLICIES for policy in invocation.values()),
+            isinstance(invocation, dict),
+            f"provider skill {name} lacks invocation policy",
+        )
+        require(
+            set(invocation) == host_names,
+            f"provider skill {name} invocation hosts differ from declaration",
+        )
+        require(
+            all(
+                isinstance(policy, str) and policy in INVOCATION_POLICIES
+                for policy in invocation.values()
+            ),
             f"invalid invocation policy for {name}",
         )
         requirements = item.get("requires_configuration")
@@ -437,11 +528,13 @@ def check_provider_declaration() -> None:
             adapter_name = adapter.get("name")
             if adapter_name == "wayfinder-runtime-projection-v1":
                 valid_adapter = (
-                    set(adapter) == {"name", "projection_source", "upstream_body_sha256"}
+                    set(adapter)
+                    == {"name", "projection_source", "upstream_body_sha256"}
                     and isinstance(adapter.get("upstream_body_sha256"), str)
                     and re.fullmatch(r"[0-9a-f]{64}", adapter["upstream_body_sha256"])
                     is not None
-                    and adapter.get("projection_source") == "runtime-projections/wayfinder.md"
+                    and adapter.get("projection_source")
+                    == "runtime-projections/wayfinder.md"
                     and name == "wayfinder"
                 )
             elif adapter_name == "grilling-discovery-v1":
@@ -459,7 +552,10 @@ def check_provider_declaration() -> None:
                 and invocation.get("claude-code") == "unavailable",
                 f"provider skill {name} adapter does not match supported host policies",
             )
-    require(set(capabilities.values()) <= names, "capability points to an undeclared provider skill")
+    require(
+        set(capabilities.values()) <= names,
+        "capability points to an undeclared provider skill",
+    )
     require(
         snapshot_root.is_dir() and not snapshot_root.is_symlink(),
         "bundled provider snapshot is missing or unsafe",
@@ -477,8 +573,14 @@ def check_provider_declaration() -> None:
         validate_local_references(snapshot_root / name)
         skill_file = snapshot_root / name / "SKILL.md"
         openai_file = snapshot_root / name / "agents" / "openai.yaml"
-        require(skill_file.is_file() and not skill_file.is_symlink(), f"bundled provider skill is missing: {name}")
-        require(openai_file.is_file() and not openai_file.is_symlink(), f"bundled Codex metadata is missing: {name}")
+        require(
+            skill_file.is_file() and not skill_file.is_symlink(),
+            f"bundled provider skill is missing: {name}",
+        )
+        require(
+            openai_file.is_file() and not openai_file.is_symlink(),
+            f"bundled Codex metadata is missing: {name}",
+        )
         frontmatter = skill_file.read_text(encoding="utf-8").split("\n---\n", 1)[0]
         for expected in (
             f"name: {name}",
@@ -487,9 +589,13 @@ def check_provider_declaration() -> None:
             f"    github-ref: refs/tags/{provider_version}",
             f"    github-repo: https://github.com/{repository}",
         ):
-            require(expected in frontmatter.splitlines(), f"bundled provider metadata differs for {name}: {expected}")
+            require(
+                expected in frontmatter.splitlines(),
+                f"bundled provider metadata differs for {name}: {expected}",
+            )
         require(
-            re.search(r"^    github-tree-sha: [0-9a-f]{40}$", frontmatter, re.MULTILINE) is not None,
+            re.search(r"^    github-tree-sha: [0-9a-f]{40}$", frontmatter, re.MULTILINE)
+            is not None,
             f"bundled provider tree provenance is missing for {name}",
         )
     installed_declaration = REPOSITORY_ROOT / ".agent-workflow" / "providers.json"
@@ -607,7 +713,10 @@ def check_scenario_catalogs() -> None:
 
     acceptance_name = "acceptance-scenarios.json"
     acceptance = json.loads((tests / acceptance_name).read_text(encoding="utf-8"))
-    require(isinstance(acceptance, list) and acceptance, f"{acceptance_name} must contain cases")
+    require(
+        isinstance(acceptance, list) and acceptance,
+        f"{acceptance_name} must contain cases",
+    )
     acceptance_ids: list[str] = []
     for item in acceptance:
         require(isinstance(item, dict), f"invalid case in {acceptance_name}")
@@ -617,11 +726,17 @@ def check_scenario_catalogs() -> None:
                 f"{acceptance_name} case needs a non-empty {field}",
             )
         acceptance_ids.append(item["id"])
-    require(len(acceptance_ids) == len(set(acceptance_ids)), f"duplicate case id in {acceptance_name}")
+    require(
+        len(acceptance_ids) == len(set(acceptance_ids)),
+        f"duplicate case id in {acceptance_name}",
+    )
 
     decision_name = "decision-contract-scenarios.json"
     decisions = json.loads((tests / decision_name).read_text(encoding="utf-8"))
-    require(isinstance(decisions, list) and decisions, f"{decision_name} must contain decisions")
+    require(
+        isinstance(decisions, list) and decisions,
+        f"{decision_name} must contain decisions",
+    )
     required_strings = (
         "id",
         "category",
@@ -648,20 +763,33 @@ def check_scenario_catalogs() -> None:
             f"{decision_name} decision needs a capabilities array",
         )
         invocations = item.get("provider_invocations")
-        require(isinstance(invocations, list), f"{decision_name} decision needs provider_invocations")
+        require(
+            isinstance(invocations, list),
+            f"{decision_name} decision needs provider_invocations",
+        )
         for invocation in invocations:
-            require(isinstance(invocation, dict), f"invalid provider invocation in {decision_name}")
+            require(
+                isinstance(invocation, dict),
+                f"invalid provider invocation in {decision_name}",
+            )
             require(
                 all(
-                    isinstance(invocation.get(field), str) and bool(invocation[field].strip())
+                    isinstance(invocation.get(field), str)
+                    and bool(invocation[field].strip())
                     for field in ("name", "policy", "invocation")
                 )
                 and isinstance(invocation.get("executed"), bool),
                 f"invalid provider invocation in {decision_name}",
             )
-        require(isinstance(item.get("executed"), bool), f"{decision_name} decision needs executed")
+        require(
+            isinstance(item.get("executed"), bool),
+            f"{decision_name} decision needs executed",
+        )
         decision_ids.append(item["id"])
-    require(len(decision_ids) == len(set(decision_ids)), f"duplicate decision id in {decision_name}")
+    require(
+        len(decision_ids) == len(set(decision_ids)),
+        f"duplicate decision id in {decision_name}",
+    )
 
 
 def check_behavior_scenarios() -> None:
@@ -681,7 +809,12 @@ def check_behavior_scenarios() -> None:
 
 
 def check_markdown_links() -> None:
-    roots = [REPOSITORY_ROOT / "README.md", REPOSITORY_ROOT / "docs", PACKAGE_ROOT / "SKILL.md", PAYLOAD_ROOT / "agent-workflow"]
+    roots = [
+        REPOSITORY_ROOT / "README.md",
+        REPOSITORY_ROOT / "docs",
+        PACKAGE_ROOT / "SKILL.md",
+        PAYLOAD_ROOT / "agent-workflow",
+    ]
     files: list[Path] = []
     for root in roots:
         if root.is_file():
@@ -692,17 +825,34 @@ def check_markdown_links() -> None:
         text = path.read_text(encoding="utf-8")
         for destination in MARKDOWN_LINK.findall(text):
             destination = destination.split("#", 1)[0]
-            if not destination or "://" in destination or destination.startswith("mailto:"):
+            if (
+                not destination
+                or "://" in destination
+                or destination.startswith("mailto:")
+            ):
                 continue
             candidate = (path.parent / destination).resolve()
-            require(candidate.exists(), f"broken local Markdown link in {path.relative_to(REPOSITORY_ROOT)}: {destination}")
+            require(
+                candidate.exists(),
+                f"broken local Markdown link in {path.relative_to(REPOSITORY_ROOT)}: {destination}",
+            )
 
 
 def run_tests() -> None:
     environment = os.environ.copy()
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     result = subprocess.run(
-        [sys.executable, "-m", "unittest", "discover", "-s", str(PACKAGE_ROOT / "tests"), "-p", "test_*.py", "-v"],
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            str(PACKAGE_ROOT / "tests"),
+            "-p",
+            "test_*.py",
+            "-v",
+        ],
         cwd=REPOSITORY_ROOT,
         env=environment,
     )
@@ -741,7 +891,13 @@ def main(argv: Iterable[str] | None = None) -> int:
             run_tests()
         print("OK: Agent Workflow package verification passed.")
         return 0
-    except (VerificationError, SnapshotTreeError, OSError, UnicodeError, json.JSONDecodeError) as exc:
+    except (
+        VerificationError,
+        SnapshotTreeError,
+        OSError,
+        UnicodeError,
+        json.JSONDecodeError,
+    ) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 

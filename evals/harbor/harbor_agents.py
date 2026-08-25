@@ -98,8 +98,12 @@ class AgenticWorkflowCodex(_EvaluationCodex):
 
     def __init__(self, *args, source_revision: str, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        if not source_revision or any(c not in "0123456789abcdef" for c in source_revision):
-            raise ValueError("source_revision must be a lowercase hexadecimal Git commit")
+        if not source_revision or any(
+            c not in "0123456789abcdef" for c in source_revision
+        ):
+            raise ValueError(
+                "source_revision must be a lowercase hexadecimal Git commit"
+            )
         self.source_revision = source_revision
 
     async def setup(self, environment: BaseEnvironment) -> None:
@@ -133,9 +137,9 @@ class AgenticWorkflowCodex(_EvaluationCodex):
                 "test -f /app/.agents/skills/workflow-discovery/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-implementation/SKILL.md\n"
                 "test -f /app/.agents/skills/workflow-verification/SKILL.md\n"
-                "python3 -c 'import json; p=json.load(open(\"/app/.agent-workflow/install-manifest.json\")); "
-                "print(json.dumps({\"source_revision\": p.get(\"source_revision\"), "
-                "\"framework_version\": p.get(\"framework_version\")}, sort_keys=True))'\n"
+                'python3 -c \'import json; p=json.load(open("/app/.agent-workflow/install-manifest.json")); '
+                'print(json.dumps({"source_revision": p.get("source_revision"), '
+                '"framework_version": p.get("framework_version")}, sort_keys=True))\'\n'
                 "python3 - <<'PY'\n"
                 "import json\n"
                 "from pathlib import Path\n"

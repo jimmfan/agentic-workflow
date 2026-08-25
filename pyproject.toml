@@ -29,3 +29,8 @@ agent_workflow = [
   "provider-snapshots/**/*",
   "runtime-projections/*.md",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.4",
+]

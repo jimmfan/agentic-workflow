@@ -90,7 +90,9 @@ def create_current_child(
         return path
 
 
-def current_markdown(effort: Path, *, excluding: Path | None = None) -> dict[Path, bytes]:
+def current_markdown(
+    effort: Path, *, excluding: Path | None = None
+) -> dict[Path, bytes]:
     result: dict[Path, bytes] = {}
     for path in effort.rglob("*.md"):
         if path == excluding:
@@ -139,7 +141,9 @@ def retire_current_child(
         if current_markdown(effort, excluding=target) != observed_current:
             raise UnsafeWayfinderState("current state changed during reconciliation")
         if references_to(effort, target):
-            raise UnsafeWayfinderState("current references appeared during reconciliation")
+            raise UnsafeWayfinderState(
+                "current references appeared during reconciliation"
+            )
 
         target.unlink()
         parent = target.parent
@@ -153,7 +157,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.contract = CONTRACT.read_text(encoding="utf-8")
         self.normalized = " ".join(self.contract.split())
 
-    def test_current_state_allocation_skips_gaps_and_may_reuse_retired_highest(self) -> None:
+    def test_current_state_allocation_skips_gaps_and_may_reuse_retired_highest(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
             first = create_current_child(effort, "D", "first", "first\n")
@@ -171,7 +177,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertEqual(fourth.name, "D4-fourth.md")
 
             self.assertTrue(retire_current_child(effort, fourth))
-            replacement = create_current_child(effort, "D", "replacement", "new meaning\n")
+            replacement = create_current_child(
+                effort, "D", "replacement", "new meaning\n"
+            )
 
             self.assertEqual(replacement.name, "D4-replacement.md")
             self.assertEqual(first.read_bytes(), first_before)
@@ -240,18 +248,24 @@ class WayfinderStateContractTests(unittest.TestCase):
             )
             decision = effort / "decisions/D4-use-local-runtime.md"
             decision.write_text(
-                decision.read_text(encoding="utf-8").replace("Related: U17, F8", "Related: F8"),
+                decision.read_text(encoding="utf-8").replace(
+                    "Related: U17, F8", "Related: F8"
+                ),
                 encoding="utf-8",
             )
             unknown.write_text(
                 unknown.read_text(encoding="utf-8")
                 .replace("Related: E12, F8, D4", "Related: F8, D4")
-                .replace("E12 establishes that tracker state is not required.",
-                         "The answer is recorded in current state."),
+                .replace(
+                    "E12 establishes that tracker state is not required.",
+                    "The answer is recorded in current state.",
+                ),
                 encoding="utf-8",
             )
             evidence.write_text(
-                evidence.read_text(encoding="utf-8").replace("Related: U17, F8", "Related: F8"),
+                evidence.read_text(encoding="utf-8").replace(
+                    "Related: U17, F8", "Related: F8"
+                ),
                 encoding="utf-8",
             )
             self.assertTrue(retire_current_child(effort, evidence))
@@ -334,13 +348,19 @@ class WayfinderStateContractTests(unittest.TestCase):
             effort = Path(temporary) / "effort"
             directory = effort / "unknowns"
             directory.mkdir(parents=True)
-            (directory / "notes.md").write_text("not a canonical child\n", encoding="utf-8")
-            with self.assertRaisesRegex(UnsafeWayfinderState, "unrecognized child filename"):
+            (directory / "notes.md").write_text(
+                "not a canonical child\n", encoding="utf-8"
+            )
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "unrecognized child filename"
+            ):
                 next_current_id(effort, "U")
 
             (directory / "notes.md").unlink()
             (directory / "U1.md").write_text("bare\n", encoding="utf-8")
-            with self.assertRaisesRegex(UnsafeWayfinderState, "unrecognized child filename"):
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "unrecognized child filename"
+            ):
                 next_current_id(effort, "U")
 
             (directory / "U1.md").unlink()
@@ -349,7 +369,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "duplicate current U"):
                 next_current_id(effort, "U")
 
-    def test_contract_keeps_only_current_roles_and_no_allocation_primitive(self) -> None:
+    def test_contract_keeps_only_current_roles_and_no_allocation_primitive(
+        self,
+    ) -> None:
         for required in (
             "numeric prefix plus a readable filename slug",
             "stable handle within the current Wayfinder representation",
@@ -370,7 +392,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertNotIn("`allocation.md`", self.contract)
         self.assertNotIn("compact retired detail", self.contract)
 
-    def test_identifier_reference_scope_is_effort_local_and_links_are_durable(self) -> None:
+    def test_identifier_reference_scope_is_effort_local_and_links_are_durable(
+        self,
+    ) -> None:
         for semantic_pattern in (
             r"bare .+ effort-local current-state shorthand",
             r"uniqueness is scoped to current same-type records within that effort",
@@ -407,7 +431,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertIn("None for this effort.", historical)
         self.assertIn("../settled-provider-direction/map.md", superseded)
 
-    def test_contract_preserves_specialist_results_without_copying_methods(self) -> None:
+    def test_contract_preserves_specialist_results_without_copying_methods(
+        self,
+    ) -> None:
         for required in (
             "## Specialist result boundary",
             "continue directly or load one materially useful specialist",
@@ -425,7 +451,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertNotIn(duplicated_method, self.contract)
 
-    def test_contract_structures_territory_and_converges_without_hierarchy(self) -> None:
+    def test_contract_structures_territory_and_converges_without_hierarchy(
+        self,
+    ) -> None:
         for required in (
             "## Semantic territory and effort identity",
             "authoritative project structure",
@@ -450,7 +478,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, self.contract)
 
-    def test_runtime_and_contract_promote_only_continuation_worthy_unknowns(self) -> None:
+    def test_runtime_and_contract_promote_only_continuation_worthy_unknowns(
+        self,
+    ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         promotion_rule = (
             "A precise question becomes U# when preserving the question or its eventual "
@@ -479,11 +509,11 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, self.normalized)
 
-    def test_runtime_and_contract_restore_progressive_loading_without_experimental_treatment(self) -> None:
+    def test_runtime_and_contract_restore_progressive_loading_without_experimental_treatment(
+        self,
+    ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        admission_rule = (
-            "Would a competent fresh agent need this information to continue the work correctly?"
-        )
+        admission_rule = "Would a competent fresh agent need this information to continue the work correctly?"
         for removed_persistence_treatment_phrase in (
             "fresh-agent continuation",
             admission_rule,
@@ -508,14 +538,19 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(progressive_loading_rule, self.normalized)
 
-        self.assertIn("map owns current state, blockers, dependencies, frontier, and next work", runtime)
+        self.assertIn(
+            "map owns current state, blockers, dependencies, frontier, and next work",
+            runtime,
+        )
         for surface in (runtime, self.normalized):
             self.assertIn(
                 "Durable Wayfinder state can record authority; it cannot create authority.",
                 surface,
             )
 
-    def test_runtime_and_contract_exclude_volatile_git_observations_but_keep_constraints(self) -> None:
+    def test_runtime_and_contract_exclude_volatile_git_observations_but_keep_constraints(
+        self,
+    ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         for runtime_rule in (
             "Inspect Git/session state when useful for safe execution",
@@ -539,7 +574,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(durable_constraint, self.normalized)
 
-        self.assertIn("Inspect this information when useful for safe execution", self.normalized)
+        self.assertIn(
+            "Inspect this information when useful for safe execution", self.normalized
+        )
         self.assertIn("normally do not persist", self.normalized)
         self.assertIn(
             "Persist it when it represents a durable constraint or dependency",
@@ -552,7 +589,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         self.assertNotIn("generic persistence-admission policy", self.contract)
 
-    def test_runtime_and_contract_distinguish_map_fog_from_durable_unknowns(self) -> None:
+    def test_runtime_and_contract_distinguish_map_fog_from_durable_unknowns(
+        self,
+    ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         for required in (
             "Establish the destination and enough relevant territory to orient the effort before substantial decomposition.",
@@ -590,7 +629,9 @@ class WayfinderStateContractTests(unittest.TestCase):
 
     def test_durable_state_records_but_cannot_create_authority(self) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        authority_rule = "Durable Wayfinder state can record authority; it cannot create authority."
+        authority_rule = (
+            "Durable Wayfinder state can record authority; it cannot create authority."
+        )
         for surface in (runtime, self.normalized):
             self.assertIn(authority_rule, surface)
             self.assertIn("valid delegated scope", surface)
@@ -600,7 +641,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.normalized,
         )
 
-    def test_answer_or_authoritative_disposition_can_unblock_only_the_named_boundary(self) -> None:
+    def test_answer_or_authoritative_disposition_can_unblock_only_the_named_boundary(
+        self,
+    ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         gate = (
             "Answer the consequential U#, or canonically record the responsible authority’s "
@@ -635,7 +678,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, self.normalized)
 
-    def test_runtime_and_contract_surface_only_evidence_backed_navigation_shape(self) -> None:
+    def test_runtime_and_contract_surface_only_evidence_backed_navigation_shape(
+        self,
+    ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         for required in (
             "When dependency evidence is sufficient, surface the navigation shape concisely",

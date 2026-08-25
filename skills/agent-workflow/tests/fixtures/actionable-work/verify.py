@@ -14,11 +14,13 @@ def main() -> int:
     root = Path(".behavior-evidence")
     root.mkdir(exist_ok=True)
     with (root / "verification.jsonl").open("a", encoding="utf-8") as stream:
-        stream.write(json.dumps({"command": "python verify.py", "exit_code": 0 if passed else 1}) + "\n")
+        stream.write(
+            json.dumps({"command": "python verify.py", "exit_code": 0 if passed else 1})
+            + "\n"
+        )
     print("PASS: discount bounds" if passed else "FAIL: discount bounds")
     return 0 if passed else 1
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

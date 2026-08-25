@@ -31,13 +31,18 @@ def _limitations(trace: NormalizedTrace) -> list[str]:
     return limitations
 
 
-def analyze_trace(trace: NormalizedTrace, thresholds: Thresholds | None = None) -> dict[str, Any]:
+def analyze_trace(
+    trace: NormalizedTrace, thresholds: Thresholds | None = None
+) -> dict[str, Any]:
     configured = thresholds or Thresholds()
     measured_tokens, derived_tokens, token_warnings = analyze_tokens(trace)
     measured_tools, derived_tools, tool_warnings = analyze_tools(trace, configured)
     _repository, heuristic, context_warnings = analyze_context(trace, configured)
 
-    compaction_observable = trace.source_format in {"codex-rollout-jsonl", "codex-mixed-jsonl"}
+    compaction_observable = trace.source_format in {
+        "codex-rollout-jsonl",
+        "codex-mixed-jsonl",
+    }
     context_compactions: int | None
     if trace.compactions:
         context_compactions = len(trace.compactions)
@@ -51,9 +56,12 @@ def analyze_trace(trace: NormalizedTrace, thresholds: Thresholds | None = None) 
         "codex_turns_completed": trace.codex_turns_completed,
         "internal_model_calls": None,
         "context_compactions": context_compactions,
-        "compaction_observability": "rollout-events" if compaction_observable else "unavailable",
+        "compaction_observability": "rollout-events"
+        if compaction_observable
+        else "unavailable",
         "compaction_events": [
-            {"line": item.line_number, "event_type": item.event_type} for item in trace.compactions
+            {"line": item.line_number, "event_type": item.event_type}
+            for item in trace.compactions
         ],
     }
     warnings = token_warnings + tool_warnings + context_warnings
@@ -74,7 +82,9 @@ def analyze_trace(trace: NormalizedTrace, thresholds: Thresholds | None = None) 
             }
         )
     for warning in trace.parse_warnings:
-        warnings.append({"code": "parse_warning", "category": "measured", "message": warning})
+        warnings.append(
+            {"code": "parse_warning", "category": "measured", "message": warning}
+        )
 
     return {
         "schema_version": "token-forensics/v1",

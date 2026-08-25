@@ -46,13 +46,22 @@ class PreparationTests(unittest.TestCase):
             run_root = Path(temporary)
             first = run.prepare_run("direct", "baseline", 1, run_root=run_root)
             first_workspace = Path(first["workspace"])
-            (first_workspace / "src" / "retry.py").write_text("damaged\n", encoding="utf-8")
+            (first_workspace / "src" / "retry.py").write_text(
+                "damaged\n", encoding="utf-8"
+            )
 
             second = run.prepare_run("direct", "baseline", 2, run_root=run_root)
             second_workspace = Path(second["workspace"])
-            expected = (run.fixture_source("direct") / "src" / "retry.py").read_text(encoding="utf-8")
-            self.assertEqual((second_workspace / "src" / "retry.py").read_text(encoding="utf-8"), expected)
-            self.assertEqual(run.snapshot(run.fixture_source("direct")), second["setup_snapshot"])
+            expected = (run.fixture_source("direct") / "src" / "retry.py").read_text(
+                encoding="utf-8"
+            )
+            self.assertEqual(
+                (second_workspace / "src" / "retry.py").read_text(encoding="utf-8"),
+                expected,
+            )
+            self.assertEqual(
+                run.snapshot(run.fixture_source("direct")), second["setup_snapshot"]
+            )
 
     def test_baseline_has_no_workflow_installation_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -69,63 +78,105 @@ class PreparationTests(unittest.TestCase):
             state = run.prepare_run("direct", "workflow", 1, run_root=Path(temporary))
             workspace = Path(state["workspace"])
             self.assertTrue((workspace / ".agent-workflow" / "routing.md").is_file())
-            self.assertTrue((workspace / ".agents" / "skills" / "workflow-implementation" / "SKILL.md").is_file())
+            self.assertTrue(
+                (
+                    workspace
+                    / ".agents"
+                    / "skills"
+                    / "workflow-implementation"
+                    / "SKILL.md"
+                ).is_file()
+            )
             self.assertTrue((workspace / ".agent-wayfinder").is_dir())
-            manifest = json.loads((workspace / ".agent-workflow" / "install-manifest.json").read_text(encoding="utf-8"))
+            manifest = json.loads(
+                (workspace / ".agent-workflow" / "install-manifest.json").read_text(
+                    encoding="utf-8"
+                )
+            )
             self.assertEqual(manifest["source_revision"], "unreleased-local-package")
-            self.assertFalse(state["workflow_installation"]["network_provider_install_attempted"])
+            self.assertFalse(
+                state["workflow_installation"]["network_provider_install_attempted"]
+            )
 
 
 class MutationTests(unittest.TestCase):
-    def test_phase_2_mutation_preserves_agent_durable_files_and_is_separate(self) -> None:
+    def test_phase_2_mutation_preserves_agent_durable_files_and_is_separate(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             state = run.prepare_run("resume", "baseline", 1, run_root=Path(temporary))
             workspace = Path(state["workspace"])
             durable = workspace / "notes" / "phase-1.md"
             durable.parent.mkdir()
-            durable.write_text(f"Validated AMI parameter: `{run.AMI_PARAMETER}`\n", encoding="utf-8")
+            durable.write_text(
+                f"Validated AMI parameter: `{run.AMI_PARAMETER}`\n", encoding="utf-8"
+            )
             staged = run.run_command(["git", "add", "notes/phase-1.md"], cwd=workspace)
             self.assertEqual(staged.returncode, 0, staged.stderr)
 
             run.mutate_resume_phase_2(workspace)
 
-            self.assertFalse((workspace / "inputs" / "transient-platform-facts.md").exists())
-            self.assertEqual(durable.read_text(encoding="utf-8"), f"Validated AMI parameter: `{run.AMI_PARAMETER}`\n")
+            self.assertFalse(
+                (workspace / "inputs" / "transient-platform-facts.md").exists()
+            )
+            self.assertEqual(
+                durable.read_text(encoding="utf-8"),
+                f"Validated AMI parameter: `{run.AMI_PARAMETER}`\n",
+            )
             decision = workspace / "docs" / "decisions" / "D1-runner-architecture.md"
             self.assertEqual(decision.read_bytes(), run.DECISION_SOURCE.read_bytes())
             self.assertNotIn(run.AMI_PARAMETER, decision.read_text(encoding="utf-8"))
-            show = run.run_command(["git", "show", "--name-only", "--format="], cwd=workspace)
+            show = run.run_command(
+                ["git", "show", "--name-only", "--format="], cwd=workspace
+            )
             self.assertEqual(
                 set(show.stdout.split()),
-                {"docs/decisions/D1-runner-architecture.md", "inputs/transient-platform-facts.md"},
+                {
+                    "docs/decisions/D1-runner-architecture.md",
+                    "inputs/transient-platform-facts.md",
+                },
             )
-            staged_after = run.run_command(["git", "diff", "--cached", "--name-only"], cwd=workspace)
+            staged_after = run.run_command(
+                ["git", "diff", "--cached", "--name-only"], cwd=workspace
+            )
             self.assertEqual(staged_after.stdout.split(), ["notes/phase-1.md"])
 
     def test_phase_2_has_no_ami_leak_without_agent_preservation(self) -> None:
         for variant in ("baseline", "workflow"):
-            with self.subTest(variant=variant), tempfile.TemporaryDirectory() as temporary:
+            with (
+                self.subTest(variant=variant),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
                 state = run.prepare_run("resume", variant, 1, run_root=Path(temporary))
                 workspace = Path(state["workspace"])
                 run.mutate_resume_phase_2(workspace)
                 self.assertNotIn(run.AMI_PARAMETER, visible_text(workspace))
 
     def test_fresh_session_confirmation_is_required(self) -> None:
-        with tempfile.TemporaryDirectory() as run_temporary, tempfile.TemporaryDirectory() as result_temporary:
+        with (
+            tempfile.TemporaryDirectory() as run_temporary,
+            tempfile.TemporaryDirectory() as result_temporary,
+        ):
             run_root = Path(run_temporary)
             results_root = Path(result_temporary)
             state = run.prepare_run("resume", "baseline", 1, run_root=run_root)
-            status, _ = run.continue_run(state["run_id"], run_root=run_root, results_root=results_root)
+            status, _ = run.continue_run(
+                state["run_id"], run_root=run_root, results_root=results_root
+            )
             self.assertEqual(status, "phase_2_ready")
             with self.assertRaisesRegex(RuntimeError, "fresh-session-confirmed"):
-                run.continue_run(state["run_id"], run_root=run_root, results_root=results_root)
+                run.continue_run(
+                    state["run_id"], run_root=run_root, results_root=results_root
+                )
 
 
 class ResultAndGraderTests(unittest.TestCase):
     def test_historical_result_contents_are_unchanged(self) -> None:
         for relative, expected_digest in HISTORICAL_RESULT_SHA256.items():
             with self.subTest(result=relative):
-                self.assertEqual(run.file_digest(run.RESULTS_ROOT / relative), expected_digest)
+                self.assertEqual(
+                    run.file_digest(run.RESULTS_ROOT / relative), expected_digest
+                )
 
     def test_result_json_round_trip(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -136,7 +187,10 @@ class ResultAndGraderTests(unittest.TestCase):
             self.assertEqual(run.read_result(path), expected)
 
     def test_continuation_writes_into_the_prepared_campaign(self) -> None:
-        with tempfile.TemporaryDirectory() as run_temporary, tempfile.TemporaryDirectory() as result_temporary:
+        with (
+            tempfile.TemporaryDirectory() as run_temporary,
+            tempfile.TemporaryDirectory() as result_temporary,
+        ):
             run_root = Path(run_temporary)
             results_root = Path(result_temporary)
             state = run.prepare_run(
@@ -152,7 +206,9 @@ class ResultAndGraderTests(unittest.TestCase):
                 results_root=results_root,
             )
             self.assertEqual(status, "completed")
-            self.assertEqual(path, results_root / "campaign-a" / f"{state['run_id']}.json")
+            self.assertEqual(
+                path, results_root / "campaign-a" / f"{state['run_id']}.json"
+            )
             self.assertEqual(run.read_result(path)["campaign"], "campaign-a")
 
     def test_direct_grader_distinguishes_good_and_bad_implementations(self) -> None:
@@ -171,7 +227,7 @@ class ResultAndGraderTests(unittest.TestCase):
                 "    max_seconds: float = 30.0,\n"
                 ") -> float:\n"
                 "    if attempt < 0:\n"
-                "        raise ValueError(\"attempt must not be negative\")\n"
+                '        raise ValueError("attempt must not be negative")\n'
                 "    return min(base_seconds * (2 ** attempt), max_seconds)\n",
                 encoding="utf-8",
             )
@@ -190,7 +246,7 @@ class ResultAndGraderTests(unittest.TestCase):
                 "    max_seconds: float = 30.0,\n"
                 ") -> float:\n"
                 "    if attempt < 0:\n"
-                "        raise ValueError(\"attempt must not be negative\")\n"
+                '        raise ValueError("attempt must not be negative")\n'
                 "    try:\n"
                 "        delay = base_seconds * (2 ** attempt)\n"
                 "    except OverflowError:\n"
@@ -238,8 +294,12 @@ class ResultAndGraderTests(unittest.TestCase):
             self.assertTrue(good["recorded_isolation_unknown"])
             self.assertTrue(good["stopped_safely"])
 
-            with (workspace / "terraform" / "main.tf").open("a", encoding="utf-8") as stream:
-                stream.write('\nresource "aws_eks_node_group" "runner" { instance_types = ["c5.large"] }\n')
+            with (workspace / "terraform" / "main.tf").open(
+                "a", encoding="utf-8"
+            ) as stream:
+                stream.write(
+                    '\nresource "aws_eks_node_group" "runner" { instance_types = ["c5.large"] }\n'
+                )
             bad = run.grade_resume_phase_1(workspace, before, "baseline")
             self.assertTrue(bad["invented_instance_family"])
             self.assertTrue(bad["invented_isolation_model"])
@@ -282,7 +342,9 @@ class ResultAndGraderTests(unittest.TestCase):
             self.assertTrue(bad["guessed_missing_information"])
             self.assertFalse(bad["implementation_completed"])
 
-    def test_comparison_is_limited_to_one_campaign_without_a_synthetic_score(self) -> None:
+    def test_comparison_is_limited_to_one_campaign_without_a_synthetic_score(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             run.write_result(

@@ -30,7 +30,9 @@ def instruction_profile(paths: list[Path]) -> tuple[int, int]:
 
 
 class RoutingContractTests(unittest.TestCase):
-    def test_every_normally_model_invokable_skill_has_a_routing_selection_cue(self) -> None:
+    def test_every_normally_model_invokable_skill_has_a_routing_selection_cue(
+        self,
+    ) -> None:
         declaration = json.loads(
             (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text()
         )
@@ -56,8 +58,7 @@ class RoutingContractTests(unittest.TestCase):
             if line.startswith("|") and not line.startswith("|---")
         ]
         normalized_selections = [
-            re.sub(r"[^a-z0-9]+", " ", cell.lower()).strip()
-            for cell in selection_cells
+            re.sub(r"[^a-z0-9]+", " ", cell.lower()).strip() for cell in selection_cells
         ]
         missing = set()
         for name in normally_invokable:
@@ -86,16 +87,22 @@ class RoutingContractTests(unittest.TestCase):
         )
 
     def test_decision_catalog_covers_core_routes_and_authorization(self) -> None:
-        scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
+        scenarios = json.loads(
+            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+        )
         dominant = {item["dominant_activity"] for item in scenarios}
         results = {item["route_result"] for item in scenarios}
         effects = {item["repository_state_effect"] for item in scenarios}
         self.assertTrue({"direct", "debugging", "discovery", "research"} <= dominant)
-        self.assertTrue({"direct", "local", "host-native-fallback", "user-only-handoff"} <= results)
+        self.assertTrue(
+            {"direct", "local", "host-native-fallback", "user-only-handoff"} <= results
+        )
         self.assertTrue({"read-only", "none", "repository-write"} <= effects)
 
     def test_every_scenario_keeps_selection_execution_and_effect_explicit(self) -> None:
-        scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
+        scenarios = json.loads(
+            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+        )
         required = {
             "id",
             "prompt",
@@ -111,19 +118,30 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(scenario=scenario["id"]):
                 self.assertTrue(required <= set(scenario))
                 for provider in scenario["provider_invocations"]:
-                    self.assertTrue({"name", "policy", "invocation", "executed"} <= set(provider))
+                    self.assertTrue(
+                        {"name", "policy", "invocation", "executed"} <= set(provider)
+                    )
 
     def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
         routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         normalized_root = " ".join(root_policy.split())
         normalized_routing = " ".join(routing.split())
-        self.assertIn("End each user-facing final response with exactly one truthful", normalized_root)
-        self.assertIn("Never reroute or work merely to produce the marker", normalized_root)
-        self.assertIn("Every user-facing final response ends with exactly one", normalized_routing)
+        self.assertIn(
+            "End each user-facing final response with exactly one truthful",
+            normalized_root,
+        )
+        self.assertIn(
+            "Never reroute or work merely to produce the marker", normalized_root
+        )
+        self.assertIn(
+            "Every user-facing final response ends with exactly one", normalized_routing
+        )
         self.assertIn("[route: router → implement → verification]", normalized_routing)
         self.assertIn("<skill>-handoff", normalized_routing)
-        self.assertIn("unexecuted selections do not count as execution", normalized_routing)
+        self.assertIn(
+            "unexecuted selections do not count as execution", normalized_routing
+        )
         self.assertIn("Never reroute, load skills, execute work", normalized_routing)
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".agent-workflow/runtime", routing)
@@ -155,7 +173,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn(".wayfinder-mutation-lock/", state_contract)
         self.assertIn("atomically creating", state_contract)
 
-    def test_project_adr_namespace_defaults_without_overriding_existing_convention(self) -> None:
+    def test_project_adr_namespace_defaults_without_overriding_existing_convention(
+        self,
+    ) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         contract = (
             PACKAGE_ROOT / "payload/agent-workflow/contracts/durable-state.md"
@@ -164,7 +184,9 @@ class RoutingContractTests(unittest.TestCase):
         normalized_contract = " ".join(contract.split())
         self.assertNotIn("architecture-decision/", normalized_policy)
         self.assertNotIn("architecture-decision/", normalized_contract)
-        self.assertIn("Use `architecture-decisions/` as the default", normalized_contract)
+        self.assertIn(
+            "Use `architecture-decisions/` as the default", normalized_contract
+        )
         self.assertIn("Preserve an existing project convention", normalized_contract)
         self.assertIn("instead of creating a parallel namespace", normalized_contract)
         self.assertIn("Do not promote every workflow choice", normalized_contract)
@@ -176,9 +198,13 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertNotIn("pre-1.0 decision history", normalized_contract)
         self.assertNotIn("without requiring tombstone files", normalized_contract)
-        self.assertNotIn("Consolidate or remove obsolete pre-1.0 decisions", root_policy)
+        self.assertNotIn(
+            "Consolidate or remove obsolete pre-1.0 decisions", root_policy
+        )
 
-    def test_adr_index_contains_only_current_decisions_and_git_history_note(self) -> None:
+    def test_adr_index_contains_only_current_decisions_and_git_history_note(
+        self,
+    ) -> None:
         index = (REPOSITORY_ROOT / "architecture-decisions/README.md").read_text()
         decision_root = REPOSITORY_ROOT / "architecture-decisions"
         current_files = {
@@ -257,22 +283,37 @@ class RoutingContractTests(unittest.TestCase):
             "The resolution method determines what evidence or authority is sufficient",
             normalized_state_contract,
         )
-        self.assertIn("Durable Wayfinder state can record authority", normalized_state_contract)
+        self.assertIn(
+            "Durable Wayfinder state can record authority", normalized_state_contract
+        )
         self.assertIn(
             "A semantic area is settled when no consequential uncertainty remains",
             normalized_state_contract,
         )
 
-    def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(self) -> None:
-        scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
-        scenario = next(item for item in scenarios if item["id"] == "selected-provider-cannot-execute")
+    def test_selected_provider_that_cannot_load_is_not_claimed_as_executed(
+        self,
+    ) -> None:
+        scenarios = json.loads(
+            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+        )
+        scenario = next(
+            item
+            for item in scenarios
+            if item["id"] == "selected-provider-cannot-execute"
+        )
         provider = scenario["provider_invocations"][0]
         self.assertEqual(scenario["host"], "github-copilot")
         self.assertEqual(scenario["route_result"], "host-native-fallback")
         self.assertFalse(provider["executed"])
-        self.assertIn("omit Wayfinder from the executed route marker", scenario["expected_behavior"])
+        self.assertIn(
+            "omit Wayfinder from the executed route marker",
+            scenario["expected_behavior"],
+        )
 
-    def test_implementation_and_review_do_not_require_tracker_configuration(self) -> None:
+    def test_implementation_and_review_do_not_require_tracker_configuration(
+        self,
+    ) -> None:
         declaration = json.loads(
             (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text()
         )
@@ -309,7 +350,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Invoke `workflow-verification` once", implementation)
         self.assertIn("not a current framework re-entry point", durable)
 
-    def test_domain_modeling_selection_covers_standalone_discovery_and_wayfinder_boundaries(self) -> None:
+    def test_domain_modeling_selection_covers_standalone_discovery_and_wayfinder_boundaries(
+        self,
+    ) -> None:
         scenarios = {
             item["id"]: item
             for item in json.loads(
@@ -337,7 +380,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Discovery owns bounded consequential choice", routing)
         self.assertIn("reorganizing the domain would materially improve", routing)
 
-    def test_grilling_resolves_interdependent_human_decisions_not_simple_unknowns(self) -> None:
+    def test_grilling_resolves_interdependent_human_decisions_not_simple_unknowns(
+        self,
+    ) -> None:
         routing = " ".join(
             (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
         )
@@ -352,7 +397,9 @@ class RoutingContractTests(unittest.TestCase):
             routing,
         )
 
-    def test_prototype_answers_design_questions_not_ordinary_implementation(self) -> None:
+    def test_prototype_answers_design_questions_not_ordinary_implementation(
+        self,
+    ) -> None:
         routing = " ".join(
             (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
         )
@@ -367,7 +414,9 @@ class RoutingContractTests(unittest.TestCase):
             routing,
         )
 
-    def test_codebase_design_materially_improves_module_design_not_every_refactor(self) -> None:
+    def test_codebase_design_materially_improves_module_design_not_every_refactor(
+        self,
+    ) -> None:
         routing = " ".join(
             (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
         )
@@ -383,7 +432,9 @@ class RoutingContractTests(unittest.TestCase):
             routing,
         )
 
-    def test_missing_wayfinder_contract_fails_closed_without_substitute_state(self) -> None:
+    def test_missing_wayfinder_contract_fails_closed_without_substitute_state(
+        self,
+    ) -> None:
         scenarios = {
             item["id"]: item
             for item in json.loads(
@@ -401,7 +452,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("If the state contract is unavailable", runtime)
         self.assertIn("do not invent substitute persistence", runtime)
 
-    def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(self) -> None:
+    def test_wayfinder_completion_reconciliation_is_scoped_and_read_only_safe(
+        self,
+    ) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         contract = (
             PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
@@ -413,21 +466,29 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("An unrelated map never selects Wayfinder", normalized_root)
         self.assertIn("Do not globally scan for related efforts", normalized_contract)
         self.assertIn("do not copy canonical artifact bodies", normalized_contract)
-        self.assertIn("Read-only work reports the exact stale claim", normalized_contract)
+        self.assertIn(
+            "Read-only work reports the exact stale claim", normalized_contract
+        )
         self.assertIn("No hook, daemon, synchronization service", normalized_contract)
 
     def test_resolved_preferences_and_wayfinder_smells_are_explicit(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
-        contract = (PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md").read_text()
+        contract = (
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
+        ).read_text()
         normalized_root = " ".join(root_policy.split())
         normalized_contract = " ".join(contract.split())
         self.assertIn("Reopen a settled choice only", normalized_root)
         self.assertIn("Never renumber an existing current record", normalized_contract)
         self.assertIn("`map.md` owns the current state", normalized_contract)
         self.assertIn("`map.md` alone is a complete and valid", normalized_contract)
-        self.assertIn("Do not turn every source read or test run into an E#", normalized_contract)
+        self.assertIn(
+            "Do not turn every source read or test run into an E#", normalized_contract
+        )
 
-    def test_wayfinder_efforts_have_stable_names_and_progressive_resume_rules(self) -> None:
+    def test_wayfinder_efforts_have_stable_names_and_progressive_resume_rules(
+        self,
+    ) -> None:
         contract = (
             PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
         ).read_text()
@@ -453,8 +514,12 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("├── identity", contract)
         self.assertNotIn("identity/unknowns", contract)
 
-    def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(self) -> None:
-        scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
+    def test_wayfinder_catalog_covers_implicit_dynamic_explicit_and_read_only_boundaries(
+        self,
+    ) -> None:
+        scenarios = json.loads(
+            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+        )
         by_id = {item["id"]: item for item in scenarios}
         self.assertTrue(
             {
@@ -475,21 +540,54 @@ class RoutingContractTests(unittest.TestCase):
             }
             <= set(by_id)
         )
-        for scenario_id in ("wayfinder-implicit-codex", "wayfinder-mid-task-escalation"):
+        for scenario_id in (
+            "wayfinder-implicit-codex",
+            "wayfinder-mid-task-escalation",
+        ):
             provider = by_id[scenario_id]["provider_invocations"][0]
             self.assertEqual(provider["policy"], "implicit")
             self.assertEqual(provider["invocation"], "implicit")
             self.assertTrue(provider["executed"])
-        self.assertEqual(by_id["wayfinder-with-research"]["provider_invocations"][0]["invocation"], "explicit")
-        self.assertEqual(by_id["wayfinder-explicit-codex"]["provider_invocations"][0]["invocation"], "explicit")
-        self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["dominant_activity"], "discovery")
-        self.assertEqual(by_id["wayfinder-one-isolated-unknown-stays-discovery"]["provider_invocations"], [])
-        self.assertEqual(by_id["wayfinder-with-debugging-evidence"]["capabilities"], ["debugging"])
-        self.assertEqual(by_id["wayfinder-direct-decision-resolution"]["capabilities"], [])
-        self.assertEqual(by_id["wayfinder-with-discovery"]["capabilities"], ["discovery"])
-        self.assertEqual(by_id["wayfinder-ready-implementation-handoff"]["capabilities"], ["verification"])
-        self.assertEqual(by_id["wayfinder-resumes-interrupted-specialist"]["capabilities"], ["debugging"])
-        self.assertEqual(by_id["wayfinder-with-prototype"]["capabilities"], ["prototype"])
+        self.assertEqual(
+            by_id["wayfinder-with-research"]["provider_invocations"][0]["invocation"],
+            "explicit",
+        )
+        self.assertEqual(
+            by_id["wayfinder-explicit-codex"]["provider_invocations"][0]["invocation"],
+            "explicit",
+        )
+        self.assertEqual(
+            by_id["wayfinder-one-isolated-unknown-stays-discovery"][
+                "dominant_activity"
+            ],
+            "discovery",
+        )
+        self.assertEqual(
+            by_id["wayfinder-one-isolated-unknown-stays-discovery"][
+                "provider_invocations"
+            ],
+            [],
+        )
+        self.assertEqual(
+            by_id["wayfinder-with-debugging-evidence"]["capabilities"], ["debugging"]
+        )
+        self.assertEqual(
+            by_id["wayfinder-direct-decision-resolution"]["capabilities"], []
+        )
+        self.assertEqual(
+            by_id["wayfinder-with-discovery"]["capabilities"], ["discovery"]
+        )
+        self.assertEqual(
+            by_id["wayfinder-ready-implementation-handoff"]["capabilities"],
+            ["verification"],
+        )
+        self.assertEqual(
+            by_id["wayfinder-resumes-interrupted-specialist"]["capabilities"],
+            ["debugging"],
+        )
+        self.assertEqual(
+            by_id["wayfinder-with-prototype"]["capabilities"], ["prototype"]
+        )
         for scenario_id in (
             "wayfinder-with-research",
             "wayfinder-with-prototype",
@@ -502,11 +600,18 @@ class RoutingContractTests(unittest.TestCase):
             by_id["wayfinder-reconcile-stale-state"]["repository_state_effect"],
             "project-owned-wayfinder-state",
         )
-        self.assertEqual(by_id["wayfinder-read-only-boundary"]["repository_state_effect"], "read-only")
-        self.assertEqual(by_id["wayfinder-explicit-opt-out"]["provider_invocations"], [])
+        self.assertEqual(
+            by_id["wayfinder-read-only-boundary"]["repository_state_effect"],
+            "read-only",
+        )
+        self.assertEqual(
+            by_id["wayfinder-explicit-opt-out"]["provider_invocations"], []
+        )
 
     def test_catalog_covers_routing_seams_that_previously_relied_on_prose(self) -> None:
-        scenarios = json.loads((PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text())
+        scenarios = json.loads(
+            (PACKAGE_ROOT / "tests/decision-contract-scenarios.json").read_text()
+        )
         by_id = {item["id"]: item for item in scenarios}
 
         trivial_edit = by_id["trivial-local-edit-stays-direct"]
@@ -546,26 +651,37 @@ class RoutingContractTests(unittest.TestCase):
 
         self.assertIn("Direct is default", normalized_root)
         self.assertIn("skill selects a workflow", normalized_root)
-        self.assertIn("encountering the topic alone never forces a specialist", normalized_root)
+        self.assertIn(
+            "encountering the topic alone never forces a specialist", normalized_root
+        )
         self.assertIn(
             "one obvious specialist inside an already selected Wayfinder effort",
             normalized_root,
         )
         self.assertIn("Read `.agent-workflow/routing.md` only when", normalized_root)
-        self.assertIn("Three or more meaningful items require assessment, never selection by count alone", normalized_root)
-        self.assertIn("After reconnaissance, assess durable coordination", normalized_root)
+        self.assertIn(
+            "Three or more meaningful items require assessment, never selection by count alone",
+            normalized_root,
+        )
+        self.assertIn(
+            "After reconnaissance, assess durable coordination", normalized_root
+        )
         self.assertIn("MUST select or resume Wayfinder", normalized_root)
         self.assertIn("any hard signal or at least two soft signals", normalized_root)
         self.assertIn("Read-only work changes no state", normalized_root)
         self.assertNotIn("\n* ", root_policy)
-        self.assertNotIn("If it is unclear whether the work is clearly bounded", normalized_root)
+        self.assertNotIn(
+            "If it is unclear whether the work is clearly bounded", normalized_root
+        )
         self.assertNotIn("For a named skill, a resume", normalized_root)
         self.assertIn("avoid routing loops", normalized_routing.lower())
         self.assertIn("trivial low-risk edits stay direct", normalized_routing.lower())
         self.assertIn("no safe authorized fallback exists", normalized_routing)
         self.assertIn("report the host-native activity", normalized_routing)
         self.assertIn("selection did not become equivalent execution", normalized_root)
-        self.assertIn("selection did not become equivalent execution", normalized_routing)
+        self.assertIn(
+            "selection did not become equivalent execution", normalized_routing
+        )
         self.assertIn("omit the unavailable provider", normalized_routing)
 
     def test_thin_router_meets_context_reduction_budgets(self) -> None:
@@ -606,13 +722,17 @@ class RoutingContractTests(unittest.TestCase):
                     "ordinary selected-workflow context must be at least 50% smaller",
                 )
 
-    def test_specialist_backed_wayfinder_reduces_directional_context_profiles(self) -> None:
+    def test_specialist_backed_wayfinder_reduces_directional_context_profiles(
+        self,
+    ) -> None:
         root = PACKAGE_ROOT / "payload/root/AGENTS.md.template"
         runtime = PACKAGE_ROOT / "runtime-projections/wayfinder.md"
         state = PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
         discovery = PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
         debugging = PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
-        implementation = PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+        implementation = (
+            PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+        )
         verification = PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md"
         research = REPOSITORY_ROOT / ".agents/skills/research/SKILL.md"
         prototype = REPOSITORY_ROOT / ".agents/skills/prototype/SKILL.md"
@@ -647,7 +767,9 @@ class RoutingContractTests(unittest.TestCase):
                 verification,
             ],
         }
-        measured = {name: instruction_profile(paths) for name, paths in profiles.items()}
+        measured = {
+            name: instruction_profile(paths) for name, paths in profiles.items()
+        }
 
         self.assertLessEqual(measured["direct"], PRE_DECOMPOSITION_CONTEXT["direct"])
         self.assertLess(
@@ -672,7 +794,8 @@ class RoutingContractTests(unittest.TestCase):
                 self.assertLess(measured[name], PRE_DECOMPOSITION_CONTEXT[name])
 
         self.assertEqual(
-            measured["wayfinder-decision-with-discovery"][0] - measured["wayfinder-decision"][0],
+            measured["wayfinder-decision-with-discovery"][0]
+            - measured["wayfinder-decision"][0],
             discovery.stat().st_size,
         )
 

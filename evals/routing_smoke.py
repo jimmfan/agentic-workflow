@@ -25,9 +25,12 @@ CLAUDE_MAX_CALL_USD = 0.20
 
 RESOURCE_PATHS = {
     ".agent-workflow/routing.md": REPOSITORY_ROOT / ".agent-workflow/routing.md",
-    ".agent-workflow/providers.json": REPOSITORY_ROOT / ".agent-workflow/providers.json",
-    ".agents/skills/wayfinder/SKILL.md": REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md",
-    ".agent-workflow/contracts/wayfinder-state.md": REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md",
+    ".agent-workflow/providers.json": REPOSITORY_ROOT
+    / ".agent-workflow/providers.json",
+    ".agents/skills/wayfinder/SKILL.md": REPOSITORY_ROOT
+    / ".agents/skills/wayfinder/SKILL.md",
+    ".agent-workflow/contracts/wayfinder-state.md": REPOSITORY_ROOT
+    / ".agent-workflow/contracts/wayfinder-state.md",
 }
 
 ROUTES = ["direct", "discovery", "debugging", "wayfinder", "other"]
@@ -89,7 +92,9 @@ class CostBudget:
             uncached_tokens = max(input_tokens - cached_tokens, 0)
         else:
             cached_tokens = int(usage.get("cache_read_input_tokens", 0) or 0)
-            uncached_tokens = input_tokens + int(usage.get("cache_creation_input_tokens", 0) or 0)
+            uncached_tokens = input_tokens + int(
+                usage.get("cache_creation_input_tokens", 0) or 0
+            )
         output_tokens = int(usage.get("output_tokens", 0) or 0)
         cost = (
             uncached_tokens * self.input_per_million
@@ -146,10 +151,13 @@ def build_prompt(
 ) -> str:
     root_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
     available = json.dumps(resource_catalog(case), indent=2)
-    loaded_text = "\n\n".join(
-        f"<resource name={json.dumps(name)}>\n{content}\n</resource>"
-        for name, content in loaded.items()
-    ) or "(none)"
+    loaded_text = (
+        "\n\n".join(
+            f"<resource name={json.dumps(name)}>\n{content}\n</resource>"
+            for name, content in loaded.items()
+        )
+        or "(none)"
+    )
     history = json.dumps(list(decisions), indent=2)
     return f"""Evaluate how an agent on host {host!r} interprets the repository routing policy.
 
@@ -168,7 +176,7 @@ unless it is already loaded; use that metadata to report provider_outcome truthf
 </always_loaded_policy>
 
 User request:
-{case['request']}
+{case["request"]}
 
 Available resources (names and sizes only):
 {available}
@@ -187,11 +195,15 @@ falsifiable explanation using policy signals, not chain-of-thought.
 def validate_decision(decision: Mapping[str, Any]) -> None:
     required = set(DECISION_SCHEMA["required"])
     if set(decision) != required:
-        raise SmokeError(f"adapter decision fields differ from schema: {sorted(decision)}")
+        raise SmokeError(
+            f"adapter decision fields differ from schema: {sorted(decision)}"
+        )
     if decision["status"] not in {"request_resources", "complete"}:
         raise SmokeError("adapter returned an invalid status")
     requested = decision["requested_resources"]
-    if not isinstance(requested, list) or any(not isinstance(item, str) for item in requested):
+    if not isinstance(requested, list) or any(
+        not isinstance(item, str) for item in requested
+    ):
         raise SmokeError("requested_resources must be a string array")
     if len(requested) != len(set(requested)):
         raise SmokeError("requested_resources must not contain duplicates")
@@ -199,11 +211,16 @@ def validate_decision(decision: Mapping[str, Any]) -> None:
         raise SmokeError("request_resources status requires at least one resource")
     if decision["status"] == "complete" and requested:
         raise SmokeError("complete status cannot request resources")
-    if decision["initial_route"] not in ROUTES or decision["current_route"] not in ROUTES:
+    if (
+        decision["initial_route"] not in ROUTES
+        or decision["current_route"] not in ROUTES
+    ):
         raise SmokeError("adapter returned an invalid route")
     if decision["provider_outcome"] not in PROVIDER_OUTCOMES:
         raise SmokeError("adapter returned an invalid provider outcome")
-    if not isinstance(decision["wayfinder_assessment"], bool) or not isinstance(decision["wayfinder_selected"], bool):
+    if not isinstance(decision["wayfinder_assessment"], bool) or not isinstance(
+        decision["wayfinder_selected"], bool
+    ):
         raise SmokeError("Wayfinder fields must be booleans")
     if not isinstance(decision["summary"], str) or not decision["summary"].strip():
         raise SmokeError("summary must be a non-empty string")
@@ -243,7 +260,8 @@ def evaluate_case(
         },
         {
             "name": "wayfinder-selection",
-            "passed": final.get("wayfinder_selected") is case["expected_wayfinder_selected"],
+            "passed": final.get("wayfinder_selected")
+            is case["expected_wayfinder_selected"],
             "detail": f"expected={case['expected_wayfinder_selected']!r}, actual={final.get('wayfinder_selected')!r}",
         },
         {
@@ -253,7 +271,9 @@ def evaluate_case(
         },
         {
             "name": "forbidden-resources",
-            "passed": not any(name in loaded_names for name in case["forbidden_resources"]),
+            "passed": not any(
+                name in loaded_names for name in case["forbidden_resources"]
+            ),
             "detail": f"forbidden={case['forbidden_resources']!r}, loaded={list(loaded_names)!r}",
         },
         {
@@ -378,7 +398,9 @@ def codex_usage(jsonl: str) -> dict[str, int]:
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if event.get("type") != "turn.completed" or not isinstance(event.get("usage"), dict):
+        if event.get("type") != "turn.completed" or not isinstance(
+            event.get("usage"), dict
+        ):
             continue
         for key, value in event["usage"].items():
             if isinstance(value, int) and not isinstance(value, bool):
@@ -405,18 +427,20 @@ def executable_path(explicit: str | None, default: str) -> str:
     raise SmokeError(f"adapter executable is unavailable: {default}")
 
 
-def codex_invoke(
-    *, model: str, executable: str | None, timeout_seconds: int
-) -> Invoke:
+def codex_invoke(*, model: str, executable: str | None, timeout_seconds: int) -> Invoke:
     binary = executable_path(executable, "codex")
 
     def invoke(prompt: str) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
         with tempfile.TemporaryDirectory(prefix="routing-smoke-codex-") as temporary:
             root = Path(temporary)
-            source_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")).expanduser()
+            source_home = Path(
+                os.environ.get("CODEX_HOME", Path.home() / ".codex")
+            ).expanduser()
             source_auth = source_home / "auth.json"
             if not source_auth.is_file() or source_auth.is_symlink():
-                raise SmokeError("Codex adapter requires a regular CODEX_HOME/auth.json")
+                raise SmokeError(
+                    "Codex adapter requires a regular CODEX_HOME/auth.json"
+                )
             isolated_home = root / "codex-home"
             isolated_home.mkdir(mode=0o700)
             isolated_auth = isolated_home / "auth.json"
@@ -466,13 +490,23 @@ def codex_invoke(
                     env=environment,
                 )
             except subprocess.TimeoutExpired as exc:
-                raise SmokeError(f"Codex adapter exceeded {timeout_seconds} seconds") from exc
+                raise SmokeError(
+                    f"Codex adapter exceeded {timeout_seconds} seconds"
+                ) from exc
             if result.returncode != 0:
-                detail = "\n".join(part for part in (result.stdout.strip(), result.stderr.strip()) if part)
-                raise SmokeError(f"Codex adapter failed with exit {result.returncode}: {detail[-2000:]}")
+                detail = "\n".join(
+                    part
+                    for part in (result.stdout.strip(), result.stderr.strip())
+                    if part
+                )
+                raise SmokeError(
+                    f"Codex adapter failed with exit {result.returncode}: {detail[-2000:]}"
+                )
             if not output.is_file():
                 raise SmokeError("Codex adapter did not create its structured output")
-            decision = parse_json_object(output.read_text(encoding="utf-8"), label="Codex adapter")
+            decision = parse_json_object(
+                output.read_text(encoding="utf-8"), label="Codex adapter"
+            )
             return decision, codex_usage(result.stdout)
 
     return invoke
@@ -521,15 +555,21 @@ def claude_invoke(
                     env=environment,
                 )
             except subprocess.TimeoutExpired as exc:
-                raise SmokeError(f"Claude adapter exceeded {timeout_seconds} seconds") from exc
+                raise SmokeError(
+                    f"Claude adapter exceeded {timeout_seconds} seconds"
+                ) from exc
             if result.returncode != 0:
                 detail = result.stderr.strip() or result.stdout.strip()
-                raise SmokeError(f"Claude adapter failed with exit {result.returncode}: {detail[-2000:]}")
+                raise SmokeError(
+                    f"Claude adapter failed with exit {result.returncode}: {detail[-2000:]}"
+                )
             envelope = parse_json_object(result.stdout, label="Claude adapter")
             decision = envelope.get("structured_output")
             if not isinstance(decision, dict):
                 raise SmokeError("Claude adapter response lacks structured_output")
-            usage = envelope.get("usage") if isinstance(envelope.get("usage"), dict) else {}
+            usage = (
+                envelope.get("usage") if isinstance(envelope.get("usage"), dict) else {}
+            )
             return decision, usage
 
     return invoke
@@ -545,7 +585,9 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         raw_cases = report.get("cases")
         if not isinstance(raw_cases, list):
             raise SmokeError("every comparison report must contain a cases array")
-        report_case_sets.append({str(case.get("case")) for case in raw_cases if isinstance(case, dict)})
+        report_case_sets.append(
+            {str(case.get("case")) for case in raw_cases if isinstance(case, dict)}
+        )
         for case in raw_cases:
             if not isinstance(case, dict):
                 raise SmokeError("comparison case entries must be objects")
@@ -562,7 +604,9 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                     "provider_outcome": decision.get("provider_outcome"),
                 }
             )
-    complete_case_matrix = all(case_set == expected_cases for case_set in report_case_sets)
+    complete_case_matrix = all(
+        case_set == expected_cases for case_set in report_case_sets
+    )
     interpretation_agreement = complete_case_matrix
     provider_outcome_agreement = complete_case_matrix
     for entries in by_case.values():
@@ -576,7 +620,9 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             and all(entry["passed"] is True for entry in entries)
             and len(interpretation_signatures) == 1
         )
-        provider_outcome_agreement &= len(entries) == len(reports) and len(provider_outcomes) == 1
+        provider_outcome_agreement &= (
+            len(entries) == len(reports) and len(provider_outcomes) == 1
+        )
     return {
         "schema_version": 1,
         "report_count": len(reports),
@@ -613,19 +659,35 @@ def run_command(args: argparse.Namespace) -> int:
         raise SmokeError(f"max rounds must be between 1 and {DEFAULT_MAX_ROUNDS}")
     if args.max_prompt_bytes < 1 or args.max_prompt_bytes > DEFAULT_MAX_PROMPT_BYTES:
         raise SmokeError(f"max prompt bytes cannot exceed {DEFAULT_MAX_PROMPT_BYTES}")
-    if args.max_estimated_cost_usd <= 0 or args.max_estimated_cost_usd > HARD_MAX_COST_USD:
-        raise SmokeError(f"estimated cost limit must be greater than zero and at most ${HARD_MAX_COST_USD:.2f}")
-    if min(
-        args.input_price_per_million,
-        args.cached_input_price_per_million,
-        args.output_price_per_million,
-    ) < 0:
+    if (
+        args.max_estimated_cost_usd <= 0
+        or args.max_estimated_cost_usd > HARD_MAX_COST_USD
+    ):
+        raise SmokeError(
+            f"estimated cost limit must be greater than zero and at most ${HARD_MAX_COST_USD:.2f}"
+        )
+    if (
+        min(
+            args.input_price_per_million,
+            args.cached_input_price_per_million,
+            args.output_price_per_million,
+        )
+        < 0
+    ):
         raise SmokeError("token prices must be non-negative")
     host = "claude" if args.adapter == "claude" else "codex"
     if args.adapter == "codex":
-        invoke = codex_invoke(model=args.model, executable=args.executable, timeout_seconds=args.timeout_seconds)
+        invoke = codex_invoke(
+            model=args.model,
+            executable=args.executable,
+            timeout_seconds=args.timeout_seconds,
+        )
     elif args.adapter == "claude":
-        invoke = claude_invoke(model=args.model, executable=args.executable, timeout_seconds=args.timeout_seconds)
+        invoke = claude_invoke(
+            model=args.model,
+            executable=args.executable,
+            timeout_seconds=args.timeout_seconds,
+        )
     cost_budget = CostBudget(
         max_usd=args.max_estimated_cost_usd,
         input_per_million=args.input_price_per_million,
@@ -667,7 +729,10 @@ def run_command(args: argparse.Namespace) -> int:
 
 
 def compare_command(args: argparse.Namespace) -> int:
-    reports = [parse_json_object(path.read_text(encoding="utf-8"), label=str(path)) for path in args.reports]
+    reports = [
+        parse_json_object(path.read_text(encoding="utf-8"), label=str(path))
+        for path in args.reports
+    ]
     comparison = compare_reports(reports)
     if args.output:
         write_json(args.output, comparison)
@@ -685,8 +750,7 @@ def payload_command(_args: argparse.Namespace) -> int:
             "words": len(root.split()),
         },
         "cases": {
-            case_id: resource_catalog(case)
-            for case_id, case in load_cases().items()
+            case_id: resource_catalog(case) for case_id, case in load_cases().items()
         },
         "limits": {
             "max_rounds": DEFAULT_MAX_ROUNDS,
@@ -700,7 +764,9 @@ def payload_command(_args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
-    run = subparsers.add_parser("run", help="run the two routing cases through one model adapter")
+    run = subparsers.add_parser(
+        "run", help="run the two routing cases through one model adapter"
+    )
     run.add_argument("--adapter", choices=("codex", "claude"), required=True)
     run.add_argument("--model", required=True)
     run.add_argument("--executable")
@@ -713,10 +779,14 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--cached-input-price-per-million", type=float, required=True)
     run.add_argument("--output-price-per-million", type=float, required=True)
     run.add_argument("--output", type=Path)
-    compare = subparsers.add_parser("compare", help="compare two or more completed model reports")
+    compare = subparsers.add_parser(
+        "compare", help="compare two or more completed model reports"
+    )
     compare.add_argument("reports", nargs="+", type=Path)
     compare.add_argument("--output", type=Path)
-    subparsers.add_parser("payload", help="show the exact local payload sizes without contacting a model")
+    subparsers.add_parser(
+        "payload", help="show the exact local payload sizes without contacting a model"
+    )
     return parser
 
 

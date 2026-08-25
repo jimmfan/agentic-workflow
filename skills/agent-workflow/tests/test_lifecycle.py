@@ -111,7 +111,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         provider["skills"] = [{"name": skill_name, "path": skill_path}]
         declaration.write_text(json.dumps(raw), encoding="utf-8")
 
-        upstream_skill = b"---\ndescription: Demo skill.\nname: demo\n---\n\nDemo body.\n"
+        upstream_skill = (
+            b"---\ndescription: Demo skill.\nname: demo\n---\n\nDemo body.\n"
+        )
         upstream_openai = b'interface:\n  display_name: "Demo"\n'
         metadata = (
             "metadata:\n"
@@ -121,7 +123,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             f"    github-repo: https://github.com/{provider['repository']}\n"
             f"    github-tree-sha: {skill_tree}\n"
         ).encode("utf-8")
-        installed_skill = upstream_skill.replace(b"name: demo\n", metadata + b"name: demo\n")
+        installed_skill = upstream_skill.replace(
+            b"name: demo\n", metadata + b"name: demo\n"
+        )
 
         def git_blob_sha(content: bytes) -> str:
             header = f"blob {len(content)}\0".encode("ascii")
@@ -211,18 +215,30 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertTrue((self.project / ".agent-wayfinder").is_dir())
         self.assertEqual(list((self.project / ".agent-wayfinder").iterdir()), [])
         self.assertFalse((self.project / ".wayfinder").exists())
-        self.assertFalse((self.project / ".agent-workflow/templates/active-state.md").exists())
+        self.assertFalse(
+            (self.project / ".agent-workflow/templates/active-state.md").exists()
+        )
         self.assertFalse((self.project / ".agent-workflow/state/README.md").exists())
-        manifest = json.loads((self.project / ".agent-workflow/install-manifest.json").read_text())
+        manifest = json.loads(
+            (self.project / ".agent-workflow/install-manifest.json").read_text()
+        )
         self.assertEqual(manifest["schema_version"], 1)
         self.assertEqual(
             set(manifest),
-            {"schema_version", "framework_version", "source_revision", "external_files", "composites"},
+            {
+                "schema_version",
+                "framework_version",
+                "source_revision",
+                "external_files",
+                "composites",
+            },
         )
         self.assertNotIn("framework_files", manifest)
         self.assertNotIn("project_owned", manifest)
 
-    def test_update_replaces_missing_modified_and_obsolete_reconstructable_files(self) -> None:
+    def test_update_replaces_missing_modified_and_obsolete_reconstructable_files(
+        self,
+    ) -> None:
         self.assert_ok(self.adopt("install"))
         routing = self.project / ".agent-workflow/routing.md"
         expected = routing.read_bytes()
@@ -244,8 +260,15 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assert_ok(self.adopt("update"))
         self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
         self.assertEqual(state.read_text(), "durable project bytes\n")
-        manifest = json.loads((self.project / ".agent-workflow/install-manifest.json").read_text())
-        self.assertTrue(all(not details["created"] for details in manifest["external_files"].values()))
+        manifest = json.loads(
+            (self.project / ".agent-workflow/install-manifest.json").read_text()
+        )
+        self.assertTrue(
+            all(
+                not details["created"]
+                for details in manifest["external_files"].values()
+            )
+        )
 
     def test_historical_absence_is_not_a_blocker_or_recreated(self) -> None:
         self.assert_ok(self.adopt("install"))
@@ -311,7 +334,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
                 self.assert_ok(self.adopt(command))
                 self.assertEqual(tree_snapshot(effort), original)
 
-    def test_composite_policy_preserves_project_region_through_update_and_remove(self) -> None:
+    def test_composite_policy_preserves_project_region_through_update_and_remove(
+        self,
+    ) -> None:
         project_policy = b"# Project policy\n\nKeep this byte-for-byte.\n"
         (self.project / "AGENTS.md").write_bytes(project_policy)
         self.assert_ok(self.adopt("install"))
@@ -368,7 +393,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         target = self.project / ".agents/skills/workflow-debugging/SKILL.md"
         target.write_text("project changed this managed integration\n")
         self.assert_ok(self.adopt("remove"))
-        self.assertEqual(target.read_text(), "project changed this managed integration\n")
+        self.assertEqual(
+            target.read_text(), "project changed this managed integration\n"
+        )
 
     def test_framework_and_state_root_symlinks_are_rejected(self) -> None:
         outside = Path(self.temporary.name) / "outside"
@@ -380,7 +407,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual((outside / "sentinel").read_text(), "safe\n")
 
         (self.project / ".agent-workflow").unlink()
-        (self.project / ".agent-wayfinder").symlink_to(outside, target_is_directory=True)
+        (self.project / ".agent-wayfinder").symlink_to(
+            outside, target_is_directory=True
+        )
         result = self.adopt("install")
         self.assertEqual(result.returncode, 2)
         self.assertEqual((outside / "sentinel").read_text(), "safe\n")
@@ -390,7 +419,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("filesystem root", result.stderr)
 
-    def test_status_treats_optional_files_as_normal_and_drift_as_repairable(self) -> None:
+    def test_status_treats_optional_files_as_normal_and_drift_as_repairable(
+        self,
+    ) -> None:
         self.assert_ok(self.adopt("install"))
         result = self.adopt("status")
         self.assert_ok(result)
@@ -403,10 +434,15 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_optional_provider_failure_does_not_fail_core_install(self) -> None:
         package_copy = self.copy_package("corrupt-provider-snapshot")
-        snapshot = package_copy / "provider-snapshots/matt-pocock-skills/skills/research/SKILL.md"
+        snapshot = (
+            package_copy
+            / "provider-snapshots/matt-pocock-skills/skills/research/SKILL.md"
+        )
         snapshot.write_text("corrupt bundled provider\n", encoding="utf-8")
 
-        result = run_script(package_copy / "scripts/lifecycle.py", "install", self.project)
+        result = run_script(
+            package_copy / "scripts/lifecycle.py", "install", self.project
+        )
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
@@ -421,10 +457,14 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         package_copy = self.copy_package("remove-provider-failure")
         declaration = package_copy / "payload/agent-workflow/providers.json"
         declaration.write_text("{}\n", encoding="utf-8")
-        result = run_script(package_copy / "scripts/lifecycle.py", "remove", self.project)
+        result = run_script(
+            package_copy / "scripts/lifecycle.py", "remove", self.project
+        )
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("Core removal will continue; inspect the provider error", result.stderr)
+        self.assertIn(
+            "Core removal will continue; inspect the provider error", result.stderr
+        )
         self.assertNotIn("core router and local workflows remain usable", result.stderr)
         self.assertFalse((self.project / ".agent-workflow").exists())
         self.assertEqual(provider_file.read_text(), "preserve provider bytes\n")
@@ -437,13 +477,17 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertFalse((directory / "personal.txt").exists())
-        self.assertIn("disable-model-invocation: false", (directory / "SKILL.md").read_text())
+        self.assertIn(
+            "disable-model-invocation: false", (directory / "SKILL.md").read_text()
+        )
         self.assertIn(
             "framework-owned runtime projection",
             (directory / "SKILL.md").read_text(),
         )
         for name in self.declared_provider_names():
-            self.assertTrue((self.project / ".agents/skills" / name / "SKILL.md").is_file())
+            self.assertTrue(
+                (self.project / ".agents/skills" / name / "SKILL.md").is_file()
+            )
 
     def test_fresh_lifecycle_projects_every_declared_provider_skill(self) -> None:
         empty_bin = Path(self.temporary.name) / "empty-bin"
@@ -456,7 +500,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         for name in self.declared_provider_names():
             with self.subTest(skill=name):
-                self.assertTrue((self.project / ".agents/skills" / name / "SKILL.md").is_file())
+                self.assertTrue(
+                    (self.project / ".agents/skills" / name / "SKILL.md").is_file()
+                )
 
     def test_update_completes_an_existing_partial_provider_projection(self) -> None:
         first = run_script(PROVIDERS, "install", self.project)
@@ -474,9 +520,13 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         for name in self.declared_provider_names():
             with self.subTest(skill=name):
-                self.assertTrue((self.project / ".agents/skills" / name / "SKILL.md").is_file())
+                self.assertTrue(
+                    (self.project / ".agents/skills" / name / "SKILL.md").is_file()
+                )
         for name, snapshot in before.items():
-            self.assertEqual(tree_snapshot(self.project / ".agents/skills" / name), snapshot)
+            self.assertEqual(
+                tree_snapshot(self.project / ".agents/skills" / name), snapshot
+            )
 
     def test_modified_and_missing_provider_skills_are_repaired_together(self) -> None:
         first = run_script(PROVIDERS, "install", self.project)
@@ -499,7 +549,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
         shutil.rmtree(self.project / ".agents/skills/research")
         shutil.rmtree(self.project / ".agents/skills/wayfinder")
-        (self.project / ".agents/skills/wayfinder").write_text("unsafe\n", encoding="utf-8")
+        (self.project / ".agents/skills/wayfinder").write_text(
+            "unsafe\n", encoding="utf-8"
+        )
 
         result = run_script(PROVIDERS, "install", self.project)
 
@@ -510,7 +562,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
     def test_projection_failure_rolls_back_the_complete_changed_set(self) -> None:
         first = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
-        (self.project / ".agents/skills/wayfinder/personal.txt").write_text("old bytes\n")
+        (self.project / ".agents/skills/wayfinder/personal.txt").write_text(
+            "old bytes\n"
+        )
         shutil.rmtree(self.project / ".agents/skills/research")
         before = tree_snapshot(self.project / ".agents/skills")
 
@@ -534,12 +588,16 @@ class LifecycleAcceptanceTests(unittest.TestCase):
                 original_move(source, destination)
 
             module.move_path = fail_third_move
-            with self.assertRaisesRegex(module.ProviderError, "prior projection restored"):
+            with self.assertRaisesRegex(
+                module.ProviderError, "prior projection restored"
+            ):
                 module.replace_projection(self.project, staged, list(provider.skills))
 
         self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before)
 
-    def test_projection_revalidates_every_declared_destination_before_mutation(self) -> None:
+    def test_projection_revalidates_every_declared_destination_before_mutation(
+        self,
+    ) -> None:
         first = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
         shutil.rmtree(self.project / ".agents/skills/research")
@@ -569,9 +627,13 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             module.install(self.project, False)
 
         self.assertFalse((self.project / ".agents/skills/research").exists())
-        self.assertEqual((self.project / ".agents/skills/wayfinder").read_text(), "unsafe\n")
+        self.assertEqual(
+            (self.project / ".agents/skills/wayfinder").read_text(), "unsafe\n"
+        )
 
-    def test_replacement_cleanup_failure_reports_success_with_recovery_path(self) -> None:
+    def test_replacement_cleanup_failure_reports_success_with_recovery_path(
+        self,
+    ) -> None:
         first = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
         marker = self.project / ".agents/skills/wayfinder/personal.txt"
@@ -590,7 +652,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             with tempfile.TemporaryDirectory(dir=self.project) as temporary:
                 staged = module.prepare_staged_projection(Path(temporary), provider)
 
-                def fail_recovery_cleanup(path: object, *args: object, **kwargs: object) -> None:
+                def fail_recovery_cleanup(
+                    path: object, *args: object, **kwargs: object
+                ) -> None:
                     if Path(path).name.startswith(".agent-workflow-provider-rollback-"):
                         raise PermissionError("injected cleanup failure")
                     original_rmtree(path, *args, **kwargs)
@@ -652,7 +716,10 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         original_rmtree = module.shutil.rmtree
         warning = io.StringIO()
         try:
-            def fail_recovery_cleanup(path: object, *args: object, **kwargs: object) -> None:
+
+            def fail_recovery_cleanup(
+                path: object, *args: object, **kwargs: object
+            ) -> None:
                 if Path(path).name.startswith(".agent-workflow-provider-remove-"):
                     raise PermissionError("injected cleanup failure")
                 original_rmtree(path, *args, **kwargs)
@@ -663,7 +730,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         finally:
             module.shutil.rmtree = original_rmtree
 
-        self.assertEqual({skill.name for skill in removed}, self.declared_provider_names())
+        self.assertEqual(
+            {skill.name for skill in removed}, self.declared_provider_names()
+        )
         for name in self.declared_provider_names():
             self.assertFalse((self.project / ".agents/skills" / name).exists())
         recovery = list(self.project.glob(".agent-workflow-provider-remove-*"))
@@ -687,30 +756,44 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         module.remove_projection = fail_remove
         output = io.StringIO()
-        with redirect_stdout(output), self.assertRaisesRegex(
-            module.ProviderError, "injected remove failure"
+        with (
+            redirect_stdout(output),
+            self.assertRaisesRegex(module.ProviderError, "injected remove failure"),
         ):
             module.remove(self.project, False)
-        self.assertNotIn("removed declared optional provider directories", output.getvalue())
+        self.assertNotIn(
+            "removed declared optional provider directories", output.getvalue()
+        )
 
-    def test_runtime_projection_does_not_enforce_release_snapshot_checksum(self) -> None:
+    def test_runtime_projection_does_not_enforce_release_snapshot_checksum(
+        self,
+    ) -> None:
         package_copy = self.copy_package("runtime-provider-checksum")
-        snapshot = package_copy / "provider-snapshots/matt-pocock-skills/skills/codebase-design/SKILL.md"
+        snapshot = (
+            package_copy
+            / "provider-snapshots/matt-pocock-skills/skills/codebase-design/SKILL.md"
+        )
         snapshot.write_text(
             snapshot.read_text(encoding="utf-8") + "\nrelease-content-drift\n",
             encoding="utf-8",
         )
 
-        result = run_script(package_copy / "scripts/providers.py", "install", self.project)
+        result = run_script(
+            package_copy / "scripts/providers.py", "install", self.project
+        )
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("OK: Optional provider skills match the bundled projection.", result.stdout)
+        self.assertIn(
+            "OK: Optional provider skills match the bundled projection.", result.stdout
+        )
         projected = self.project / ".agents/skills/codebase-design/SKILL.md"
         self.assertTrue(
             projected.read_text(encoding="utf-8").endswith("\nrelease-content-drift\n")
         )
 
-    def test_implicit_invocation_adapters_apply_from_bundle_and_are_idempotent(self) -> None:
+    def test_implicit_invocation_adapters_apply_from_bundle_and_are_idempotent(
+        self,
+    ) -> None:
         first = run_script(PROVIDERS, "install", self.project)
         before_second = tree_snapshot(self.project / ".agents/skills")
         second = run_script(PROVIDERS, "install", self.project)
@@ -720,9 +803,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(tree_snapshot(self.project / ".agents/skills"), before_second)
         for name in IMPLICIT_INVOCATION_SKILLS:
             with self.subTest(skill=name):
-                skill_text = (self.project / ".agents/skills" / name / "SKILL.md").read_text(
-                    encoding="utf-8"
-                )
+                skill_text = (
+                    self.project / ".agents/skills" / name / "SKILL.md"
+                ).read_text(encoding="utf-8")
                 openai_text = (
                     self.project / ".agents/skills" / name / "agents/openai.yaml"
                 ).read_text(encoding="utf-8")
@@ -732,22 +815,24 @@ class LifecycleAcceptanceTests(unittest.TestCase):
                 self.assertNotIn("allow_implicit_invocation: false", openai_text)
         for name in USER_ONLY_SKILLS:
             with self.subTest(skill=name):
-                skill_text = (self.project / ".agents/skills" / name / "SKILL.md").read_text(
-                    encoding="utf-8"
-                )
+                skill_text = (
+                    self.project / ".agents/skills" / name / "SKILL.md"
+                ).read_text(encoding="utf-8")
                 openai_text = (
                     self.project / ".agents/skills" / name / "agents/openai.yaml"
                 ).read_text(encoding="utf-8")
                 self.assertIn("disable-model-invocation: true", skill_text)
                 self.assertIn("allow_implicit_invocation: false", openai_text)
 
-    def test_grilling_discovery_adapter_preserves_explicit_and_adds_implicit_cues(self) -> None:
+    def test_grilling_discovery_adapter_preserves_explicit_and_adds_implicit_cues(
+        self,
+    ) -> None:
         result = run_script(PROVIDERS, "install", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        skill_text = (
-            self.project / ".agents/skills/grilling/SKILL.md"
-        ).read_text(encoding="utf-8")
+        skill_text = (self.project / ".agents/skills/grilling/SKILL.md").read_text(
+            encoding="utf-8"
+        )
         openai_text = (
             self.project / ".agents/skills/grilling/agents/openai.yaml"
         ).read_text(encoding="utf-8")
@@ -762,13 +847,17 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             openai_text,
         )
 
-    def test_provider_status_is_nonzero_while_declared_projection_is_incomplete(self) -> None:
+    def test_provider_status_is_nonzero_while_declared_projection_is_incomplete(
+        self,
+    ) -> None:
         result = run_script(PROVIDERS, "status", self.project)
 
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn("0 ready, 14 repairable, 0 blocked", result.stdout)
 
-    def test_lifecycle_status_reports_incomplete_provider_projection_without_failing_core(self) -> None:
+    def test_lifecycle_status_reports_incomplete_provider_projection_without_failing_core(
+        self,
+    ) -> None:
         self.assert_ok(self.adopt("install"))
 
         result = run_script(LIFECYCLE, "status", self.project)
@@ -777,21 +866,32 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("Agent Workflow: healthy", result.stdout)
         self.assertIn("Optional provider projection is incomplete", result.stderr)
 
-    def test_wayfinder_owned_runtime_projects_from_recognized_upstream_input(self) -> None:
+    def test_wayfinder_owned_runtime_projects_from_recognized_upstream_input(
+        self,
+    ) -> None:
         result = run_script(PROVIDERS, "install", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        skill_text = (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8")
+        skill_text = (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(
+            encoding="utf-8"
+        )
         self.assertNotIn(WAYFINDER_ADAPTER_BEGIN, skill_text)
         self.assertNotIn(WAYFINDER_ADAPTER_END, skill_text)
         self.assertIn("framework-owned runtime projection", skill_text)
         normalized_skill = " ".join(skill_text.split())
-        self.assertIn("derived from Matt Pocock's Wayfinder methodology", normalized_skill)
+        self.assertIn(
+            "derived from Matt Pocock's Wayfinder methodology", normalized_skill
+        )
         self.assertIn("## Core invariants", normalized_skill)
         self.assertIn("## Resolve the frontier progressively", normalized_skill)
-        self.assertIn("Specialists own their methods and native artifacts", normalized_skill)
+        self.assertIn(
+            "Specialists own their methods and native artifacts", normalized_skill
+        )
         self.assertIn("create no framework continuity record", normalized_skill)
-        self.assertIn("Optional U/E/F/D preserves only independently useful knowledge", normalized_skill)
+        self.assertIn(
+            "Optional U/E/F/D preserves only independently useful knowledge",
+            normalized_skill,
+        )
         self.assertIn("Verification follows execution", normalized_skill)
         self.assertIn("Use `to-tickets`", normalized_skill)
         self.assertNotIn(".wayfinder-mutation-lock", normalized_skill)
@@ -811,22 +911,32 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             self.assertNotIn(incompatible, skill_text)
         self.assertIn(
             "disable-model-invocation: false",
-            (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8"),
+            (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(
+                encoding="utf-8"
+            ),
         )
         self.assertIn(
             "description: Keep a lightweight structured map",
-            (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(encoding="utf-8"),
+            (self.project / ".agents/skills/wayfinder/SKILL.md").read_text(
+                encoding="utf-8"
+            ),
         )
         self.assertIn(
             "allow_implicit_invocation: true",
-            (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(encoding="utf-8"),
+            (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(
+                encoding="utf-8"
+            ),
         )
         self.assertIn(
-            "short_description: \"Keep a lightweight map of complicated work\"",
-            (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(encoding="utf-8"),
+            'short_description: "Keep a lightweight map of complicated work"',
+            (self.project / ".agents/skills/wayfinder/agents/openai.yaml").read_text(
+                encoding="utf-8"
+            ),
         )
 
-    def test_unadapted_upstream_wayfinder_is_repaired_for_model_invocation(self) -> None:
+    def test_unadapted_upstream_wayfinder_is_repaired_for_model_invocation(
+        self,
+    ) -> None:
         source = PACKAGE_ROOT / "provider-snapshots/matt-pocock-skills/skills/wayfinder"
         destination = self.project / ".agents/skills/wayfinder"
         destination.parent.mkdir(parents=True)
@@ -842,7 +952,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         )
         self.assertTrue((self.project / ".agents/skills/research/SKILL.md").is_file())
 
-    def test_legacy_prepend_wayfinder_projection_is_repaired_to_owned_runtime(self) -> None:
+    def test_legacy_prepend_wayfinder_projection_is_repaired_to_owned_runtime(
+        self,
+    ) -> None:
         source = PACKAGE_ROOT / "provider-snapshots/matt-pocock-skills/skills/wayfinder"
         destination = self.project / ".agents/skills/wayfinder"
         destination.parent.mkdir(parents=True)
@@ -879,7 +991,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertNotIn(WAYFINDER_ADAPTER_BEGIN, repaired)
         self.assertNotIn("shared map on the repo's issue tracker", repaired)
 
-    def test_stale_owned_wayfinder_projection_is_repaired_to_current_runtime(self) -> None:
+    def test_stale_owned_wayfinder_projection_is_repaired_to_current_runtime(
+        self,
+    ) -> None:
         install = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
         skill_path = self.project / ".agents/skills/wayfinder/SKILL.md"
@@ -899,7 +1013,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("## Resolve the frontier progressively", repaired)
         self.assertNotIn("stale owned runtime projection", repaired)
 
-    def test_malformed_owned_runtime_source_fails_before_projection_mutation(self) -> None:
+    def test_malformed_owned_runtime_source_fails_before_projection_mutation(
+        self,
+    ) -> None:
         install = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
         before = tree_snapshot(self.project / ".agents/skills")
@@ -907,7 +1023,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         projection = package_copy / "runtime-projections/wayfinder.md"
         projection.write_text("not a Wayfinder runtime\n", encoding="utf-8")
 
-        result = run_script(package_copy / "scripts/providers.py", "install", self.project)
+        result = run_script(
+            package_copy / "scripts/providers.py", "install", self.project
+        )
 
         self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
         self.assertIn("runtime projection is malformed", result.stderr)
@@ -928,13 +1046,17 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         install = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
         openai = self.project / ".agents/skills/wayfinder/agents/openai.yaml"
-        openai.write_text("policy:\n  allow_implicit_invocation: ask\n", encoding="utf-8")
+        openai.write_text(
+            "policy:\n  allow_implicit_invocation: ask\n", encoding="utf-8"
+        )
 
         result = run_script(PROVIDERS, "install", self.project)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("reconciled optional provider skill wayfinder", result.stdout)
-        self.assertIn("allow_implicit_invocation: true", openai.read_text(encoding="utf-8"))
+        self.assertIn(
+            "allow_implicit_invocation: true", openai.read_text(encoding="utf-8")
+        )
 
     def test_provider_status_reports_modified_content_without_writing(self) -> None:
         install = run_script(PROVIDERS, "install", self.project)
@@ -975,12 +1097,15 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(status.returncode, 0, status.stdout + status.stderr)
         self.assertIn("\\u96ea", status.stdout)
 
-    def test_payload_content_edits_need_no_manifest_refresh_but_mapping_changes_do(self) -> None:
+    def test_payload_content_edits_need_no_manifest_refresh_but_mapping_changes_do(
+        self,
+    ) -> None:
         package_copy = self.copy_package("mapping-change")
 
         source = package_copy / "payload/agent-workflow/README.md"
         source.write_text(
-            source.read_text(encoding="utf-8") + "\nCurrent package bytes are authoritative.\n",
+            source.read_text(encoding="utf-8")
+            + "\nCurrent package bytes are authoritative.\n",
             encoding="utf-8",
         )
 
@@ -1035,7 +1160,12 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         cases = (
             ("empty skill name", "name", "", "invalid provider skill name"),
             ("missing skill path", "path", None, "needs a path"),
-            ("incomplete invocation hosts", "invocation", {}, "invocation hosts differ"),
+            (
+                "incomplete invocation hosts",
+                "invocation",
+                {},
+                "invocation hosts differ",
+            ),
             (
                 "unknown configuration requirement",
                 "requires_configuration",
@@ -1069,7 +1199,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         raw["provider"]["skills"][0]["requires_configuration"] = [{}]
         declaration.write_text(json.dumps(raw), encoding="utf-8")
 
-        result = run_script(package_copy / "scripts/providers.py", "status", self.project)
+        result = run_script(
+            package_copy / "scripts/providers.py", "status", self.project
+        )
 
         self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
         self.assertIn("invalid configuration requirements", result.stderr)
@@ -1079,7 +1211,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         package_copy = self.copy_package("wayfinder-adapter-declaration")
         declaration = package_copy / "payload/agent-workflow/providers.json"
         raw = json.loads(declaration.read_text(encoding="utf-8"))
-        wayfinder = next(item for item in raw["provider"]["skills"] if item["name"] == "wayfinder")
+        wayfinder = next(
+            item for item in raw["provider"]["skills"] if item["name"] == "wayfinder"
+        )
         wayfinder.pop("agentic_workflow_adapter")
         wayfinder["invocation"]["codex"] = "user-only"
         wayfinder["invocation"]["github-copilot"] = "user-only"
@@ -1102,20 +1236,27 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         verify = run_script(package_copy / "scripts/verify_package.py")
 
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("owned Wayfinder runtime contains incompatible tracker mechanics", verify.stderr)
+        self.assertIn(
+            "owned Wayfinder runtime contains incompatible tracker mechanics",
+            verify.stderr,
+        )
 
     def test_verifier_requires_implicit_invocation_adapters(self) -> None:
         package_copy = self.copy_package("implicit-invocation-adapter-declaration")
         declaration = package_copy / "payload/agent-workflow/providers.json"
         raw = json.loads(declaration.read_text(encoding="utf-8"))
-        implement = next(item for item in raw["provider"]["skills"] if item["name"] == "implement")
+        implement = next(
+            item for item in raw["provider"]["skills"] if item["name"] == "implement"
+        )
         implement.pop("agentic_workflow_adapter")
         declaration.write_text(json.dumps(raw), encoding="utf-8")
 
         verify = run_script(package_copy / "scripts/verify_package.py")
 
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("implement must declare the implicit-invocation adapter", verify.stderr)
+        self.assertIn(
+            "implement must declare the implicit-invocation adapter", verify.stderr
+        )
 
     def test_verifier_requires_grilling_discovery_adapter(self) -> None:
         package_copy = self.copy_package("grilling-discovery-adapter-declaration")
@@ -1134,7 +1275,10 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_verifier_rejects_corrupt_provider_snapshot_and_provenance(self) -> None:
         package_copy = self.copy_package("provider-snapshot-integrity")
-        snapshot = package_copy / "provider-snapshots/matt-pocock-skills/skills/research/SKILL.md"
+        snapshot = (
+            package_copy
+            / "provider-snapshots/matt-pocock-skills/skills/research/SKILL.md"
+        )
         original = snapshot.read_bytes()
         snapshot.write_bytes(original + b"\ncorrupt\n")
 
@@ -1175,7 +1319,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("outside the Agent Workflow package", result.stderr)
         self.assertFalse(candidate.exists())
 
-    def test_provider_refresh_verifies_every_installed_byte_against_the_commit_tree(self) -> None:
+    def test_provider_refresh_verifies_every_installed_byte_against_the_commit_tree(
+        self,
+    ) -> None:
         refresh, output = self.run_fake_provider_refresh("exact-provider-refresh")
 
         refresh.generate(output)
@@ -1224,12 +1370,16 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         cache.mkdir(exist_ok=True)
         generated = cache / "local-test.cpython-311.pyc"
         generated.write_bytes(b"generated test cache\n")
-        before = {path.name: path.read_bytes() for path in cache.iterdir() if path.is_file()}
+        before = {
+            path.name: path.read_bytes() for path in cache.iterdir() if path.is_file()
+        }
 
         result = run_script(package_copy / "scripts/verify_package.py")
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        after = {path.name: path.read_bytes() for path in cache.iterdir() if path.is_file()}
+        after = {
+            path.name: path.read_bytes() for path in cache.iterdir() if path.is_file()
+        }
         self.assertEqual(after, before)
 
     def test_provider_reference_validation_rejects_external_resources(self) -> None:
@@ -1239,7 +1389,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         )
         skill = Path(self.temporary.name) / "referencing-skill"
         skill.mkdir()
-        (skill / "SKILL.md").write_text("Use [shared](../shared.md).\n", encoding="utf-8")
+        (skill / "SKILL.md").write_text(
+            "Use [shared](../shared.md).\n", encoding="utf-8"
+        )
 
         with self.assertRaisesRegex(snapshot_module.SnapshotTreeError, "escape"):
             snapshot_module.validate_local_references(skill)
@@ -1266,12 +1418,17 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         verify = run_script(package_copy / "scripts/verify_package.py")
 
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("acceptance-scenarios.json case needs a non-empty operation", verify.stderr)
+        self.assertIn(
+            "acceptance-scenarios.json case needs a non-empty operation", verify.stderr
+        )
 
-        acceptance_path.write_bytes((PACKAGE_ROOT / "tests/acceptance-scenarios.json").read_bytes())
+        acceptance_path.write_bytes(
+            (PACKAGE_ROOT / "tests/acceptance-scenarios.json").read_bytes()
+        )
         scenario_path = package_copy / "tests/scenarios/simple-bounded-task.toml"
         scenario_path.write_text(
-            'unknown_contract_field = "unexpected"\n' + scenario_path.read_text(encoding="utf-8"),
+            'unknown_contract_field = "unexpected"\n'
+            + scenario_path.read_text(encoding="utf-8"),
             encoding="utf-8",
         )
 
@@ -1284,7 +1441,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 class BootstrapSafetyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.bootstrap = load_module("agentic_workflow_bootstrap", PACKAGE_ROOT / "scripts/bootstrap.py")
+        cls.bootstrap = load_module(
+            "agentic_workflow_bootstrap", PACKAGE_ROOT / "scripts/bootstrap.py"
+        )
 
     def archive(self, entries: list[tuple[str, bytes, str]]) -> bytes:
         output = io.BytesIO()
@@ -1314,7 +1473,11 @@ class BootstrapSafetyTests(unittest.TestCase):
                 member.size = len(data)
                 archive.addfile(member, io.BytesIO(data))
             for path in sorted(PACKAGE_ROOT.rglob("*")):
-                if not path.is_file() or path.is_symlink() or "__pycache__" in path.parts:
+                if (
+                    not path.is_file()
+                    or path.is_symlink()
+                    or "__pycache__" in path.parts
+                ):
                     continue
                 relative = path.relative_to(PACKAGE_ROOT).as_posix()
                 data = path.read_bytes()
@@ -1336,9 +1499,14 @@ class BootstrapSafetyTests(unittest.TestCase):
             [("root/skills/agent-workflow/scripts/lifecycle.py", b"", "special")],
         ]
         for entries in cases:
-            with self.subTest(entries=entries), tempfile.TemporaryDirectory() as temporary:
+            with (
+                self.subTest(entries=entries),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
                 with self.assertRaises(self.bootstrap.BootstrapError):
-                    self.bootstrap.extract_package(self.archive(entries), Path(temporary))
+                    self.bootstrap.extract_package(
+                        self.archive(entries), Path(temporary)
+                    )
 
     def test_unrelated_repository_entries_do_not_exhaust_package_limit(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1397,7 +1565,9 @@ class BootstrapSafetyTests(unittest.TestCase):
             with self.assertRaises(self.bootstrap.BootstrapError):
                 self.bootstrap.main(["status", str(link), "--archive-url", "unused"])
 
-    def test_local_archive_bootstrap_installs_core_and_providers_without_external_tools(self) -> None:
+    def test_local_archive_bootstrap_installs_core_and_providers_without_external_tools(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             project = root / "project"
@@ -1420,12 +1590,16 @@ class BootstrapSafetyTests(unittest.TestCase):
             self.assertTrue((project / ".agent-workflow/routing.md").is_file())
             self.assertTrue((project / ".agent-wayfinder").is_dir())
             declaration = json.loads(
-                (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text(encoding="utf-8")
+                (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text(
+                    encoding="utf-8"
+                )
             )
             names = {item["name"] for item in declaration["provider"]["skills"]}
             for name in names:
                 with self.subTest(skill=name):
-                    self.assertTrue((project / ".agents/skills" / name / "SKILL.md").is_file())
+                    self.assertTrue(
+                        (project / ".agents/skills" / name / "SKILL.md").is_file()
+                    )
             self.assertNotIn("GitHub CLI", result.stderr)
 
     def test_cli_exposes_help_and_delegates_every_lifecycle_command(self) -> None:
@@ -1438,16 +1612,24 @@ class BootstrapSafetyTests(unittest.TestCase):
             archive_url = archive.as_uri()
 
             help_result = run_script(CLI, "--help")
-            self.assertEqual(help_result.returncode, 0, help_result.stdout + help_result.stderr)
+            self.assertEqual(
+                help_result.returncode, 0, help_result.stdout + help_result.stderr
+            )
             self.assertIn("{install,update,status,remove}", help_result.stdout)
 
-            install = run_script(CLI, "install", "--archive-url", archive_url, cwd=project)
+            install = run_script(
+                CLI, "install", "--archive-url", archive_url, cwd=project
+            )
             self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
 
             for command in ("update", "status"):
                 with self.subTest(command=command):
-                    result = run_script(CLI, command, project, "--archive-url", archive_url)
-                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    result = run_script(
+                        CLI, command, project, "--archive-url", archive_url
+                    )
+                    self.assertEqual(
+                        result.returncode, 0, result.stdout + result.stderr
+                    )
 
             state = project / ".agent-wayfinder"
             sentinel = state / "keep.txt"

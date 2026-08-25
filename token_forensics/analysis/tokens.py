@@ -20,7 +20,9 @@ def _same_counters(left: UsageObservation, right: UsageObservation) -> bool:
     return all(getattr(left, field) == getattr(right, field) for field in _TOKEN_FIELDS)
 
 
-def _deduplicate_snapshots(observations: list[UsageObservation]) -> list[UsageObservation]:
+def _deduplicate_snapshots(
+    observations: list[UsageObservation],
+) -> list[UsageObservation]:
     result: list[UsageObservation] = []
     for observation in observations:
         if result and _same_counters(result[-1], observation):
@@ -54,7 +56,9 @@ def _cumulative_value(
     return numeric[-1]
 
 
-def _point(observation: UsageObservation, cumulative: dict[str, int | None]) -> dict[str, Any]:
+def _point(
+    observation: UsageObservation, cumulative: dict[str, int | None]
+) -> dict[str, Any]:
     return {
         "observation": observation.sequence,
         "line": observation.line_number,
@@ -64,11 +68,19 @@ def _point(observation: UsageObservation, cumulative: dict[str, int | None]) -> 
     }
 
 
-def analyze_tokens(trace: NormalizedTrace) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]]]:
+def analyze_tokens(
+    trace: NormalizedTrace,
+) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]]]:
     warnings: list[dict[str, Any]] = []
-    per_turn = [item for item in trace.usage_observations if item.semantics == "per_turn"]
+    per_turn = [
+        item for item in trace.usage_observations if item.semantics == "per_turn"
+    ]
     cumulative = _deduplicate_snapshots(
-        [item for item in trace.usage_observations if item.semantics == "cumulative_snapshot"]
+        [
+            item
+            for item in trace.usage_observations
+            if item.semantics == "cumulative_snapshot"
+        ]
     )
 
     if per_turn and cumulative:
@@ -84,8 +96,13 @@ def analyze_tokens(trace: NormalizedTrace) -> tuple[dict[str, Any], dict[str, An
         totals = {field: None for field in _TOKEN_FIELDS}
     elif cumulative:
         selected = cumulative
-        accounting = "final monotonic cumulative snapshot; repeated snapshots deduplicated"
-        totals = {field: _cumulative_value(selected, field, warnings) for field in _TOKEN_FIELDS}
+        accounting = (
+            "final monotonic cumulative snapshot; repeated snapshots deduplicated"
+        )
+        totals = {
+            field: _cumulative_value(selected, field, warnings)
+            for field in _TOKEN_FIELDS
+        }
     else:
         selected = per_turn
         accounting = "sum of per-turn usage observations"
@@ -104,7 +121,11 @@ def analyze_tokens(trace: NormalizedTrace) -> tuple[dict[str, Any], dict[str, An
 
     input_tokens = totals["input_tokens"]
     cached_tokens = totals["cached_input_tokens"]
-    if input_tokens is not None and cached_tokens is not None and cached_tokens <= input_tokens:
+    if (
+        input_tokens is not None
+        and cached_tokens is not None
+        and cached_tokens <= input_tokens
+    ):
         uncached = input_tokens - cached_tokens
         cached_ratio = cached_tokens / input_tokens if input_tokens else None
     else:
@@ -149,7 +170,8 @@ def analyze_tokens(trace: NormalizedTrace) -> tuple[dict[str, Any], dict[str, An
                     current["cached_input_tokens"] - previous["cached_input_tokens"]
                     if current["cached_input_tokens"] is not None
                     and previous["cached_input_tokens"] is not None
-                    and current["cached_input_tokens"] >= previous["cached_input_tokens"]
+                    and current["cached_input_tokens"]
+                    >= previous["cached_input_tokens"]
                     else None
                 ),
             }

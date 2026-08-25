@@ -70,7 +70,9 @@ def _usage(
         semantics=semantics,  # type: ignore[arg-type]
         input_tokens=_nonnegative_int(value.get("input_tokens")),
         cached_input_tokens=_nonnegative_int(value.get("cached_input_tokens")),
-        cache_write_input_tokens=_nonnegative_int(value.get("cache_write_input_tokens")),
+        cache_write_input_tokens=_nonnegative_int(
+            value.get("cache_write_input_tokens")
+        ),
         output_tokens=_nonnegative_int(value.get("output_tokens")),
         reasoning_output_tokens=_nonnegative_int(value.get("reasoning_output_tokens")),
         model_context_window=_nonnegative_int(model_context_window),
@@ -185,7 +187,13 @@ def parse_codex_trace(path: str | Path) -> NormalizedTrace:
             top_type = event.get("type")
             if top_type in _EXEC_EVENT_TYPES:
                 saw_exec = True
-            if top_type in {"event_msg", "response_item", "turn_context", "session_meta", "compacted"}:
+            if top_type in {
+                "event_msg",
+                "response_item",
+                "turn_context",
+                "session_meta",
+                "compacted",
+            }:
                 saw_rollout = True
 
             if top_type == "thread.started" and isinstance(event.get("thread_id"), str):
@@ -201,7 +209,9 @@ def parse_codex_trace(path: str | Path) -> NormalizedTrace:
                     semantics="per_turn",
                 )
                 if observation is None:
-                    warnings.append(f"line {line_number}: turn.completed has no usable usage object")
+                    warnings.append(
+                        f"line {line_number}: turn.completed has no usable usage object"
+                    )
                 else:
                     usage_observations.append(observation)
 
@@ -234,9 +244,15 @@ def parse_codex_trace(path: str | Path) -> NormalizedTrace:
                     )
                     if observation is not None:
                         usage_observations.append(observation)
-            if top_type == "event_msg" and payload_type in {"task_started", "turn_started"}:
+            if top_type == "event_msg" and payload_type in {
+                "task_started",
+                "turn_started",
+            }:
                 turns_started += 1
-            if top_type == "event_msg" and payload_type in {"task_complete", "turn_complete"}:
+            if top_type == "event_msg" and payload_type in {
+                "task_complete",
+                "turn_complete",
+            }:
                 turns_completed += 1
 
             compact_type: str | None = None

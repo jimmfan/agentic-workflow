@@ -152,7 +152,10 @@ class RoutingSmokeTests(unittest.TestCase):
                     {
                         "case": "direct",
                         "passed": True,
-                        "final_decision": {"initial_route": "direct", "current_route": "direct"},
+                        "final_decision": {
+                            "initial_route": "direct",
+                            "current_route": "direct",
+                        },
                     },
                     {
                         "case": "evolving",
@@ -206,10 +209,16 @@ class RoutingSmokeTests(unittest.TestCase):
             output_per_million=30.0,
         )
         cost = budget.add(
-            {"input_tokens": 30_000, "cached_input_tokens": 10_000, "output_tokens": 200}
+            {
+                "input_tokens": 30_000,
+                "cached_input_tokens": 10_000,
+                "output_tokens": 200,
+            }
         )
         self.assertAlmostEqual(cost, 0.111)
-        with self.assertRaisesRegex(routing_smoke.SmokeError, "reached the \\$2.00 limit"):
+        with self.assertRaisesRegex(
+            routing_smoke.SmokeError, "reached the \\$2.00 limit"
+        ):
             budget.add({"input_tokens": 400_000, "output_tokens": 0})
 
     def test_comparison_fails_when_matching_models_both_miss_the_contract(self) -> None:

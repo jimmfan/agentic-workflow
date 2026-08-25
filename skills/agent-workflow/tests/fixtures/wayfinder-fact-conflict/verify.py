@@ -20,7 +20,8 @@ checks = [
     "- Status: disputed" in fact and "- Contradicted by: E2" in fact,
     "F1 is disputed" in mapping,
     "review D1" in mapping,
-    "Use the dedicated capacity policy unless its authority supersedes this decision." in decision,
+    "Use the dedicated capacity policy unless its authority supersedes this decision."
+    in decision,
     not (effort / "tickets").exists(),
 ]
 
