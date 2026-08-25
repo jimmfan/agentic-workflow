@@ -564,7 +564,7 @@ def wayfinder_record_changed(
     identifier: str,
 ) -> bool:
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
-    record_name = re.compile(rf"{re.escape(identifier)}[1-9][0-9]*(?:-[^/]*)?\.md")
+    record_name = re.compile(rf"{re.escape(identifier)}[1-9][0-9]*-[^.]+\.md")
     return any(
         len(parts := PurePosixPath(path).parts) == 4
         and parts[0] == ".agent-wayfinder"
@@ -574,8 +574,18 @@ def wayfinder_record_changed(
     )
 
 
+def wayfinder_child_changed(evidence: RunEvidence, directory: str) -> bool:
+    created, modified, _deleted = changed_paths(evidence.before, evidence.after)
+    return any(
+        len(parts := PurePosixPath(path).parts) >= 4
+        and parts[0] == ".agent-wayfinder"
+        and parts[2] == directory
+        for path in created | modified
+    )
+
+
 def decision_artifact_changed(evidence: RunEvidence) -> bool:
-    if wayfinder_record_changed(evidence, "decisions", "D"):
+    if wayfinder_child_changed(evidence, "decisions"):
         return True
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
     return any(
@@ -823,8 +833,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     prohibition_checks: dict[str, tuple[bool, str]] = {
         "unnecessary_planning_artifacts": (forbidden_ok, forbidden_detail),
         "manufacture_uncertainty": (
-            not wayfinder_record_changed(evidence, "unknowns", "U"),
-            "no current U# was created or updated",
+            not wayfinder_child_changed(evidence, "unknowns"),
+            "no unknown child was created or updated",
         ),
         "invent_external_fact": (
             status != "success" or bool(sources),
