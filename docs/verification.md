@@ -56,6 +56,23 @@ Success ends with:
 OK: Agent Workflow package verification passed.
 ```
 
+## Release tags
+
+`skills/agent-workflow/VERSION` is the human-controlled release switch. Ordinary
+changes can reach `main` without changing it. After the deterministic verifier
+succeeds on a push to `main`, a `VERSION` change requests one annotated release
+tag on that exact verified commit.
+
+The release job accepts only the package's `x.y.z` format, requires the version
+to be greater than every existing semantic release tag, and refuses to reuse or
+move an existing `vX.Y.Z` tag. It serializes release attempts and pushes only
+the new tag without force. `v0.20.0` is the first trustworthy release-tag
+baseline; earlier history is intentionally not backfilled.
+
+Changing the package version also requires the distribution-manifest refresh
+described below. Do not create the release tag manually while preparing a
+branch; the verified `main` workflow owns tag creation.
+
 After intentionally adding, removing, or remapping a packaged payload file, or
 changing the framework version, first inspect the diff. Then run this persistent
 refresh from the **source repository root**:

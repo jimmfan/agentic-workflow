@@ -16,12 +16,40 @@ jobs:
 
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
       - name: Run deterministic behavior and release gate
         run: python skills/agent-workflow/scripts/verify_package.py --tests
+
+  release-tag:
+    name: Tag verified release
+    needs: deterministic-pre-merge-gate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: release-tag-${{ github.repository }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out verified commit and tags
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Create release tag when VERSION changed
+        run: >-
+          python .github/scripts/release_tag.py
+          --before "${{ github.event.before }}"
+          --commit "${{ github.sha }}"
