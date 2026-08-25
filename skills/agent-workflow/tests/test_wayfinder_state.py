@@ -25,6 +25,12 @@ LEDGER_TITLES = {"F": "Facts", "D": "Decisions"}
 CURRENT_ID = re.compile(r"^([UEFD])([1-9][0-9]*)-([^.]+)\.md$")
 LEDGER_HEADING = re.compile(r"^## ([FD])([1-9][0-9]*) — (\S.*)$")
 MARKDOWN_LINK_DESTINATION = re.compile(r"(\[[^]]+\]\()([^)]+)(\))")
+LOCAL_MARKDOWN_PATH = re.compile(
+    r"(?<![A-Za-z0-9_./-])"
+    r"((?:\.\.?/)*(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.md"
+    r"(?:#[A-Za-z0-9_-]+)?)"
+    r"(?![A-Za-z0-9_./-])"
+)
 
 
 class UnsafeWayfinderState(RuntimeError):
@@ -201,7 +207,26 @@ def rewrite_markdown_links(
             rewritten += f"#{fragment}"
         return f"{match.group(1)}{rewritten}{match.group(3)}"
 
+    plain_rewrites: dict[str, str] = {}
+    if rebase_all:
+        for match in LOCAL_MARKDOWN_PATH.finditer(text):
+            raw = match.group(1)
+            relative, separator, fragment = raw.partition("#")
+            target = (source.parent / relative).resolve()
+            migrated = migrated_targets.get(target)
+            if migrated is not None:
+                target, fragment = migrated
+                separator = "#"
+            elif not target.is_file():
+                continue
+            replacement = relative_destination(destination, target)
+            if separator:
+                replacement += f"#{fragment}"
+            plain_rewrites[raw] = replacement
+
     rewritten = MARKDOWN_LINK_DESTINATION.sub(replace, text)
+    for old_path, new_path in plain_rewrites.items():
+        rewritten = rewritten.replace(old_path, new_path)
     for legacy_target, (ledger_target, anchor) in migrated_targets.items():
         old_path = relative_destination(source, legacy_target)
         new_path = relative_destination(destination, ledger_target)
@@ -881,6 +906,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "- Status: current\n"
                 "- Scope: This effort\n"
                 "- Supported by: [E3](../evidence/E3-observation.md)\n"
+                "- Evidence path: ../evidence/E3-observation.md\n"
                 "- Related: [F6](F6-companion.md)\n"
                 "- Limitations: Applies only to this effort\n"
                 "- Contradicted by: none\n\n"
@@ -946,6 +972,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertIn("- Scope: This effort", facts_text)
             self.assertIn("- Derived from: [E3]", facts_text)
             self.assertIn("[E3](evidence/E3-observation.md)", facts_text)
+            self.assertIn("- Evidence path: evidence/E3-observation.md", facts_text)
             self.assertIn("[F6](facts.md#f6--companion)", facts_text)
             self.assertIn("[F4](facts.md#f4--established)", facts_text)
             self.assertIn("- Limitations: Applies only to this effort", facts_text)
