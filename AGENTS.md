@@ -58,7 +58,7 @@ never selects Wayfinder. Never seed state.
 End each user-facing final response with exactly one truthful
 `[route: router → <executed path or terminal outcome>]` line. Report only what
 executed; use `direct` if no workflow or skill ran. If selection did
-not become equivalent execution, report the routing contract's terminal outcome.
+not become equivalent execution, report the routing policy's terminal outcome.
 Never reroute or work merely to produce the marker.
 <!-- agent-workflow:managed-end -->
 

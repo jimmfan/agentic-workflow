@@ -1,15 +1,14 @@
 # Installed Agent Workflow
 
 This directory is the reconstructable part of Agent Workflow. Its purpose is
-to supply the progressively loaded routing, state, and provider contracts used
-by the compact root policy. Install/update may replace every file here with
-current package bytes.
+to supply the progressively loaded routing policy, state contract, and provider
+configuration used by the compact root policy. Install/update may replace every
+file here with current package bytes.
 
-There is no current `.agent-workflow/state/` directory. Durable project-owned
-state lives only under sibling `.agent-wayfinder/`. Install and update may
-ensure that directory exists, but every lifecycle command otherwise treats its
-contents as opaque: none seeds, inventories, normalizes, migrates, rewrites, or
-removes them.
+Durable project-owned state lives only under sibling `.agent-wayfinder/`. Install
+and update may ensure that directory exists, but every lifecycle command otherwise
+treats its contents as opaque: none seeds, inventories, normalizes, migrates,
+rewrites, or removes them.
 
 ## Contents
 

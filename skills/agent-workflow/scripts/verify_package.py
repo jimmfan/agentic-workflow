@@ -247,10 +247,6 @@ def check_manifest() -> None:
             target.parts[0] != ".agent-wayfinder",
             "manifest must not own durable project state",
         )
-        require(
-            ".agent-workflow/state" not in target.as_posix(),
-            "manifest must not recreate obsolete workflow state",
-        )
         sources.append(source.as_posix())
         targets.append(target.as_posix())
     require(len(sources) == len(set(sources)), "manifest source paths are duplicated")

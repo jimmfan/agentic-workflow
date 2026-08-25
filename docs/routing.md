@@ -115,4 +115,4 @@ marker such as:
 
 The marker is required observability, not telemetry or proof that work ran, and
 must not trigger additional workflow work. Detailed syntax and terminal outcomes
-remain owned by the installed routing contract.
+remain owned by the installed routing policy.

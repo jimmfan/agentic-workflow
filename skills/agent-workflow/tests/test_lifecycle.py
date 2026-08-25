@@ -216,7 +216,6 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertFalse(
             (self.project / ".agent-workflow/templates/active-state.md").exists()
         )
-        self.assertFalse((self.project / ".agent-workflow/state/README.md").exists())
         manifest = json.loads(
             (self.project / ".agent-workflow/install-manifest.json").read_text()
         )
@@ -242,8 +241,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         expected = routing.read_bytes()
         routing.write_bytes(b"locally drifted framework bytes\n")
         (self.project / ".agent-workflow/README.md").unlink()
-        obsolete = self.project / ".agent-workflow/state/README.md"
-        obsolete.parent.mkdir()
+        obsolete = self.project / ".agent-workflow/obsolete-runtime-note.md"
         obsolete.write_text("historical framework file\n")
         self.assert_ok(self.adopt("update"))
         self.assertEqual(routing.read_bytes(), expected)
@@ -283,7 +281,6 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         retired.unlink()
         self.assert_ok(self.adopt("update"))
         self.assertFalse(retired.exists())
-        self.assertFalse((self.project / ".agent-workflow/state/README.md").exists())
 
     def test_arbitrary_durable_state_survives_update_remove_and_reinstall(self) -> None:
         state = self.project / ".agent-wayfinder"

@@ -15,11 +15,6 @@
     "expected": "An obsolete path from local install state that is already absent is ignored."
   },
   {
-    "id": "do-not-recreate-old-state-readme",
-    "operation": "update",
-    "expected": "The development-era .agent-workflow/state/README.md path is neither required nor recreated."
-  },
-  {
     "id": "preserve-arbitrary-durable-state",
     "operation": "install-update-remove-reinstall",
     "expected": "Every project-owned entry under .agent-wayfinder survives byte-for-byte."

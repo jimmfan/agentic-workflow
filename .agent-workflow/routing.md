@@ -1,6 +1,6 @@
-# Detailed routing contract
+# Detailed routing policy
 
-The root policy performs first-pass routing. Read this contract only for
+The root policy performs first-pass routing. Read this policy only for
 ambiguous ownership, material provider fallback or handoff, or unclear durable
 re-entry. Direct work, one obvious workflow, and one obvious specialist inside
 Wayfinder do not load it. Root authorization, preservation, and reporting rules
