@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+import os
 from pathlib import Path
 import re
 import shutil
@@ -23,6 +24,7 @@ LEDGER_PATHS = {"F": "facts.md", "D": "decisions.md"}
 LEDGER_TITLES = {"F": "Facts", "D": "Decisions"}
 CURRENT_ID = re.compile(r"^([UEFD])([1-9][0-9]*)-([^.]+)\.md$")
 LEDGER_HEADING = re.compile(r"^## ([FD])([1-9][0-9]*) — (\S.*)$")
+MARKDOWN_LINK_DESTINATION = re.compile(r"(\[[^]]+\]\()([^)]+)(\))")
 
 
 class UnsafeWayfinderState(RuntimeError):
@@ -165,18 +167,55 @@ def heading_anchor(kind: str, identifier: int, title: str) -> str:
     return without_punctuation.replace(" ", "-")
 
 
+def rewrite_markdown_links(
+    text: str,
+    *,
+    source: Path,
+    destination: Path,
+    migrated_targets: dict[Path, tuple[Path, str]],
+    rebase_all: bool,
+) -> str:
+    def replace(match: re.Match[str]) -> str:
+        raw = match.group(2)
+        if (
+            not raw
+            or raw.startswith(("#", "/", "mailto:"))
+            or "://" in raw
+        ):
+            return match.group(0)
+        relative, separator, fragment = raw.partition("#")
+        target = (source.parent / relative).resolve()
+        migrated = migrated_targets.get(target)
+        if migrated is not None:
+            target, fragment = migrated
+            separator = "#"
+        elif not rebase_all:
+            return match.group(0)
+        rewritten = Path(
+            os.path.relpath(target, destination.parent.resolve())
+        ).as_posix()
+        if separator:
+            rewritten += f"#{fragment}"
+        return f"{match.group(1)}{rewritten}{match.group(3)}"
+
+    return MARKDOWN_LINK_DESTINATION.sub(replace, text)
+
+
 def ledger_references(
     effort: Path,
     kind: str,
     identifier: int,
     title: str,
     ledger_without_target: str,
+    known_references: list[Path] | None = None,
 ) -> list[Path]:
     token = re.compile(rf"(?<![A-Z0-9]){kind}{identifier}(?![0-9])")
     ledger_name = LEDGER_PATHS[kind]
     anchor = heading_anchor(kind, identifier, title)
     references: list[Path] = []
-    for path in effort.rglob("*.md"):
+    paths = list(effort.rglob("*.md"))
+    paths.extend(known_references or [])
+    for path in dict.fromkeys(paths):
         if path.is_symlink() or not path.is_file():
             raise UnsafeWayfinderState(f"unsafe reference path: {path}")
         text = (
@@ -194,11 +233,14 @@ def retire_ledger_section(
     kind: str,
     identifier: int,
     *,
+    known_references: list[Path] | None = None,
     before_final_check: Callable[[], None] | None = None,
     lock_attempts: int = 1_000,
 ) -> bool:
     path = effort / LEDGER_PATHS[kind]
     with effort_mutation_lock(effort, attempts=lock_attempts):
+        if selected_representation(effort, kind) == "mixed":
+            raise UnsafeWayfinderState(f"mixed current {kind} representations")
         if not path.exists():
             return False
         original = path.read_text(encoding="utf-8")
@@ -208,14 +250,38 @@ def retire_ledger_section(
             return False
         _, title, section = matches[0]
         updated = original.replace(section, "", 1)
-        if ledger_references(effort, kind, identifier, title, updated):
+        if ledger_references(
+            effort,
+            kind,
+            identifier,
+            title,
+            updated,
+            known_references,
+        ):
             raise UnsafeWayfinderState("current references remain")
         observed_current = current_markdown(effort)
+        observed_known = {
+            reference: reference.read_bytes()
+            for reference in known_references or []
+            if not reference.is_relative_to(effort)
+        }
         if before_final_check is not None:
             before_final_check()
         if current_markdown(effort) != observed_current:
             raise UnsafeWayfinderState("current state changed during reconciliation")
-        if ledger_references(effort, kind, identifier, title, updated):
+        if any(
+            not reference.is_file() or reference.read_bytes() != observed
+            for reference, observed in observed_known.items()
+        ):
+            raise UnsafeWayfinderState("known reference changed during reconciliation")
+        if ledger_references(
+            effort,
+            kind,
+            identifier,
+            title,
+            updated,
+            known_references,
+        ):
             raise UnsafeWayfinderState("current references appeared during reconciliation")
         if len(sections) == 1:
             path.unlink()
@@ -300,9 +366,30 @@ def migrate_legacy_to_ledger(
                     line = "- Based on:" + line.removeprefix("- Related:")
                 transformed.append(line)
             body = "\n".join(transformed).strip()
-            body = body.replace("../facts.md#", "facts.md#")
-            body = body.replace("../decisions.md#", "decisions.md#")
             parsed.append((int(match.group(1)), match.group(2), path, body))
+
+        migrated_targets = {
+            path.resolve(): (
+                ledger.resolve(),
+                heading_anchor(kind, identifier, title),
+            )
+            for identifier, title, path, _ in parsed
+        }
+        parsed = [
+            (
+                identifier,
+                title,
+                path,
+                rewrite_markdown_links(
+                    body,
+                    source=path,
+                    destination=ledger,
+                    migrated_targets=migrated_targets,
+                    rebase_all=True,
+                ),
+            )
+            for identifier, title, path, body in parsed
+        ]
 
         references = [
             path
@@ -319,11 +406,13 @@ def migrate_legacy_to_ledger(
         rewritten: dict[Path, bytes] = {}
         for reference, original_bytes in reference_bytes.items():
             text = original_bytes.decode("utf-8")
-            for identifier, title, legacy_path, _ in parsed:
-                anchor = heading_anchor(kind, identifier, title)
-                old = f"{TYPE_DIRECTORIES[kind]}/{legacy_path.name}"
-                new = f"{LEDGER_PATHS[kind]}#{anchor}"
-                text = text.replace(old, new)
+            text = rewrite_markdown_links(
+                text,
+                source=reference,
+                destination=reference,
+                migrated_targets=migrated_targets,
+                rebase_all=False,
+            )
             rewritten[reference] = text.encode("utf-8")
 
         sections = []
@@ -612,18 +701,30 @@ class WayfinderStateContractTests(unittest.TestCase):
                 UnsafeWayfinderState, "mixed current F representations"
             ):
                 create_current_record(effort, "F", "Unsafe", "Unsafe.\n")
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "mixed current F representations"
+            ):
+                retire_ledger_section(effort, "F", 2)
             self.assertEqual(read_current_ids(effort, "F"), [2, 7])
 
     def test_ledger_retirement_removes_only_the_reconciled_section_and_empty_ledger(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            effort = Path(temporary) / "effort"
-            effort.mkdir()
+            project = Path(temporary) / "project"
+            effort = project / ".agent-wayfinder/effort"
+            effort.mkdir(parents=True)
+            docs = project / "docs"
+            docs.mkdir()
+            external = docs / "current.md"
             map_path = effort / "map.md"
             map_path.write_text(
                 "# Retirement\n\n"
                 "Read [the first fact](facts.md#f1--first-fact).\n",
+                encoding="utf-8",
+            )
+            external.write_text(
+                "[First fact](../.agent-wayfinder/effort/facts.md#f1--first-fact)\n",
                 encoding="utf-8",
             )
             ledger = effort / "facts.md"
@@ -639,10 +740,15 @@ class WayfinderStateContractTests(unittest.TestCase):
             )
 
             with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
-                retire_ledger_section(effort, "F", 1)
+                retire_ledger_section(effort, "F", 1, known_references=[external])
 
             map_path.write_text("# Retirement\n\nOnly F3 remains.\n", encoding="utf-8")
-            self.assertTrue(retire_ledger_section(effort, "F", 1))
+            with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
+                retire_ledger_section(effort, "F", 1, known_references=[external])
+            external.write_text("The first fact was reconciled.\n", encoding="utf-8")
+            self.assertTrue(
+                retire_ledger_section(effort, "F", 1, known_references=[external])
+            )
             remaining = ledger.read_text(encoding="utf-8")
             self.assertEqual(remaining, "# Facts\n\n" + remaining_section)
 
@@ -754,10 +860,19 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "- Status: current\n"
                 "- Scope: This effort\n"
                 "- Supported by: [E3](../evidence/E3-observation.md)\n"
+                "- Related: [F6](F6-companion.md)\n"
                 "- Limitations: Applies only to this effort\n"
                 "- Contradicted by: none\n\n"
                 "## Fact\n\nEstablished conclusion.\n\n"
                 "## Change note\n\nClarified scope without changing meaning.\n",
+                encoding="utf-8",
+            )
+            (facts / "F6-companion.md").write_text(
+                "# F6: Companion\n\n"
+                "- Status: current\n"
+                "- Scope: This effort\n"
+                "- Supported by: [F4](F4-established.md)\n\n"
+                "## Fact\n\nCompanion conclusion.\n",
                 encoding="utf-8",
             )
             (decisions / "D2-use-ledger.md").write_text(
@@ -802,8 +917,12 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertIn("- Status: established", facts_text)
             self.assertIn("- Scope: This effort", facts_text)
             self.assertIn("- Derived from: [E3]", facts_text)
+            self.assertIn("[E3](evidence/E3-observation.md)", facts_text)
+            self.assertIn("[F6](facts.md#f6--companion)", facts_text)
+            self.assertIn("[F4](facts.md#f4--established)", facts_text)
             self.assertIn("- Limitations: Applies only to this effort", facts_text)
             self.assertIn("### Change note", facts_text)
+            self.assertIn("## F6 — Companion", facts_text)
             self.assertIn("## D2 — Use ledger", decisions_text)
             self.assertIn("- Authority: User, 2026-08-25", decisions_text)
             self.assertIn("- Based on: F4", decisions_text)

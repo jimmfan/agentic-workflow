@@ -370,10 +370,8 @@ def check_router_contract() -> None:
         "## Specialist result boundary",
         "continue directly or load one materially useful specialist",
         "No DEC, IMP, DBG, or replacement record is allocated",
-        "Select facts and decisions independently",
-        "permit read-only interpretation but fail closed for writes",
-        "explicit legacy-to-ledger migration requires user authorization",
-        "Retiring a fact or decision removes only its selected H2 section",
+        "## Representation selection and legacy state",
+        "## Knowledge settlement and effort completion",
     ):
         require(
             required in normalized_wayfinder,
