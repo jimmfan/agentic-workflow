@@ -128,6 +128,6 @@ when approved work needs substantial dependency ordering or independently
 deliverable sessions, and link its native frontier without a shadow copy.
 
 Read-only work never mutates state. Follow the state contract for every
-authorized mutation. Legacy project-owned records remain valid and use their
+authorized mutation. Legacy per-record F#/D# records remain valid and use their
 existing representation until an explicit authorized reconciliation changes
 it.

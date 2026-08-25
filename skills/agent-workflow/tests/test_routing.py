@@ -30,6 +30,28 @@ def instruction_profile(paths: list[Path]) -> tuple[int, int]:
 
 
 class RoutingContractTests(unittest.TestCase):
+    def test_adr_location_remains_project_or_provider_owned(self) -> None:
+        architecture = " ".join(
+            (REPOSITORY_ROOT / "docs/architecture.md").read_text().split()
+        )
+        domain_modeling = (
+            REPOSITORY_ROOT / ".agents/skills/domain-modeling/SKILL.md"
+        ).read_text()
+
+        self.assertIn(
+            "This source repository's project instructions declare `architecture-decisions/`",
+            architecture,
+        )
+        self.assertIn(
+            "a consuming project's declared convention or the selected provider's native convention owns the location",
+            architecture,
+        )
+        self.assertNotIn(
+            "Accepted lasting architecture decisions use `architecture-decisions/` by default",
+            architecture,
+        )
+        self.assertIn("docs/adr/", domain_modeling)
+
     def test_every_normally_model_invokable_skill_has_a_routing_selection_cue(
         self,
     ) -> None:

@@ -709,6 +709,14 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue((legacy_facts / "F9-legacy-continuation.md").is_file())
             self.assertFalse((effort / "facts.md").exists())
 
+            self.assertTrue(
+                retire_current_child(
+                    effort, legacy_facts / "F9-legacy-continuation.md"
+                )
+            )
+            self.assertTrue((legacy_facts / "F8-existing.md").is_file())
+            self.assertFalse((effort / "facts.md").exists())
+
             self.assertEqual(
                 create_current_record(
                     effort,
@@ -721,6 +729,12 @@ class WayfinderStateContractTests(unittest.TestCase):
             )
             self.assertTrue((effort / "decisions.md").is_file())
             self.assertFalse((effort / "decisions").exists())
+
+            self.assertTrue(
+                retire_current_child(effort, legacy_facts / "F8-existing.md")
+            )
+            self.assertFalse(legacy_facts.exists())
+            self.assertTrue((effort / "decisions.md").is_file())
 
     def test_mixed_current_representation_is_readable_but_blocks_writes(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1307,12 +1321,18 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Select facts and decisions independently",
             "permit read-only interpretation but fail closed for writes",
             "Existing legacy `facts/F#-readable-name.md`",
+            "When legacy F#/D# is selected, reread its directory",
+            "rejects malformed or duplicate identifiers",
+            "create one readable `F#-...md` or `D#-...md` file without overwriting any path",
+            "Never create a legacy directory when neither representation has a current record",
             "explicit legacy-to-ledger migration requires user authorization",
             "Update all known current references before removing the old files",
             "Reject duplicate identifiers and unresolved conflicts",
             "do not renumber",
             "never trigger migration, normalization, or rewriting",
             "Retiring a fact or decision removes only its selected H2 section",
+            "Retiring a selected legacy F#/D# removes only that record file",
+            "never converts the representation or creates a ledger",
             "Remove an otherwise empty `facts.md` or `decisions.md`",
             "Do not implement automatic ledger sharding",
             "arbitrary F#/D# file-count rule",
@@ -1642,6 +1662,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Prototype",
             "Domain Modeling",
             "create no framework continuity record",
+            "Legacy per-record F#/D# records remain valid",
             "Use `to-tickets`",
             "Verification follows execution",
             "preferred structural fallback",
@@ -1652,6 +1673,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             "If the state contract is unavailable",
         ):
             self.assertIn(required, normalized_runtime)
+
+        self.assertNotIn("Legacy project-owned records remain valid", runtime)
         for contract_only_detail in (
             ".wayfinder-mutation-lock",
             "highest currently present",

@@ -105,15 +105,14 @@ def _route_markers(messages: list[str]) -> list[str]:
 
 def _framework_kind(path: str) -> str | None:
     normalized = path.replace("\\", "/")
-    if any(
-        marker in normalized
-        for marker in (
-            ".agent-wayfinder/records/",
-            ".agent-wayfinder/archive/",
-        )
-    ) or normalized.endswith(".agent-wayfinder/active.md"):
-        return None
-    if ".agent-wayfinder/" in normalized:
+    wayfinder_marker = ".agent-wayfinder/"
+    if wayfinder_marker in normalized:
+        relative = normalized.partition(wayfinder_marker)[2]
+        if (
+            relative in {"records", "archive", "active.md", "active-index"}
+            or relative.startswith(("records/", "archive/", "active-index."))
+        ):
+            return None
         return "wayfinder_state"
     if "/.agents/skills/" in normalized or normalized.startswith(".agents/skills/"):
         return "skill"

@@ -328,15 +328,17 @@ it already exists, wait through host coordination or stop conservatively;
 never steal or guess that a lock is stale. If atomic directory creation is
 unavailable, do not mutate the effort.
 
-Under that lock, allocation rereads the selected F#/D# ledger or U#/E#
-directory, parses current identifiers, rejects malformed or duplicate current
-identifiers, and recomputes one greater than the highest current same-type
-identifier. Append a new F#/D# section without replacing another section;
-create a U#/E# file without overwriting any path. Before every write, reread the
-ledger, map, target, and directly affected current state. The same single lock
-makes retirement's final reference scan and removal indivisible with compliant
-state edits. If concurrent edits disagree, preserve both claims and reconcile
-explicitly rather than choosing silently.
+Under that lock, allocation rereads the selected F#/D# representation or U#/E#
+directory, parses every canonical same-type identifier, rejects malformed or
+duplicate identifiers, and recomputes one greater than the highest current
+same-type identifier. Append one ledger section or exclusively create one
+record file.
+When legacy F#/D# is selected, reread its directory and create one readable
+`F#-...md` or `D#-...md` file without overwriting any path. Never create a
+legacy directory when neither representation has a current record. Immediately
+before writing, reread the selected representation, map, target, and affected
+state. The lock makes retirement's final reference scan and removal indivisible.
+Preserve concurrent conflicts and reconcile explicitly.
 
 ## Representation selection and legacy state
 
@@ -606,17 +608,15 @@ requirement that the record's exact contents already exist in Git. Git preserves
 states that actually entered Git; transient navigation artifacts may disappear
 without first becoming historical records.
 
-Under the effort mutation lock, immediately before removal, reread the target,
-map, ledgers, U#/E# files, and directly affected current state and confirm no
-current reference or independently useful information still depends on the
-record. If participating state changed before the lock was acquired, retry from
-the new current state rather than overwriting it. Retiring a fact or decision
-removes only its selected H2 section after reconciliation; preserve every other
-section byte-for-byte where practical. Remove an otherwise empty `facts.md` or
-`decisions.md` instead of leaving an empty required shell. Retiring a U# or E#
-removes only its file, and an empty artifact directory may then disappear. The
-retired number becomes available through the ordinary highest-current-plus-one
-rule.
+Before removal under the effort mutation lock, reread the target and affected
+state; stop for references or useful information, and retry after change.
+Retiring a fact or decision removes only its selected H2 section after reconciliation and
+preserves other sections byte-for-byte where practical. Remove an otherwise
+empty `facts.md` or `decisions.md`. Retiring U#/E# removes only its file; its
+empty directory may disappear. Retiring a selected legacy F#/D# removes only
+that record file after the same reconciliation and final reread; its empty
+directory may disappear. It never converts the representation or creates a
+ledger. The retired number follows the ordinary highest-current-plus-one rule.
 
 Do not implement automatic ledger sharding or use an arbitrary F#/D# file-count
 rule. A future explicit refactor may split an unwieldy ledger by coherent

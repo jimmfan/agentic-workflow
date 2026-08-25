@@ -130,10 +130,11 @@ current re-entry or allocation source and is never automatically migrated,
 normalized, rewritten, or deleted. Current Wayfinder topology does not include
 those historical namespaces.
 
-Accepted lasting architecture decisions use `architecture-decisions/` by
-default unless a consuming project already declares another convention.
-Wayfinder decisions may link an ADR but do not become a parallel source of
-project policy.
+This source repository's project instructions declare
+`architecture-decisions/`. Elsewhere, a consuming project's declared convention
+or the selected provider's native convention owns the location; Agent Workflow
+imposes no additional ADR path. Wayfinder decisions may link an ADR but do not
+become a parallel source of project policy.
 
 ## Provider boundary
 

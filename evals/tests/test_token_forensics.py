@@ -70,6 +70,7 @@ class GenericAnalysisTests(unittest.TestCase):
             ".agent-wayfinder/records/IDP-0001-platform-friction.md",
             ".agent-wayfinder/archive/2025/DEC-0002-retired-choice.md",
             ".agent-wayfinder/active.md",
+            ".agent-wayfinder/active-index.json",
         )
         trace = NormalizedTrace(
             source_path=Path("legacy-state-trace.jsonl"),
