@@ -1,13 +1,3 @@
----
-description: Investigate substantive questions against high-trust primary sources and return cited findings in chat. Create a repository artifact only when the user explicitly requests durable research output.
-metadata:
-    github-path: skills/engineering/research
-    github-pinned: v1.2.3
-    github-ref: refs/tags/v1.2.3
-    github-repo: https://github.com/mattpocock/skills
-    github-tree-sha: 972a34cd8128b7952b7eb279b06715862db906a7
-name: research
----
 # Research
 
 Spin up a **background agent** to do substantive research while you continue

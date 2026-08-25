@@ -24,9 +24,13 @@ Tickets, and Implement for implicit invocation because they are normal router
 destinations. Claude does not receive a `.claude/skills` projection in this
 release, so the router uses host-native fallback there.
 
-Wayfinder also carries a method-body adaptation for Agent Workflow's canonical
-local state. The other three routed skills need only an activation-metadata
-overlay: their upstream method bodies remain unchanged.
+Wayfinder carries a method-body adaptation for Agent Workflow's canonical local
+state. Research carries a narrow output-policy adaptation: sourced findings
+return in chat by default, standalone research files require an explicit user
+request, adopted evidence goes directly to its owning ADR or product
+documentation, and raw research notes are never written into the repository.
+To Spec, To Tickets, and Implement need only an activation-metadata overlay;
+their upstream method bodies remain unchanged.
 
 ### Invocation portability boundary
 
@@ -117,6 +121,12 @@ source. Unknown bundled input or malformed owned instructions fail before
 target mutation. The raw snapshot remains unchanged. Future upstream upgrades
 are reviewed and useful method improvements are selectively ported rather than
 automatically inherited.
+
+Research uses the same pinned-input principle through
+`research-chat-output-v1`. The adapter verifies the reviewed upstream method
+body and source metadata, then projects the package-owned chat-first output
+contract without modifying the bundled snapshot. Missing, changed, or malformed
+input fails before provider mutation.
 
 To Spec, To Tickets, and Implement use the narrower
 `implicit-invocation-v1` adapter. Release-local staging accepts

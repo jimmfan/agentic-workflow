@@ -99,6 +99,11 @@
           "codex": "implicit",
           "github-copilot": "implicit"
         },
+        "agentic_workflow_adapter": {
+          "name": "research-chat-output-v1",
+          "projection_source": "runtime-projections/research.md",
+          "upstream_body_sha256": "24cb65267a1843d108622609ac6b623d024a80d12de62fe0a22a90b17d7c78f0"
+        },
         "name": "research",
         "path": "skills/engineering/research",
         "requires_configuration": []

@@ -909,6 +909,39 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             openai_text,
         )
 
+    def test_research_projection_defaults_to_chat_without_repository_notes(
+        self,
+    ) -> None:
+        result = run_script(PROVIDERS, "install", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        skill_text = (
+            self.project / ".agents/skills/research/SKILL.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join(skill_text.split())
+        self.assertIn("Return sourced research findings in chat by default.", normalized)
+        self.assertIn(
+            "Do not create a standalone research file unless the user explicitly "
+            "requests a durable research artifact.",
+            normalized,
+        )
+        self.assertIn(
+            "write the necessary evidence directly into the owning ADR or product "
+            "documentation",
+            normalized,
+        )
+        self.assertIn(
+            "Do not create raw or temporary research files inside the repository.",
+            normalized,
+        )
+        self.assertNotIn("Write the findings to a single Markdown file", normalized)
+
+        upstream = (
+            PACKAGE_ROOT
+            / "provider-snapshots/matt-pocock-skills/skills/research/SKILL.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Write the findings to a single Markdown file", upstream)
+
     def test_unadapted_upstream_wayfinder_is_repaired_for_model_invocation(
         self,
     ) -> None:
@@ -1208,6 +1241,21 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
         self.assertIn("grilling must declare the discovery adapter", verify.stderr)
+
+    def test_verifier_requires_research_chat_output_adapter(self) -> None:
+        package_copy = self.copy_package("research-chat-output-adapter-declaration")
+        declaration = package_copy / "payload/agent-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        research = next(
+            item for item in raw["provider"]["skills"] if item["name"] == "research"
+        )
+        research.pop("agentic_workflow_adapter")
+        declaration.write_text(json.dumps(raw), encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("research must declare the chat-output adapter", verify.stderr)
 
     def test_verifier_rejects_corrupt_provider_snapshot_and_provenance(self) -> None:
         package_copy = self.copy_package("provider-snapshot-integrity")

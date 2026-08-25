@@ -50,6 +50,7 @@ class Provider:
 
 
 WAYFINDER_ADAPTER = "wayfinder-runtime-projection-v1"
+RESEARCH_OUTPUT_ADAPTER = "research-chat-output-v1"
 IMPLICIT_INVOCATION_ADAPTER = "implicit-invocation-v1"
 GRILLING_DISCOVERY_ADAPTER = "grilling-discovery-v1"
 
@@ -174,7 +175,7 @@ def load_provider() -> Provider:
                     f"provider skill {name} has an invalid Agent Workflow adapter"
                 )
             adapter_name = adapter.get("name")
-            if adapter_name == WAYFINDER_ADAPTER:
+            if adapter_name in {WAYFINDER_ADAPTER, RESEARCH_OUTPUT_ADAPTER}:
                 upstream_body_sha256 = adapter.get("upstream_body_sha256")
                 projection_source = package_path(
                     adapter.get("projection_source"),
@@ -183,7 +184,13 @@ def load_provider() -> Provider:
                 valid = (
                     set(adapter)
                     == {"name", "projection_source", "upstream_body_sha256"}
-                    and name == "wayfinder"
+                    and (
+                        (adapter_name == WAYFINDER_ADAPTER and name == "wayfinder")
+                        or (
+                            adapter_name == RESEARCH_OUTPUT_ADAPTER
+                            and name == "research"
+                        )
+                    )
                     and isinstance(upstream_body_sha256, str)
                     and len(upstream_body_sha256) == 64
                     and not any(
@@ -339,6 +346,8 @@ def adapter_plan(
         return implicit_invocation_adapter_plan(root, skill, repository, version)
     if skill.adapter == GRILLING_DISCOVERY_ADAPTER:
         return grilling_discovery_adapter_plan(root, skill, repository, version)
+    if skill.adapter == RESEARCH_OUTPUT_ADAPTER:
+        return research_output_adapter_plan(root, skill, repository, version)
     if (
         skill.adapter != WAYFINDER_ADAPTER
         or skill.upstream_body_sha256 is None
@@ -459,6 +468,88 @@ def adapter_plan(
             desired = desired.replace(upstream_line, adapted_line, 1)
         plan.append((path, original, desired))
     return plan
+
+
+def research_output_adapter_plan(
+    root: Path,
+    skill: ProviderSkill,
+    repository: str,
+    version: str,
+) -> list[tuple[Path, bytes, bytes]]:
+    """Project Research's chat-first output contract from pinned input."""
+    if (
+        destination_state(root, skill.name) != "present"
+        or skill.upstream_body_sha256 is None
+        or skill.projection_source is None
+    ):
+        raise ProviderError(f"provider skill {skill.name} is not safe to adapt")
+
+    skill_path = root / ".agents" / "skills" / skill.name / "SKILL.md"
+    if skill_path.is_symlink() or not skill_path.is_file():
+        raise ProviderError(
+            f"provider skill {skill.name} instructions are missing or unsafe"
+        )
+    original = skill_path.read_bytes()
+    if not original.startswith(b"---\n"):
+        raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
+    separator = original.find(b"\n---\n", 4)
+    if separator < 0:
+        raise ProviderError(f"provider skill {skill.name} lacks valid frontmatter")
+    body_start = separator + len(b"\n---\n")
+    frontmatter = original[4:separator]
+    required_source = (
+        f"    github-path: {skill.path}\n".encode("utf-8"),
+        f"    github-pinned: {version}\n".encode("utf-8"),
+        f"    github-repo: https://github.com/{repository}\n".encode("utf-8"),
+    )
+    if any(frontmatter.count(line) != 1 for line in required_source):
+        raise ProviderError(
+            f"provider skill {skill.name} has incompatible source metadata"
+        )
+    if sha256(original[body_start:]).hexdigest() != skill.upstream_body_sha256:
+        raise ProviderError(
+            f"provider skill {skill.name} has an unexpected pinned method body"
+        )
+
+    source = skill.projection_source
+    if source.is_symlink() or not source.is_file():
+        raise ProviderError(
+            f"provider skill {skill.name} runtime projection is missing or unsafe"
+        )
+    try:
+        projection = source.read_bytes()
+        projection.decode("utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise ProviderError(
+            f"cannot read runtime projection for provider skill {skill.name}: {exc}"
+        ) from exc
+    if (
+        not projection.startswith(b"# Research\n")
+        or not projection.endswith(b"\n")
+        or b"\n---\n" in projection
+    ):
+        raise ProviderError(
+            f"provider skill {skill.name} runtime projection is malformed"
+        )
+
+    upstream_description = (
+        b"description: Investigate a question against high-trust primary sources and "
+        b"capture the findings as a Markdown file in the repo. Use when the user wants "
+        b"a topic researched, docs or API facts gathered, or reading legwork delegated "
+        b"to a background agent.\n"
+    )
+    adapted_description = (
+        b"description: Investigate substantive questions against high-trust primary "
+        b"sources and return cited findings in chat. Create a repository artifact only "
+        b"when the user explicitly requests durable research output.\n"
+    )
+    desired = original[:body_start] + projection
+    if desired.count(upstream_description) != 1 or adapted_description in desired:
+        raise ProviderError(
+            f"provider skill {skill.name} has unexpected discovery metadata"
+        )
+    desired = desired.replace(upstream_description, adapted_description, 1)
+    return [(skill_path, original, desired)]
 
 
 def implicit_invocation_adapter_plan(

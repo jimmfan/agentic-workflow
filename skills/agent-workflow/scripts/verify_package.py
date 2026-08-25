@@ -56,6 +56,7 @@ REQUIRED_PACKAGE_FILES = (
     "scripts/provider_snapshot.py",
     "scripts/refresh_provider_snapshot.py",
     "scripts/verify_package.py",
+    "runtime-projections/research.md",
     "runtime-projections/wayfinder.md",
     "tests/behavior.py",
     "payload/distribution/manifest.json",
@@ -537,6 +538,17 @@ def check_provider_declaration() -> None:
                     == "runtime-projections/wayfinder.md"
                     and name == "wayfinder"
                 )
+            elif adapter_name == "research-chat-output-v1":
+                valid_adapter = (
+                    set(adapter)
+                    == {"name", "projection_source", "upstream_body_sha256"}
+                    and isinstance(adapter.get("upstream_body_sha256"), str)
+                    and re.fullmatch(r"[0-9a-f]{64}", adapter["upstream_body_sha256"])
+                    is not None
+                    and adapter.get("projection_source")
+                    == "runtime-projections/research.md"
+                    and name == "research"
+                )
             elif adapter_name == "grilling-discovery-v1":
                 valid_adapter = set(adapter) == {"name"} and name == "grilling"
             else:
@@ -686,6 +698,45 @@ def check_provider_declaration() -> None:
     require(
         sha256(upstream_body).hexdigest() == wayfinder_adapter["upstream_body_sha256"],
         "Wayfinder upstream body fingerprint differs from the reviewed input",
+    )
+    research = next((item for item in skills if item.get("name") == "research"), None)
+    require(
+        isinstance(research, dict)
+        and research.get("agentic_workflow_adapter", {}).get("name")
+        == "research-chat-output-v1"
+        and research.get("invocation", {}).get("codex") == "implicit"
+        and research.get("invocation", {}).get("github-copilot") == "implicit",
+        "research must declare the chat-output adapter",
+    )
+    research_adapter = research["agentic_workflow_adapter"]
+    research_projection = package_path(
+        research_adapter.get("projection_source"),
+        "Research runtime projection source",
+    )
+    require(
+        research_projection.is_file() and not research_projection.is_symlink(),
+        "owned Research runtime projection is missing or unsafe",
+    )
+    research_text = research_projection.read_text(encoding="utf-8")
+    for required in (
+        "Return sourced research findings in chat by default.",
+        "Do not create a standalone research file unless the user explicitly requests",
+        "write the necessary evidence directly into the owning ADR or product documentation",
+        "Do not create raw or temporary research files inside the repository.",
+    ):
+        require(
+            required in " ".join(research_text.split()),
+            f"owned Research runtime lacks required contract: {required}",
+        )
+    upstream_research = snapshot_root / "research" / "SKILL.md"
+    research_bytes = upstream_research.read_bytes()
+    separator = research_bytes.find(b"\n---\n", 4)
+    require(separator >= 0, "bundled Research skill lacks valid frontmatter")
+    research_body = research_bytes[separator + len(b"\n---\n") :]
+    require(
+        sha256(research_body).hexdigest()
+        == research_adapter["upstream_body_sha256"],
+        "Research upstream body fingerprint differs from the reviewed input",
     )
     for name in ("to-spec", "to-tickets", "implement"):
         skill = next((item for item in skills if item.get("name") == name), None)
