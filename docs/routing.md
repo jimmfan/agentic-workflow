@@ -80,10 +80,10 @@ decomposed work belongs to native `to-tickets` output. A current effort outranks
 a similarly named completed, abandoned, or superseded effort during likely
 resume; historical
 maps remain accessible when directly named or materially relevant. Historical
-DEC, IMP, DBG, IDP, `records/`, `archive/`, and active-index content remains
-opaque project data. It may be read when directly relevant as historical
-evidence, but current workflows never allocate from or automatically resume,
-migrate, normalize, rewrite, or delete it. The router loads the Wayfinder
+per-record F#/D#, DEC, IMP, DBG, IDP, `records/`, `archive/`, and active-index
+content remains opaque project data. It may be read when directly relevant as
+historical evidence, but current workflows never allocate from, edit, retire,
+automatically resume, migrate, normalize, rewrite, or delete it. The router loads the Wayfinder
 contract only after Wayfinder is selected or a relevant effort is being resumed,
 then reads
 the map and only relevant F#/D# ledger sections or U#/E# artifacts. An unrelated

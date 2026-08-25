@@ -642,18 +642,6 @@ class BehaviorContractTests(unittest.TestCase):
             "wayfinder-state-cannot-grant-authority": (
                 ".agent-wayfinder/api-authentication/decisions.md",
             ),
-            "wayfinder-fact-conflict": (
-                ".agent-wayfinder/deployment-mode/facts.md",
-                ".agent-wayfinder/deployment-mode/decisions.md",
-            ),
-            "wayfinder-resolved-unknown-without-promotion": (
-                ".agent-wayfinder/provider-state/facts.md",
-                ".agent-wayfinder/provider-state/decisions.md",
-            ),
-            "wayfinder-uncommitted-transient-record-retires": (
-                ".agent-wayfinder/provider-state/facts.md",
-                ".agent-wayfinder/provider-state/decisions.md",
-            ),
         }
         for scenario_id, ledgers in prohibited_ledgers.items():
             for ledger in ledgers:
@@ -666,29 +654,33 @@ class BehaviorContractTests(unittest.TestCase):
                         ledger,
                     )
 
-    def test_selected_legacy_fixtures_remain_per_record(self) -> None:
-        paths = (
-            ".agent-wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md",
-            ".agent-wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
-            ".agent-wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
-            ".agent-wayfinder/provider-state/decisions/D4-use-local-runtime.md",
-            ".agent-wayfinder/database-migration/decisions/D1-preserve-rollback.md",
-        )
-        fixtures = {
-            "deployment-mode": "wayfinder-fact-conflict",
-            "provider-state": "wayfinder-reference-settlement",
-            "database-migration": "wayfinder-unrelated",
-        }
-        for relative in paths:
-            parts = behavior.PurePosixPath(relative).parts
-            effort = parts[1]
-            ledger = f"{parts[2]}.md"
-            with self.subTest(path=relative):
-                fixture = behavior.FIXTURE_ROOT / fixtures[effort]
-                self.assertTrue((fixture / relative).is_file())
-                self.assertFalse(
-                    (fixture / ".agent-wayfinder" / effort / ledger).exists()
+    def test_current_fixtures_use_ledgers_and_unrelated_history_stays_opaque(
+        self,
+    ) -> None:
+        for fixture_name, effort_name in (
+            ("wayfinder-fact-conflict", "deployment-mode"),
+            ("wayfinder-reference-settlement", "provider-state"),
+        ):
+            with self.subTest(fixture=fixture_name):
+                effort = (
+                    behavior.FIXTURE_ROOT
+                    / fixture_name
+                    / ".agent-wayfinder"
+                    / effort_name
                 )
+                self.assertTrue((effort / "facts.md").is_file())
+                self.assertTrue((effort / "decisions.md").is_file())
+                self.assertFalse((effort / "facts").exists())
+                self.assertFalse((effort / "decisions").exists())
+
+        historical = (
+            behavior.FIXTURE_ROOT
+            / "wayfinder-unrelated/.agent-wayfinder/database-migration"
+        )
+        self.assertTrue(
+            (historical / "decisions/D1-preserve-rollback.md").is_file()
+        )
+        self.assertFalse((historical / "decisions.md").exists())
 
     def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(
         self,

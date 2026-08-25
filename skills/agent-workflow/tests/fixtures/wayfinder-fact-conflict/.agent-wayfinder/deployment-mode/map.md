@@ -7,8 +7,8 @@ capacity-policy decision.
 
 ## Current state
 
-- [F1 — Deployment mode is dedicated](facts/F1-deployment-mode-is-dedicated.md) is currently treated as established.
-- [D1 — Use dedicated capacity policy](decisions/D1-use-dedicated-capacity-policy.md) is accepted under the original evidence.
+- [F1 — Deployment mode is dedicated](facts.md#f1--deployment-mode-is-dedicated) is currently treated as established.
+- [D1 — Use dedicated capacity policy](decisions.md#d1--use-dedicated-capacity-policy) is accepted under the original evidence.
 
 ## Blockers and dependencies
 
@@ -24,7 +24,7 @@ Current source and observed behavior outrank this summary.
 
 ## Decisions so far
 
-- [D1 — Use dedicated capacity policy](decisions/D1-use-dedicated-capacity-policy.md) — accepted under F1.
+- [D1 — Use dedicated capacity policy](decisions.md#d1--use-dedicated-capacity-policy) — accepted under F1.
 
 ## Not yet specified
 

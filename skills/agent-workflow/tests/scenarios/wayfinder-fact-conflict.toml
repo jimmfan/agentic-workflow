@@ -23,12 +23,10 @@ must_not = [
 live = true
 verification_command = "Run python verify.py after reconciling E2, F1, U1, and map.md without changing D1."
 preserve_paths = [
-  ".agent-wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+  ".agent-wayfinder/deployment-mode/decisions.md",
 ]
 forbid_created_globs = [
   ".agent-wayfinder/active.md",
-  ".agent-wayfinder/deployment-mode/facts.md",
-  ".agent-wayfinder/deployment-mode/decisions.md",
   ".agent-wayfinder/deployment-mode/tickets",
   ".agent-wayfinder/deployment-mode/tickets/**",
   ".scratch/**",
@@ -37,8 +35,8 @@ route_must_not_include = ["discovery"]
 state_must_include = [
   ".agent-wayfinder/deployment-mode/map.md",
   ".agent-wayfinder/deployment-mode/evidence/E1-original-deployment-mode.md",
-  ".agent-wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md",
-  ".agent-wayfinder/deployment-mode/decisions/D1-use-dedicated-capacity-policy.md",
+  ".agent-wayfinder/deployment-mode/facts.md",
+  ".agent-wayfinder/deployment-mode/decisions.md",
 ]
 state_must_not_include = []
 
@@ -84,12 +82,12 @@ value = "- Status: open"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md"
+path = ".agent-wayfinder/deployment-mode/facts.md"
 value = "- Status: disputed"
 
 [[assertions]]
 kind = "path_contains"
-path = ".agent-wayfinder/deployment-mode/facts/F1-deployment-mode-is-dedicated.md"
+path = ".agent-wayfinder/deployment-mode/facts.md"
 value = "- Contradicted by: E2"
 
 [[assertions]]
@@ -109,11 +107,3 @@ path = ".agent-wayfinder/deployment-mode/tickets"
 [[assertions]]
 kind = "path_not_exists"
 path = ".agent-wayfinder/active.md"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/deployment-mode/facts.md"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/deployment-mode/decisions.md"

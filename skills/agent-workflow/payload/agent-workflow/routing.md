@@ -56,11 +56,11 @@ Resume only relevant work. An exact Wayfinder map or provider-native artifact
 selects that re-entry point. For an unnamed likely Wayfinder resume, inspect the
 smallest plausible effort set. Prefer a current map over a similar historical
 map, and load historical detail only when directly requested or needed to
-follow a successor. An unrelated map never captures the route. Historical DEC,
-IMP, DBG, IDP, `records/`, `archive/`, and active-index content may be read only
-when directly relevant as project evidence. These are not current re-entry or
-allocation sources and current workflows never automatically migrate,
-normalize, rewrite, or delete them.
+follow a successor. An unrelated map never captures the route. Historical
+per-record F#/D#, DEC, IMP, DBG, IDP, `records/`, `archive/`, and active-index
+content may be read only when directly relevant as project evidence. These are
+not current re-entry or allocation sources and current workflows never edit,
+retire, automatically migrate, normalize, rewrite, or delete them.
 
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 only relevant F#/D# ledger sections or U#/E# artifacts. Implementation may

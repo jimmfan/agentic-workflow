@@ -7,8 +7,8 @@ from pathlib import Path
 effort = Path(".agent-wayfinder/deployment-mode")
 evidence = sorted((effort / "evidence").glob("E2-*.md"))
 unknowns = sorted((effort / "unknowns").glob("U1-*.md"))
-fact = (effort / "facts/F1-deployment-mode-is-dedicated.md").read_text()
-decision = (effort / "decisions/D1-use-dedicated-capacity-policy.md").read_text()
+fact = (effort / "facts.md").read_text()
+decision = (effort / "decisions.md").read_text()
 mapping = (effort / "map.md").read_text()
 
 checks = [

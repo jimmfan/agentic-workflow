@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-import os
 from pathlib import Path
 import re
 import shutil
@@ -24,13 +23,6 @@ LEDGER_PATHS = {"F": "facts.md", "D": "decisions.md"}
 LEDGER_TITLES = {"F": "Facts", "D": "Decisions"}
 CURRENT_ID = re.compile(r"^([UEFD])([1-9][0-9]*)-([^.]+)\.md$")
 LEDGER_HEADING = re.compile(r"^## ([FD])([1-9][0-9]*) — (\S.*)$")
-MARKDOWN_LINK_DESTINATION = re.compile(r"(\[[^]]+\]\()([^)]+)(\))")
-LOCAL_MARKDOWN_PATH = re.compile(
-    r"(?<![A-Za-z0-9_./-])"
-    r"((?:\.\.?/)*(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.md"
-    r"(?:#[A-Za-z0-9_-]+)?)"
-    r"(?![A-Za-z0-9_./-])"
-)
 
 
 class UnsafeWayfinderState(RuntimeError):
@@ -70,25 +62,19 @@ def ledger_sections(effort: Path, kind: str) -> list[tuple[int, str, str]]:
     return sections
 
 
-def selected_representation(effort: Path, kind: str) -> str:
-    if kind not in LEDGER_PATHS:
-        raise UnsafeWayfinderState("representation selection applies to facts or decisions")
-    ledger_ids = [item[0] for item in ledger_sections(effort, kind)]
-    legacy_ids = current_ids(effort, kind)
-    if ledger_ids and legacy_ids:
-        return "mixed"
-    if legacy_ids:
-        return "legacy"
-    return "ledger"
-
-
 def read_current_ids(effort: Path, kind: str) -> list[int]:
     if kind in LEDGER_PATHS:
-        return sorted(
-            [item[0] for item in ledger_sections(effort, kind)]
-            + current_ids(effort, kind)
-        )
+        return [item[0] for item in ledger_sections(effort, kind)]
     return sorted(current_ids(effort, kind))
+
+
+def historical_fd_present(effort: Path, kind: str) -> bool:
+    directory = effort / TYPE_DIRECTORIES[kind]
+    if not directory.exists():
+        return False
+    if directory.is_symlink() or not directory.is_dir():
+        raise UnsafeWayfinderState(f"unsafe historical {kind} path")
+    return any(directory.iterdir())
 
 
 def readable_slug(title: str) -> str:
@@ -120,36 +106,13 @@ def create_current_record(
     if before_lock is not None:
         before_lock()
     with effort_mutation_lock(effort, attempts=lock_attempts):
-        representation = selected_representation(effort, kind)
-        if representation == "mixed":
-            raise UnsafeWayfinderState(f"mixed current {kind} representations")
-        if representation == "legacy":
-            identifiers = current_ids(effort, kind)
-            identifier = max(identifiers, default=0) + 1
-            directory = effort / TYPE_DIRECTORIES[kind]
-            path = directory / f"{kind}{identifier}-{readable_slug(title)}.md"
-            observed = {
-                child: child.read_bytes()
-                for child in directory.iterdir()
-                if child.is_file()
-            }
-            if before_final_write is not None:
-                before_final_write()
-            current = {
-                child: child.read_bytes()
-                for child in directory.iterdir()
-                if child.is_file()
-            }
-            if current != observed:
-                raise UnsafeWayfinderState("legacy records changed before write")
-            with path.open("x", encoding="utf-8") as handle:
-                handle.write(
-                    f"# {kind}{identifier}: {title}\n\n{body.rstrip()}\n"
-                )
-            return f"{kind}{identifier}"
-
         path = effort / LEDGER_PATHS[kind]
         sections = ledger_sections(effort, kind)
+        if historical_fd_present(effort, kind):
+            raise UnsafeWayfinderState(
+                f"historical per-record {kind} requires manual reconciliation; "
+                "manual reconciliation required before a current ledger write"
+            )
         identifier = max((item[0] for item in sections), default=0) + 1
         observed = path.read_bytes() if path.exists() else None
         existing = observed.decode("utf-8") if observed is not None else ""
@@ -175,67 +138,6 @@ def heading_anchor(kind: str, identifier: int, title: str) -> str:
         if character.isalnum() or character in {" ", "-"}
     )
     return without_punctuation.replace(" ", "-")
-
-
-def rewrite_markdown_links(
-    text: str,
-    *,
-    source: Path,
-    destination: Path,
-    migrated_targets: dict[Path, tuple[Path, str]],
-    rebase_all: bool,
-) -> str:
-    def relative_destination(document: Path, target: Path) -> str:
-        return Path(
-            os.path.relpath(target.resolve(), document.parent.resolve())
-        ).as_posix()
-
-    def replace(match: re.Match[str]) -> str:
-        raw = match.group(2)
-        if (
-            not raw
-            or raw.startswith(("#", "/", "mailto:"))
-            or "://" in raw
-        ):
-            return match.group(0)
-        relative, separator, fragment = raw.partition("#")
-        target = (source.parent / relative).resolve()
-        migrated = migrated_targets.get(target)
-        if migrated is not None:
-            target, fragment = migrated
-            separator = "#"
-        elif not rebase_all:
-            return match.group(0)
-        rewritten = relative_destination(destination, target)
-        if separator:
-            rewritten += f"#{fragment}"
-        return f"{match.group(1)}{rewritten}{match.group(3)}"
-
-    plain_rewrites: dict[str, str] = {}
-    if rebase_all:
-        for match in LOCAL_MARKDOWN_PATH.finditer(text):
-            raw = match.group(1)
-            relative, separator, fragment = raw.partition("#")
-            target = (source.parent / relative).resolve()
-            migrated = migrated_targets.get(target)
-            if migrated is not None:
-                target, fragment = migrated
-                separator = "#"
-            elif not target.is_file():
-                continue
-            replacement = relative_destination(destination, target)
-            if separator:
-                replacement += f"#{fragment}"
-            plain_rewrites[raw] = replacement
-
-    rewritten = MARKDOWN_LINK_DESTINATION.sub(replace, text)
-    for old_path, new_path in plain_rewrites.items():
-        rewritten = rewritten.replace(old_path, new_path)
-    for legacy_target, (ledger_target, anchor) in migrated_targets.items():
-        old_path = relative_destination(source, legacy_target)
-        new_path = relative_destination(destination, ledger_target)
-        rewritten = rewritten.replace(old_path, f"{new_path}#{anchor}")
-    return rewritten
 
 
 def ledger_references(
@@ -276,8 +178,11 @@ def retire_ledger_section(
 ) -> bool:
     path = effort / LEDGER_PATHS[kind]
     with effort_mutation_lock(effort, attempts=lock_attempts):
-        if selected_representation(effort, kind) == "mixed":
-            raise UnsafeWayfinderState(f"mixed current {kind} representations")
+        if historical_fd_present(effort, kind):
+            raise UnsafeWayfinderState(
+                f"historical per-record {kind} requires manual reconciliation; "
+                "manual reconciliation required before a current ledger write"
+            )
         if not path.exists():
             return False
         original = path.read_text(encoding="utf-8")
@@ -341,143 +246,6 @@ def replace_map(
         path.write_bytes(updated)
 
 
-def migrate_legacy_to_ledger(
-    effort: Path,
-    kind: str,
-    *,
-    authorized: bool,
-    known_references: list[Path] | None = None,
-    lock_attempts: int = 1_000,
-) -> None:
-    if not authorized:
-        raise UnsafeWayfinderState("explicit authorization is required for migration")
-    if kind not in LEDGER_PATHS:
-        raise UnsafeWayfinderState("only legacy facts or decisions can migrate")
-    with effort_mutation_lock(effort, attempts=lock_attempts):
-        representation = selected_representation(effort, kind)
-        if representation == "mixed":
-            raise UnsafeWayfinderState("unresolved mixed representations block migration")
-        directory = effort / TYPE_DIRECTORIES[kind]
-        identifiers = current_ids(effort, kind)
-        if not identifiers:
-            return
-        ledger = effort / LEDGER_PATHS[kind]
-        existing_sections = ledger_sections(effort, kind)
-        ledger_observed = ledger.read_bytes() if ledger.exists() else None
-        if existing_sections:
-            raise UnsafeWayfinderState("unresolved ledger records block migration")
-
-        legacy_paths = sorted(
-            directory.iterdir(),
-            key=lambda child: int(CURRENT_ID.fullmatch(child.name).group(2)),  # type: ignore[union-attr]
-        )
-        parsed: list[tuple[int, str, Path, str]] = []
-        legacy_bytes: dict[Path, bytes] = {}
-        title_pattern = re.compile(
-            rf"^# {kind}([1-9][0-9]*)(?:: | — )(\S.*)$"
-        )
-        for path in legacy_paths:
-            legacy_bytes[path] = path.read_bytes()
-            original = legacy_bytes[path].decode("utf-8")
-            lines = original.splitlines()
-            match = title_pattern.fullmatch(lines[0] if lines else "")
-            filename_match = CURRENT_ID.fullmatch(path.name)
-            if (
-                match is None
-                or filename_match is None
-                or int(match.group(1)) != int(filename_match.group(2))
-            ):
-                raise UnsafeWayfinderState("malformed legacy record blocks migration")
-            body_lines = lines[1:]
-            while body_lines and not body_lines[0]:
-                body_lines.pop(0)
-            transformed: list[str] = []
-            for line in body_lines:
-                if line.startswith("## "):
-                    line = "#" + line
-                if kind == "F" and line == "- Status: current":
-                    line = "- Status: established"
-                if kind == "F" and line.startswith("- Supported by:"):
-                    line = "- Derived from:" + line.removeprefix("- Supported by:")
-                if kind == "D" and line.startswith("- Related:"):
-                    line = "- Based on:" + line.removeprefix("- Related:")
-                transformed.append(line)
-            body = "\n".join(transformed).strip()
-            parsed.append((int(match.group(1)), match.group(2), path, body))
-
-        migrated_targets = {
-            path.resolve(): (
-                ledger.resolve(),
-                heading_anchor(kind, identifier, title),
-            )
-            for identifier, title, path, _ in parsed
-        }
-        parsed = [
-            (
-                identifier,
-                title,
-                path,
-                rewrite_markdown_links(
-                    body,
-                    source=path,
-                    destination=ledger,
-                    migrated_targets=migrated_targets,
-                    rebase_all=True,
-                ),
-            )
-            for identifier, title, path, body in parsed
-        ]
-
-        references = [
-            path
-            for path in effort.rglob("*.md")
-            if path not in legacy_paths and path != ledger
-        ]
-        references.extend(known_references or [])
-        reference_bytes: dict[Path, bytes] = {}
-        for path in references:
-            if path.is_symlink() or not path.is_file():
-                raise UnsafeWayfinderState(f"unsafe known reference path: {path}")
-            reference_bytes[path] = path.read_bytes()
-
-        rewritten: dict[Path, bytes] = {}
-        for reference, original_bytes in reference_bytes.items():
-            text = original_bytes.decode("utf-8")
-            text = rewrite_markdown_links(
-                text,
-                source=reference,
-                destination=reference,
-                migrated_targets=migrated_targets,
-                rebase_all=False,
-            )
-            rewritten[reference] = text.encode("utf-8")
-
-        sections = []
-        for identifier, title, _, body in parsed:
-            section = f"## {kind}{identifier} — {title}"
-            if body:
-                section += f"\n\n{body}"
-            sections.append(section)
-        ledger_text = f"# {LEDGER_TITLES[kind]}\n\n" + "\n\n".join(sections) + "\n"
-
-        for reference, observed in reference_bytes.items():
-            if reference.read_bytes() != observed:
-                raise UnsafeWayfinderState("known reference changed before migration")
-        for path, observed in legacy_bytes.items():
-            if not path.is_file() or path.read_bytes() != observed:
-                raise UnsafeWayfinderState("legacy record changed before migration")
-        ledger_current = ledger.read_bytes() if ledger.exists() else None
-        if ledger_current != ledger_observed:
-            raise UnsafeWayfinderState("ledger changed before migration")
-
-        ledger.write_text(ledger_text, encoding="utf-8")
-        for reference, content in rewritten.items():
-            reference.write_bytes(content)
-        for path in legacy_paths:
-            path.unlink()
-        directory.rmdir()
-
-
 def current_ids(effort: Path, kind: str) -> list[int]:
     directory = effort / TYPE_DIRECTORIES[kind]
     if not directory.exists():
@@ -530,6 +298,8 @@ def create_current_child(
     before_lock: Callable[[], None] | None = None,
     lock_attempts: int = 1_000,
 ) -> Path:
+    if kind not in {"U", "E"}:
+        raise UnsafeWayfinderState("historical per-record F/D is not writable")
     if before_lock is not None:
         before_lock()
     with effort_mutation_lock(effort, attempts=lock_attempts):
@@ -577,18 +347,12 @@ def retire_current_child(
     before_final_check: Callable[[], None] | None = None,
     lock_attempts: int = 1_000,
 ) -> bool:
+    match = CURRENT_ID.fullmatch(target.name)
+    if match is not None and match.group(1) in LEDGER_PATHS:
+        raise UnsafeWayfinderState("historical per-record F/D is not writable")
     with effort_mutation_lock(effort, attempts=lock_attempts):
         if not target.exists():
             return False
-        match = CURRENT_ID.fullmatch(target.name)
-        if (
-            match is not None
-            and match.group(1) in LEDGER_PATHS
-            and selected_representation(effort, match.group(1)) == "mixed"
-        ):
-            raise UnsafeWayfinderState(
-                f"mixed current {match.group(1)} representations"
-            )
         references = references_to(effort, target)
         if references:
             raise UnsafeWayfinderState(f"current references remain: {references}")
@@ -688,88 +452,70 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "malformed current D"):
                 create_current_record(effort, "D", "Blocked", "Blocked.\n")
 
-    def test_fact_and_decision_representations_are_selected_independently(self) -> None:
+    def test_historical_per_record_fd_is_opaque_and_blocks_current_mutation(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
-            legacy_facts = effort / "facts"
-            legacy_facts.mkdir(parents=True)
-            (effort / "map.md").write_text("# Mixed types\n", encoding="utf-8")
-            (legacy_facts / "F8-existing.md").write_text(
-                "# F8: Existing\n\n- Status: current\n\nExisting.\n",
+            historical = effort / "facts"
+            historical.mkdir(parents=True)
+            (effort / "map.md").write_text("# Historical facts\n", encoding="utf-8")
+            legacy = historical / "F8-existing.md"
+            legacy.write_bytes(b"# F8: Historical\n\nOpaque bytes.\n")
+            before = current_markdown(effort)
+
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "manual reconciliation required"
+            ):
+                create_current_record(effort, "F", "Unsafe", "Unsafe.\n")
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "historical per-record F/D is not writable"
+            ):
+                create_current_child(effort, "F", "unsafe", "Unsafe.\n")
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "historical per-record F/D is not writable"
+            ):
+                retire_current_child(effort, legacy)
+
+            self.assertEqual(current_markdown(effort), before)
+            self.assertFalse((effort / "facts.md").exists())
+
+    def test_historical_fd_blocks_only_same_type_ledger_mutations(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "effort"
+            historical = effort / "facts"
+            historical.mkdir(parents=True)
+            (effort / "map.md").write_text("# Mixed history\n", encoding="utf-8")
+            (effort / "facts.md").write_text(
+                "# Facts\n\n## F2 — Current fact\n\n- Source: source.md\n\nCurrent.\n",
                 encoding="utf-8",
             )
+            (historical / "F7-history.md").write_bytes(b"opaque history\n")
+            before = current_markdown(effort)
 
-            self.assertEqual(selected_representation(effort, "F"), "legacy")
-            self.assertEqual(selected_representation(effort, "D"), "ledger")
-            self.assertEqual(
-                create_current_record(
-                    effort,
-                    "F",
-                    "Legacy continuation",
-                    "- Status: current\n- Supported by: source.md\n\nContinued.\n",
-                ),
-                "F9",
-            )
-            self.assertTrue((legacy_facts / "F9-legacy-continuation.md").is_file())
-            self.assertFalse((effort / "facts.md").exists())
-
-            self.assertTrue(
-                retire_current_child(
-                    effort, legacy_facts / "F9-legacy-continuation.md"
-                )
-            )
-            self.assertTrue((legacy_facts / "F8-existing.md").is_file())
-            self.assertFalse((effort / "facts.md").exists())
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "manual reconciliation required"
+            ):
+                create_current_record(effort, "F", "Blocked", "Blocked.\n")
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState, "manual reconciliation required"
+            ):
+                retire_ledger_section(effort, "F", 2)
+            self.assertEqual(current_markdown(effort), before)
 
             self.assertEqual(
                 create_current_record(
                     effort,
                     "D",
-                    "New default",
-                    "- Status: accepted\n"
-                    "- Authority: User, 2026-08-25, request\n\nUse a ledger.\n",
+                    "Independent decision",
+                    "- Status: accepted\n- Authority: test\n\nIndependent.\n",
                 ),
                 "D1",
             )
+            self.assertEqual(
+                (historical / "F7-history.md").read_bytes(), b"opaque history\n"
+            )
             self.assertTrue((effort / "decisions.md").is_file())
-            self.assertFalse((effort / "decisions").exists())
-
-            self.assertTrue(
-                retire_current_child(effort, legacy_facts / "F8-existing.md")
-            )
-            self.assertFalse(legacy_facts.exists())
-            self.assertTrue((effort / "decisions.md").is_file())
-
-    def test_mixed_current_representation_is_readable_but_blocks_writes(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            effort = Path(temporary) / "effort"
-            legacy = effort / "facts"
-            legacy.mkdir(parents=True)
-            (effort / "map.md").write_text("# Mixed facts\n", encoding="utf-8")
-            (effort / "facts.md").write_text(
-                "# Facts\n\n## F2 — Ledger fact\n\n- Source: source.md\n\nLedger.\n",
-                encoding="utf-8",
-            )
-            (legacy / "F7-legacy.md").write_text(
-                "# F7: Legacy fact\n\n- Supported by: source.md\n\nLegacy.\n",
-                encoding="utf-8",
-            )
-
-            self.assertEqual(selected_representation(effort, "F"), "mixed")
-            self.assertEqual(read_current_ids(effort, "F"), [2, 7])
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "mixed current F representations"
-            ):
-                create_current_record(effort, "F", "Unsafe", "Unsafe.\n")
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "mixed current F representations"
-            ):
-                retire_ledger_section(effort, "F", 2)
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "mixed current F representations"
-            ):
-                retire_current_child(effort, legacy / "F7-legacy.md")
-            self.assertEqual(read_current_ids(effort, "F"), [2, 7])
 
     def test_ledger_retirement_removes_only_the_reconciled_section_and_empty_ledger(
         self,
@@ -899,152 +645,6 @@ class WayfinderStateContractTests(unittest.TestCase):
 
             self.assertEqual(map_path.read_bytes(), b"# Locked effort\n")
 
-    def test_explicit_authorized_migration_preserves_meaning_references_and_state(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            project = Path(temporary) / "project"
-            effort = project / ".agent-wayfinder/effort"
-            facts = effort / "facts"
-            decisions = effort / "decisions"
-            unknowns = effort / "unknowns"
-            evidence = effort / "evidence"
-            docs = project / "docs"
-            for directory in (facts, decisions, unknowns, evidence, docs):
-                directory.mkdir(parents=True, exist_ok=True)
-            map_path = effort / "map.md"
-            map_path.write_text(
-                "# Migration\n\n"
-                "[Established](facts/F4-established.md) and "
-                "[choice](decisions/D2-use-ledger.md) remain current.\n",
-                encoding="utf-8",
-            )
-            (facts / "F4-established.md").write_text(
-                "# F4: Established\n\n"
-                "- Status: current\n"
-                "- Scope: This effort\n"
-                "- Supported by: [E3](../evidence/E3-observation.md)\n"
-                "- Evidence path: ../evidence/E3-observation.md\n"
-                "- Related: [F6](F6-companion.md)\n"
-                "- Limitations: Applies only to this effort\n"
-                "- Contradicted by: none\n\n"
-                "## Fact\n\nEstablished conclusion.\n\n"
-                "## Change note\n\nClarified scope without changing meaning.\n",
-                encoding="utf-8",
-            )
-            (facts / "F6-companion.md").write_text(
-                "# F6: Companion\n\n"
-                "- Status: current\n"
-                "- Scope: This effort\n"
-                "- Supported by: [F4](F4-established.md)\n\n"
-                "## Fact\n\nCompanion conclusion.\n",
-                encoding="utf-8",
-            )
-            (decisions / "D2-use-ledger.md").write_text(
-                "# D2: Use ledger\n\n"
-                "- Status: accepted\n"
-                "- Authority: User, 2026-08-25, implementation request\n"
-                "- Related: F4\n\n"
-                "## Decision\n\nUse the consolidated ledger.\n\n"
-                "## Why and consequences\n\nFewer retrieval decisions; preserve IDs.\n\n"
-                "## Change note\n\nNo renumbering.\n",
-                encoding="utf-8",
-            )
-            (unknowns / "U9-independent.md").write_bytes(b"independent unknown\n")
-            (evidence / "E3-observation.md").write_bytes(b"substantial evidence\n")
-            unrelated = effort / "owner.bin"
-            unrelated.write_bytes(b"\x00owner\xff")
-            external = docs / "spec.md"
-            external.write_text(
-                "[Decision](../.agent-wayfinder/effort/decisions/D2-use-ledger.md)\n"
-                "Current fact path: "
-                "../.agent-wayfinder/effort/facts/F4-established.md\n",
-                encoding="utf-8",
-            )
-            preserved = {
-                path: path.read_bytes()
-                for path in (unknowns / "U9-independent.md", evidence / "E3-observation.md", unrelated)
-            }
-
-            with self.assertRaisesRegex(UnsafeWayfinderState, "explicit authorization"):
-                migrate_legacy_to_ledger(effort, "F", authorized=False)
-            self.assertTrue((facts / "F4-established.md").is_file())
-
-            migrate_legacy_to_ledger(
-                effort,
-                "F",
-                authorized=True,
-                known_references=[external],
-            )
-            migrate_legacy_to_ledger(
-                effort,
-                "D",
-                authorized=True,
-                known_references=[external],
-            )
-
-            facts_text = (effort / "facts.md").read_text(encoding="utf-8")
-            decisions_text = (effort / "decisions.md").read_text(encoding="utf-8")
-            self.assertIn("## F4 — Established", facts_text)
-            self.assertIn("- Status: established", facts_text)
-            self.assertIn("- Scope: This effort", facts_text)
-            self.assertIn("- Derived from: [E3]", facts_text)
-            self.assertIn("[E3](evidence/E3-observation.md)", facts_text)
-            self.assertIn("- Evidence path: evidence/E3-observation.md", facts_text)
-            self.assertIn("[F6](facts.md#f6--companion)", facts_text)
-            self.assertIn("[F4](facts.md#f4--established)", facts_text)
-            self.assertIn("- Limitations: Applies only to this effort", facts_text)
-            self.assertIn("### Change note", facts_text)
-            self.assertIn("## F6 — Companion", facts_text)
-            self.assertIn("## D2 — Use ledger", decisions_text)
-            self.assertIn("- Authority: User, 2026-08-25", decisions_text)
-            self.assertIn("- Based on: F4", decisions_text)
-            self.assertIn("### Why and consequences", decisions_text)
-            self.assertIn("Fewer retrieval decisions; preserve IDs.", decisions_text)
-            self.assertIn("### Change note", decisions_text)
-            self.assertIn("facts.md#f4--established", map_path.read_text(encoding="utf-8"))
-            self.assertIn("decisions.md#d2--use-ledger", map_path.read_text(encoding="utf-8"))
-            self.assertIn(
-                "../.agent-wayfinder/effort/decisions.md#d2--use-ledger",
-                external.read_text(encoding="utf-8"),
-            )
-            self.assertIn(
-                "../.agent-wayfinder/effort/facts.md#f4--established",
-                external.read_text(encoding="utf-8"),
-            )
-            self.assertNotIn(
-                "../.agent-wayfinder/effort/facts/F4-established.md",
-                external.read_text(encoding="utf-8"),
-            )
-            self.assertFalse(facts.exists())
-            self.assertFalse(decisions.exists())
-            for path, content in preserved.items():
-                self.assertEqual(path.read_bytes(), content)
-            for forbidden in ("archive", "migration.log", "allocation.md", "registry.md"):
-                self.assertFalse((effort / forbidden).exists())
-
-    def test_migration_rejects_unresolved_mixed_records_without_renumbering(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            effort = Path(temporary) / "effort"
-            legacy = effort / "decisions"
-            legacy.mkdir(parents=True)
-            (effort / "map.md").write_text("# Conflict\n", encoding="utf-8")
-            (effort / "decisions.md").write_text(
-                "# Decisions\n\n## D3 — Ledger\n\n- Authority: User\n\nLedger.\n",
-                encoding="utf-8",
-            )
-            legacy_path = legacy / "D3-legacy.md"
-            legacy_path.write_text(
-                "# D3: Legacy\n\n- Authority: User\n\nLegacy.\n",
-                encoding="utf-8",
-            )
-            before = current_markdown(effort)
-
-            with self.assertRaisesRegex(UnsafeWayfinderState, "unresolved mixed"):
-                migrate_legacy_to_ledger(effort, "D", authorized=True)
-
-            self.assertEqual(current_markdown(effort), before)
-
     def test_current_state_allocation_skips_gaps_and_may_reuse_retired_highest(
         self,
     ) -> None:
@@ -1143,22 +743,23 @@ class WayfinderStateContractTests(unittest.TestCase):
 
             (effort / "map.md").write_text(
                 "# Provider state settlement\n\n- Status: current\n\n"
-                "## Current state\n\n[F8](facts/F8-provider-needs-no-tracker.md) and "
-                "[D4](decisions/D4-use-local-runtime.md) remain current.\n",
+                "## Current state\n\n[F8](facts.md#f8--provider-needs-no-tracker-state) and "
+                "[D4](decisions.md#d4--use-the-local-runtime-without-tracker-state) "
+                "remain current.\n",
                 encoding="utf-8",
             )
-            fact = effort / "facts/F8-provider-needs-no-tracker.md"
+            fact = effort / "facts.md"
             fact.write_text(
                 fact.read_text(encoding="utf-8").replace(
-                    "Supported by: E12",
-                    "Supported by: [source.txt](../../../source.txt)",
+                    "- Derived from: E12",
+                    "- Source: [source.txt](../../source.txt)",
                 ),
                 encoding="utf-8",
             )
-            decision = effort / "decisions/D4-use-local-runtime.md"
+            decision = effort / "decisions.md"
             decision.write_text(
                 decision.read_text(encoding="utf-8").replace(
-                    "Related: U17, F8", "Related: F8"
+                    "- Based on: U17, F8", "- Based on: F8"
                 ),
                 encoding="utf-8",
             )
@@ -1180,7 +781,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue(retire_current_child(effort, evidence))
             self.assertTrue(retire_current_child(effort, unknown))
             self.assertFalse(retire_current_child(effort, evidence))
-            source_link = (fact.parent / "../../../source.txt").resolve()
+            source_link = (fact.parent / "../../source.txt").resolve()
             self.assertEqual(source_link, (root / "source.txt").resolve())
             self.assertTrue(source_link.is_file())
             self.assertNotIn("U17", decision.read_text(encoding="utf-8"))
@@ -1324,7 +925,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "d4--use-a-dedicated-node-group",
         )
 
-    def test_contract_defines_consolidated_records_authority_and_legacy_safety(
+    def test_contract_defines_consolidated_records_authority_and_historical_safety(
         self,
     ) -> None:
         for required in (
@@ -1343,21 +944,11 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Accepted and provisional decisions require actual project authority",
             "Evidence can support a choice but cannot create authority",
             "Revisit when: <required for provisional",
-            "Select facts and decisions independently",
-            "permit read-only interpretation but fail closed for writes",
-            "Existing legacy `facts/F#-readable-name.md`",
-            "When legacy F#/D# is selected, reread its directory",
-            "rejects malformed or duplicate identifiers",
-            "create one readable `F#-...md` or `D#-...md` file without overwriting any path",
-            "Never create a legacy directory when neither representation has a current record",
-            "explicit legacy-to-ledger migration requires user authorization",
-            "Update all known current references before removing the old files",
-            "Reject duplicate identifiers and unresolved conflicts",
-            "do not renumber",
-            "never trigger migration, normalization, or rewriting",
+            "`facts.md` and `decisions.md` ledgers are the only current F#/D# representation",
+            "Per-record facts/F# and decisions/D# files are opaque historical project data",
+            "never allocate, edit, retire, or automatically migrate them",
+            "fail closed for that affected write and report that manual reconciliation is required",
             "Retiring a fact or decision removes only its selected H2 section",
-            "Retiring a selected legacy F#/D# removes only that record file",
-            "never converts the representation or creates a ledger",
             "Remove an otherwise empty `facts.md` or `decisions.md`",
             "Do not implement automatic ledger sharding",
             "arbitrary F#/D# file-count rule",
@@ -1367,6 +958,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         for forbidden in (
             "allocation store",
             "migration registry",
+            "legacy-to-ledger migration",
+            "When legacy F#/D# is selected",
         ):
             self.assertNotIn(forbidden, self.contract)
 
@@ -1379,7 +972,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "unnecessary personal data",
             "raw transcripts",
             "private agent memory",
-            "Historical DEC, IMP, DBG, IDP, `records/`, `archive/`, active-index",
+            "Historical per-record `facts/F#` and `decisions/D#`, DEC, IMP, DBG, IDP",
             "only when directly relevant as historical project evidence",
             "not current automatic re-entry or allocation sources",
             "never automatically migrated, normalized, rewritten, or deleted",
@@ -1687,7 +1280,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Prototype",
             "Domain Modeling",
             "create no framework continuity record",
-            "Legacy per-record F#/D# records remain valid",
+            "Per-record F#/D# files are historical and never mutated by Wayfinder",
             "Use `to-tickets`",
             "Verification follows execution",
             "preferred structural fallback",
@@ -1700,6 +1293,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertIn(required, normalized_runtime)
 
         self.assertNotIn("Legacy project-owned records remain valid", runtime)
+        self.assertNotIn("Legacy per-record F#/D# records remain valid", runtime)
         for contract_only_detail in (
             ".wayfinder-mutation-lock",
             "highest currently present",

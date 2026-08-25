@@ -381,29 +381,30 @@ def check_router_contract() -> None:
         "## Specialist result boundary",
         "continue directly or load one materially useful specialist",
         "No DEC, IMP, DBG, or replacement record is allocated",
-        "## Representation selection and legacy state",
+        "## Current ledgers and historical per-record state",
         "## Knowledge settlement and effort completion",
     ):
         require(
             required in normalized_wayfinder,
             f"Wayfinder state contract lacks required boundary: {required}",
         )
-    representation = normalized_wayfinder.partition(
-        "## Representation selection and legacy state"
+    historical_boundary = normalized_wayfinder.partition(
+        "## Current ledgers and historical per-record state"
     )[2].partition("## The low-resolution map")[0].lower()
     require(
         all(
-            marker in representation
+            marker in historical_boundary
             for marker in (
-                "independently",
-                "read-only",
+                "only current f#/d# representation",
+                "opaque historical project data",
+                "never allocate, edit, retire, or automatically migrate",
                 "fail closed",
-                "user authorization",
-                "known current references",
-                "install, update, status, remove, reinstall",
+                "manual reconciliation",
+                "unrelated decision-ledger write",
+                "unrelated fact-ledger write",
             )
         ),
-        "Wayfinder representation section lacks independent selection or safety",
+        "Wayfinder historical F/D boundary lacks non-writability or per-type safety",
     )
     settlement = normalized_wayfinder.partition(
         "## Knowledge settlement and effort completion"

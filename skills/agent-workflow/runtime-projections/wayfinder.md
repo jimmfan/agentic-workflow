@@ -128,6 +128,6 @@ when approved work needs substantial dependency ordering or independently
 deliverable sessions, and link its native frontier without a shadow copy.
 
 Read-only work never mutates state. Follow the state contract for every
-authorized mutation. Legacy per-record F#/D# records remain valid and use their
-existing representation until an explicit authorized reconciliation changes
-it.
+authorized mutation. Per-record F#/D# files are historical and never mutated by
+Wayfinder; an affected current ledger write fails closed until manual project
+reconciliation.

@@ -154,7 +154,7 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("wayfinder-state.md", normalized_routing)
         self.assertNotIn("durable-state.md", normalized_routing)
         for historical_boundary in (
-            "Historical DEC, IMP, DBG, IDP",
+            "Historical per-record F#/D#, DEC, IMP, DBG, IDP",
             "`records/`, `archive/`, and active-index",
             "not current re-entry or allocation sources",
         ):

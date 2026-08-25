@@ -110,21 +110,19 @@ and enough scope to avoid unsupported generalization. Accepted and provisional
 decisions require actual project authority; evidence may support a choice but
 does not create that authority. The map represents current navigation and
 should converge as lasting outcomes move to canonical owners. Exact allocation,
-locking, selection, settlement, retirement, migration, and reference behavior
-is owned by the progressively loaded Wayfinder state contract and its tests.
+locking, settlement, retirement, and reference behavior is owned by the
+progressively loaded Wayfinder state contract and its tests.
 
-For facts and decisions independently, a legacy-only current representation
-under `facts/F#-*.md` or `decisions/D#-*.md` remains valid and continues in that
-form until an explicit authorized migration. A ledger-only type uses its
-ledger, and the first justified record uses a ledger when neither representation
-contains a current record. Concurrent current ledger and legacy records of the
-same type remain readable but fail closed for writes until explicitly
-reconciled. Lifecycle operations never select, validate, normalize, or migrate
-either representation; they preserve the complete project-owned tree without
-interpreting it.
+`facts.md` and `decisions.md` ledgers are the only current F#/D# representation.
+Per-record `facts/F#-*.md` and `decisions/D#-*.md` files are opaque historical
+data and never receive Wayfinder mutations or automatic migration. A nonempty
+historical same-type directory blocks ledger writes until manual project
+reconciliation; the unrelated type remains independent. Lifecycle operations
+preserve the complete project-owned tree without interpreting it.
 
-Historical DEC, IMP, DBG, IDP, `records/`, `archive/`, active-index, and similar
-pre-current content below `.agent-wayfinder/` remains opaque project-owned data.
+Historical per-record F#/D#, DEC, IMP, DBG, IDP, `records/`, `archive/`,
+active-index, and similar pre-current content below `.agent-wayfinder/` remains
+opaque project-owned data.
 It may be read when directly relevant as historical evidence, but it is not a
 current re-entry or allocation source and is never automatically migrated,
 normalized, rewritten, or deleted. Current Wayfinder topology does not include

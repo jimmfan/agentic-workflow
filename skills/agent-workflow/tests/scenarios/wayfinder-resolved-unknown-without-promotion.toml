@@ -22,8 +22,6 @@ must_not = [
 live = false
 preserve_paths = ["source.txt"]
 forbid_created_globs = [
-  ".agent-wayfinder/provider-state/facts.md",
-  ".agent-wayfinder/provider-state/decisions.md",
   "architecture-decisions",
   "architecture-decisions/**",
   "issues",
@@ -33,8 +31,8 @@ state_must_include = [
   ".agent-wayfinder/provider-state/map.md",
   ".agent-wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
   ".agent-wayfinder/provider-state/evidence/E12-provider-configuration.md",
-  ".agent-wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md",
-  ".agent-wayfinder/provider-state/decisions/D4-use-local-runtime.md",
+  ".agent-wayfinder/provider-state/facts.md",
+  ".agent-wayfinder/provider-state/decisions.md",
   "source.txt",
 ]
 state_must_not_include = []
@@ -49,11 +47,11 @@ path = ".agent-wayfinder/provider-state/evidence/E12-provider-configuration.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/facts/F8-provider-needs-no-tracker.md"
+path = ".agent-wayfinder/provider-state/facts.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/decisions/D4-use-local-runtime.md"
+path = ".agent-wayfinder/provider-state/decisions.md"
 
 [[assertions]]
 kind = "path_exists"
@@ -93,15 +91,7 @@ path = ".agent-wayfinder/provider-state/facts"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/facts.md"
-
-[[assertions]]
-kind = "path_not_exists"
 path = ".agent-wayfinder/provider-state/decisions"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/decisions.md"
 
 [[assertions]]
 kind = "path_not_exists"

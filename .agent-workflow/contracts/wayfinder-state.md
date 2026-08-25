@@ -185,11 +185,12 @@ validate, migrate, rewrite, or remove Wayfinder state.
 
 ## Historical project-owned state
 
-Historical DEC, IMP, DBG, IDP, `records/`, `archive/`, active-index, and similar
-content may be read only when directly relevant as historical project evidence.
-They are not current automatic re-entry or allocation sources and are never
-automatically migrated, normalized, rewritten, or deleted. Lifecycle and
-provider repair treat `.agent-wayfinder/` as opaque project-owned data.
+Historical per-record `facts/F#` and `decisions/D#`, DEC, IMP, DBG, IDP,
+`records/`, `archive/`, active-index, and similar content may be read only when
+directly relevant as historical project evidence. They are not current
+automatic re-entry or allocation sources and are never automatically migrated,
+normalized, rewritten, or deleted. Lifecycle and provider repair treat
+`.agent-wayfinder/` as opaque project-owned data.
 
 ## Effort naming, selection, and stable paths
 
@@ -328,47 +329,30 @@ it already exists, wait through host coordination or stop conservatively;
 never steal or guess that a lock is stale. If atomic directory creation is
 unavailable, do not mutate the effort.
 
-Under that lock, allocation rereads the selected F#/D# representation or U#/E#
-directory, parses every canonical same-type identifier, rejects malformed or
-duplicate identifiers, and recomputes one greater than the highest current
-same-type identifier. Append one ledger section or exclusively create one
-record file.
-When legacy F#/D# is selected, reread its directory and create one readable
-`F#-...md` or `D#-...md` file without overwriting any path. Never create a
-legacy directory when neither representation has a current record. Immediately
-before writing, reread the selected representation, map, target, and affected
-state. The lock makes retirement's final reference scan and removal indivisible.
-Preserve concurrent conflicts and reconcile explicitly.
+Under that lock, allocation rereads the F#/D# ledger or U#/E# directory,
+parses every canonical same-type identifier, rejects malformed or duplicate
+identifiers, and recomputes one greater than the highest current same-type
+identifier. Append one ledger section or exclusively create one U#/E# file.
+Immediately before writing, reread the ledger or directory, map, target, and
+affected state. The lock makes retirement's final reference scan and removal
+indivisible. Preserve concurrent conflicts and reconcile explicitly.
 
-## Representation selection and legacy state
+## Current ledgers and historical per-record state
 
-Select facts and decisions independently:
+`facts.md` and `decisions.md` ledgers are the only current F#/D#
+representation. Per-record facts/F# and decisions/D# files are opaque
+historical project data. Wayfinder may read them only when directly relevant as
+history and must never allocate, edit, retire, or automatically migrate them.
 
-- when a ledger contains current records and no legacy current records exist,
-  use the ledger;
-- when a nonempty legacy `facts/` or `decisions/` directory contains current
-  records and the corresponding ledger has none, continue that legacy
-  representation;
-- when neither representation contains a current record, create the ledger on
-  the first justified F# or D#; and
-- when both representations contain current same-type records, permit read-only
-  interpretation but fail closed for writes until an explicit authorized
-  reconciliation chooses one representation.
-
-An empty legacy directory or a header-only ledger is not a second current
-representation. Existing legacy `facts/F#-readable-name.md` and
-`decisions/D#-readable-name.md` records remain valid, readable, and safely
-maintainable. Do not normalize them opportunistically.
-
-An explicit legacy-to-ledger migration requires user authorization and the
-effort mutation lock. Preserve current IDs and semantic content, including
-provenance, authority, scope, limitations, rationale, consequences, and change
-notes. Update all known current references before removing the old files.
-Reject duplicate identifiers and unresolved conflicts; preserve unrelated
-state; do not renumber. Create no archive, tombstone, registry, high-water file,
-or migration log: Git owns history. Install, update, status, remove, reinstall,
-provider repair, and projection regeneration never trigger migration,
-normalization, or rewriting of project-owned Wayfinder state.
+This safety boundary is per type. If an explicitly resumed effort has a
+nonempty historical `facts/` directory, current fact-ledger append and
+retirement require project-owned reconciliation; the same rule applies from a
+nonempty historical `decisions/` directory to decision-ledger writes. Preserve
+all bytes, fail closed for that affected write and report that manual
+reconciliation is required. Historical facts do not block an unrelated
+decision-ledger write, and historical decisions do not block an unrelated
+fact-ledger write. Do not add automated conversion, a migration command,
+registry, archive, or compatibility layer.
 
 ## The low-resolution map
 
@@ -610,13 +594,11 @@ without first becoming historical records.
 
 Before removal under the effort mutation lock, reread the target and affected
 state; stop for references or useful information, and retry after change.
-Retiring a fact or decision removes only its selected H2 section after reconciliation and
-preserves other sections byte-for-byte where practical. Remove an otherwise
-empty `facts.md` or `decisions.md`. Retiring U#/E# removes only its file; its
-empty directory may disappear. Retiring a selected legacy F#/D# removes only
-that record file after the same reconciliation and final reread; its empty
-directory may disappear. It never converts the representation or creates a
-ledger. The retired number follows the ordinary highest-current-plus-one rule.
+Retiring a fact or decision removes only its selected H2 section after
+reconciliation and preserves other sections byte-for-byte where practical.
+Remove an otherwise empty `facts.md` or `decisions.md`. Retiring U#/E# removes
+only its file; its empty directory may disappear. The retired number follows
+the ordinary highest-current-plus-one rule.
 
 Do not implement automatic ledger sharding or use an arbitrary F#/D# file-count
 rule. A future explicit refactor may split an unwieldy ledger by coherent
@@ -645,8 +627,8 @@ it for a new destination, or move it into `.agent-wayfinder/archive/`;
 that path is outside current Wayfinder lifecycle and may contain opaque legacy
 project data.
 
-Legacy maps and records require no repository-wide migration. Existing
-U/E/F/D statuses retain their meanings. When authorized work on the relevant
+Historical maps and records remain opaque and require no repository-wide
+reconciliation. Current U/E/F/D statuses retain their meanings. When authorized work on the relevant
 effort supplies enough evidence, add the lifecycle line or settle only the
 directly affected records; otherwise preserve the state and treat ambiguous
 lifecycle as unknown. Install, update, status, remove, reinstall, provider

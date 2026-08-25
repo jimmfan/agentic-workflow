@@ -18,8 +18,8 @@ removes them.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   optional F# and D# ledgers, independently useful U#/E# files, current-state
-  allocation, legacy representation selection, explicit migration, knowledge
-  settlement, effort completion, and progressive loading.
+  allocation, opaque historical-state safety, knowledge settlement, effort
+  completion, and progressive loading.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
 
@@ -62,17 +62,18 @@ a relevant ledger section or U#/E# artifact.
 Facts require truthful provenance, and decisions require responsible project
 authority rather than evidence alone.
 
-Existing project-owned per-record F#/D# files remain valid and writable when
-they are the only current representation for that type. A current ledger and
-legacy records of the same type are readable but block writes until explicit
-authorized reconciliation; migration is never a lifecycle side effect.
+Only `facts.md` and `decisions.md` ledgers are current F#/D# state. Per-record
+F#/D# files are opaque history and are never allocated, edited, retired, or
+automatically migrated by Wayfinder. A nonempty historical same-type directory
+blocks current ledger writes until manual project reconciliation; unrelated
+types remain independent.
 Substantial decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling remain stateless
 specialists. Implementation is an execution handoff. Historical DEC, IMP, DBG,
-IDP, `records/`, `archive/`, and active-index content remains opaque project
-data. Current workflows do not allocate from or automatically resume, migrate,
-normalize, rewrite, or delete it.
+IDP, per-record F#/D#, `records/`, `archive/`, and active-index content remains
+opaque project data. Current workflows do not allocate from or automatically
+resume, migrate, normalize, rewrite, or delete it.
 
 ## Status and recovery
 

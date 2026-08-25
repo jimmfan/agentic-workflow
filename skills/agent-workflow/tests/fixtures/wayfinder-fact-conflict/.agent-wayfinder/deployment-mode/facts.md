@@ -1,10 +1,10 @@
-# F1: Deployment mode is dedicated
+# Facts
 
-- Status: current
+## F1 — Deployment mode is dedicated
+
+- Status: established
 - Scope: current deployment configuration
-- Supported by: E1
+- Derived from: E1
 - Contradicted by: none
-
-## Fact
 
 The deployment mode is dedicated.

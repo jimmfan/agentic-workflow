@@ -327,18 +327,14 @@ paths; durable F#/D# links target the exact readable heading in `facts.md` or
 effort use repository-relative Markdown links with readable labels when a
 reference must remain durable beyond the current Wayfinder representation.
 
-Existing project-owned `facts/F#-*.md` and `decisions/D#-*.md` records remain a
-valid legacy representation. Facts and decisions select their representation
-independently: a legacy-only type continues using its files, a ledger-only type
-uses its ledger, and simultaneous current records in both forms remain readable
-but block writes until explicitly reconciled. When neither representation
-contains a current record, the first justified record uses the corresponding
-ledger. Migration requires user authority and preserves identifiers, semantic
-content, provenance, authority, scope, limitations, rationale, consequences,
-change notes, current references, and unrelated state without renumbering.
-Install, update, status, remove, and reinstall treat the complete tree as opaque
-project data and never initiate that migration or normalize either
-representation.
+Only `facts.md` and `decisions.md` ledgers are current F#/D# state. Existing
+per-record `facts/F#-*.md` and `decisions/D#-*.md` files are opaque historical
+project data. Wayfinder may read directly relevant history but never allocates,
+edits, retires, or automatically migrates those files. A nonempty historical
+directory blocks current writes of the same type until manual project
+reconciliation; the unrelated F/D type remains independent. Install, update,
+status, remove, and reinstall preserve the complete project-owned tree without
+interpreting it.
 
 Wayfinder does not own implementation work items. When evidence supports it, the
 map concisely shows the critical path, independent parallel work, and material
@@ -450,11 +446,10 @@ target-project/
         └── evidence/
 ```
 
-Legacy per-record F#/D# files remain valid current state until explicit
-migration. Historical `DEC`, `IMP`, `DBG`, `IDP`, `records/`, `archive/`, and
-active-index content remains untouched project-owned data; current workflows do
-not allocate from or automatically resume, migrate, normalize, rewrite, or
-delete it.
+Per-record F#/D#, `DEC`, `IMP`, `DBG`, `IDP`, `records/`, `archive/`, and
+active-index content is untouched historical project data. Current workflows do
+not allocate from, edit, retire, automatically resume, migrate, normalize,
+rewrite, or delete it.
 
 ### `.agent-workflow/`
 

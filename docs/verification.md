@@ -152,15 +152,12 @@ reread-before-write conflict handling, separate U#/E# artifacts, readable
 section anchors, and progressive retrieval of relevant detail without an
 arbitrary file count.
 
-Legacy coverage selects facts and decisions independently: a legacy-only type
-continues in its per-record representation, a ledger-only type continues in its
-ledger, and mixed current representations remain readable but block writes
-until explicit reconciliation. Authorized migration preserves identifiers,
-semantic content, provenance, authority, scope, limitations, rationale,
-consequences, change notes, known current references, and unrelated state
-without renumbering. The lifecycle contract forbids migration during install,
-update, status, remove, and reinstall, while preservation integration exercises
-the mutating lifecycle sequence byte-for-byte. The behavioral suite also keeps
+Historical-state coverage proves per-record F#/D# bytes remain opaque and
+unchanged, same-type ledger append and retirement fail closed pending manual
+project reconciliation, and the unrelated F/D type remains independent. No
+runtime migration or representation-selection machinery exists. Lifecycle
+preservation exercises install, update, status, remove, reinstall, and provider
+repair byte-for-byte. The behavioral suite also keeps
 implementation work-item artifacts out of Wayfinder, resumes relevant map
 state, reconciles affected state after implementation, excludes unrelated
 detail and efforts, reports stale state without mutation during read-only work,

@@ -18,9 +18,9 @@ subprocess.
 - `test_wayfinder_state.py` validates the authored, installed, and generated
   state contract plus a deterministic state-transition oracle for map-only
   efforts; F#/D# ledger creation, allocation, duplicate rejection, mutation,
-  and retirement; independent U#/E# files; per-type legacy selection and
-  explicit migration; effort-lock serialization; effort lifecycle; progressive
-  retrieval; and projection parity.
+  and retirement; independent U#/E# files; opaque historical F#/D# preservation
+  and fail-closed writes; effort-lock serialization; effort lifecycle;
+  progressive retrieval; and projection parity.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
@@ -77,10 +77,11 @@ authority-owned, external-approval, and cross-area-gating uncertainty without
 promoting incidental fog or requiring an exact artifact count. The live
 Wayfinder contracts preserve an unrelated effort during reconciliation, keep
 stale-state audits read-only, and require conflicting reconciliation to stop
-without guessing. Lifecycle coverage preserves current legacy per-record F#/D#
-state unchanged until explicit migration and keeps historical DEC/IMP/DBG/IDP,
-`records/`, `archive/`, and active-index content as opaque project data; current
-workflow scenarios resume only from Wayfinder or canonical provider artifacts.
+without guessing. Lifecycle coverage preserves historical per-record F#/D#,
+DEC/IMP/DBG/IDP, `records/`, `archive/`, and active-index bytes as opaque project
+data. Deterministic state tests prove same-type current ledger writes fail closed
+without runtime migration, while current workflow scenarios resume only from
+supported Wayfinder state or canonical provider artifacts.
 
 See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema,
 evidence model, commands, side effects, cleanup, and limitations.
