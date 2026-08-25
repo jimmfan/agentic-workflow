@@ -101,6 +101,7 @@ def create_current_record(
     title: str,
     body: str,
     *,
+    before_lock: Callable[[], None] | None = None,
     before_final_write: Callable[[], None] | None = None,
     lock_attempts: int = 1_000,
 ) -> str:
@@ -112,9 +113,12 @@ def create_current_record(
             kind,
             readable_slug(title),
             body,
+            before_lock=before_lock,
             lock_attempts=lock_attempts,
         )
         return path.name.split("-", 1)[0]
+    if before_lock is not None:
+        before_lock()
     with effort_mutation_lock(effort, attempts=lock_attempts):
         representation = selected_representation(effort, kind)
         if representation == "mixed":
@@ -1046,45 +1050,61 @@ class WayfinderStateContractTests(unittest.TestCase):
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
-            first = create_current_child(effort, "D", "first", "first\n")
-            second = create_current_child(effort, "D", "second", "second\n")
-            third = create_current_child(effort, "D", "third", "third\n")
-            first_before = first.read_bytes()
-            third_before = third.read_bytes()
+            effort.mkdir()
+            (effort / "map.md").write_text("# Allocation\n", encoding="utf-8")
+
+            first = create_current_record(effort, "D", "First", "First.\n")
+            second = create_current_record(effort, "D", "Second", "Second.\n")
+            third = create_current_record(effort, "D", "Third", "Third.\n")
+            preserved = {
+                identifier: section
+                for identifier, _, section in ledger_sections(effort, "D")
+                if identifier in {1, 3}
+            }
 
             self.assertEqual(
-                (first.name, second.name, third.name),
-                ("D1-first.md", "D2-second.md", "D3-third.md"),
+                (first, second, third),
+                ("D1", "D2", "D3"),
             )
-            self.assertTrue(retire_current_child(effort, second))
-            fourth = create_current_child(effort, "D", "fourth", "fourth\n")
-            self.assertEqual(fourth.name, "D4-fourth.md")
+            self.assertTrue(retire_ledger_section(effort, "D", 2))
+            fourth = create_current_record(effort, "D", "Fourth", "Fourth.\n")
+            self.assertEqual(fourth, "D4")
 
-            self.assertTrue(retire_current_child(effort, fourth))
-            replacement = create_current_child(
-                effort, "D", "replacement", "new meaning\n"
+            self.assertTrue(retire_ledger_section(effort, "D", 4))
+            replacement = create_current_record(
+                effort, "D", "Replacement", "New meaning.\n"
             )
 
-            self.assertEqual(replacement.name, "D4-replacement.md")
-            self.assertEqual(first.read_bytes(), first_before)
-            self.assertEqual(third.read_bytes(), third_before)
+            self.assertEqual(replacement, "D4")
+            current = {
+                identifier: section
+                for identifier, _, section in ledger_sections(effort, "D")
+            }
+            self.assertEqual(current[1].rstrip(), preserved[1].rstrip())
+            self.assertEqual(current[3].rstrip(), preserved[3].rstrip())
             self.assertFalse((effort / "allocation.md").exists())
+            self.assertTrue((effort / "decisions.md").is_file())
+            self.assertFalse((effort / "decisions").exists())
 
-    def test_atomic_effort_lock_serializes_simultaneous_different_slugs(self) -> None:
+    def test_atomic_effort_lock_serializes_simultaneous_decision_allocations(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
+            effort.mkdir()
+            (effort / "map.md").write_text("# Concurrent allocation\n", encoding="utf-8")
             barrier = threading.Barrier(2)
-            created: list[Path] = []
+            created: list[str] = []
             errors: list[BaseException] = []
 
             def create(slug: str) -> None:
                 try:
                     created.append(
-                        create_current_child(
+                        create_current_record(
                             effort,
                             "D",
-                            slug,
-                            f"{slug}\n",
+                            slug.title(),
+                            f"{slug.title()}.\n",
                             before_lock=barrier.wait,
                         )
                     )
@@ -1101,8 +1121,13 @@ class WayfinderStateContractTests(unittest.TestCase):
                 thread.join()
 
             self.assertEqual(errors, [])
-            self.assertEqual({path.name[:2] for path in created}, {"D1", "D2"})
-            self.assertEqual(len(current_ids(effort, "D")), 2)
+            self.assertEqual(set(created), {"D1", "D2"})
+            self.assertEqual(
+                [identifier for identifier, _, _ in ledger_sections(effort, "D")],
+                [1, 2],
+            )
+            self.assertTrue((effort / "decisions.md").is_file())
+            self.assertFalse((effort / "decisions").exists())
             self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
 
     def test_retirement_requires_reconciled_references_and_is_idempotent(self) -> None:
