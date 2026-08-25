@@ -111,8 +111,8 @@ def _framework_kind(path: str) -> str | None:
             ".agent-wayfinder/records/",
             ".agent-wayfinder/archive/",
         )
-    ):
-        return "durable_workflow_state"
+    ) or normalized.endswith(".agent-wayfinder/active.md"):
+        return None
     if ".agent-wayfinder/" in normalized:
         return "wayfinder_state"
     if "/.agents/skills/" in normalized or normalized.startswith(".agents/skills/"):
@@ -245,10 +245,6 @@ def analyze_context(
         "wayfinder_files_read": sorted(framework_paths["wayfinder_state"]),
         "wayfinder_files_written": sorted(framework_writes["wayfinder_state"]),
         "wayfinder_output_bytes_observed": output_bytes_for("wayfinder_state"),
-        "other_durable_state_read": sorted(framework_paths["durable_workflow_state"]),
-        "other_durable_state_written": sorted(
-            framework_writes["durable_workflow_state"]
-        ),
         "byte_note": "bytes are tool-output bytes associated with commands that name these paths, not token counts or exact per-file bytes",
     }
 

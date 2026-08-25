@@ -45,6 +45,11 @@ the historical traces, so stdout and stderr cannot be split there.
 The parser tolerates missing fields and incomplete older logs. Unavailable
 measurements remain `null` in JSON and `unknown / unavailable` in text.
 
+The current JSON shape is `token-forensics/v2`. Historical root-level
+`.agent-wayfinder/records/`, `.agent-wayfinder/archive/`, and active-index paths
+remain visible in generic repository observations but are not classified as
+current Wayfinder state.
+
 Primary schema references:
 
 - [Codex non-interactive JSONL documentation](https://learn.chatgpt.com/docs/non-interactive-mode.md#make-output-machine-readable)

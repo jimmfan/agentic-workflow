@@ -59,13 +59,12 @@ FRAMEWORK-OWNED, RECONSTRUCTABLE
 
 PROJECT-OWNED, DURABLE
 └── .agent-wayfinder/
-    ├── <effort>/               # map-first Wayfinder coordination
-    │   ├── map.md
-    │   ├── facts.md            # optional current F# ledger
-    │   ├── decisions.md        # optional current D# ledger
-    │   ├── unknowns/           # optional independent U# files
-    │   └── evidence/           # optional substantial E# files
-    └── records/                # optional accepted canonical records such as IDP
+    └── <effort>/               # map-first Wayfinder coordination
+        ├── map.md
+        ├── facts.md            # optional current F# ledger
+        ├── decisions.md        # optional current D# ledger
+        ├── unknowns/           # optional independent U# files
+        └── evidence/           # optional substantial E# files
 
 OPTIONAL, INDEPENDENT
 └── unrelated local skill directories under .agents/skills/
@@ -124,11 +123,12 @@ reconciled. Lifecycle operations never select, validate, normalize, or migrate
 either representation; they preserve the complete project-owned tree without
 interpreting it.
 
-The optional `.agent-wayfinder/records/IDP-...` form is an accepted project
-opportunity artifact, not a second framework coordination notebook. Existing
-legacy DEC, DBG, IMP, record, archive, and active-index files remain opaque
-historical project data. Current workflows neither resume nor migrate those
-older artifact types.
+Historical DEC, IMP, DBG, IDP, `records/`, `archive/`, active-index, and similar
+pre-current content below `.agent-wayfinder/` remains opaque project-owned data.
+It may be read when directly relevant as historical evidence, but it is not a
+current re-entry or allocation source and is never automatically migrated,
+normalized, rewritten, or deleted. Current Wayfinder topology does not include
+those historical namespaces.
 
 Accepted lasting architecture decisions use `architecture-decisions/` by
 default unless a consuming project already declares another convention.

@@ -41,9 +41,8 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 
 When selecting or resuming Wayfinder, read the state contract before the map.
 It defines effort selection, paths, identifiers, locking, reconciliation,
-settlement, and lifecycle. Do not load the general durable-state contract merely
-to write Wayfinder state. If the state contract is unavailable, fail closed for
-the affected Wayfinder work: do not inspect or mutate a map; do not invent
+settlement, and lifecycle. If the state contract is unavailable, fail closed
+for the affected Wayfinder work: do not inspect or mutate a map; do not invent
 substitute persistence or create tracker, specialist-record, or scratch state.
 Report the incomplete installation.
 

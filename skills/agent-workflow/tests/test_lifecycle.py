@@ -293,11 +293,26 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             "DEC-0001-legacy-choice.md",
             "IMP-0002-legacy-work.md",
             "DBG-0003-legacy-failure.md",
+            "IDP-0004-legacy-opportunity.md",
         ):
             (state / "records" / legacy_name).write_text(
                 f"# {legacy_name}\n\nOpaque historical project data.\n",
                 encoding="utf-8",
             )
+        archive = state / "archive/2025"
+        archive.mkdir(parents=True)
+        (archive / "IDP-0005-completed-opportunity.md").write_text(
+            "# Historical archived opportunity\n",
+            encoding="utf-8",
+        )
+        (state / "active.md").write_text(
+            "records/IMP-0002-legacy-work.md\n",
+            encoding="utf-8",
+        )
+        (state / "active-index.json").write_text(
+            '{"current":"records/DBG-0003-legacy-failure.md"}\n',
+            encoding="utf-8",
+        )
         (state / "custom.json").write_text('{"owner":"project"}\n')
         try:
             (state / "record-link").symlink_to("records/nested/data.bin")
@@ -306,6 +321,8 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         original = tree_snapshot(state)
 
         self.assert_ok(self.adopt("install"))
+        self.assertEqual(tree_snapshot(state), original)
+        self.assert_ok(self.adopt("status"))
         self.assertEqual(tree_snapshot(state), original)
         self.assert_ok(self.adopt("update"))
         self.assertEqual(tree_snapshot(state), original)
@@ -977,8 +994,26 @@ class LifecycleAcceptanceTests(unittest.TestCase):
     def test_stale_owned_wayfinder_projection_is_repaired_to_current_runtime(
         self,
     ) -> None:
+        state = self.project / ".agent-wayfinder"
+        (state / "records").mkdir(parents=True)
+        (state / "records/IDP-0042-legacy-platform-note.md").write_text(
+            "# Historical IDP record\n",
+            encoding="utf-8",
+        )
+        (state / "archive/2024").mkdir(parents=True)
+        (state / "archive/2024/DEC-0007-retired-choice.md").write_text(
+            "# Historical archived decision\n",
+            encoding="utf-8",
+        )
+        (state / "active.md").write_text(
+            "records/IDP-0042-legacy-platform-note.md\n",
+            encoding="utf-8",
+        )
+        original_state = tree_snapshot(state)
+
         install = run_script(PROVIDERS, "install", self.project)
         self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
+        self.assertEqual(tree_snapshot(state), original_state)
         skill_path = self.project / ".agents/skills/wayfinder/SKILL.md"
         frontmatter, _ = skill_path.read_text(encoding="utf-8").split("\n---\n", 1)
         skill_path.write_text(
@@ -995,6 +1030,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertIn("## Core invariants", repaired)
         self.assertIn("## Resolve the frontier progressively", repaired)
         self.assertNotIn("stale owned runtime projection", repaired)
+        self.assertEqual(tree_snapshot(state), original_state)
 
     def test_malformed_owned_runtime_source_fails_before_projection_mutation(
         self,

@@ -1325,6 +1325,25 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, self.contract)
 
+    def test_contract_protects_sensitive_data_and_treats_pre_current_state_as_history(
+        self,
+    ) -> None:
+        for required in (
+            "Never persist secrets, tokens, private keys, raw credentials",
+            "sensitive command output",
+            "unnecessary personal data",
+            "raw transcripts",
+            "private agent memory",
+            "Historical DEC, IMP, DBG, IDP, `records/`, `archive/`, active-index",
+            "only when directly relevant as historical project evidence",
+            "not current automatic re-entry or allocation sources",
+            "never automatically migrated, normalized, rewritten, or deleted",
+        ):
+            self.assertIn(required, self.normalized)
+
+        self.assertNotIn("IDP-NNNN", self.contract)
+        self.assertNotIn("Optional IDP opportunities", self.contract)
+
     def test_effort_lifecycle_remains_map_owned_and_progressive(self) -> None:
         for required in (
             "- Status: current | completed | abandoned | superseded",

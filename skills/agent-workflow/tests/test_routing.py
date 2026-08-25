@@ -110,33 +110,41 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("runtime/capabilities.json", routing)
         self.assertNotIn(".agent-workflow/runtime", routing)
 
-    def test_project_adr_namespace_defaults_without_overriding_existing_convention(
-        self,
-    ) -> None:
+    def test_wayfinder_is_the_only_current_runtime_state_contract(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
-        contract = (
-            PACKAGE_ROOT / "payload/agent-workflow/contracts/durable-state.md"
-        ).read_text()
+        routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
+        contracts = PACKAGE_ROOT / "payload/agent-workflow/contracts"
+        manifest = json.loads(
+            (PACKAGE_ROOT / "payload/distribution/manifest.json").read_text()
+        )
         normalized_policy = " ".join(root_policy.split())
-        normalized_contract = " ".join(contract.split())
-        self.assertNotIn("architecture-decision/", normalized_policy)
-        self.assertNotIn("architecture-decision/", normalized_contract)
-        self.assertIn(
-            "Use `architecture-decisions/` as the default", normalized_contract
+        normalized_routing = " ".join(routing.split())
+
+        self.assertEqual(
+            sorted(path.name for path in contracts.glob("*.md")),
+            ["wayfinder-state.md"],
         )
-        self.assertIn("Preserve an existing project convention", normalized_contract)
-        self.assertIn("instead of creating a parallel namespace", normalized_contract)
-        self.assertIn("Do not promote every workflow choice", normalized_contract)
-        self.assertIn("A current Wayfinder D# may link that ADR", normalized_contract)
-        self.assertIn("maintained consequential decisions", normalized_contract)
         self.assertIn(
-            "follow the project's existing convention for superseded or historical decisions",
-            normalized_contract,
+            "read `.agent-workflow/contracts/wayfinder-state.md` before the map",
+            normalized_policy.casefold(),
         )
-        self.assertNotIn("pre-1.0 decision history", normalized_contract)
-        self.assertNotIn("without requiring tombstone files", normalized_contract)
-        self.assertNotIn(
-            "Consolidate or remove obsolete pre-1.0 decisions", root_policy
+        self.assertNotIn("durable-state.md", normalized_policy)
+        self.assertIn("wayfinder-state.md", normalized_routing)
+        self.assertNotIn("durable-state.md", normalized_routing)
+        for historical_boundary in (
+            "Historical DEC, IMP, DBG, IDP",
+            "`records/`, `archive/`, and active-index",
+            "not current re-entry or allocation sources",
+        ):
+            self.assertIn(historical_boundary, normalized_routing)
+        mapped_paths = {
+            item[key]
+            for item in manifest["framework_owned"]
+            for key in ("source", "target")
+        }
+        self.assertFalse(any("durable-state.md" in path for path in mapped_paths))
+        self.assertFalse(
+            (REPOSITORY_ROOT / ".agent-workflow/contracts/durable-state.md").exists()
         )
 
     def test_decision_context_goal_blocks_only_dependent_work(self) -> None:
@@ -222,14 +230,14 @@ class RoutingContractTests(unittest.TestCase):
         implementation = (
             PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
         ).read_text()
-        durable = (
-            PACKAGE_ROOT / "payload/agent-workflow/contracts/durable-state.md"
+        state_contract = (
+            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
         ).read_text()
 
         discovery = " ".join(discovery.split())
         debugging = " ".join(debugging.split())
         implementation = " ".join(implementation.split())
-        durable = " ".join(durable.split())
+        state_contract = " ".join(state_contract.split())
 
         self.assertIn("without creating DEC", discovery)
         self.assertIn("Compare viable alternatives", discovery)
@@ -237,7 +245,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Form 3–5 ranked, falsifiable hypotheses", debugging)
         self.assertIn("Create no IMP or replacement record", implementation)
         self.assertIn("Invoke `workflow-verification` once", implementation)
-        self.assertIn("not a current framework re-entry point", durable)
+        self.assertIn(
+            "not current automatic re-entry or allocation sources", state_contract
+        )
 
     def test_optional_specialists_have_material_selection_boundaries(self) -> None:
         routing = " ".join(
@@ -288,7 +298,8 @@ class RoutingContractTests(unittest.TestCase):
         normalized_contract = " ".join(contract.split())
         normalized_root = " ".join(root_policy.split())
         self.assertIn("wayfinder-state.md` before the map", normalized_root)
-        self.assertIn("only before current project-state writes", normalized_root)
+        self.assertNotIn("durable-state.md", normalized_root)
+        self.assertIn("Never seed state", normalized_root)
         self.assertIn("An unrelated map never selects Wayfinder", normalized_root)
         self.assertIn("Do not globally scan for related efforts", normalized_contract)
         self.assertIn("do not copy canonical artifact bodies", normalized_contract)

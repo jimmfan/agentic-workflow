@@ -5,10 +5,6 @@
       "target": ".agent-workflow/README.md"
     },
     {
-      "source": "agent-workflow/contracts/durable-state.md",
-      "target": ".agent-workflow/contracts/durable-state.md"
-    },
-    {
       "source": "agent-workflow/contracts/wayfinder-state.md",
       "target": ".agent-workflow/contracts/wayfinder-state.md"
     },

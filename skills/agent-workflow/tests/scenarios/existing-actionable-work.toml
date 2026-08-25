@@ -31,11 +31,11 @@ forbid_created_globs = ["docs/decisions/0002*.md", "planning/**", "wayfinder/**"
 route_must_not_include = ["discovery", "debugging"]
 state_must_include = [
   ".agent-wayfinder/discount-bounds/map.md",
-  ".agent-wayfinder/records/IMP-0001-discount-bounds.md",
   "docs/decisions/0001-discount-bounds.md",
 ]
 state_must_not_include = [
   ".agent-wayfinder/user-notes.txt",
+  ".agent-wayfinder/records/IMP-0001-discount-bounds.md",
 ]
 
 [[assertions]]

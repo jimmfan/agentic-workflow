@@ -62,6 +62,43 @@ class CodexParserTests(unittest.TestCase):
 
 
 class GenericAnalysisTests(unittest.TestCase):
+    def test_legacy_wayfinder_paths_are_observed_without_becoming_current_state(
+        self,
+    ) -> None:
+        paths = (
+            ".agent-wayfinder/current-effort/map.md",
+            ".agent-wayfinder/records/IDP-0001-platform-friction.md",
+            ".agent-wayfinder/archive/2025/DEC-0002-retired-choice.md",
+            ".agent-wayfinder/active.md",
+        )
+        trace = NormalizedTrace(
+            source_path=Path("legacy-state-trace.jsonl"),
+            source_format="codex-exec-jsonl",
+            source_bytes=1,
+            tool_invocations=[
+                ToolInvocation(
+                    f"tool-{index}",
+                    index,
+                    "command_execution",
+                    "command_execution",
+                    f"sed -n '1,40p' {path}",
+                    "completed",
+                    0,
+                    combined_output_bytes=10,
+                )
+                for index, path in enumerate(paths, start=1)
+            ],
+        )
+
+        summary = analyze_trace(trace)
+        repository = summary["heuristic"]["repository"]
+        framework = summary["heuristic"]["framework"]
+
+        self.assertEqual(framework["wayfinder_files_read"], [paths[0]])
+        self.assertNotIn("other_durable_state_read", framework)
+        self.assertNotIn("other_durable_state_written", framework)
+        self.assertTrue(set(paths) <= set(repository["paths_observed"]))
+
     def test_analysis_accepts_normalized_trace_without_benchmark_code(self) -> None:
         trace = NormalizedTrace(
             source_path=Path("ordinary-codex.jsonl"),
@@ -142,7 +179,7 @@ class GenericAnalysisTests(unittest.TestCase):
         summary = analyze_trace(parse_codex_trace(FIXTURES / "codex-exec.jsonl"))
 
         self.assertEqual(
-            json.loads(json_text(summary))["schema_version"], "token-forensics/v1"
+            json.loads(json_text(summary))["schema_version"], "token-forensics/v2"
         )
         report = human_text(summary, label="Fixture")
         self.assertIn("Fixture", report)
@@ -169,7 +206,7 @@ class GenericAnalysisTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertEqual(
                 json.loads(json_path.read_text())["schema_version"],
-                "token-forensics/v1",
+                "token-forensics/v2",
             )
             self.assertIn("TOKENS", text_path.read_text())
 

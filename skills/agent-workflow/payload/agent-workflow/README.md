@@ -16,8 +16,6 @@ removes them.
 - `routing.md`: detailed minimum-workflow selection, composition, invocation,
   fallback, authorization, evidence, and required route-marker rules.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
-- `contracts/durable-state.md`: current durable ownership, canonical-artifact,
-  legacy-state preservation, and controlled-promotion rules.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   optional F# and D# ledgers, independently useful U#/E# files, current-state
   allocation, legacy representation selection, explicit migration, knowledge
@@ -71,8 +69,10 @@ authorized reconciliation; migration is never a lifecycle side effect.
 Substantial decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling remain stateless
-specialists. Implementation is an execution handoff. Legacy DEC, IMP, and DBG
-files remain untouched historical project data and are not resumed.
+specialists. Implementation is an execution handoff. Historical DEC, IMP, DBG,
+IDP, `records/`, `archive/`, and active-index content remains opaque project
+data. Current workflows do not allocate from or automatically resume, migrate,
+normalize, rewrite, or delete it.
 
 ## Status and recovery
 

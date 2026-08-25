@@ -39,7 +39,7 @@ It checks:
 - absence of literal root-policy files and host customization trees in the
   activation-sensitive payload namespace;
 - absence of deferred controller, hook, and observability payloads;
-- routing, authorization, durable-state, and provider declaration contracts;
+- routing, authorization, Wayfinder-state, and provider declaration contracts;
 - thin-router word budgets and deterministic positive/negative escalation
   contracts (not live model-routing proof);
 - local Markdown links plus the lifecycle-acceptance JSON catalog schema;
@@ -103,8 +103,9 @@ The suite prioritizes behavior that matters before 1.0:
 
 - missing and drifted `.agent-workflow/` files are restored from current desired
   state, and obsolete internal files disappear;
-- arbitrary `.agent-wayfinder/` contents survive install, update, remove, and
-  reinstall byte-for-byte;
+- arbitrary `.agent-wayfinder/` contents, including historical IDP, `records/`,
+  `archive/`, and active-index data, survive install, status, update, remove,
+  reinstall, and provider repair byte-for-byte;
 - canonical local Wayfinder maps, F#/D# ledgers, U#/E# files, and legacy
   per-record F#/D# files survive the same lifecycle sequence without schema
   interpretation, normalization, or implicit migration;

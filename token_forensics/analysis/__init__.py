@@ -87,7 +87,7 @@ def analyze_trace(
         )
 
     return {
-        "schema_version": "token-forensics/v1",
+        "schema_version": "token-forensics/v2",
         "source": {
             "format": trace.source_format,
             "path": str(trace.source_path),

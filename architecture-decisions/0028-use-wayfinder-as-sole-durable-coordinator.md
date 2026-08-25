@@ -35,8 +35,8 @@ outputs rather than competing framework coordination models.
 
 When interrupted work lacks a sufficient canonical artifact, Wayfinder records
 only the consequential return frontier and pointers. Retired specialist
-continuity remains project-owned historical data governed by the durable-state
-contract, not a current coordination model.
+continuity remains opaque project-owned historical data, not a current
+coordination model or automatic re-entry source.
 
 ## Consequences
 

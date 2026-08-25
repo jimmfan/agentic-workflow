@@ -32,6 +32,10 @@ These are distinctions, not a mandatory pipeline. Evidence may leave an
 unknown unresolved, a fact may require no decision, and a decision may be made
 under uncertainty without manufacturing a fact.
 
+Never persist secrets, tokens, private keys, raw credentials, sensitive command
+output, unnecessary personal data, raw transcripts, or private agent memory in
+Wayfinder state.
+
 Git/session observations such as the current branch, HEAD commit, dirty
 working-tree status, or ahead/behind status are execution context, not normal
 durable state. Inspect this information when useful for safe execution, but
@@ -178,6 +182,14 @@ map nor a supporting record merely because Wayfinder was considered or selected.
 
 Install, update, status, remove, and reinstall never seed, inventory, checksum,
 validate, migrate, rewrite, or remove Wayfinder state.
+
+## Historical project-owned state
+
+Historical DEC, IMP, DBG, IDP, `records/`, `archive/`, active-index, and similar
+content may be read only when directly relevant as historical project evidence.
+They are not current automatic re-entry or allocation sources and are never
+automatically migrated, normalized, rewritten, or deleted. Lifecycle and
+provider repair treat `.agent-wayfinder/` as opaque project-owned data.
 
 ## Effort naming, selection, and stable paths
 
@@ -683,9 +695,7 @@ implied; the acting agent performs this bounded reconciliation.
 Direct reasoning or one lazily selected specialist may supply reasoning,
 evidence, or clarification while Wayfinder alone retains framework-owned
 durable coordination. Specialist-native artifacts stay canonical and are linked
-rather than copied. Legacy DEC/IMP/DBG files are project-owned historical data:
-lifecycle operations preserve them, and current workflows neither allocate nor
-resume them.
+rather than copied.
 
 Use `to-tickets` only when clear work benefits from dependency ordering or
 separately deliverable sessions. Pass the map and only relevant U/E/F/D context.

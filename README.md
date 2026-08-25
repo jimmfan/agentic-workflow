@@ -451,8 +451,10 @@ target-project/
 ```
 
 Legacy per-record F#/D# files remain valid current state until explicit
-migration. Legacy `DEC`, `IMP`, and `DBG` files remain untouched historical
-data; current workflows neither allocate nor resume those older artifact types.
+migration. Historical `DEC`, `IMP`, `DBG`, `IDP`, `records/`, `archive/`, and
+active-index content remains untouched project-owned data; current workflows do
+not allocate from or automatically resume, migrate, normalize, rewrite, or
+delete it.
 
 ### `.agent-workflow/`
 

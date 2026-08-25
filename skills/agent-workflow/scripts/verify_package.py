@@ -66,7 +66,6 @@ REQUIRED_PACKAGE_FILES = (
     "payload/root/CLAUDE.md.template",
     "payload/agent-workflow/routing.md",
     "payload/agent-workflow/providers.json",
-    "payload/agent-workflow/contracts/durable-state.md",
     "payload/agent-workflow/contracts/wayfinder-state.md",
 )
 REMOVED_RUNTIME_PATHS = (
@@ -186,6 +185,15 @@ def check_structure() -> None:
         not (PAYLOAD_ROOT / "agent-workflow/templates/active-state.md").exists(),
         "retired active-index template remains packaged",
     )
+    require(
+        not (
+            PAYLOAD_ROOT / "agent-workflow/contracts/durable-state.md"
+        ).exists()
+        and not (
+            PAYLOAD_ROOT / "agent-workflow/contracts/durable-state.md"
+        ).is_symlink(),
+        "obsolete generic durable-state contract remains packaged",
+    )
     for retired_template in ("decision-record.md", "work-item.md"):
         require(
             not (PAYLOAD_ROOT / "agent-workflow/templates" / retired_template).exists(),
@@ -276,15 +284,12 @@ def check_router_contract() -> None:
     routing = (PAYLOAD_ROOT / "agent-workflow" / "routing.md").read_text(
         encoding="utf-8"
     )
-    durable = (
-        PAYLOAD_ROOT / "agent-workflow" / "contracts" / "durable-state.md"
-    ).read_text(encoding="utf-8")
     wayfinder = (
         PAYLOAD_ROOT / "agent-workflow" / "contracts" / "wayfinder-state.md"
     ).read_text(encoding="utf-8")
     normalized_agents = " ".join(agents.split())
     normalized_routing = " ".join(routing.split())
-    normalized_durable = " ".join(durable.split())
+    normalized_wayfinder = " ".join(wayfinder.split())
     require("MUST route every request" in agents, "root policy lacks mandatory routing")
     require(
         "`direct`" in agents and "minimum useful process" in routing,
@@ -302,7 +307,6 @@ def check_router_contract() -> None:
         "never selection by count alone",
         "any hard signal or at least two soft signals",
         "Read-only work changes no state",
-        "only before current project-state writes",
     ):
         require(
             required in normalized_agents,
@@ -322,28 +326,35 @@ def check_router_contract() -> None:
         "detailed router lacks conditional specialist transitions",
     )
     require(
-        ".agent-wayfinder/" in durable,
-        "durable-state contract lacks the canonical state root",
+        ".agent-wayfinder/" in wayfinder,
+        "Wayfinder state contract lacks the canonical state root",
     )
     require(
-        "no global active index" in durable,
-        "durable-state contract retains a global active index",
+        "global active index" in normalized_wayfinder,
+        "Wayfinder state contract lacks the global active-index prohibition",
     )
     require(
-        "Wayfinder is the sole framework-owned durable coordination layer"
-        in normalized_durable,
-        "durable-state contract lacks sole-coordinator ownership",
+        "sole framework-owned durable coordination"
+        in normalized_wayfinder,
+        "Wayfinder state contract lacks sole-coordinator ownership",
     )
     require(
-        "never delete, migrate, rewrite, validate, allocate from, resume, or normalize them"
-        in normalized_durable,
-        "durable-state contract lacks legacy record preservation",
+        "not current automatic re-entry or allocation sources"
+        in normalized_wayfinder
+        and "never automatically migrated, normalized, rewritten, or deleted"
+        in normalized_wayfinder,
+        "Wayfinder state contract lacks historical-state preservation",
+    )
+    require(
+        "Never persist secrets, tokens, private keys, raw credentials"
+        in normalized_wayfinder
+        and "raw transcripts, or private agent memory" in normalized_wayfinder,
+        "Wayfinder state contract lacks sensitive-data protection",
     )
     require(
         "wayfinder-state.md" in agents and "unrelated map" in agents,
         "root policy lacks Wayfinder loading guidance",
     )
-    normalized_wayfinder = " ".join(wayfinder.split())
     for required in (
         "unknowns/",
         "evidence/",
@@ -408,11 +419,15 @@ def check_router_contract() -> None:
         ),
         "Wayfinder settlement section lacks reference-safe ledger retirement",
     )
-    combined = agents + routing + durable + wayfinder
+    combined = agents + routing + wayfinder
     require(
         "runtime/README.md" not in combined
         and ".agent-workflow/runtime" not in combined,
         "router still depends on the removed controller payload",
+    )
+    require(
+        "durable-state.md" not in combined,
+        "runtime instructions still load the obsolete durable-state contract",
     )
 
 

@@ -78,9 +78,9 @@ promoting incidental fog or requiring an exact artifact count. The live
 Wayfinder contracts preserve an unrelated effort during reconciliation, keep
 stale-state audits read-only, and require conflicting reconciliation to stop
 without guessing. Lifecycle coverage preserves current legacy per-record F#/D#
-state unchanged until explicit migration and keeps older DEC/IMP/DBG files as
-opaque project data; current workflow scenarios resume only from Wayfinder or
-canonical provider artifacts.
+state unchanged until explicit migration and keeps historical DEC/IMP/DBG/IDP,
+`records/`, `archive/`, and active-index content as opaque project data; current
+workflow scenarios resume only from Wayfinder or canonical provider artifacts.
 
 See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema,
 evidence model, commands, side effects, cleanup, and limitations.

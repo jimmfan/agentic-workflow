@@ -50,8 +50,7 @@ state.
 
 For selected/resumed Wayfinder, read
 `.agent-workflow/contracts/wayfinder-state.md` before the map. An unrelated map
-never selects Wayfinder. Read `.agent-workflow/contracts/durable-state.md` only
-before current project-state writes. Never seed state.
+never selects Wayfinder. Never seed state.
 
 ## Report the route
 

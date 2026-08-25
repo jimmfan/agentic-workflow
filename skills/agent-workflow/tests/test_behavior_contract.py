@@ -24,6 +24,24 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
+    def test_implementation_reentry_uses_current_map_and_accepted_adr_not_legacy_imp(
+        self,
+    ) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        scenario = scenarios["existing-actionable-work"]
+        preserved = {path.as_posix() for path in scenario.preserve_paths}
+        state_used = {path.as_posix() for path in scenario.state_must_include}
+        state_not_used = {
+            path.as_posix() for path in scenario.state_must_not_include
+        }
+        legacy_imp = ".agent-wayfinder/records/IMP-0001-discount-bounds.md"
+
+        self.assertIn(legacy_imp, preserved)
+        self.assertIn(legacy_imp, state_not_used)
+        self.assertNotIn(legacy_imp, state_used)
+        self.assertIn(".agent-wayfinder/discount-bounds/map.md", state_used)
+        self.assertIn("docs/decisions/0001-discount-bounds.md", state_used)
+
     def test_required_live_safety_boundaries_remain_enabled(self) -> None:
         live_ids = {
             scenario.id for scenario in behavior.load_scenarios() if scenario.live
