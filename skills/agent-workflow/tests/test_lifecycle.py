@@ -356,6 +356,10 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assert_ok(self.adopt("install"))
         installed = (self.project / "AGENTS.md").read_bytes()
         self.assertTrue(installed.startswith(MANAGED_BEGIN))
+        self.assertIn(
+            b"Do not manufacture cross-artifact conflicts or parallel canonical state",
+            installed,
+        )
         self.assertTrue(installed.endswith(project_policy))
 
         managed_end = installed.index(MANAGED_END)

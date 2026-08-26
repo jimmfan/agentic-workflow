@@ -10,6 +10,8 @@ REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 # Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
 PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
 PRE_THIN_DIRECT_ROOT_WORDS = 682
+GLOBAL_RECONCILIATION_RULE_WORDS = 94
+GLOBAL_RECONCILIATION_RULE_PROFILE = (700, GLOBAL_RECONCILIATION_RULE_WORDS)
 PRE_DECOMPOSITION_CONTEXT = {
     "direct": (3362, 466),
     "standalone-discovery": (7642, 1050),
@@ -348,6 +350,22 @@ class RoutingContractTests(unittest.TestCase):
             "Do not turn every source read or test run into an E#", normalized_contract
         )
 
+    def test_root_policy_requires_evidence_backed_canonical_reconciliation(
+        self,
+    ) -> None:
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
+        normalized_root = " ".join(root_policy.split())
+
+        for required in (
+            "Do not manufacture cross-artifact conflicts or parallel canonical state",
+            "Different scope, abstraction, summarization, or omitted detail is not by itself an inconsistency",
+            "identify a concrete incompatible statement or a requirement the target artifact fails to satisfy",
+            "update that owner rather than creating a parallel representation",
+            "independently useful meaning, scope, or retrieval value",
+            "preserve the existing content and clarify or investigate",
+        ):
+            self.assertIn(required, normalized_root)
+
     def test_wayfinder_efforts_have_stable_names_and_progressive_resume_rules(
         self,
     ) -> None:
@@ -426,13 +444,14 @@ class RoutingContractTests(unittest.TestCase):
 
         self.assertLessEqual(
             root_words,
-            PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5,
-            "routing context must be at least 80% smaller when the old ambiguity gate loaded root plus router",
+            PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5 + GLOBAL_RECONCILIATION_RULE_WORDS,
+            "routing context excluding the required global reconciliation rule must be at least 80% smaller when the old ambiguity gate loaded root plus router",
         )
         self.assertLessEqual(
             root_words,
-            PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100,
-            "the always-loaded root must be at least 35% smaller for confidently Direct work",
+            PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100
+            + GLOBAL_RECONCILIATION_RULE_WORDS,
+            "the always-loaded root excluding the required global reconciliation rule must be at least 35% smaller for confidently Direct work",
         )
 
         selected_skills = [
@@ -507,7 +526,15 @@ class RoutingContractTests(unittest.TestCase):
             name: instruction_profile(paths) for name, paths in profiles.items()
         }
 
-        self.assertLessEqual(measured["direct"], PRE_DECOMPOSITION_CONTEXT["direct"])
+        direct_limit = tuple(
+            baseline + reconciliation
+            for baseline, reconciliation in zip(
+                PRE_DECOMPOSITION_CONTEXT["direct"],
+                GLOBAL_RECONCILIATION_RULE_PROFILE,
+                strict=True,
+            )
+        )
+        self.assertLessEqual(measured["direct"], direct_limit)
         self.assertLess(
             measured["standalone-discovery"],
             PRE_DECOMPOSITION_CONTEXT["standalone-discovery"],

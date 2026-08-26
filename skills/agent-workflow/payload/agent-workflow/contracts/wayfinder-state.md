@@ -498,6 +498,16 @@ A fact must contain at least one truthful `Source`, `Authority`, or
 appropriate U# with `Assumed:` and `Settled by:`. An agent-created inference
 does not become established merely because it is placed in the ledger.
 
+Fact correction: Treat each F# as the current canonical statement of one scoped
+factual conclusion. When stronger evidence corrects, narrows, or refines the
+same conclusion — same subject, corrected value or scope — update that F# in
+place and reconcile its provenance, scope, limitations, and affected references.
+Do not create a new F# merely to preserve history; retain the previous value only
+when it remains materially useful, otherwise Git owns the history. Create a new
+F# only for an independently useful fact with distinct meaning or scope. If
+conflicting evidence remains unresolved, mark the existing fact `disputed` or
+`stale` rather than creating another established fact.
+
 Use an H2 section in `decisions.md` for a committed choice, not for a
 descriptive conclusion:
 
@@ -632,8 +642,8 @@ When newer or stronger evidence conflicts with a fact:
 1. preserve the conflicting evidence and its provenance;
 2. if the conflict is unresolved, mark the F# `disputed`, open or reopen the
    relevant U#, and surface the blocker in the map;
-3. if resolved, update the same F# with its current scope, supporting and
-   contradicting links, plus one concise change note; and
+3. if resolved, apply the fact-correction rule to update the same F# and affected
+   references; and
 4. review dependent decisions and next work, but do not silently change a
    decision merely because its factual basis changed.
 

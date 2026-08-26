@@ -35,6 +35,7 @@ INVOCATION_POLICIES = frozenset({"implicit", "user-only", "unavailable"})
 # Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
 PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
 PRE_THIN_DIRECT_ROOT_WORDS = 682
+GLOBAL_RECONCILIATION_RULE_WORDS = 94
 REVIEWED_PROVIDER = {
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
@@ -301,11 +302,14 @@ def check_router_contract() -> None:
             f"thin root router lacks required boundary: {required}",
         )
     require(
-        len(agents.split()) <= PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5,
+        len(agents.split())
+        <= PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5 + GLOBAL_RECONCILIATION_RULE_WORDS,
         "thin root router exceeds the prior ambiguity-gate context budget",
     )
     require(
-        len(agents.split()) <= PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100,
+        len(agents.split())
+        <= PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100
+        + GLOBAL_RECONCILIATION_RULE_WORDS,
         "thin root router reduces confidently Direct context by less than 35%",
     )
     require(

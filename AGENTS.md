@@ -28,6 +28,16 @@
 - Never claim unexecuted work.
 - Preserve unrelated work, project state, canonical artifacts, and identifiers.
   Live source and accepted artifacts outrank summaries, memory, and chat.
+- Do not manufacture cross-artifact conflicts or parallel canonical state.
+  Different scope, abstraction, summarization, or omitted detail is not by itself
+  an inconsistency. Before reconciling artifacts, identify a concrete
+  incompatible statement or a requirement the target artifact fails to satisfy.
+  When an existing canonical artifact or record owns the current state, update
+  that owner rather than creating a parallel representation unless the new
+  representation has independently useful meaning, scope, or retrieval value.
+  When materially ambiguous, preserve the existing content and clarify or
+  investigate rather than inventing detail or process merely to make artifacts
+  match.
 
 ## When to use Wayfinder
 
