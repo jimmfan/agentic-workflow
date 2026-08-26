@@ -119,6 +119,40 @@ As work settles, lasting results should live with the artifact that owns them ra
 
 Exact Wayfinder storage and mutation behavior is defined in the installed Wayfinder state contract.
 
+
+Example text to use Wayfinder:
+```text
+Use the installed Agent Workflow and explicitly start Wayfinder for this
+repository's current development effort.
+
+First inspect the project instructions, relevant accepted architecture
+decisions and documentation, repository structure, current Git state, and the
+source and tests relevant to the effort. Then create a lightweight
+`.agent-wayfinder/<stable-effort-name>/map.md` that will help developers and
+future agents resume the work without depending on this chat.
+
+Record only durable, evidence-backed coordination context:
+
+- the goal and scope boundary;
+- the important areas and relationships in the effort;
+- established facts with pointers to their authoritative sources;
+- consequential unknowns, decisions, dependencies, and blockers; and
+- a concise ready frontier describing what can happen next.
+
+Create a separate unknown or evidence file only when it is an independently
+useful coordination or retrieval unit. When an established fact or committed
+decision warrants durable representation, record it as an F# or D# section in
+the optional `facts.md` or `decisions.md` ledger. Treat live source and accepted
+project artifacts as more authoritative than assumptions, chat history, or
+stale Wayfinder state. Do not copy the transcript, invent requirements, or
+implement product changes during this first pass.
+
+If the current effort cannot be inferred confidently, ask me one concrete scope
+question before creating the Wayfinder state. When finished, summarize what you
+created, what remains uncertain, and the best next prompt for continuing the
+work.
+```
+
 ## Project ownership
 
 Agent Workflow separates reconstructable framework files from durable project-owned state.
