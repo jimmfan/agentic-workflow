@@ -26,7 +26,7 @@ REPOSITORY_ROOT = PACKAGE_ROOT.parent.parent
 PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
 MINIMUM_PYTHON = (3, 11)
-MANIFEST_SCHEMA = 6
+MANIFEST_SCHEMA = 7
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
 MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 FENCED_CODE = re.compile(r"(?ms)^```[^\n]*\n.*?^```[ \t]*$")
@@ -155,7 +155,6 @@ def expected_mappings() -> list[dict[str, str]]:
 def generated_manifest() -> Mapping[str, object]:
     return {
         "schema_version": MANIFEST_SCHEMA,
-        "framework_version": version(),
         "framework_owned": expected_mappings(),
     }
 
@@ -175,6 +174,7 @@ def check_structure() -> None:
             path.is_file() and not path.is_symlink(),
             f"missing or unsafe package file: {relative}",
         )
+    version()
     duplicate_version = PAYLOAD_ROOT / "VERSION"
     require(
         not duplicate_version.exists() and not duplicate_version.is_symlink(),

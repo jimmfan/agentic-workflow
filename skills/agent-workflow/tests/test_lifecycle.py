@@ -1155,6 +1155,22 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(refresh.returncode, 1)
         self.assertIn("authored payload differs from the exact current package surface", refresh.stderr)
 
+    def test_version_file_is_the_only_authored_package_version(self) -> None:
+        package_copy = self.copy_package("version-source")
+        (package_copy / "VERSION").write_text("9.8.7\n", encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+        self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
+
+        install = run_script(
+            package_copy / "scripts/adopt.py", "install", self.project
+        )
+        self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
+        installed = json.loads(
+            (self.project / ".agent-workflow/install-manifest.json").read_text()
+        )
+        self.assertEqual(installed["framework_version"], "9.8.7")
+
     def test_verifier_rejects_duplicate_payload_version(self) -> None:
         package_copy = self.copy_package("duplicate-payload-version")
         (package_copy / "payload/VERSION").write_text("0.0.0\n", encoding="utf-8")

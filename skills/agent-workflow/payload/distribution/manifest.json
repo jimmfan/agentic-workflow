@@ -41,6 +41,5 @@
       "target": "CLAUDE.md"
     }
   ],
-  "framework_version": "0.22.0",
-  "schema_version": 6
+  "schema_version": 7
 }

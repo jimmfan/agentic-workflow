@@ -68,10 +68,13 @@ distributable package.
 
 ## Release tags
 
-`skills/agent-workflow/VERSION` is the human-controlled release switch. Ordinary
-changes can reach `main` without changing it. After the deterministic verifier
-succeeds on a push to `main`, a `VERSION` change requests one annotated release
-tag on that exact verified commit.
+`skills/agent-workflow/VERSION` is the sole authored framework version and the
+human-controlled release switch. Ordinary changes can reach `main` without
+changing it. The distribution manifest contains only package mappings; a
+version-only change does not require refreshing it. Adoption reads the version
+directly from the package and records it in generated install metadata. After
+the deterministic verifier succeeds on a push to `main`, a `VERSION` change
+requests one annotated release tag on that exact verified commit.
 
 The release job accepts only the package's `x.y.z` format, requires the version
 to be greater than every existing semantic release tag, and refuses to reuse or
@@ -80,13 +83,12 @@ the new tag without force. The first version increase after this workflow
 reaches `main` will establish the first trustworthy release-tag baseline;
 earlier history is intentionally not backfilled.
 
-Changing the package version also requires the distribution-manifest refresh
-described below. Do not create the release tag manually while preparing a
-branch; the verified `main` workflow owns tag creation.
+Do not create the release tag manually while preparing a branch; the verified
+`main` workflow owns tag creation.
 
-After intentionally adding, removing, or remapping a packaged payload file, or
-changing the framework version, first inspect the diff. Then run this persistent
-refresh from the **source repository root**:
+After intentionally adding, removing, or remapping a packaged payload file,
+first inspect the diff. Then run this persistent refresh from the **source
+repository root**:
 
 ```bash
 python3 skills/agent-workflow/scripts/verify_package.py --refresh-manifest --tests
