@@ -65,125 +65,111 @@ Never reroute or work merely to produce the marker.
 <!-- agent-workflow:project-instructions -->
 ## External action notifications
 
-When progress is blocked on an action I must take outside Codex—such as
-trusting a workspace, approving a permission, authenticating, or clicking a UI
-control—tell me immediately instead of waiting silently. State that work is
-paused, name the exact app, window, and control, give the single exact action
-required, and ask me to confirm when complete. Also explicitly tell me when a
-requested action has taken effect or no further action is needed.
+When progress is blocked on an action the user must take outside the agent
+session—such as trusting a workspace, approving a permission, authenticating,
+or clicking a UI control—say so immediately. State that the blocked step cannot
+continue, name the exact app, window, and control, give the single exact action
+required and what it unblocks, and ask the user to confirm when complete.
+Explicitly say when the action has taken effect or is no longer needed.
 
 # Agent Workflow source repository
 
+These source-repository instructions apply specifically to agents modifying the
+Agent Workflow source repository.
+
 ## Pre-1.0 engineering priority
 
-This project is pre-1.0 and should optimize for rapid iteration and learning.
-
-Only engineer deeply around two things:
-
-1. Do not destroy project-owned or user-owned data.
-2. Make the core routing behavior work reliably.
-
-Everything else should default to being simple, replaceable, optional, best-effort, or CI-only.
-
-Prefer deleting or simplifying machinery over extending it. Do not add package-manager-grade integrity, migration, compatibility, observability, ownership, or lifecycle systems unless necessary to protect user data or make the core router reliable.
-
-When choosing between robustness for hypothetical future users and simplicity for current development, prefer simplicity unless there is a concrete current failure or data-loss risk.
-
-Do not preserve complexity merely because it already exists.
+- Agent Workflow is pre-1.0. Prioritize protecting project-owned and user-owned
+  durable data, preserving authorization and safe-delivery boundaries, and
+  making core routing behavior reliable.
+- Outside those boundaries, prefer simple, replaceable designs over speculative
+  robustness or machinery for hypothetical future needs.
+- Remove or simplify unjustified machinery rather than preserving it merely
+  because it exists. Do not add package-manager-grade integrity, migration,
+  compatibility, deprecation, observability, ownership registries, or lifecycle
+  systems unless a concrete current failure, durable-data or safety risk, or
+  current external contract requires them.
 
 ## Scope
 
-These instructions apply specifically to agents modifying the **Agent Workflow source repository**.
-
-The installed routing policy above intentionally applies here so this project exercises its own workflow behavior.
-
-This section supplements that policy with source-repository constraints. Do not copy these maintenance instructions into consuming projects.
-
-Do not modify downstream consuming projects unless the task explicitly includes a migration, adoption test, or disposable compatibility test involving them.
+- Do not copy source-repository maintenance instructions into consuming
+  projects.
+- Do not modify downstream consuming projects unless the task explicitly
+  includes a migration, adoption test, or disposable compatibility test
+  involving them.
 
 ## Architectural decisions
 
-Accepted, non-superseded records under `architecture-decisions/` are governing project constraints.
-
-Follow every architectural decision applicable to the work. Do not silently contradict, bypass, or reinterpret an accepted decision because another design seems preferable.
-
-For substantial changes, identify and read the decisions governing the affected boundary. Routine work does not require reading the entire decision history.
-
-Architectural decisions are authoritative but not immutable. New evidence may justify reconsidering one, but do so explicitly rather than working around it.
-
-When an accepted decision changes, update the ADR and affected contracts, implementation, documentation, and tests as appropriate.
-
-If an ADR and current repository behavior appear inconsistent, investigate the discrepancy rather than silently choosing either one.
-
-Keep `architecture-decisions/` small. Create or retain an ADR only for an
-architecturally significant choice that can reasonably be reconsidered
-independently and whose rationale would otherwise be lost. Before adding one,
-check whether an existing ADR already owns the boundary. Put current system
-shape in `docs/architecture.md` and exact required behavior in contracts,
-source, and tests. Do not create ADRs for experiments, bug fixes, dependency or
-version updates, numeric limits, path cleanup, benchmark results, or routine
-implementation mechanics. Consolidate or remove obsolete pre-1.0 decisions;
-Git preserves historical evolution.
+- Accepted, non-superseded records under `architecture-decisions/` govern the
+  boundaries they address. Do not silently bypass or reinterpret them. For
+  substantial changes, read the applicable decisions rather than the entire
+  decision history.
+- If an ADR and current repository behavior appear inconsistent, investigate
+  the discrepancy. If new evidence changes an accepted decision, update the ADR
+  and affected contracts, implementation, documentation, and tests explicitly.
+- Keep ADRs for architecturally significant choices that can reasonably be
+  reconsidered independently and whose rationale would otherwise be lost.
+  Before adding one, check whether an existing ADR already owns the boundary.
+  Put current system shape in `docs/architecture.md` and exact required behavior
+  in contracts, source, and tests.
+- Do not use ADRs merely to record experiments, bug fixes, dependency or version
+  updates, numeric limits, path cleanup, benchmark results, or routine
+  implementation mechanics. During explicit ADR maintenance, consolidate or
+  remove obsolete pre-1.0 records rather than keeping them as a changelog; Git
+  preserves historical evolution.
 
 ## Architecture boundary
 
-Agent Workflow is a thin orchestration layer over host capabilities and curated, replaceable skills.
-
-Keep the project centered on routing, provider integration, safe framework delivery, authorization boundaries, durable coordination where the framework genuinely owns it, and integration verification.
-
-Prefer existing host or provider capabilities when they satisfy the required contract.
-
-Do not create parallel Agent Workflow representations of artifacts or behavior already canonically owned by a provider or host.
-
-Do not copy or lightly rewrite upstream functionality merely for naming, wording, or stylistic preferences.
-
-Do not expand the project into a general agent runtime, package manager, plugin platform, compatibility framework, observability platform, or broad lifecycle system without a concrete current need.
-
-Avoid speculative abstractions. Hypothetical future users or implementations are not sufficient justification for additional machinery.
+- Agent Workflow is a thin orchestration layer. Keep it centered on routing,
+  provider integration, safe framework delivery, authorization boundaries,
+  durable coordination the framework genuinely owns, and integration
+  verification.
+- Prefer existing host or provider capabilities and canonical artifacts over
+  parallel Agent Workflow representations or lightly rewritten upstream
+  functionality.
+- Do not expand the project into a general agent runtime, package manager,
+  plugin platform, compatibility framework, observability platform, broad
+  lifecycle system, or other new machinery without a concrete current need.
 
 ## Authorization and preservation
 
-Workflows, providers, skills, tests, and documentation never expand user authorization.
-
-Do not perform commits, pushes, publication, destructive operations, external mutations, or changes outside the authorized task merely because a workflow suggests them.
-
-Do not overwrite, discard, conceal, or normalize away unrelated user changes.
-
-Protect project-owned and user-owned durable state. Reconstructable framework machinery may be replaced when appropriate; durable state must not be treated as disposable framework content.
-
-Repository artifacts and accepted project state outrank chat recollection or private agent memory.
-
-Do not decide questions requiring human or project authority. Surface the concrete question, why that authority is required, and what answer unblocks the work.
+- Do not treat a workflow, provider, skill, test, or document as authorization
+  for commits, pushes, publication, destructive operations, external mutations,
+  or changes outside the authorized task.
+- Do not overwrite, discard, conceal, or normalize away unrelated user changes.
+- Protect project-owned and user-owned durable state. Reconstructable framework
+  output may be replaced when appropriate; durable state must not be treated as
+  disposable framework content.
 
 ## Working practice
 
 For substantial changes:
 
-* inspect the current implementation, repository status, and relevant diff;
-* read the applicable contracts and architectural decisions;
-* determine which layer owns the behavior;
-* check whether a host or provider already supplies the capability;
-* prefer the smallest coherent and reversible change;
-* update tests and durable documentation when the resulting contract changes.
+- Inspect the current implementation, repository status, exact worktree,
+  branch, base, and relevant diff.
+- Read the applicable contracts and architectural decisions and determine which
+  layer owns the behavior.
+- Check whether a host or provider already supplies the capability.
+- Prefer the smallest coherent and reversible change that preserves accepted
+  behavior.
+- Update tests and durable documentation when the resulting contract changes.
 
-Use current primary sources when an evolving external integration materially affects the work.
+Use current primary sources when an evolving external integration materially
+affects the work.
 
 Keep experiments reversible and isolated until adoption is intentional.
 
-Pre-1.0 is a reason to change bad designs quickly, not a reason to accumulate migrations or compatibility machinery around them.
-
 ## Testing and verification
 
-Test Agent Workflow's contracts and boundaries rather than reproducing provider internals.
-
-Prefer deterministic tests for normal development. Keep live-agent evaluation opt-in, benchmark-specific, scheduled, or release-gated.
-
-When benchmark tests evaluate Agent Workflow and Wayfinder remains an active part of the project, consider Wayfinder among the routes or variants being evaluated rather than silently excluding it.
-
-Follow the current repository verification documentation for applicable checks.
-
-Report verification truthfully. If a relevant test, platform, integration, workflow, or external behavior was not actually exercised, say so.
-
-Do not regenerate or modify derived metadata merely to make an unexplained difference disappear.
-
-Before finishing a substantial change, simplify anything whose complexity is not justified by protecting durable data, preserving an accepted contract, or making core routing reliably work.
+- Test Agent Workflow's contracts and boundaries rather than reproducing
+  provider internals.
+- Prefer deterministic tests for normal development. Keep live-agent evaluation
+  opt-in, benchmark-specific, scheduled, or release-gated.
+- Follow `docs/verification.md` and the applicable evaluation documentation for
+  required checks and execution procedures.
+- Report verification truthfully. If a relevant test, platform, integration,
+  workflow, or external behavior was not actually exercised, say so. Separate
+  product behavior from harness, evaluator, fixture, authentication, quota,
+  timeout, permission, host, and other infrastructure failures.
+- Do not regenerate or modify derived metadata merely to make an unexplained
+  difference disappear.
