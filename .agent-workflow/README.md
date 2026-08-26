@@ -17,7 +17,7 @@ rewrites, or removes them.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   optional F# and D# ledgers, independently useful U#/E# files, current-state
-  allocation, opaque historical-state safety, knowledge settlement, effort
+  allocation, unknown-content safety, knowledge settlement, effort
   completion, and progressive loading.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
@@ -61,18 +61,16 @@ a relevant ledger section or U#/E# artifact.
 Facts require truthful provenance, and decisions require responsible project
 authority rather than evidence alone.
 
-Only `facts.md` and `decisions.md` ledgers are current F#/D# state. Per-record
-F#/D# files are opaque history and are never allocated, edited, retired, or
-automatically migrated by Wayfinder. A nonempty historical same-type directory
-blocks current ledger writes until manual project reconciliation; unrelated
-types remain independent.
+Wayfinder recognizes only the current map, ledgers, and canonical U#/E# files.
+Unknown project-owned content is preserved without interpretation or mutation;
+independent current work may proceed unless the content creates an actual
+collision, reference conflict, semantic ambiguity, or unsafe filesystem
+boundary.
 Substantial decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling remain stateless
-specialists. Implementation is an execution handoff. Historical DEC, IMP, DBG,
-IDP, per-record F#/D#, `records/`, `archive/`, and active-index content remains
-opaque project data. Current workflows do not allocate from or automatically
-resume, migrate, normalize, rewrite, or delete it.
+specialists. Implementation is an execution handoff. Specialists create no
+separate framework continuity records.
 
 ## Status and recovery
 

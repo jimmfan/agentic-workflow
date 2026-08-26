@@ -14,10 +14,9 @@ Durable source and reproducibility inputs stay in their suite directories.
 Compact run results, token-forensics summaries, adjudication, and final reports
 also stay outside this directory so they can be reviewed and committed.
 
-Some harnesses use guarded host-temporary job/workspace directories instead of
-copying those jobs here. Harbor, for example, keeps its external work/jobs/cache
-paths ignored by its suite-local `.gitignore`. Do not duplicate those artifacts
-under `evals/artifacts/` unless a local copy is needed for short-term analysis.
+Harnesses may use guarded host-temporary job or workspace directories instead
+of copying those jobs here. Do not duplicate those artifacts under
+`evals/artifacts/` unless a local copy is needed for short-term analysis.
 
 Raw artifacts may be deleted after the compact result and any important
 adjudication or forensic summary have been preserved. They are not required to

@@ -8,7 +8,7 @@ description: Diagnose an existing unexplained failure through an evidence-driven
 Find the cause before choosing the fix. Debugging owns causal investigation,
 not durable continuity. Run it standalone when the work fits the current
 session. Use Wayfinder when consequential investigation must survive a handoff;
-resume from its map without creating a DBG or specialist notebook.
+resume from its map without creating a separate specialist continuity record.
 
 ## Establish the investigation
 

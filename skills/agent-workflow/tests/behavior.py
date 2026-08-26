@@ -565,13 +565,20 @@ def wayfinder_record_changed(
 ) -> bool:
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
     record_name = re.compile(rf"{re.escape(identifier)}[1-9][0-9]*-[^.]+\.md")
-    return any(
-        len(parts := PurePosixPath(path).parts) == 4
-        and parts[0] == ".agent-wayfinder"
-        and parts[2] == directory
-        and record_name.fullmatch(parts[3]) is not None
-        for path in created | modified
-    )
+    for path in created | modified:
+        parts = PurePosixPath(path).parts
+        if (
+            len(parts) == 4
+            and parts[0] == ".agent-wayfinder"
+            and parts[2] == directory
+            and record_name.fullmatch(parts[3]) is not None
+        ):
+            map_entry = evidence.after.get(
+                f".agent-wayfinder/{parts[1]}/map.md"
+            )
+            if map_entry is not None and map_entry.kind == "file":
+                return True
+    return False
 
 
 def wayfinder_child_changed(evidence: RunEvidence, directory: str) -> bool:
@@ -595,10 +602,7 @@ def wayfinder_ledger_changed(evidence: RunEvidence, ledger: str) -> bool:
 
 
 def decision_artifact_changed(evidence: RunEvidence) -> bool:
-    if (
-        wayfinder_ledger_changed(evidence, "decisions.md")
-        or wayfinder_child_changed(evidence, "decisions")
-    ):
+    if wayfinder_ledger_changed(evidence, "decisions.md"):
         return True
     created, modified, _deleted = changed_paths(evidence.before, evidence.after)
     return any(
@@ -609,6 +613,54 @@ def decision_artifact_changed(evidence: RunEvidence) -> bool:
         )
         for path in created | modified
     )
+
+
+def is_recognized_current_wayfinder_path(path: str, entry: Entry) -> bool:
+    parts = PurePosixPath(path).parts
+    if not parts or parts[0] != ".agent-wayfinder":
+        return True
+    if len(parts) == 2:
+        return entry.kind == "directory"
+    if len(parts) == 3:
+        if parts[2] in {"map.md", "facts.md", "decisions.md"}:
+            return entry.kind == "file"
+        if parts[2] in {"unknowns", "evidence"}:
+            return entry.kind == "directory"
+        return False
+    if len(parts) != 4 or entry.kind != "file":
+        return False
+    if parts[2] == "unknowns":
+        return re.fullmatch(r"U[1-9][0-9]*-[^.]+\.md", parts[3]) is not None
+    if parts[2] == "evidence":
+        return re.fullmatch(r"E[1-9][0-9]*-[^.]+\.md", parts[3]) is not None
+    return False
+
+
+def recognized_wayfinder_mutations(evidence: RunEvidence) -> tuple[bool, str]:
+    created, modified, deleted = changed_paths(evidence.before, evidence.after)
+    invalid: list[str] = []
+    changed_efforts: set[str] = set()
+    for path in sorted(created | modified | deleted):
+        if not path.startswith(".agent-wayfinder/"):
+            continue
+        parts = PurePosixPath(path).parts
+        if len(parts) >= 2:
+            changed_efforts.add(parts[1])
+        entry = evidence.after.get(path) or evidence.before.get(path)
+        if entry is None or not is_recognized_current_wayfinder_path(path, entry):
+            invalid.append(path)
+    for effort in sorted(changed_efforts):
+        prefix = f".agent-wayfinder/{effort}"
+        remains = any(
+            path == prefix or path.startswith(prefix + "/")
+            for path in evidence.after
+        )
+        map_entry = evidence.after.get(f"{prefix}/map.md")
+        if remains and (map_entry is None or map_entry.kind != "file"):
+            invalid.append(f"{prefix} (missing map.md)")
+    if invalid:
+        return False, "unrecognized Wayfinder writes: " + ", ".join(invalid)
+    return True, "all Wayfinder writes use recognized current paths"
 
 
 def evaluate_assertion(evidence: RunEvidence, assertion: Assertion) -> CheckResult:
@@ -731,6 +783,14 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     results: list[CheckResult] = [
         evaluate_assertion(evidence, item) for item in evidence.scenario.assertions
     ]
+    current_shape_ok, current_shape_detail = recognized_wayfinder_mutations(evidence)
+    results.append(
+        CheckResult(
+            "contract:recognized-wayfinder-mutations",
+            current_shape_ok,
+            current_shape_detail,
+        )
+    )
     preserved_ok, preserved_detail = preserved(evidence)
     forbidden_ok, forbidden_detail = forbidden_created(evidence)
     route_ok, route_detail = route_excluded(evidence)
@@ -1154,11 +1214,11 @@ def fixtures_command() -> int:
 
 def live_command(args: argparse.Namespace) -> int:
     raw_command = args.agent_command_json or os.environ.get(
-        "AGENTIC_WORKFLOW_AGENT_COMMAND_JSON", ""
+        "AGENT_WORKFLOW_AGENT_COMMAND_JSON", ""
     )
     if not raw_command:
         raise BehaviorError(
-            "live runs require --agent-command-json or AGENTIC_WORKFLOW_AGENT_COMMAND_JSON"
+            "live runs require --agent-command-json or AGENT_WORKFLOW_AGENT_COMMAND_JSON"
         )
     command = parse_command_json(raw_command)
     selected = set(args.scenario or ())

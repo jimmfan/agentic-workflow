@@ -1,8 +1,8 @@
 schema_version = 1
-id = "wayfinder-exact-legacy-path-stays-stable"
+id = "wayfinder-exact-established-path-stays-stable"
 name = "Exact awkward effort path is honored without rename"
 fixture = "wayfinder-effort-selection"
-request = "Audit the named effort at .agent-wayfinder/legacy-dir/map.md and report its destination. Do not change files."
+request = "Audit the named effort at .agent-wayfinder/established-provider-naming/map.md and report its destination. Do not change files."
 starting_state = [
   "An exact safe repository-relative effort path is supplied.",
   "The readable H1 is clearer than the established directory slug.",
@@ -19,14 +19,14 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-wayfinder/legacy-dir/map.md",
+  ".agent-wayfinder/established-provider-naming/map.md",
 ]
 forbid_created_globs = [
   ".agent-wayfinder/stable-awkward-effort-path",
   ".agent-wayfinder/stable-awkward-effort-path/**",
 ]
 state_must_include = [
-  ".agent-wayfinder/legacy-dir/map.md",
+  ".agent-wayfinder/established-provider-naming/map.md",
 ]
 state_must_not_include = [
   ".agent-wayfinder/wayfinder-runtime-projection/map.md",
@@ -36,7 +36,7 @@ state_must_not_include = [
 
 [[assertions]]
 kind = "path_exists"
-path = ".agent-wayfinder/legacy-dir/map.md"
+path = ".agent-wayfinder/established-provider-naming/map.md"
 
 [[assertions]]
 kind = "path_not_exists"

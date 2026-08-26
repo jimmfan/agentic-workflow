@@ -30,7 +30,7 @@ state_must_include = [
 ]
 state_must_not_include = [
   ".agent-wayfinder/provider-runtime/map.md",
-  ".agent-wayfinder/legacy-dir/map.md",
+  ".agent-wayfinder/established-provider-naming/map.md",
 ]
 
 [[assertions]]

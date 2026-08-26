@@ -30,20 +30,37 @@ def is_ignored(path: str) -> bool:
 
 def is_raw_artifact(path: str) -> bool:
     parts = Path(path).parts
-    name = parts[-1]
+    if path == "evals/artifacts/README.md" or parts[:3] == (
+        "evals",
+        "tests",
+        "fixtures",
+    ):
+        return False
+    if parts[:2] == ("evals", "artifacts"):
+        return True
+    raw_directories = {
+        "__pycache__",
+        ".cache",
+        "cache",
+        "codex-home",
+        "codex-homes",
+        "jobs",
+        "raw",
+        "workspace",
+        "workspaces",
+    }
+    raw_filenames = {
+        "codex.jsonl",
+        "stderr",
+        "stderr.txt",
+        "stdout",
+        "stdout.txt",
+    }
     return (
-        "__pycache__" in parts
-        or "raw" in parts
-        or "snapshots" in parts
-        and "runs" in parts
-        or "workspace" in parts
-        and "runs" in parts
-        or "attempts" in parts
-        and "runs" in parts
-        or name in {"reasoning-grader.jsonl", "reasoning-grader.stderr.txt"}
-        or "audit-evidence" in parts
-        or "isolation-audit" in parts
-        and name.endswith((".jsonl", ".stderr.txt"))
+        bool(set(parts) & raw_directories)
+        or Path(path).name in raw_filenames
+        or Path(path).suffix in {".jsonl", ".log", ".pyc"}
+        or Path(path).name.endswith((".stderr.txt", ".stdout.txt"))
     )
 
 
@@ -51,7 +68,6 @@ class EvaluationStorageTests(unittest.TestCase):
     def test_raw_artifact_paths_are_ignored_but_compact_results_are_not(self) -> None:
         ignored = [
             "evals/artifacts/example/run/raw/codex.jsonl",
-            "evals/results/example/runs/example/snapshots/phase-1.tar.gz",
             "evals/example/__pycache__/module.pyc",
         ]
         tracked_contract = [
@@ -65,6 +81,23 @@ class EvaluationStorageTests(unittest.TestCase):
     def test_no_raw_execution_exhaust_is_tracked_under_evals(self) -> None:
         raw = [path for path in tracked_eval_files() if is_raw_artifact(path)]
         self.assertEqual(raw, [])
+
+    def test_raw_execution_exhaust_is_recognized_outside_artifacts(self) -> None:
+        raw = (
+            "evals/results/example/raw/codex.jsonl",
+            "evals/results/example/workspace/source.py",
+            "evals/results/example/stdout.txt",
+            "evals/results/example/agent.log",
+            "evals/results/example/grader-transcript.jsonl",
+            "evals/results/example/reasoning-grader.stderr.txt",
+        )
+        retained = (
+            "evals/routing-smoke/cases.json",
+            "evals/tests/fixtures/token_forensics/codex-exec.jsonl",
+        )
+
+        self.assertTrue(all(is_raw_artifact(path) for path in raw))
+        self.assertTrue(all(not is_raw_artifact(path) for path in retained))
 
 
 if __name__ == "__main__":

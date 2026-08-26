@@ -10,7 +10,7 @@
     "expected": "A modified current file under .agent-workflow is replaced without forensic checksum checks."
   },
   {
-    "id": "ignore-absent-historical-file",
+    "id": "ignore-absent-recorded-file",
     "operation": "update",
     "expected": "An obsolete path from local install state that is already absent is ignored."
   },
@@ -70,8 +70,8 @@
     "expected": "Unrepresentable path characters are escaped and do not crash the CLI."
   },
   {
-    "id": "release-map-tracks-install-scope-not-content-hashes",
+    "id": "release-map-and-current-surface-stay-explicit",
     "operation": "verify-and-install",
-    "expected": "Mapped payload content changes install current bytes without metadata refresh, while an added or remapped payload file requires the explicit install map to be refreshed."
+    "expected": "Mapped payload content changes install current bytes without metadata refresh, while an extra payload file is rejected until the exact allowed surface and install map are intentionally updated."
   }
 ]

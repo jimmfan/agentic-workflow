@@ -72,22 +72,18 @@ class GenericAnalysisTests(unittest.TestCase):
             ".agent-wayfinder/current-effort/unknowns/U3-open-question.md",
             ".agent-wayfinder/current-effort/evidence/E2-test-output.md",
         )
-        historical_paths = (
-            ".agent-wayfinder/records/IDP-0001-platform-friction.md",
-            ".agent-wayfinder/archive/2025/DEC-0002-retired-choice.md",
-            ".agent-wayfinder/active.md",
-            ".agent-wayfinder/active-index.json",
-            ".agent-wayfinder/current-effort/facts/F1-old-fact.md",
-            ".agent-wayfinder/current-effort/decisions/D2-old-decision.md",
-            ".agent-wayfinder/current-effort/DEC-0003-old-choice.md",
-            ".agent-wayfinder/current-effort/IMP-0004-old-work.md",
-            ".agent-wayfinder/current-effort/DBG-0005-old-failure.md",
-            ".agent-wayfinder/current-effort/IDP-0006-old-opportunity.md",
+        unrecognized_paths = (
+            ".agent-wayfinder/unrecognized-project-data/note.txt",
+            ".agent-wayfinder/current-effort/notes/free-form.md",
+            ".agent-wayfinder/current-effort/unknowns/question.md",
+            ".agent-wayfinder/current-effort/evidence/output.txt",
+            ".agent-wayfinder/current-effort/unknowns/U0-invalid.md",
+            ".agent-wayfinder/current-effort/evidence/E-invalid.md",
             ".agent-wayfinder/current-effort/private-memory.md",
         )
-        paths = current_paths + historical_paths
+        paths = current_paths + unrecognized_paths
         trace = NormalizedTrace(
-            source_path=Path("legacy-state-trace.jsonl"),
+            source_path=Path("project-data-trace.jsonl"),
             source_format="codex-exec-jsonl",
             source_bytes=1,
             tool_invocations=[

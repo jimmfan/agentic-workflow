@@ -64,6 +64,9 @@
           "codex": "user-only",
           "github-copilot": "user-only"
         },
+        "agent_workflow_adapter": {
+          "name": "setup-current-coordination-v1"
+        },
         "name": "setup-matt-pocock-skills",
         "path": "skills/engineering/setup-matt-pocock-skills",
         "requires_configuration": []
@@ -74,7 +77,7 @@
           "codex": "implicit",
           "github-copilot": "implicit"
         },
-        "agentic_workflow_adapter": {
+        "agent_workflow_adapter": {
           "name": "wayfinder-runtime-projection-v1",
           "projection_source": "runtime-projections/wayfinder.md",
           "upstream_body_sha256": "d13834a052804c9465c5a422585df99ee2664ec6940beb2ae1d961fd06ff4aff"
@@ -99,7 +102,7 @@
           "codex": "implicit",
           "github-copilot": "implicit"
         },
-        "agentic_workflow_adapter": {
+        "agent_workflow_adapter": {
           "name": "research-chat-output-v1",
           "projection_source": "runtime-projections/research.md",
           "upstream_body_sha256": "24cb65267a1843d108622609ac6b623d024a80d12de62fe0a22a90b17d7c78f0"
@@ -114,7 +117,7 @@
           "codex": "implicit",
           "github-copilot": "implicit"
         },
-        "agentic_workflow_adapter": {
+        "agent_workflow_adapter": {
           "name": "implicit-invocation-v1"
         },
         "name": "to-spec",
@@ -131,7 +134,7 @@
           "codex": "implicit",
           "github-copilot": "implicit"
         },
-        "agentic_workflow_adapter": {
+        "agent_workflow_adapter": {
           "name": "implicit-invocation-v1"
         },
         "name": "to-tickets",
@@ -148,7 +151,7 @@
           "codex": "implicit",
           "github-copilot": "implicit"
         },
-        "agentic_workflow_adapter": {
+        "agent_workflow_adapter": {
           "name": "implicit-invocation-v1"
         },
         "name": "implement",
@@ -181,7 +184,7 @@
           "codex": "implicit",
           "github-copilot": "implicit"
         },
-        "agentic_workflow_adapter": {
+        "agent_workflow_adapter": {
           "name": "grilling-discovery-v1"
         },
         "name": "grilling",
@@ -237,5 +240,5 @@
     "upstream_tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
     "version": "v1.2.3"
   },
-  "schema_version": 7
+  "schema_version": 8
 }

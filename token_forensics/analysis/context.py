@@ -113,11 +113,6 @@ def _framework_kind(path: str) -> str | None:
     wayfinder_marker = ".agent-wayfinder/"
     if wayfinder_marker in normalized:
         relative = normalized.partition(wayfinder_marker)[2]
-        if (
-            relative in {"records", "archive", "active.md", "active-index"}
-            or relative.startswith(("records/", "archive/", "active-index."))
-        ):
-            return None
         if _CURRENT_WAYFINDER_PATH.fullmatch(relative):
             return "wayfinder_state"
         return None

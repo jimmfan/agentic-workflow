@@ -29,10 +29,7 @@ preserve_paths = [
 ]
 forbid_created_globs = [
   "docs/decisions/**",
-  ".agent-wayfinder/active.md",
   ".agent-wayfinder/response-serialization/unknowns/U2*.md",
-  ".agent-wayfinder/response-serialization/decisions",
-  ".agent-wayfinder/response-serialization/decisions/**",
   ".agent-wayfinder/response-serialization/tickets",
   ".agent-wayfinder/response-serialization/tickets/**",
   ".scratch/**",

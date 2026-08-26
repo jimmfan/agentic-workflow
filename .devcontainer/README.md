@@ -3,7 +3,7 @@
 This development container supplies the complete toolchain needed to develop
 and verify Agent Workflow without changing the macOS host's Python setup. It
 uses Python 3.14 on Debian Bookworm, `uv`, Git, the GitHub CLI version whose
-`gh skill` interface is the project's live-tested provider baseline, and an
+`gh skill` interface is used by the explicit provider-snapshot refresh tool, and an
 exactly pinned Codex extension with a persistent project-specific login volume.
 
 The project itself has no third-party Python dependencies: its runtime,
@@ -65,10 +65,11 @@ environment, use this equivalent command in the **same Dev Container terminal**:
 uv run --no-project python skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
-Provider installation and update additionally require GitHub authentication.
-Authentication is not needed for ordinary development or the hermetic release
-gate. If live provider work is required, run this persistent login in the **Dev
-Container terminal**:
+Normal lifecycle install and update use the bundled provider snapshot and need
+no GitHub CLI authentication or network access. Authentication is needed only
+for an explicit maintainer snapshot refresh or other authorized GitHub work. If
+that work is required, run this persistent login in the **Dev Container
+terminal**:
 
 ```bash
 gh auth login --hostname github.com --web
@@ -130,7 +131,7 @@ docker volume rm agent-workflow-instructions-codex-home
 ```
 
 This permanently deletes only this project's copied or newly created Codex
-login and local state; it does not affect the separate ARC/EKS Codex volume.
+login and local state.
 Verify removal from the **same macOS host Terminal** with:
 
 ```bash

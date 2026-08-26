@@ -23,13 +23,8 @@ preserve_paths = []
 report_must_include = ["Domain Modeling"]
 forbid_created_globs = [
   ".scratch/**",
-  ".agent-wayfinder/active.md",
   ".agent-wayfinder/policy-execution-migration/facts.md",
-  ".agent-wayfinder/policy-execution-migration/facts",
-  ".agent-wayfinder/policy-execution-migration/facts/**",
   ".agent-wayfinder/policy-execution-migration/decisions.md",
-  ".agent-wayfinder/policy-execution-migration/decisions",
-  ".agent-wayfinder/policy-execution-migration/decisions/**",
   ".agent-wayfinder/policy-execution-migration/tickets/**",
 ]
 
@@ -67,15 +62,7 @@ path = ".agent-wayfinder/policy-execution-migration/evidence"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/policy-execution-migration/facts"
-
-[[assertions]]
-kind = "path_not_exists"
 path = ".agent-wayfinder/policy-execution-migration/facts.md"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/policy-execution-migration/decisions"
 
 [[assertions]]
 kind = "path_not_exists"

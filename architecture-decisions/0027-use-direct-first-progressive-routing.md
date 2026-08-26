@@ -2,7 +2,6 @@
 
 - Status: accepted
 - Date: 2026-08-19
-- Consolidated: 2026-08-22
 
 ## Context
 

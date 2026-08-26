@@ -2,16 +2,13 @@
 
 - Status: accepted
 - Date: 2026-08-14
-- Consolidated: 2026-08-22
 
 ## Context
 
 Agent Workflow must be able to install, repair, update, and remove the files it
-manages without risking unique information owned by the project or user. Earlier
-pre-1.0 designs accumulated checksums, restoration data, retirement catalogs,
-provider inventories, and upgrade machinery that made reconstructable files
-look like package-manager state. Most of that complexity protected neither
-project data nor core routing.
+manages without risking unique information owned by the project or user.
+Reconstructable framework output does not justify package-manager machinery;
+the ownership boundary should protect project data and core routing directly.
 
 The source package also contains policies and skill resources destined for an
 installed repository. The supported bootstrap and adoption path needs an

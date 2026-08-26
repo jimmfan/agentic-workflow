@@ -2,10 +2,10 @@ schema_version = 1
 id = "wayfinder-completed-effort-new-destination"
 name = "Completed effort does not absorb a new destination"
 fixture = "wayfinder-settlement"
-request = "Start a Wayfinder effort to validate legacy lifecycle interpretation. The similarly named wayfinder-lifecycle-completed effort reached its different destination and must not be repurposed. Create one new stable effort map and leave the completed path unchanged."
+request = "Start a Wayfinder effort to validate current lifecycle interpretation. The similarly named wayfinder-lifecycle-completed effort reached its different destination and must not be repurposed. Create one new stable effort map and leave the completed path unchanged."
 starting_state = [
   "The existing lifecycle-design map explicitly says completed and has no next work.",
-  "Legacy lifecycle validation is a materially new destination.",
+  "Current lifecycle validation is a materially new destination.",
   "Repository-local durable writes are authorized.",
 ]
 expect = [
@@ -23,16 +23,7 @@ preserve_paths = [
   "docs/wayfinder-lifecycle.md",
 ]
 forbid_created_globs = [
-  ".agent-wayfinder/wayfinder-lifecycle-completed/unknowns",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/unknowns/**",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/evidence",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/evidence/**",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/facts.md",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/facts",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/facts/**",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/decisions.md",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/decisions",
-  ".agent-wayfinder/wayfinder-lifecycle-completed/decisions/**",
+  ".agent-wayfinder/wayfinder-lifecycle-completed/**",
   "issues",
   "issues/**",
 ]
@@ -61,18 +52,6 @@ value = "- Status: completed"
 kind = "path_contains"
 path = ".agent-wayfinder/wayfinder-lifecycle-completed/map.md"
 value = "docs/wayfinder-lifecycle.md"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/wayfinder-lifecycle-completed/decisions"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/wayfinder-lifecycle-completed/decisions.md"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/wayfinder-lifecycle-completed/facts.md"
 
 [[assertions]]
 kind = "path_not_exists"

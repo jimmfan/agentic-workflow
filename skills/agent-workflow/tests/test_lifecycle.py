@@ -155,7 +155,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         sys.path.insert(0, str(scripts))
         try:
             refresh = load_module(
-                f"agentic_workflow_refresh_{name}",
+                f"agent_workflow_refresh_{name}",
                 scripts / "refresh_provider_snapshot.py",
             )
         finally:
@@ -212,9 +212,19 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
         self.assertTrue((self.project / ".agent-wayfinder").is_dir())
         self.assertEqual(list((self.project / ".agent-wayfinder").iterdir()), [])
-        self.assertFalse((self.project / ".wayfinder").exists())
-        self.assertFalse(
-            (self.project / ".agent-workflow/templates/active-state.md").exists()
+        self.assertEqual(
+            {
+                path.relative_to(self.project / ".agent-workflow").as_posix()
+                for path in (self.project / ".agent-workflow").rglob("*")
+                if path.is_file()
+            },
+            {
+                "README.md",
+                "contracts/wayfinder-state.md",
+                "install-manifest.json",
+                "providers.json",
+                "routing.md",
+            },
         )
         manifest = json.loads(
             (self.project / ".agent-workflow/install-manifest.json").read_text()
@@ -266,53 +276,31 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             )
         )
 
-    def test_historical_absence_is_not_a_blocker_or_recreated(self) -> None:
+    def test_absent_recorded_external_file_is_not_a_blocker_or_recreated(self) -> None:
         self.assert_ok(self.adopt("install"))
         manifest_path = self.project / ".agent-workflow/install-manifest.json"
         manifest = json.loads(manifest_path.read_text())
-        retired = self.project / ".agents/skills/retired-workflow/SKILL.md"
-        retired.parent.mkdir(parents=True)
-        retired.write_bytes(b"old managed bytes\n")
-        manifest["external_files"][".agents/skills/retired-workflow/SKILL.md"] = {
+        absent = self.project / ".agents/skills/removed-local-skill/SKILL.md"
+        absent.parent.mkdir(parents=True)
+        absent.write_bytes(b"previously recorded managed bytes\n")
+        manifest["external_files"][".agents/skills/removed-local-skill/SKILL.md"] = {
             "created": True,
-            "sha256": hashlib.sha256(retired.read_bytes()).hexdigest(),
+            "sha256": hashlib.sha256(absent.read_bytes()).hexdigest(),
         }
         manifest_path.write_text(json.dumps(manifest))
-        retired.unlink()
+        absent.unlink()
         self.assert_ok(self.adopt("update"))
-        self.assertFalse(retired.exists())
+        self.assertFalse(absent.exists())
 
     def test_arbitrary_durable_state_survives_update_remove_and_reinstall(self) -> None:
         state = self.project / ".agent-wayfinder"
-        (state / "records/nested").mkdir(parents=True)
-        (state / "records/nested/data.bin").write_bytes(b"\x00project\xffstate")
-        for legacy_name in (
-            "DEC-0001-legacy-choice.md",
-            "IMP-0002-legacy-work.md",
-            "DBG-0003-legacy-failure.md",
-            "IDP-0004-legacy-opportunity.md",
-        ):
-            (state / "records" / legacy_name).write_text(
-                f"# {legacy_name}\n\nOpaque historical project data.\n",
-                encoding="utf-8",
-            )
-        archive = state / "archive/2025"
-        archive.mkdir(parents=True)
-        (archive / "IDP-0005-completed-opportunity.md").write_text(
-            "# Historical archived opportunity\n",
-            encoding="utf-8",
-        )
-        (state / "active.md").write_text(
-            "records/IMP-0002-legacy-work.md\n",
-            encoding="utf-8",
-        )
-        (state / "active-index.json").write_text(
-            '{"current":"records/DBG-0003-legacy-failure.md"}\n',
-            encoding="utf-8",
-        )
-        (state / "custom.json").write_text('{"owner":"project"}\n')
+        unknown = state / "unrecognized-project-data"
+        (unknown / "nested").mkdir(parents=True)
+        (unknown / "note.txt").write_bytes(b"project-owned note\n")
+        (unknown / "nested/data.bin").write_bytes(b"\x00project\xffstate")
+        (unknown / "metadata.json").write_bytes(b'{"owner":"project"}\n')
         try:
-            (state / "record-link").symlink_to("records/nested/data.bin")
+            (unknown / "data-link").symlink_to("nested/data.bin")
         except OSError:
             pass
         original = tree_snapshot(state)
@@ -331,7 +319,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
     def test_human_edited_wayfinder_state_is_opaque_to_lifecycle(self) -> None:
         effort = self.project / ".agent-wayfinder/custom-effort"
         (effort / "unknowns").mkdir(parents=True)
-        (effort / "facts").mkdir()
+        (effort / "unrecognized-project-data").mkdir()
         (effort / "map.md").write_text(
             "# Personal layout\n\nNo standard headings; keep exactly.\n",
             encoding="utf-8",
@@ -340,8 +328,8 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             "# Facts\n\n## F1 — Ledger fact\n\n- Source: source.md\n\nKeep exactly.\n",
             encoding="utf-8",
         )
-        (effort / "facts/F2-legacy-fact.md").write_text(
-            "# F2: Legacy fact\n\n- Supported by: source.md\n\nKeep exactly.\n",
+        (effort / "unrecognized-project-data/note.txt").write_text(
+            "Human-owned content outside the current state shape.\n",
             encoding="utf-8",
         )
         (effort / "decisions.md").write_text(
@@ -452,7 +440,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         result = self.adopt("status")
         self.assert_ok(result)
         self.assertIn("Agent Workflow: healthy", result.stdout)
-        self.assertFalse((self.project / ".agent-wayfinder/active.md").exists())
+        self.assertEqual(list((self.project / ".agent-wayfinder").iterdir()), [])
         (self.project / ".agent-workflow/routing.md").unlink()
         result = self.adopt("status")
         self.assertEqual(result.returncode, 1)
@@ -937,6 +925,32 @@ class LifecycleAcceptanceTests(unittest.TestCase):
             openai_text,
         )
 
+    def test_setup_projection_omits_upstream_wayfinder_tracker_contract(
+        self,
+    ) -> None:
+        result = run_script(PROVIDERS, "install", self.project)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        for name in (
+            "issue-tracker-local.md",
+            "issue-tracker-github.md",
+            "issue-tracker-gitlab.md",
+        ):
+            projected = (
+                self.project / ".agents/skills/setup-matt-pocock-skills" / name
+            ).read_text(encoding="utf-8")
+            self.assertIn("## When a skill says", projected)
+            self.assertNotIn("## Wayfinding operations", projected)
+            self.assertNotIn("Used by `/wayfinder`", projected)
+
+            upstream = (
+                PACKAGE_ROOT
+                / "provider-snapshots/matt-pocock-skills/skills/"
+                "setup-matt-pocock-skills"
+                / name
+            ).read_text(encoding="utf-8")
+            self.assertIn("## Wayfinding operations", upstream)
+
     def test_research_projection_defaults_to_chat_without_repository_notes(
         self,
     ) -> None:
@@ -992,19 +1006,9 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self,
     ) -> None:
         state = self.project / ".agent-wayfinder"
-        (state / "records").mkdir(parents=True)
-        (state / "records/IDP-0042-legacy-platform-note.md").write_text(
-            "# Historical IDP record\n",
-            encoding="utf-8",
-        )
-        (state / "archive/2024").mkdir(parents=True)
-        (state / "archive/2024/DEC-0007-retired-choice.md").write_text(
-            "# Historical archived decision\n",
-            encoding="utf-8",
-        )
-        (state / "active.md").write_text(
-            "records/IDP-0042-legacy-platform-note.md\n",
-            encoding="utf-8",
+        (state / "unrecognized-project-data").mkdir(parents=True)
+        (state / "unrecognized-project-data/note.txt").write_bytes(
+            b"provider repair must preserve these bytes\n"
         )
         original_state = tree_snapshot(state)
 
@@ -1113,7 +1117,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         self.assertEqual(status.returncode, 0, status.stdout + status.stderr)
         self.assertIn("\\u96ea", status.stdout)
 
-    def test_payload_content_edits_need_no_manifest_refresh_but_mapping_changes_do(
+    def test_payload_content_edits_need_no_refresh_and_extra_surfaces_are_rejected(
         self,
     ) -> None:
         package_copy = self.copy_package("mapping-change")
@@ -1139,7 +1143,13 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         unmapped.write_text("# Newly packaged contract\n", encoding="utf-8")
         verify = run_script(package_copy / "scripts/verify_package.py")
         self.assertEqual(verify.returncode, 1)
-        self.assertIn("manifest is stale", verify.stderr)
+        self.assertIn("authored payload differs from the exact current package surface", verify.stderr)
+
+        refresh = run_script(
+            package_copy / "scripts/verify_package.py", "--refresh-manifest"
+        )
+        self.assertEqual(refresh.returncode, 1)
+        self.assertIn("authored payload differs from the exact current package surface", refresh.stderr)
 
     def test_verifier_rejects_duplicate_payload_version(self) -> None:
         package_copy = self.copy_package("duplicate-payload-version")
@@ -1230,7 +1240,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         wayfinder = next(
             item for item in raw["provider"]["skills"] if item["name"] == "wayfinder"
         )
-        wayfinder.pop("agentic_workflow_adapter")
+        wayfinder.pop("agent_workflow_adapter")
         wayfinder["invocation"]["codex"] = "user-only"
         wayfinder["invocation"]["github-copilot"] = "user-only"
         declaration.write_text(json.dumps(raw), encoding="utf-8")
@@ -1239,6 +1249,23 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
         self.assertIn("Wayfinder must declare", verify.stderr)
+
+    def test_verifier_requires_setup_current_coordination_adapter(self) -> None:
+        package_copy = self.copy_package("setup-coordination-adapter-declaration")
+        declaration = package_copy / "payload/agent-workflow/providers.json"
+        raw = json.loads(declaration.read_text(encoding="utf-8"))
+        setup = next(
+            item
+            for item in raw["provider"]["skills"]
+            if item["name"] == "setup-matt-pocock-skills"
+        )
+        setup.pop("agent_workflow_adapter")
+        declaration.write_text(json.dumps(raw), encoding="utf-8")
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("setup must declare the current-coordination adapter", verify.stderr)
 
     def test_verifier_rejects_conflicting_owned_wayfinder_runtime_content(self) -> None:
         package_copy = self.copy_package("conflicting-wayfinder-runtime")
@@ -1264,7 +1291,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         implement = next(
             item for item in raw["provider"]["skills"] if item["name"] == "implement"
         )
-        implement.pop("agentic_workflow_adapter")
+        implement.pop("agent_workflow_adapter")
         declaration.write_text(json.dumps(raw), encoding="utf-8")
 
         verify = run_script(package_copy / "scripts/verify_package.py")
@@ -1281,7 +1308,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         grilling = next(
             item for item in raw["provider"]["skills"] if item["name"] == "grilling"
         )
-        grilling.pop("agentic_workflow_adapter")
+        grilling.pop("agent_workflow_adapter")
         declaration.write_text(json.dumps(raw), encoding="utf-8")
 
         verify = run_script(package_copy / "scripts/verify_package.py")
@@ -1296,7 +1323,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
         research = next(
             item for item in raw["provider"]["skills"] if item["name"] == "research"
         )
-        research.pop("agentic_workflow_adapter")
+        research.pop("agent_workflow_adapter")
         declaration.write_text(json.dumps(raw), encoding="utf-8")
 
         verify = run_script(package_copy / "scripts/verify_package.py")
@@ -1392,7 +1419,7 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
     def test_provider_reference_validation_rejects_external_resources(self) -> None:
         snapshot_module = load_module(
-            "agentic_workflow_provider_snapshot",
+            "agent_workflow_provider_snapshot",
             PACKAGE_ROOT / "scripts/provider_snapshot.py",
         )
         skill = Path(self.temporary.name) / "referencing-skill"
@@ -1403,24 +1430,6 @@ class LifecycleAcceptanceTests(unittest.TestCase):
 
         with self.assertRaisesRegex(snapshot_module.SnapshotTreeError, "escape"):
             snapshot_module.validate_local_references(skill)
-
-    def test_verifier_rejects_forbidden_payload_paths(self) -> None:
-        forbidden_paths = (
-            "payload/agent-workflow/runtime/controller.py",
-            "payload/agent-workflow/observability/events.py",
-            "payload/hosts",
-        )
-        for index, relative in enumerate(forbidden_paths):
-            with self.subTest(path=relative):
-                package_copy = self.copy_package(f"forbidden-payload-{index}")
-                forbidden = package_copy / relative
-                forbidden.parent.mkdir(parents=True, exist_ok=True)
-                forbidden.write_text("forbidden runtime payload\n", encoding="utf-8")
-
-                verify = run_script(package_copy / "scripts/verify_package.py")
-
-                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-                self.assertIn("deferred v0 subsystem remains packaged", verify.stderr)
 
     def test_verifier_distinguishes_json_catalogs_from_toml_scenarios(self) -> None:
         package_copy = self.copy_package("scenario-layers")
@@ -1456,7 +1465,7 @@ class BootstrapSafetyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.bootstrap = load_module(
-            "agentic_workflow_bootstrap", PACKAGE_ROOT / "scripts/bootstrap.py"
+            "agent_workflow_bootstrap", PACKAGE_ROOT / "scripts/bootstrap.py"
         )
 
     def archive(self, entries: list[tuple[str, bytes, str]]) -> bytes:

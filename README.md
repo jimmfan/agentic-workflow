@@ -1,12 +1,14 @@
 # Agent Workflow
 
-Agent Workflow is an experimental stateful workflow layer for coding agents.
+Agent Workflow is an experimental, thin orchestration layer for coding agents.
 
-It is designed to keep clear, bounded work direct while giving longer-running engineering work a project-owned place to record and resume important state across sessions.
+It keeps clear, bounded work direct, progressively loads specialist methods,
+and uses Wayfinder when consequential coordination must survive across sessions.
 
 The project started from a practical problem: engineering work rarely happens in one clean session. Questions get investigated, decisions depend on what was learned, implementation exposes new unknowns, work gets blocked, and the project gets picked up again later.
 
-Agent Workflow explores whether explicitly recording that state can help an agent continue work without depending on the previous chat or session.
+Agent Workflow explores whether routing plus a small, map-first coordination
+surface can help an agent continue without depending on the previous chat.
 
 Its core goal is to preserve the material context that humans and later agents
 need to make or evaluate responsible project decisions. Dependent work should
@@ -101,11 +103,7 @@ The problem this project is focused on is preserving the useful connections betw
 Agent Workflow currently combines two mechanisms:
 
 * **Routing** — clear, bounded requests can remain direct; other work can be routed to a relevant workflow.
-* **Durable project state** — work that needs continuity can leave behind structured state for later sessions.
-
-The workflow handles the current activity.
-
-The state records what later work may need to know.
+* **Wayfinder coordination** — work that crosses the durable-coordination threshold can leave a map and only independently useful supporting state for later sessions.
 
 ## Architecture
 
@@ -121,7 +119,6 @@ flowchart LR
     router --> provider["Optional provider"]
 
     discovery --> result["Outcome / findings"]
-    wayfinder --> result
     implementation --> result
     debugging --> result
     provider --> result
@@ -129,9 +126,8 @@ flowchart LR
     direct --> verify["Verification when useful"]
     result --> verify
 
-    result --> durable{"Persist state?"}
-    durable -->|no| verify
-    durable -->|yes| state[".agent-wayfinder/"]
+    wayfinder <--> state[".agent-wayfinder/"]
+    wayfinder --> result
 
     state --> resume["Later session"]
     resume --> router
@@ -164,7 +160,7 @@ weighted complexity score, and explicit invocation is not required.
 
 Optional provider capabilities can be used when installed and available. If one is unavailable, the framework must not report that it ran.
 
-## Durable project state
+## Durable coordination
 
 Durable state exists when important project context must remain distinguishable
 outside ordinary conversational memory, including work likely to continue in a
@@ -198,7 +194,9 @@ The intended source-of-truth order is explicit:
 
 ## Wayfinder
 
-Wayfinder is the durable planning workflow for efforts where unknowns, decisions, dependencies, and resulting work need to remain connected over time.
+Wayfinder is Agent Workflow's sole framework-owned durable coordinator for
+efforts where unknowns, decisions, dependencies, and resulting work need to
+remain connected over time.
 
 The practical threshold is whether a careful engineer would start structured notes now because losing or conflating important state could cause a later mistake. The effort does not have to be huge or certainly multi-session. Explicit Wayfinder requests still select it, explicit opt-outs are respected, and read-only work never creates or updates its state.
 
@@ -327,14 +325,14 @@ paths; durable F#/D# links target the exact readable heading in `facts.md` or
 effort use repository-relative Markdown links with readable labels when a
 reference must remain durable beyond the current Wayfinder representation.
 
-Only `facts.md` and `decisions.md` ledgers are current F#/D# state. Existing
-per-record `facts/F#-*.md` and `decisions/D#-*.md` files are opaque historical
-project data. Wayfinder may read directly relevant history but never allocates,
-edits, retires, or automatically migrates those files. A nonempty historical
-directory blocks current writes of the same type until manual project
-reconciliation; the unrelated F/D type remains independent. Install, update,
-status, remove, and reinstall preserve the complete project-owned tree without
-interpreting it.
+Wayfinder recognizes only the current map, optional F#/D# ledgers, and
+canonical U#/E# files. Other content under `.agent-wayfinder/` remains
+project-owned: Wayfinder does not interpret, mutate, or silently normalize it.
+Independent current work may proceed when its authorized reads and writes do
+not depend on unknown content. A mutation stops safely for a real collision,
+reference conflict, semantic ambiguity, unsafe filesystem boundary, or an
+inability to perform the write truthfully. Install, update, status, remove, and
+reinstall preserve the complete project-owned tree byte-for-byte.
 
 Wayfinder does not own implementation work items. When evidence supports it, the
 map concisely shows the critical path, independent parallel work, and material
@@ -446,10 +444,8 @@ target-project/
         └── evidence/
 ```
 
-Per-record F#/D#, `DEC`, `IMP`, `DBG`, `IDP`, `records/`, `archive/`, and
-active-index content is untouched historical project data. Current workflows do
-not allocate from, edit, retire, automatically resume, migrate, normalize,
-rewrite, or delete it.
+Only recognized current Wayfinder state is interpreted. Arbitrary other
+project-owned content remains untouched.
 
 ### `.agent-workflow/`
 
@@ -515,15 +511,16 @@ decisions ledger section or the independently useful U#/E# file.
 
 ## Scope
 
-Agent Workflow is a project-level workflow and state layer, not a coding-agent runtime or general-purpose memory system. Framework files are replaceable; durable project state remains separate and understandable without the framework.
+Agent Workflow is a project-level routing and orchestration layer, not a coding-agent runtime or general-purpose memory system. Framework files are replaceable; durable project state remains separate and understandable without the framework.
 
 ## Prerequisites
 
 Install with `uv` in a POSIX-style shell in the environment that owns the target
 project: Bash or Zsh on macOS, Linux, WSL, or a Linux-based devcontainer. Native
 PowerShell and CMD are not supported; Git Bash on native Windows is best-effort.
-Installation requires HTTPS access to GitHub. The package requires Python 3.11
-or newer; `uv` manages the tool environment.
+Installing the CLI from GitHub requires HTTPS access. Once installed, the
+project lifecycle and bundled provider projection are offline. The package
+requires Python 3.11 or newer; `uv` manages the tool environment.
 
 ## Install
 
@@ -620,7 +617,6 @@ The current design follows these constraints:
 * [Behavioral testing](docs/behavioral-testing.md)
 * [Verification](docs/verification.md)
 * [Provider research](docs/provider-research.md)
-* [Focused Wayfinder VS Code experiment history](docs/focused-wayfinder-vscode-experiment-history.md)
 
 ## Acknowledgments
 

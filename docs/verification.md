@@ -36,9 +36,10 @@ It checks:
 
 - Python syntax, package structure, regular-file modes, and synchronized versions;
 - the exact current source-to-target mapping and synchronized version;
-- absence of literal root-policy files and host customization trees in the
+- the exact allowed authored payload, root-template, workflow-skill, and runtime
+  projection inventories;
+- absence of executable or host-customization content in the
   activation-sensitive payload namespace;
-- absence of deferred controller, hook, and observability payloads;
 - routing, authorization, Wayfinder-state, and provider declaration contracts;
 - thin-router word budgets and deterministic positive/negative escalation
   contracts (not live model-routing proof);
@@ -103,12 +104,10 @@ The suite prioritizes behavior that matters before 1.0:
 
 - missing and drifted `.agent-workflow/` files are restored from current desired
   state, and obsolete internal files disappear;
-- arbitrary `.agent-wayfinder/` contents, including historical IDP, `records/`,
-  `archive/`, and active-index data, survive install, status, update, remove,
-  reinstall, and provider repair byte-for-byte;
-- canonical local Wayfinder maps, F#/D# ledgers, U#/E# files, and legacy
-  per-record F#/D# files survive the same lifecycle sequence without schema
-  interpretation, normalization, or implicit migration;
+- arbitrary unrecognized project-owned `.agent-wayfinder/` contents survive
+  install, status, update, remove, reinstall, and provider repair byte-for-byte;
+- canonical local Wayfinder maps, F#/D# ledgers, and U#/E# files survive the
+  same lifecycle sequence without schema interpretation or normalization;
 - project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
 - malformed composite markers and unknown external collisions stop before
   partial mutation;
@@ -152,12 +151,12 @@ reread-before-write conflict handling, separate U#/E# artifacts, readable
 section anchors, and progressive retrieval of relevant detail without an
 arbitrary file count.
 
-Historical-state coverage proves per-record F#/D# bytes remain opaque and
-unchanged, same-type ledger append and retirement fail closed pending manual
-project reconciliation, and the unrelated F/D type remains independent. No
-runtime migration or representation-selection machinery exists. Lifecycle
-preservation exercises install, update, status, remove, reinstall, and provider
-repair byte-for-byte. The behavioral suite also keeps
+Unknown-content coverage proves unrecognized project-owned bytes remain opaque
+and unchanged, are not treated as current references or allocation state, and
+do not block independent current work. Recognized-container ambiguity and real
+filesystem collisions still fail safely. Lifecycle preservation exercises
+install, update, status, remove, reinstall, and provider repair byte-for-byte.
+The behavioral suite also keeps
 implementation work-item artifacts out of Wayfinder, resumes relevant map
 state, reconciles affected state after implementation, excludes unrelated
 detail and efforts, reports stale state without mutation during read-only work,

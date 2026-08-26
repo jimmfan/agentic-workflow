@@ -23,7 +23,6 @@ verification_command = "Confirm that the existing map was revised in place to ma
 preserve_paths = ["architecture.md"]
 forbid_created_globs = [
   ".scratch/**",
-  ".agent-wayfinder/active.md",
   ".agent-wayfinder/policy-control-plane",
   ".agent-wayfinder/policy-control-plane/**",
   ".agent-wayfinder/policy-execution-migration-v2",

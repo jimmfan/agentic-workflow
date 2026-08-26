@@ -1,10 +1,10 @@
 schema_version = 1
-id = "wayfinder-explicit-historical-effort-access"
-name = "Explicitly named historical effort remains accessible"
+id = "wayfinder-explicit-completed-effort-access"
+name = "Explicitly named completed effort remains accessible"
 fixture = "wayfinder-settlement"
 request = "Read the explicitly named .agent-wayfinder/wayfinder-lifecycle-completed/map.md and summarize its outcome without changing files or treating it as current work."
 starting_state = [
-  "The exact safe historical map path is supplied.",
+  "The exact safe completed map path is supplied.",
   "The completed effort remains readable but has no current frontier.",
 ]
 expect = [

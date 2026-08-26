@@ -72,8 +72,6 @@ paused, name the exact app, window, and control, give the single exact action
 required, and ask me to confirm when complete. Also explicitly tell me when a
 requested action has taken effect or no further action is needed.
 
-I’d use this as the **entire source-repository amendment below the installed/dogfood section**. It keeps the high-value constraints while pushing details into progressively loaded docs/contracts.
-
 # Agent Workflow source repository
 
 ## Pre-1.0 engineering priority

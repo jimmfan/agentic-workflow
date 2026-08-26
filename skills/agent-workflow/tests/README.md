@@ -18,9 +18,9 @@ subprocess.
 - `test_wayfinder_state.py` validates the authored, installed, and generated
   state contract plus a deterministic state-transition oracle for map-only
   efforts; F#/D# ledger creation, allocation, duplicate rejection, mutation,
-  and retirement; independent U#/E# files; opaque historical F#/D# preservation
-  and fail-closed writes; effort-lock serialization; effort lifecycle;
-  progressive retrieval; and projection parity.
+  and retirement; independent U#/E# files; non-interpretation of unrecognized
+  project-owned content; safe collision handling; effort-lock serialization;
+  effort lifecycle; progressive retrieval; and projection parity.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
@@ -71,17 +71,17 @@ serialization across maps, ledgers, U#, and E#, and reference-safe targeted
 retirement without requiring a prior commit.
 
 The catalog also covers completed-effort/new-destination separation, explicit
-historical access, and ensuring that an unrelated existing effort neither
+completed-effort access, and ensuring that an unrelated existing effort neither
 captures a simple route nor gets loaded. Selective U# promotion keeps
 authority-owned, external-approval, and cross-area-gating uncertainty without
 promoting incidental fog or requiring an exact artifact count. The live
 Wayfinder contracts preserve an unrelated effort during reconciliation, keep
 stale-state audits read-only, and require conflicting reconciliation to stop
-without guessing. Lifecycle coverage preserves historical per-record F#/D#,
-DEC/IMP/DBG/IDP, `records/`, `archive/`, and active-index bytes as opaque project
-data. Deterministic state tests prove same-type current ledger writes fail closed
-without runtime migration, while current workflow scenarios resume only from
-supported Wayfinder state or canonical provider artifacts.
+without guessing. Lifecycle coverage preserves arbitrary unrecognized
+project-owned bytes, including binary data and symlink targets, through every
+supported lifecycle operation. Deterministic state tests prove unknown content
+is not interpreted as current state, independent writes may proceed, and real
+recognized-container ambiguity still fails safely.
 
 See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema,
 evidence model, commands, side effects, cleanup, and limitations.

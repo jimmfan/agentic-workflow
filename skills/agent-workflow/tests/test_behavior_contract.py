@@ -12,7 +12,7 @@ TEST_ROOT = Path(__file__).resolve().parent
 
 def load_behavior():
     path = TEST_ROOT / "behavior.py"
-    spec = importlib.util.spec_from_file_location("agentic_workflow_behavior", path)
+    spec = importlib.util.spec_from_file_location("agent_workflow_behavior", path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -24,7 +24,7 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
-    def test_implementation_reentry_uses_current_map_and_accepted_adr_not_legacy_imp(
+    def test_implementation_reentry_uses_current_map_and_preserves_unknown_content(
         self,
     ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
@@ -34,11 +34,11 @@ class BehaviorContractTests(unittest.TestCase):
         state_not_used = {
             path.as_posix() for path in scenario.state_must_not_include
         }
-        legacy_imp = ".agent-wayfinder/records/IMP-0001-discount-bounds.md"
+        unknown_note = ".agent-wayfinder/unrecognized-project-data/note.txt"
 
-        self.assertIn(legacy_imp, preserved)
-        self.assertIn(legacy_imp, state_not_used)
-        self.assertNotIn(legacy_imp, state_used)
+        self.assertIn(unknown_note, preserved)
+        self.assertIn(unknown_note, state_not_used)
+        self.assertNotIn(unknown_note, state_used)
         self.assertIn(".agent-wayfinder/discount-bounds/map.md", state_used)
         self.assertIn("docs/decisions/0001-discount-bounds.md", state_used)
 
@@ -384,9 +384,39 @@ class BehaviorContractTests(unittest.TestCase):
             (
                 "current-unknown-is-recorded-uncertainty",
                 "genuine-unresolved-decision",
-                ".agent-wayfinder/persistence/unknowns/U1-backend.md",
+                (
+                    ".agent-wayfinder/persistence/map.md",
+                    ".agent-wayfinder/persistence/unknowns/U1-backend.md",
+                ),
                 "expect:uncertainty_recorded_or_blocked",
                 True,
+            ),
+            (
+                "current-unknown-uses-recognized-state",
+                "genuine-unresolved-decision",
+                (
+                    ".agent-wayfinder/persistence/map.md",
+                    ".agent-wayfinder/persistence/unknowns/U1-backend.md",
+                ),
+                "contract:recognized-wayfinder-mutations",
+                True,
+            ),
+            (
+                "orphan-unknown-is-rejected",
+                "genuine-unresolved-decision",
+                ".agent-wayfinder/persistence/unknowns/U1-backend.md",
+                "contract:recognized-wayfinder-mutations",
+                False,
+            ),
+            (
+                "unrecognized-wayfinder-write-is-rejected",
+                "genuine-unresolved-decision",
+                (
+                    ".agent-wayfinder/persistence/map.md",
+                    ".agent-wayfinder/persistence/notes/choice.md",
+                ),
+                "contract:recognized-wayfinder-mutations",
+                False,
             ),
             (
                 "bare-unknown-is-not-recorded-uncertainty",
@@ -438,23 +468,9 @@ class BehaviorContractTests(unittest.TestCase):
                 True,
             ),
             (
-                "created-wayfinder-decision-is-invention",
-                "genuine-unresolved-decision",
-                ".agent-wayfinder/persistence/decisions/D1-use-sqlite.md",
-                "must-not:silent_decision_invention",
-                False,
-            ),
-            (
                 "created-wayfinder-decision-ledger-is-invention",
                 "genuine-unresolved-decision",
                 ".agent-wayfinder/persistence/decisions.md",
-                "must-not:silent_decision_invention",
-                False,
-            ),
-            (
-                "malformed-wayfinder-decision-is-still-invention",
-                "genuine-unresolved-decision",
-                ".agent-wayfinder/persistence/decisions/D1.md",
                 "must-not:silent_decision_invention",
                 False,
             ),
@@ -467,12 +483,19 @@ class BehaviorContractTests(unittest.TestCase):
             ),
         )
 
-        for label, scenario_id, changed_path, result_name, expected in cases:
+        for label, scenario_id, changed_paths, result_name, expected in cases:
             with self.subTest(case=label), tempfile.TemporaryDirectory() as temporary:
                 scenario = scenarios[scenario_id]
                 workspace = behavior.copy_fixture(scenario, Path(temporary))
                 before = behavior.snapshot(workspace)
-                if changed_path is not None:
+                paths = (
+                    ()
+                    if changed_paths is None
+                    else (changed_paths,)
+                    if isinstance(changed_paths, str)
+                    else changed_paths
+                )
+                for changed_path in paths:
                     target = workspace / changed_path
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_text("adversarial artifact\n", encoding="utf-8")
@@ -541,13 +564,6 @@ class BehaviorContractTests(unittest.TestCase):
             ".agent-wayfinder/response-serialization/decisions.md"
         )
         self.assertIn(decision_path, existing.state_must_include)
-        self.assertNotIn(
-            behavior.PurePosixPath(
-                ".agent-wayfinder/response-serialization/decisions/"
-                "D1-use-compact-sorted-json.md"
-            ),
-            existing.state_must_include,
-        )
 
         fixture = behavior.FIXTURE_ROOT / existing.fixture
         decisions = (fixture / decision_path.as_posix()).read_text(encoding="utf-8")
@@ -559,19 +575,6 @@ class BehaviorContractTests(unittest.TestCase):
         self.assertIn(
             "decisions.md#d1--use-compact-sorted-json",
             mapping,
-        )
-        self.assertFalse(
-            (
-                fixture
-                / ".agent-wayfinder/response-serialization/decisions/"
-                "D1-use-compact-sorted-json.md"
-            ).exists()
-        )
-        self.assertFalse(
-            (
-                fixture
-                / ".agent-wayfinder/response-serialization/decisions"
-            ).exists()
         )
 
         expected_output_paths = {
@@ -601,18 +604,6 @@ class BehaviorContractTests(unittest.TestCase):
                     )
                 )
 
-    def test_fact_and_decision_contracts_do_not_count_per_record_files(self) -> None:
-        offenders = []
-        for scenario in behavior.load_scenarios():
-            for assertion in scenario.assertions:
-                path = assertion.path.as_posix()
-                if assertion.kind == "glob_count" and (
-                    "/facts/F" in path or "/decisions/D" in path
-                ):
-                    offenders.append(f"{scenario.id}:{path}")
-
-        self.assertEqual(offenders, [])
-
     def test_negative_knowledge_contracts_cover_root_ledgers(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
         prohibited_ledgers = {
@@ -621,10 +612,6 @@ class BehaviorContractTests(unittest.TestCase):
             ),
             "wayfinder-contract-smoke": (
                 ".agent-wayfinder/runtime-rollout/decisions.md",
-            ),
-            "wayfinder-completed-effort-new-destination": (
-                ".agent-wayfinder/wayfinder-lifecycle-completed/facts.md",
-                ".agent-wayfinder/wayfinder-lifecycle-completed/decisions.md",
             ),
             "wayfinder-domain-modeling-discovery": (
                 ".agent-wayfinder/zero-downtime-platform-cutover/decisions.md",
@@ -654,7 +641,7 @@ class BehaviorContractTests(unittest.TestCase):
                         ledger,
                     )
 
-    def test_current_fixtures_use_ledgers_and_unrelated_history_stays_opaque(
+    def test_current_fixtures_use_fact_and_decision_ledgers(
         self,
     ) -> None:
         for fixture_name, effort_name in (
@@ -670,17 +657,15 @@ class BehaviorContractTests(unittest.TestCase):
                 )
                 self.assertTrue((effort / "facts.md").is_file())
                 self.assertTrue((effort / "decisions.md").is_file())
-                self.assertFalse((effort / "facts").exists())
-                self.assertFalse((effort / "decisions").exists())
-
-        historical = (
+        unrelated = (
             behavior.FIXTURE_ROOT
             / "wayfinder-unrelated/.agent-wayfinder/database-migration"
         )
-        self.assertTrue(
-            (historical / "decisions/D1-preserve-rollback.md").is_file()
+        self.assertTrue((unrelated / "decisions.md").is_file())
+        self.assertIn(
+            "## D1 — Preserve rollback",
+            (unrelated / "decisions.md").read_text(encoding="utf-8"),
         )
-        self.assertFalse((historical / "decisions.md").exists())
 
     def test_glob_assertions_accept_stable_ids_without_fixing_filename_slugs(
         self,
