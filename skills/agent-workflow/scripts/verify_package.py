@@ -26,7 +26,7 @@ REPOSITORY_ROOT = PACKAGE_ROOT.parent.parent
 PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
 MINIMUM_PYTHON = (3, 11)
-MANIFEST_SCHEMA = 6
+MANIFEST_SCHEMA = 7
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
 MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 FENCED_CODE = re.compile(r"(?ms)^```[^\n]*\n.*?^```[ \t]*$")
@@ -35,6 +35,7 @@ INVOCATION_POLICIES = frozenset({"implicit", "user-only", "unavailable"})
 # Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
 PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
 PRE_THIN_DIRECT_ROOT_WORDS = 682
+GLOBAL_RECONCILIATION_RULE_WORDS = 94
 REVIEWED_PROVIDER = {
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
@@ -154,7 +155,6 @@ def expected_mappings() -> list[dict[str, str]]:
 def generated_manifest() -> Mapping[str, object]:
     return {
         "schema_version": MANIFEST_SCHEMA,
-        "framework_version": version(),
         "framework_owned": expected_mappings(),
     }
 
@@ -174,6 +174,7 @@ def check_structure() -> None:
             path.is_file() and not path.is_symlink(),
             f"missing or unsafe package file: {relative}",
         )
+    version()
     duplicate_version = PAYLOAD_ROOT / "VERSION"
     require(
         not duplicate_version.exists() and not duplicate_version.is_symlink(),
@@ -301,11 +302,14 @@ def check_router_contract() -> None:
             f"thin root router lacks required boundary: {required}",
         )
     require(
-        len(agents.split()) <= PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5,
+        len(agents.split())
+        <= PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5 + GLOBAL_RECONCILIATION_RULE_WORDS,
         "thin root router exceeds the prior ambiguity-gate context budget",
     )
     require(
-        len(agents.split()) <= PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100,
+        len(agents.split())
+        <= PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100
+        + GLOBAL_RECONCILIATION_RULE_WORDS,
         "thin root router reduces confidently Direct context by less than 35%",
     )
     require(

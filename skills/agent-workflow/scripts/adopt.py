@@ -19,6 +19,7 @@ from typing import Iterable, Mapping, MutableMapping, Sequence
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 DISTRIBUTION_MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
+VERSION_FILE = PACKAGE_ROOT / "VERSION"
 FRAMEWORK_ROOT = PurePosixPath(".agent-workflow")
 DURABLE_ROOT = PurePosixPath(".agent-wayfinder")
 INSTALL_MANIFEST = FRAMEWORK_ROOT / "install-manifest.json"
@@ -27,7 +28,7 @@ MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
 MANAGED_END = b"<!-- agent-workflow:managed-end -->\n"
 PROJECT_BEGIN = b"\n<!-- agent-workflow:project-instructions -->\n"
 MINIMUM_PYTHON = (3, 11)
-DISTRIBUTION_SCHEMA = 6
+DISTRIBUTION_SCHEMA = 7
 INSTALL_SCHEMA = 1
 LOCAL_REVISION = "unreleased-local-package"
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
@@ -119,14 +120,26 @@ def load_json(path: Path, label: str) -> MutableMapping[str, object]:
     return value
 
 
+def package_version() -> str:
+    if VERSION_FILE.is_symlink() or not VERSION_FILE.is_file():
+        raise AdoptionError(
+            f"package VERSION must be a regular non-symlink file: {VERSION_FILE}"
+        )
+    try:
+        version = VERSION_FILE.read_text(encoding="utf-8").strip()
+    except (OSError, UnicodeError) as exc:
+        raise AdoptionError(f"cannot read package VERSION: {exc}") from exc
+    if re.fullmatch(r"\d+\.\d+\.\d+", version) is None:
+        raise AdoptionError("package VERSION must use x.y.z")
+    return version
+
+
 def load_distribution() -> tuple[str, list[tuple[PurePosixPath, PurePosixPath]]]:
     raw = load_json(DISTRIBUTION_MANIFEST, "distribution manifest")
     if raw.get("schema_version") != DISTRIBUTION_SCHEMA:
         raise AdoptionError("unsupported distribution manifest schema")
-    version = raw.get("framework_version")
+    version = package_version()
     mappings = raw.get("framework_owned")
-    if not isinstance(version, str) or re.fullmatch(r"\d+\.\d+\.\d+", version) is None:
-        raise AdoptionError("distribution manifest has an invalid framework_version")
     if not isinstance(mappings, list):
         raise AdoptionError("distribution manifest needs a framework_owned array")
 

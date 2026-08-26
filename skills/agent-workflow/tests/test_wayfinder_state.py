@@ -908,6 +908,19 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, self.normalized)
 
+    def test_fact_corrections_update_the_same_scoped_fact_in_place(self) -> None:
+        for required in (
+            "Treat each F# as the current canonical statement of one scoped factual conclusion",
+            "same subject, corrected value or scope",
+            "update that F# in place",
+            "Do not create a new F# merely to preserve history",
+            "otherwise Git owns the history",
+            "only for an independently useful fact with distinct meaning or scope",
+            "mark the existing fact `disputed` or `stale` rather than creating another established fact",
+            "Keep a `superseded` decision only while it adds current navigational value",
+        ):
+            self.assertIn(required, self.normalized)
+
     def test_contract_protects_sensitive_data_and_unknown_project_content(
         self,
     ) -> None:

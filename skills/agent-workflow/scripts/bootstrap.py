@@ -29,6 +29,7 @@ MAX_ARCHIVE_MEMBERS = 10_000
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 MINIMUM_PYTHON = (3, 11)
 RUNTIME_PACKAGE_REQUIREMENTS = (
+    (PurePosixPath("VERSION"), "package version"),
     (PurePosixPath("scripts/lifecycle.py"), "lifecycle entrypoint"),
     (PurePosixPath("scripts/adopt.py"), "framework reconciliation entrypoint"),
     (PurePosixPath("payload/distribution/manifest.json"), "lifecycle mapping metadata"),
