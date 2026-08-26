@@ -12,8 +12,8 @@ methodology, while this contract owns the Git-native state and continuation
 mechanics. This is durable project knowledge and coordination state, not an
 issue tracker, specialist notebook, or mirror of `.scratch/` or an external
 tracker.
-Do not create or update `.agent-wayfinder/active.md`; the effort map is the
-only re-entry point.
+The selected effort's `map.md` is its only re-entry point. Add no global state
+registry or second framework-owned frontier.
 
 ## Responsibility boundary
 
@@ -96,8 +96,8 @@ helps re-entry, dependencies, blockers, and next work. Do not copy a specialist
 method, transcript, or temporary bookkeeping into Wayfinder.
 
 If specialist work is interrupted, the selected effort map and only justified
-U/E/F/D detail become the re-entry point. No DEC, IMP, DBG, or replacement
-record is allocated.
+U/E/F/D detail become the re-entry point. Create no separate specialist
+continuity record.
 
 The resolution method determines what evidence or authority is sufficient to
 answer the question. It is not merely a label on a U# and does not require a
@@ -183,14 +183,22 @@ map nor a supporting record merely because Wayfinder was considered or selected.
 Install, update, status, remove, and reinstall never seed, inventory, checksum,
 validate, migrate, rewrite, or remove Wayfinder state.
 
-## Historical project-owned state
+## Recognized current state boundary
 
-Historical per-record `facts/F#` and `decisions/D#`, DEC, IMP, DBG, IDP,
-`records/`, `archive/`, active-index, and similar content may be read only when
-directly relevant as historical project evidence. They are not current
-automatic re-entry or allocation sources and are never automatically migrated,
-normalized, rewritten, or deleted. Lifecycle and provider repair treat
-`.agent-wayfinder/` as opaque project-owned data.
+Wayfinder recognizes only an effort's `map.md`, optional `facts.md` and
+`decisions.md` ledgers, and canonical U#/E# files below `unknowns/` and
+`evidence/`. Content outside that shape is project-owned data: do not interpret
+it as current Wayfinder state, use it for automatic re-entry or allocation, or
+mutate or silently normalize it.
+
+Unknown project-owned content does not by itself block independent current
+work. Continue when the authorized read and write set does not depend on that
+content. Stop safely when it creates a real target or ancestor collision,
+reference conflict, semantic ambiguity in a recognized current container,
+unsafe filesystem boundary, or inability to perform the authorized current
+write truthfully. Preserve every unknown byte when stopping. Lifecycle,
+provider repair, and projection regeneration treat all `.agent-wayfinder/`
+content as opaque project-owned data.
 
 ## Effort naming, selection, and stable paths
 
@@ -227,8 +235,8 @@ plausible map. Resume a colliding slug only for the same effort; otherwise use
 the shortest stable meaningful disambiguator without overwriting or merging.
 
 Once created, the effort directory path is stable across wording, branch,
-phase, ticket, and evidence changes. Established awkward or legacy slugs remain
-valid; do not normalize or automatically migrate them.
+phase, ticket, and evidence changes. Preserve an established safe path; do not
+rename it merely to improve wording.
 
 Continue while the destination and boundary remain intact. A different endpoint,
 bringing previously out-of-scope work inside the boundary, a misleading old
@@ -258,7 +266,7 @@ unambiguous, and never let it displace an explicit current match.
    linked F# or D# section from its ledger, or the linked U#/E# file; do not
    load unrelated ledger sections or every U/E artifact.
 5. Derive the current frontier from the map and any linked native ticket source;
-   do not persist a second frontier or global active index.
+   do not persist a second frontier or global state registry.
 
 An implementation request may consume a coherent next-work scope from the map,
 a settled decision or specification, or a native ticket without rerunning
@@ -336,23 +344,6 @@ identifier. Append one ledger section or exclusively create one U#/E# file.
 Immediately before writing, reread the ledger or directory, map, target, and
 affected state. The lock makes retirement's final reference scan and removal
 indivisible. Preserve concurrent conflicts and reconcile explicitly.
-
-## Current ledgers and historical per-record state
-
-`facts.md` and `decisions.md` ledgers are the only current F#/D#
-representation. Per-record facts/F# and decisions/D# files are opaque
-historical project data. Wayfinder may read them only when directly relevant as
-history and must never allocate, edit, retire, or automatically migrate them.
-
-This safety boundary is per type and applies to every selected effort. A
-nonempty historical `facts/` directory blocks current fact-ledger append and
-retirement until project-owned reconciliation; the same rule applies from a
-nonempty historical `decisions/` directory to decision-ledger writes. Preserve
-all bytes, fail closed for that affected write and report that manual
-reconciliation is required. Historical facts do not block an unrelated
-decision-ledger write, and historical decisions do not block an unrelated
-fact-ledger write. Do not add automated conversion, a migration command,
-registry, archive, or compatibility layer.
 
 ## The low-resolution map
 
@@ -621,14 +612,12 @@ effort.
 To abandon or supersede an effort, set the corresponding status, record the
 concise reason or outcome, reconcile current canonical links, and replace `Next
 work` with none for that effort. A superseded effort also links the successor or
-governing direction. Do not load historical supporting
-detail during ordinary effort selection, rename the stable directory, repurpose
-it for a new destination, or move it into `.agent-wayfinder/archive/`;
-that path is outside current Wayfinder lifecycle and may contain opaque legacy
-project data.
+governing direction. Do not load supporting detail from a completed, abandoned,
+or superseded effort during ordinary effort selection, rename the stable
+directory, repurpose it for a new destination, or move it into a
+framework-owned archive. Git owns history.
 
-Historical maps and records remain opaque and require no repository-wide
-reconciliation. Current U/E/F/D statuses retain their meanings. When authorized work on the relevant
+Current U/E/F/D statuses retain their meanings. When authorized work on the relevant
 effort supplies enough evidence, add the lifecycle line or settle only the
 directly affected records; otherwise preserve the state and treat ambiguous
 lifecycle as unknown. Install, update, status, remove, reinstall, provider

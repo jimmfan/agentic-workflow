@@ -22,8 +22,6 @@ verification_command = "No implementation validation is required if the work is 
 preserve_paths = ["docs/requirements.md"]
 forbid_created_globs = [
   ".agent-wayfinder/**/decisions.md",
-  ".agent-wayfinder/**/decisions",
-  ".agent-wayfinder/**/decisions/**",
   "architecture-decisions/**",
   "docs/decisions/**",
   "infra/**",

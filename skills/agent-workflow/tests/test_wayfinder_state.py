@@ -68,23 +68,6 @@ def read_current_ids(effort: Path, kind: str) -> list[int]:
     return sorted(current_ids(effort, kind))
 
 
-def historical_fd_present(effort: Path, kind: str) -> bool:
-    directory = effort / TYPE_DIRECTORIES[kind]
-    if not directory.exists():
-        return False
-    if directory.is_symlink() or not directory.is_dir():
-        raise UnsafeWayfinderState(f"unsafe historical {kind} path")
-    return any(directory.iterdir())
-
-
-def require_no_historical_fd(effort: Path, kind: str) -> None:
-    if historical_fd_present(effort, kind):
-        raise UnsafeWayfinderState(
-            f"manual reconciliation required before current {kind} ledger "
-            "mutation because historical per-record state is present"
-        )
-
-
 def readable_slug(title: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
 
@@ -116,17 +99,14 @@ def create_current_record(
     with effort_mutation_lock(effort, attempts=lock_attempts):
         path = effort / LEDGER_PATHS[kind]
         sections = ledger_sections(effort, kind)
-        require_no_historical_fd(effort, kind)
         identifier = max((item[0] for item in sections), default=0) + 1
         observed = path.read_bytes() if path.exists() else None
         existing = observed.decode("utf-8") if observed is not None else ""
         if before_final_write is not None:
             before_final_write()
-        require_no_historical_fd(effort, kind)
         current = path.read_bytes() if path.exists() else None
         if current != observed:
             raise UnsafeWayfinderState("ledger changed before write")
-        require_no_historical_fd(effort, kind)
         prefix = existing.rstrip() if existing else f"# {LEDGER_TITLES[kind]}"
         content = (
             f"{prefix}\n\n## {kind}{identifier} — {title}\n\n"
@@ -158,7 +138,7 @@ def ledger_references(
     ledger_name = LEDGER_PATHS[kind]
     anchor = heading_anchor(kind, identifier, title)
     references: list[Path] = []
-    paths = list(effort.rglob("*.md"))
+    paths = list(current_markdown(effort))
     paths.extend(known_references or [])
     for path in dict.fromkeys(paths):
         if path.is_symlink() or not path.is_file():
@@ -184,7 +164,6 @@ def retire_ledger_section(
 ) -> bool:
     path = effort / LEDGER_PATHS[kind]
     with effort_mutation_lock(effort, attempts=lock_attempts):
-        require_no_historical_fd(effort, kind)
         if not path.exists():
             return False
         original = path.read_text(encoding="utf-8")
@@ -211,7 +190,6 @@ def retire_ledger_section(
         }
         if before_final_check is not None:
             before_final_check()
-        require_no_historical_fd(effort, kind)
         if current_markdown(effort) != observed_current:
             raise UnsafeWayfinderState("current state changed during reconciliation")
         if any(
@@ -228,7 +206,6 @@ def retire_ledger_section(
             known_references,
         ):
             raise UnsafeWayfinderState("current references appeared during reconciliation")
-        require_no_historical_fd(effort, kind)
         if len(sections) == 1:
             path.unlink()
         else:
@@ -250,24 +227,33 @@ def replace_map(
         path.write_bytes(updated)
 
 
-def current_ids(effort: Path, kind: str) -> list[int]:
+def current_child_paths(effort: Path, kind: str) -> list[Path]:
     directory = effort / TYPE_DIRECTORIES[kind]
     if not directory.exists():
         return []
     if directory.is_symlink() or not directory.is_dir():
         raise UnsafeWayfinderState(f"unsafe {kind} directory")
 
-    result: list[int] = []
+    result: list[Path] = []
+    identifiers: list[int] = []
     for child in directory.iterdir():
         if child.is_symlink() or not child.is_file():
             raise UnsafeWayfinderState(f"unsafe child path: {child.name}")
         match = CURRENT_ID.fullmatch(child.name)
         if match is None or match.group(1) != kind:
             raise UnsafeWayfinderState(f"unrecognized child filename: {child.name}")
-        result.append(int(match.group(2)))
-    if len(result) != len(set(result)):
+        result.append(child)
+        identifiers.append(int(match.group(2)))
+    if len(identifiers) != len(set(identifiers)):
         raise UnsafeWayfinderState(f"duplicate current {kind} identifier")
-    return result
+    return sorted(result)
+
+
+def current_ids(effort: Path, kind: str) -> list[int]:
+    return [
+        int(CURRENT_ID.fullmatch(path.name).group(2))
+        for path in current_child_paths(effort, kind)
+    ]
 
 
 def next_current_id(effort: Path, kind: str) -> int:
@@ -303,7 +289,7 @@ def create_current_child(
     lock_attempts: int = 1_000,
 ) -> Path:
     if kind not in {"U", "E"}:
-        raise UnsafeWayfinderState("historical per-record F/D is not writable")
+        raise UnsafeWayfinderState("F/D records belong in their current ledgers")
     if before_lock is not None:
         before_lock()
     with effort_mutation_lock(effort, attempts=lock_attempts):
@@ -320,8 +306,13 @@ def current_markdown(
     effort: Path, *, excluding: Path | None = None
 ) -> dict[Path, bytes]:
     result: dict[Path, bytes] = {}
-    for path in effort.rglob("*.md"):
+    paths = [effort / "map.md", effort / "facts.md", effort / "decisions.md"]
+    paths.extend(current_child_paths(effort, "U"))
+    paths.extend(current_child_paths(effort, "E"))
+    for path in paths:
         if path == excluding:
+            continue
+        if not path.exists() and not path.is_symlink():
             continue
         if path.is_symlink() or not path.is_file():
             raise UnsafeWayfinderState(f"unsafe reference path: {path}")
@@ -353,7 +344,7 @@ def retire_current_child(
 ) -> bool:
     match = CURRENT_ID.fullmatch(target.name)
     if match is not None and match.group(1) in LEDGER_PATHS:
-        raise UnsafeWayfinderState("historical per-record F/D is not writable")
+        raise UnsafeWayfinderState("F/D records belong in their current ledgers")
     with effort_mutation_lock(effort, attempts=lock_attempts):
         if not target.exists():
             return False
@@ -413,7 +404,6 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "- Source: README.md\n\n"
                 "A map-only effort is valid.\n",
             )
-            self.assertFalse((effort / "facts").exists())
 
     def test_decision_ledger_allocates_after_the_highest_valid_unique_heading(
         self,
@@ -456,132 +446,29 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "malformed current D"):
                 create_current_record(effort, "D", "Blocked", "Blocked.\n")
 
-    def test_historical_per_record_fd_is_opaque_and_blocks_current_mutation(
+    def test_unrecognized_project_content_is_not_interpreted_as_current_references(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
-            historical = effort / "facts"
-            historical.mkdir(parents=True)
-            (effort / "map.md").write_text("# Historical facts\n", encoding="utf-8")
-            legacy = historical / "F8-existing.md"
-            legacy.write_bytes(b"# F8: Historical\n\nOpaque bytes.\n")
-            before = current_markdown(effort)
-
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "manual reconciliation required"
-            ):
-                create_current_record(effort, "F", "Unsafe", "Unsafe.\n")
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "historical per-record F/D is not writable"
-            ):
-                create_current_child(effort, "F", "unsafe", "Unsafe.\n")
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "historical per-record F/D is not writable"
-            ):
-                retire_current_child(effort, legacy)
-
-            self.assertEqual(current_markdown(effort), before)
-            self.assertFalse((effort / "facts.md").exists())
-
-    def test_historical_fd_blocks_only_same_type_ledger_mutations(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            effort = Path(temporary) / "effort"
-            historical = effort / "facts"
-            historical.mkdir(parents=True)
-            (effort / "map.md").write_text("# Mixed history\n", encoding="utf-8")
-            (effort / "facts.md").write_text(
-                "# Facts\n\n## F2 — Current fact\n\n- Source: source.md\n\nCurrent.\n",
-                encoding="utf-8",
+            unknown = effort / "unrecognized-project-data/note.md"
+            unknown.parent.mkdir(parents=True)
+            unknown.write_bytes(
+                b"Project-owned prose that happens to mention F1.\n"
             )
-            (historical / "F7-history.md").write_bytes(b"opaque history\n")
-            before = current_markdown(effort)
-
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "manual reconciliation required"
-            ):
-                create_current_record(effort, "F", "Blocked", "Blocked.\n")
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "manual reconciliation required"
-            ):
-                retire_ledger_section(effort, "F", 2)
-            self.assertEqual(current_markdown(effort), before)
-
-            self.assertEqual(
-                create_current_record(
-                    effort,
-                    "D",
-                    "Independent decision",
-                    "- Status: accepted\n- Authority: test\n\nIndependent.\n",
-                ),
-                "D1",
-            )
-            self.assertEqual(
-                (historical / "F7-history.md").read_bytes(), b"opaque history\n"
-            )
-            self.assertTrue((effort / "decisions.md").is_file())
-
-    def test_new_historical_fd_at_mutation_boundary_blocks_the_write(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            append_effort = root / "append"
-            append_effort.mkdir()
-            (append_effort / "map.md").write_text(
-                "# Concurrent append\n", encoding="utf-8"
-            )
-            appended_history = append_effort / "facts/F9-history.md"
-
-            def add_history_before_append() -> None:
-                appended_history.parent.mkdir()
-                appended_history.write_bytes(b"opaque concurrent history\n")
-
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "manual reconciliation required"
-            ):
-                create_current_record(
-                    append_effort,
-                    "F",
-                    "Blocked",
-                    "Blocked.\n",
-                    before_final_write=add_history_before_append,
-                )
-
-            self.assertFalse((append_effort / "facts.md").exists())
-            self.assertEqual(
-                appended_history.read_bytes(), b"opaque concurrent history\n"
-            )
-
-            retire_effort = root / "retire"
-            retire_effort.mkdir()
-            (retire_effort / "map.md").write_text(
-                "# Concurrent retirement\n", encoding="utf-8"
-            )
-            ledger = retire_effort / "facts.md"
+            (effort / "map.md").write_text("# Independent retirement\n", encoding="utf-8")
+            ledger = effort / "facts.md"
             ledger.write_text(
                 "# Facts\n\n## F1 — Current fact\n\n"
                 "- Source: source.md\n\nCurrent.\n",
                 encoding="utf-8",
             )
-            ledger_before = ledger.read_bytes()
-            retired_history = retire_effort / "facts/opaque.bin"
 
-            def add_history_before_retirement() -> None:
-                retired_history.parent.mkdir()
-                retired_history.write_bytes(b"opaque concurrent bytes\n")
-
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "manual reconciliation required"
-            ):
-                retire_ledger_section(
-                    retire_effort,
-                    "F",
-                    1,
-                    before_final_check=add_history_before_retirement,
-                )
-
-            self.assertEqual(ledger.read_bytes(), ledger_before)
+            self.assertTrue(retire_ledger_section(effort, "F", 1))
+            self.assertFalse(ledger.exists())
             self.assertEqual(
-                retired_history.read_bytes(), b"opaque concurrent bytes\n"
+                unknown.read_bytes(),
+                b"Project-owned prose that happens to mention F1.\n",
             )
 
     def test_ledger_retirement_removes_only_the_reconciled_section_and_empty_ledger(
@@ -749,9 +636,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             }
             self.assertEqual(current[1].rstrip(), preserved[1].rstrip())
             self.assertEqual(current[3].rstrip(), preserved[3].rstrip())
-            self.assertFalse((effort / "allocation.md").exists())
             self.assertTrue((effort / "decisions.md").is_file())
-            self.assertFalse((effort / "decisions").exists())
 
     def test_atomic_effort_lock_serializes_simultaneous_decision_allocations(
         self,
@@ -794,7 +679,6 @@ class WayfinderStateContractTests(unittest.TestCase):
                 [1, 2],
             )
             self.assertTrue((effort / "decisions.md").is_file())
-            self.assertFalse((effort / "decisions").exists())
             self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
 
     def test_retirement_requires_reconciled_references_and_is_idempotent(self) -> None:
@@ -946,7 +830,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "duplicate current U"):
                 next_current_id(effort, "U")
 
-    def test_contract_keeps_only_current_roles_and_no_allocation_primitive(
+    def test_contract_keeps_only_current_roles_and_lock_based_allocation(
         self,
     ) -> None:
         for required in (
@@ -967,8 +851,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             "ordinary highest-current-plus-one rule",
         ):
             self.assertIn(required, self.normalized)
-        self.assertNotIn("`allocation.md`", self.contract)
-        self.assertNotIn("compact retired detail", self.contract)
 
     def test_identifier_reference_scope_is_effort_local_and_links_are_durable(
         self,
@@ -992,7 +874,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "d4--use-a-dedicated-node-group",
         )
 
-    def test_contract_defines_consolidated_records_authority_and_historical_safety(
+    def test_contract_defines_current_records_authority_and_unknown_content_safety(
         self,
     ) -> None:
         for required in (
@@ -1011,11 +893,14 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Accepted and provisional decisions require actual project authority",
             "Evidence can support a choice but cannot create authority",
             "Revisit when: <required for provisional",
-            "`facts.md` and `decisions.md` ledgers are the only current F#/D# representation",
-            "Per-record facts/F# and decisions/D# files are opaque historical project data",
-            "never allocate, edit, retire, or automatically migrate them",
-            "applies to every selected effort",
-            "fail closed for that affected write and report that manual reconciliation is required",
+            "## Recognized current state boundary",
+            "Wayfinder recognizes only an effort's `map.md`",
+            "Content outside that shape is project-owned data",
+            "do not interpret it as current Wayfinder state",
+            "Unknown project-owned content does not by itself block independent current work",
+            "real target or ancestor collision",
+            "semantic ambiguity in a recognized current container",
+            "Preserve every unknown byte when stopping",
             "Retiring a fact or decision removes only its selected H2 section",
             "Remove an otherwise empty `facts.md` or `decisions.md`",
             "Do not implement automatic ledger sharding",
@@ -1023,16 +908,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, self.normalized)
 
-        for forbidden in (
-            "allocation store",
-            "migration registry",
-            "legacy-to-ledger migration",
-            "When legacy F#/D# is selected",
-        ):
-            self.assertNotIn(forbidden, self.contract)
-        self.assertNotIn("If an explicitly resumed effort", self.contract)
-
-    def test_contract_protects_sensitive_data_and_treats_pre_current_state_as_history(
+    def test_contract_protects_sensitive_data_and_unknown_project_content(
         self,
     ) -> None:
         for required in (
@@ -1041,15 +917,12 @@ class WayfinderStateContractTests(unittest.TestCase):
             "unnecessary personal data",
             "raw transcripts",
             "private agent memory",
-            "Historical per-record `facts/F#` and `decisions/D#`, DEC, IMP, DBG, IDP",
-            "only when directly relevant as historical project evidence",
-            "not current automatic re-entry or allocation sources",
-            "never automatically migrated, normalized, rewritten, or deleted",
+            "optional `facts.md` and `decisions.md` ledgers",
+            "canonical U#/E# files below `unknowns/` and `evidence/`",
+            "mutate or silently normalize it",
+            "Lifecycle, provider repair, and projection regeneration treat all `.agent-wayfinder/` content as opaque project-owned data",
         ):
             self.assertIn(required, self.normalized)
-
-        self.assertNotIn("IDP-NNNN", self.contract)
-        self.assertNotIn("Optional IDP opportunities", self.contract)
 
     def test_effort_lifecycle_remains_map_owned_and_progressive(self) -> None:
         for required in (
@@ -1081,7 +954,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "continue directly or load one materially useful specialist",
             "Specialists own their methods and native artifacts",
             "Do not copy a specialist method, transcript, or temporary bookkeeping",
-            "No DEC, IMP, DBG, or replacement record is allocated",
+            "Create no separate specialist continuity record",
             "accepted D#, specification, or implementation ticket",
             "no durable Wayfinder state is needed",
         ):
@@ -1112,14 +985,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Completed efforts should normally shrink",
         ):
             self.assertIn(required, self.normalized)
-        for forbidden in (
-            "identity/unknowns",
-            "networking/decisions",
-            "├── identity",
-            "## Identity",
-        ):
-            self.assertNotIn(forbidden, self.contract)
-
     def test_runtime_and_contract_promote_only_continuation_worthy_unknowns(
         self,
     ) -> None:
@@ -1349,7 +1214,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Prototype",
             "Domain Modeling",
             "create no framework continuity record",
-            "Per-record F#/D# files are historical and never mutated by Wayfinder",
+            "Interpret and mutate only recognized current Wayfinder state",
+            "Preserve unknown project-owned content without interpreting it",
+            "continue independent current work",
             "Use `to-tickets`",
             "Verification follows execution",
             "preferred structural fallback",
@@ -1361,8 +1228,6 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(required, normalized_runtime)
 
-        self.assertNotIn("Legacy project-owned records remain valid", runtime)
-        self.assertNotIn("Legacy per-record F#/D# records remain valid", runtime)
         for contract_only_detail in (
             ".wayfinder-mutation-lock",
             "highest currently present",

@@ -22,11 +22,10 @@ live = false
 verification_command = "Run python verify.py after changing only the greeting implementation."
 preserve_paths = [
   ".agent-wayfinder/database-migration/map.md",
-  ".agent-wayfinder/database-migration/decisions/D1-preserve-rollback.md",
+  ".agent-wayfinder/database-migration/decisions.md",
 ]
 forbid_created_globs = [
   ".agent-wayfinder/**",
-  ".agent-wayfinder/active.md",
   "docs/decisions/**",
   "planning/**",
 ]
@@ -34,7 +33,7 @@ route_must_not_include = ["discovery", "wayfinder"]
 state_must_include = []
 state_must_not_include = [
   ".agent-wayfinder/database-migration/map.md",
-  ".agent-wayfinder/database-migration/decisions/D1-preserve-rollback.md",
+  ".agent-wayfinder/database-migration/decisions.md",
 ]
 
 [[assertions]]

@@ -1,12 +1,12 @@
 schema_version = 1
 id = "existing-actionable-work"
-name = "Ready Wayfinder scope hands off without IMP continuity"
+name = "Ready Wayfinder scope hands off without duplicate continuity"
 fixture = "actionable-work"
 request = "Continue the ready implementation scope from the named discount-bounds Wayfinder map, complete it, and verify the result."
 starting_state = [
   "The discount-bounds Wayfinder map contains the exact ready scope and acceptance criteria.",
   "An accepted project decision defines the discount bounds.",
-  "A legacy IMP record and an unexpected user note exist in project-owned state and must remain untouched.",
+  "Unrecognized project-owned content and a user note exist and must remain untouched.",
 ]
 expect = [
   "task_completed",
@@ -24,7 +24,7 @@ live = false
 verification_command = "Run python verify.py after implementing the bounded discount behavior."
 preserve_paths = [
   ".agent-wayfinder/user-notes.txt",
-  ".agent-wayfinder/records/IMP-0001-discount-bounds.md",
+  ".agent-wayfinder/unrecognized-project-data/note.txt",
   "docs/decisions/0001-discount-bounds.md",
 ]
 forbid_created_globs = ["docs/decisions/0002*.md", "planning/**", "wayfinder/**"]
@@ -35,7 +35,7 @@ state_must_include = [
 ]
 state_must_not_include = [
   ".agent-wayfinder/user-notes.txt",
-  ".agent-wayfinder/records/IMP-0001-discount-bounds.md",
+  ".agent-wayfinder/unrecognized-project-data/note.txt",
 ]
 
 [[assertions]]

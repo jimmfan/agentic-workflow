@@ -27,16 +27,11 @@ preserve_paths = [
   "rollout-plan.md",
 ]
 forbid_created_globs = [
-  ".agent-wayfinder/active.md",
   ".agent-wayfinder/runtime-rollout/tickets",
   ".agent-wayfinder/runtime-rollout/tickets/**",
   ".agent-wayfinder/runtime-rollout/unknowns",
   ".agent-wayfinder/runtime-rollout/unknowns/**",
   ".agent-wayfinder/runtime-rollout/decisions.md",
-  ".agent-wayfinder/runtime-rollout/decisions",
-  ".agent-wayfinder/runtime-rollout/decisions/**",
-  ".agent-wayfinder/runtime-rollout/facts",
-  ".agent-wayfinder/runtime-rollout/facts/**",
 ]
 route_must_not_include = ["discovery", "implement"]
 state_must_include = [

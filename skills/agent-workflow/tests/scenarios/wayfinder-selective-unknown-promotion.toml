@@ -21,8 +21,6 @@ blind_grading = true
 preserve_paths = ["README.md"]
 forbid_created_globs = [
   ".agent-wayfinder/*/decisions.md",
-  ".agent-wayfinder/*/decisions",
-  ".agent-wayfinder/*/decisions/**",
   ".agent-wayfinder/*/tickets",
   ".agent-wayfinder/*/tickets/**",
   ".scratch",

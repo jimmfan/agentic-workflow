@@ -29,9 +29,9 @@ usable even when every optional provider is unavailable.
   and remove deletes them; every unrelated skill directory is preserved. Apply
   adapters only to recognized pinned input in staging before target mutation.
 
-Do not treat a missing historical file, old manifest detail, durable record,
-provider, or setup file as package corruption. Current desired state is
-authoritative.
+Do not treat a missing previously recorded file, obsolete manifest detail,
+durable project content, provider, or setup file as package corruption. Current
+desired state is authoritative.
 
 ## Lifecycle commands
 

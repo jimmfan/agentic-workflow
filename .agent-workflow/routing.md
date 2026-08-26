@@ -54,13 +54,13 @@ authoritative. Read-only work never creates or updates Wayfinder state.
 
 Resume only relevant work. An exact Wayfinder map or provider-native artifact
 selects that re-entry point. For an unnamed likely Wayfinder resume, inspect the
-smallest plausible effort set. Prefer a current map over a similar historical
-map, and load historical detail only when directly requested or needed to
-follow a successor. An unrelated map never captures the route. Historical
-per-record F#/D#, DEC, IMP, DBG, IDP, `records/`, `archive/`, and active-index
-content may be read only when directly relevant as project evidence. These are
-not current re-entry or allocation sources and current workflows never edit,
-retire, automatically migrate, normalize, rewrite, or delete them.
+smallest plausible effort set. Prefer a current map over a similar completed,
+abandoned, or superseded map, and load supporting detail only when directly
+requested or needed to follow a successor. An unrelated map never captures the
+route. Interpret only recognized current Wayfinder state; preserve unknown
+project-owned content without mutation and continue independent current work
+unless a real collision, reference conflict, semantic ambiguity, or unsafe
+filesystem boundary requires a safe stop.
 
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 only relevant F#/D# ledger sections or U#/E# artifacts. Implementation may
@@ -109,7 +109,7 @@ where created.
 The Implementation adapter supplies accepted scope, canonical artifacts, and
 acceptance criteria. Invoked `implement` owns its build loop, TDD, and closing
 Code Review. Framework Verification runs afterward and adds only uncovered
-evidence. No specialist creates DEC, IMP, DBG, or another continuity record.
+evidence. No specialist creates a separate framework continuity record.
 
 ## Report the executed route
 

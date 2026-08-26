@@ -78,12 +78,11 @@ Wayfinder methodology. The map owns current state, blockers, dependencies, and
 next work; sparse F#/D# ledger sections and U#/E# artifacts stay lazy, and new
 decomposed work belongs to native `to-tickets` output. A current effort outranks
 a similarly named completed, abandoned, or superseded effort during likely
-resume; historical
-maps remain accessible when directly named or materially relevant. Historical
-per-record F#/D#, DEC, IMP, DBG, IDP, `records/`, `archive/`, and active-index
-content remains opaque project data. It may be read when directly relevant as
-historical evidence, but current workflows never allocate from, edit, retire,
-automatically resume, migrate, normalize, rewrite, or delete it. The router loads the Wayfinder
+resume; those other maps remain accessible when directly named or materially
+relevant. Only recognized current Wayfinder state is interpreted. Unknown
+project-owned content is preserved without mutation; independent current work
+proceeds unless a real collision, reference conflict, semantic ambiguity, or
+unsafe filesystem boundary requires a safe stop. The router loads the Wayfinder
 contract only after Wayfinder is selected or a relevant effort is being resumed,
 then reads
 the map and only relevant F#/D# ledger sections or U#/E# artifacts. An unrelated

@@ -129,8 +129,6 @@ class RoutingContractTests(unittest.TestCase):
             "unexecuted selections do not count as execution", normalized_routing
         )
         self.assertIn("Never reroute, load skills, execute work", normalized_routing)
-        self.assertNotIn("runtime/capabilities.json", routing)
-        self.assertNotIn(".agent-workflow/runtime", routing)
 
     def test_wayfinder_is_the_only_current_runtime_state_contract(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -150,23 +148,29 @@ class RoutingContractTests(unittest.TestCase):
             "read `.agent-workflow/contracts/wayfinder-state.md` before the map",
             normalized_policy.casefold(),
         )
-        self.assertNotIn("durable-state.md", normalized_policy)
         self.assertIn("wayfinder-state.md", normalized_routing)
-        self.assertNotIn("durable-state.md", normalized_routing)
-        for historical_boundary in (
-            "Historical per-record F#/D#, DEC, IMP, DBG, IDP",
-            "`records/`, `archive/`, and active-index",
-            "not current re-entry or allocation sources",
+        for current_boundary in (
+            "Interpret only recognized current Wayfinder state",
+            "preserve unknown project-owned content without mutation",
+            "continue independent current work",
+            "real collision, reference conflict, semantic ambiguity, or unsafe filesystem boundary",
         ):
-            self.assertIn(historical_boundary, normalized_routing)
+            self.assertIn(current_boundary, normalized_routing)
         mapped_paths = {
             item[key]
             for item in manifest["framework_owned"]
             for key in ("source", "target")
         }
-        self.assertFalse(any("durable-state.md" in path for path in mapped_paths))
-        self.assertFalse(
-            (REPOSITORY_ROOT / ".agent-workflow/contracts/durable-state.md").exists()
+        self.assertEqual(
+            {
+                path
+                for path in mapped_paths
+                if "contracts/" in path
+            },
+            {
+                "agent-workflow/contracts/wayfinder-state.md",
+                ".agent-workflow/contracts/wayfinder-state.md",
+            },
         )
 
     def test_decision_context_goal_blocks_only_dependent_work(self) -> None:
@@ -261,14 +265,14 @@ class RoutingContractTests(unittest.TestCase):
         implementation = " ".join(implementation.split())
         state_contract = " ".join(state_contract.split())
 
-        self.assertIn("without creating DEC", discovery)
+        self.assertIn("without creating a framework continuity record", discovery)
         self.assertIn("Compare viable alternatives", discovery)
-        self.assertIn("without creating a DBG", debugging)
+        self.assertIn("without creating a separate specialist continuity record", debugging)
         self.assertIn("Form 3–5 ranked, falsifiable hypotheses", debugging)
-        self.assertIn("Create no IMP or replacement record", implementation)
+        self.assertIn("Create no separate implementation continuity record", implementation)
         self.assertIn("Invoke `workflow-verification` once", implementation)
         self.assertIn(
-            "not current automatic re-entry or allocation sources", state_contract
+            "do not interpret it as current Wayfinder state", state_contract
         )
 
     def test_optional_specialists_have_material_selection_boundaries(self) -> None:
@@ -320,7 +324,6 @@ class RoutingContractTests(unittest.TestCase):
         normalized_contract = " ".join(contract.split())
         normalized_root = " ".join(root_policy.split())
         self.assertIn("wayfinder-state.md` before the map", normalized_root)
-        self.assertNotIn("durable-state.md", normalized_root)
         self.assertIn("Never seed state", normalized_root)
         self.assertIn("An unrelated map never selects Wayfinder", normalized_root)
         self.assertIn("Do not globally scan for related efforts", normalized_contract)
@@ -365,13 +368,10 @@ class RoutingContractTests(unittest.TestCase):
             "Immediately before creating the directory",
             "shortest stable meaningful disambiguator",
             "Once created, the effort directory path is stable",
-            "Established awkward or legacy slugs remain valid",
+            "Preserve an established safe path",
             "bringing previously out-of-scope work inside the boundary",
         ):
             self.assertIn(required, normalized)
-        self.assertNotIn("## Identity", contract)
-        self.assertNotIn("├── identity", contract)
-        self.assertNotIn("identity/unknowns", contract)
 
     def test_external_read_scope_is_always_loaded_policy(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()

@@ -75,10 +75,6 @@ surface. Changing the model selected inside Copilot does not change the
 documented host metadata contract; treating that as identical live behavior
 across models remains an inference until the matrix is exercised.
 
-The detailed evidence, artifact inventory, compatibility table, and manual
-matrix procedure live in
-[Host invocation portability research](host-invocation-portability-research.md).
-
 The local framework retains only materially distinct boundaries:
 
 - bounded Discovery for local consequential decisions;

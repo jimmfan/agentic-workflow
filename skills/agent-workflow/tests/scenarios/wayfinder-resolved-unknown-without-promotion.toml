@@ -87,11 +87,11 @@ path = ".agent-wayfinder/provider-state/evidence"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/facts"
+path = ".agent-wayfinder/provider-state/facts.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/decisions"
+path = ".agent-wayfinder/provider-state/decisions.md"
 
 [[assertions]]
 kind = "path_not_exists"

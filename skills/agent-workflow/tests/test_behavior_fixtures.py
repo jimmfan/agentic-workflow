@@ -14,7 +14,7 @@ TEST_ROOT = Path(__file__).resolve().parent
 def load_behavior():
     path = TEST_ROOT / "behavior.py"
     spec = importlib.util.spec_from_file_location(
-        "agentic_workflow_behavior_fixtures", path
+        "agent_workflow_behavior_fixtures", path
     )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -69,8 +69,7 @@ class BehaviorFixtureTests(unittest.TestCase):
             self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
             state_root = workspace / ".agent-wayfinder"
             self.assertTrue(state_root.is_dir())
-            self.assertFalse((state_root / "wayfinder").exists())
-            self.assertFalse((state_root / "active.md").exists())
+            self.assertEqual(list(state_root.iterdir()), [])
             self.assertFalse((workspace / ".scratch").exists())
 
     def test_state_preservation_oracle_detects_destructive_change(self) -> None:
@@ -84,7 +83,7 @@ class BehaviorFixtureTests(unittest.TestCase):
             install = behavior.run_adopt("install", workspace)
             self.assertEqual(install.returncode, 0, install.stderr)
             before = behavior.snapshot(workspace)
-            target = workspace / ".agent-wayfinder/custom/owner-note.txt"
+            target = workspace / ".agent-wayfinder/unrecognized-project-data/note.txt"
             target.write_text("destructive replacement\n", encoding="utf-8")
             (workspace / "AGENTS.md").write_text(
                 "unauthorized policy replacement\n", encoding="utf-8"

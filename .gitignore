@@ -6,22 +6,3 @@ __pycache__/
 # remain outside this generated boundary and are intentionally tracked.
 /evals/artifacts/*
 !/evals/artifacts/README.md
-
-# Guards for historical/frozen harnesses that may leave local raw output behind.
-/evals/itbench-wayfinder/**/results/runs/*/raw/
-/evals/itbench-wayfinder/**/results/runs/*/workspace/
-/evals/itbench-wayfinder/**/results/runs/*/attempts/
-/evals/itbench-wayfinder/**/results/grades/*/reasoning-grader.jsonl
-/evals/itbench-wayfinder/**/results/grades/*/reasoning-grader.stderr.txt
-/evals/itbench-wayfinder/**/audit-evidence/
-/evals/**/isolation-audit/*.jsonl
-/evals/**/isolation-audit/*.stderr.txt
-/evals/**/executions/*.jsonl
-/evals/**/executions/*.stderr.txt
-
-# Historical ARC runs stored generated transcripts and workspace archives
-# beside their compact result JSON. New harness runs write these under
-# evals/artifacts; keep the guards while old trees remain locally. Compact
-# preflight conclusions and evaluator freezes remain tracked.
-/evals/results/*/runs/*/raw/
-/evals/results/*/runs/*/snapshots/

@@ -2,7 +2,6 @@
 
 - Status: accepted
 - Date: 2026-08-14
-- Consolidated: 2026-08-22
 
 ## Context
 
@@ -62,7 +61,7 @@ Wayfinder contract.
 
 A fresh session can orient from one small map and load only relevant detail.
 State can remain sparse and human-editable without a database, event log,
-global active index, shadow `.scratch/` tree, or duplicated tracker.
+global state registry, shadow work tree, or duplicated tracker.
 
 Executable decomposition and its native frontier belong to `to-tickets`;
 Wayfinder links that artifact rather than mirroring T# work as a second

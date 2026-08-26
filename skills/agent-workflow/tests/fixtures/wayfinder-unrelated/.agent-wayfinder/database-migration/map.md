@@ -10,7 +10,7 @@ This effort has no relationship to application greeting text.
 
 ## Decisions so far
 
-- [D1 — Preserve rollback](decisions/D1-preserve-rollback.md) — every migration keeps a tested rollback path.
+- [D1 — Preserve rollback](decisions.md#d1--preserve-rollback) — every migration keeps a tested rollback path.
 
 ## Not yet specified
 

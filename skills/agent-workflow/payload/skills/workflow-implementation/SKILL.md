@@ -16,7 +16,7 @@ state. Upstream `implement` owns its build loop, TDD, and closing Code Review.
    the coordination threshold, and an unexplained failure to Debugging.
 3. Use one coherent ready scope. Select `to-tickets` first only when approved
    work needs dependency ordering or independently deliverable sessions.
-4. Create no IMP or replacement record. Resume from canonical artifacts,
+4. Create no separate implementation continuity record. Resume from canonical artifacts,
    source, and verification evidence. If interruption would lose consequential
    coordination, preserve only the frontier, artifact pointers, blockers, and
    next work in Wayfinder.

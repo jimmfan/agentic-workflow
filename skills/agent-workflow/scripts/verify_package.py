@@ -68,10 +68,23 @@ REQUIRED_PACKAGE_FILES = (
     "payload/agent-workflow/providers.json",
     "payload/agent-workflow/contracts/wayfinder-state.md",
 )
-REMOVED_RUNTIME_PATHS = (
-    PAYLOAD_ROOT / "agent-workflow" / "runtime",
-    PAYLOAD_ROOT / "agent-workflow" / "observability",
-    PAYLOAD_ROOT / "hosts",
+EXPECTED_PAYLOAD_FILES = frozenset(
+    {
+        "agent-workflow/README.md",
+        "agent-workflow/contracts/wayfinder-state.md",
+        "agent-workflow/providers.json",
+        "agent-workflow/routing.md",
+        "distribution/manifest.json",
+        "root/AGENTS.md.template",
+        "root/CLAUDE.md.template",
+        "skills/workflow-debugging/SKILL.md",
+        "skills/workflow-discovery/SKILL.md",
+        "skills/workflow-implementation/SKILL.md",
+        "skills/workflow-verification/SKILL.md",
+    }
+)
+EXPECTED_RUNTIME_PROJECTIONS = frozenset(
+    {"runtime-projections/research.md", "runtime-projections/wayfinder.md"}
 )
 
 
@@ -166,46 +179,25 @@ def check_structure() -> None:
         not duplicate_version.exists() and not duplicate_version.is_symlink(),
         "payload/VERSION must remain absent; package VERSION is the single source of truth",
     )
-    for path in REMOVED_RUNTIME_PATHS:
-        require(
-            not path.is_symlink()
-            and (
-                not path.exists()
-                or (
-                    path.is_dir()
-                    and not any(
-                        child.is_file() or child.is_symlink()
-                        for child in path.rglob("*")
-                    )
-                )
-            ),
-            f"deferred v0 subsystem remains packaged: {path}",
-        )
+    actual_payload_files = {
+        path.relative_to(PAYLOAD_ROOT).as_posix()
+        for path in PAYLOAD_ROOT.rglob("*")
+        if path.is_file() or path.is_symlink()
+    }
     require(
-        not (PAYLOAD_ROOT / "agent-workflow/templates/active-state.md").exists(),
-        "retired active-index template remains packaged",
+        actual_payload_files == EXPECTED_PAYLOAD_FILES,
+        "authored payload differs from the exact current package surface: "
+        f"expected={sorted(EXPECTED_PAYLOAD_FILES)!r}, "
+        f"actual={sorted(actual_payload_files)!r}",
     )
+    actual_projections = {
+        path.relative_to(PACKAGE_ROOT).as_posix()
+        for path in (PACKAGE_ROOT / "runtime-projections").glob("*")
+        if path.is_file() or path.is_symlink()
+    }
     require(
-        not (
-            PAYLOAD_ROOT / "agent-workflow/contracts/durable-state.md"
-        ).exists()
-        and not (
-            PAYLOAD_ROOT / "agent-workflow/contracts/durable-state.md"
-        ).is_symlink(),
-        "obsolete generic durable-state contract remains packaged",
-    )
-    for retired_template in ("decision-record.md", "work-item.md"):
-        require(
-            not (PAYLOAD_ROOT / "agent-workflow/templates" / retired_template).exists(),
-            f"retired specialist-state template remains packaged: {retired_template}",
-        )
-    require(
-        not (REPOSITORY_ROOT / "docs" / "enforcement.md").exists(),
-        "obsolete controller documentation remains",
-    )
-    require(
-        not (REPOSITORY_ROOT / "docs" / "observability.md").exists(),
-        "obsolete observability documentation remains",
+        actual_projections == EXPECTED_RUNTIME_PROJECTIONS,
+        "runtime projections differ from the exact current package surface",
     )
 
 
@@ -326,20 +318,16 @@ def check_router_contract() -> None:
         "Wayfinder state contract lacks the canonical state root",
     )
     require(
-        "global active index" in normalized_wayfinder,
-        "Wayfinder state contract lacks the global active-index prohibition",
-    )
-    require(
         "sole framework-owned durable coordination"
         in normalized_wayfinder,
         "Wayfinder state contract lacks sole-coordinator ownership",
     )
     require(
-        "not current automatic re-entry or allocation sources"
+        "Wayfinder recognizes only an effort's `map.md`"
         in normalized_wayfinder
-        and "never automatically migrated, normalized, rewritten, or deleted"
+        and "Unknown project-owned content does not by itself block independent current work"
         in normalized_wayfinder,
-        "Wayfinder state contract lacks historical-state preservation",
+        "Wayfinder state contract lacks the positive current-state boundary",
     )
     require(
         "Never persist secrets, tokens, private keys, raw credentials"
@@ -358,7 +346,7 @@ def check_router_contract() -> None:
         "decisions.md",
         "`map.md` alone is a complete and valid Wayfinder effort",
         "do not load unrelated ledger sections",
-        "Do not create or update `.agent-wayfinder/active.md`",
+        "selected effort's `map.md` is its only re-entry point",
         "Every current fact contains at least one truthful provenance mode",
         "reciprocal backlinks",
         "mark the F# `disputed`",
@@ -376,31 +364,32 @@ def check_router_contract() -> None:
         "Do not scan the repository or Git history",
         "## Specialist result boundary",
         "continue directly or load one materially useful specialist",
-        "No DEC, IMP, DBG, or replacement record is allocated",
-        "## Current ledgers and historical per-record state",
+        "Create no separate specialist continuity record",
+        "## Recognized current state boundary",
         "## Knowledge settlement and effort completion",
     ):
         require(
             required in normalized_wayfinder,
             f"Wayfinder state contract lacks required boundary: {required}",
         )
-    historical_boundary = normalized_wayfinder.partition(
-        "## Current ledgers and historical per-record state"
-    )[2].partition("## The low-resolution map")[0].lower()
+    current_boundary = normalized_wayfinder.partition(
+        "## Recognized current state boundary"
+    )[2].partition("## Effort naming, selection, and stable paths")[0].lower()
     require(
         all(
-            marker in historical_boundary
+            marker in current_boundary
             for marker in (
-                "only current f#/d# representation",
-                "opaque historical project data",
-                "never allocate, edit, retire, or automatically migrate",
-                "fail closed",
-                "manual reconciliation",
-                "unrelated decision-ledger write",
-                "unrelated fact-ledger write",
+                "do not interpret it as current wayfinder state",
+                "mutate or silently normalize it",
+                "continue when the authorized read and write set does not depend on that content",
+                "real target or ancestor collision",
+                "reference conflict",
+                "semantic ambiguity in a recognized current container",
+                "unsafe filesystem boundary",
+                "preserve every unknown byte",
             )
         ),
-        "Wayfinder historical F/D boundary lacks non-writability or per-type safety",
+        "Wayfinder current-state boundary lacks unknown-content safety",
     )
     settlement = normalized_wayfinder.partition(
         "## Knowledge settlement and effort completion"
@@ -416,23 +405,13 @@ def check_router_contract() -> None:
         ),
         "Wayfinder settlement section lacks reference-safe ledger retirement",
     )
-    combined = agents + routing + wayfinder
-    require(
-        "runtime/README.md" not in combined
-        and ".agent-workflow/runtime" not in combined,
-        "router still depends on the removed controller payload",
-    )
-    require(
-        "durable-state.md" not in combined,
-        "runtime instructions still load the obsolete durable-state contract",
-    )
 
 
 def check_provider_declaration() -> None:
     path = PAYLOAD_ROOT / "agent-workflow" / "providers.json"
     raw = json.loads(path.read_text(encoding="utf-8"))
     require(
-        isinstance(raw, dict) and raw.get("schema_version") == 7,
+        isinstance(raw, dict) and raw.get("schema_version") == 8,
         "unsupported provider declaration",
     )
     provider = raw.get("provider")
@@ -567,10 +546,10 @@ def check_provider_declaration() -> None:
             and all(requirement in configuration_names for requirement in requirements),
             f"provider skill {name} has invalid configuration requirements",
         )
-        adapter = item.get("agentic_workflow_adapter")
+        adapter = item.get("agent_workflow_adapter")
         require(
             adapter is None or isinstance(adapter, dict),
-            f"provider skill {name} agentic_workflow_adapter must be an object",
+            f"provider skill {name} agent_workflow_adapter must be an object",
         )
         if isinstance(adapter, dict):
             adapter_name = adapter.get("name")
@@ -596,6 +575,11 @@ def check_provider_declaration() -> None:
                     == "runtime-projections/research.md"
                     and name == "research"
                 )
+            elif adapter_name == "setup-current-coordination-v1":
+                valid_adapter = (
+                    set(adapter) == {"name"}
+                    and name == "setup-matt-pocock-skills"
+                )
             elif adapter_name == "grilling-discovery-v1":
                 valid_adapter = set(adapter) == {"name"} and name == "grilling"
             else:
@@ -604,10 +588,15 @@ def check_provider_declaration() -> None:
                     and adapter_name == "implicit-invocation-v1"
                     and name in {"to-spec", "to-tickets", "implement"}
                 )
+            expected_policy = (
+                "user-only"
+                if adapter_name == "setup-current-coordination-v1"
+                else "implicit"
+            )
             require(
                 valid_adapter
-                and invocation.get("codex") == "implicit"
-                and invocation.get("github-copilot") == "implicit"
+                and invocation.get("codex") == expected_policy
+                and invocation.get("github-copilot") == expected_policy
                 and invocation.get("claude-code") == "unavailable",
                 f"provider skill {name} adapter does not match supported host policies",
             )
@@ -665,16 +654,52 @@ def check_provider_declaration() -> None:
             and installed_declaration.read_bytes() == path.read_bytes(),
             "source and packaged provider declarations differ",
         )
+    setup = next(
+        (item for item in skills if item.get("name") == "setup-matt-pocock-skills"),
+        None,
+    )
+    require(
+        isinstance(setup, dict)
+        and setup.get("agent_workflow_adapter", {}).get("name")
+        == "setup-current-coordination-v1"
+        and setup.get("invocation", {}).get("codex") == "user-only"
+        and setup.get("invocation", {}).get("github-copilot") == "user-only",
+        "setup must declare the current-coordination adapter",
+    )
+    setup_source = snapshot_root / "setup-matt-pocock-skills"
+    setup_projection = (
+        REPOSITORY_ROOT / ".agents" / "skills" / "setup-matt-pocock-skills"
+    )
+    setup_marker = b"\n## Wayfinding operations\n"
+    if setup_projection.exists():
+        for resource_name in (
+            "issue-tracker-local.md",
+            "issue-tracker-github.md",
+            "issue-tracker-gitlab.md",
+        ):
+            source_bytes = (setup_source / resource_name).read_bytes()
+            require(
+                source_bytes.count(setup_marker) == 1,
+                f"bundled setup resource has unexpected structure: {resource_name}",
+            )
+            projected_path = setup_projection / resource_name
+            require(
+                projected_path.is_file()
+                and not projected_path.is_symlink()
+                and projected_path.read_bytes()
+                == source_bytes.split(setup_marker, 1)[0],
+                f"setup current-coordination projection differs: {resource_name}",
+            )
     wayfinder = next((item for item in skills if item.get("name") == "wayfinder"), None)
     require(
         isinstance(wayfinder, dict)
-        and wayfinder.get("agentic_workflow_adapter", {}).get("name")
+        and wayfinder.get("agent_workflow_adapter", {}).get("name")
         == "wayfinder-runtime-projection-v1"
         and wayfinder.get("invocation", {}).get("codex") == "implicit"
         and wayfinder.get("invocation", {}).get("github-copilot") == "implicit",
         "Wayfinder must declare the Agent Workflow runtime-projection adapter",
     )
-    wayfinder_adapter = wayfinder["agentic_workflow_adapter"]
+    wayfinder_adapter = wayfinder["agent_workflow_adapter"]
     projection_source = package_path(
         wayfinder_adapter.get("projection_source"),
         "Wayfinder runtime projection source",
@@ -750,13 +775,13 @@ def check_provider_declaration() -> None:
     research = next((item for item in skills if item.get("name") == "research"), None)
     require(
         isinstance(research, dict)
-        and research.get("agentic_workflow_adapter", {}).get("name")
+        and research.get("agent_workflow_adapter", {}).get("name")
         == "research-chat-output-v1"
         and research.get("invocation", {}).get("codex") == "implicit"
         and research.get("invocation", {}).get("github-copilot") == "implicit",
         "research must declare the chat-output adapter",
     )
-    research_adapter = research["agentic_workflow_adapter"]
+    research_adapter = research["agent_workflow_adapter"]
     research_projection = package_path(
         research_adapter.get("projection_source"),
         "Research runtime projection source",
@@ -790,7 +815,7 @@ def check_provider_declaration() -> None:
         skill = next((item for item in skills if item.get("name") == name), None)
         require(
             isinstance(skill, dict)
-            and skill.get("agentic_workflow_adapter", {}).get("name")
+            and skill.get("agent_workflow_adapter", {}).get("name")
             == "implicit-invocation-v1"
             and skill.get("invocation", {}).get("codex") == "implicit"
             and skill.get("invocation", {}).get("github-copilot") == "implicit",
@@ -799,7 +824,7 @@ def check_provider_declaration() -> None:
     grilling = next((item for item in skills if item.get("name") == "grilling"), None)
     require(
         isinstance(grilling, dict)
-        and grilling.get("agentic_workflow_adapter", {}).get("name")
+        and grilling.get("agent_workflow_adapter", {}).get("name")
         == "grilling-discovery-v1"
         and grilling.get("invocation", {}).get("codex") == "implicit"
         and grilling.get("invocation", {}).get("github-copilot") == "implicit",
@@ -916,8 +941,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         if args.refresh_manifest:
             refresh_manifest()
         for check in (
-            check_structure,
             check_inert_payload,
+            check_structure,
             check_manifest,
             check_filesystem,
             check_router_contract,

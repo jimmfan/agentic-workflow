@@ -13,8 +13,8 @@ method materially improves a choice.
 1. Read only relevant project facts and canonical artifacts.
 2. Keep read-only work ephemeral; a provisional choice does not authorize a
    write.
-3. Standalone Discovery returns its result without creating DEC or another
-   framework record. Select Wayfinder only when the decision crosses its
+3. Standalone Discovery returns its result without creating a framework
+   continuity record. Select Wayfinder only when the decision crosses its
    durable coordination threshold.
 4. Inside Wayfinder, use only relevant map detail. Wayfinder remains the re-entry
    point and owns reconciliation.

@@ -22,7 +22,7 @@ preserve_paths = [
   ".agent-wayfinder/wayfinder-runtime-projection/map.md",
   ".agent-wayfinder/provider-projection/map.md",
   ".agent-wayfinder/provider-runtime/map.md",
-  ".agent-wayfinder/legacy-dir/map.md",
+  ".agent-wayfinder/established-provider-naming/map.md",
   ".agent-wayfinder/concurrency-safe-provider-refresh/map.md",
 ]
 forbid_created_globs = [
@@ -40,7 +40,7 @@ state_must_not_include = [
   ".agent-wayfinder/wayfinder-runtime-projection/map.md",
   ".agent-wayfinder/provider-projection/map.md",
   ".agent-wayfinder/provider-runtime/map.md",
-  ".agent-wayfinder/legacy-dir/map.md",
+  ".agent-wayfinder/established-provider-naming/map.md",
   ".agent-wayfinder/concurrency-safe-provider-refresh/map.md",
 ]
 

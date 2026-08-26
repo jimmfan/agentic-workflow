@@ -18,7 +18,7 @@ must_not = [
 live = false
 verification_command = "The deterministic fixture layer performs lifecycle operations and compares state snapshots after every operation."
 preserve_paths = [
-  ".agent-wayfinder/custom/owner-note.txt",
+  ".agent-wayfinder/unrecognized-project-data/note.txt",
   ".agent-wayfinder/unexpected.json",
   ".agent-wayfinder/human-edited/map.md",
   ".agent-wayfinder/human-edited/unknowns/U7-custom-question.md",

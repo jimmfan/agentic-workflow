@@ -26,7 +26,6 @@ preserve_paths = [
   ".agent-wayfinder/deployment-mode/decisions.md",
 ]
 forbid_created_globs = [
-  ".agent-wayfinder/active.md",
   ".agent-wayfinder/deployment-mode/tickets",
   ".agent-wayfinder/deployment-mode/tickets/**",
   ".scratch/**",
@@ -103,7 +102,3 @@ value = "review D1"
 [[assertions]]
 kind = "path_not_exists"
 path = ".agent-wayfinder/deployment-mode/tickets"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/active.md"

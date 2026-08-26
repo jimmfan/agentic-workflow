@@ -23,8 +23,6 @@ verification_command = "Confirm the public response asks the authority question 
 preserve_paths = ["docs/requirements.md", "storage.py"]
 forbid_created_globs = [
   ".agent-wayfinder/persistence-authority/decisions.md",
-  ".agent-wayfinder/persistence-authority/decisions",
-  ".agent-wayfinder/persistence-authority/decisions/**",
   ".agent-wayfinder/persistence-authority/tickets",
   ".agent-wayfinder/persistence-authority/tickets/**",
   ".scratch",
@@ -46,10 +44,6 @@ path = ".agent-wayfinder/persistence-authority/map.md"
 kind = "glob_count"
 path = ".agent-wayfinder/persistence-authority/unknowns/U*.md"
 count = 1
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/persistence-authority/decisions"
 
 [[assertions]]
 kind = "path_not_exists"

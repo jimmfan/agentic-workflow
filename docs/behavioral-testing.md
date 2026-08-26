@@ -148,7 +148,7 @@ U# and redundant E# files only after reference reconciliation, serializing
 concurrent creation with a transient effort mutation lock, allowing an
 uncommitted transient child to retire once current state is reconciled, creating
 a fresh effort after a completed destination, and reading an explicitly named
-historical effort without making it current. These are human-authored behavior
+completed effort without making it current. These are human-authored behavior
 contracts, not evidence that an unrun model obeyed them.
 
 ## Fixtures and reset

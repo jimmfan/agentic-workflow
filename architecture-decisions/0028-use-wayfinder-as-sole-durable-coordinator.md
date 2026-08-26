@@ -2,15 +2,13 @@
 
 - Status: accepted
 - Date: 2026-08-20
-- Consolidated: 2026-08-22
 
 ## Context
 
-Agent Workflow previously maintained specialist-specific continuity systems
-alongside Wayfinder. Those systems created competing resume identities,
-statuses, and lifecycle behavior. Specialists already own better methods and
-native artifacts than a coordinator could reproduce, so copying their
-procedures into Wayfinder would increase context and create drift.
+Multiple specialist-specific continuity systems would create competing resume
+identities, statuses, and lifecycle behavior. Specialists already own better
+methods and native artifacts than a coordinator could reproduce, so copying
+their procedures into Wayfinder would increase context and create drift.
 
 The project needs one small coordination owner, not mandatory durable state for
 every method that might help during an effort.
@@ -34,9 +32,8 @@ Other specialist-native or accepted project artifacts are likewise canonical
 outputs rather than competing framework coordination models.
 
 When interrupted work lacks a sufficient canonical artifact, Wayfinder records
-only the consequential return frontier and pointers. Retired specialist
-continuity remains opaque project-owned historical data, not a current
-coordination model or automatic re-entry source.
+only the consequential return frontier and pointers. Unknown project-owned
+content is not a current coordination model or automatic re-entry source.
 
 ## Consequences
 
@@ -48,7 +45,7 @@ This decision does not require Wayfinder's current Markdown representation.
 Representation and re-entry are governed separately by ADR-0011, so either
 choice may change without silently changing the other.
 
-Exact specialist integrations, legacy mechanics, implementation handoffs,
+Exact specialist integrations, implementation mechanics and handoffs,
 context budgets, and evaluation outcomes belong in runtime instructions,
 contracts, tests, and history rather than this decision.
 

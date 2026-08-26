@@ -51,6 +51,7 @@ class Provider:
 
 WAYFINDER_ADAPTER = "wayfinder-runtime-projection-v1"
 RESEARCH_OUTPUT_ADAPTER = "research-chat-output-v1"
+SETUP_CURRENT_COORDINATION_ADAPTER = "setup-current-coordination-v1"
 IMPLICIT_INVOCATION_ADAPTER = "implicit-invocation-v1"
 GRILLING_DISCOVERY_ADAPTER = "grilling-discovery-v1"
 
@@ -98,7 +99,7 @@ def load_provider() -> Provider:
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise ProviderError(f"cannot read provider declaration: {exc}") from exc
     provider = raw.get("provider") if isinstance(raw, dict) else None
-    if not isinstance(raw, dict) or raw.get("schema_version") != 7:
+    if not isinstance(raw, dict) or raw.get("schema_version") != 8:
         raise ProviderError("unsupported provider declaration")
     if not isinstance(provider, dict):
         raise ProviderError("provider declaration needs a provider object")
@@ -165,7 +166,7 @@ def load_provider() -> Provider:
             raise ProviderError(
                 f"provider skill {name} has invalid configuration requirements"
             )
-        adapter = item.get("agentic_workflow_adapter")
+        adapter = item.get("agent_workflow_adapter")
         adapter_name: str | None = None
         upstream_body_sha256: str | None = None
         projection_source: Path | None = None
@@ -198,6 +199,11 @@ def load_provider() -> Provider:
                         for character in upstream_body_sha256
                     )
                 )
+            elif adapter_name == SETUP_CURRENT_COORDINATION_ADAPTER:
+                valid = (
+                    set(adapter) == {"name"}
+                    and name == "setup-matt-pocock-skills"
+                )
             elif adapter_name == GRILLING_DISCOVERY_ADAPTER:
                 valid = set(adapter) == {"name"} and name == "grilling"
             else:
@@ -208,14 +214,20 @@ def load_provider() -> Provider:
                 raise ProviderError(
                     f"provider skill {name} has an unsupported Agent Workflow adapter"
                 )
-        if adapter_name and (
-            invocation.get("codex") != "implicit"
-            or invocation.get("github-copilot") != "implicit"
-            or invocation.get("claude-code") != "unavailable"
-        ):
-            raise ProviderError(
-                f"provider skill {name} adapter does not match supported host policies"
+        if adapter_name:
+            expected_policy = (
+                "user-only"
+                if adapter_name == SETUP_CURRENT_COORDINATION_ADAPTER
+                else "implicit"
             )
+            if (
+                invocation.get("codex") != expected_policy
+                or invocation.get("github-copilot") != expected_policy
+                or invocation.get("claude-code") != "unavailable"
+            ):
+                raise ProviderError(
+                    f"provider skill {name} adapter does not match supported host policies"
+                )
         result.append(
             ProviderSkill(
                 name,
@@ -342,6 +354,8 @@ def adapter_plan(
     """Return validated rewrites for a declared Agent Workflow adapter."""
     if not skill.adapter:
         return []
+    if skill.adapter == SETUP_CURRENT_COORDINATION_ADAPTER:
+        return setup_current_coordination_adapter_plan(root, skill)
     if skill.adapter == IMPLICIT_INVOCATION_ADAPTER:
         return implicit_invocation_adapter_plan(root, skill, repository, version)
     if skill.adapter == GRILLING_DISCOVERY_ADAPTER:
@@ -415,6 +429,41 @@ def adapter_plan(
                     f"{path.relative_to(directory)}"
                 )
             desired = desired.replace(upstream_line, adapted_line, 1)
+        plan.append((path, original, desired))
+    return plan
+
+
+def setup_current_coordination_adapter_plan(
+    root: Path,
+    skill: ProviderSkill,
+) -> list[tuple[Path, bytes, bytes]]:
+    """Remove the upstream tracker-owned Wayfinder contract from setup output."""
+    if destination_state(root, skill.name) != "present":
+        raise ProviderError(f"provider skill {skill.name} is not safe to adapt")
+
+    directory = root / ".agents" / "skills" / skill.name
+    marker = b"\n## Wayfinding operations\n"
+    plan: list[tuple[Path, bytes, bytes]] = []
+    for name in (
+        "issue-tracker-local.md",
+        "issue-tracker-github.md",
+        "issue-tracker-gitlab.md",
+    ):
+        path = directory / name
+        if path.is_symlink() or not path.is_file():
+            raise ProviderError(
+                f"provider skill {skill.name} setup resource is missing or unsafe: {name}"
+            )
+        original = path.read_bytes()
+        if original.count(marker) != 1:
+            raise ProviderError(
+                f"provider skill {skill.name} has unexpected Wayfinder setup content: {name}"
+            )
+        desired = original.split(marker, 1)[0]
+        if not desired.endswith(b"\n"):
+            raise ProviderError(
+                f"provider skill {skill.name} setup resource is malformed: {name}"
+            )
         plan.append((path, original, desired))
     return plan
 

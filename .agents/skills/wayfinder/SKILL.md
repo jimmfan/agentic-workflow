@@ -99,7 +99,7 @@ Do not load specialists speculatively. Specialists own their methods and native
 artifacts and create no framework continuity record. If work is interrupted,
 reconcile only the consequential frontier, evidence or conclusions, artifact
 pointers, resolution mode when useful, and next work into Wayfinder. The map,
-not DEC/IMP/DBG or a specialist notebook, is the re-entry point.
+not a specialist notebook or continuity record, is the re-entry point.
 
 ## Reconcile and hand off
 
@@ -139,6 +139,7 @@ when approved work needs substantial dependency ordering or independently
 deliverable sessions, and link its native frontier without a shadow copy.
 
 Read-only work never mutates state. Follow the state contract for every
-authorized mutation. Per-record F#/D# files are historical and never mutated by
-Wayfinder; an affected current ledger write fails closed until manual project
-reconciliation.
+authorized mutation. Interpret and mutate only recognized current Wayfinder
+state. Preserve unknown project-owned content without interpreting it, continue
+independent current work, and stop safely for an actual collision, reference
+conflict, semantic ambiguity, or unsafe filesystem boundary.

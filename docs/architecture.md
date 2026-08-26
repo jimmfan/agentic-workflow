@@ -113,20 +113,14 @@ should converge as lasting outcomes move to canonical owners. Exact allocation,
 locking, settlement, retirement, and reference behavior is owned by the
 progressively loaded Wayfinder state contract and its tests.
 
-`facts.md` and `decisions.md` ledgers are the only current F#/D# representation.
-Per-record `facts/F#-*.md` and `decisions/D#-*.md` files are opaque historical
-data and never receive Wayfinder mutations or automatic migration. A nonempty
-historical same-type directory blocks ledger writes until manual project
-reconciliation; the unrelated type remains independent. Lifecycle operations
-preserve the complete project-owned tree without interpreting it.
-
-Historical per-record F#/D#, DEC, IMP, DBG, IDP, `records/`, `archive/`,
-active-index, and similar pre-current content below `.agent-wayfinder/` remains
-opaque project-owned data.
-It may be read when directly relevant as historical evidence, but it is not a
-current re-entry or allocation source and is never automatically migrated,
-normalized, rewritten, or deleted. Current Wayfinder topology does not include
-those historical namespaces.
+Wayfinder recognizes only an effort's map, optional F#/D# ledgers, and
+canonical U#/E# files. Other content below `.agent-wayfinder/` is project-owned
+data that Wayfinder does not interpret, mutate, or silently normalize. Unknown
+content does not by itself block independent authorized work. A mutation stops
+safely only when the content creates a real path collision, reference conflict,
+semantic ambiguity in a recognized current container, unsafe filesystem
+boundary, or inability to make the current write truthfully. Lifecycle
+operations preserve the complete project-owned tree without interpreting it.
 
 This source repository's project instructions declare
 `architecture-decisions/`. Elsewhere, a consuming project's declared convention

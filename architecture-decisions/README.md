@@ -8,8 +8,3 @@ decisions:
 - [ADR-0025 — Preserve authority at consequential boundaries](0025-preserve-authority-at-consequential-boundaries.md)
 - [ADR-0027 — Use Direct-first progressive routing](0027-use-direct-first-progressive-routing.md)
 - [ADR-0028 — Use Wayfinder as the sole durable coordinator](0028-use-wayfinder-as-sole-durable-coordinator.md)
-
-Before v1.0, the ADR set was consolidated to keep the active decision context
-small. The previous complete set remains available in Git at `fb51c4a` and
-through repository history; removed identifiers do not have stub files or
-compatibility aliases.

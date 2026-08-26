@@ -17,37 +17,16 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = false
-verification_command = "Validate that the resulting repository-local planning state preserves the destination, current state, blockers, decisions, unknowns, and next work without creating Wayfinder tickets, a global active file, or a parallel copy."
+verification_command = "Validate that the resulting repository-local planning state preserves the destination, current state, blockers, decisions, unknowns, and next work without creating Wayfinder tickets or a parallel native-ticket copy."
 preserve_paths = ["migration-architecture.md"]
 route_must_not_include = ["domain-modeling"]
 forbid_created_globs = [
-  ".agent-wayfinder/active.md",
-  ".agent-wayfinder/archive",
-  ".agent-wayfinder/archive/**",
-  ".agent-wayfinder/planning",
-  ".agent-wayfinder/planning/**",
-  ".agent-wayfinder/records",
-  ".agent-wayfinder/records/**",
-  ".agent-wayfinder/state",
-  ".agent-wayfinder/state/**",
-  ".planning",
-  ".planning/**",
   ".scratch",
   ".scratch/**",
-  ".jira",
-  ".jira/**",
   "issues",
   "issues/**",
-  "jira",
-  "jira/**",
-  "planning",
-  "planning/**",
-  "wayfinder",
-  "wayfinder/**",
   ".agent-wayfinder/platform-migration/tickets",
   ".agent-wayfinder/platform-migration/tickets/**",
-  ".agent-wayfinder/platform-migration/decisions",
-  ".agent-wayfinder/platform-migration/decisions/**",
 ]
 
 [[assertions]]
@@ -195,19 +174,7 @@ value = "](decisions.md#d1--use-a-zero-downtime-cutover)"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/active.md"
-
-[[assertions]]
-kind = "path_not_exists"
 path = ".scratch"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/records"
-
-[[assertions]]
-kind = "path_not_exists"
-path = "planning"
 
 [[assertions]]
 kind = "path_not_exists"
