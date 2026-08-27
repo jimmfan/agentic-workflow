@@ -143,7 +143,7 @@ A new scenario should need one TOML file and one small fixture directory. The
 validator rejects unknown behavior names, unsafe paths, missing preserved files,
 unknown fields, and unsupported assertion kinds.
 
-The deterministic catalog includes settlement contracts for removing resolved
+The deterministic catalog includes settlement contracts for retiring answered
 U# and redundant E# files only after reference reconciliation, serializing
 concurrent creation with a transient effort mutation lock, allowing an
 uncommitted transient child to retire once current state is reconciled, creating

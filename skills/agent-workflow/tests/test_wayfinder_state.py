@@ -681,7 +681,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue((effort / "decisions.md").is_file())
             self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
 
-    def test_retirement_requires_reconciled_references_and_is_idempotent(self) -> None:
+    def test_answered_unknown_retirement_requires_reconciled_references_and_is_idempotent(
+        self,
+    ) -> None:
         fixture = FIXTURES / "wayfinder-reference-settlement"
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "project"
@@ -761,7 +763,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue(replacement.exists())
             self.assertTrue((effort / ".wayfinder-mutation-lock").is_dir())
 
-    def test_resolved_unknown_can_settle_to_map_only(self) -> None:
+    def test_answered_unknown_without_independent_outcome_can_settle_to_map_only(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "map-only"
             unknowns = effort / "unknowns"
@@ -780,6 +784,22 @@ class WayfinderStateContractTests(unittest.TestCase):
                 [path.relative_to(effort).as_posix() for path in effort.iterdir()],
                 ["map.md"],
             )
+
+    def test_empty_unknowns_directory_has_no_current_state_meaning(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "empty-unknowns"
+            unknowns = effort / "unknowns"
+            unknowns.mkdir(parents=True)
+            map_path = effort / "map.md"
+            map_path.write_text(
+                "# Empty unknowns\n\nThe ready frontier has no blocker.\n",
+                encoding="utf-8",
+            )
+
+            self.assertEqual(current_ids(effort, "U"), [])
+            self.assertEqual(next_current_id(effort, "U"), 1)
+            self.assertEqual(current_markdown(effort), {map_path: map_path.read_bytes()})
+            self.assertTrue(unknowns.is_dir())
 
     def test_retirement_rechecks_current_state_under_effort_lock(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -866,7 +886,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertRegex(self.normalized, semantic_pattern)
 
-        self.assertIn("U17 resolved by F8", self.contract)
+        self.assertIn("U17 blocks D4", self.contract)
         self.assertIn("D4 follows from F8", self.contract)
         self.assertIn("decisions.md#d4--use-a-dedicated-node-group", self.contract)
         self.assertEqual(
@@ -1003,9 +1023,8 @@ class WayfinderStateContractTests(unittest.TestCase):
     ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         promotion_rule = (
-            "A precise question becomes U# when preserving the question or its eventual "
-            "answer could materially improve a later developer’s ability to make or "
-            "evaluate a decision."
+            "A precise question becomes U# when preserving it while unanswered could "
+            "materially improve a later developer’s ability to make or evaluate a decision."
         )
         for required in (
             "Map uncertainty broadly, then promote selectively",
@@ -1020,7 +1039,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
         for required in (
             promotion_rule,
-            "`unknown`: a precise unresolved question preserved independently because its question or eventual answer could materially improve a later developer’s ability to make or evaluate a decision",
+            "`unknown`: a precise unresolved question preserved independently while unanswered because it could materially improve a later developer’s ability to make or evaluate a decision",
             "human or project authority",
             "external owner or approval",
             "multiple downstream areas or a meaningful seam",
@@ -1144,7 +1163,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.normalized,
         )
 
-    def test_answer_or_authoritative_disposition_can_unblock_only_the_named_boundary(
+    def test_answered_unknown_retires_while_authoritative_disposition_stays_open(
         self,
     ) -> None:
         runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
@@ -1152,15 +1171,42 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Answer the consequential U#, or canonically record the responsible authority’s "
             "explicit acceptance of the remaining uncertainty for that boundary."
         )
+        self.assertIn(gate, runtime)
+        self.assertIn("remains factually unanswered", runtime)
+        self.assertIn("only the named boundary", runtime)
+        self.assertIn("question remains unanswered", self.normalized)
+        self.assertIn("unblock only that boundary", self.normalized)
         for surface in (runtime, self.normalized):
-            self.assertIn(gate, surface)
             self.assertIn("The ready frontier is the set of coherent scopes", surface)
             self.assertIn("answered or explicitly dispositioned", surface)
-            self.assertIn("remains factually unanswered", surface)
-            self.assertIn("does not become resolved", surface)
-            self.assertIn("only the named boundary", surface)
+            self.assertIn("keep the U# open", surface)
 
-        self.assertIn("- Status: open | resolved", self.contract)
+        for required in (
+            "An answered U# is no longer current unknown state",
+            "reconcile affected current references and dependencies, then retire the U#",
+            "Do not retain a resolved U# solely for history; Git owns history",
+            "Answering a U# need not create F# or D# before retirement",
+            "A current U# remains open until sufficient evidence or authority answers it and it is retired",
+            "An empty `unknowns/` directory has no semantic meaning",
+            "not a current unknown, blocker, dependency, or frontier item",
+            "requires neither creation nor removal",
+        ):
+            self.assertIn(required, self.normalized)
+
+        template_match = re.search(
+            r"Use U# when a question is consequential enough to track independently:\s*"
+            r"```markdown\n(?P<body>.*?)\n```",
+            self.contract,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(template_match)
+        assert template_match is not None
+        self.assertEqual(
+            re.findall(r"(?m)^- Status:.*$", template_match.group("body")),
+            ["- Status: open"],
+        )
+        self.assertNotIn("- Status: open | resolved", self.contract)
+        self.assertNotIn("mark it `resolved`", self.contract)
         self.assertNotIn("Status: accepted uncertainty", self.contract)
 
     def test_runtime_and_contract_expose_an_unblocked_ready_frontier(self) -> None:

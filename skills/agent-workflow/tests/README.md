@@ -66,7 +66,7 @@ implementation work-item children. Current facts and decisions use optional
 `facts.md` and `decisions.md` ledgers; independent unknowns and substantial
 evidence retain U#/E# files. Tests cover truthful fact provenance, actual
 decision authority, relevant-section retrieval without unrelated detail,
-resolved unknowns and redundant evidence leaving current state, effort-lock
+answered unknowns and redundant evidence leaving current state, effort-lock
 serialization across maps, ledgers, U#, and E#, and reference-safe targeted
 retirement without requiring a prior commit.
 

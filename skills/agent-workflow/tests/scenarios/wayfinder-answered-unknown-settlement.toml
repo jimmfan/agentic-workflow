@@ -1,8 +1,8 @@
 schema_version = 1
-id = "wayfinder-resolved-unknown-without-promotion"
-name = "Settled semantic area moves to canonical ownership and shrinks"
+id = "wayfinder-answered-unknown-settlement"
+name = "Answered unknown moves to canonical ownership and retires"
 fixture = "wayfinder-reference-settlement"
-request = "Resume the named provider-state effort and settle its Provider requirements area. U17 is answered, source.txt is authoritative, and the project-owner choice in D4 is accepted. Move the durable fact and choice into concise canonical docs/provider-runtime.md, update map.md to link that owner and mark the area settled, then retire redundant U17, E12, F8, and D4 plus empty child directories. Create no ADR or ticket."
+request = "Resume the named provider-state effort and settle its Provider requirements area. U17 is answered, source.txt is authoritative, and the project-owner choice in D4 is accepted. Move the durable fact and choice into concise canonical docs/provider-runtime.md, update map.md to link that owner and mark the area settled, then retire redundant U17, E12, F8, and D4. Create no ADR or ticket."
 starting_state = [
   "This effort currently contains U17, E12, F8, and D4.",
   "Provider requirements is an active semantic area whose source-supported fact and project-authorized choice are ready for canonical project documentation.",
@@ -76,14 +76,6 @@ value = "[Provider runtime](../../../../docs/provider-runtime.md)"
 kind = "path_contains"
 path = ".agent-wayfinder/provider-state/map.md"
 value = "Provider requirements — settled"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/unknowns"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/evidence"
 
 [[assertions]]
 kind = "path_not_exists"

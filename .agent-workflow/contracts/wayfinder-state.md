@@ -19,9 +19,9 @@ registry or second framework-owned frontier.
 
 Wayfinder may preserve four kinds of durable knowledge:
 
-- `unknown`: a precise unresolved question preserved independently because its
-  question or eventual answer could materially improve a later developer’s
-  ability to make or evaluate a decision;
+- `unknown`: a precise unresolved question preserved independently while
+  unanswered because it could materially improve a later developer’s ability
+  to make or evaluate a decision;
 - `evidence`: an observation, measurement, report, or source result, including
   its provenance, scope, and limitations;
 - `fact`: a sufficiently established descriptive conclusion, scoped to the
@@ -288,7 +288,7 @@ current same-type records within that effort.
 
 A bare U#/E#/F#/D# identifier is effort-local current-state shorthand. Inside
 the selected effort's map and records, concise statements such as
-`U17 resolved by F8` and `D4 follows from F8` are valid when the effort context
+`U17 blocks D4` and `D4 follows from F8` are valid when the effort context
 is unambiguous. A U#/E# readable filename is its canonical filesystem path. A
 current F#/D# durable link uses a readable label and the exact ledger heading,
 for example `[D4 — Use a dedicated node group](decisions.md#d4--use-a-dedicated-node-group)`.
@@ -412,8 +412,8 @@ lead time. Never manufacture a critical path from an unordered backlog or
 incomplete dependency evidence.
 
 Map uncertainty broadly, then promote selectively. A precise question becomes
-U# when preserving the question or its eventual answer could materially improve
-a later developer’s ability to make or evaluate a decision. Human or project
+U# when preserving it while unanswered could materially improve a later
+developer’s ability to make or evaluate a decision. Human or project
 authority, an external owner or approval, expensive reconstruction, premature
 dependent work, or multiple downstream areas or a meaningful seam are strong
 signals, not a checklist.
@@ -434,7 +434,7 @@ Use U# when a question is consequential enough to track independently:
 ```markdown
 # U1: <Question>
 
-- Status: open | resolved
+- Status: open
 - Resolution mode: direct | discovery | debugging | research | prototype | domain modeling | human clarification | grilling
 - Blocked by: none
 - Related: none
@@ -443,10 +443,9 @@ Use U# when a question is consequential enough to track independently:
 
 <How the answer changes the destination, a decision, or next work.>
 
-## Evidence and resolution
+## Evidence
 
-<Concise observations or links; when resolved, state the answer and resulting
-links.>
+<Observations or links relevant to answering the question.>
 ```
 
 A separate U# earns its file when preserving the detailed question or eventual
@@ -530,17 +529,18 @@ navigational value. Accepted and provisional decisions require actual project
 authority. Evidence can support a choice but cannot create authority. A
 proposal, inferred preference, or working assumption does not become D#.
 
-A resolved U# need not create F# or D#. An E# need not create F#. A routine
-source read, transient command output, or fact obvious from current source does
-not deserve an E#. A conclusion used only to orient the current session does not
-deserve an F#. A preference, proposal, or agent assumption is not an accepted
-D# unless the user or project policy grants the necessary authority.
+Answering a U# need not create F# or D# before retirement. An E# need not create
+F#. A routine source read, transient command output, or fact obvious from current
+source does not deserve an E#. A conclusion used only to orient the current
+session does not deserve an F#. A preference, proposal, or agent assumption is
+not an accepted D# unless the user or project policy grants the necessary
+authority.
 
 The `Resolution mode` field constrains sufficiency rather than adding a
-lifecycle. Record the mode when it helps re-entry, and preserve the existing
-`open | resolved` status behavior. A source, result, or authority answer may
-satisfy the named mode without forcing a specialist run, but an invalid kind of
-evidence cannot answer the U#.
+lifecycle. A current U# remains open until sufficient evidence or authority
+answers it and it is retired. Record the mode when it helps re-entry. A source,
+result, or authority answer may satisfy the named mode without forcing a
+specialist run, but an invalid kind of evidence cannot answer the U#.
 
 ## Knowledge settlement and effort completion
 
@@ -559,23 +559,22 @@ As an area settles, reconcile its map, fog, blockers, dependencies, frontier,
 and links. Retain U/E/F/D only while currently useful; add no area IDs,
 per-area lifecycle files, or state hierarchy.
 
-When a U# is answered, state the answer, mark it `resolved`, reconcile the map
-and links, and retain it or related E#/F#/D# only for remaining current value.
+An answered U# is no longer current unknown state. Preserve any independently
+useful outcome in its proper current owner, reconcile affected current
+references and dependencies, then retire the U#. Do not retain a resolved U#
+solely for history; Git owns history. If the question remains unanswered but
+responsible authority explicitly accepts the uncertainty for a boundary, keep
+the U# open and unblock only that boundary.
 
-Answer the consequential U#, or canonically record the responsible authority’s
-explicit acceptance of the remaining uncertainty for that boundary. In the
-second case, record the authority source, accepted uncertainty, and affected
-boundary in the map or another canonical project artifact. The U# remains
-factually unanswered and does not become resolved; remove only the named
-boundary from blockers. Other dependencies remain blocked, and the U# remains
-while it still has independent navigational value.
+Record accepted residual uncertainty, its authority source, and its named
+boundary in a canonical owner. Other dependencies remain blocked.
 
-The map may be the entire current result. Resolution does not require
+The map may be the entire current result. Answering a U# does not require
 U# -> E# -> F# -> D#, and creates no ceremonial record.
 
-U/E files and F/D ledger sections are current durable knowledge, not historical
-allocation markers. Retain each only for current navigational, provenance,
-descriptive, or authority value; Git owns retired history.
+U/E files and F/D ledger sections are current durable knowledge, not history.
+Retain E#/F#/D# only for current provenance, descriptive, or authority value;
+Git owns retired history.
 
 Before retiring a record, inspect the selected effort's map, ledgers, U#/E#
 files, and known current canonical references outside the effort for references
@@ -598,8 +597,10 @@ state; stop for references or useful information, and retry after change.
 Retiring a fact or decision removes only its selected H2 section after
 reconciliation and preserves other sections byte-for-byte where practical.
 Remove an otherwise empty `facts.md` or `decisions.md`. Retiring U#/E# removes
-only its file; its empty directory may disappear. The retired number follows
-the ordinary highest-current-plus-one rule.
+only its file; an empty directory may remain or disappear. An empty `unknowns/`
+directory has no semantic meaning: it is not a current unknown, blocker,
+dependency, or frontier item and requires neither creation nor removal.
+The retired number follows the ordinary highest-current-plus-one rule.
 
 Do not implement automatic ledger sharding or use an arbitrary F#/D# file-count
 rule. A future explicit refactor may split an unwieldy ledger by coherent
@@ -627,11 +628,9 @@ or superseded effort during ordinary effort selection, rename the stable
 directory, repurpose it for a new destination, or move it into a
 framework-owned archive. Git owns history.
 
-Current U/E/F/D statuses retain their meanings. When authorized work on the relevant
-effort supplies enough evidence, add the lifecycle line or settle only the
-directly affected records; otherwise preserve the state and treat ambiguous
-lifecycle as unknown. Install, update, status, remove, reinstall, provider
-repair, and projection regeneration treat all Wayfinder state as opaque and
+Current E/F/D statuses retain their meanings; preserve ambiguous state. Install,
+update, status, remove, reinstall, provider repair, and projection regeneration
+treat all Wayfinder state as opaque and
 never inventory, validate, migrate, repair, or settle it.
 
 ## Contradictions and revision

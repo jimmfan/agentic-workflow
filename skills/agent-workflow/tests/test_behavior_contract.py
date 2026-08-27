@@ -191,6 +191,58 @@ class BehaviorContractTests(unittest.TestCase):
                 with self.subTest(incorrect=incorrect):
                     self.assertFalse(relationships_pass(incorrect))
 
+    def test_answered_authority_scenario_requires_reconciliation_and_retirement(
+        self,
+    ) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        answered = scenarios["wayfinder-answered-unknown-authority-choice"]
+        assertion_paths = {
+            (assertion.kind, assertion.path.as_posix(), assertion.value)
+            for assertion in answered.assertions
+        }
+
+        self.assertTrue(answered.live)
+        self.assertIn(
+            (
+                "path_not_exists",
+                ".agent-wayfinder/rollout-choice/unknowns/U1-rollout-strategy.md",
+                None,
+            ),
+            assertion_paths,
+        )
+        self.assertIn(
+            (
+                "path_contains",
+                ".agent-wayfinder/rollout-choice/decisions.md",
+                "Option B",
+            ),
+            assertion_paths,
+        )
+        self.assertIn(
+            (
+                "path_contains",
+                ".agent-wayfinder/rollout-choice/decisions.md",
+                "responsible project owner",
+            ),
+            assertion_paths,
+        )
+        self.assertIn(
+            (
+                "path_contains",
+                ".agent-wayfinder/rollout-choice/map.md",
+                "ready",
+            ),
+            assertion_paths,
+        )
+        self.assertIn(
+            ".agent-wayfinder/rollout-choice/unrelated-notes.md",
+            {path.as_posix() for path in answered.preserve_paths},
+        )
+        self.assertNotIn(
+            ".agent-wayfinder/rollout-choice/unknowns",
+            {assertion.path.as_posix() for assertion in answered.assertions},
+        )
+
     def test_scenarios_reject_unknown_behavior_vocabulary(self) -> None:
         source = (behavior.SCENARIO_ROOT / "simple-bounded-task.toml").read_text(
             encoding="utf-8"

@@ -109,8 +109,8 @@ canonical artifacts instead of copying them. The state contract defines when
 U/E/F/D detail is worth retaining and how settled state shrinks.
 
 Map uncertainty broadly, then promote selectively. A precise question becomes
-U# when preserving the question or its eventual answer could materially improve
-a later developer’s ability to make or evaluate a decision. This applies within
+U# when preserving it while unanswered could materially improve a later
+developer’s ability to make or evaluate a decision. This applies within
 the current destination and relevant territory, especially when the answer
 requires human or project authority, depends on an external owner or approval,
 or gates multiple downstream areas or a meaningful seam. Ask the substantive
@@ -130,8 +130,8 @@ The ready frontier is the set of coherent scopes whose material decision
 dependencies are answered or explicitly dispositioned and can therefore
 proceed now. Answer the consequential U#, or canonically record the responsible
 authority’s explicit acceptance of the remaining uncertainty for that boundary.
-The U# then remains factually unanswered and does not become resolved; the
-acceptance unblocks only the named boundary. Reconcile and shrink the map, then
+The U# then remains factually unanswered; keep the U# open, and unblock only
+the named boundary. Reconcile and shrink the map, then
 hand off one or more ready scopes without advancing work that remains
 dependency-blocked. Each Implementation handoff consumes one coherent scope and
 its acceptance criteria; Verification follows execution. Use `to-tickets` only
