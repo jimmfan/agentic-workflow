@@ -657,7 +657,9 @@ def recognized_wayfinder_mutations(evidence: RunEvidence) -> tuple[bool, str]:
         )
         map_entry = evidence.after.get(f"{prefix}/map.md")
         if remains and (map_entry is None or map_entry.kind != "file"):
-            invalid.append(f"{prefix} (missing map.md)")
+            before_map = evidence.before.get(f"{prefix}/map.md")
+            if before_map is None or before_map.kind != "file":
+                invalid.append(f"{prefix} (missing map.md)")
     if invalid:
         return False, "unrecognized Wayfinder writes: " + ", ".join(invalid)
     return True, "all Wayfinder writes use recognized current paths"

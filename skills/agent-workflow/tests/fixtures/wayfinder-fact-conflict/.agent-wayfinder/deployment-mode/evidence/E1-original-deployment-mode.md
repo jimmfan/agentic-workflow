@@ -11,4 +11,4 @@ The observed deployment mode was `deployment_mode=dedicated`.
 
 ## Limitations
 
-This observation may become stale when configuration changes.
+This dated observation may no longer describe later configuration.

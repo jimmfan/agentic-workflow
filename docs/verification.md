@@ -161,7 +161,7 @@ install, update, status, remove, reinstall, and provider repair byte-for-byte.
 The behavioral suite also keeps
 implementation work-item artifacts out of Wayfinder, resumes relevant map
 state, reconciles affected state after implementation, excludes unrelated
-detail and efforts, reports stale state without mutation during read-only work,
+detail and efforts, reports outdated state without mutation during read-only work,
 stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
 of a direct route.
 

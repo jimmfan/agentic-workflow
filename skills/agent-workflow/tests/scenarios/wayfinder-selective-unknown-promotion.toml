@@ -1,8 +1,8 @@
 schema_version = 1
 id = "wayfinder-selective-unknown-promotion"
-name = "ARC platform delivery"
+name = "Release readiness coordination"
 fixture = "wayfinder-selective-promotion"
-request = "Use Wayfinder to orient the ARC platform delivery described in README.md. Do not publish implementation tickets or change the source documents."
+request = "Use Wayfinder to orient the release readiness effort described in README.md. Do not publish implementation tickets or change the source documents."
 starting_state = [
   "README.md is the current repository evidence for this assessment.",
   "Repository-local Wayfinder writes are authorized; external mutations are not.",
@@ -30,7 +30,7 @@ forbid_created_globs = [
 [[assertions]]
 kind = "glob_any_contains"
 path = ".agent-wayfinder/*/map.md"
-value = "ARC"
+value = "release readiness"
 
 [[assertions]]
 kind = "glob_any_contains"

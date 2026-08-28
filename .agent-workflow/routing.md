@@ -54,13 +54,13 @@ authoritative. Read-only work never creates or updates Wayfinder state.
 
 Resume only relevant work. An exact Wayfinder map or provider-native artifact
 selects that re-entry point. For an unnamed likely Wayfinder resume, inspect the
-smallest plausible effort set. Prefer a current map over a similar completed,
-abandoned, or superseded map, and load supporting detail only when directly
-requested or needed to follow a successor. An unrelated map never captures the
-route. Interpret only recognized current Wayfinder state; preserve unknown
-project-owned content without mutation and continue independent current work
-unless a real collision, reference conflict, semantic ambiguity, or unsafe
-filesystem boundary requires a safe stop.
+smallest plausible effort set and resume only one clear destination-and-boundary
+match. A safe regular map identifies current resumable coordination; a mapless
+directory is not a candidate. An unrelated map never captures the route.
+Interpret only recognized current Wayfinder state; preserve unknown project-owned
+content without mutation and continue independent current work unless a real
+collision, reference conflict, semantic ambiguity, or unsafe filesystem boundary
+requires a safe stop.
 
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 only relevant F#/D# ledger sections or U#/E# artifacts. Implementation may

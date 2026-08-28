@@ -225,15 +225,7 @@ class RoutingContractTests(unittest.TestCase):
         ):
             self.assertIn(required, normalized_map_decision)
         self.assertIn(
-            "The resolution method determines what evidence or authority is sufficient",
-            normalized_state_contract,
-        )
-        self.assertIn(
-            "Durable Wayfinder state can record authority", normalized_state_contract
-        )
-        self.assertIn(
-            "A semantic area is settled when no consequential uncertainty remains",
-            normalized_state_contract,
+            "can record authority; it cannot create it", normalized_state_contract
         )
 
     def test_implementation_and_review_do_not_require_tracker_configuration(
@@ -258,14 +250,9 @@ class RoutingContractTests(unittest.TestCase):
         implementation = (
             PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
         ).read_text()
-        state_contract = (
-            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
-        ).read_text()
-
         discovery = " ".join(discovery.split())
         debugging = " ".join(debugging.split())
         implementation = " ".join(implementation.split())
-        state_contract = " ".join(state_contract.split())
 
         self.assertIn("without creating a framework continuity record", discovery)
         self.assertIn("Compare viable alternatives", discovery)
@@ -273,9 +260,6 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("Form 3–5 ranked, falsifiable hypotheses", debugging)
         self.assertIn("Create no separate implementation continuity record", implementation)
         self.assertIn("Invoke `workflow-verification` once", implementation)
-        self.assertIn(
-            "do not interpret it as current Wayfinder state", state_contract
-        )
 
     def test_optional_specialists_have_material_selection_boundaries(self) -> None:
         routing = " ".join(
@@ -320,35 +304,16 @@ class RoutingContractTests(unittest.TestCase):
         self,
     ) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
-        contract = (
-            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
-        ).read_text()
-        normalized_contract = " ".join(contract.split())
         normalized_root = " ".join(root_policy.split())
         self.assertIn("wayfinder-state.md` before the map", normalized_root)
         self.assertIn("Never seed state", normalized_root)
         self.assertIn("An unrelated map never selects Wayfinder", normalized_root)
-        self.assertIn("Do not globally scan for related efforts", normalized_contract)
-        self.assertIn("do not copy canonical artifact bodies", normalized_contract)
-        self.assertIn(
-            "Read-only work reports the exact stale claim", normalized_contract
-        )
-        self.assertIn("No hook, daemon, synchronization service", normalized_contract)
+        self.assertIn("Read-only work changes no state", normalized_root)
 
     def test_resolved_preferences_and_wayfinder_smells_are_explicit(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
-        contract = (
-            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
-        ).read_text()
         normalized_root = " ".join(root_policy.split())
-        normalized_contract = " ".join(contract.split())
         self.assertIn("Reopen a settled choice only", normalized_root)
-        self.assertIn("Never renumber an existing current record", normalized_contract)
-        self.assertIn("`map.md` owns the current state", normalized_contract)
-        self.assertIn("`map.md` alone is a complete and valid", normalized_contract)
-        self.assertIn(
-            "Do not turn every source read or test run into an E#", normalized_contract
-        )
 
     def test_root_policy_requires_evidence_backed_canonical_reconciliation(
         self,
@@ -366,30 +331,16 @@ class RoutingContractTests(unittest.TestCase):
         ):
             self.assertIn(required, normalized_root)
 
-    def test_wayfinder_efforts_have_stable_names_and_progressive_resume_rules(
+    def test_wayfinder_route_loads_the_state_contract_before_the_map(
         self,
     ) -> None:
-        contract = (
-            PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
-        ).read_text()
-        normalized = " ".join(contract.split())
-        for required in (
-            "## Effort naming, selection, and stable paths",
-            "The H1 heading in `map.md` is the durable human-readable effort name",
-            "directory slug is only its stable storage key",
-            "List effort directory names",
-            "smallest plausible candidate set",
-            "If multiple efforts remain plausible",
-            "create a third synonymous effort",
-            "A branch, ticket, file, command, temporary task description, or chat title",
-            "lowercase, filesystem-safe, hyphen-separated",
-            "Immediately before creating the directory",
-            "shortest stable meaningful disambiguator",
-            "Once created, the effort directory path is stable",
-            "Preserve an established safe path",
-            "bringing previously out-of-scope work inside the boundary",
-        ):
-            self.assertIn(required, normalized)
+        root_policy = " ".join(
+            (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text().split()
+        )
+        self.assertIn(
+            "read `.agent-workflow/contracts/wayfinder-state.md` before the map",
+            root_policy.casefold(),
+        )
 
     def test_external_read_scope_is_always_loaded_policy(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()

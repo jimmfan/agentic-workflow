@@ -76,10 +76,9 @@ effort map as the re-entry point. Its effective skill is an Agent Workflow-
 owned runtime projection derived from and attributed to Matt Pocock's pinned
 Wayfinder methodology. The map owns current state, blockers, dependencies, and
 next work; sparse F#/D# ledger sections and U#/E# artifacts stay lazy, and new
-decomposed work belongs to native `to-tickets` output. A current effort outranks
-a similarly named completed, abandoned, or superseded effort during likely
-resume; those other maps remain accessible when directly named or materially
-relevant. Only recognized current Wayfinder state is interpreted. Unknown
+decomposed work belongs to native `to-tickets` output. A safe regular map makes
+an effort current and resumable; a mapless directory is not a candidate. Only
+recognized current Wayfinder state is interpreted. Unknown
 project-owned content is preserved without mutation; independent current work
 proceeds unless a real collision, reference conflict, semantic ambiguity, or
 unsafe filesystem boundary requires a safe stop. The router loads the Wayfinder

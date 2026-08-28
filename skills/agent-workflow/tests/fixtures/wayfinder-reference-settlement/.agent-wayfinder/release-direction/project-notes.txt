@@ -1,0 +1,1 @@
+This project-owned note is outside recognized Wayfinder state and must remain byte-stable.

@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-distinct-scope-creates-effort"
 name = "Previously excluded destination creates a distinct effort"
 fixture = "wayfinder-effort-selection"
-request = "Map the resolved-knowledge settlement and completed-effort lifecycle for Wayfinder. This is a new destination, not the runtime-projection implementation."
+request = "Map current-knowledge settlement and safe effort retirement for Wayfinder. This is a new destination, not the runtime-projection implementation."
 starting_state = [
   "Wayfinder is explicitly selected and repository-local durable writes are authorized.",
   "The existing runtime-projection map explicitly places settlement outside its scope.",

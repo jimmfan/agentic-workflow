@@ -7,7 +7,6 @@ from pathlib import Path
 effort = Path(".agent-wayfinder/deployment-mode")
 evidence = sorted((effort / "evidence").glob("E2-*.md"))
 unknowns = sorted((effort / "unknowns").glob("U1-*.md"))
-fact = (effort / "facts.md").read_text()
 decision = (effort / "decisions.md").read_text()
 mapping = (effort / "map.md").read_text()
 
@@ -20,9 +19,12 @@ checks = [
     len(unknowns) == 1
     and "deployment mode" in unknowns[0].read_text().lower()
     and "- Status: open" in unknowns[0].read_text(),
-    "- Status: disputed" in fact and "- Contradicted by: E2" in fact,
-    "F1 is disputed" in mapping,
-    "review D1" in mapping,
+    not (effort / "facts.md").exists(),
+    "U1" in mapping and "review D1" in mapping,
+    "- Status: accepted" in decision
+    and "Authority: platform architecture policy" in decision
+    and "authority review" in decision
+    and "Based on: F1" not in decision,
     "Use the dedicated capacity policy unless its authority supersedes this decision."
     in decision,
     not (effort / "tickets").exists(),

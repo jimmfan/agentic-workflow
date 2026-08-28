@@ -79,9 +79,9 @@ path = ".agent-wayfinder/runtime-rollout/facts.md"
 value = "## F1 — Python 3.11 is the minimum supported runtime"
 
 [[assertions]]
-kind = "path_contains"
+kind = "path_not_contains"
 path = ".agent-wayfinder/runtime-rollout/facts.md"
-value = "- Status: established"
+value = "- Status:"
 
 [[assertions]]
 kind = "path_contains"

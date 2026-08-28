@@ -1,7 +1,5 @@
 # Public API authentication
 
-- Status: current
-
 ## Destination
 
 Choose the next public API authentication mechanism under project authority.

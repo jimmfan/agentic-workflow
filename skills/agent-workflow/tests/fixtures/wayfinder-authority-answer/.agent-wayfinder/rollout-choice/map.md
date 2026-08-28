@@ -1,7 +1,5 @@
 # Rollout choice
 
-- Status: current
-
 ## Destination
 
 Record the authorized rollout strategy and expose the ready planning frontier.

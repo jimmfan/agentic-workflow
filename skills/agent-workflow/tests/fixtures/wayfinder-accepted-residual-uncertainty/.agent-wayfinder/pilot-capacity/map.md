@@ -1,7 +1,5 @@
 # Pilot capacity
 
-- Status: current
-
 ## Destination
 
 Prepare the non-production worker pilot without claiming production readiness.

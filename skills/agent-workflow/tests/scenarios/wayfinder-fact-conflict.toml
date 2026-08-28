@@ -1,8 +1,8 @@
 schema_version = 1
 id = "wayfinder-fact-conflict"
-name = "Conflicting evidence disputes a fact without silently changing a decision"
+name = "Conflicting evidence retires an unsupported fact without inventing authority"
 fixture = "wayfinder-fact-conflict"
-request = "Resume the named deployment-mode Wayfinder effort. Current configuration contradicts F1. Reconcile the durable state: preserve the conflicting observation as E2 with config.txt provenance, scope, and limitations; mark F1 contradicted by E2; open U1; surface F1 as a blocker; make authority review of D1 the next action; and do not silently change D1."
+request = "Resume the named deployment-mode Wayfinder effort. Current configuration contradicts F1. Reconcile the durable state: preserve the conflicting observation as E2 with config.txt provenance, scope, and limitations; remove the unsupported F1 conclusion; open U1 for the consequential unresolved deployment-mode question; surface U1 only because it blocks the current route; reconcile references that treated F1 as supported; record that D1 needs authority review without changing its accepted choice or authority; and make that review the next action."
 starting_state = [
   "F1 says deployment mode is dedicated and links its original E1 observation.",
   "Current config.txt now says deployment_mode=shared, so the contradiction is unresolved.",
@@ -22,9 +22,7 @@ must_not = [
 ]
 live = true
 verification_command = "Run python verify.py after reconciling E2, F1, U1, and map.md without changing D1."
-preserve_paths = [
-  ".agent-wayfinder/deployment-mode/decisions.md",
-]
+preserve_paths = []
 forbid_created_globs = [
   ".agent-wayfinder/deployment-mode/tickets",
   ".agent-wayfinder/deployment-mode/tickets/**",
@@ -80,24 +78,33 @@ path = ".agent-wayfinder/deployment-mode/unknowns/U1-*.md"
 value = "- Status: open"
 
 [[assertions]]
-kind = "path_contains"
+kind = "path_not_exists"
 path = ".agent-wayfinder/deployment-mode/facts.md"
-value = "- Status: disputed"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/deployment-mode/facts.md"
-value = "- Contradicted by: E2"
 
 [[assertions]]
 kind = "path_contains"
 path = ".agent-wayfinder/deployment-mode/map.md"
-value = "F1 is disputed"
+value = "U1"
 
 [[assertions]]
 kind = "path_contains"
 path = ".agent-wayfinder/deployment-mode/map.md"
 value = "review D1"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/deployment-mode/decisions.md"
+value = "- Status: accepted"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/deployment-mode/decisions.md"
+value = "authority review"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-wayfinder/deployment-mode/decisions.md"
+value = "Based on: F1"
 
 [[assertions]]
 kind = "path_not_exists"

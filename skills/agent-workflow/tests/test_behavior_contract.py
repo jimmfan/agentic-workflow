@@ -24,6 +24,51 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
+    def test_recognized_effort_retirement_can_leave_opaque_project_content(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary)
+            effort = workspace / ".agent-wayfinder/release-direction"
+            effort.mkdir(parents=True)
+            map_path = effort / "map.md"
+            facts = effort / "facts.md"
+            unknown = effort / "project-notes.bin"
+            map_path.write_text("# Release direction\n", encoding="utf-8")
+            facts.write_text(
+                "# Facts\n\nProject-owned preamble.\n\n"
+                "## F1 — Current fact\n\n- Source: source.md\n\nCurrent.\n",
+                encoding="utf-8",
+            )
+            unknown.write_bytes(b"\x00project-owned\xff\n")
+            before = behavior.snapshot(workspace)
+
+            facts.write_text(
+                "# Facts\n\nProject-owned preamble.\n\n", encoding="utf-8"
+            )
+            map_path.unlink()
+            after = behavior.snapshot(workspace)
+            evidence = behavior.RunEvidence(
+                scenario=next(iter(behavior.load_scenarios())),
+                workspace=workspace,
+                before=before,
+                after=after,
+                stdout="",
+                stderr="",
+                returncode=0,
+                report={},
+                verification=(),
+                route_components=(),
+            )
+
+            passed, detail = behavior.recognized_wayfinder_mutations(evidence)
+            self.assertTrue(passed, detail)
+            self.assertEqual(
+                facts.read_text(encoding="utf-8"),
+                "# Facts\n\nProject-owned preamble.\n\n",
+            )
+            self.assertEqual(unknown.read_bytes(), b"\x00project-owned\xff\n")
+
     def test_implementation_reentry_uses_current_map_and_preserves_unknown_content(
         self,
     ) -> None:
@@ -676,7 +721,7 @@ class BehaviorContractTests(unittest.TestCase):
                 ".agent-wayfinder/persistence-authority/decisions.md",
             ),
             "wayfinder-selective-unknown-promotion": (
-                ".agent-wayfinder/arc-platform-delivery/decisions.md",
+                ".agent-wayfinder/release-readiness/decisions.md",
             ),
             "wayfinder-state-cannot-grant-authority": (
                 ".agent-wayfinder/api-authentication/decisions.md",
@@ -698,7 +743,7 @@ class BehaviorContractTests(unittest.TestCase):
     ) -> None:
         for fixture_name, effort_name in (
             ("wayfinder-fact-conflict", "deployment-mode"),
-            ("wayfinder-reference-settlement", "provider-state"),
+            ("wayfinder-reference-settlement", "release-direction"),
         ):
             with self.subTest(fixture=fixture_name):
                 effort = (
@@ -812,14 +857,14 @@ class BehaviorContractTests(unittest.TestCase):
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             workspace = Path(temporary)
-            unknowns = workspace / ".agent-wayfinder/arc/unknowns"
+            unknowns = workspace / ".agent-wayfinder/release-readiness/unknowns"
             unknowns.mkdir(parents=True)
             (unknowns / "U7-review.md").write_text(
-                "# U7: Has the ADR completed full-team review?\n",
+                "# U7: Has the governing direction completed full-team review?\n",
                 encoding="utf-8",
             )
-            (unknowns / "U9-firewall.md").write_text(
-                "# U9: Which destinations have firewall approval?\n",
+            (unknowns / "U9-approval.md").write_text(
+                "# U9: Which scope has operations approval?\n",
                 encoding="utf-8",
             )
             evidence = behavior.RunEvidence(
@@ -834,7 +879,9 @@ class BehaviorContractTests(unittest.TestCase):
                 verification=(),
                 route_components=(),
             )
-            pattern = behavior.PurePosixPath(".agent-wayfinder/arc/unknowns/U*.md")
+            pattern = behavior.PurePosixPath(
+                ".agent-wayfinder/release-readiness/unknowns/U*.md"
+            )
             any_review = behavior.Assertion(
                 kind="glob_any_contains",
                 path=pattern,

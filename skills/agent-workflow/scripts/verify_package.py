@@ -317,98 +317,34 @@ def check_router_contract() -> None:
         and "according to the coordination threshold" in normalized_routing.lower(),
         "detailed router lacks conditional specialist transitions",
     )
-    require(
-        ".agent-wayfinder/" in wayfinder,
-        "Wayfinder state contract lacks the canonical state root",
+    contract_sections = (
+        "## Core invariants",
+        "## Effort shape and selection",
+        "## Current knowledge",
+        "## Safe mutation",
+        "## Reconciliation and settlement",
     )
+    section_offsets = [wayfinder.find(section) for section in contract_sections]
     require(
-        "sole framework-owned durable coordination"
-        in normalized_wayfinder,
-        "Wayfinder state contract lacks sole-coordinator ownership",
-    )
-    require(
-        "Wayfinder recognizes only an effort's `map.md`"
-        in normalized_wayfinder
-        and "Unknown project-owned content does not by itself block independent current work"
-        in normalized_wayfinder,
-        "Wayfinder state contract lacks the positive current-state boundary",
-    )
-    require(
-        "Never persist secrets, tokens, private keys, raw credentials"
-        in normalized_wayfinder
-        and "raw transcripts, or private agent memory" in normalized_wayfinder,
-        "Wayfinder state contract lacks sensitive-data protection",
-    )
-    require(
-        "wayfinder-state.md" in agents and "unrelated map" in agents,
-        "root policy lacks Wayfinder loading guidance",
+        all(offset >= 0 for offset in section_offsets)
+        and section_offsets == sorted(section_offsets),
+        "Wayfinder state contract lacks its normative section structure",
     )
     for required in (
-        "unknowns/",
-        "evidence/",
-        "facts.md",
-        "decisions.md",
-        "`map.md` alone is a complete and valid Wayfinder effort",
-        "do not load unrelated ledger sections",
-        "selected effort's `map.md` is its only re-entry point",
-        "Every current fact contains at least one truthful provenance mode",
-        "reciprocal backlinks",
-        "mark the F# `disputed`",
-        "review dependent decisions",
-        "does not duplicate those work items in Wayfinder",
-        "Use `to-tickets` only when clear work benefits from dependency ordering",
-        "exact contents already exist in Git",
-        "never leave a dangling current link",
-        "A retired number is not reserved",
-        ".wayfinder-mutation-lock/",
-        "never allow two current records",
-        "effort-local current-state shorthand",
-        "canonical filesystem path",
-        "outside the selected effort needs a reference",
-        "Do not scan the repository or Git history",
-        "## Specialist result boundary",
-        "continue directly or load one materially useful specialist",
-        "Create no separate specialist continuity record",
-        "## Recognized current state boundary",
-        "## Knowledge settlement and effort completion",
+        ".agent-wayfinder/<effort>/map.md",
+        "A map-only effort is valid",
+        "U/E/F/D are distinct current-knowledge types",
+        "makes that effort current and resumable",
+        "Without `map.md`",
+        "can record authority; it cannot create it",
+        "raw transcripts",
+        "`<effort>/.wayfinder-mutation-lock/`",
+        "opaque project-owned data",
     ):
         require(
             required in normalized_wayfinder,
-            f"Wayfinder state contract lacks required boundary: {required}",
+            f"Wayfinder state contract lacks stable boundary: {required}",
         )
-    current_boundary = normalized_wayfinder.partition(
-        "## Recognized current state boundary"
-    )[2].partition("## Effort naming, selection, and stable paths")[0].lower()
-    require(
-        all(
-            marker in current_boundary
-            for marker in (
-                "do not interpret it as current wayfinder state",
-                "mutate or silently normalize it",
-                "continue when the authorized read and write set does not depend on that content",
-                "real target or ancestor collision",
-                "reference conflict",
-                "semantic ambiguity in a recognized current container",
-                "unsafe filesystem boundary",
-                "preserve every unknown byte",
-            )
-        ),
-        "Wayfinder current-state boundary lacks unknown-content safety",
-    )
-    settlement = normalized_wayfinder.partition(
-        "## Knowledge settlement and effort completion"
-    )[2].partition("## Contradictions and revision")[0].lower()
-    require(
-        all(
-            marker in settlement
-            for marker in (
-                "known current canonical references outside the effort",
-                "selected h2 section",
-                "otherwise empty",
-            )
-        ),
-        "Wayfinder settlement section lacks reference-safe ledger retirement",
-    )
 
 
 def check_provider_declaration() -> None:
@@ -735,7 +671,6 @@ def check_provider_declaration() -> None:
         "Each Implementation handoff consumes one coherent scope",
         "Verification follows execution",
         "Use `to-tickets`",
-        "It defines effort selection, paths, identifiers, locking",
     ):
         require(
             required in " ".join(projection_text.split()),

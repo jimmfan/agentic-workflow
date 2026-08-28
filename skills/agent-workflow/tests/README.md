@@ -70,14 +70,14 @@ answered unknowns and redundant evidence leaving current state, effort-lock
 serialization across maps, ledgers, U#, and E#, and reference-safe targeted
 retirement without requiring a prior commit.
 
-The catalog also covers completed-effort/new-destination separation, explicit
-completed-effort access, and ensuring that an unrelated existing effort neither
-captures a simple route nor gets loaded. Selective U# promotion keeps
+The catalog also covers blocked-effort re-entry, mapless retired directories
+being excluded from selection, and ensuring that an unrelated existing effort
+neither captures a simple route nor gets loaded. Selective U# promotion keeps
 authority-owned, external-approval, and cross-area-gating uncertainty without
 promoting incidental fog or requiring an exact artifact count. The live
 Wayfinder contracts preserve an unrelated effort during reconciliation, keep
-stale-state audits read-only, and require conflicting reconciliation to stop
-without guessing. Lifecycle coverage preserves arbitrary unrecognized
+outdated-state audits read-only, and require conflicting reconciliation to stop
+without guessing. Framework lifecycle coverage preserves arbitrary unrecognized
 project-owned bytes, including binary data and symlink targets, through every
 supported lifecycle operation. Deterministic state tests prove unknown content
 is not interpreted as current state, independent writes may proceed, and real

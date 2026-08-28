@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-uncommitted-transient-artifact-retires"
 name = "Uncommitted transient artifact may retire"
 fixture = "wayfinder-reference-settlement"
-request = "Resolve U17 in the named provider-state effort. U17's exact current contents never entered Git, but its answer is established and it has no independent current value. Reconcile map.md, E12, and D4 so no current reference depends on U17, then remove U17 without creating bookkeeping state. Do not treat absent Git history as a blocker."
+request = "Resolve U17 in the named release-direction effort. U17's exact current contents never entered Git, but its answer is established and it has no independent current value. Reconcile map.md, E12, and D4 so no current reference depends on U17, then remove U17 without creating bookkeeping state. Do not treat absent Git history as a blocker."
 starting_state = [
   "U17 is a transient current navigation artifact whose exact contents are not in Git.",
   "The answer and independently useful E12, F8, and D4 information can remain current without U17.",
@@ -19,15 +19,15 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".agent-wayfinder/provider-state/facts.md",
+  ".agent-wayfinder/release-direction/facts.md",
 ]
 forbid_created_globs = []
 state_must_include = [
-  ".agent-wayfinder/provider-state/map.md",
-  ".agent-wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
-  ".agent-wayfinder/provider-state/evidence/E12-provider-configuration.md",
-  ".agent-wayfinder/provider-state/facts.md",
-  ".agent-wayfinder/provider-state/decisions.md",
+  ".agent-wayfinder/release-direction/map.md",
+  ".agent-wayfinder/release-direction/unknowns/U17-source-constraint.md",
+  ".agent-wayfinder/release-direction/evidence/E12-source-observation.md",
+  ".agent-wayfinder/release-direction/facts.md",
+  ".agent-wayfinder/release-direction/decisions.md",
 ]
 state_must_not_include = []
 report_must_include = [
@@ -37,27 +37,27 @@ report_must_include = [
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/unknowns/U17-provider-tracker-state.md"
+path = ".agent-wayfinder/release-direction/unknowns/U17-source-constraint.md"
 
 [[assertions]]
 kind = "path_not_contains"
-path = ".agent-wayfinder/provider-state/map.md"
+path = ".agent-wayfinder/release-direction/map.md"
 value = "U17"
 
 [[assertions]]
 kind = "path_not_contains"
-path = ".agent-wayfinder/provider-state/evidence/E12-provider-configuration.md"
+path = ".agent-wayfinder/release-direction/evidence/E12-source-observation.md"
 value = "U17"
 
 [[assertions]]
 kind = "path_not_contains"
-path = ".agent-wayfinder/provider-state/decisions.md"
+path = ".agent-wayfinder/release-direction/decisions.md"
 value = "U17"
 
 [[assertions]]
 kind = "path_exists"
-path = ".agent-wayfinder/provider-state/facts.md"
+path = ".agent-wayfinder/release-direction/facts.md"
 
 [[assertions]]
 kind = "path_exists"
-path = ".agent-wayfinder/provider-state/decisions.md"
+path = ".agent-wayfinder/release-direction/decisions.md"

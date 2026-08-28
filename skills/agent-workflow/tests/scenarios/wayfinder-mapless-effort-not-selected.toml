@@ -1,0 +1,47 @@
+schema_version = 1
+id = "wayfinder-mapless-effort-not-selected"
+name = "Mapless retired state is not selected over a blocked resumable effort"
+fixture = "wayfinder-settlement"
+request = "Continue the relevant provider-direction Wayfinder effort and report its current blocker without changing files. Inspect only the smallest plausible candidate set. The retired-provider-direction directory has no map.md and is not a resumable effort; use blocked-provider-direction/map.md and do not load the opaque project note."
+starting_state = [
+  "The blocked provider effort has a safe map and a current external dependency.",
+  "The retired provider directory has no map and contains only opaque project-owned content.",
+]
+expect = [
+  "task_completed",
+  "repository_unchanged",
+  "existing_state_reused",
+  "project_state_preserved",
+]
+must_not = [
+  "repeat_resolved_discovery",
+  "overwrite_project_owned_state",
+]
+live = false
+preserve_paths = [
+  ".agent-wayfinder/blocked-provider-direction/map.md",
+  ".agent-wayfinder/retired-provider-direction/project-notes.txt",
+]
+forbid_created_globs = []
+state_must_include = [
+  ".agent-wayfinder/blocked-provider-direction/map.md",
+]
+state_must_not_include = [
+  ".agent-wayfinder/retired-provider-direction/project-notes.txt",
+]
+report_must_include = [
+  "checksum",
+]
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-wayfinder/blocked-provider-direction/map.md"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/retired-provider-direction/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/retired-provider-direction/project-notes.txt"
+value = "project-owned note"

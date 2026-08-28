@@ -28,7 +28,7 @@ checks = [
     "Supports: F1" in evidence[0].read_text(encoding="utf-8") if evidence else False,
     facts.startswith("# Facts\n"),
     "## F1 — Python 3.11 is the minimum supported runtime" in facts,
-    "- Status: established" in facts,
+    "- Status:" not in facts,
     "- Scope:" in facts,
     "Derived from: E1" in facts,
     "Source: release-policy.txt" in facts,

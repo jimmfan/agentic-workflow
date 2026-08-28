@@ -1,7 +1,5 @@
 # Discount bounds
 
-- Status: current
-
 ## Destination
 
 Implement the accepted bounded-discount behavior and verify it.
