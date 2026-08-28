@@ -25,7 +25,9 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 - Route before inspecting state; an existing map never selects Wayfinder.
 - Establish the destination and enough relevant territory to orient the effort
   before substantial decomposition. Keep `map.md` low-resolution and load
-  detail only when relevant.
+  detail only when relevant. Apply the contract's default map shape when
+  applicable; omit empty headings, allow a materially clearer equivalent, and
+  never copy canonical plans.
 - The map owns current state, blockers, dependencies, frontier, and next work.
   Optional F/D ledger sections and U/E artifacts preserve only useful current
   knowledge.

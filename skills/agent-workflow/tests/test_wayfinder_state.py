@@ -964,7 +964,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "an explicit `current` match outranks a similarly named historical match",
             "Read a historical map when it is directly named",
             "An older map without a status remains valid",
-            "replace `Next work` with none for that effort",
+            "replace its ready frontier and next work with none for that effort",
         ):
             self.assertIn(required, self.normalized)
 
@@ -1018,6 +1018,41 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Completed efforts should normally shrink",
         ):
             self.assertIn(required, self.normalized)
+
+    def test_contract_and_runtime_define_an_adaptive_default_map_shape(self) -> None:
+        for required in (
+            "## Default map shape",
+            "strong defaults, not a rigid schema",
+            "predictable headings improve scanning and re-entry",
+            "`## Destination` — Desired endpoint plus material scope or "
+            "authority boundary",
+            "`## Territory` — Major areas, ownership or operating constraints, "
+            "and important relationships or seams",
+            "one sentence, a few bullets, or a compact table",
+            "`## Current state` — The smallest truthful summary required for re-entry",
+            "authoritative roadmap, specification, ADR, or tracker",
+            "`## Blockers and dependencies` — Only material constraints on progress",
+            "`## Ready frontier` — Coherent work that can proceed now, what "
+            "remains blocked, and the next meaningful milestone or handoff",
+            "`## Key links` — Only the few canonical artifacts needed for continuation",
+            "combined, renamed, or omitted only when its purpose is genuinely "
+            "inapplicable or another structure is materially clearer",
+            "Empty sections must not be created merely to satisfy the outline",
+            "must not duplicate authoritative roadmaps, specifications, trackers, "
+            "facts, decisions, evidence records, generated graphs, or detailed backlogs",
+            "`Current phase` is not universal",
+            "place that information in `Current state`",
+            "`Current position` heading when that materially improves navigation",
+        ):
+            self.assertIn(required, self.normalized)
+
+        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+        self.assertIn(
+            "Apply the contract's default map shape when applicable; omit empty headings, "
+            "allow a materially clearer equivalent, and never copy canonical plans.",
+            runtime,
+        )
+
     def test_runtime_and_contract_promote_only_continuation_worthy_unknowns(
         self,
     ) -> None:
@@ -1124,7 +1159,8 @@ class WayfinderStateContractTests(unittest.TestCase):
 
         for required in (
             "Establish the destination and enough relevant territory to orient the effort before substantial decomposition.",
-            "In-scope fog or unresolved detail that does not currently justify independent U# tracking.",
+            "Keep incidental, routine, easily reconstructed, or merely unspecified detail in the map",
+            "Keep low-value fog under `Not yet specified`",
             "Precision alone is insufficient",
         ):
             self.assertIn(required, self.normalized)
@@ -1221,7 +1257,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
         for required in (
             "coherent ready frontier",
-            "one or more independently ready scopes",
+            "List ready scopes only when useful",
             "dependency-blocked work",
             "one coherent scope at a time",
         ):

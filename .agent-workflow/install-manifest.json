@@ -25,7 +25,7 @@
       "sha256": "15a7747ec899a4ef0b7de2b69c0016bbd8f4e59881cf51974f79de2924807f2d"
     }
   },
-  "framework_version": "0.22.0",
+  "framework_version": "0.23.0",
   "schema_version": 1,
   "source_revision": "unreleased-local-package"
 }

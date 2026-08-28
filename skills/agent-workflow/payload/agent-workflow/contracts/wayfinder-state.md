@@ -59,10 +59,10 @@ Establish the destination and enough relevant territory to orient the effort
 before substantial decomposition.
 
 Use the smallest clear representation: prose, bullets, a compact table, or a
-small diagram are all valid. `## Territory` is a useful default heading, not a
-required schema. Do not create area identifiers, nested domain directories, or
-parallel maps merely to express this structure; the flat effort layout with
-optional F/D ledgers and independently useful U/E files remains canonical.
+small diagram are all valid. Do not create area identifiers, nested domain
+directories, or parallel maps merely to express this structure; the flat effort
+layout with optional F/D ledgers and independently useful U/E files remains
+canonical.
 
 Territory is provisional, adaptive, and judgment-based. It helps Wayfinder
 explore relevant areas and seams, challenge incomplete framing, and revise its
@@ -345,66 +345,39 @@ Immediately before writing, reread the ledger or directory, map, target, and
 affected state. The lock makes retirement's final reference scan and removal
 indivisible. Preserve concurrent conflicts and reconcile explicitly.
 
-## The low-resolution map
+## Default map shape
 
-Use these headings as a compact authoring default, not a strict schema. Preserve
-clear existing human content instead of normalizing it for ceremony.
+These standard names are strong defaults, not a rigid schema; prefer them because
+predictable headings improve scanning and re-entry. A heading may be combined,
+renamed, or omitted only when its purpose is genuinely inapplicable or another
+structure is materially clearer. Empty sections must not be created merely to
+satisfy the outline.
 
-```markdown
-# <Effort name>
+- `## Destination` — Desired endpoint plus material scope or authority boundary.
+- `## Territory` — Major areas, ownership or operating constraints, and
+  important relationships or seams; for a small effort, one sentence, a few
+  bullets, or a compact table.
+- `## Current state` — The smallest truthful summary required for re-entry.
+  Include current position against an authoritative roadmap, specification,
+  ADR, or tracker when useful.
+- `## Blockers and dependencies` — Only material constraints on progress; omit
+  when none need separate attention.
+- `## Ready frontier` — Coherent work that can proceed now, what remains blocked,
+  and the next meaningful milestone or handoff.
+- `## Key links` — Only the few canonical artifacts needed for continuation;
+  omit when unnecessary.
 
-- Status: current
-
-## Destination
-
-<What it means for the route to be clear.>
-
-## Territory
-
-<When useful: major coherent areas and the relationships or seams that matter.>
-
-## Current state
-
-<Concise established state and links to independently useful U/E/F/D detail.>
-
-## Blockers and dependencies
-
-<What prevents progress, what depends on what, and any recovery condition.>
-
-## Next work
-
-<The coherent ready frontier: one or more independently ready scopes, or a
-linked native ticket frontier.>
-
-## Notes
-
-<Standing constraints and useful canonical links.>
-
-## Decisions so far
-
-- [D1 — Title](decisions.md#d1--title) — one-line gist
-
-## Not yet specified
-
-<In-scope fog or unresolved detail that does not currently justify independent
-U# tracking.>
-
-## Out of scope
-
-<Explicit boundaries beyond this destination.>
-```
-
-`Territory` is optional when the same bearings are already clear elsewhere in
-the map. Keep small facts inline; promote reusable, disputed, independently
-revised, provenance-sensitive, or oversized detail. Keep the coherent ready
-frontier concise, list one or more independently ready scopes only when useful,
-exclude dependency-blocked work, and link rather than copy a native ticket
-frontier.
+The map must not duplicate authoritative roadmaps, specifications, trackers,
+facts, decisions, evidence records, generated graphs, or detailed backlogs.
+`Current phase` is not universal. When a canonical artifact defines phases,
+place that information in `Current state`, or use a concise `Current position`
+heading when that materially improves navigation.
 
 The ready frontier is the set of coherent scopes whose material decision
-dependencies are answered or explicitly dispositioned and can therefore
-proceed now. Explicit disposition is responsible-authority acceptance of
-remaining uncertainty for a named boundary, never an agent assumption.
+dependencies are answered or explicitly dispositioned. List ready scopes only
+when useful, exclude dependency-blocked work, and link native ticket frontiers.
+Explicit disposition requires responsible-authority acceptance for a named
+boundary, never an agent assumption.
 
 When evidence establishes execution order, surface the critical path,
 independent parallel work, and any off-path dependency with material external
@@ -617,16 +590,16 @@ uncertainty remains undispositioned in any in-scope area, durable outcomes are
 canonically owned or handed off, and redundant supporting knowledge is retired.
 Completed efforts should normally shrink to a concise map with the outcome and
 canonical pointers. Then set the map status to `completed`, record the outcome,
-reconcile current canonical links, and replace `Next work` with none for that
-effort.
+reconcile current canonical links, and replace its ready frontier and next work
+with none for that effort.
 
 To abandon or supersede an effort, set the corresponding status, record the
-concise reason or outcome, reconcile current canonical links, and replace `Next
-work` with none for that effort. A superseded effort also links the successor or
-governing direction. Do not load supporting detail from a completed, abandoned,
-or superseded effort during ordinary effort selection, rename the stable
-directory, repurpose it for a new destination, or move it into a
-framework-owned archive. Git owns history.
+concise reason or outcome, reconcile current canonical links, and replace its
+ready frontier and next work with none for that effort. A superseded effort also
+links the successor or governing direction. Do not load supporting detail from a
+completed, abandoned, or superseded effort during ordinary effort selection,
+rename the stable directory, repurpose it for a new destination, or move it into
+a framework-owned archive. Git owns history.
 
 Current E/F/D statuses retain their meanings; preserve ambiguous state. Install,
 update, status, remove, reinstall, provider repair, and projection regeneration
