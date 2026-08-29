@@ -19,7 +19,7 @@ subprocess.
   bootstrap, and CLI delegation.
 - `test_routing.py` owns direct/progressive routing, explicit selection,
   specialist boundaries, Wayfinder loading, authority blocking, fail-closed
-  state loading, and one context-budget proof.
+  state loading, and semantic progressive-loading boundaries.
 - `test_wayfinder_state.py` owns deterministic state representation, allocation,
   changed-state detection, no-overwrite creation, reconciliation, reference
   safety, and project-data preservation.

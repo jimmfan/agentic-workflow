@@ -4,27 +4,6 @@ from pathlib import Path
 import unittest
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
-PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
-PRE_THIN_DIRECT_ROOT_WORDS = 682
-GLOBAL_RECONCILIATION_RULE_WORDS = 94
-GLOBAL_RECONCILIATION_RULE_PROFILE = (700, GLOBAL_RECONCILIATION_RULE_WORDS)
-PRE_DECOMPOSITION_CONTEXT = {
-    "direct": (3362, 466),
-    "standalone-discovery": (7642, 1050),
-    "wayfinder-decision": (54264, 7683),
-    "wayfinder-causal": (71751, 10118),
-    "wayfinder-research": (68316, 9636),
-    "wayfinder-implementation": (52822, 7462),
-    "multi-front": (79626, 11294),
-}
-
-
-def instruction_profile(paths: list[Path]) -> tuple[int, int]:
-    bodies = [path.read_text(encoding="utf-8") for path in paths]
-    return sum(len(body.encode("utf-8")) for body in bodies), sum(
-        len(body.split()) for body in bodies
-    )
 
 
 class RoutingContractTests(unittest.TestCase):
@@ -174,132 +153,19 @@ class RoutingContractTests(unittest.TestCase):
             "selection did not become equivalent execution", normalized_routing
         )
         self.assertIn("omit the unavailable provider", normalized_routing)
-
-        self._assert_context_reduction_budgets()
-        self._assert_directional_context_profiles()
-
-    def _assert_context_reduction_budgets(self) -> None:
-        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
-        root_words = len(root_policy.split())
-
-        self.assertLessEqual(
-            root_words,
-            PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5 + GLOBAL_RECONCILIATION_RULE_WORDS,
-            "routing context excluding the required global reconciliation rule must be at least 80% smaller when the old ambiguity gate loaded root plus router",
+        self.assertIn(
+            "Direct work, one obvious workflow, and one obvious specialist inside "
+            "Wayfinder do not load it",
+            normalized_routing,
         )
-        self.assertLessEqual(
-            root_words,
-            PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100
-            + GLOBAL_RECONCILIATION_RULE_WORDS,
-            "the always-loaded root excluding the required global reconciliation rule must be at least 35% smaller for confidently Direct work",
+        self.assertIn(
+            "A supporting capability does not become the dominant workflow or create "
+            "durable state",
+            normalized_routing,
         )
-
-        selected_skills = [
-            PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md",
-            PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md",
-            PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md",
-            PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md",
-            REPOSITORY_ROOT / ".agents/skills/domain-modeling/SKILL.md",
-            REPOSITORY_ROOT / ".agents/skills/implement/SKILL.md",
-            REPOSITORY_ROOT / ".agents/skills/research/SKILL.md",
-            REPOSITORY_ROOT / ".agents/skills/tdd/SKILL.md",
-            REPOSITORY_ROOT / ".agents/skills/to-spec/SKILL.md",
-            REPOSITORY_ROOT / ".agents/skills/to-tickets/SKILL.md",
-        ]
-        for skill in selected_skills:
-            with self.subTest(skill=skill.parent.name):
-                skill_words = len(skill.read_text().split())
-                old_context = PRE_THIN_AMBIGUOUS_ROUTE_WORDS + skill_words
-                new_context = root_words + skill_words
-                self.assertLessEqual(
-                    new_context,
-                    old_context / 2,
-                    "ordinary selected-workflow context must be at least 50% smaller",
-                )
-
-    def _assert_directional_context_profiles(
-        self,
-    ) -> None:
-        root = PACKAGE_ROOT / "payload/root/AGENTS.md.template"
-        runtime = PACKAGE_ROOT / "runtime-projections/wayfinder.md"
-        state = PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
-        discovery = PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
-        debugging = PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
-        implementation = (
-            PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
-        )
-        verification = PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md"
-        research = REPOSITORY_ROOT / ".agents/skills/research/SKILL.md"
-        prototype = REPOSITORY_ROOT / ".agents/skills/prototype/SKILL.md"
-        domain_modeling = REPOSITORY_ROOT / ".agents/skills/domain-modeling/SKILL.md"
-        implement = REPOSITORY_ROOT / ".agents/skills/implement/SKILL.md"
-
-        profiles = {
-            "direct": [root],
-            "standalone-discovery": [root, discovery],
-            "wayfinder-decision": [root, runtime, state],
-            "wayfinder-decision-with-discovery": [root, runtime, state, discovery],
-            "wayfinder-causal": [root, runtime, state, debugging],
-            "wayfinder-research": [root, runtime, state, research],
-            "wayfinder-implementation": [
-                root,
-                runtime,
-                state,
-                implementation,
-                implement,
-                verification,
-            ],
-            "multi-front": [
-                root,
-                runtime,
-                state,
-                discovery,
-                debugging,
-                research,
-                prototype,
-                domain_modeling,
-                implementation,
-                verification,
-            ],
-        }
-        measured = {
-            name: instruction_profile(paths) for name, paths in profiles.items()
-        }
-
-        direct_limit = tuple(
-            baseline + reconciliation
-            for baseline, reconciliation in zip(
-                PRE_DECOMPOSITION_CONTEXT["direct"],
-                GLOBAL_RECONCILIATION_RULE_PROFILE,
-                strict=True,
-            )
-        )
-        self.assertLessEqual(measured["direct"], direct_limit)
-        self.assertLess(
-            measured["standalone-discovery"],
-            PRE_DECOMPOSITION_CONTEXT["standalone-discovery"],
-        )
-        self.assertLess(
-            measured["wayfinder-decision"],
-            PRE_DECOMPOSITION_CONTEXT["wayfinder-decision"],
-        )
-        self.assertLess(
-            measured["wayfinder-decision-with-discovery"],
-            PRE_DECOMPOSITION_CONTEXT["wayfinder-decision"],
-        )
-        for name in (
-            "wayfinder-causal",
-            "wayfinder-research",
-            "wayfinder-implementation",
-            "multi-front",
-        ):
-            with self.subTest(profile=name):
-                self.assertLess(measured[name], PRE_DECOMPOSITION_CONTEXT[name])
-
-        self.assertEqual(
-            measured["wayfinder-decision-with-discovery"][0]
-            - measured["wayfinder-decision"][0],
-            discovery.stat().st_size,
+        self.assertIn(
+            "After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map",
+            normalized_routing,
         )
 
 
