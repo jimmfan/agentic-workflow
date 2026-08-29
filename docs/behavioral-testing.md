@@ -12,42 +12,27 @@ The framework uses only Python 3.11 standard-library modules. Normal pull
 requests do not need a model, network credential, provider, Git repository, or
 hidden reasoning trace.
 
-## Three layers
+## Testing layers
 
-1. **Contract/unit tests** validate TOML schema, supported behavior vocabulary,
-   blind-rubric isolation, evaluator failure modes, required route-marker
-   syntax, and the command-runner protocol.
-2. **Fixture/integration tests** copy every consuming-project fixture into a new
-   temporary directory. They exercise install, update, repeated update, remove,
-   and reinstall, comparing project-owned state after every operation. Fixture
-   validation commands begin in a known failing state where implementation is
-   required.
-3. **Live behavioral smoke tests** are opt-in. A caller supplies an agent command
-   that reads the scenario prompt from standard input and operates in the
-   temporary fixture working directory. The default set spans direct work,
-   research, blocked authority, read-only and writable reconciliation,
-   uncertainty handling, native work handoff, verification recovery, and clean
-   blocking.
+1. **Production-owner tests** exercise lifecycle, provider transactions,
+   package verification, bootstrap safety, routing, and Wayfinder state through
+   their public boundaries.
+2. **Behavior-harness tests** validate TOML schema and vocabulary, blind-rubric
+   isolation, evaluator failure modes, route-marker syntax, fixture reset, and
+   command-runner evidence.
+3. **Wayfinder behavioral scenarios** provide fixture-backed observable
+   contracts for authority, current-state selection, reconciliation, and
+   settlement without duplicating product implementation.
+4. **Live behavioral smoke tests** are opt-in. A caller supplies an agent command
+   that operates in a disposable fixture workspace. The default set remains a
+   representative sample rather than an exhaustive catalog.
+5. **Evaluation-tooling tests** under `evals/tests/` are deterministic and
+   network-free, but remain separate from the distributed package gate.
 
-The deterministic first two layers plus package checks are the required
+The deterministic package tests and scenario validation are the required
 pre-merge gate. Live smoke tests are manual or suitable for a separately
 credentialed scheduled/release job; they are not required on ordinary pull
 requests.
-
-## Related deterministic catalogs
-
-The TOML files described below are the only scenarios loaded by `behavior.py`.
-One separate JSON catalog lives directly under `skills/agent-workflow/tests/`:
-
-- `acceptance-scenarios.json` is a concise index of lifecycle product acceptance
-  cases exercised by the lifecycle suite.
-
-This JSON file is a deterministic product catalog, not a fixture-backed or live
-behavioral scenario, so it does not use the TOML schema. The package verifier
-checks its schema directly, then invokes `behavior.py validate` to validate
-every TOML scenario and fixture reference. Routing decisions are tested against
-the canonical prose contract and in the opt-in routing evaluation rather than a
-duplicate hand-authored answer key.
 
 ## Human-authored scenario format
 
@@ -72,7 +57,7 @@ expect = [
 ]
 must_not = [
   "repeat_resolved_discovery",
-  "invent_unknown_answers",
+  "overwrite_project_owned_state",
 ]
 live = false
 blind_grading = false
@@ -144,12 +129,11 @@ validator rejects unknown behavior names, unsafe paths, missing preserved files,
 unknown fields, and unsupported assertion kinds.
 
 The deterministic catalog includes settlement contracts for retiring answered
-U# and redundant E# files only after reference reconciliation, serializing
-concurrent creation with a transient effort mutation lock, allowing an
-uncommitted transient child to retire once current state is reconciled, keeping
-blocked efforts resumable, and excluding mapless retired directories from
-selection. These are human-authored behavior contracts, not evidence that an
-unrun model obeyed them.
+U# and redundant E# files only after reference reconciliation, keeping blocked
+efforts resumable, excluding mapless directories from selection, updating the
+same authorized D# boundary, and preventing reference-system observations from
+becoming unsupported current-project facts. These are human-authored behavior
+contracts, not evidence that an unrun model obeyed them.
 
 ## Fixtures and reset
 
@@ -200,18 +184,12 @@ does not independently adjudicate every changing external fact.
 Run all commands from the **source repository root** in the macOS/Linux host
 Terminal or the VS Code Dev Container terminal that owns this checkout.
 
-The fast behavioral contract suite is deterministic and read-only outside
-temporary directories:
+The behavior-harness and Wayfinder behavior suites are deterministic and
+read-only outside temporary directories:
 
 ```bash
-python3 -B -m unittest discover -s skills/agent-workflow/tests -p 'test_behavior_*.py' -v
-```
-
-The fixture lifecycle exercise is also deterministic and uses only disposable
-temporary copies:
-
-```bash
-python3 skills/agent-workflow/tests/behavior.py fixtures
+python3 -B -m unittest discover -s skills/agent-workflow/tests -p 'test_behavior_harness.py' -v
+python3 -B -m unittest discover -s skills/agent-workflow/tests -p 'test_wayfinder_behavior.py' -v
 ```
 
 The full required pre-merge gate runs package/static checks plus every
@@ -248,8 +226,8 @@ python3 skills/agent-workflow/tests/behavior.py live \
 ```
 
 `--scenario simple-bounded-task` may be repeated to select named contracts,
-including contracts outside the default smoke set. Without it, all five
-default-live scenarios run. Kept workspaces and reports are persistent caller
+including contracts outside the default smoke set. Without it, every scenario
+marked `live = true` runs. Kept workspaces and reports are persistent caller
 artifacts; remove those explicitly after review. The normal temporary mode
 cleans workspaces automatically.
 

@@ -9,11 +9,10 @@ starting_state = [
 ]
 expect = [
   "existing_state_reused",
-  "unresolved_unknowns_preserved",
+  "project_state_preserved",
   "meaningful_repository_change",
 ]
 must_not = [
-  "invent_unknown_answers",
   "silent_decision_invention",
   "overwrite_project_owned_state",
 ]

@@ -6,8 +6,10 @@ Record the authorized rollout strategy and expose the ready planning frontier.
 
 ## Current state
 
-[U1](unknowns/U1-rollout-strategy.md) is awaiting the responsible project
-owner's answer. The release checklist is the dependent current item.
+[D1 — Rollout strategy](decisions.md#d1--rollout-strategy) currently selects
+Option A. [U1](unknowns/U1-rollout-strategy.md) is awaiting the responsible
+project owner's answer on whether that same boundary should change. The release
+checklist is the dependent current item.
 
 ## Blockers and dependencies
 

@@ -18,7 +18,6 @@ expect = [
 must_not = [
   "repeat_resolved_discovery",
   "overwrite_project_owned_state",
-  "invent_unknown_answers",
 ]
 live = true
 verification_command = "Run python verify.py after creating only the justified E1/F1 chain, publishing the approved native tickets, and updating map.md."

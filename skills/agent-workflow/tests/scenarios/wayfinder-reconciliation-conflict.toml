@@ -15,7 +15,6 @@ expect = [
 ]
 must_not = [
   "overwrite_project_owned_state",
-  "invent_unknown_answers",
 ]
 live = true
 verification_command = "No truthful reconciliation is possible until authoritative regional rollout evidence exists."

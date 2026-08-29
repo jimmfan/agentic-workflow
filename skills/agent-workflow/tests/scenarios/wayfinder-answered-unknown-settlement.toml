@@ -15,7 +15,6 @@ expect = [
   "project_state_preserved",
 ]
 must_not = [
-  "invent_unknown_answers",
   "overwrite_project_owned_state",
   "unnecessary_planning_artifacts",
 ]

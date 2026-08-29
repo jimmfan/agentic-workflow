@@ -32,10 +32,6 @@ MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 FENCED_CODE = re.compile(r"(?ms)^```[^\n]*\n.*?^```[ \t]*$")
 INLINE_CODE = re.compile(r"`[^`\n]*`")
 INVOCATION_POLICIES = frozenset({"implicit", "user-only", "unavailable"})
-# Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
-PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
-PRE_THIN_DIRECT_ROOT_WORDS = 682
-GLOBAL_RECONCILIATION_RULE_WORDS = 94
 REVIEWED_PROVIDER = {
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
@@ -266,87 +262,6 @@ def check_filesystem() -> None:
                 )
     for script in PACKAGE_ROOT.rglob("*.py"):
         compile(script.read_text(encoding="utf-8"), str(script), "exec")
-
-
-def check_router_contract() -> None:
-    agents = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
-    routing = (PAYLOAD_ROOT / "agent-workflow" / "routing.md").read_text(
-        encoding="utf-8"
-    )
-    wayfinder = (
-        PAYLOAD_ROOT / "agent-workflow" / "contracts" / "wayfinder-state.md"
-    ).read_text(encoding="utf-8")
-    normalized_agents = " ".join(agents.split())
-    normalized_routing = " ".join(routing.split())
-    normalized_wayfinder = " ".join(wayfinder.split())
-    require("MUST route every request" in agents, "root policy lacks mandatory routing")
-    require(
-        "`direct`" in agents and "minimum useful process" in routing,
-        "router lacks the minimum/direct contract",
-    )
-    require(
-        "MUST NOT" in agents and "authority" in agents,
-        "root policy lacks the authorization boundary",
-    )
-    for required in (
-        "Direct is default",
-        "encountering the topic alone never forces a specialist",
-        "one obvious specialist inside an already selected Wayfinder effort",
-        "Read `.agent-workflow/routing.md` only when",
-        "never selection by count alone",
-        "any hard signal or at least two soft signals",
-        "Read-only work changes no state",
-    ):
-        require(
-            required in normalized_agents,
-            f"thin root router lacks required boundary: {required}",
-        )
-    require(
-        len(agents.split())
-        <= PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5 + GLOBAL_RECONCILIATION_RULE_WORDS,
-        "thin root router exceeds the prior ambiguity-gate context budget",
-    )
-    require(
-        len(agents.split())
-        <= PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100
-        + GLOBAL_RECONCILIATION_RULE_WORDS,
-        "thin root router reduces confidently Direct context by less than 35%",
-    )
-    require(
-        "avoid routing loops" in normalized_routing.lower()
-        and "according to the coordination threshold" in normalized_routing.lower(),
-        "detailed router lacks conditional specialist transitions",
-    )
-    contract_sections = (
-        "## Core invariants",
-        "## Effort shape and selection",
-        "## Current knowledge",
-        "## Safe mutation",
-        "## Reconciliation and settlement",
-    )
-    section_offsets = [wayfinder.find(section) for section in contract_sections]
-    require(
-        all(offset >= 0 for offset in section_offsets)
-        and section_offsets == sorted(section_offsets),
-        "Wayfinder state contract lacks its normative section structure",
-    )
-    for required in (
-        ".agent-wayfinder/<effort>/map.md",
-        "A map-only effort is valid",
-        "U/E/F/D classify current knowledge",
-        "Presence in `unknowns/` means",
-        "Presence in `decisions.md` means",
-        "makes an effort current and resumable",
-        "Without `map.md`",
-        "can record authority; it cannot create it",
-        "raw transcripts",
-        "`<effort>/.wayfinder-mutation-lock/`",
-        "opaque project-owned data",
-    ):
-        require(
-            required in normalized_wayfinder,
-            f"Wayfinder state contract lacks stable boundary: {required}",
-        )
 
 
 def check_provider_declaration() -> None:
@@ -773,30 +688,6 @@ def check_provider_declaration() -> None:
     )
 
 
-def check_acceptance_catalog() -> None:
-    tests = PACKAGE_ROOT / "tests"
-
-    acceptance_name = "acceptance-scenarios.json"
-    acceptance = json.loads((tests / acceptance_name).read_text(encoding="utf-8"))
-    require(
-        isinstance(acceptance, list) and acceptance,
-        f"{acceptance_name} must contain cases",
-    )
-    acceptance_ids: list[str] = []
-    for item in acceptance:
-        require(isinstance(item, dict), f"invalid case in {acceptance_name}")
-        for field in ("id", "operation", "expected"):
-            require(
-                isinstance(item.get(field), str) and bool(item[field].strip()),
-                f"{acceptance_name} case needs a non-empty {field}",
-            )
-        acceptance_ids.append(item["id"])
-    require(
-        len(acceptance_ids) == len(set(acceptance_ids)),
-        f"duplicate case id in {acceptance_name}",
-    )
-
-
 def check_behavior_scenarios() -> None:
     tests = PACKAGE_ROOT / "tests"
     behavior = subprocess.run(
@@ -886,9 +777,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             check_structure,
             check_manifest,
             check_filesystem,
-            check_router_contract,
             check_provider_declaration,
-            check_acceptance_catalog,
             check_behavior_scenarios,
             check_markdown_links,
         ):

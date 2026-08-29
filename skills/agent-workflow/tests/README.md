@@ -7,40 +7,37 @@ Run focused unittest commands with `python3 -m unittest ...`. Python's generated
 need manual cleanup. The full verifier also disables bytecode writes in its test
 subprocess.
 
-## Deterministic contract and unit tests
+## Production-owner unit and integration tests
 
-- `test_behavior_contract.py` validates the TOML scenario contract, behavior
-  vocabulary, blind-rubric isolation, adversarial evaluator cases, required
-  route-marker syntax, progressive Wayfinder state inputs, and live command
-  protocol using a deterministic fake agent.
-- `test_routing.py` validates the executable routing, authorization, lazy
-  loading, Wayfinder resume, and fail-closed prose contracts.
-- `test_wayfinder_state.py` validates the authored, installed, and generated
-  state contract plus a deterministic state-transition oracle for map-only
-  efforts; F#/D# ledger creation, allocation, duplicate rejection, mutation,
-  and retirement; independent U#/E# files; non-interpretation of unrecognized
-  project-owned content; safe collision handling; effort-lock serialization;
-  effort lifecycle; progressive retrieval; and projection parity.
+- `test_lifecycle.py` owns install, update, status, remove, composite-file and
+  project-owned-state preservation boundaries.
+- `test_providers.py` owns provider reconciliation, projections, adapters,
+  status, transactions, rollback, recovery reporting, and removal.
+- `test_verify_package.py` owns package shape, manifest and provider declaration
+  integrity, projection provenance, and refresh validation.
+- `test_bootstrap.py` owns archive parsing, extraction and root safety, offline
+  bootstrap, and CLI delegation.
+- `test_routing.py` owns direct/progressive routing, explicit selection,
+  specialist boundaries, Wayfinder loading, authority blocking, fail-closed
+  state loading, and one context-budget proof.
+- `test_wayfinder_state.py` owns deterministic state representation, allocation,
+  locking, concurrency, reconciliation, reference safety, and project-data
+  preservation.
+
+## Behavior harness and Wayfinder behavior
+
+- `test_behavior_harness.py` validates scenario schema and vocabulary, blind
+  grading, evaluator assertions, route markers, verification evidence, fixture
+  isolation, destructive-mutation detection, and intentionally-red fixtures.
+- `test_wayfinder_behavior.py` validates Wayfinder scenario semantics, current
+  record presence, authority, progressive loading, conflict promotion,
+  reconciliation, blocked settlement, full settlement, and no-state outcomes.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
-## Static product catalog
-
-- `acceptance-scenarios.json` indexes lifecycle product acceptance cases.
-
-This JSON catalog is validated directly by `verify_package.py`. It is not a
-`behavior.py` scenario and does not use the fixture-backed TOML schema. Routing
-behavior is exercised by the prose-contract tests here and the separate
-evaluation harness under `evals/` rather than a hand-authored answer catalog.
-
-## Deterministic fixture and lifecycle integration
-
-- `test_behavior_fixtures.py` copies fixtures to temporary workspaces, checks
-  reset behavior, proves install leaves Wayfinder state unseeded, verifies
-  implementation fixtures begin red, detects a destructive state mutation, and
-  runs install/update/repeated-update/remove/reinstall once per unique fixture.
-- `test_lifecycle.py` retains focused archive, composite, collision,
-  provider-isolation, cp1252, and current-state reconciliation coverage.
+The lifecycle suite directly proves framework operations preserve arbitrary and
+human-edited `.agent-wayfinder/` bytes. Fixtures therefore need only prove reset,
+evaluator, and scenario behavior; they do not repeat the full lifecycle matrix.
 
 ## Human behavioral contracts and live smoke tests
 
@@ -51,12 +48,12 @@ evaluation harness under `evals/` rather than a hand-authored answer catalog.
   a caller-supplied agent command, captures public evidence, and evaluates the
   scenario without asking for hidden reasoning.
 
-The default live set covers bounded direct work, external research, existing
-Wayfinder state, blocked authority, read-only and writable reconciliation,
+The default live set is a representative smoke sample covering direct work,
+external research, blocked authority, read-only and writable reconciliation,
 evidence/fact contradiction, map-only continuation with a native `to-tickets`
-handoff, selective uncertainty, unordered work, verification failure/recovery,
-and a blocked project. Live cases are opt-in and not part of ordinary pull
-requests.
+handoff, selective uncertainty, verification recovery, blocked work, and the
+valid outcome that Wayfinder assessment creates no state. Live cases are opt-in
+and not part of ordinary pull requests.
 
 The broader deterministic catalog also covers Domain Modeling surfacing
 consequential uncertainty, authority-dependent choices asking a concrete human
@@ -72,9 +69,9 @@ serialization across maps, ledgers, U#, and E#, and reference-safe targeted
 retirement without requiring a prior commit. Opaque content inside U/E containers
 is preserved and blocks only an affected ambiguous mutation.
 
-The catalog also covers blocked-effort re-entry, mapless retired directories
-being excluded from selection, and ensuring that an unrelated existing effort
-neither captures a simple route nor gets loaded. Selective U# promotion keeps
+The catalog also covers blocked-effort re-entry, mapless directories being
+excluded from selection, and ensuring that an unrelated existing effort
+neither captures a simple route nor gets loaded. Selective U#/E# promotion keeps
 authority-owned, external-approval, and cross-area-gating uncertainty without
 promoting incidental fog or requiring an exact artifact count. The live
 Wayfinder contracts preserve an unrelated effort during reconciliation, keep
@@ -84,6 +81,9 @@ project-owned bytes, including binary data and symlink targets, through every
 supported lifecycle operation. Deterministic state tests prove unknown content
 is not interpreted as current state, independent writes may proceed, and real
 recognized-container ambiguity still fails safely.
+
+Repository evaluation-tooling tests under `evals/tests/` remain a separate
+network-free CI step and are not part of the distributed package gate.
 
 See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema,
 evidence model, commands, side effects, cleanup, and limitations.

@@ -17,7 +17,7 @@ must_not = [
   "manufacture_uncertainty",
   "overwrite_project_owned_state",
 ]
-live = false
+live = true
 preserve_paths = ["app.py", "verify.py"]
 forbid_created_globs = [
   ".agent-wayfinder/**",
@@ -27,4 +27,3 @@ forbid_created_globs = [
 report_must_include = [
   "no durable Wayfinder state is needed",
 ]
-

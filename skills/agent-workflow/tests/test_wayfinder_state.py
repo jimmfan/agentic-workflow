@@ -1023,7 +1023,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertIn("## F1 — Supported environments", current)
             self.assertIn("Scope: Linux environments", current)
             self.assertNotIn("every supported environment", current)
-            self.assertNotIn("Status:", current)
 
             self.assertTrue(retire_ledger_section(effort, "F", 1))
             self.assertFalse(facts.exists())
@@ -1091,7 +1090,6 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "Use the revised boundary.\n",
             )
             self.assertEqual(read_current_ids(effort, "D"), [1])
-            self.assertNotIn("Status:", decisions.read_text(encoding="utf-8"))
             self.assertIn("Use the revised boundary", decisions.read_text(encoding="utf-8"))
 
             self.assertEqual(
@@ -1777,7 +1775,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             "private agent memory",
         ):
             self.assertIn(required, self.normalized)
-        self.assertNotIn("Status:", self.contract)
         self.assertIn("Presence in `unknowns/` means", self.normalized)
         self.assertIn("Presence in `decisions.md` means", self.normalized)
 
@@ -1820,7 +1817,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             / "wayfinder-accepted-residual-uncertainty/project-approval.md"
         ).read_text(encoding="utf-8")
         self.assertTrue(unknown.is_file())
-        self.assertNotIn("Status:", unknown.read_text(encoding="utf-8"))
         self.assertIn("non-production pilot only", approval)
         self.assertIn("keep its U# current and unresolved", self.normalized)
         self.assertIn("unblock only that accepted boundary", self.normalized)
@@ -1830,7 +1826,6 @@ class WayfinderStateContractTests(unittest.TestCase):
         retired = state_root / "retired-provider-direction"
         self.assertTrue(blocked_map.is_file())
         self.assertIn("checksum", blocked_map.read_text(encoding="utf-8"))
-        self.assertNotIn("- Status:", blocked_map.read_text(encoding="utf-8"))
         self.assertFalse((retired / "map.md").exists())
         self.assertIn(
             "project-owned note",

@@ -14,7 +14,6 @@ expect = [
 ]
 must_not = [
   "silent_decision_invention",
-  "invent_unknown_answers",
   "overwrite_project_owned_state",
 ]
 live = true

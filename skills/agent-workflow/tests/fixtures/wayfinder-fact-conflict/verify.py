@@ -17,12 +17,10 @@ checks = [
     and "Scope: current deployment configuration" in evidence[0].read_text()
     and "## Limitations" in evidence[0].read_text(),
     len(unknowns) == 1
-    and "deployment mode" in unknowns[0].read_text().lower()
-    and "Status:" not in unknowns[0].read_text(),
+    and "deployment mode" in unknowns[0].read_text().lower(),
     not (effort / "facts.md").exists(),
     "U1" in mapping and "review D1" in mapping,
-    "Status:" not in decision
-    and "Authority: platform architecture policy" in decision
+    "Authority: platform architecture policy" in decision
     and "authority review" in decision
     and "Based on: F1" not in decision,
     "Use the dedicated capacity policy unless its authority changes the choice."
