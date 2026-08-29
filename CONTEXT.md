@@ -7,7 +7,7 @@ One resumable body of coordination with one stable objective and scope.
 The brief coordination summary for a Wayfinder effort and the first effort file read when resuming it.
 
 **Objective**:
-What a Wayfinder effort must achieve.
+The result a Wayfinder effort is intended to achieve.
 
 **Scope**:
 What a Wayfinder effort includes and excludes, including relevant project or authority limits.
@@ -19,17 +19,17 @@ Resolving something differently would change the objective, scope, authority req
 The information that remains relevant to coordinating a Wayfinder effort now.
 
 **Ready work**:
-Work that may proceed now without crossing an unresolved dependency, consequential uncertainty, or missing authority.
+Work to which no blocker currently applies.
 
 **Dependency**:
 Something particular work requires from another action, artifact, decision, person, or system.
 
 **Blocker**:
-An unresolved dependency or missing authority that currently prevents particular work from proceeding.
+An unsatisfied dependency, unresolved consequential uncertainty, or missing required authority that currently prevents particular work from proceeding.
 
 **Reconciliation**:
 Bringing affected current coordination state into agreement with current truth, valid project authority, and the artifact that owns each lasting result.
 
 **Pruning**:
-Removing recognized Wayfinder records that no longer belong in current coordination after useful results and affected references are handled.
-It is distinct from physically removing an artifact or ending a Wayfinder effort.
+Pruning removes a recognized Wayfinder record from current coordination after useful results are preserved and affected references are reconciled.
+File or ledger-section removal carries out pruning; ending an effort is separate.

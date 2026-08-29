@@ -16,8 +16,8 @@ method materially improves a choice.
 3. Standalone Discovery returns its result without creating a framework
    continuity record. Select Wayfinder only when the decision crosses its
    durable coordination threshold.
-4. Inside Wayfinder, use only relevant map detail. Wayfinder remains the re-entry
-   point and owns reconciliation.
+4. Inside Wayfinder, use only relevant map detail. Resume and continue the effort
+   through its map; Wayfinder owns reconciliation.
 
 ## Resolve the decision
 

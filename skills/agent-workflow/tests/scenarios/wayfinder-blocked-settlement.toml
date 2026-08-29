@@ -4,7 +4,7 @@ name = "Blocked resumable coordination is not settled as history"
 fixture = "wayfinder-settlement"
 request = "Resume the blocked provider-direction effort and assess whether it can settle. The provider checksum is still unavailable and no canonical owner can continue U1 yet. Keep the effort current and resumable, report the exact blocker, and do not create lifecycle labels or historical artifacts."
 starting_state = [
-  "The selected map and U1 represent one consequential unresolved dependency.",
+  "The selected map and U1 represent one consequential unsatisfied dependency.",
   "The effort may realistically resume when the provider publishes the checksum.",
   "A separate mapless directory contains unknown project-owned content and is not a resumable effort.",
 ]

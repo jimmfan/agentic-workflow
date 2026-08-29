@@ -60,7 +60,10 @@ before retrieving a relevant ledger section or U#/E# artifact.
 Facts require traceable provenance, and decisions require responsible project
 authority rather than evidence alone.
 
-Substantial decomposed work belongs to `to-tickets`, not Wayfinder. See
+Before detailed decomposition, the map may state ready work directly. Substantial
+decomposed work belongs to `to-tickets`, whose ticket artifact or ticket set owns
+ticket contents, dependencies, ordering, and readiness. The map links that artifact
+and may summarize the current ready handoff without mirroring ticket-level state. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling remain stateless
 specialists. Implementation is an execution handoff. Specialists create no

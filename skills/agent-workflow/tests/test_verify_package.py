@@ -211,6 +211,46 @@ class VerifyPackageTests(ProjectTestCase):
             verify.stderr,
         )
 
+    def test_verifier_rejects_generic_reentry_on_owned_wayfinder_runtime(self) -> None:
+        mutations = (
+            "Generic re-entry guidance remains.",
+            "Domain Modeling may re-enter for this effort.",
+        )
+        for index, mutation in enumerate(mutations):
+            with self.subTest(mutation=mutation):
+                package_copy = self.copy_package(f"generic-wayfinder-reentry-{index}")
+                projection = package_copy / "runtime-projections/wayfinder.md"
+                projection.write_text(
+                    projection.read_text(encoding="utf-8") + f"\n{mutation}\n",
+                    encoding="utf-8",
+                )
+
+                verify = run_script(package_copy / "scripts/verify_package.py")
+
+                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+                self.assertIn(
+                    "owned Wayfinder runtime retains retired canonical language",
+                    verify.stderr,
+                )
+
+    def test_verifier_accepts_equivalent_ready_work_wording(self) -> None:
+        package_copy = self.copy_package("equivalent-ready-work-wording")
+        projection = package_copy / "runtime-projections/wayfinder.md"
+        original = projection.read_text(encoding="utf-8")
+        revised = original.replace(
+            "Ready work is work to which no blocker currently applies.",
+            "Ready work exists when no blocker currently applies to it.",
+        )
+        self.assertNotEqual(revised, original)
+        projection.write_text(
+            revised,
+            encoding="utf-8",
+        )
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
+
     def test_verifier_allows_quoted_provider_frontier_language(self) -> None:
         package_copy = self.copy_package("quoted-provider-language")
         projection = package_copy / "runtime-projections/wayfinder.md"

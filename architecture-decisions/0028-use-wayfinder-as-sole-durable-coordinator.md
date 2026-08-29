@@ -26,8 +26,9 @@ because they run. Direct reasoning remains valid; load only a specialist whose
 method materially helps the current work or unresolved issue.
 
 Native artifacts retain their own durable ownership. In particular,
-`to-tickets` owns executable decomposition and its ticket ordering and readiness; Wayfinder may link
-that output but never mirrors T# work as a second ticket/status surface.
+`to-tickets` owns its ticket artifact or ticket set, including ticket contents,
+dependencies, ordering, and readiness. Wayfinder may link that output and identify
+the current ready handoff but never mirrors T# work as a second ticket/status surface.
 Other specialist-native or accepted project artifacts are likewise canonical
 outputs rather than competing framework coordination models.
 

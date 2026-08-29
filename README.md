@@ -139,8 +139,12 @@ Record only durable, evidence-backed coordination context:
 - the important areas and relationships in the effort;
 - supported current conclusions with pointers to their authoritative sources;
 - consequential unknowns, decisions, dependencies, and blockers; and
-- ready work that may proceed without an unresolved dependency,
-  consequential uncertainty, or missing authority.
+- ready work—work to which no blocker currently applies.
+
+A blocker is an unsatisfied dependency, unresolved consequential uncertainty,
+or missing required authority that currently prevents particular work from
+proceeding. A blocker applies to particular work; independent ready work may
+proceed while other work remains blocked.
 
 Create a separate unknown or evidence file only when it is an independently
 useful coordination or retrieval unit. When a supported current conclusion or

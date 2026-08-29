@@ -14,11 +14,11 @@
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "38dcc91d0705fe8d84c77adb737255374330142e2fc2f58f8cab0c214b8f2193"
+      "sha256": "8d5fb46e3213fd707fbb7ed86bb08585ef294e4c7cd82589ddb25f0cf7242805"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "2ac64e866b2442772bc8b8d3fff59ef8da952644c91624ad9efef7a2459fe27a"
+      "sha256": "262e61b803fcd6df0712a12ed6ab48c4a0ea739a35310ddb3df346516c9e22ae"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,

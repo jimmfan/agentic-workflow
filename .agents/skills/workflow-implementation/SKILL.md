@@ -18,7 +18,8 @@ state. Upstream `implement` owns its build loop, TDD, and closing Code Review.
    work needs dependency ordering or independently deliverable sessions.
 4. Create no separate implementation continuity record. Resume from canonical artifacts,
    source, and verification evidence. If interruption would lose consequential
-   coordination, preserve only the current question, artifact pointers, blockers,
+   coordination, preserve only relevant questions, uncertainties, blockers,
+   unexplained causes, choices, structural ambiguity, artifact pointers,
    dependencies, and ready work in Wayfinder.
 
 ## Execute once
@@ -44,4 +45,5 @@ acceptance, artifact, boundary, or compatibility checks.
 
 Completion requires the scope to be finished, required Verification to pass or
 an authorized limitation to be explicit, and remaining next work to be durable
-in its canonical map, specification, or native ticket ordering and readiness.
+in its canonical map, specification, or To Tickets-owned ticket artifact or
+ticket set.

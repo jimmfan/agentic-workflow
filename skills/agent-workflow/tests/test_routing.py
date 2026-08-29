@@ -38,6 +38,37 @@ class RoutingContractTests(unittest.TestCase):
             set(re.findall(r"^\*\*([^*]+)\*\*:", context, re.MULTILINE)),
             EXPECTED_PROJECT_LANGUAGE,
         )
+        entries = {
+            name: " ".join(definition.split())
+            for name, definition in re.findall(
+                r"^\*\*([^*]+)\*\*:\n(.*?)(?=\n\n\*\*|\Z)",
+                context,
+                re.MULTILINE | re.DOTALL,
+            )
+        }
+        expected_fragments = {
+            "Objective": (
+                "result a Wayfinder effort is intended to achieve",
+            ),
+            "Blocker": (
+                "unsatisfied dependency",
+                "unresolved consequential uncertainty",
+                "missing required authority",
+                "prevents particular work from proceeding",
+            ),
+            "Ready work": (
+                "work to which no blocker currently applies",
+            ),
+            "Pruning": (
+                "removes a recognized Wayfinder record from current coordination",
+                "File or ledger-section removal carries out pruning",
+                "ending an effort is separate",
+            ),
+        }
+        for term, fragments in expected_fragments.items():
+            with self.subTest(term=term):
+                for fragment in fragments:
+                    self.assertIn(fragment.casefold(), entries[term].casefold())
         self.assertNotIn("CONTEXT.md", distributed_policy)
         self.assertNotIn("## Project language", distributed_policy)
         self.assertFalse(any(PACKAGE_ROOT.glob("payload/**/CONTEXT.md")))

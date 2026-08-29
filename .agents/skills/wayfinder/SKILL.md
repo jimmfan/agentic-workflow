@@ -17,8 +17,8 @@ sessions, handoffs, owners, or interacting areas. Clear bounded work, one
 isolated unknown, and read-only work stay on their minimum useful route.
 
 This framework-owned runtime projection is derived from Matt Pocock's
-Wayfinder methodology. It helps orient the effort, resolve current questions,
-and identify ready work;
+Wayfinder methodology. It helps orient the effort, choose the minimum resolution
+method, and identify ready work;
 `.agent-workflow/contracts/wayfinder-state.md` owns state mechanics.
 
 ## Operating rules
@@ -31,7 +31,7 @@ and identify ready work;
   preserve enough information to resume safely, and load detail only when
   relevant. Apply the contract's default map shape when applicable; omit empty
   headings, allow a clearer equivalent, and never copy canonical plans.
-- The map owns current coordination state, blockers, dependencies, and ready work.
+- The map summarizes the effort's current coordination state, blockers, dependencies, and ready work.
   Optional F/D ledger sections and U/E artifacts preserve only useful current
   knowledge.
 - Create a separate artifact because it is an independently useful coordination
@@ -47,7 +47,7 @@ and identify ready work;
 
 When selecting or resuming Wayfinder, read the state contract before effort state.
 When resuming a Wayfinder effort, read `map.md` first among its effort files.
-It defines effort recognition and selection, paths, identifiers,
+The state contract defines effort recognition and selection, paths and identifiers,
 reconciliation, pruning, and effort ending. If the state contract is unavailable,
 fail closed for the affected Wayfinder work: do not inspect or change a map; do not invent
 substitute persistence or create tracker, specialist-record, or scratch state.
@@ -73,15 +73,15 @@ effort name and stable path from the objective and scope.
 
 On resumption, do not reload Domain Modeling merely because Wayfinder resumed.
 If later authoritative evidence shows that the current areas and relationships
-no longer fit current truth, Domain Modeling may re-enter to revise the same map.
+no longer fit current truth, Domain Modeling may be loaded again to revise the same map.
 Reconcile the current structure rather than preserving unsupported or parallel
 representations.
 
-## Resolve the current question progressively
+## Choose the minimum resolution method
 
-Continue directly when the current question can be resolved safely without additional
-methodology. Load only the smallest specialist needed to resolve or accurately
-frame it:
+Continue directly when no additional method is needed. Otherwise load only the
+smallest specialist needed to resolve or accurately frame the current question,
+uncertainty, blocker, unexplained cause, consequential choice, or structural ambiguity:
 
 - **Discovery** for consequential alternatives and tradeoffs.
 - **Debugging** for an observed behavior with an unknown cause.
@@ -97,8 +97,8 @@ Debugging investigates an unexplained cause within established areas and
 relationships. They do not replace structural modeling when those areas or
 relationships need improvement or revision.
 
-The resolution method determines what evidence or authority is sufficient to
-answer the question. It is not merely an artifact label: human clarification
+The resolution method determines what evidence or authority is sufficient for
+the issue. It is not merely an artifact label: human clarification
 requires the responsible authority, research requires appropriate source
 evidence, and prototype or debugging requires relevant observed or experimental
 evidence. Existing authoritative evidence may satisfy the method without a
@@ -107,16 +107,16 @@ required authority or evidence.
 
 Do not load specialists speculatively. Specialists own their methods and native
 artifacts and create no framework continuity record. If work is interrupted,
-reconcile only the consequential current question, uncertainty, blocker, evidence
-or conclusions, artifact pointers, resolution mode when useful, and ready work
-into Wayfinder. When resuming, read the map first rather than a specialist
-notebook or continuity record.
+reconcile only the consequential question, uncertainty, blocker, unexplained
+cause, choice, structural ambiguity, evidence or conclusions, artifact pointers,
+resolution mode when useful, and ready work into Wayfinder. When resuming, read
+the map first rather than a specialist notebook or continuity record.
 
 ## Reconcile and hand off
 
-Keep the map sufficient for a fresh session to recover the objective, scope,
-current coordination state, blockers, dependencies, and ready work. Link
-canonical artifacts instead of copying them. The state contract defines when
+The map summarizes the objective, scope, current coordination state, blockers,
+dependencies, and ready work. Keep it sufficient for a fresh session to continue
+the effort. Link canonical artifacts instead of copying them. The state contract defines when
 U/E/F/D detail is worth retaining, how records are pruned, and when an effort
 ends.
 
@@ -139,16 +139,24 @@ the critical path, independent parallel work, and any off-path dependency whose
 external lead time changes ordering or readiness. Do not infer a critical path
 from an unordered backlog or incomplete evidence.
 
-Ready work may proceed now without crossing an unresolved dependency,
-consequential uncertainty, or missing authority. Resolve each blocking
-dependency using the evidence or authority its resolution method requires. For
+An unsatisfied dependency, unresolved consequential uncertainty, or missing
+required authority is a blocker when it currently prevents particular work from proceeding.
+A blocker applies to particular work, not automatically to the entire effort.
+Ready work is work to which no blocker currently applies. Independent ready work
+may proceed while other work remains blocked. Resolve each blocking dependency
+using the evidence or authority its resolution method requires. For
 an unresolved consequential question, either answer the U# or record in a
 canonical artifact the responsible authority's explicit acceptance of the
 remaining uncertainty for one named boundary. That acceptance leaves the U#
-current and unresolved, unblocks only that named boundary, does not grant
-authority, and does not unblock another dependency. Reconcile and shrink the
+current and unresolved, unblocks only that named boundary, and does not grant
+unrelated authority or unblock another dependency. The same uncertainty may
+remain a blocker for other work. Reconcile and shrink the
 map, then hand off one or more ready implementation scopes without advancing work
 that remains dependency-blocked. Each Implementation handoff consumes one ready scope and
 its acceptance criteria; Verification follows execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
-deliverable sessions, and link its ticket ordering and readiness without a shadow copy.
+deliverable sessions. When no ticket artifact exists, the map may state ready
+work directly. Once To Tickets creates a ticket artifact or ticket set, it owns
+ticket contents, dependencies, ordering, and readiness. The map links that artifact
+and does not mirror ticket-level state; it may identify or summarize the current
+ready handoff.

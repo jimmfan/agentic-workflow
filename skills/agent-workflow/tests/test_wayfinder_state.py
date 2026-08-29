@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 import re
 import shutil
@@ -16,6 +17,28 @@ INSTALLED_CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-stat
 RUNTIME = PACKAGE_ROOT / "runtime-projections/wayfinder.md"
 GENERATED_SKILL = REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md"
 MAP_FIRST_ADR = REPOSITORY_ROOT / "architecture-decisions/0011-use-map-first-wayfinder-state.md"
+
+
+def verifier_retired_wayfinder_patterns() -> tuple[str, ...]:
+    verifier = PACKAGE_ROOT / "scripts/verify_package.py"
+    syntax = ast.parse(verifier.read_text(encoding="utf-8"), filename=str(verifier))
+    for statement in syntax.body:
+        if not isinstance(statement, ast.Assign):
+            continue
+        if any(
+            isinstance(target, ast.Name)
+            and target.id == "RETIRED_WAYFINDER_RUNTIME_PATTERNS"
+            for target in statement.targets
+        ):
+            value = ast.literal_eval(statement.value)
+            if isinstance(value, tuple) and all(
+                isinstance(pattern, str) for pattern in value
+            ):
+                return value
+    raise AssertionError("verifier retired-language patterns are missing")
+
+
+RETIRED_CANONICAL_WAYFINDER_PATTERNS = verifier_retired_wayfinder_patterns()
 CURRENT_WAYFINDER_DOC_SECTIONS = {
     "Agent Workflow README contents": (
         REPOSITORY_ROOT / ".agent-workflow/README.md",
@@ -80,22 +103,13 @@ CURRENT_WAYFINDER_LANGUAGE_SURFACES = {
     "packaged implementation workflow": (
         PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
     ),
+    "installed discovery workflow": (
+        REPOSITORY_ROOT / ".agents/skills/workflow-discovery/SKILL.md"
+    ),
+    "packaged discovery workflow": (
+        PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
+    ),
 }
-RETIRED_CANONICAL_WAYFINDER_PATTERNS = (
-    r"(?im)^##\s+Establish territory\s*$",
-    r"(?im)^##\s+Resolve the frontier progressively\s*$",
-    r"(?im)^-\s+\*\*(?:Destination|Territory|Ready frontier)\*\*",
-    r"\bthe ready frontier\s+(?:is|contains|owns)\b",
-    r"\blow-resolution\s+(?:map|maps|view|semantic)\b",
-    r"\b(?:map(?:\.md)?|effort map)\b[^.\n]{0,80}\bre-entry point\b",
-    r"\bre-entry point\b[^.\n]{0,80}\b(?:map(?:\.md)?|effort map)\b",
-    r"\b(?:establish|same|stable)\s+(?:the\s+)?destination\b",
-    r"\bderive\b[^.\n]{0,40}\bfrom\s+(?:the\s+)?destination\b",
-    r"\bdestination\s+(?:and|or)\s+(?:scope|boundary)\b",
-    r"\b(?:ordinary|research|debugging)\s+fog\b",
-    r"\b(?:resolve|frame|reconcile|return|native|current|ready|coherent)\s+(?:the\s+)?frontier\b",
-    r"\bfrontier\s+(?:can|may|is|work|state)\b",
-)
 FIXTURES = PACKAGE_ROOT / "tests/fixtures"
 TYPE_DIRECTORIES = {"U": "unknowns", "E": "evidence", "F": "facts", "D": "decisions"}
 LEDGER_PATHS = {"F": "facts.md", "D": "decisions.md"}
@@ -931,7 +945,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                     "Packaging only",
                 )
 
-    def test_existing_map_with_older_orientation_headings_remains_recognized(
+    def test_existing_map_with_older_orientation_headings_can_be_selected_semantically(
         self,
     ) -> None:
         effort = (
@@ -943,6 +957,14 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertIn("## Destination", map_text)
         self.assertIn("## Territory", map_text)
         self.assertTrue(validate_effort(effort))
+        self.assertEqual(
+            select_effort(
+                [effort],
+                "One concise Agent Workflow-owned runtime",
+                "Runtime method",
+            ),
+            effort,
+        )
 
     def test_current_child_rename_requires_reconciled_references(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -2010,29 +2032,50 @@ class WayfinderStateContractTests(unittest.TestCase):
             ],
         )
         normalized = " ".join(effort_shape.split())
-        ready_work = normalized.split("Ready work means", 1)[1].split(
+        ready_work = normalized.split("Ready work is", 1)[1].split(
             "## Current knowledge", 1
         )[0]
         for condition in (
-            "unresolved dependency",
-            "consequential uncertainty",
-            "missing authority",
+            "work to which no blocker currently applies",
             "Independent ready work",
             "unrelated work remains blocked",
         ):
             with self.subTest(ready_work_condition=condition):
                 self.assertIn(condition, ready_work)
-        self.assertIn("A blocker is an unresolved dependency or missing authority", normalized)
-        self.assertIn("prevents particular work from proceeding", normalized)
+        blocker = normalized.split("A blocker is", 1)[1].split("Ready work is", 1)[0]
+        for condition in (
+            "unsatisfied dependency",
+            "unresolved consequential uncertainty",
+            "missing required authority",
+            "prevents particular work from proceeding",
+        ):
+            with self.subTest(blocker_condition=condition):
+                self.assertIn(condition, blocker)
         self.assertIn(
             "When resuming a Wayfinder effort, read `map.md` first",
             self.normalized,
         )
 
-        reconciliation = markdown_section(
-            self.contract,
-            "## Reconciliation and pruning",
+        reconciliation = " ".join(
+            markdown_section(
+                self.contract,
+                "## Reconciliation and pruning",
+            ).split()
         )
+        for accepted_uncertainty_semantic in (
+            "question remains factually unresolved",
+            "keep its U# current and unresolved",
+            "unblock only that accepted boundary",
+            "may remain a blocker for other work",
+            "does not answer the U#",
+            "grant unrelated authority",
+            "unblock another dependency",
+        ):
+            with self.subTest(
+                accepted_uncertainty_semantic=accepted_uncertainty_semantic
+            ):
+                self.assertIn(accepted_uncertainty_semantic, reconciliation)
+
         for heading in (
             "### Reconcile affected state",
             "### Apply record-specific changes",
@@ -2040,6 +2083,72 @@ class WayfinderStateContractTests(unittest.TestCase):
             "### Keep or end the effort",
         ):
             self.assertIn(heading, reconciliation)
+
+    def test_ticket_artifact_and_map_ownership_are_explicit(self) -> None:
+        contract_boundaries = " ".join(
+            markdown_section(
+                self.contract,
+                "## State model and boundaries",
+            ).split()
+        )
+        for responsibility in (
+            "ticket artifact or ticket set",
+            "ticket contents, dependencies, ordering, and readiness",
+            "links that artifact",
+            "ticket-level state",
+        ):
+            with self.subTest(contract_responsibility=responsibility):
+                self.assertIn(responsibility, contract_boundaries)
+
+        effort_shape = " ".join(
+            markdown_section(
+                self.contract,
+                "## Effort shape and selection",
+            ).split()
+        )
+        for map_behavior in (
+            "summarizes the effort's current coordination state",
+            "when no ticket artifact exists",
+            "may state ready work directly",
+            "may identify or summarize the current ready handoff",
+        ):
+            with self.subTest(map_behavior=map_behavior):
+                self.assertIn(map_behavior.casefold(), effort_shape.casefold())
+
+        implementation = " ".join(
+            (
+                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+            ).read_text(encoding="utf-8").split()
+        )
+        self.assertIn("ticket artifact or ticket set", implementation)
+        for invalid in (
+            "link its ticket ordering and readiness",
+            "remain durable in ticket ordering and readiness",
+            "link ticket ordering and readiness",
+        ):
+            for name, surface in (
+                ("contract", self.contract),
+                ("runtime", RUNTIME.read_text(encoding="utf-8")),
+                ("implementation", implementation),
+            ):
+                with self.subTest(surface=name, invalid=invalid):
+                    self.assertNotIn(invalid, surface)
+
+    def test_effort_ending_uses_non_circular_continuation_conditions(self) -> None:
+        ending = " ".join(
+            markdown_section(
+                self.contract,
+                "## Reconciliation and pruning",
+            ).split("### Keep or end the effort", 1)[1].split()
+        )
+        for condition in (
+            "objective was achieved",
+            "responsible authority stopped the effort",
+            "coordination moved to a different objective and scope",
+        ):
+            with self.subTest(ending_condition=condition):
+                self.assertIn(condition, ending)
+        self.assertNotIn("it was intentionally ended", ending)
 
     def test_current_wayfinder_documentation_uses_pruning_terminology(self) -> None:
         for name, (path, heading) in CURRENT_WAYFINDER_DOC_SECTIONS.items():
@@ -2092,8 +2201,9 @@ class WayfinderStateContractTests(unittest.TestCase):
 
         ticket_handoff = scenarios["wayfinder-contract-smoke"]
         self.assertIn(
-            "ticket ordering and readiness", ticket_handoff["request"].casefold()
+            "link the resulting ticket set", ticket_handoff["request"].casefold()
         )
+        self.assertIn("ticket 01 as the ready ticket", ticket_handoff["request"].casefold())
 
     def test_contract_keeps_pruning_boundaries(self) -> None:
         pruning = markdown_section(
@@ -2171,6 +2281,12 @@ class WayfinderStateContractTests(unittest.TestCase):
             (PACKAGE_ROOT / "payload/agent-workflow/README.md").read_bytes(),
             (REPOSITORY_ROOT / ".agent-workflow/README.md").read_bytes(),
         )
+        for workflow in ("workflow-discovery", "workflow-implementation"):
+            with self.subTest(workflow=workflow):
+                self.assertEqual(
+                    (PACKAGE_ROOT / f"payload/skills/{workflow}/SKILL.md").read_bytes(),
+                    (REPOSITORY_ROOT / f".agents/skills/{workflow}/SKILL.md").read_bytes(),
+                )
         source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
         managed = source_policy.split("<!-- agent-workflow:managed-begin -->", 1)[1]
         managed = managed.split("<!-- agent-workflow:managed-end -->", 1)[0].strip()
@@ -2185,10 +2301,53 @@ class WayfinderStateContractTests(unittest.TestCase):
         for heading in (
             "## Operating rules",
             "## Establish areas and relationships",
-            "## Resolve the current question progressively",
+            "## Choose the minimum resolution method",
             "## Reconcile and hand off",
         ):
             self.assertIn(heading, runtime)
+        minimum_method = markdown_section(
+            runtime,
+            "## Choose the minimum resolution method",
+        )
+        self.assertIn(
+            "Continue directly when no additional method is needed",
+            minimum_method,
+        )
+        for issue in (
+            "current question",
+            "uncertainty",
+            "blocker",
+            "unexplained cause",
+            "consequential choice",
+            "structural ambiguity",
+        ):
+            with self.subTest(issue=issue):
+                self.assertIn(issue, minimum_method)
+
+        operating_rules = markdown_section(runtime, "## Operating rules")
+        self.assertIn("The state contract defines", operating_rules)
+        for mechanic in (
+            "effort recognition and selection",
+            "paths and identifiers",
+            "reconciliation",
+            "pruning",
+            "effort ending",
+        ):
+            with self.subTest(state_contract_mechanic=mechanic):
+                self.assertIn(mechanic, operating_rules)
+        self.assertNotIn("The map owns", operating_rules)
+
+        handoff = markdown_section(runtime, "## Reconcile and hand off")
+        for responsibility in (
+            "The map summarizes",
+            "no ticket artifact exists",
+            "ticket artifact or ticket set",
+            "ticket contents, dependencies, ordering, and readiness",
+            "does not mirror ticket-level state",
+        ):
+            with self.subTest(ticket_responsibility=responsibility):
+                self.assertIn(responsibility, handoff)
+        self.assertNotIn("link its ticket ordering and readiness", handoff)
         self.assertNotIn("settlement", runtime.lower())
 
 

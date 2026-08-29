@@ -49,9 +49,20 @@ checks = [
     "02" in native_tickets[2].read_text(encoding="utf-8")
     if len(native_tickets) > 2
     else False,
-    ".scratch/runtime-rollout/issues/" in mapping,
+    re.search(
+        r"\[[^\]]+\]\([^\)\n]*\.scratch/runtime-rollout/issues/[^\)\n]*\)",
+        mapping,
+    )
+    is not None,
     "## Next work" in mapping,
-    "01" in mapping,
+    re.search(
+        r"(?im)^(?:[^\n]*\b(?:ticket\s*)?01\b[^\n]{0,80}\b(?:is|remains)\s+"
+        r"(?:the\s+)?(?:single\s+)?(?:ready|unblocked)\b|[^\n]*\b"
+        r"(?:ready|unblocked)\s+(?:ticket|next action|next work)\b[^\n]{0,80}"
+        r"\b(?:ticket\s*)?01\b)[^\n]*$",
+        mapping,
+    )
+    is not None,
 ]
 passed = all(checks)
 root = Path(".behavior-evidence")

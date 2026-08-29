@@ -34,17 +34,19 @@ coordination or retrieval units separate; that representation remains a
 contract and test detail.
 
 Wayfinder represents current coordination state rather than permanent identities
-or an append-only journal. Lasting outcomes move to their canonical owners,
-current coordination state converges and shrinks, and Git preserves committed historical evolution.
+or an append-only journal. Lasting outcomes move to their canonical owners, the
+map and recognized records converge and shrink, and Git preserves committed historical evolution.
 Preserve a question independently only when retaining it or its eventual answer
 could materially improve a later developer's ability to make or evaluate a
-decision. Expose ready work only when it can proceed without crossing an
-unresolved dependency, consequential uncertainty, or missing authority.
+decision. A blocker is an unsatisfied dependency, unresolved consequential
+uncertainty, or missing required authority that currently prevents particular work from
+proceeding. Ready work is work to which no blocker currently applies; independent
+ready work may proceed while other work remains blocked.
 
 Authorized work that changes represented reality owns scoped reconciliation of
-the affected map and current coordination state before claiming completion. Canonical artifacts
-remain authoritative. Read-only work may report staleness but does not repair
-project-owned state.
+affected map content, recognized records, and references before claiming completion.
+Canonical artifacts remain authoritative. Read-only work may report staleness but
+does not repair project-owned state.
 
 The effective Wayfinder instructions present one coherent operational model
 rather than prepend local state rules to a contradictory tracker specification.
@@ -64,8 +66,9 @@ A fresh session can orient from one small map and load only relevant detail.
 State can remain sparse and human-editable without a database, event log,
 global state registry, shadow work tree, or duplicated tracker.
 
-Executable decomposition and its ticket ordering and readiness belong to `to-tickets`;
-Wayfinder links that artifact rather than mirroring T# work as a second
+The ticket artifact or ticket set produced by `to-tickets` owns ticket contents,
+dependencies, ordering, and readiness. Wayfinder links that artifact and may
+identify the current ready handoff rather than mirroring T# work as a second
 ticket/status surface.
 
 U/E/F/D storage topology, schemas, numbering, filenames, effort selection,

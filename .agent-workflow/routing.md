@@ -63,11 +63,12 @@ consume ready work from a map, a settled D#, a specification, or a native ticket
 without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses
-the Wayfinder threshold; a selected Wayfinder current question may use Discovery once
-without changing durable ownership. The same rule applies to Debugging and
-other specialists. Meaningful Implementation runs Verification once. New causal
-uncertainty returns to Debugging; a material unresolved choice returns to
-Discovery or Wayfinder according to the coordination threshold.
+the Wayfinder threshold. Inside selected Wayfinder, use each needed specialist
+once for the relevant question, uncertainty, blocker, unexplained cause,
+consequential choice, or structural ambiguity without changing durable ownership.
+Meaningful Implementation runs Verification once. New causal uncertainty returns
+to Debugging; a material unresolved choice returns to Discovery or Wayfinder
+according to the coordination threshold.
 
 Discovery owns bounded consequential choice and tradeoff analysis. Compose
 Domain Modeling when structural ambiguity materially affects that analysis or

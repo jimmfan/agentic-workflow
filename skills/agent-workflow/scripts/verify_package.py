@@ -104,8 +104,7 @@ RETIRED_WAYFINDER_RUNTIME_PATTERNS = (
     r"(?im)^-\s+\*\*(?:Destination|Territory|Ready frontier)\*\*",
     r"\bthe ready frontier\s+(?:is|contains|owns)\b",
     r"\blow-resolution\s+(?:map|maps|view|semantic)\b",
-    r"\b(?:map(?:\.md)?|effort map)\b[^.\n]{0,80}\bre-entry point\b",
-    r"\bre-entry point\b[^.\n]{0,80}\b(?:map(?:\.md)?|effort map)\b",
+    r"\bre-ent(?:ry|er(?:s|ed|ing)?)\b",
     r"\b(?:establish|same|stable)\s+(?:the\s+)?destination\b",
     r"\bderive\b[^.\n]{0,40}\bfrom\s+(?:the\s+)?destination\b",
     r"\bdestination\s+(?:and|or)\s+(?:scope|boundary)\b",
@@ -646,12 +645,22 @@ def check_provider_declaration() -> None:
         and "\n---\n" not in projection_text,
         "owned Wayfinder runtime projection is malformed",
     )
+    normalized_projection = " ".join(projection_text.split())
+
+    def projection_section(heading: str) -> str:
+        start = projection_text.find(heading)
+        if start < 0:
+            return ""
+        end = projection_text.find("\n## ", start + len(heading))
+        section = projection_text[start:] if end < 0 else projection_text[start:end]
+        return " ".join(section.split())
+
     for required in (
         "framework-owned runtime projection",
         "derived from Matt Pocock's Wayfinder methodology",
         "## Operating rules",
         "## Establish areas and relationships",
-        "## Resolve the current question progressively",
+        "## Choose the minimum resolution method",
         "## Reconcile and hand off",
         "reconciliation, pruning, and effort ending",
         "when an effort ends",
@@ -660,18 +669,55 @@ def check_provider_declaration() -> None:
         "Specialists own their methods and native artifacts",
         "create no framework continuity record",
         "current coordination state, blockers, dependencies, and ready work",
-        "Ready work may proceed now without crossing an unresolved dependency, "
-        "consequential uncertainty, or missing authority",
         "one or more ready implementation scopes",
         "Each Implementation handoff consumes one ready scope",
         "Verification follows execution",
         "Use `to-tickets`",
-        "ticket ordering and readiness",
     ):
         require(
-            required in " ".join(projection_text.split()),
+            required in normalized_projection,
             f"owned Wayfinder runtime lacks required contract: {required}",
         )
+    section_requirements = {
+        "## Operating rules": (
+            "The state contract defines",
+            "effort recognition and selection",
+            "paths and identifiers",
+            "reconciliation",
+            "pruning",
+            "effort ending",
+        ),
+        "## Choose the minimum resolution method": (
+            "Continue directly when no additional method is needed",
+            "current question",
+            "uncertainty",
+            "blocker",
+            "unexplained cause",
+            "consequential choice",
+            "structural ambiguity",
+        ),
+        "## Reconcile and hand off": (
+            "unsatisfied dependency",
+            "unresolved consequential uncertainty",
+            "missing required authority",
+            "particular work",
+            "Ready work",
+            "no blocker currently applies",
+            "Independent ready work may proceed",
+            "unblocks only that named boundary",
+            "same uncertainty may remain a blocker for other work",
+            "ticket artifact or ticket set",
+            "ticket contents, dependencies, ordering, and readiness",
+            "does not mirror ticket-level state",
+        ),
+    }
+    for heading, requirements in section_requirements.items():
+        section = projection_section(heading)
+        for required in requirements:
+            require(
+                required in section,
+                f"owned Wayfinder runtime lacks {heading} contract: {required}",
+            )
     for retired in RETIRED_WAYFINDER_RUNTIME_PATTERNS:
         require(
             re.search(retired, projection_text, re.IGNORECASE) is None,

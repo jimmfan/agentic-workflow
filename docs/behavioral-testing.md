@@ -21,7 +21,7 @@ hidden reasoning trace.
    isolation, evaluator failure modes, route-marker syntax, fixture reset, and
    command-runner evidence.
 3. **Wayfinder behavioral scenarios** provide fixture-backed observable
-   contracts for authority, selection from current coordination state, reconciliation, and
+   contracts for authority, effort selection, reconciliation, and
    record pruning or effort ending without duplicating product implementation.
 4. **Live behavioral smoke tests** are opt-in. A caller supplies an agent command
    that operates in a disposable fixture workspace. The default set remains a

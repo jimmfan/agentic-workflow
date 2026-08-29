@@ -160,14 +160,14 @@ malformed entries and exact filesystem collisions are rejected. Lifecycle
 preservation exercises
 install, update, status, remove, reinstall, and provider repair byte-for-byte.
 The behavioral suite also keeps
-implementation work-item artifacts out of Wayfinder, resumes relevant current
-coordination state from the map, reconciles affected state after implementation,
+implementation work-item artifacts out of Wayfinder, resumes relevant efforts
+from the map, reconciles affected state after implementation,
 excludes unrelated detail and efforts, reports outdated state without changing it during read-only work,
 stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
 of a direct route.
 
 The routing catalog separately covers direct work, standalone Discovery,
-direct Wayfinder ready work, specialist-supported resolution of current questions,
+direct Wayfinder ready work, specialist-supported resolution of consequential issues,
 Wayfinder-to-Implementation handoff, interrupted-specialist resumption from the map, host-native fallback,
 explicit provider handoff, external read scope, and provider-artifact
 ownership. It is an executable contract check, not proof that a live editor or
