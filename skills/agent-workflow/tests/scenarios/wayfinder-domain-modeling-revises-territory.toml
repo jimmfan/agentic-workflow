@@ -1,12 +1,12 @@
 schema_version = 1
 id = "wayfinder-domain-modeling-revises-territory"
-name = "Authoritative evidence lets Domain Modeling revise existing territory"
+name = "Authoritative evidence lets Domain Modeling revise areas and relationships"
 fixture = "wayfinder-territory-invalidation"
 request = "Resume `.agent-wayfinder/policy-execution-migration/map.md` and reconcile it against the accepted architecture.md. Do not preserve contradicted structure, create a replacement effort, or implement the migration."
 starting_state = [
-  "The selected current map has a coherent but now-invalid combined-service territory.",
+  "The selected current map has now-invalid combined-service areas and relationships.",
   "architecture.md is authoritative and materially changes boundaries, responsibilities, and relationships.",
-  "The accepted artifact resolves the territory without independently useful U/E/F/D state.",
+  "The accepted artifact resolves the areas and relationships without independently useful U/E/F/D state.",
   "Repository-local Wayfinder reconciliation is authorized.",
 ]
 expect = [

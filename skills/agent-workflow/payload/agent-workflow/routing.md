@@ -2,7 +2,7 @@
 
 The root policy performs first-pass routing. Read this policy only for
 ambiguous ownership, material provider fallback or handoff, or unclear durable
-re-entry. Direct work, one obvious workflow, and one obvious specialist inside
+resumption. Direct work, one obvious workflow, and one obvious specialist inside
 Wayfinder do not load it. Root authorization, preservation, and reporting rules
 remain binding.
 
@@ -34,8 +34,8 @@ prerequisite using the minimum sufficient method. This table resolves overlaps:
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis does not authorize a fix |
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
 | Settled scope needs a specification | `to-spec` | Its artifact remains canonical |
-| Approved work needs ordered independent sessions | `to-tickets` | Its tickets and frontier remain canonical |
-| One coherent ready implementation | Implementation, then `implement` | Trivial low-risk edits stay Direct; meaningful work ends with Verification |
+| Approved work needs ordered independent sessions | `to-tickets` | Its tickets, ordering, and readiness remain canonical |
+| One implementation scope is ready | Implementation, then `implement` | Trivial low-risk edits stay Direct; meaningful work ends with Verification |
 | Explicit bounded test-first work | `tdd` | The provider owns its loop |
 | Completion audit or meaningful finished change | Verification | Add only uncovered acceptance or integration evidence |
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
@@ -51,19 +51,19 @@ Re-evaluate when evidence changes uncertainty, scope, coordination, failure
 mode, or authorization. Apply the root Wayfinder threshold; counts trigger
 assessment, never selection. Explicit Wayfinder use and opt-out remain authoritative.
 
-Resume only relevant work. An exact Wayfinder map or provider-native artifact
-selects that re-entry point. For an unnamed likely Wayfinder resume, inspect the
-smallest plausible effort set and resume only one clear destination-and-boundary
+Resume only relevant work. Continue from an exact Wayfinder map or provider-native
+artifact. For an unnamed likely Wayfinder resume, inspect the smallest plausible
+effort set and resume only one clear objective-and-scope
 match. A safe regular map identifies current resumable coordination; a mapless
 directory is not a candidate. An unrelated map never captures the route.
 
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 only relevant F#/D# ledger sections or U#/E# artifacts. Implementation may
-consume a coherent map scope, settled D#, specification, or native ticket
+consume ready work from a map, a settled D#, a specification, or a native ticket
 without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses
-the Wayfinder threshold; a selected Wayfinder frontier may use Discovery once
+the Wayfinder threshold; a selected Wayfinder current question may use Discovery once
 without changing durable ownership. The same rule applies to Debugging and
 other specialists. Meaningful Implementation runs Verification once. New causal
 uncertainty returns to Debugging; a material unresolved choice returns to

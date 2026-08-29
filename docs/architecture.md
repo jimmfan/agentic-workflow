@@ -37,7 +37,7 @@ route.
 
 Routing begins Direct and classifies from user intent plus cheap installed-skill
 descriptions. Detailed routing loads only when ownership, composition, provider
-fallback, handoff, or durable re-entry is materially unclear. Routing may change
+fallback, handoff, or durable resumption is materially unclear. Routing may change
 as evidence emerges. Selection, provider invocation, authorization, execution,
 and completion evidence remain distinct; host sandboxing and approvals remain
 authoritative.
@@ -95,7 +95,8 @@ update may establish the root when absent, but lifecycle operations never seed,
 inventory, validate, checksum, merge, migrate, rewrite, or remove its contents.
 
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
-Their `map.md` is the low-resolution re-entry point and canonical frontier.
+Their `map.md` is the brief coordination summary and the first effort file read
+when resuming. It owns the effort's ready work.
 Optional `facts.md` and `decisions.md` ledgers hold current F# and D# sections;
 independently useful U# questions and substantial E# evidence remain separate
 files. The map indexes relevant detail rather than duplicating those stores.
@@ -108,7 +109,7 @@ without treating one topology as universally superior.
 Every current fact carries traceable source, authority, or derivation provenance
 and enough scope to avoid unsupported generalization. A D#'s presence means it
 is the current committed choice under actual project authority; evidence may
-support a choice but does not create that authority. The map represents current navigation and
+support a choice but does not create that authority. The map represents current coordination state and
 should converge as lasting outcomes move to canonical artifacts. Exact allocation,
 reconciliation, pruning, effort-ending, and reference behavior is owned by the
 progressively loaded Wayfinder state contract and its tests.
@@ -133,10 +134,11 @@ lifecycle operation. Exact snapshot hashes, adapter preconditions, staging,
 comparison, and cleanup behavior are implementation and test details.
 
 Wayfinder is a deliberate derived-runtime exception. The raw pinned snapshot
-remains unchanged as reviewed provenance, while the effective installed body
-uses one coherent map-first operational model rather than layering local state
-rules over conflicting upstream tracker mechanics. Useful upstream destination,
-map, fog, frontier, readable-name, and progressive-resolution concepts remain.
+and its provider-owned vocabulary remain unchanged as reviewed provenance, while
+the effective installed body uses one coherent map-first operational model rather
+than layering local state rules over conflicting upstream tracker mechanics. It
+uses objective, scope, areas and relationships, literal uncertainty or blocker
+language, ready work, readable names, and progressive resolution.
 
 Provider instructions never authorize commits, publication, tracker mutation,
 or broader external access. An unavailable or non-invocable provider normally

@@ -83,6 +83,36 @@ EXPECTED_PAYLOAD_FILES = frozenset(
 EXPECTED_RUNTIME_PROJECTIONS = frozenset(
     {"runtime-projections/research.md", "runtime-projections/wayfinder.md"}
 )
+EXPECTED_PROJECT_LANGUAGE = frozenset(
+    {
+        "Wayfinder effort",
+        "Map",
+        "Objective",
+        "Scope",
+        "Consequential",
+        "Current coordination state",
+        "Ready work",
+        "Dependency",
+        "Blocker",
+        "Reconciliation",
+        "Pruning",
+    }
+)
+RETIRED_WAYFINDER_RUNTIME_PATTERNS = (
+    r"(?im)^##\s+Establish territory\s*$",
+    r"(?im)^##\s+Resolve the frontier progressively\s*$",
+    r"(?im)^-\s+\*\*(?:Destination|Territory|Ready frontier)\*\*",
+    r"\bthe ready frontier\s+(?:is|contains|owns)\b",
+    r"\blow-resolution\s+(?:map|maps|view|semantic)\b",
+    r"\b(?:map(?:\.md)?|effort map)\b[^.\n]{0,80}\bre-entry point\b",
+    r"\bre-entry point\b[^.\n]{0,80}\b(?:map(?:\.md)?|effort map)\b",
+    r"\b(?:establish|same|stable)\s+(?:the\s+)?destination\b",
+    r"\bderive\b[^.\n]{0,40}\bfrom\s+(?:the\s+)?destination\b",
+    r"\bdestination\s+(?:and|or)\s+(?:scope|boundary)\b",
+    r"\b(?:ordinary|research|debugging)\s+fog\b",
+    r"\b(?:resolve|frame|reconcile|return|native|current|ready|coherent)\s+(?:the\s+)?frontier\b",
+    r"\bfrontier\s+(?:can|may|is|work|state)\b",
+)
 
 
 class VerificationError(RuntimeError):
@@ -211,6 +241,50 @@ def check_inert_payload() -> None:
             not path.exists() and not path.is_symlink(),
             f"activation-sensitive payload path must remain absent: payload/{directory}",
         )
+
+
+def check_source_project_language() -> None:
+    context_path = REPOSITORY_ROOT / "CONTEXT.md"
+    require(
+        context_path.is_file() and not context_path.is_symlink(),
+        "source terminology glossary is missing or unsafe",
+    )
+    context = context_path.read_text(encoding="utf-8")
+    terms = frozenset(re.findall(r"^\*\*([^*]+)\*\*:", context, re.MULTILINE))
+    require(
+        terms == EXPECTED_PROJECT_LANGUAGE,
+        "source terminology glossary differs from the accepted language",
+    )
+
+    source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    require(
+        "<!-- agent-workflow:project-instructions -->" in source_policy,
+        "source project instructions are missing",
+    )
+    project_policy = source_policy.split(
+        "<!-- agent-workflow:project-instructions -->", 1
+    )[1]
+    normalized = " ".join(project_policy.split())
+    for required in (
+        "## Project language",
+        "Read `CONTEXT.md` before changing routing, Wayfinder, provider integration, "
+        "ownership, or framework-lifecycle concepts",
+        "determine the actual concept from current source, behavior, tests, and accepted decisions",
+        "identify the bounded technical or domain context that owns it",
+        "Update `CONTEXT.md` only after the terminology decision is accepted",
+        "Do not force one term across genuinely different bounded contexts",
+    ):
+        require(required in normalized, f"source project language policy lacks: {required}")
+
+    distributed_policy = (PAYLOAD_ROOT / "root/AGENTS.md.template").read_text(
+        encoding="utf-8"
+    )
+    require(
+        "CONTEXT.md" not in distributed_policy
+        and "## Project language" not in distributed_policy
+        and not any(PAYLOAD_ROOT.rglob("CONTEXT.md")),
+        "source project language policy or glossary must not be distributed",
+    )
 
 
 def check_manifest() -> None:
@@ -576,8 +650,8 @@ def check_provider_declaration() -> None:
         "framework-owned runtime projection",
         "derived from Matt Pocock's Wayfinder methodology",
         "## Operating rules",
-        "## Establish territory",
-        "## Resolve the frontier progressively",
+        "## Establish areas and relationships",
+        "## Resolve the current question progressively",
         "## Reconcile and hand off",
         "reconciliation, pruning, and effort ending",
         "when an effort ends",
@@ -585,15 +659,23 @@ def check_provider_declaration() -> None:
         "Create a separate artifact because it is an independently useful coordination or retrieval unit",
         "Specialists own their methods and native artifacts",
         "create no framework continuity record",
-        "coherent ready frontier",
-        "one or more ready scopes",
-        "Each Implementation handoff consumes one coherent scope",
+        "current coordination state, blockers, dependencies, and ready work",
+        "Ready work may proceed now without crossing an unresolved dependency, "
+        "consequential uncertainty, or missing authority",
+        "one or more ready implementation scopes",
+        "Each Implementation handoff consumes one ready scope",
         "Verification follows execution",
         "Use `to-tickets`",
+        "ticket ordering and readiness",
     ):
         require(
             required in " ".join(projection_text.split()),
             f"owned Wayfinder runtime lacks required contract: {required}",
+        )
+    for retired in RETIRED_WAYFINDER_RUNTIME_PATTERNS:
+        require(
+            re.search(retired, projection_text, re.IGNORECASE) is None,
+            f"owned Wayfinder runtime retains retired canonical language: {retired}",
         )
     for contract_only_detail in (
         "highest currently present",
@@ -775,6 +857,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         for check in (
             check_inert_payload,
             check_structure,
+            check_source_project_language,
             check_manifest,
             check_filesystem,
             check_provider_declaration,

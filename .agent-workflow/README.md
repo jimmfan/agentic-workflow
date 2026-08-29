@@ -53,9 +53,9 @@ tree. A map may stand alone. The current default places supported F# facts in
 optional `facts.md` and committed D# decisions in optional `decisions.md`, while
 unresolved U# questions and substantial E# evidence earn separate files only
 when they are independently useful coordination or retrieval units. The map
-owns current state, blockers, dependencies, and next work, indexing rather than
-duplicating supporting detail; later work orients there before retrieving only
-a relevant ledger section or U#/E# artifact.
+summarizes current coordination state, blockers, dependencies, and ready work,
+indexing rather than duplicating supporting detail. When resuming, read the map
+before retrieving a relevant ledger section or U#/E# artifact.
 
 Facts require traceable provenance, and decisions require responsible project
 authority rather than evidence alone.

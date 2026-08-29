@@ -17,7 +17,8 @@ The provider owner has not yet published the required checksum.
 
 ## Ready frontier
 
-Wait for the checksum, then verify the current runtime projection.
+No work is ready until the checksum is available. Verification may proceed after
+that dependency is resolved.
 
 ## Key links
 

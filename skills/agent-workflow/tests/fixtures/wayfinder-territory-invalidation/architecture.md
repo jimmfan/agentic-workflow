@@ -8,4 +8,4 @@ The accepted architecture supersedes the old combined control-service model.
 - Execution depends on an approved intent from the Policy control plane.
 
 The existing Wayfinder map must be revised in place. This evidence does not
-authorize a new effort, a parallel territory, or an implementation decision.
+authorize a new effort, a parallel representation of the areas, or an implementation decision.

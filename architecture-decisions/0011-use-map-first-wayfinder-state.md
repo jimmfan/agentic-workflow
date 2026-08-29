@@ -22,36 +22,37 @@ instructions.
 
 When durable coordination is warranted, use project-owned, map-first Wayfinder
 state. The current local representation lives under
-`.agent-wayfinder/<effort>/`, and `map.md` is its canonical re-entry point.
+`.agent-wayfinder/<effort>/`. When resuming an effort, read `map.md` first.
 
-The map is low-resolution semantic territory, not a type ledger. It preserves
-the destination, substantive boundary, major areas, current state, material
-blockers and dependencies, and useful next frontier. Optional supporting
+The map is a brief coordination summary, not a type ledger. It preserves the
+objective, scope, major areas and relationships, current coordination state,
+material blockers and dependencies, and ready work. Optional supporting
 knowledge exists only when durable preservation adds value; a map-only effort
 is valid and supporting detail loads progressively. The contract may
 consolidate small same-type records while keeping independently useful
 coordination or retrieval units separate; that representation remains a
 contract and test detail.
 
-Wayfinder represents current navigation rather than permanent identities or an
-append-only journal. Lasting outcomes move to their canonical owners, current
-state converges and shrinks, and Git preserves committed historical evolution.
+Wayfinder represents current coordination state rather than permanent identities
+or an append-only journal. Lasting outcomes move to their canonical owners,
+current coordination state converges and shrinks, and Git preserves committed historical evolution.
 Preserve a question independently only when retaining it or its eventual answer
 could materially improve a later developer's ability to make or evaluate a
-decision. Expose a ready scope only when it can proceed without crossing an
-unresolved dependency, consequential boundary, or missing authority.
+decision. Expose ready work only when it can proceed without crossing an
+unresolved dependency, consequential uncertainty, or missing authority.
 
 Authorized work that changes represented reality owns scoped reconciliation of
-the affected map and state before claiming completion. Canonical artifacts
+the affected map and current coordination state before claiming completion. Canonical artifacts
 remain authoritative. Read-only work may report staleness but does not repair
 project-owned state.
 
 The effective Wayfinder instructions present one coherent operational model
 rather than prepend local state rules to a contradictory tracker specification.
 Matt Pocock's pinned skill remains the methodological source and reviewed
-provenance. The derived runtime preserves useful destination, map, fog,
-frontier, readable-name, progressive-resolution, and authority-sensitive
-reasoning concepts while implementing the project's map-first contract.
+provenance. The raw snapshot retains its exact provider-owned vocabulary and
+tracker model. The derived runtime preserves applicable map, readable-name,
+progressive-resolution, and authority-sensitive reasoning through the project's
+objective, scope, literal uncertainty, blocker, and ready-work language.
 
 Lifecycle operations treat the complete `.agent-wayfinder/` tree as opaque
 project data. Exact state mechanics remain progressively loaded from the
@@ -63,7 +64,7 @@ A fresh session can orient from one small map and load only relevant detail.
 State can remain sparse and human-editable without a database, event log,
 global state registry, shadow work tree, or duplicated tracker.
 
-Executable decomposition and its native frontier belong to `to-tickets`;
+Executable decomposition and its ticket ordering and readiness belong to `to-tickets`;
 Wayfinder links that artifact rather than mirroring T# work as a second
 ticket/status surface.
 
@@ -74,13 +75,13 @@ contract and test details, not architectural commitments.
 ## Alternatives considered
 
 - Persist a complete journal or permanent child identities: rejected because
-  current navigation should converge instead of accumulating maintenance state.
+  current coordination state should converge instead of accumulating maintenance state.
 - Duplicate provider or project artifacts inside Wayfinder: rejected because
   two canonical copies would drift.
 - Layer map-first rules over the upstream tracker runtime: rejected because one
   effective skill must describe one coherent way of operating.
 - Require a database, graph index, external tracker, or lifecycle-wide Markdown
-  schema validation: rejected because low-resolution maps, targeted contract
+  schema validation: rejected because brief safely resumable maps, targeted contract
   rules, links, agent reasoning, and Git cover the current need without making
   project-owned edits lifecycle failures.
 
@@ -88,4 +89,4 @@ contract and test details, not architectural commitments.
 
 Reconsider if fresh sessions repeatedly cannot reconstruct consequential state,
 if map convergence loses needed information, or if a different representation
-provides a materially simpler and safer re-entry model.
+provides materially simpler and safer resumption.

@@ -41,6 +41,10 @@ It checks:
 - absence of executable or host-customization content in the
   activation-sensitive payload namespace;
 - provider declarations and projection integrity;
+- the source-only terminology glossary and project-language policy remain
+  present, scoped, and absent from the distributed payload;
+- current Agent Workflow-owned Wayfinder surfaces use concept-specific
+  orientation and ready-work language;
 - local Markdown links and behavioral scenario validation;
 - lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and
   stale-release-metadata tests;
@@ -156,15 +160,15 @@ malformed entries and exact filesystem collisions are rejected. Lifecycle
 preservation exercises
 install, update, status, remove, reinstall, and provider repair byte-for-byte.
 The behavioral suite also keeps
-implementation work-item artifacts out of Wayfinder, resumes relevant map
-state, reconciles affected state after implementation, excludes unrelated
-detail and efforts, reports outdated state without changing it during read-only work,
+implementation work-item artifacts out of Wayfinder, resumes relevant current
+coordination state from the map, reconciles affected state after implementation,
+excludes unrelated detail and efforts, reports outdated state without changing it during read-only work,
 stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
 of a direct route.
 
 The routing catalog separately covers direct work, standalone Discovery,
-direct and specialist-backed Wayfinder frontiers, Wayfinder-to-Implementation
-handoff, interrupted-specialist re-entry from the map, host-native fallback,
+direct Wayfinder ready work, specialist-supported resolution of current questions,
+Wayfinder-to-Implementation handoff, interrupted-specialist resumption from the map, host-native fallback,
 explicit provider handoff, external read scope, and provider-artifact
 ownership. It is an executable contract check, not proof that a live editor or
 provider service was exercised.

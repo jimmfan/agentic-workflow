@@ -98,10 +98,11 @@ so far, Not yet specified, and Out of scope; it loads child decision tickets on
 demand and derives the frontier from open, unblocked, unclaimed children. Its
 default local-Markdown tracker stores those artifacts below `.scratch/`.
 Agent Workflow deliberately owns its effective runtime and canonical local representation
-under `.agent-wayfinder/` instead, with the map itself as the
-re-entry point and optional U#/E#/F#/D# knowledge. The map owns current state,
-blockers, dependencies, and next work. Substantial decomposition passes to the
-native `to-tickets` output without a shadow copy. The pinned release remains the
+under `.agent-wayfinder/` instead. When resuming an effort, it reads the map first
+and then only relevant optional U#/E#/F#/D# knowledge. The map owns current
+coordination state, blockers, dependencies, and ready work. Substantial
+decomposition passes to native `to-tickets` ticket ordering and readiness without
+a shadow copy. The pinned release remains the
 methodological source and reviewed provenance, while the local runtime is an
 intentional derived projection; see
 [ADR-0010](../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md)

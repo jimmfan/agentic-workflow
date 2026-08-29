@@ -14,7 +14,7 @@
 - For one obvious specialist inside an already selected Wayfinder effort, load
   only what it needs.
   Read `.agent-workflow/routing.md` only when ownership is unclear or provider
-  fallback, handoff, or durable re-entry materially matters.
+  fallback, handoff, or durable resumption materially matters.
 - Workflows never expand authority. Exact external read-only targets permit only
   that read.
 - MUST NOT cross a consequential decision boundary without required evidence,

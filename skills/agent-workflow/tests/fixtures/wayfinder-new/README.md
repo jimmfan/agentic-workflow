@@ -1,7 +1,7 @@
 # Platform migration planning fixture
 
 The migration spans several sessions. The authoritative migration architecture
-already establishes the destination, scope, major areas, and relationships.
+already establishes the objective, scope, major areas, and relationships.
 The project owner accepted zero downtime, the safe migration order is
 unresolved, and inventorying current consumers is concrete work that can
 proceed without answering the ordering question.

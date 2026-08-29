@@ -10,26 +10,28 @@ Durable state is intentionally preserved across sessions or handoffs.
 
 ## State model and boundaries
 
-An effort is one resumable body of coordination with a stable destination and scope boundary.
+An effort is one resumable body of coordination with one stable objective and scope.
 Wayfinder is the sole framework-owned durable coordination model. The selected effort's
-`map.md` is its re-entry point; no other framework continuity record may compete with it.
+`map.md` is its brief coordination summary. Load this state contract before effort state.
+When resuming a Wayfinder effort, read `map.md` first; it is the first effort file, and no
+other framework continuity record may compete with it.
 
 Specialists retain their methods and native artifacts. Wayfinder records consequential results
 and links, not procedures or bookkeeping. `to-tickets` owns executable decomposition and its
-frontier; link it rather than mirroring tickets.
+ticket ordering and readiness; link it rather than mirroring tickets.
 
 All content below `.agent-wayfinder/` is project-owned durable data. Wayfinder interprets or
 changes only the recognized current paths described below. All other entries are opaque
 project-owned content: their bytes remain unchanged, and they are not interpreted as recognized
 Wayfinder state.
 
-Wayfinder recognizes only the contract-defined paths and record forms in this current-state
-layout. Only `map.md` is required:
+Wayfinder recognizes only the contract-defined paths and record forms in the layout below. Only
+`map.md` is required:
 
 ```text
 .agent-wayfinder/
 └── <effort>/
-    ├── map.md                    # required re-entry point
+    ├── map.md                    # required coordination summary
     ├── facts.md                  # optional current F# ledger
     ├── decisions.md              # optional current D# ledger
     ├── unknowns/                 # optional current U# files
@@ -44,23 +46,23 @@ current and resumable. A map-only effort is valid; optional `facts.md`, optional
 `evidence/E<ID>-<slug>.md` records are created lazily when independently useful. Separate
 preservation is independently useful only when it has coordination, evaluation, retrieval,
 reference, or update value beyond the map. Without `map.md`, a directory is not a recognized
-resumable effort. Current state is relevant to present coordination according to its type, not a
+resumable effort. Current coordination state is relevant to present coordination according to its type, not a
 claim that every current U# or E# is established project truth.
 
 Never persist credentials, secrets, sensitive data or sensitive command output, raw
 transcripts, private agent memory, or unnecessary personal information.
 
-Coordination is consequential when resolving it differently would change the destination,
-substantive boundary, authority requirement, blocker or dependency, canonical outcome, or ready
-frontier. Wayfinder represents current, resumable coordination, not a permanent journal. A
+Coordination is consequential when resolving it differently would change the objective, scope,
+authority requirement, blocker or dependency, lasting result, or ready work. Wayfinder represents
+current, resumable coordination, not a permanent journal. A
 canonical artifact is the designated durable location for a lasting outcome; Git owns historical
 evolution.
 
 ## Effort shape and selection
 
 The map H1 is the durable human-readable effort name. Its directory slug is a concise,
-lowercase, filesystem-safe, hyphen-separated storage key derived from the destination and
-scope boundary, not a branch, ticket, phase, timestamp, random suffix, or chat title.
+lowercase, filesystem-safe, hyphen-separated storage key derived from the objective and scope,
+not a branch, ticket, phase, timestamp, random suffix, or chat title.
 Use only the shortest meaningful disambiguator for a genuine collision.
 
 An exact effort path must be repository-relative, remain strictly below `.agent-wayfinder/`, cross
@@ -68,7 +70,7 @@ no symlink in the root, ancestors, effort, or `map.md`, and identify a regular `
 unsafe or invalid exact path; do not invent a replacement.
 
 Without an exact path, inspect only the smallest plausible candidate set. Compare safe maps
-by destination, boundary, and name, and resume only one clear match. If selection remains
+by objective, scope, and name, and resume only one clear match. If selection remains
 ambiguous, do not guess, merge efforts, create a synonymous duplicate, or change affected state.
 A mapless directory is not a candidate.
 
@@ -76,49 +78,51 @@ Selection does not require persistence. If assessment leaves no consequential cr
 coordination worth preserving, create no effort, map, or supporting record.
 
 Create a new effort only when durable writes are authorized, persistence is justified, and
-no recognized effort owns the same destination and boundary in substance. Immediately before
+no recognized effort owns the same objective and scope in substance. Immediately before
 creation, reread the parent and any newly plausible map. A storage-key collision resumes
 only the same effort; otherwise use the shortest meaningful disambiguator.
 
-Preserve the established effort path while its destination and boundary remain the same in
+Preserve the established effort path while its objective and scope remain the same in
 substance, including through wording, phase, branch, ticket, or evidence changes. A different
-destination or substantive boundary requires a new effort. Never repurpose earlier state to
+objective or substantive scope requires a new effort. Never repurpose earlier state to
 represent different work.
 
 A recognized effort may be ready, paused, blocked on evidence, waiting for authority, or
-waiting for an external dependency. Represent that condition through current state,
-blockers, dependencies, and frontier. Do not add a map status or historical label.
+waiting for an external dependency. Represent that condition through current coordination state,
+blockers, dependencies, and ready work. Do not add a map status or historical label.
 
 Use this brief default map shape, combining, renaming, or omitting an item only when its
 purpose is inapplicable or a clearer equivalent exists:
 
-- **Destination** — desired endpoint and substantive scope or authority boundary.
-- **Territory** — major areas, ownership constraints, relationships, and operating boundaries.
-- **Current state** — smallest truthful summary needed for re-entry.
+- **Objective** — what the effort must achieve.
+- **Scope** — what the effort includes and excludes, including relevant project or authority limits.
+- **Areas and relationships** — major areas, how they relate, and important ownership or operating constraints.
+- **Current state** — smallest truthful summary needed to resume safely.
 - **Blockers and dependencies** — only consequential constraints on progress.
-- **Ready frontier** — coherent work that can proceed and the next handoff.
+- **Ready work** — work that may proceed now.
 - **Key links** — the few canonical artifacts needed for continuation.
 
 These headings guide content; they are not a recognition schema. Do not create empty headings.
-Keep the map low-resolution and link canonical roadmaps, specifications, ADRs, tickets, and
-project artifacts instead of copying their bodies or detailed backlogs. Load only records linked
+Keep the map brief, preserve enough information to resume safely, and link detailed or authoritative
+roadmaps, specifications, ADRs, tickets, and project artifacts instead of copying their bodies or
+detailed backlogs. Load only records linked
 for the current question; do not read every ledger section or U/E file. If a fresh session must
 read most supporting records to recover the current route, reconcile the map instead of adding
 more supporting detail.
 
-Remaining work is not automatically blocked work. A blocker is an unmet dependency,
-unresolved consequential boundary, or missing authority that prevents otherwise coherent
-work from proceeding; planned but unperformed validation alone is not a blocker.
+Remaining work is not automatically blocked work. A blocker is an unresolved dependency or missing
+authority that currently prevents particular work from proceeding. An unresolved consequential
+uncertainty blocks only work whose correctness depends on it; planned but unperformed validation
+alone is not a blocker.
 
-The ready frontier contains only coherent work that can proceed now. Exclude any scope blocked by
-an unresolved dependency, consequential boundary, or missing authority. Independent ready work may
-proceed while unrelated work remains blocked. Native ticket artifacts, when used, remain the
-executable frontier.
+Ready work means work that may proceed now without crossing an unresolved dependency,
+consequential uncertainty, or missing authority. Independent ready work may proceed while unrelated
+work remains blocked. Native ticket artifacts, when used, own ticket ordering and readiness.
 
 ## Current knowledge
 
-U/E/F/D classify current knowledge; they are neither a mandatory pipeline nor the effort's
-territory or problem hierarchy:
+U/E/F/D classify current knowledge; they are neither a mandatory pipeline nor a representation of
+the effort's areas and relationships or problem hierarchy:
 
 - `U#`: an unresolved consequential question whose separate preservation is independently useful
   for a later decision or continuation.
@@ -191,9 +195,9 @@ current same-type identifier, or 1 when none exists. Do not deliberately recycle
 a pruned highest number is not reserved.
 
 Immediately before assigning an identifier, reread all recognized same-type identifiers and reject
-malformed or duplicate current state. Append an F/D section only if its ledger still matches the
-content used to plan the append. Before creating a U/E file, recheck the same-type identifiers and
-create the target without overwriting an existing path.
+malformed or duplicate identifiers in current coordination state. Append an F/D section only if its
+ledger still matches the content used to plan the append. Before creating a U/E file, recheck the
+same-type identifiers and create the target without overwriting an existing path.
 
 An identity-like U/E entry that cannot be interpreted safely blocks only operations whose
 correctness depends on identifying records in that affected U/E container. It does not
@@ -210,10 +214,10 @@ renaming a U/E file or F/D heading.
 ## Reconciliation and pruning
 
 Keep only current coordination needed to navigate the effort. Reconciliation brings affected
-current state, the map and frontier, and references into agreement with current truth, valid project
+current coordination state, the map and ready work, and references into agreement with current truth, valid project
 authority, and the artifact that owns each lasting result. Pruning removes recognized Wayfinder
-state that no longer belongs in current coordination after still-useful results are preserved and
-affected current state and references are reconciled. Both preserve unrelated state. Git retains
+records that no longer belong in current coordination after still-useful results are preserved and
+affected current coordination state and references are reconciled. Both preserve unrelated state. Git retains
 committed history.
 
 ### Reconcile affected state
@@ -234,8 +238,8 @@ unrelated efforts, the entire repository, or Git history.
 Use this common sequence for every affected reconciliation:
 
 1. Preserve any still-useful result in its proper canonical owner.
-2. Reconcile affected current state, map consequences and frontier, and known current references.
-3. Prune from current state only recognized state that no longer has independent current value.
+2. Reconcile affected current coordination state, map consequences and ready work, and known current references.
+3. Prune from current coordination state only recognized state that no longer has independent current value.
 
 Update only affected records and links to canonical artifacts. Do not copy canonical artifact
 bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
@@ -249,7 +253,7 @@ state and report the blocker.
 When evidence strengthens or narrows an F#, update the same F# in place with its current claim,
 scope, provenance, and material limitations. When evidence invalidates its support, narrow or
 remove the unsupported conclusion and reconcile references that treated it as supported. Prune the
-F# from current state when no supported conclusion with independent current value remains. Do not
+F# from current coordination state when no supported conclusion with independent current value remains. Do not
 create a second fact merely to preserve history.
 
 When an observation independently earns E# preservation through its source, method,
@@ -259,18 +263,18 @@ consequential current coordination value, and surface it in the map only when it
 Do not create an E#/U# pair by template.
 
 When a U# is answered, preserve any independently useful result through the common sequence and
-prune the U# from current state; an answered question is no longer current unknown state and is not
+prune the U# from current coordination state; an answered question is no longer current unknown state and is not
 retained as history. If responsible authority explicitly accepts residual uncertainty for a named
 boundary, the question remains factually unresolved: keep its U# current and unresolved, record the
 authority source and accepted boundary in its proper canonical artifact, and unblock only that
 accepted boundary. The acceptance does not answer the U#, grant unrelated authority, or unblock
 another dependency.
 
-When factual evidence changes, review dependent D# records and frontier work under the authority
+When factual evidence changes, review dependent D# records and ready work under the authority
 rule in `## Current knowledge`. When responsible authority changes the choice for the same decision
 boundary, update the same D# and its authority, basis, consequences, revisit condition, and affected
 references. Allocate another D# only for a distinct current decision. When a D# is no longer
-current under project authority, apply the common sequence and prune it from current state; Git
+current under project authority, apply the common sequence and prune it from current coordination state; Git
 retains the prior choice.
 
 ### Prune one record
@@ -286,7 +290,7 @@ effort, `unknowns/`, or `evidence/` directory.
 ### Keep or end the effort
 
 Keep an effort's map while it may realistically resume, including when it is paused, blocked, or
-waiting. Keep its blockers, dependencies, and truthful frontier sufficient for re-entry. Do not
+waiting. Keep its blockers, dependencies, and truthful ready work sufficient for safe resumption. Do not
 remove `map.md` while consequential unresolved coordination still needs continuity. Retain the
 effort, transfer that coordination to a recognized current successor, or preserve the consequential
 result or constraint in its canonical artifact before ending the effort.

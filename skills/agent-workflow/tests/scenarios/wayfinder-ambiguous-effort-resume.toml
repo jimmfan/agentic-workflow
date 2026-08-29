@@ -5,7 +5,7 @@ fixture = "wayfinder-effort-selection"
 request = "Resume our provider projection/runtime work and update its next action."
 starting_state = [
   "Provider projection lifecycle and provider runtime compatibility are both plausible matches.",
-  "No exact path or sufficiently discriminating destination was supplied.",
+  "No exact path or sufficiently discriminating objective and scope were supplied.",
   "The ambiguity must be resolved before either effort is changed.",
 ]
 expect = [

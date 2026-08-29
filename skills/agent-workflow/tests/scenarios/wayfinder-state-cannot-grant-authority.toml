@@ -36,3 +36,23 @@ value = "README.md"
 kind = "glob_any_contains"
 path = ".agent-wayfinder/*/map.md"
 value = "blocked"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = '''(?:\bterminology\b[^.!?\n]{0,120}\b(?:may\s+proceed|can\s+proceed|approved\s+to\s+proceed|allowed\s+to\s+proceed|ready|unblocked|not\s+blocked)\b|(?<!not\s)\b(?:ready|unblocked)\b[^.!?\n]{0,120}\bterminology\b)'''
+
+[[assertions]]
+kind = "glob_none_matches"
+path = ".agent-wayfinder/*/map.md"
+value = '''(?:\bterminology\b[^.!?\n]{0,120}(?<!not\s)\bblocked\b|\bterminology\b[^.!?\n]{0,120}\bnot\s+(?:ready|unblocked)\b|(?<!not\s)\bblocked\b[^.!?\n]{0,120}\bterminology\b|\bnot\s+(?:ready|unblocked)\b[^.!?\n]{0,120}\bterminology\b)'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = '''(?:\bauthentication\b[^.!?\n]{0,120}(?<!not\s)\bblocked\b|(?<!not\s)\bblocked\b[^.!?\n]{0,120}\bauthentication\b)'''
+
+[[assertions]]
+kind = "glob_none_matches"
+path = ".agent-wayfinder/*/map.md"
+value = '''(?:\bauthentication\b[^.!?\n]{0,120}(?<!not\s)\b(?:ready|unblocked)\b|\bauthentication\b[^.!?\n]{0,120}\b(?:may\s+proceed|can\s+proceed|approved\s+to\s+proceed|allowed\s+to\s+proceed)\b|(?<!not\s)\b(?:ready|unblocked)\b[^.!?\n]{0,120}\bauthentication\b|\b(?:may\s+proceed|can\s+proceed|approved\s+to\s+proceed|allowed\s+to\s+proceed)\b[^.!?\n]{0,120}\bauthentication\b)'''

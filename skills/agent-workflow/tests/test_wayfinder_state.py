@@ -67,6 +67,35 @@ CURRENT_WAYFINDER_SCENARIOS = {
         PACKAGE_ROOT / "tests/scenarios/wayfinder-fact-conflict.toml"
     ),
 }
+CURRENT_WAYFINDER_LANGUAGE_SURFACES = {
+    "packaged contract": CONTRACT,
+    "installed contract": INSTALLED_CONTRACT,
+    "runtime projection": RUNTIME,
+    "installed routing policy": REPOSITORY_ROOT / ".agent-workflow/routing.md",
+    "packaged routing policy": PACKAGE_ROOT / "payload/agent-workflow/routing.md",
+    "distributed root policy": PACKAGE_ROOT / "payload/root/AGENTS.md.template",
+    "installed implementation workflow": (
+        REPOSITORY_ROOT / ".agents/skills/workflow-implementation/SKILL.md"
+    ),
+    "packaged implementation workflow": (
+        PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+    ),
+}
+RETIRED_CANONICAL_WAYFINDER_PATTERNS = (
+    r"(?im)^##\s+Establish territory\s*$",
+    r"(?im)^##\s+Resolve the frontier progressively\s*$",
+    r"(?im)^-\s+\*\*(?:Destination|Territory|Ready frontier)\*\*",
+    r"\bthe ready frontier\s+(?:is|contains|owns)\b",
+    r"\blow-resolution\s+(?:map|maps|view|semantic)\b",
+    r"\b(?:map(?:\.md)?|effort map)\b[^.\n]{0,80}\bre-entry point\b",
+    r"\bre-entry point\b[^.\n]{0,80}\b(?:map(?:\.md)?|effort map)\b",
+    r"\b(?:establish|same|stable)\s+(?:the\s+)?destination\b",
+    r"\bderive\b[^.\n]{0,40}\bfrom\s+(?:the\s+)?destination\b",
+    r"\bdestination\s+(?:and|or)\s+(?:scope|boundary)\b",
+    r"\b(?:ordinary|research|debugging)\s+fog\b",
+    r"\b(?:resolve|frame|reconcile|return|native|current|ready|coherent)\s+(?:the\s+)?frontier\b",
+    r"\bfrontier\s+(?:can|may|is|work|state)\b",
+)
 FIXTURES = PACKAGE_ROOT / "tests/fixtures"
 TYPE_DIRECTORIES = {"U": "unknowns", "E": "evidence", "F": "facts", "D": "decisions"}
 LEDGER_PATHS = {"F": "facts.md", "D": "decisions.md"}
@@ -142,24 +171,15 @@ def exact_effort(repository: Path, relative: Path) -> Path:
     return cursor
 
 
-def select_effort(
-    candidates: list[Path], destination: str, boundary: str
-) -> Path | None:
+def select_effort(candidates: list[Path], objective: str, scope: str) -> Path | None:
     matches: list[Path] = []
     for effort in candidates:
         map_path = effort / "map.md"
         if not map_path.exists() and not map_path.is_symlink():
             continue
         validate_effort(effort)
-        fields: dict[str, str] = {}
-        for line in (effort / "map.md").read_text(encoding="utf-8").splitlines():
-            match = re.fullmatch(r"- (Destination|Boundary):\s*(.+)", line)
-            if match:
-                fields[match.group(1)] = match.group(2).strip()
-        if (
-            fields.get("Destination", "").casefold() == destination.casefold()
-            and fields.get("Boundary", "").casefold() == boundary.casefold()
-        ):
+        map_text = map_path.read_text(encoding="utf-8").casefold()
+        if objective.casefold() in map_text and scope.casefold() in map_text:
             matches.append(effort)
     if len(matches) > 1:
         raise UnsafeWayfinderState("ambiguous effort selection")
@@ -843,8 +863,8 @@ class WayfinderStateContractTests(unittest.TestCase):
                 effort.mkdir(parents=True)
             (current / "map.md").write_text(
                 "# Release direction\n\n"
-                "- Destination: Publish the approved release\n"
-                "- Boundary: Packaging only\n",
+                "## Objective\n\nPublish the approved release.\n\n"
+                "## Scope\n\nPackaging only.\n",
                 encoding="utf-8",
             )
             (mapless / "project-notes.md").write_text(
@@ -853,8 +873,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             )
             (other / "map.md").write_text(
                 "# Other work\n\n"
-                "- Destination: Update documentation\n"
-                "- Boundary: Documentation only\n",
+                "## Objective\n\nUpdate documentation.\n\n"
+                "## Scope\n\nDocumentation only.\n",
                 encoding="utf-8",
             )
 
@@ -910,6 +930,19 @@ class WayfinderStateContractTests(unittest.TestCase):
                     "Publish the approved release",
                     "Packaging only",
                 )
+
+    def test_existing_map_with_older_orientation_headings_remains_recognized(
+        self,
+    ) -> None:
+        effort = (
+            FIXTURES
+            / "wayfinder-effort-selection/.agent-wayfinder/wayfinder-runtime-projection"
+        )
+        map_text = (effort / "map.md").read_text(encoding="utf-8")
+
+        self.assertIn("## Destination", map_text)
+        self.assertIn("## Territory", map_text)
+        self.assertTrue(validate_effort(effort))
 
     def test_current_child_rename_requires_reconciled_references(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1572,7 +1605,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             unknowns.mkdir(parents=True)
             map_path = effort / "map.md"
             map_path.write_text(
-                "# Empty unknowns\n\nThe ready frontier has no blocker.\n",
+                "# Empty unknowns\n\nThe ready work has no blocker.\n",
                 encoding="utf-8",
             )
 
@@ -1686,7 +1719,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
             def changed_state() -> None:
                 map_path.write_text(
-                    "# Current effort\n\nA new frontier appeared.\n", encoding="utf-8"
+                    "# Current effort\n\nThe ready work changed.\n", encoding="utf-8"
                 )
 
             with self.assertRaisesRegex(UnsafeWayfinderState, "current state changed"):
@@ -1917,6 +1950,85 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertNotRegex(lowered, r"\bretir\w*\b")
                 self.assertNotIn("settlement", lowered)
 
+    def test_current_wayfinder_surfaces_use_concept_specific_orientation_language(
+        self,
+    ) -> None:
+        generated = GENERATED_SKILL.read_text(encoding="utf-8")
+        surfaces = {
+            **CURRENT_WAYFINDER_LANGUAGE_SURFACES,
+            "generated runtime": generated.split("\n---\n", 1)[1],
+        }
+        legitimate_noncanonical_uses = (
+            "The deployment destination is /srv/application.",
+            "The pinned provider calls its tracker concept `frontier`.",
+            "The research fixture studies territorial fog forecasts.",
+        )
+        for prose in legitimate_noncanonical_uses:
+            for pattern in RETIRED_CANONICAL_WAYFINDER_PATTERNS:
+                with self.subTest(prose=prose, pattern=pattern):
+                    self.assertIsNone(re.search(pattern, prose, re.IGNORECASE))
+
+        for name, source in surfaces.items():
+            text = source.read_text(encoding="utf-8") if isinstance(source, Path) else source
+            for pattern in RETIRED_CANONICAL_WAYFINDER_PATTERNS:
+                with self.subTest(surface=name, pattern=pattern):
+                    self.assertIsNone(re.search(pattern, text, re.IGNORECASE))
+
+        provider_research = (
+            REPOSITORY_ROOT / "docs/provider-research.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Wayfinder v1.2.3 defines", provider_research)
+        self.assertIn("frontier", provider_research)
+
+        for path in (
+            MAP_FIRST_ADR,
+            REPOSITORY_ROOT
+            / "architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md",
+        ):
+            decision = markdown_section(
+                path.read_text(encoding="utf-8"), "## Decision"
+            ).casefold()
+            for current_term in ("objective", "scope", "ready work"):
+                with self.subTest(adr=path.name, term=current_term):
+                    self.assertIn(current_term, decision)
+
+    def test_default_map_orientation_and_ready_work_semantics_are_explicit(
+        self,
+    ) -> None:
+        effort_shape = markdown_section(self.contract, "## Effort shape and selection")
+        orientation = re.findall(r"^- \*\*([^*]+)\*\*", effort_shape, re.MULTILINE)
+        self.assertEqual(
+            orientation[:7],
+            [
+                "Objective",
+                "Scope",
+                "Areas and relationships",
+                "Current state",
+                "Blockers and dependencies",
+                "Ready work",
+                "Key links",
+            ],
+        )
+        normalized = " ".join(effort_shape.split())
+        ready_work = normalized.split("Ready work means", 1)[1].split(
+            "## Current knowledge", 1
+        )[0]
+        for condition in (
+            "unresolved dependency",
+            "consequential uncertainty",
+            "missing authority",
+            "Independent ready work",
+            "unrelated work remains blocked",
+        ):
+            with self.subTest(ready_work_condition=condition):
+                self.assertIn(condition, ready_work)
+        self.assertIn("A blocker is an unresolved dependency or missing authority", normalized)
+        self.assertIn("prevents particular work from proceeding", normalized)
+        self.assertIn(
+            "When resuming a Wayfinder effort, read `map.md` first",
+            self.normalized,
+        )
+
         reconciliation = markdown_section(
             self.contract,
             "## Reconciliation and pruning",
@@ -1959,6 +2071,28 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertIn(
             "end the effort",
             scenario_descriptions["whole-effort ending"],
+        )
+
+    def test_current_scenarios_use_domain_language_without_renaming_historical_ids(
+        self,
+    ) -> None:
+        scenarios = {
+            path.stem: tomllib.loads(path.read_text(encoding="utf-8"))
+            for path in (PACKAGE_ROOT / "tests/scenarios").glob("*.toml")
+        }
+        revised_areas = scenarios["wayfinder-domain-modeling-revises-territory"]
+        self.assertEqual(
+            revised_areas["id"], "wayfinder-domain-modeling-revises-territory"
+        )
+        self.assertIn("areas and relationships", revised_areas["name"].casefold())
+
+        new_effort = scenarios["wayfinder-new-effort"]
+        self.assertIn("objective, scope", new_effort["request"].casefold())
+        self.assertIn("ready work", new_effort["verification_command"].casefold())
+
+        ticket_handoff = scenarios["wayfinder-contract-smoke"]
+        self.assertIn(
+            "ticket ordering and readiness", ticket_handoff["request"].casefold()
         )
 
     def test_contract_keeps_pruning_boundaries(self) -> None:
@@ -2029,14 +2163,29 @@ class WayfinderStateContractTests(unittest.TestCase):
 
     def test_authored_installed_and_generated_surfaces_are_consistent(self) -> None:
         self.assertEqual(CONTRACT.read_bytes(), INSTALLED_CONTRACT.read_bytes())
+        self.assertEqual(
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_bytes(),
+            (REPOSITORY_ROOT / ".agent-workflow/routing.md").read_bytes(),
+        )
+        self.assertEqual(
+            (PACKAGE_ROOT / "payload/agent-workflow/README.md").read_bytes(),
+            (REPOSITORY_ROOT / ".agent-workflow/README.md").read_bytes(),
+        )
+        source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        managed = source_policy.split("<!-- agent-workflow:managed-begin -->", 1)[1]
+        managed = managed.split("<!-- agent-workflow:managed-end -->", 1)[0].strip()
+        packaged_policy = (
+            PACKAGE_ROOT / "payload/root/AGENTS.md.template"
+        ).read_text(encoding="utf-8").strip()
+        self.assertEqual(packaged_policy, managed)
         runtime = RUNTIME.read_text(encoding="utf-8")
         generated = GENERATED_SKILL.read_text(encoding="utf-8")
         generated_body = generated.split("\n---\n", 1)[1]
         self.assertEqual(runtime, generated_body)
         for heading in (
             "## Operating rules",
-            "## Establish territory",
-            "## Resolve the frontier progressively",
+            "## Establish areas and relationships",
+            "## Resolve the current question progressively",
             "## Reconcile and hand off",
         ):
             self.assertIn(heading, runtime)

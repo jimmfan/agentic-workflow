@@ -64,7 +64,7 @@ It does not run every potentially relevant skill.
 
 Routing starts Direct.
 
-The root project instructions perform the initial classification. More detailed routing guidance is loaded only when ownership, workflow composition, provider fallback, handoff, or durable re-entry is unclear.
+The root project instructions perform the initial classification. More detailed routing guidance is loaded only when ownership, workflow composition, provider fallback, handoff, or durable resumption is unclear.
 
 Routing can change as work develops. For example, a bounded implementation task may expose an unresolved design decision or enough coordination state to justify a different workflow.
 
@@ -96,13 +96,14 @@ A Wayfinder effort is map-first:
     └── evidence/       # optional
 ```
 
-`map.md` is the effort's main re-entry point. It records enough current context for a later agent or developer to understand the effort, including:
+When resuming a Wayfinder effort, read `map.md` first. It records enough current coordination context for a later agent or developer to understand the effort, including:
 
-- goal and scope;
+- objective;
+- scope;
 - important areas and relationships;
 - current blockers and dependencies;
 - unresolved questions that matter to the work; and
-- what can happen next.
+- ready work.
 
 A simple effort may need only `map.md`.
 
@@ -133,11 +134,13 @@ future agents resume the work without depending on this chat.
 
 Record only durable, evidence-backed coordination context:
 
-- the goal and scope boundary;
+- the objective;
+- the included and excluded scope;
 - the important areas and relationships in the effort;
 - supported current conclusions with pointers to their authoritative sources;
 - consequential unknowns, decisions, dependencies, and blockers; and
-- a concise ready frontier describing what can happen next.
+- ready work that may proceed without an unresolved dependency,
+  consequential uncertainty, or missing authority.
 
 Create a separate unknown or evidence file only when it is an independently
 useful coordination or retrieval unit. When a supported current conclusion or
@@ -277,7 +280,7 @@ Current evaluation focuses on questions such as:
 
 - Do bounded tasks stay Direct?
 - Does routing select useful methods without unnecessary overhead?
-- Can a fresh session recover the current state of an effort?
+- Can a fresh session recover the current coordination state of an effort?
 - Does it avoid repeating completed investigation?
 - Does new evidence correctly change later work?
 - Does current repository state override stale recorded state?

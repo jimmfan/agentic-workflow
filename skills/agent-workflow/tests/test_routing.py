@@ -1,12 +1,75 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import unittest
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
+
+EXPECTED_PROJECT_LANGUAGE = {
+    "Wayfinder effort",
+    "Map",
+    "Objective",
+    "Scope",
+    "Consequential",
+    "Current coordination state",
+    "Ready work",
+    "Dependency",
+    "Blocker",
+    "Reconciliation",
+    "Pruning",
+}
 
 
 class RoutingContractTests(unittest.TestCase):
+    def test_source_project_language_policy_uses_an_undistributed_glossary(
+        self,
+    ) -> None:
+        context_path = REPOSITORY_ROOT / "CONTEXT.md"
+        source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        distributed_policy = (
+            PACKAGE_ROOT / "payload/root/AGENTS.md.template"
+        ).read_text(encoding="utf-8")
+
+        self.assertTrue(context_path.is_file())
+        context = context_path.read_text(encoding="utf-8")
+        self.assertEqual(
+            set(re.findall(r"^\*\*([^*]+)\*\*:", context, re.MULTILINE)),
+            EXPECTED_PROJECT_LANGUAGE,
+        )
+        self.assertNotIn("CONTEXT.md", distributed_policy)
+        self.assertNotIn("## Project language", distributed_policy)
+        self.assertFalse(any(PACKAGE_ROOT.glob("payload/**/CONTEXT.md")))
+        self.assertNotIn(
+            "CONTEXT.md",
+            (
+                PACKAGE_ROOT / "payload/distribution/manifest.json"
+            ).read_text(encoding="utf-8"),
+        )
+
+        project_instructions = source_policy.split(
+            "<!-- agent-workflow:project-instructions -->", 1
+        )[1]
+        normalized = " ".join(project_instructions.split())
+        for requirement in (
+            "## Project language",
+            "Read `CONTEXT.md` before changing routing, Wayfinder, provider integration, "
+            "ownership, or framework-lifecycle concepts",
+            "determine the actual concept from current source, behavior, tests, and accepted decisions",
+            "identify the bounded technical or domain context that owns it",
+            "primary standards, official technical documentation, strong engineering evidence, "
+            "and peer-reviewed evidence when available",
+            "compare alternatives by exact semantics and applicability",
+            "avoid project-specific metaphors when an established or literal term is more precise",
+            "state evidence strength and uncertainty honestly",
+            "Update `CONTEXT.md` only after the terminology decision is accepted",
+            "Keep behavior, architecture, authority, and terminology in their respective owning layers",
+            "Do not force one term across genuinely different bounded contexts",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, normalized)
+
     def test_explicit_compatible_skill_selection_still_takes_precedence(self) -> None:
         routing = " ".join(
             (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()

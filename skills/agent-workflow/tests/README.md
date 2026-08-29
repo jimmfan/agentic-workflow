@@ -64,16 +64,16 @@ implementation work-item children. Current facts and decisions use optional
 evidence retain U#/E# files. Presence means a U# remains unresolved and a D#
 remains the current authorized choice; neither uses a lifecycle status field.
 Tests cover truthful fact provenance, actual decision authority, relevant-section retrieval without unrelated detail,
-answered unknowns and redundant evidence leaving current state, reference-safe
+answered unknowns and redundant evidence leaving current coordination state, reference-safe
 targeted pruning without requiring a prior commit, changed-state rejection,
 and no-overwrite U#/E# creation. Opaque content inside U/E containers
 is preserved, while identity-like malformed entries block the affected U/E operation.
 
-The catalog also covers blocked-effort re-entry, mapless directories being
+The catalog also covers blocked-effort resumption, mapless directories being
 excluded from selection, and ensuring that an unrelated existing effort
 neither captures a simple route nor gets loaded. Selective U#/E# promotion keeps
 authority-owned, external-approval, and cross-area-gating uncertainty without
-promoting incidental fog or requiring an exact artifact count. The live
+promoting incidental uncertainty or requiring an exact artifact count. The live
 Wayfinder contracts preserve an unrelated effort during reconciliation, keep
 outdated-state audits read-only, and require conflicting reconciliation to stop
 without guessing.

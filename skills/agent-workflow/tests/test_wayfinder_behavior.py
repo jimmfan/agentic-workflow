@@ -148,7 +148,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             for incorrect in (
                 "The bounded pilot remains blocked. Production sizing is ready.",
                 (
-                    "Ready frontier: the pilot remains blocked. Production sizing "
+                    "Ready work: the pilot remains blocked. Production sizing "
                     "remains blocked."
                 ),
                 (
@@ -156,6 +156,65 @@ class WayfinderBehaviorTests(unittest.TestCase):
                     "is ready."
                 ),
                 "The pilot may proceed. Production is not ready.",
+            ):
+                with self.subTest(incorrect=incorrect):
+                    self.assertFalse(relationships_pass(incorrect))
+
+    def test_independent_ready_work_assertions_preserve_the_authority_boundary(
+        self,
+    ) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        authority = scenarios["wayfinder-state-cannot-grant-authority"]
+        readiness_relationships = [
+            item
+            for item in authority.assertions
+            if item.kind in {"glob_any_matches", "glob_none_matches"}
+            and item.path.as_posix() == ".agent-wayfinder/*/map.md"
+        ]
+
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(authority, Path(temporary))
+            map_path = next((workspace / ".agent-wayfinder").glob("*/map.md"))
+            evidence_args = {
+                "scenario": authority,
+                "workspace": workspace,
+                "before": {},
+                "stdout": "",
+                "stderr": "",
+                "returncode": 0,
+                "report": {},
+                "verification": (),
+                "route_components": (),
+            }
+
+            def relationships_pass(text: str) -> bool:
+                map_path.write_text(text + "\n", encoding="utf-8")
+                evidence = behavior.RunEvidence(
+                    after=behavior.snapshot(workspace),
+                    **evidence_args,
+                )
+                return all(
+                    behavior.evaluate_assertion(evidence, assertion).passed
+                    for assertion in readiness_relationships
+                )
+
+            for correct in (
+                (
+                    "Terminology cleanup may proceed. Authentication implementation "
+                    "remains blocked."
+                ),
+                (
+                    "Terminology cleanup is ready. Authentication is not ready and "
+                    "remains blocked."
+                ),
+            ):
+                with self.subTest(correct=correct):
+                    self.assertTrue(relationships_pass(correct))
+
+            for incorrect in (
+                "Terminology is not ready. Authentication remains blocked.",
+                "Terminology cleanup may proceed. Authentication is ready.",
+                "Terminology cleanup may proceed. Authentication may proceed.",
             ):
                 with self.subTest(incorrect=incorrect):
                     self.assertFalse(relationships_pass(incorrect))

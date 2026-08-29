@@ -14,6 +14,15 @@ from _test_support import (
 
 
 class VerifyPackageTests(ProjectTestCase):
+    def test_verifier_requires_the_source_only_project_language_glossary(self) -> None:
+        package_copy = self.copy_package("missing-source-language")
+        (package_copy.parents[1] / "CONTEXT.md").unlink()
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn("source terminology glossary is missing", verify.stderr)
+
     def test_payload_content_edits_need_no_manifest_refresh(self) -> None:
         package_copy = self.copy_package("mapping-change")
 
@@ -184,6 +193,36 @@ class VerifyPackageTests(ProjectTestCase):
             "owned Wayfinder runtime contains incompatible tracker mechanics",
             verify.stderr,
         )
+
+    def test_verifier_rejects_retired_owned_wayfinder_runtime_language(self) -> None:
+        package_copy = self.copy_package("retired-wayfinder-language")
+        projection = package_copy / "runtime-projections/wayfinder.md"
+        projection.write_text(
+            projection.read_text(encoding="utf-8")
+            + "\nThe ready frontier is available.\n",
+            encoding="utf-8",
+        )
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
+        self.assertIn(
+            "owned Wayfinder runtime retains retired canonical language",
+            verify.stderr,
+        )
+
+    def test_verifier_allows_quoted_provider_frontier_language(self) -> None:
+        package_copy = self.copy_package("quoted-provider-language")
+        projection = package_copy / "runtime-projections/wayfinder.md"
+        projection.write_text(
+            projection.read_text(encoding="utf-8")
+            + "\nThe pinned provider calls its tracker concept `frontier`.\n",
+            encoding="utf-8",
+        )
+
+        verify = run_script(package_copy / "scripts/verify_package.py")
+
+        self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
 
     def test_verifier_rejects_provider_snapshot_checksum_drift(self) -> None:
         package_copy = self.copy_package("provider-snapshot-integrity")

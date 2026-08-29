@@ -19,7 +19,7 @@ a weighted complexity score. Explicit use and opt-out remain authoritative.
 
 The compact always-loaded rules live in `payload/root/AGENTS.md.template`.
 Detailed overlap resolution, composition, transitions, provider fallback,
-unclear durable-resume ownership, and route-marker edge cases live in
+unclear durable resumption ownership, and route-marker edge cases live in
 `payload/agent-workflow/routing.md`. They load only after the thin gate identifies
 one of those needs, not for Direct work or one obvious selected skill.
 
@@ -28,10 +28,10 @@ Runtime ownership is deliberately split:
 | Owner | Runtime responsibility |
 |---|---|
 | Root `AGENTS.md` | Every-request routing, authorization, preservation, truthfulness, progressive-loading gates, and the marker requirement |
-| `routing.md` | Selection criteria, route transitions, relevant resume, provider resolution, workflow composition, and detailed marker semantics |
+| `routing.md` | Selection criteria, route transitions, relevant resumption, provider resolution, workflow composition, and detailed marker semantics |
 | `providers.json` | Current host discovery, invocation, availability, configuration, and adapter facts |
 | Provider and local skills | The selected workflow's methodology and its provider-specific execution boundary |
-| State contracts | Storage, identifiers, progressive state loading, reconciliation, and re-entry mechanics |
+| State contracts | Storage, identifiers, progressive state loading, reconciliation, and map-first resumption mechanics |
 | ADRs and project documentation | Architectural rationale, history, maintenance policy, and compatibility explanation |
 
 This keeps concrete host snapshots and provider methodology out of the router
@@ -71,11 +71,11 @@ Wayfinder alone owns framework durable coordination under
 `.agent-wayfinder/`.
 Provider-native tickets, specifications, research, reviews, and learning
 artifacts remain canonical; the framework does not mirror them. Local Wayfinder
-uses the configured canonical tree under `.agent-wayfinder/` and its
-effort map as the re-entry point. Its effective skill is an Agent Workflow-
+uses the configured canonical tree under `.agent-wayfinder/`. When resuming a
+Wayfinder effort, read its map first. Its effective skill is an Agent Workflow-
 owned runtime projection derived from and attributed to Matt Pocock's pinned
-Wayfinder methodology. The map owns current state, blockers, dependencies, and
-next work; sparse F#/D# ledger sections and U#/E# artifacts stay lazy, and new
+Wayfinder methodology. The map owns current coordination state, blockers,
+dependencies, and ready work; sparse F#/D# ledger sections and U#/E# artifacts stay lazy, and new
 decomposed work belongs to native `to-tickets` output. A safe regular map makes
 an effort current and resumable; a mapless directory is not a candidate. The
 router loads the Wayfinder contract only after Wayfinder is selected or a
@@ -86,11 +86,12 @@ existing map never changes a request's route.
 Normal authorized project work may create a lightweight Wayfinder map without a
 second permission request after the router selects it.
 
-Within a selected effort, continue directly when the frontier is clear. Load
-Discovery, Debugging, Research, Prototype, Domain Modeling, Grilling, or human
-clarification only when that method materially improves resolution. Specialists
+Within a selected effort, continue directly with ready work. Load Discovery,
+Debugging, Research, Prototype, Domain Modeling, Grilling, or human clarification
+only when that method materially improves resolution of a current question,
+uncertainty, blocker, or other consequential issue. Specialists
 remain stateless from the framework's perspective and return only consequential
-results for reconciliation. Implementation is a ready-scope execution handoff,
+results for reconciliation. Implementation is a ready-work execution handoff,
 followed by Verification, not a Wayfinder reasoning method or continuity record.
 
 After meaningful implementation or a causal fix, gather acceptance evidence not

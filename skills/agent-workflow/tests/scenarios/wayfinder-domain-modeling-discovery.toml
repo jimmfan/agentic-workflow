@@ -1,6 +1,6 @@
 schema_version = 1
 id = "wayfinder-domain-modeling-discovery"
-name = "Domain Modeling gives ambiguous territory structure before child growth"
+name = "Domain Modeling establishes ambiguous areas and relationships before child growth"
 fixture = "wayfinder-ambiguous-domain"
 request = "Use Wayfinder to orient the ambiguous migration described by the repository. Move it as far as current evidence permits without implementing the migration."
 starting_state = [
@@ -20,7 +20,7 @@ must_not = [
 ]
 live = false
 blind_grading = true
-verification_command = "Confirm the map gives a fresh agent low-resolution territory bearings before one consequential U# is retained, without creating decisions, implementation tickets, or nested area storage."
+verification_command = "Confirm the map briefly orients a fresh agent to the objective, scope, areas, and relationships before one consequential U# is retained, without creating decisions, implementation tickets, or nested area storage."
 preserve_paths = []
 report_must_include = ["Domain Modeling"]
 forbid_created_globs = [
@@ -43,7 +43,7 @@ path = ".agent-wayfinder/zero-downtime-platform-cutover/map.md"
 [[assertions]]
 kind = "path_contains"
 path = ".agent-wayfinder/zero-downtime-platform-cutover/map.md"
-value = "## Destination"
+value = "## Objective"
 
 [[assertions]]
 kind = "path_contains"
@@ -53,7 +53,12 @@ value = "# Zero-downtime platform cutover"
 [[assertions]]
 kind = "path_contains"
 path = ".agent-wayfinder/zero-downtime-platform-cutover/map.md"
-value = "## Territory"
+value = "## Areas and relationships"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/zero-downtime-platform-cutover/map.md"
+value = "## Scope"
 
 [[assertions]]
 kind = "path_contains"

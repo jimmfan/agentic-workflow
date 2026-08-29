@@ -1,6 +1,6 @@
 # Release readiness coordination
 
-The destination is to publish the approved service revision through a
+The objective is to publish the approved service revision through a
 non-production pilot and agree the cutover and rollback path.
 
 The accepted delivery backlog spans authority, access, packaging, pilot

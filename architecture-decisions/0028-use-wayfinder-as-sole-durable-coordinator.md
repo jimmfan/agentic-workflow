@@ -16,33 +16,34 @@ every method that might help during an effort.
 ## Decision
 
 Wayfinder is the sole framework-owned durable coordination model. It persists
-only consequential cross-session coordination: destination and scope, semantic
-territory, current blockers and dependencies, useful frontier and next work,
-optional current knowledge, and readable pointers to canonical artifacts.
+only consequential cross-session coordination: objective, scope, areas and
+relationships, current blockers and dependencies, ready work, optional current
+knowledge, and readable pointers to canonical artifacts.
 
 Specialists own their methods and native outputs. They remain stateless from the
 framework's perspective and do not create competing continuity notebooks merely
 because they run. Direct reasoning remains valid; load only a specialist whose
-method materially helps the current frontier.
+method materially helps the current work or unresolved issue.
 
 Native artifacts retain their own durable ownership. In particular,
-`to-tickets` owns executable decomposition and its frontier; Wayfinder may link
+`to-tickets` owns executable decomposition and its ticket ordering and readiness; Wayfinder may link
 that output but never mirrors T# work as a second ticket/status surface.
 Other specialist-native or accepted project artifacts are likewise canonical
 outputs rather than competing framework coordination models.
 
 When interrupted work lacks a sufficient canonical artifact, Wayfinder records
-only the consequential return frontier and pointers. Unknown project-owned
-content is not a current coordination model or automatic re-entry source.
+only consequential coordination needed for resumption—such as a current question,
+blocker, dependency, or ready work—and pointers. Unknown project-owned content is
+not current coordination state or an automatic resumption source.
 
 ## Consequences
 
-Fresh sessions have one framework re-entry model. Standalone specialist work is
+Fresh sessions have one framework resumption model. Standalone specialist work is
 ephemeral unless it crosses the Wayfinder threshold, while specialist
 methodology stays in the skill that owns it.
 
 This decision does not require Wayfinder's current Markdown representation.
-Representation and re-entry are governed separately by ADR-0011, so either
+Representation and resumption are governed separately by ADR-0011, so either
 choice may change without silently changing the other.
 
 Exact specialist integrations, implementation mechanics and handoffs,

@@ -13,6 +13,7 @@ import tempfile
 import unittest
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 CLI = PACKAGE_ROOT / "cli.py"
 ADOPT = PACKAGE_ROOT / "scripts" / "adopt.py"
 BOOTSTRAP = PACKAGE_ROOT / "scripts" / "bootstrap.py"
@@ -85,6 +86,9 @@ class ProjectTestCase(unittest.TestCase):
     def copy_package(self, name: str) -> Path:
         package_copy = Path(self.temporary.name) / name / "agent-workflow"
         shutil.copytree(PACKAGE_ROOT, package_copy)
+        repository_copy = package_copy.parents[1]
+        for source_name in ("AGENTS.md", "CONTEXT.md"):
+            shutil.copy2(REPOSITORY_ROOT / source_name, repository_copy / source_name)
         return package_copy
 
     def declared_provider_names(self, package_root: Path = PACKAGE_ROOT) -> set[str]:

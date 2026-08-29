@@ -14,12 +14,12 @@ state. Upstream `implement` owns its build loop, TDD, and closing Code Review.
    reference, with its scope and acceptance criteria.
 2. Return a material unresolved choice to Discovery or Wayfinder according to
    the coordination threshold, and an unexplained failure to Debugging.
-3. Use one coherent ready scope. Select `to-tickets` first only when approved
+3. Use one ready scope. Select `to-tickets` first only when approved
    work needs dependency ordering or independently deliverable sessions.
 4. Create no separate implementation continuity record. Resume from canonical artifacts,
    source, and verification evidence. If interruption would lose consequential
-   coordination, preserve only the frontier, artifact pointers, blockers, and
-   next work in Wayfinder.
+   coordination, preserve only the current question, artifact pointers, blockers,
+   dependencies, and ready work in Wayfinder.
 
 ## Execute once
 
@@ -44,4 +44,4 @@ acceptance, artifact, boundary, or compatibility checks.
 
 Completion requires the scope to be finished, required Verification to pass or
 an authorized limitation to be explicit, and remaining next work to be durable
-in its canonical map, specification, or native ticket frontier.
+in its canonical map, specification, or native ticket ordering and readiness.

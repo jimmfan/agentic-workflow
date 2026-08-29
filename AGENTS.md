@@ -15,7 +15,7 @@
 - For one obvious specialist inside an already selected Wayfinder effort, load
   only what it needs.
   Read `.agent-workflow/routing.md` only when ownership is unclear or provider
-  fallback, handoff, or durable re-entry materially matters.
+  fallback, handoff, or durable resumption materially matters.
 - Workflows never expand authority. Exact external read-only targets permit only
   that read.
 - MUST NOT cross a consequential decision boundary without required evidence,
@@ -86,6 +86,25 @@ Explicitly say when the action has taken effect or is no longer needed.
 
 These source-repository instructions apply specifically to agents modifying the
 Agent Workflow source repository.
+
+## Project language
+
+Read `CONTEXT.md` before changing routing, Wayfinder, provider integration,
+ownership, or framework-lifecycle concepts in a way that uses or changes
+canonical project language.
+
+Before introducing, renaming, or materially redefining a canonical term,
+determine the actual concept from current source, behavior, tests, and accepted
+decisions; identify the bounded technical or domain context that owns it;
+research established terminology using applicable primary standards, official
+technical documentation, strong engineering evidence, and peer-reviewed
+evidence when available; compare alternatives by exact semantics and
+applicability; avoid project-specific metaphors when an established or literal
+term is more precise; and state evidence strength and uncertainty honestly.
+
+Update `CONTEXT.md` only after the terminology decision is accepted. Keep
+behavior, architecture, authority, and terminology in their respective owning
+layers. Do not force one term across genuinely different bounded contexts.
 
 ## Pre-1.0 engineering priority
 

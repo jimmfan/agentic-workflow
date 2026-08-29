@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-answered-unknown-authority-choice"
 name = "Authority answer prunes the dependent unknown"
 fixture = "wayfinder-authority-answer"
-request = "Resume the rollout-choice Wayfinder effort. As the responsible project owner, I change the existing rollout-strategy decision to Option B: a staged rollout. Update that same D1 boundary in place, reconcile the release-checklist dependency and ready frontier, then prune the answered U1 from current state. Preserve D7 and unrelated state. Do not create D2, the allocator-next D8, or retain the superseded choice as history; do not implement the rollout, create an ADR or ticket, or treat the empty unknowns directory as state."
+request = "Resume the rollout-choice Wayfinder effort. As the responsible project owner, I change the existing rollout-strategy decision to Option B: a staged rollout. Update that same D1 boundary in place, reconcile the release-checklist dependency and ready work, then prune the answered U1 from current coordination state. Preserve D7 and unrelated state. Do not create D2, the allocator-next D8, or retain the superseded choice as history; do not implement the rollout, create an ADR or ticket, or treat the empty unknowns directory as state."
 starting_state = [
   "U1 is a current unresolved consequential authority-owned question.",
   "The release checklist is a dependent current item blocked by U1.",
