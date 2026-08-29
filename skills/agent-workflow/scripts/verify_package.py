@@ -575,10 +575,12 @@ def check_provider_declaration() -> None:
     for required in (
         "framework-owned runtime projection",
         "derived from Matt Pocock's Wayfinder methodology",
-        "## Core invariants",
+        "## Operating rules",
         "## Establish territory",
         "## Resolve the frontier progressively",
         "## Reconcile and hand off",
+        "reconciliation, pruning, and effort ending",
+        "when an effort ends",
         "Optional F/D ledger sections and U/E artifacts preserve only useful current knowledge",
         "Create a separate artifact because it is an independently useful coordination or retrieval unit",
         "Specialists own their methods and native artifacts",
@@ -595,7 +597,7 @@ def check_provider_declaration() -> None:
         )
     for contract_only_detail in (
         "highest currently present",
-        "retired number",
+        "pruned number",
     ):
         require(
             contract_only_detail not in projection_text,

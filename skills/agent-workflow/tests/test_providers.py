@@ -471,7 +471,7 @@ class ProviderTests(ProjectTestCase):
                 self.assertIn("reconciled optional provider skill wayfinder", result.stdout)
                 repaired = (destination / "SKILL.md").read_text(encoding="utf-8")
                 self.assertIn("disable-model-invocation: false", repaired)
-                self.assertIn("## Core invariants", repaired)
+                self.assertIn("## Operating rules", repaired)
                 self.assertNotIn("stale runtime", repaired)
                 self.assertIn(
                     "allow_implicit_invocation: true",

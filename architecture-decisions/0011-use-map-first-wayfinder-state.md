@@ -38,8 +38,8 @@ append-only journal. Lasting outcomes move to their canonical owners, current
 state converges and shrinks, and Git preserves committed historical evolution.
 Preserve a question independently only when retaining it or its eventual answer
 could materially improve a later developer's ability to make or evaluate a
-decision. Expose a ready scope only after its material dependencies are answered
-or explicitly dispositioned.
+decision. Expose a ready scope only when it can proceed without crossing an
+unresolved dependency, consequential boundary, or missing authority.
 
 Authorized work that changes represented reality owns scoped reconciliation of
 the affected map and state before claiming completion. Canonical artifacts
@@ -68,7 +68,7 @@ Wayfinder links that artifact rather than mirroring T# work as a second
 ticket/status surface.
 
 U/E/F/D storage topology, schemas, numbering, filenames, effort selection,
-settlement, retirement, statuses, templates, and reference rules are
+reconciliation, pruning, effort ending, statuses, templates, and reference rules are
 contract and test details, not architectural commitments.
 
 ## Alternatives considered

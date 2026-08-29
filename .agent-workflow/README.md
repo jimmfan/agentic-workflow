@@ -17,7 +17,7 @@ rewrites, or removes them.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   current maps, optional F#/D# ledgers, independently useful U#/E# files,
-  identifiers, reconciliation, retirement, and progressive loading.
+  identifiers, reconciliation, pruning, effort ending, and progressive loading.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
 

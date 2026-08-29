@@ -31,7 +31,7 @@ subprocess.
   isolation, destructive-change detection, and intentionally-red fixtures.
 - `test_wayfinder_behavior.py` validates Wayfinder scenario semantics, current
   record presence, authority, progressive loading, conflict promotion,
-  reconciliation, blocked retirement, full retirement, and no-state outcomes.
+  reconciliation, blocked pruning, safe whole-effort ending, and no-state outcomes.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
@@ -65,7 +65,7 @@ evidence retain U#/E# files. Presence means a U# remains unresolved and a D#
 remains the current authorized choice; neither uses a lifecycle status field.
 Tests cover truthful fact provenance, actual decision authority, relevant-section retrieval without unrelated detail,
 answered unknowns and redundant evidence leaving current state, reference-safe
-targeted retirement without requiring a prior commit, changed-state rejection,
+targeted pruning without requiring a prior commit, changed-state rejection,
 and no-overwrite U#/E# creation. Opaque content inside U/E containers
 is preserved, while identity-like malformed entries block the affected U/E operation.
 

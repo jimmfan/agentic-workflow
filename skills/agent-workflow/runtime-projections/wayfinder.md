@@ -9,7 +9,7 @@ This framework-owned runtime projection is derived from Matt Pocock's
 Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 `.agent-workflow/contracts/wayfinder-state.md` owns state mechanics.
 
-## Core invariants
+## Operating rules
 
 - Route before inspecting state; an existing map never selects Wayfinder.
 - Selection may conclude that no consequential continuity earns persistence;
@@ -35,8 +35,8 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 
 When selecting or resuming Wayfinder, read the state contract before the map.
 It defines effort recognition and selection, paths, identifiers,
-reconciliation, and retirement. If the state contract is unavailable, fail closed
-for the affected Wayfinder work: do not inspect or change a map; do not invent
+reconciliation, pruning, and effort ending. If the state contract is unavailable,
+fail closed for the affected Wayfinder work: do not inspect or change a map; do not invent
 substitute persistence or create tracker, specialist-record, or scratch state.
 Report the incomplete installation.
 
@@ -102,7 +102,8 @@ not a specialist notebook or continuity record, is the re-entry point.
 Keep the map sufficient for a fresh session to recover the destination,
 current state, blockers, dependencies, and coherent ready frontier. Link
 canonical artifacts instead of copying them. The state contract defines when
-U/E/F/D detail is worth retaining and how recognized state retires.
+U/E/F/D detail is worth retaining, how records are pruned, and when an effort
+ends.
 
 Map uncertainty broadly, then promote selectively. A precise question becomes
 U# when separate preservation while unanswered is independently useful to a
@@ -116,7 +117,7 @@ incidental or merely unspecified detail under `Not yet specified` in the map.
 Precision alone is insufficient. Ordinary research or debugging fog, a long
 list, or a template does not by itself justify a U#. A temporary U# is useful
 only when separate preservation improves current coordination or later
-continuation, not as create-and-retire ceremony.
+continuation, not as create-and-prune ceremony.
 
 When dependency evidence is sufficient, surface the navigation shape concisely:
 the critical path, independent parallel work, and any off-path dependency whose
