@@ -45,9 +45,9 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
   authority-owned choice. Keep the question and what it blocks explicit.
 
 When selecting or resuming Wayfinder, read the state contract before the map.
-It defines effort recognition and selection, paths, identifiers, locking,
+It defines effort recognition and selection, paths, identifiers,
 reconciliation, and retirement. If the state contract is unavailable, fail closed
-for the affected Wayfinder work: do not inspect or mutate a map; do not invent
+for the affected Wayfinder work: do not inspect or change a map; do not invent
 substitute persistence or create tracker, specialist-record, or scratch state.
 Report the incomplete installation.
 
@@ -146,9 +146,3 @@ dependency-blocked. Each Implementation handoff consumes one coherent scope and
 its acceptance criteria; Verification follows execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
 deliverable sessions, and link its native frontier without a shadow copy.
-
-Read-only work never mutates state. Follow the state contract for every
-authorized mutation. Interpret and mutate only recognized current Wayfinder
-state. Preserve unrecognized project-owned content without interpreting it,
-continue independent current work, and stop safely for an actual collision,
-reference conflict, semantic ambiguity, or unsafe filesystem boundary.

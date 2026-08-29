@@ -8,7 +8,7 @@ Establish truthful rollout coverage before declaring the deployment complete.
 
 - The local operations note says rollout coverage is partial and remaining
   regions still need verification.
-- A concurrent release note says rollout coverage is complete and no further
+- A separate release note says rollout coverage is complete and no further
   verification is needed.
 
 ## Not yet specified

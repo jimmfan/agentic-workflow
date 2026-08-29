@@ -117,7 +117,7 @@ Wayfinder coordinates this information. It does not replace source code, documen
 
 As work settles, lasting results should live with the artifact that owns them rather than accumulating indefinitely in Wayfinder.
 
-Exact Wayfinder storage and mutation behavior is defined in the installed Wayfinder state contract.
+Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
 
 Example text to use Wayfinder:

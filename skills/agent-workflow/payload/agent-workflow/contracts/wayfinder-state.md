@@ -1,11 +1,10 @@
 # Local Wayfinder state contract
 
 Use this contract only after routing selects Wayfinder or a request explicitly continues a relevant
-effort. Existing state is never a routing signal. Clear, unrelated, and read-only work does not
-inspect or create Wayfinder state merely because state exists.
+effort. Existing state is never a routing signal.
 
-This contract owns Wayfinder's durable representation, selection, mutation, reconciliation, and
-retirement. The Wayfinder runtime owns navigation and specialist methodology.
+This contract owns Wayfinder's durable representation, selection, reconciliation, and retirement.
+The Wayfinder runtime owns navigation and specialist methodology.
 Durable state is intentionally preserved across sessions or handoffs.
 
 ## Core invariants
@@ -18,10 +17,8 @@ Specialists retain their methods and native artifacts. Wayfinder records consequ
 and links, not procedures or bookkeeping. `to-tickets` owns executable decomposition and its
 frontier; link it rather than mirroring tickets.
 
-All content below `.agent-wayfinder/` is project-owned durable data. For the applicable actor or
-operation, opaque means preserving bytes without interpreting, normalizing, or mutating them.
-Framework delivery and provider operations treat the whole tree as opaque: they do not inventory,
-validate, migrate, repair, reconcile, or delete its contents. They may create an absent root.
+All content below `.agent-wayfinder/` is project-owned durable data. Wayfinder interprets or
+changes only the recognized current paths described below; all other entries remain unchanged.
 
 Wayfinder recognizes only the contract-defined paths and record forms in this current-state
 layout. Only `map.md` is required:
@@ -47,15 +44,6 @@ reference, or update value beyond the map. Without `map.md`, a directory is not 
 resumable effort. Current state is relevant to present coordination according to its type, not a
 claim that every current U# or E# is established project truth.
 
-All other content, including unmatched children or ledger sections inside a recognized container,
-is unrecognized project-owned content. Except for the transient mutation lock, preserve it as
-opaque data; it blocks only a mutation affected by a target or ancestor collision,
-recognized-container ambiguity, reference conflict, unsafe boundary, or inability to mutate
-truthfully.
-
-Read-only work never authorizes Wayfinder mutation. When the request or delegated scope authorizes
-mutation, a mutating workflow may change only the requested effort and affected current state.
-
 Never persist credentials, secrets, sensitive data or sensitive command output, raw
 transcripts, private agent memory, or unnecessary personal information.
 
@@ -63,8 +51,7 @@ Coordination is consequential when resolving it differently would change the des
 substantive boundary, authority requirement, blocker or dependency, canonical outcome, or ready
 frontier. Wayfinder represents current, resumable coordination, not a permanent journal. A
 canonical artifact is the designated durable location for a lasting outcome; Git owns historical
-evolution. Agent Workflow is pre-v1: do not add historical-state interpretation, legacy
-compatibility, migration, registry, synchronization, or lifecycle machinery.
+evolution.
 
 ## Effort shape and selection
 
@@ -79,8 +66,8 @@ unsafe or invalid exact path; do not invent a replacement.
 
 Without an exact path, inspect only the smallest plausible candidate set. Compare safe maps
 by destination, boundary, and name, and resume only one clear match. If selection remains
-ambiguous, stay read-only: do not guess, merge efforts, create a synonymous duplicate, or
-mutate affected state. A mapless directory is not a candidate.
+ambiguous, do not guess, merge efforts, create a synonymous duplicate, or change affected state.
+A mapless directory is not a candidate.
 
 Selection does not require persistence. If assessment leaves no consequential cross-session
 coordination worth preserving, create no effort, map, or supporting record.
@@ -188,9 +175,14 @@ readable slugs. F/D records retain these exact H2 representations:
 - `## F<ID> — <title>`
 - `## D<ID> — <title>`
 
-Never renumber or duplicate a current same-type number. Under the lock, allocate one greater
-than the highest current same-type identifier, or 1 when none exists. Do not deliberately recycle
-interior gaps; a retired highest number is not reserved.
+Never renumber or duplicate a current same-type number. Allocate one greater than the highest
+current same-type identifier, or 1 when none exists. Do not deliberately recycle interior gaps;
+a retired highest number is not reserved.
+
+Immediately before assigning an identifier, reread all recognized same-type identifiers and reject
+malformed or duplicate current state. Append an F/D section only if its ledger still matches the
+content used to plan the append. Before creating a U/E file, recheck the same-type identifiers and
+create the target without overwriting an existing path.
 
 A bare identifier is local shorthand only. Durable references outside the selected effort
 use a readable repository-relative link to the exact U/E file, F/D heading, or longer-lived
@@ -200,37 +192,26 @@ F/D anchors must retain the established lowercase `f<ID>--<slug>` and `d<ID>--<s
 derived from those headings' em-dash representation. Reconcile affected references before
 renaming a U/E file or F/D heading.
 
-## Safe mutation
+## Reconciliation and retirement
 
-Every authorized mutation is serialized through the empty, atomically created
-`<effort>/.wayfinder-mutation-lock/` directory. Hold it across affected reads, allocation,
-reference checks, writes, renames, and removals, then remove it. Never commit, steal, or assume
-an existing lock is abandoned. Without atomic directory creation, do not mutate.
+Keep only current coordination needed to navigate the effort. Correction, reconciliation, and
+retirement converge existing state; they do not preserve a second history alongside Git.
 
-Reread affected state under the lock immediately before writing, renaming, or removing it.
-For allocation, parse all current recognized same-type identifiers and reject malformed or
-duplicate state before computing the next identifier. Append one F/D section or exclusively
-create one U/E file.
+Wayfinder does not coordinate simultaneous writers to the same effort. Before changing existing
+current state, confirm that the directly affected files still match the state used to plan the
+change. If not, stop without overwriting them.
 
-Compare the final reread with the state used to plan the mutation. If any affected content
-changed concurrently, preserve the conflict and stop or retry from the new truth. Never
-silently overwrite another writer or infer that similar-looking content is equivalent.
-
-Interpret only recognized current state required by the operation. Content outside recognized
-containers stays opaque and does not block unrelated work. Unrecognized content inside
-`unknowns/` or `evidence/` blocks only an affected allocation, rename, or retirement when safe
-interpretation, identifier allocation, or target selection is ambiguous. Preserve unrecognized
-bytes; never normalize, migrate, rename, delete, or globally scan them.
+An identity-like entry that cannot be parsed unambiguously blocks allocation, rename, or retirement
+in that U/E container.
 
 Reconcile means bringing only affected current records, frontier, and references into agreement
 with live truth, an authorized choice, or the canonical artifact that owns the outcome while
 preserving unrelated state.
 
 Before renaming or retiring state, inspect the selected map, ledgers, U/E files, and known
-current references outside the effort for affected identifiers, paths, or heading
-anchors. Preserve still-useful information in its canonical artifact and reconcile every
-affected current reference before removal. Do not scan unrelated efforts, the entire
-repository, or Git history.
+current references outside the effort for affected identifiers, paths, or heading anchors.
+Preserve still-useful information in its canonical artifact and reconcile every affected current
+reference before removal. Do not scan unrelated efforts, the entire repository, or Git history.
 
 Retiring U/E removes only the selected file. Retiring F/D removes only the selected H2 section
 and preserves unrelated ledger content byte-for-byte where practical. An otherwise empty ledger
@@ -241,17 +222,10 @@ nonrecursively; leaving it is valid. Never recursively delete an effort, `unknow
 Retirement does not require committing a transient record first. Preserve any still-useful outcome,
 reconcile affected current references, then remove the record.
 
-Whole-effort retirement may remove only recognized files and sections that are safe to retire.
-Remove `map.md` last. Never recursively delete the effort directory. If unrecognized project-owned
-content remains, leave its bytes and containing directory untouched; the absence of `map.md` is
+Whole-effort retirement may remove only recognized files and sections after the required reference
+reconciliation.
+Remove `map.md` last. Never recursively delete the effort directory; the absence of `map.md` is
 sufficient to end recognition.
-
-A failed safety check leaves targets and unrelated project content intact.
-
-## Reconciliation and retirement
-
-Keep only current coordination needed to navigate the effort. Correction, reconciliation, and
-retirement converge existing state; they do not preserve a second history alongside Git.
 
 When stronger evidence makes the current conclusion known, update the same F# in place with its
 current claim, scope, provenance, and material limitations. Narrow it when only a narrower
@@ -265,10 +239,7 @@ reopen U# only when the precise question has consequential current coordination 
 it in the map only when it affects the route. Do not create an E#/U# pair by template.
 
 Changed factual evidence requires review of dependent decisions and frontier work. It does
-not create decision authority or silently rewrite a current choice. A read-only review may
-report that a fact appears outdated,
-contradicted, or unsupported, but that observation authorizes neither mutation nor a durable
-status label.
+not create decision authority or silently rewrite a current choice.
 
 An answered U# is no longer current unknown state. First preserve any independently useful
 evidence, fact, decision, or lasting outcome in its canonical artifact and reconcile known current
@@ -291,8 +262,8 @@ copy canonical artifact bodies, normalize unchanged files, or resolve unrelated 
 
 Do not manufacture inconsistency merely because one artifact summarizes, abstracts, or omits
 detail held elsewhere. Reconcile only a concrete incompatible statement or a requirement the
-current owner no longer satisfies. When evidence or concurrent edits are insufficient for a
-truthful update, preserve state and report the blocker.
+current owner no longer satisfies. When evidence is insufficient for a truthful update, preserve
+state and report the blocker.
 
 Keep an effort's map while it may realistically resume, including when it is paused, blocked,
 or waiting. Keep its blockers, dependencies, and truthful frontier sufficient for re-entry.
@@ -302,15 +273,15 @@ Retain the effort, transfer that coordination to a recognized current successor,
 the consequential result or constraint in its canonical artifact before retirement.
 
 Retire an effort when it has no legitimate continuation frontier because its destination was
-reached, it was intentionally ended, or another direction replaced it. Under one authorized
-effort mutation:
+reached, it was intentionally ended, or another direction replaced it. For an authorized
+whole-effort retirement:
 
 1. Preserve lasting outcomes in canonical artifacts or hand them off through the responsible
    workflow.
 2. Preserve only consequential relationships or constraints that remain currently useful.
 3. Reconcile known current references.
 4. Retire redundant U/E/F/D state.
-5. Retire `map.md` and any remaining recognized state once safe.
+5. Retire `map.md` and any remaining recognized state.
 
 Record a useful replacement relationship in its successor or canonical artifact. Do not retain the
 predecessor map or add tombstones, redirects, archives, or successor metadata. Do not clean up

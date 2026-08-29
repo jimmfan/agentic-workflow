@@ -23,7 +23,7 @@ preserve_paths = [
   ".agent-wayfinder/provider-projection/map.md",
   ".agent-wayfinder/provider-runtime/map.md",
   ".agent-wayfinder/established-provider-naming/map.md",
-  ".agent-wayfinder/concurrency-safe-provider-refresh/map.md",
+  ".agent-wayfinder/late-created-provider-refresh/map.md",
 ]
 forbid_created_globs = [
   ".agent-wayfinder/current-work",
@@ -41,7 +41,7 @@ state_must_not_include = [
   ".agent-wayfinder/provider-projection/map.md",
   ".agent-wayfinder/provider-runtime/map.md",
   ".agent-wayfinder/established-provider-naming/map.md",
-  ".agent-wayfinder/concurrency-safe-provider-refresh/map.md",
+  ".agent-wayfinder/late-created-provider-refresh/map.md",
 ]
 
 [[assertions]]

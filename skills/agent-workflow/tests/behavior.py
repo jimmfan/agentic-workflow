@@ -629,7 +629,7 @@ def is_recognized_current_wayfinder_path(path: str, entry: Entry) -> bool:
     return False
 
 
-def recognized_wayfinder_mutations(evidence: RunEvidence) -> tuple[bool, str]:
+def recognized_wayfinder_changes(evidence: RunEvidence) -> tuple[bool, str]:
     created, modified, deleted = changed_paths(evidence.before, evidence.after)
     invalid: list[str] = []
     changed_efforts: set[str] = set()
@@ -778,10 +778,10 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     results: list[CheckResult] = [
         evaluate_assertion(evidence, item) for item in evidence.scenario.assertions
     ]
-    current_shape_ok, current_shape_detail = recognized_wayfinder_mutations(evidence)
+    current_shape_ok, current_shape_detail = recognized_wayfinder_changes(evidence)
     results.append(
         CheckResult(
-            "contract:recognized-wayfinder-mutations",
+            "contract:recognized-wayfinder-changes",
             current_shape_ok,
             current_shape_detail,
         )

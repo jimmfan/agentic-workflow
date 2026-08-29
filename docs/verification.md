@@ -146,20 +146,19 @@ Wayfinder state contracts separately cover a valid map-only effort; creating and
 appending current F# and D# ledger sections; allocating above the highest current
 same-type identifier; rejecting malformed or duplicate identifiers; and
 retiring only the selected section after bounded reference reconciliation. They
-also cover empty-ledger removal, the shared effort mutation lock,
-reread-before-write conflict handling, separate U#/E# artifacts, readable
-section anchors, and progressive retrieval of relevant detail without an
-arbitrary file count.
+also cover empty-ledger removal, changed-state rejection,
+no-overwrite child creation, separate U#/E# artifacts, readable section anchors,
+and progressive retrieval of relevant detail without an arbitrary file count.
 
-Unknown-content coverage proves unrecognized project-owned bytes remain opaque
-and unchanged, are not treated as current references or allocation state, and
-do not block independent current work. Recognized-container ambiguity and real
-filesystem collisions still fail safely. Lifecycle preservation exercises
+Unknown-content coverage proves unmatched project-owned bytes remain unchanged
+and are not treated as current references or allocation state. Identity-like
+malformed entries and exact filesystem collisions are rejected. Lifecycle
+preservation exercises
 install, update, status, remove, reinstall, and provider repair byte-for-byte.
 The behavioral suite also keeps
 implementation work-item artifacts out of Wayfinder, resumes relevant map
 state, reconciles affected state after implementation, excludes unrelated
-detail and efforts, reports outdated state without mutation during read-only work,
+detail and efforts, reports outdated state without changing it during read-only work,
 stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
 of a direct route.
 

@@ -311,14 +311,14 @@ class BehaviorHarnessTests(unittest.TestCase):
                     ".agent-wayfinder/persistence/map.md",
                     ".agent-wayfinder/persistence/unknowns/U1-backend.md",
                 ),
-                "contract:recognized-wayfinder-mutations",
+                "contract:recognized-wayfinder-changes",
                 True,
             ),
             (
                 "orphan-unknown-is-rejected",
                 "wayfinder-human-authority-clarification",
                 ".agent-wayfinder/persistence/unknowns/U1-backend.md",
-                "contract:recognized-wayfinder-mutations",
+                "contract:recognized-wayfinder-changes",
                 False,
             ),
             (
@@ -328,7 +328,7 @@ class BehaviorHarnessTests(unittest.TestCase):
                     ".agent-wayfinder/persistence/map.md",
                     ".agent-wayfinder/persistence/notes/choice.md",
                 ),
-                "contract:recognized-wayfinder-mutations",
+                "contract:recognized-wayfinder-changes",
                 False,
             ),
             (
