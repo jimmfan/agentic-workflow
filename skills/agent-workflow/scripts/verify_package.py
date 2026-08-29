@@ -575,7 +575,7 @@ def check_provider_declaration() -> None:
     for required in (
         "framework-owned runtime projection",
         "derived from Matt Pocock's Wayfinder methodology",
-        "## Core invariants",
+        "## Operating rules",
         "## Establish territory",
         "## Resolve the frontier progressively",
         "## Reconcile and hand off",

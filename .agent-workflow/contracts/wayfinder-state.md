@@ -7,7 +7,7 @@ This contract owns Wayfinder's durable representation, selection, reconciliation
 The Wayfinder runtime owns navigation and specialist methodology.
 Durable state is intentionally preserved across sessions or handoffs.
 
-## Core invariants
+## State model and boundaries
 
 An effort is one resumable body of coordination with a stable destination and scope boundary.
 Wayfinder is the sole framework-owned durable coordination model. The selected effort's
@@ -18,7 +18,9 @@ and links, not procedures or bookkeeping. `to-tickets` owns executable decomposi
 frontier; link it rather than mirroring tickets.
 
 All content below `.agent-wayfinder/` is project-owned durable data. Wayfinder interprets or
-changes only the recognized current paths described below; all other entries remain unchanged.
+changes only the recognized current paths described below. All other entries are opaque
+project-owned content: their bytes remain unchanged, and they are not interpreted as recognized
+Wayfinder state.
 
 Wayfinder recognizes only the contract-defined paths and record forms in this current-state
 layout. Only `map.md` is required:
@@ -151,13 +153,19 @@ current and committed under actual project authority. Record the choice, authori
 basis or constraints, material consequences, and a revisit condition only when one genuinely
 applies.
 
-Factual support does not grant authority for a choice or accepted uncertainty. Record the
-responsible project authority separately where that choice or acceptance belongs.
+Create a D# only for a consequential current choice committed under actual project authority.
+Alternatives still under consideration, research findings, evidence changes, hypotheses,
+recommendations, agent inference, and routine implementation judgment within already delegated
+scope do not independently justify a D#. They may inform a choice or require review of an existing
+decision, but they cannot create authority or replace a current choice.
 
-Wayfinder can record authority; it cannot create it. Assumptions, hypotheses, proposals,
-recommendations, inferred preferences, and agent-authored persistence do not become supported
-facts or accepted decisions merely because they are recorded. Link the actual human, project
-artifact, policy, or valid delegated scope for an authority-owned conclusion.
+Factual support establishes what is true; evidence may inform a choice. Only responsible project
+authority may commit that choice or accept residual uncertainty for a named boundary. Record the
+authority source separately where the choice or acceptance belongs. Wayfinder can record
+authority; it cannot create it. Assumptions, proposals, inferred preferences, and agent-authored
+persistence do not become supported facts or accepted decisions merely because they are recorded.
+Link the actual human, project artifact, policy, or valid delegated scope for an authority-owned
+conclusion.
 
 A fact about another system remains a fact about that system; it does not establish a fact about
 the current project. Record a project-specific F# only when project evidence, current source, or
@@ -168,6 +176,8 @@ map or native specialist artifact, only when that representation independently e
 Volatile branch, HEAD, working-tree, ahead/behind, and session observations normally remain
 execution context. Persist one only when it is an actual continuing authorization constraint,
 baseline, or dependency that would change future work.
+
+### Identifiers and references
 
 Identifiers are effort-local, positive, and unique within their type. U/E files retain
 readable slugs. F/D records retain these exact H2 representations:
@@ -184,6 +194,10 @@ malformed or duplicate current state. Append an F/D section only if its ledger s
 content used to plan the append. Before creating a U/E file, recheck the same-type identifiers and
 create the target without overwriting an existing path.
 
+An identity-like U/E entry that cannot be interpreted safely blocks only operations whose
+correctness depends on identifying records in that affected U/E container. It does not
+automatically block unrelated work elsewhere; ambiguous content remains unchanged.
+
 A bare identifier is local shorthand only. Durable references outside the selected effort
 use a readable repository-relative link to the exact U/E file, F/D heading, or longer-lived
 canonical artifact. Inside the effort, prefer links when a path or heading matters.
@@ -194,94 +208,95 @@ renaming a U/E file or F/D heading.
 
 ## Reconciliation and retirement
 
-Keep only current coordination needed to navigate the effort. Correction, reconciliation, and
-retirement converge existing state; they do not preserve a second history alongside Git.
+Keep only current coordination needed to navigate the effort. Reconciliation brings affected
+current records, the map and frontier, and references into agreement with live truth, valid project
+authority, or the canonical artifact that owns the outcome. Retirement removes recognized
+Wayfinder state that no longer has current independent value. Both preserve unrelated state and
+leave historical evolution to Git.
 
-Wayfinder does not coordinate simultaneous writers to the same effort. Before changing existing
-current state, confirm that the directly affected files still match the state used to plan the
-change. If not, stop without overwriting them.
+### Reconcile affected state
 
-An identity-like entry that cannot be parsed unambiguously blocks allocation, rename, or retirement
-in that U/E container.
+Reconciliation is required before renaming or retiring recognized state and whenever authorized
+work changes reality represented by the selected effort before claiming completion. Read-only work
+may report stale or conflicting state but does not change it.
 
-Reconcile means bringing only affected current records, frontier, and references into agreement
-with live truth, an authorized choice, or the canonical artifact that owns the outcome while
-preserving unrelated state.
+Plan a mutation from current affected state. Immediately before writing, renaming, or removing,
+confirm that the directly affected state and known affected references still support the planned
+mutation. Create a new target without overwriting an existing path. If affected state changed or
+conflicts, stop rather than overwrite it.
 
-Before renaming or retiring state, inspect the selected map, ledgers, U/E files, and known
-current references outside the effort for affected identifiers, paths, or heading anchors.
-Preserve still-useful information in its canonical artifact and reconcile every affected current
-reference before removal. Do not scan unrelated efforts, the entire repository, or Git history.
+Before renaming or retiring state, inspect the selected map, ledgers, U/E files, and known current
+references outside the effort for affected identifiers, paths, or heading anchors. Do not scan
+unrelated efforts, the entire repository, or Git history.
 
-Retiring U/E removes only the selected file. Retiring F/D removes only the selected H2 section
-and preserves unrelated ledger content byte-for-byte where practical. An otherwise empty ledger
-may be removed. After recognized state retires, a confirmed-empty directory may be removed only
-nonrecursively; leaving it is valid. Never recursively delete an effort, `unknowns/`, or
-`evidence/` directory, or remove a record with a required reference or independent current value.
+Use this common sequence for every affected reconciliation:
 
-Retirement does not require committing a transient record first. Preserve any still-useful outcome,
-reconcile affected current references, then remove the record.
+1. Preserve any still-useful result in its proper canonical owner.
+2. Reconcile affected current state, map consequences and frontier, and known current references.
+3. Retire only recognized state that no longer has current independent value.
 
-Whole-effort retirement may remove only recognized files and sections after the required reference
-reconciliation.
-Remove `map.md` last. Never recursively delete the effort directory; the absence of `map.md` is
-sufficient to end recognition.
-
-When stronger evidence makes the current conclusion known, update the same F# in place with its
-current claim, scope, provenance, and material limitations. Narrow it when only a narrower
-conclusion remains supported. Retire it after reference reconciliation when it no longer has
-independent current value. Do not create a second fact merely to preserve history.
-
-When a consequential factual question remains unresolved, remove or narrow the unsupported F# and
-reconcile references that treated it as supported. Preserve a conflicting observation as E#
-only when its source, method, limitations, or reuse value independently justify it; create or
-reopen U# only when the precise question has consequential current coordination value. Surface
-it in the map only when it affects the route. Do not create an E#/U# pair by template.
-
-Changed factual evidence requires review of dependent decisions and frontier work. It does
-not create decision authority or silently rewrite a current choice.
-
-An answered U# is no longer current unknown state. First preserve any independently useful
-evidence, fact, decision, or lasting outcome in its canonical artifact and reconcile known current
-references; then retire the U#. Do not retain it merely as history.
-
-If responsible authority explicitly accepts residual uncertainty for a named boundary, the
-question remains factually unresolved: keep its U# current and unresolved, record the authority
-source and boundary in a canonical artifact, and unblock only that accepted boundary. The
-acceptance neither answers the U# nor unblocks other dependencies.
-
-When authority changes the choice for the same decision boundary, update the same D# and its
-authority, basis, consequences, revisit condition, and affected references. Allocate another D#
-only for a distinct current decision. When a D# is no longer current, preserve any lasting result,
-reconcile references, and retire it; Git retains the prior choice. Evidence alone cannot do this.
-
-Authorized work that changes reality represented by the selected effort performs
-bounded reconciliation before claiming completion. Update only affected map consequences,
-records, and links to canonical artifacts. Do not globally scan or reconcile unrelated efforts,
-copy canonical artifact bodies, normalize unchanged files, or resolve unrelated questions.
-
+Update only affected records and links to canonical artifacts. Do not copy canonical artifact
+bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
 Do not manufacture inconsistency merely because one artifact summarizes, abstracts, or omits
 detail held elsewhere. Reconcile only a concrete incompatible statement or a requirement the
 current owner no longer satisfies. When evidence is insufficient for a truthful update, preserve
 state and report the blocker.
 
-Keep an effort's map while it may realistically resume, including when it is paused, blocked,
-or waiting. Keep its blockers, dependencies, and truthful frontier sufficient for re-entry.
+### Apply record-specific changes
 
-Do not retire `map.md` while consequential unresolved coordination still needs continuity.
-Retain the effort, transfer that coordination to a recognized current successor, or preserve
-the consequential result or constraint in its canonical artifact before retirement.
+When evidence strengthens or narrows an F#, update the same F# in place with its current claim,
+scope, provenance, and material limitations. When evidence invalidates its support, narrow or
+remove the unsupported conclusion and reconcile references that treated it as supported. Retire
+the F# when no supported conclusion with independent current value remains. Do not create a second
+fact merely to preserve history.
 
-Retire an effort when it has no legitimate continuation frontier because its destination was
+When an observation independently earns E# preservation through its source, method,
+limitations, or reuse value, preserve it as E#. Otherwise do not create or retain an E# merely as
+a transition step. Create or reopen a U# only when the precise unresolved question has
+consequential current coordination value, and surface it in the map only when it affects the route.
+Do not create an E#/U# pair by template.
+
+When a U# is answered, preserve any independently useful result through the common sequence and
+retire the U#; an answered question is no longer current unknown state and is not retained as
+history. If responsible authority explicitly accepts residual uncertainty for a named boundary,
+the question remains factually unresolved: keep its U# current and unresolved, record the authority
+source and accepted boundary in its proper canonical artifact, and unblock only that accepted
+boundary. The acceptance does not answer the U#, grant unrelated authority, or unblock another
+dependency.
+
+When factual evidence changes, review dependent D# records and frontier work under the authority
+rule in `## Current knowledge`. When responsible authority changes the choice for the same decision
+boundary, update the same D# and its authority, basis, consequences, revisit condition, and affected
+references. Allocate another D# only for a distinct current decision. When a D# is no longer
+current under project authority, apply the common sequence and retire it; Git retains the prior
+choice.
+
+### Retire one record
+
+A record may retire only after the common sequence leaves it without a required reference or
+independent current value. Retirement does not require committing a transient record first.
+
+Retiring U/E removes only the selected file. Retiring F/D removes only the selected H2 section and
+preserves unrelated ledger content byte-for-byte where practical. An otherwise empty ledger may be
+removed. Never recursively delete an effort, `unknowns/`, or `evidence/` directory. Unrecognized
+project-owned content remains unchanged.
+
+### Keep or retire the effort
+
+Keep an effort's map while it may realistically resume, including when it is paused, blocked, or
+waiting. Keep its blockers, dependencies, and truthful frontier sufficient for re-entry. Do not
+retire `map.md` while consequential unresolved coordination still needs continuity. Retain the
+effort, transfer that coordination to a recognized current successor, or preserve the consequential
+result or constraint in its canonical artifact before retirement.
+
+Retire an effort only when it has no legitimate continuation frontier because its destination was
 reached, it was intentionally ended, or another direction replaced it. For an authorized
-whole-effort retirement:
-
-1. Preserve lasting outcomes in canonical artifacts or hand them off through the responsible
-   workflow.
-2. Preserve only consequential relationships or constraints that remain currently useful.
-3. Reconcile known current references.
-4. Retire redundant U/E/F/D state.
-5. Retire `map.md` and any remaining recognized state.
+whole-effort retirement, apply the common sequence across its recognized state after ensuring that
+lasting outcomes and any continuing consequential relationships or constraints have a canonical
+owner or responsible workflow handoff. Remove only recognized files and sections after required
+reference reconciliation. Remove `map.md` last. Never recursively delete the effort directory;
+the absence of `map.md` is sufficient to end recognition, and any unrecognized project-owned bytes
+and their containing directories remain unchanged.
 
 Record a useful replacement relationship in its successor or canonical artifact. Do not retain the
 predecessor map or add tombstones, redirects, archives, or successor metadata. Do not clean up

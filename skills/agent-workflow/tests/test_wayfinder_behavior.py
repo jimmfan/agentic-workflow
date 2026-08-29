@@ -93,8 +93,17 @@ class WayfinderBehaviorTests(unittest.TestCase):
             item
             for item in accepted.assertions
             if item.kind in {"glob_any_matches", "glob_none_matches"}
+            and item.path.as_posix() == ".agent-wayfinder/*/map.md"
         ]
         self.assertEqual(len(accepted_relationships), 4)
+        self.assertTrue(
+            any(
+                item.kind == "glob_any_matches"
+                and item.path.as_posix()
+                == ".agent-wayfinder/*/unknowns/U1-*.md"
+                for item in accepted.assertions
+            )
+        )
 
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(accepted, Path(temporary))
@@ -451,6 +460,22 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 "path_contains",
                 ".agent-wayfinder/deployment-mode/decisions.md",
                 "authority review",
+            ),
+            required,
+        )
+        self.assertIn(
+            (
+                "path_contains",
+                ".agent-wayfinder/deployment-mode/decisions.md",
+                "platform architecture policy",
+            ),
+            required,
+        )
+        self.assertIn(
+            (
+                "path_contains",
+                ".agent-wayfinder/deployment-mode/decisions.md",
+                "Use the dedicated capacity policy",
             ),
             required,
         )

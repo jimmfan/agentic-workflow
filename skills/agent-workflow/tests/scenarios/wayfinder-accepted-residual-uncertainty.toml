@@ -60,3 +60,8 @@ value = '''(?:\bproduction\b[^.!?\n]{0,120}(?<!not\s)\b(?:ready|unblocked)\b|(?<
 kind = "glob_count"
 path = ".agent-wayfinder/*/unknowns/U*.md"
 count = 1
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/unknowns/U1-*.md"
+value = '''(?i)(?:\bremains?\s+(?:unknown|unresolved)\b|\bno\s+authoritative\b[^.!?\n]{0,100}\b(?:requirement|answer)\b)'''

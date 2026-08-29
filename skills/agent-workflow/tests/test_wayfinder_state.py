@@ -14,6 +14,7 @@ CONTRACT = PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
 INSTALLED_CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md"
 RUNTIME = PACKAGE_ROOT / "runtime-projections/wayfinder.md"
 GENERATED_SKILL = REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md"
+MAP_FIRST_ADR = REPOSITORY_ROOT / "architecture-decisions/0011-use-map-first-wayfinder-state.md"
 FIXTURES = PACKAGE_ROOT / "tests/fixtures"
 TYPE_DIRECTORIES = {"U": "unknowns", "E": "evidence", "F": "facts", "D": "decisions"}
 LEDGER_PATHS = {"F": "facts.md", "D": "decisions.md"}
@@ -24,6 +25,12 @@ LEDGER_HEADING = re.compile(r"^## ([FD])([1-9][0-9]*) — (\S.*)$")
 
 class UnsafeWayfinderState(RuntimeError):
     pass
+
+
+def markdown_section(text: str, heading: str) -> str:
+    start = text.index(heading)
+    end = text.find("\n## ", start + len(heading))
+    return text[start:] if end < 0 else text[start:end]
 
 
 def validate_effort_location(effort: Path, *, require_root: bool = False) -> None:
@@ -623,6 +630,7 @@ def retire_effort_state(
     known_references: list[Path] | None = None,
     continuity_owners: list[Path] | None = None,
     before_final_check: Callable[[], None] | None = None,
+    before_map_removal: Callable[[], None] | None = None,
 ) -> None:
     validate_effort_location(effort, require_root=True)
     validate_effort(effort)
@@ -722,6 +730,8 @@ def retire_effort_state(
         directory = effort / directory_name
         if directory.is_dir() and not any(directory.iterdir()):
             directory.rmdir()
+    if before_map_removal is not None:
+        before_map_removal()
     map_path.unlink()
 
 
@@ -900,6 +910,26 @@ class WayfinderStateContractTests(unittest.TestCase):
                 renamed.read_text(encoding="utf-8"),
                 "# U1: Current question\n",
             )
+
+    def test_current_child_rename_does_not_overwrite_an_existing_target(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "effort"
+            unknowns = effort / "unknowns"
+            unknowns.mkdir(parents=True)
+            (effort / "map.md").write_text("# Rename collision\n", encoding="utf-8")
+            source = unknowns / "U1-old-title.md"
+            target = unknowns / "U1-current-title.md"
+            source.write_bytes(b"source bytes\n")
+            target.write_bytes(b"existing target bytes\n")
+
+            with self.assertRaisesRegex(
+                UnsafeWayfinderState,
+                "duplicate current U|already exists",
+            ):
+                rename_current_child(effort, source, "current-title")
+
+            self.assertEqual(source.read_bytes(), b"source bytes\n")
+            self.assertEqual(target.read_bytes(), b"existing target bytes\n")
 
     def test_ledger_heading_rename_requires_reconciled_anchor_links(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1306,9 +1336,24 @@ class WayfinderStateContractTests(unittest.TestCase):
             effort.mkdir()
             (effort / "map.md").write_text("# Allocation\n", encoding="utf-8")
 
-            first = create_current_record(effort, "D", "First", "First.\n")
-            second = create_current_record(effort, "D", "Second", "Second.\n")
-            third = create_current_record(effort, "D", "Third", "Third.\n")
+            first = create_current_record(
+                effort,
+                "D",
+                "First",
+                "- Authority: test fixture\n\nFirst.\n",
+            )
+            second = create_current_record(
+                effort,
+                "D",
+                "Second",
+                "- Authority: test fixture\n\nSecond.\n",
+            )
+            third = create_current_record(
+                effort,
+                "D",
+                "Third",
+                "- Authority: test fixture\n\nThird.\n",
+            )
             preserved = {
                 identifier: section
                 for identifier, _, section in ledger_sections(effort, "D")
@@ -1320,12 +1365,20 @@ class WayfinderStateContractTests(unittest.TestCase):
                 ("D1", "D2", "D3"),
             )
             self.assertTrue(retire_ledger_section(effort, "D", 2))
-            fourth = create_current_record(effort, "D", "Fourth", "Fourth.\n")
+            fourth = create_current_record(
+                effort,
+                "D",
+                "Fourth",
+                "- Authority: test fixture\n\nFourth.\n",
+            )
             self.assertEqual(fourth, "D4")
 
             self.assertTrue(retire_ledger_section(effort, "D", 4))
             replacement = create_current_record(
-                effort, "D", "Replacement", "New meaning.\n"
+                effort,
+                "D",
+                "Replacement",
+                "- Authority: test fixture\n\nNew meaning.\n",
             )
 
             self.assertEqual(replacement, "D4")
@@ -1597,6 +1650,37 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertFalse(map_path.exists())
             self.assertEqual(facts.read_text(encoding="utf-8"), fact_preamble)
 
+    def test_effort_retirement_removes_the_map_after_other_recognized_state(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            effort = root / ".agent-wayfinder/current-effort"
+            (effort / "unknowns").mkdir(parents=True)
+            map_path = effort / "map.md"
+            fact_path = effort / "facts.md"
+            unknown_path = effort / "unknowns/U1-current-question.md"
+            map_path.write_text("# Current effort\n", encoding="utf-8")
+            fact_path.write_text(
+                "# Facts\n\n## F1 — Current fact\n\n- Source: source.md\n\nCurrent.\n",
+                encoding="utf-8",
+            )
+            unknown_path.write_text("# U1: Current question?\n", encoding="utf-8")
+            owner = root / "current-outcome.md"
+            owner.write_text("U1 remains with this owner.\n", encoding="utf-8")
+
+            def observe_before_map_removal() -> None:
+                self.assertTrue(map_path.is_file())
+                self.assertFalse(fact_path.exists())
+                self.assertFalse(unknown_path.exists())
+
+            retire_effort_state(
+                effort,
+                continuity_owners=[owner],
+                before_map_removal=observe_before_map_removal,
+            )
+            self.assertFalse(map_path.exists())
+
     def test_effort_retirement_rejects_a_symlinked_effort_before_any_change(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / ".agent-wayfinder"
@@ -1632,25 +1716,30 @@ class WayfinderStateContractTests(unittest.TestCase):
             directory = effort / "unknowns"
             directory.mkdir(parents=True)
             (effort / "map.md").write_text("# Scoped ambiguity\n", encoding="utf-8")
-            (directory / "notes.md").write_text(
-                "not a canonical child\n", encoding="utf-8"
-            )
+            opaque = directory / "notes.md"
+            opaque.write_bytes(b"\x00not a canonical child\xff\n")
             self.assertEqual(next_current_id(effort, "U"), 1)
             self.assertEqual(current_markdown(effort), {
                 effort / "map.md": b"# Scoped ambiguity\n",
             })
 
-            (directory / "U1.md").write_text("bare\n", encoding="utf-8")
+            malformed = directory / "U1.md"
+            malformed.write_bytes(b"malformed bytes\n")
             with self.assertRaisesRegex(
                 UnsafeWayfinderState, "unrecognized child filename"
             ):
                 next_current_id(effort, "U")
+            self.assertEqual(malformed.read_bytes(), b"malformed bytes\n")
 
-            (directory / "U1.md").unlink()
-            (directory / "U1-first.md").write_text("first\n", encoding="utf-8")
-            (directory / "U1-duplicate.md").write_text("duplicate\n", encoding="utf-8")
+            malformed.unlink()
+            first = directory / "U1-first.md"
+            duplicate = directory / "U1-duplicate.md"
+            first.write_bytes(b"first bytes\n")
+            duplicate.write_bytes(b"duplicate bytes\n")
             with self.assertRaisesRegex(UnsafeWayfinderState, "duplicate current U"):
                 next_current_id(effort, "U")
+            self.assertEqual(first.read_bytes(), b"first bytes\n")
+            self.assertEqual(duplicate.read_bytes(), b"duplicate bytes\n")
 
             self.assertEqual(create_current_record(
                 effort,
@@ -1659,6 +1748,9 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "- Source: source.md\n\nCurrent.\n",
             ), "F1")
             self.assertTrue(retire_ledger_section(effort, "F", 1))
+            self.assertEqual(opaque.read_bytes(), b"\x00not a canonical child\xff\n")
+            self.assertEqual(first.read_bytes(), b"first bytes\n")
+            self.assertEqual(duplicate.read_bytes(), b"duplicate bytes\n")
 
     def test_effort_retirement_requires_continuity_and_preserves_inner_opaque_bytes(
         self,
@@ -1697,94 +1789,99 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertEqual(opaque_target.read_text(encoding="utf-8"), "opaque symlink target\n")
             self.assertTrue((effort / "unknowns").is_dir())
 
-    def test_contract_has_one_concise_normative_structure(self) -> None:
+    def test_contract_keeps_stable_top_level_navigation(self) -> None:
         headings = (
-            "## Core invariants",
+            "## State model and boundaries",
             "## Effort shape and selection",
             "## Current knowledge",
             "## Reconciliation and retirement",
         )
-        offsets = [self.contract.index(heading) for heading in headings]
-        self.assertEqual(offsets, sorted(offsets))
         self.assertEqual(
-            [line for line in self.contract.splitlines() if line in headings],
+            [
+                line
+                for line in self.contract.splitlines()
+                if line.startswith("## ") and not line.startswith("### ")
+            ],
             list(headings),
         )
 
     def test_contract_keeps_the_stable_state_surface(self) -> None:
         for required in (
-            "Wayfinder recognizes only the contract-defined paths and record forms",
-            "# required re-entry point",
-            "# optional current F# ledger",
             ".agent-wayfinder/<effort>/map.md",
             "optional `facts.md`",
             "optional `decisions.md`",
             "`unknowns/U<ID>-<slug>.md`",
             "`evidence/E<ID>-<slug>.md`",
             "A map-only effort is valid",
-            "makes an effort current and resumable",
             "Without `map.md`",
         ):
             self.assertIn(required, self.normalized)
 
     def test_contract_keeps_current_knowledge_and_authority_boundaries(self) -> None:
-        for required in (
-            "`U#`: an unresolved consequential question",
-            "`E#`: independently reusable evidence",
-            "`F#`: a sufficiently supported current scoped descriptive conclusion",
-            "`D#`: a current committed choice",
-            "Presence means the conclusion is sufficiently supported and current",
-            "Decisions are H2 sections",
-            "can record authority; it cannot create it",
-            "raw transcripts",
-            "private agent memory",
+        current_knowledge = " ".join(
+            markdown_section(self.contract, "## Current knowledge").lower().split()
+        )
+        for identifier in ("`u#`:", "`e#`:", "`f#`:", "`d#`:"):
+            self.assertIn(identifier, current_knowledge)
+        for authority_boundary in (
+            "actual project authority",
+            "alternatives still under consideration",
+            "research findings",
+            "evidence changes",
+            "hypotheses",
+            "recommendations",
+            "agent inference",
+            "routine implementation judgment",
+            "factual support",
+            "evidence may inform a choice",
+            "accept residual uncertainty",
+            "cannot create it",
         ):
-            self.assertIn(required, self.normalized)
-        self.assertIn("Presence in `unknowns/` means", self.normalized)
-        self.assertIn("Presence in `decisions.md` means", self.normalized)
+            self.assertIn(authority_boundary, current_knowledge)
+
+        state_model = " ".join(
+            markdown_section(
+                self.contract,
+                "## State model and boundaries",
+            ).lower().split()
+        )
+        self.assertIn("raw transcripts", state_model)
+        self.assertIn("private agent memory", state_model)
 
     def test_contract_uses_current_wayfinder_terminology(self) -> None:
-        for required in (
-            "An effort is one resumable body of coordination",
-            "Current state is relevant to present coordination according to its type",
-            "Durable state is intentionally preserved across sessions or handoffs",
-            "all other entries remain unchanged",
-            "Separate preservation is independently useful only when",
-            "These headings guide content; they are not a recognition schema",
-            "The ready frontier contains only coherent work that can proceed now",
-            "A canonical artifact is the designated durable location",
-            "Provenance is traceable",
-            "or a working proposal",
-            "Reconcile means bringing only affected current records",
-            "consequential when resolving it differently would change",
-        ):
-            self.assertIn(required, self.normalized)
-        for obsolete in (
-            "seam",
-            "dispositioned",
-            "non-durable proposal",
-            "noncanonical content",
-            "settlement",
-            "native owner",
-        ):
-            self.assertNotIn(obsolete, self.contract.lower())
+        generated = GENERATED_SKILL.read_text(encoding="utf-8")
+        generated_body = generated.split("\n---\n", 1)[1]
+        authoritative_instructions = {
+            "contract": self.contract,
+            "runtime": RUNTIME.read_text(encoding="utf-8"),
+            "generated runtime": generated_body,
+        }
+        for name, instructions in authoritative_instructions.items():
+            with self.subTest(surface=name):
+                lowered = instructions.lower()
+                self.assertIn("reconciliation", lowered)
+                self.assertIn("retirement", lowered)
+                self.assertNotIn("settlement", lowered)
 
-    def test_contract_allows_transient_retirement_after_reconciliation(self) -> None:
-        self.assertIn(
-            "Retirement does not require committing a transient record first. "
-            "Preserve any still-useful outcome, reconcile affected current references, "
-            "then remove the record.",
-            self.normalized,
-        )
+        adr = MAP_FIRST_ADR.read_text(encoding="utf-8").lower()
+        self.assertNotIn("dispositioned", adr)
+        self.assertNotIn("settlement", adr)
 
     def test_contract_keeps_retirement_boundaries(self) -> None:
-        for required in (
-            "Do not scan unrelated efforts, the entire repository, or Git history",
-            "Never recursively delete an effort, `unknowns/`, or `evidence/` directory",
-            "Do not retain the predecessor map or add tombstones, redirects, archives, "
-            "or successor metadata",
+        retirement = markdown_section(
+            self.contract,
+            "## Reconciliation and retirement",
+        ).lower()
+        for boundary in (
+            "unrelated efforts",
+            "entire repository",
+            "git history",
+            "recursively delete",
+            "tombstones",
+            "redirects",
+            "archives",
         ):
-            self.assertIn(required, self.normalized)
+            self.assertIn(boundary, retirement)
 
     def test_contract_keeps_identifier_and_anchor_representation(self) -> None:
         for required in (
@@ -1803,15 +1900,11 @@ class WayfinderStateContractTests(unittest.TestCase):
     def test_contract_keeps_current_state_integrity_and_project_data_boundaries(
         self,
     ) -> None:
-        for required in (
-            "does not coordinate simultaneous writers to the same effort",
-            "create the target without overwriting an existing path",
-            "directly affected files still match",
-            "stop without overwriting them",
-            "all other entries remain unchanged",
-            "identity-like entry that cannot be parsed unambiguously",
-        ):
-            self.assertIn(required, self.normalized)
+        self.assertNotIn(
+            "does not coordinate simultaneous writers",
+            self.contract.lower(),
+        )
+        self.assertNotIn("wayfinder-mutation-lock", self.contract.lower())
 
     def test_residual_uncertainty_and_effort_recognition_fixtures_preserve_behavior(
         self,
@@ -1828,8 +1921,6 @@ class WayfinderStateContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertTrue(unknown.is_file())
         self.assertIn("non-production pilot only", approval)
-        self.assertIn("keep its U# current and unresolved", self.normalized)
-        self.assertIn("unblock only that accepted boundary", self.normalized)
 
         state_root = FIXTURES / "wayfinder-settlement/.agent-wayfinder"
         blocked_map = state_root / "blocked-provider-direction/map.md"
@@ -1849,23 +1940,13 @@ class WayfinderStateContractTests(unittest.TestCase):
         generated_body = generated.split("\n---\n", 1)[1]
         self.assertEqual(runtime, generated_body)
         for heading in (
-            "## Core invariants",
+            "## Operating rules",
             "## Establish territory",
             "## Resolve the frontier progressively",
             "## Reconcile and hand off",
         ):
             self.assertIn(heading, runtime)
-        normalized_runtime = " ".join(runtime.split())
-        for required in (
-            "Resolve each blocking dependency",
-            "responsible authority's explicit acceptance",
-            "leaves the U# current and unresolved",
-            "unblocks only that named boundary",
-            "does not grant authority",
-        ):
-            self.assertIn(required, normalized_runtime)
-        for obsolete in ("seam", "dispositioned", "native owner"):
-            self.assertNotIn(obsolete, runtime.lower())
+        self.assertNotIn("settlement", runtime.lower())
 
 
 if __name__ == "__main__":

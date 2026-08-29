@@ -9,7 +9,7 @@ This framework-owned runtime projection is derived from Matt Pocock's
 Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 `.agent-workflow/contracts/wayfinder-state.md` owns state mechanics.
 
-## Core invariants
+## Operating rules
 
 - Route before inspecting state; an existing map never selects Wayfinder.
 - Selection may conclude that no consequential continuity earns persistence;

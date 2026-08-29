@@ -91,6 +91,16 @@ path = ".agent-wayfinder/deployment-mode/decisions.md"
 value = "authority review"
 
 [[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/deployment-mode/decisions.md"
+value = "platform architecture policy"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/deployment-mode/decisions.md"
+value = "Use the dedicated capacity policy"
+
+[[assertions]]
 kind = "path_not_contains"
 path = ".agent-wayfinder/deployment-mode/decisions.md"
 value = "Based on: F1"
