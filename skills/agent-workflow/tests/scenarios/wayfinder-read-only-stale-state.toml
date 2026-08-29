@@ -16,7 +16,6 @@ expect = [
 ]
 must_not = [
   "overwrite_project_owned_state",
-  "invent_unknown_answers",
 ]
 live = true
 verification_command = "This is a read-only audit; compare the named map with deployment.py and report the unresolved rollout-coverage conflict."

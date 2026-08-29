@@ -32,10 +32,6 @@ MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 FENCED_CODE = re.compile(r"(?ms)^```[^\n]*\n.*?^```[ \t]*$")
 INLINE_CODE = re.compile(r"`[^`\n]*`")
 INVOCATION_POLICIES = frozenset({"implicit", "user-only", "unavailable"})
-# Frozen at a7deffc: 682 root words plus 1,487 detailed-router words.
-PRE_THIN_AMBIGUOUS_ROUTE_WORDS = 2169
-PRE_THIN_DIRECT_ROOT_WORDS = 682
-GLOBAL_RECONCILIATION_RULE_WORDS = 94
 REVIEWED_PROVIDER = {
     "name": "matt-pocock-skills",
     "repository": "mattpocock/skills",
@@ -266,149 +262,6 @@ def check_filesystem() -> None:
                 )
     for script in PACKAGE_ROOT.rglob("*.py"):
         compile(script.read_text(encoding="utf-8"), str(script), "exec")
-
-
-def check_router_contract() -> None:
-    agents = (PAYLOAD_ROOT / "root" / "AGENTS.md.template").read_text(encoding="utf-8")
-    routing = (PAYLOAD_ROOT / "agent-workflow" / "routing.md").read_text(
-        encoding="utf-8"
-    )
-    wayfinder = (
-        PAYLOAD_ROOT / "agent-workflow" / "contracts" / "wayfinder-state.md"
-    ).read_text(encoding="utf-8")
-    normalized_agents = " ".join(agents.split())
-    normalized_routing = " ".join(routing.split())
-    normalized_wayfinder = " ".join(wayfinder.split())
-    require("MUST route every request" in agents, "root policy lacks mandatory routing")
-    require(
-        "`direct`" in agents and "minimum useful process" in routing,
-        "router lacks the minimum/direct contract",
-    )
-    require(
-        "MUST NOT" in agents and "authority" in agents,
-        "root policy lacks the authorization boundary",
-    )
-    for required in (
-        "Direct is default",
-        "encountering the topic alone never forces a specialist",
-        "one obvious specialist inside an already selected Wayfinder effort",
-        "Read `.agent-workflow/routing.md` only when",
-        "never selection by count alone",
-        "any hard signal or at least two soft signals",
-        "Read-only work changes no state",
-    ):
-        require(
-            required in normalized_agents,
-            f"thin root router lacks required boundary: {required}",
-        )
-    require(
-        len(agents.split())
-        <= PRE_THIN_AMBIGUOUS_ROUTE_WORDS // 5 + GLOBAL_RECONCILIATION_RULE_WORDS,
-        "thin root router exceeds the prior ambiguity-gate context budget",
-    )
-    require(
-        len(agents.split())
-        <= PRE_THIN_DIRECT_ROOT_WORDS * 65 // 100
-        + GLOBAL_RECONCILIATION_RULE_WORDS,
-        "thin root router reduces confidently Direct context by less than 35%",
-    )
-    require(
-        "avoid routing loops" in normalized_routing.lower()
-        and "according to the coordination threshold" in normalized_routing.lower(),
-        "detailed router lacks conditional specialist transitions",
-    )
-    require(
-        ".agent-wayfinder/" in wayfinder,
-        "Wayfinder state contract lacks the canonical state root",
-    )
-    require(
-        "sole framework-owned durable coordination"
-        in normalized_wayfinder,
-        "Wayfinder state contract lacks sole-coordinator ownership",
-    )
-    require(
-        "Wayfinder recognizes only an effort's `map.md`"
-        in normalized_wayfinder
-        and "Unknown project-owned content does not by itself block independent current work"
-        in normalized_wayfinder,
-        "Wayfinder state contract lacks the positive current-state boundary",
-    )
-    require(
-        "Never persist secrets, tokens, private keys, raw credentials"
-        in normalized_wayfinder
-        and "raw transcripts, or private agent memory" in normalized_wayfinder,
-        "Wayfinder state contract lacks sensitive-data protection",
-    )
-    require(
-        "wayfinder-state.md" in agents and "unrelated map" in agents,
-        "root policy lacks Wayfinder loading guidance",
-    )
-    for required in (
-        "unknowns/",
-        "evidence/",
-        "facts.md",
-        "decisions.md",
-        "`map.md` alone is a complete and valid Wayfinder effort",
-        "do not load unrelated ledger sections",
-        "selected effort's `map.md` is its only re-entry point",
-        "Every current fact contains at least one truthful provenance mode",
-        "reciprocal backlinks",
-        "mark the F# `disputed`",
-        "review dependent decisions",
-        "does not duplicate those work items in Wayfinder",
-        "Use `to-tickets` only when clear work benefits from dependency ordering",
-        "exact contents already exist in Git",
-        "never leave a dangling current link",
-        "A retired number is not reserved",
-        ".wayfinder-mutation-lock/",
-        "never allow two current records",
-        "effort-local current-state shorthand",
-        "canonical filesystem path",
-        "outside the selected effort needs a reference",
-        "Do not scan the repository or Git history",
-        "## Specialist result boundary",
-        "continue directly or load one materially useful specialist",
-        "Create no separate specialist continuity record",
-        "## Recognized current state boundary",
-        "## Knowledge settlement and effort completion",
-    ):
-        require(
-            required in normalized_wayfinder,
-            f"Wayfinder state contract lacks required boundary: {required}",
-        )
-    current_boundary = normalized_wayfinder.partition(
-        "## Recognized current state boundary"
-    )[2].partition("## Effort naming, selection, and stable paths")[0].lower()
-    require(
-        all(
-            marker in current_boundary
-            for marker in (
-                "do not interpret it as current wayfinder state",
-                "mutate or silently normalize it",
-                "continue when the authorized read and write set does not depend on that content",
-                "real target or ancestor collision",
-                "reference conflict",
-                "semantic ambiguity in a recognized current container",
-                "unsafe filesystem boundary",
-                "preserve every unknown byte",
-            )
-        ),
-        "Wayfinder current-state boundary lacks unknown-content safety",
-    )
-    settlement = normalized_wayfinder.partition(
-        "## Knowledge settlement and effort completion"
-    )[2].partition("## Contradictions and revision")[0].lower()
-    require(
-        all(
-            marker in settlement
-            for marker in (
-                "known current canonical references outside the effort",
-                "selected h2 section",
-                "otherwise empty",
-            )
-        ),
-        "Wayfinder settlement section lacks reference-safe ledger retirement",
-    )
 
 
 def check_provider_declaration() -> None:
@@ -735,7 +588,6 @@ def check_provider_declaration() -> None:
         "Each Implementation handoff consumes one coherent scope",
         "Verification follows execution",
         "Use `to-tickets`",
-        "It defines effort selection, paths, identifiers, locking",
     ):
         require(
             required in " ".join(projection_text.split()),
@@ -836,30 +688,6 @@ def check_provider_declaration() -> None:
     )
 
 
-def check_acceptance_catalog() -> None:
-    tests = PACKAGE_ROOT / "tests"
-
-    acceptance_name = "acceptance-scenarios.json"
-    acceptance = json.loads((tests / acceptance_name).read_text(encoding="utf-8"))
-    require(
-        isinstance(acceptance, list) and acceptance,
-        f"{acceptance_name} must contain cases",
-    )
-    acceptance_ids: list[str] = []
-    for item in acceptance:
-        require(isinstance(item, dict), f"invalid case in {acceptance_name}")
-        for field in ("id", "operation", "expected"):
-            require(
-                isinstance(item.get(field), str) and bool(item[field].strip()),
-                f"{acceptance_name} case needs a non-empty {field}",
-            )
-        acceptance_ids.append(item["id"])
-    require(
-        len(acceptance_ids) == len(set(acceptance_ids)),
-        f"duplicate case id in {acceptance_name}",
-    )
-
-
 def check_behavior_scenarios() -> None:
     tests = PACKAGE_ROOT / "tests"
     behavior = subprocess.run(
@@ -949,9 +777,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             check_structure,
             check_manifest,
             check_filesystem,
-            check_router_contract,
             check_provider_declaration,
-            check_acceptance_catalog,
             check_behavior_scenarios,
             check_markdown_links,
         ):

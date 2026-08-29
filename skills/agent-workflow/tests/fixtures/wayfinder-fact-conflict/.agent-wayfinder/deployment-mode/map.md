@@ -7,7 +7,7 @@ capacity-policy decision.
 
 ## Current state
 
-- [F1 — Deployment mode is dedicated](facts.md#f1--deployment-mode-is-dedicated) is currently treated as established.
+- [F1 — Deployment mode is dedicated](facts.md#f1--deployment-mode-is-dedicated) is supported by the dated E1 observation.
 - [D1 — Use dedicated capacity policy](decisions.md#d1--use-dedicated-capacity-policy) is accepted under the original evidence.
 
 ## Blockers and dependencies

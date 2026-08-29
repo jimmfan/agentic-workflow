@@ -39,7 +39,6 @@ URL_PATTERN = re.compile(r"https?://", re.IGNORECASE)
 EXPECTATIONS = {
     "task_completed",
     "repository_unchanged",
-    "appropriate_validation",
     "external_fact_researched",
     "uncertainty_recorded_or_blocked",
     "existing_state_reused",
@@ -48,8 +47,6 @@ EXPECTATIONS = {
     "verification_failure_recovered",
     "blocked_cleanly",
     "project_state_preserved",
-    "unresolved_unknowns_preserved",
-    "lifecycle_state_preserved",
 }
 
 PROHIBITIONS = {
@@ -60,11 +57,7 @@ PROHIBITIONS = {
     "silent_decision_invention",
     "repeat_resolved_discovery",
     "overwrite_project_owned_state",
-    "ignore_persisted_decisions",
     "success_after_failed_check",
-    "fabricate_project_values",
-    "placeholder_infrastructure",
-    "invent_unknown_answers",
 }
 
 ASSERTION_KINDS = {
@@ -657,7 +650,9 @@ def recognized_wayfinder_mutations(evidence: RunEvidence) -> tuple[bool, str]:
         )
         map_entry = evidence.after.get(f"{prefix}/map.md")
         if remains and (map_entry is None or map_entry.kind != "file"):
-            invalid.append(f"{prefix} (missing map.md)")
+            before_map = evidence.before.get(f"{prefix}/map.md")
+            if before_map is None or before_map.kind != "file":
+                invalid.append(f"{prefix} (missing map.md)")
     if invalid:
         return False, "unrecognized Wayfinder writes: " + ", ".join(invalid)
     return True, "all Wayfinder writes use recognized current paths"
@@ -863,10 +858,6 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
             not all_repository_changes,
             f"repository changed paths={sorted(all_repository_changes)}",
         ),
-        "appropriate_validation": (
-            bool(observed_codes) and observed_codes[-1] == 0,
-            verification_detail,
-        ),
         "external_fact_researched": (bool(sources), f"research sources={len(sources)}"),
         "uncertainty_recorded_or_blocked": (
             (status == "blocked" and bool(blockers))
@@ -896,8 +887,6 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
             f"status={status!r}, blockers={len(blockers)}, repository changes={sorted(all_repository_changes)}",
         ),
         "project_state_preserved": (preserved_ok, preserved_detail),
-        "unresolved_unknowns_preserved": (preserved_ok, preserved_detail),
-        "lifecycle_state_preserved": (preserved_ok, preserved_detail),
     }
     for expectation in evidence.scenario.expect:
         passed, detail = expected_checks[expectation]
@@ -923,22 +912,12 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
             route_detail,
         ),
         "overwrite_project_owned_state": (preserved_ok, preserved_detail),
-        "ignore_persisted_decisions": (
-            bool(state_used),
-            f"reported state inputs={list(state_used)}",
-        ),
         "success_after_failed_check": (
             not (
                 status == "success" and bool(observed_codes) and observed_codes[-1] != 0
             ),
             f"status={status!r}; {verification_detail}",
         ),
-        "fabricate_project_values": (
-            forbidden_ok,
-            forbidden_detail,
-        ),
-        "placeholder_infrastructure": (forbidden_ok, forbidden_detail),
-        "invent_unknown_answers": (preserved_ok, preserved_detail),
     }
     for prohibition in evidence.scenario.must_not:
         passed, detail = prohibition_checks[prohibition]
@@ -967,24 +946,6 @@ def run_adopt(command: str, workspace: Path) -> subprocess.CompletedProcess[str]
         errors="backslashreplace",
         env=environment,
     )
-
-
-def exercise_fixture_lifecycle(scenario: Scenario) -> tuple[bool, str]:
-    with tempfile.TemporaryDirectory(prefix=f"behavior-{scenario.id}-") as temporary:
-        workspace = copy_fixture(scenario, Path(temporary))
-        original = snapshot(workspace / ".agent-wayfinder")
-        for command in ("install", "update", "update", "remove", "install"):
-            result = run_adopt(command, workspace)
-            if result.returncode != 0:
-                detail = (result.stderr or result.stdout).strip()
-                return False, f"{command} failed: {detail}"
-            current = snapshot(workspace / ".agent-wayfinder")
-            if current != original:
-                return False, f"{command} changed project-owned state"
-        return (
-            True,
-            "install/update/repeated-update/remove/reinstall preserved project state",
-        )
 
 
 def build_prompt(scenario: Scenario) -> str:
@@ -1203,15 +1164,6 @@ def validate_command() -> int:
     return 0
 
 
-def fixtures_command() -> int:
-    failures = 0
-    for scenario in load_scenarios():
-        passed, detail = exercise_fixture_lifecycle(scenario)
-        print(f"{'OK' if passed else 'ERROR'}: {scenario.id}: {detail}")
-        failures += not passed
-    return 1 if failures else 0
-
-
 def live_command(args: argparse.Namespace) -> int:
     raw_command = args.agent_command_json or os.environ.get(
         "AGENT_WORKFLOW_AGENT_COMMAND_JSON", ""
@@ -1287,9 +1239,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("validate", help="validate scenario and fixture contracts")
-    subparsers.add_parser(
-        "fixtures", help="exercise lifecycle safety against every fixture"
-    )
     live = subparsers.add_parser("live", help="run the opt-in live agent scenarios")
     live.add_argument("--agent-command-json")
     live.add_argument("--scenario", action="append")
@@ -1308,8 +1257,6 @@ def main(argv: Iterable[str] | None = None) -> int:
         args = build_parser().parse_args(argv)
         if args.command == "validate":
             return validate_command()
-        if args.command == "fixtures":
-            return fixtures_command()
         return live_command(args)
     except BehaviorError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

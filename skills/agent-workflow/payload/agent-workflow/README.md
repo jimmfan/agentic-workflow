@@ -17,8 +17,8 @@ rewrites, or removes them.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   optional F# and D# ledgers, independently useful U#/E# files, current-state
-  allocation, unknown-content safety, knowledge settlement, effort
-  completion, and progressive loading.
+  allocation, unknown-content safety, knowledge reconciliation, safe effort
+  retirement, and progressive loading.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
 
@@ -50,7 +50,7 @@ unchanged pinned upstream snapshot.
 
 Local Wayfinder data is a configured project-owned representation under
 `.agent-wayfinder/`, never a distributed template or lifecycle-owned
-tree. A map may stand alone. The current default places established F# facts in
+tree. A map may stand alone. The current default places supported F# facts in
 optional `facts.md` and committed D# decisions in optional `decisions.md`, while
 unresolved U# questions and substantial E# evidence earn separate files only
 when they are independently useful coordination or retrieval units. The map
@@ -58,13 +58,13 @@ owns current state, blockers, dependencies, and next work, indexing rather than
 duplicating supporting detail; later work orients there before retrieving only
 a relevant ledger section or U#/E# artifact.
 
-Facts require truthful provenance, and decisions require responsible project
+Facts require traceable provenance, and decisions require responsible project
 authority rather than evidence alone.
 
-Wayfinder recognizes only the current map, ledgers, and canonical U#/E# files.
-Unknown project-owned content is preserved without interpretation or mutation;
-independent current work may proceed unless the content creates an actual
-collision, reference conflict, semantic ambiguity, or unsafe filesystem
+Wayfinder recognizes only the current map, ledgers, and recognized U#/E# files.
+Unrecognized project-owned content is preserved without interpretation or
+mutation; independent current work may proceed unless the content creates an
+actual collision, reference conflict, semantic ambiguity, or unsafe filesystem
 boundary.
 Substantial decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.

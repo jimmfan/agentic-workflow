@@ -11,7 +11,7 @@ expect = [
   "task_completed",
   "meaningful_repository_change",
   "external_fact_researched",
-  "appropriate_validation",
+  "verification_performed",
 ]
 must_not = [
   "invent_external_fact",

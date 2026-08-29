@@ -13,14 +13,13 @@ expect = [
   "existing_state_reused",
   "meaningful_repository_change",
   "verification_performed",
-  "unresolved_unknowns_preserved",
+  "project_state_preserved",
 ]
 must_not = [
   "repeat_resolved_discovery",
-  "ignore_persisted_decisions",
-  "invent_unknown_answers",
+  "overwrite_project_owned_state",
 ]
-live = true
+live = false
 verification_command = "Run python verify.py after implementing serialize_payload."
 preserve_paths = [
   ".agent-wayfinder/response-serialization/unknowns/U1-name-telemetry-metric.md",

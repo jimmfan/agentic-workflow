@@ -24,11 +24,11 @@ None.
 
 ## Next work
 
-Verify generated projection parity and lifecycle repair.
+Verify generated projection parity and provider repair.
 
 ## Notes
 
-The detailed resolved-knowledge settlement lifecycle is intentionally separate.
+Detailed current-knowledge settlement and safe retirement are intentionally separate.
 
 ## Decisions so far
 
@@ -40,4 +40,4 @@ None.
 
 ## Out of scope
 
-Resolved-knowledge settlement and completed-effort lifecycle design.
+Current-knowledge settlement and safe-retirement rules.

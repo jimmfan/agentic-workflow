@@ -13,8 +13,7 @@ expect = [
 ]
 must_not = [
   "silent_decision_invention",
-  "fabricate_project_values",
-  "placeholder_infrastructure",
+  "unnecessary_planning_artifacts",
   "overwrite_project_owned_state",
 ]
 live = false

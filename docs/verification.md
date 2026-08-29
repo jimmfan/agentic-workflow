@@ -40,15 +40,13 @@ It checks:
   projection inventories;
 - absence of executable or host-customization content in the
   activation-sensitive payload namespace;
-- routing, authorization, Wayfinder-state, and provider declaration contracts;
-- thin-router word budgets and deterministic positive/negative escalation
-  contracts (not live model-routing proof);
-- local Markdown links plus the lifecycle-acceptance JSON catalog schema;
+- provider declarations and projection integrity;
+- local Markdown links and behavioral scenario validation;
 - lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and
   stale-release-metadata tests;
 - human-authored TOML behavioral scenario schema and fixture references; and
-- deterministic behavioral contract, evaluator, reset, and fixture lifecycle
-  tests.
+- deterministic behavior-harness, Wayfinder scenario, evaluator, and fixture
+  reset tests.
 
 Success ends with:
 
@@ -161,7 +159,7 @@ install, update, status, remove, reinstall, and provider repair byte-for-byte.
 The behavioral suite also keeps
 implementation work-item artifacts out of Wayfinder, resumes relevant map
 state, reconciles affected state after implementation, excludes unrelated
-detail and efforts, reports stale state without mutation during read-only work,
+detail and efforts, reports outdated state without mutation during read-only work,
 stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
 of a direct route.
 

@@ -1,6 +1,5 @@
 # U1: Which rollout strategy is approved?
 
-- Status: open
 - Resolution mode: human clarification
 - Blocked by: none
 - Related: release checklist

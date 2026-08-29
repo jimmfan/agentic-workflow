@@ -1,16 +1,17 @@
 schema_version = 1
 id = "wayfinder-resume-synonymous-wording"
-name = "Synonymous wording resumes one existing effort"
+name = "Synonymous wording resumes and refines one stable effort"
 fixture = "wayfinder-effort-selection"
-request = "Continue the work to replace Wayfinder's mixed local override and upstream body with one first-party effective instruction set. Identify the current next work and report it without changing files."
+request = "Continue the work to replace Wayfinder's mixed local override and upstream body with one first-party effective instruction set. Refine the selected map title to First-party Wayfinder runtime while preserving its established path and boundary."
 starting_state = [
   "The request uses different wording from the existing Wayfinder runtime projection effort.",
   "One existing map has the same substantive destination, scope boundary, coherent territory, and relationships.",
   "Other effort directory names are not plausible matches.",
+  "A title refinement is not a reason to rename the effort directory.",
 ]
 expect = [
   "existing_state_reused",
-  "repository_unchanged",
+  "meaningful_repository_change",
   "project_state_preserved",
 ]
 must_not = [
@@ -29,6 +30,8 @@ forbid_created_globs = [
   ".agent-wayfinder/wayfinder-runtime/**",
   ".agent-wayfinder/own-wayfinder",
   ".agent-wayfinder/own-wayfinder/**",
+  ".agent-wayfinder/first-party-wayfinder-runtime",
+  ".agent-wayfinder/first-party-wayfinder-runtime/**",
 ]
 route_must_not_include = ["domain-modeling"]
 state_must_include = [
@@ -39,3 +42,16 @@ state_must_not_include = [
   ".agent-wayfinder/provider-runtime/map.md",
   ".agent-wayfinder/established-provider-naming/map.md",
 ]
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-wayfinder/wayfinder-runtime-projection/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/wayfinder-runtime-projection/map.md"
+value = "# First-party Wayfinder runtime"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder/first-party-wayfinder-runtime/map.md"

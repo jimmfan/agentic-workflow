@@ -1,6 +1,5 @@
 # U1: Which public API authentication mechanism is approved?
 
-- Status: open
 - Resolution mode: human clarification
 - Blocked by: product-owner answer
 

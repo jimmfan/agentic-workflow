@@ -12,8 +12,7 @@ expect = [
   "project_state_preserved",
 ]
 must_not = [
-  "fabricate_project_values",
-  "placeholder_infrastructure",
+  "unnecessary_planning_artifacts",
   "overwrite_project_owned_state",
 ]
 live = true
@@ -25,4 +24,3 @@ route_must_not_include = []
 [[assertions]]
 kind = "path_not_exists"
 path = "infra"
-

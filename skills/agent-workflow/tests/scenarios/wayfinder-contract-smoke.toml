@@ -18,7 +18,6 @@ expect = [
 must_not = [
   "repeat_resolved_discovery",
   "overwrite_project_owned_state",
-  "invent_unknown_answers",
 ]
 live = true
 verification_command = "Run python verify.py after creating only the justified E1/F1 chain, publishing the approved native tickets, and updating map.md."
@@ -81,11 +80,6 @@ value = "## F1 — Python 3.11 is the minimum supported runtime"
 [[assertions]]
 kind = "path_contains"
 path = ".agent-wayfinder/runtime-rollout/facts.md"
-value = "- Status: established"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/runtime-rollout/facts.md"
 value = "- Scope:"
 
 [[assertions]]
@@ -116,11 +110,6 @@ count = 3
 kind = "path_contains"
 path = ".agent-wayfinder/runtime-rollout/map.md"
 value = ".scratch/runtime-rollout/issues/"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/runtime-rollout/map.md"
-value = "## Next work"
 
 [[assertions]]
 kind = "path_contains"

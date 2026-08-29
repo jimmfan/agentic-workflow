@@ -29,11 +29,85 @@ class UnsafeWayfinderState(RuntimeError):
     pass
 
 
+def validate_effort_location(effort: Path, *, require_root: bool = False) -> None:
+    if ".agent-wayfinder" not in effort.parts:
+        if effort.is_symlink():
+            raise UnsafeWayfinderState("effort path crosses a symlink")
+        if require_root:
+            raise UnsafeWayfinderState("effort path is not below Wayfinder root")
+        return
+    cursor = effort
+    found_root = False
+    while True:
+        if cursor.is_symlink():
+            raise UnsafeWayfinderState("effort path crosses a symlink")
+        if cursor.name == ".agent-wayfinder":
+            if cursor.parent.is_symlink():
+                raise UnsafeWayfinderState("effort path crosses a symlink")
+            found_root = True
+            break
+        parent = cursor.parent
+        if parent == cursor:
+            break
+        cursor = parent
+    if require_root and not found_root:
+        raise UnsafeWayfinderState("effort path is not below Wayfinder root")
+
+
 def validate_effort(effort: Path) -> bool:
+    validate_effort_location(effort)
     map_path = effort / "map.md"
     if map_path.is_symlink() or not map_path.is_file():
         raise UnsafeWayfinderState("effort has no safe map")
     return True
+
+
+def exact_effort(repository: Path, relative: Path) -> Path:
+    if (
+        relative.is_absolute()
+        or len(relative.parts) < 2
+        or relative.parts[0] != ".agent-wayfinder"
+    ):
+        raise UnsafeWayfinderState("effort path is not below Wayfinder root")
+    if repository.is_symlink():
+        raise UnsafeWayfinderState("effort path crosses a symlink")
+    if not repository.is_dir():
+        raise UnsafeWayfinderState("unsafe repository root")
+    cursor = repository
+    for part in relative.parts:
+        if part in {"", "."}:
+            continue
+        if part == "..":
+            raise UnsafeWayfinderState("effort path is not below Wayfinder root")
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise UnsafeWayfinderState("effort path crosses a symlink")
+    validate_effort(cursor)
+    return cursor
+
+
+def select_effort(
+    candidates: list[Path], destination: str, boundary: str
+) -> Path | None:
+    matches: list[Path] = []
+    for effort in candidates:
+        map_path = effort / "map.md"
+        if not map_path.exists() and not map_path.is_symlink():
+            continue
+        validate_effort(effort)
+        fields: dict[str, str] = {}
+        for line in (effort / "map.md").read_text(encoding="utf-8").splitlines():
+            match = re.fullmatch(r"- (Destination|Boundary):\s*(.+)", line)
+            if match:
+                fields[match.group(1)] = match.group(2).strip()
+        if (
+            fields.get("Destination", "").casefold() == destination.casefold()
+            and fields.get("Boundary", "").casefold() == boundary.casefold()
+        ):
+            matches.append(effort)
+    if len(matches) > 1:
+        raise UnsafeWayfinderState("ambiguous effort selection")
+    return matches[0] if matches else None
 
 
 def ledger_sections(effort: Path, kind: str) -> list[tuple[int, str, str]]:
@@ -60,6 +134,18 @@ def ledger_sections(effort: Path, kind: str) -> list[tuple[int, str, str]]:
         end = starts[position + 1][0] if position + 1 < len(starts) else len(lines)
         sections.append((identifier, title, "".join(lines[start:end])))
     return sections
+
+
+def without_ledger_sections(
+    original: str,
+    sections: list[tuple[int, str, str]],
+    identifiers: set[int],
+) -> str:
+    updated = original
+    for identifier, _title, section in sections:
+        if identifier in identifiers:
+            updated = updated.replace(section, "", 1)
+    return updated
 
 
 def read_current_ids(effort: Path, kind: str) -> list[int]:
@@ -172,7 +258,7 @@ def retire_ledger_section(
         if not matches:
             return False
         _, title, section = matches[0]
-        updated = original.replace(section, "", 1)
+        updated = without_ledger_sections(original, sections, {identifier})
         if ledger_references(
             effort,
             kind,
@@ -206,11 +292,36 @@ def retire_ledger_section(
             known_references,
         ):
             raise UnsafeWayfinderState("current references appeared during reconciliation")
-        if len(sections) == 1:
+        if updated.strip() in {"", f"# {LEDGER_TITLES[kind]}"}:
             path.unlink()
         else:
             path.write_text(updated, encoding="utf-8")
         return True
+
+
+def update_ledger_section(
+    effort: Path,
+    kind: str,
+    identifier: int,
+    body: str,
+    *,
+    before_final_check: Callable[[], None] | None = None,
+) -> None:
+    with effort_mutation_lock(effort):
+        path = effort / LEDGER_PATHS[kind]
+        original = path.read_text(encoding="utf-8")
+        matches = [item for item in ledger_sections(effort, kind) if item[0] == identifier]
+        if len(matches) != 1:
+            raise UnsafeWayfinderState("ledger section is not current and unique")
+        _, title, section = matches[0]
+        replacement = f"## {kind}{identifier} — {title}\n\n{body.rstrip()}\n"
+        updated = original.replace(section, replacement, 1)
+        observed_current = current_markdown(effort)
+        if before_final_check is not None:
+            before_final_check()
+        if current_markdown(effort) != observed_current:
+            raise UnsafeWayfinderState("current state changed during reconciliation")
+        path.write_text(updated, encoding="utf-8")
 
 
 def replace_map(
@@ -227,7 +338,12 @@ def replace_map(
         path.write_bytes(updated)
 
 
-def current_child_paths(effort: Path, kind: str) -> list[Path]:
+def current_child_paths(
+    effort: Path,
+    kind: str,
+    *,
+    strict: bool = False,
+) -> list[Path]:
     directory = effort / TYPE_DIRECTORIES[kind]
     if not directory.exists():
         return []
@@ -237,14 +353,21 @@ def current_child_paths(effort: Path, kind: str) -> list[Path]:
     result: list[Path] = []
     identifiers: list[int] = []
     for child in directory.iterdir():
-        if child.is_symlink() or not child.is_file():
-            raise UnsafeWayfinderState(f"unsafe child path: {child.name}")
         match = CURRENT_ID.fullmatch(child.name)
+        identity_like = re.match(r"^[UE][0-9]", child.name) is not None
+        if child.is_symlink() or not child.is_file():
+            if strict and identity_like:
+                raise UnsafeWayfinderState(f"unsafe child path: {child.name}")
+            continue
         if match is None or match.group(1) != kind:
-            raise UnsafeWayfinderState(f"unrecognized child filename: {child.name}")
+            if strict and identity_like:
+                raise UnsafeWayfinderState(
+                    f"unrecognized child filename: {child.name}"
+                )
+            continue
         result.append(child)
         identifiers.append(int(match.group(2)))
-    if len(identifiers) != len(set(identifiers)):
+    if strict and len(identifiers) != len(set(identifiers)):
         raise UnsafeWayfinderState(f"duplicate current {kind} identifier")
     return sorted(result)
 
@@ -252,7 +375,7 @@ def current_child_paths(effort: Path, kind: str) -> list[Path]:
 def current_ids(effort: Path, kind: str) -> list[int]:
     return [
         int(CURRENT_ID.fullmatch(path.name).group(2))
-        for path in current_child_paths(effort, kind)
+        for path in current_child_paths(effort, kind, strict=True)
     ]
 
 
@@ -320,7 +443,11 @@ def current_markdown(
     return result
 
 
-def references_to(effort: Path, target: Path) -> list[Path]:
+def references_to(
+    effort: Path,
+    target: Path,
+    known_references: list[Path] | None = None,
+) -> list[Path]:
     match = CURRENT_ID.fullmatch(target.name)
     if match is None:
         raise UnsafeWayfinderState("retiring path has no canonical current ID")
@@ -328,39 +455,167 @@ def references_to(effort: Path, target: Path) -> list[Path]:
     token = re.compile(rf"(?<![A-Z0-9]){re.escape(identifier)}(?![0-9])")
     relative_path = target.relative_to(effort).as_posix()
     references: list[Path] = []
-    for path, content in current_markdown(effort, excluding=target).items():
+    current = current_markdown(effort, excluding=target)
+    for path in known_references or []:
+        if path.is_symlink() or not path.is_file():
+            raise UnsafeWayfinderState(f"unsafe reference path: {path}")
+        current[path] = path.read_bytes()
+    for path, content in current.items():
         text = content.decode("utf-8")
         if token.search(text) or target.name in text or relative_path in text:
             references.append(path)
     return references
 
 
+def ledger_anchor_references(
+    effort: Path,
+    kind: str,
+    identifier: int,
+    title: str,
+    known_references: list[Path] | None = None,
+) -> list[Path]:
+    fragment = f"{LEDGER_PATHS[kind]}#{heading_anchor(kind, identifier, title)}"
+    paths = current_markdown(effort)
+    for path in known_references or []:
+        if path.is_symlink() or not path.is_file():
+            raise UnsafeWayfinderState(f"unsafe reference path: {path}")
+        paths[path] = path.read_bytes()
+    return [
+        path
+        for path, content in paths.items()
+        if fragment in content.decode("utf-8")
+    ]
+
+
+def rename_ledger_heading(
+    effort: Path,
+    kind: str,
+    identifier: int,
+    title: str,
+    *,
+    known_references: list[Path] | None = None,
+) -> str:
+    if kind not in LEDGER_PATHS:
+        raise UnsafeWayfinderState("only F/D records have ledger headings")
+    with effort_mutation_lock(effort):
+        path = effort / LEDGER_PATHS[kind]
+        original = path.read_text(encoding="utf-8")
+        matches = [item for item in ledger_sections(effort, kind) if item[0] == identifier]
+        if len(matches) != 1:
+            raise UnsafeWayfinderState("ledger heading is not current and unique")
+        _, old_title, section = matches[0]
+        if ledger_anchor_references(
+            effort, kind, identifier, old_title, known_references
+        ):
+            raise UnsafeWayfinderState("current anchor references remain")
+        old_heading = f"## {kind}{identifier} — {old_title}"
+        new_heading = f"## {kind}{identifier} — {title}"
+        updated = original.replace(
+            section,
+            section.replace(old_heading, new_heading, 1),
+            1,
+        )
+        observed_current = current_markdown(effort)
+        observed_known = {
+            reference: reference.read_bytes()
+            for reference in known_references or []
+        }
+        if current_markdown(effort) != observed_current:
+            raise UnsafeWayfinderState("current state changed during reconciliation")
+        if any(
+            not reference.is_file() or reference.read_bytes() != observed
+            for reference, observed in observed_known.items()
+        ):
+            raise UnsafeWayfinderState("known reference changed during reconciliation")
+        if ledger_anchor_references(
+            effort, kind, identifier, old_title, known_references
+        ):
+            raise UnsafeWayfinderState("current anchor references appeared")
+        path.write_text(updated, encoding="utf-8")
+        return heading_anchor(kind, identifier, title)
+
+
+def rename_current_child(
+    effort: Path,
+    target: Path,
+    slug: str,
+    *,
+    known_references: list[Path] | None = None,
+) -> Path:
+    match = CURRENT_ID.fullmatch(target.name)
+    if match is None or match.group(1) not in {"U", "E"}:
+        raise UnsafeWayfinderState("renaming path has no canonical current ID")
+    if readable_slug(slug) != slug or not slug:
+        raise UnsafeWayfinderState("rename requires a readable slug")
+    with effort_mutation_lock(effort):
+        current_child_paths(effort, match.group(1), strict=True)
+        if not target.is_file() or target.is_symlink():
+            raise UnsafeWayfinderState("unsafe rename target")
+        if references_to(effort, target, known_references):
+            raise UnsafeWayfinderState("current references remain")
+        observed_target = target.read_bytes()
+        observed_current = current_markdown(effort, excluding=target)
+        observed_known = {
+            reference: reference.read_bytes()
+            for reference in known_references or []
+        }
+        renamed = target.with_name(f"{match.group(1)}{match.group(2)}-{slug}.md")
+        if renamed.exists() or renamed.is_symlink():
+            raise UnsafeWayfinderState("rename target already exists")
+        if target.read_bytes() != observed_target:
+            raise UnsafeWayfinderState("rename target changed")
+        if current_markdown(effort, excluding=target) != observed_current:
+            raise UnsafeWayfinderState("current state changed during reconciliation")
+        if any(
+            not reference.is_file() or reference.read_bytes() != observed
+            for reference, observed in observed_known.items()
+        ):
+            raise UnsafeWayfinderState("known reference changed during reconciliation")
+        if references_to(effort, target, known_references):
+            raise UnsafeWayfinderState("current references appeared during reconciliation")
+        target.rename(renamed)
+        return renamed
+
+
 def retire_current_child(
     effort: Path,
     target: Path,
     *,
+    known_references: list[Path] | None = None,
     before_final_check: Callable[[], None] | None = None,
     lock_attempts: int = 1_000,
 ) -> bool:
     match = CURRENT_ID.fullmatch(target.name)
     if match is not None and match.group(1) in LEDGER_PATHS:
         raise UnsafeWayfinderState("F/D records belong in their current ledgers")
+    if match is None or match.group(1) not in {"U", "E"}:
+        raise UnsafeWayfinderState("retiring path has no canonical current ID")
     with effort_mutation_lock(effort, attempts=lock_attempts):
+        current_child_paths(effort, match.group(1), strict=True)
         if not target.exists():
             return False
-        references = references_to(effort, target)
+        references = references_to(effort, target, known_references)
         if references:
             raise UnsafeWayfinderState(f"current references remain: {references}")
 
         observed_target = target.read_bytes()
         observed_current = current_markdown(effort, excluding=target)
+        observed_known = {
+            reference: reference.read_bytes()
+            for reference in known_references or []
+        }
         if before_final_check is not None:
             before_final_check()
         if not target.exists() or target.read_bytes() != observed_target:
             raise UnsafeWayfinderState("retiring child changed during reconciliation")
         if current_markdown(effort, excluding=target) != observed_current:
             raise UnsafeWayfinderState("current state changed during reconciliation")
-        if references_to(effort, target):
+        if any(
+            not reference.is_file() or reference.read_bytes() != observed
+            for reference, observed in observed_known.items()
+        ):
+            raise UnsafeWayfinderState("known reference changed during reconciliation")
+        if references_to(effort, target, known_references):
             raise UnsafeWayfinderState(
                 "current references appeared during reconciliation"
             )
@@ -372,10 +627,343 @@ def retire_current_child(
         return True
 
 
+def retire_effort_state(
+    effort: Path,
+    *,
+    known_references: list[Path] | None = None,
+    continuity_owners: list[Path] | None = None,
+    before_final_check: Callable[[], None] | None = None,
+) -> None:
+    validate_effort_location(effort, require_root=True)
+    validate_effort(effort)
+    reference_paths = list(
+        dict.fromkeys([*(known_references or []), *(continuity_owners or [])])
+    )
+    for reference in reference_paths:
+        if reference.is_symlink() or not reference.is_file():
+            raise UnsafeWayfinderState(f"unsafe reference path: {reference}")
+    if any(owner.is_relative_to(effort) for owner in continuity_owners or []):
+        raise UnsafeWayfinderState("continuity owner must outlive the effort")
+    with effort_mutation_lock(effort):
+        validate_effort_location(effort, require_root=True)
+        validate_effort(effort)
+        for kind in ("U", "E"):
+            current_child_paths(effort, kind, strict=True)
+        observed_current = current_markdown(effort)
+        observed_known = {
+            reference: reference.read_bytes() for reference in reference_paths
+        }
+        unresolved = [
+            path.name.split("-", 1)[0]
+            for path in current_child_paths(effort, "U", strict=True)
+        ]
+        owner_text = "\n".join(
+            owner.read_text(encoding="utf-8") for owner in continuity_owners or []
+        )
+        if any(
+            re.search(rf"(?<![A-Z0-9]){re.escape(identifier)}(?![0-9])", owner_text)
+            is None
+            for identifier in unresolved
+        ):
+            raise UnsafeWayfinderState(
+                "unresolved coordination lacks an observable continuity owner"
+            )
+        root_index = max(
+            index
+            for index, part in enumerate(effort.parts)
+            if part == ".agent-wayfinder"
+        )
+        effort_relative = Path(*effort.parts[root_index:])
+        target_links = {
+            (effort_relative / path.relative_to(effort)).as_posix()
+            for path in observed_current
+        }
+        for reference, content in observed_known.items():
+            text = content.decode("utf-8")
+            if any(target in text for target in target_links):
+                raise UnsafeWayfinderState("current references remain")
+
+        ledger_updates: dict[Path, bytes | None] = {}
+        for kind, name in LEDGER_PATHS.items():
+            path = effort / name
+            if path not in observed_current:
+                continue
+            original = observed_current[path].decode("utf-8")
+            sections = ledger_sections(effort, kind)
+            updated = without_ledger_sections(
+                original,
+                sections,
+                {identifier for identifier, _title, _section in sections},
+            )
+            for identifier, title, _section in sections:
+                token = re.compile(rf"(?<![A-Z0-9]){kind}{identifier}(?![0-9])")
+                anchor = f"{name}#{heading_anchor(kind, identifier, title)}"
+                if token.search(updated) or anchor in updated:
+                    raise UnsafeWayfinderState("unknown ledger content references a record")
+            ledger_updates[path] = (
+                None
+                if updated.strip() in {"", f"# {LEDGER_TITLES[kind]}"}
+                else updated.encode("utf-8")
+            )
+
+        if before_final_check is not None:
+            before_final_check()
+        validate_effort_location(effort, require_root=True)
+        for kind in ("U", "E"):
+            current_child_paths(effort, kind, strict=True)
+        if current_markdown(effort) != observed_current:
+            raise UnsafeWayfinderState("current state changed during reconciliation")
+        if any(
+            not reference.is_file() or reference.read_bytes() != observed
+            for reference, observed in observed_known.items()
+        ):
+            raise UnsafeWayfinderState("known reference changed during reconciliation")
+
+        map_path = effort / "map.md"
+        for path in observed_current:
+            if path == map_path or path in ledger_updates:
+                continue
+            path.unlink()
+        for path, content in ledger_updates.items():
+            if content is None:
+                path.unlink()
+            else:
+                path.write_bytes(content)
+        for directory_name in ("unknowns", "evidence"):
+            directory = effort / directory_name
+            if directory.is_dir() and not any(directory.iterdir()):
+                directory.rmdir()
+        map_path.unlink()
+
+
 class WayfinderStateContractTests(unittest.TestCase):
     def setUp(self) -> None:
         self.contract = CONTRACT.read_text(encoding="utf-8")
         self.normalized = " ".join(self.contract.split())
+
+    def test_exact_effort_path_stays_below_root_and_crosses_no_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "project"
+            root = project / ".agent-wayfinder"
+            effort = root / "release-direction"
+            effort.mkdir(parents=True)
+            (effort / "map.md").write_text("# Release direction\n", encoding="utf-8")
+
+            self.assertEqual(
+                exact_effort(project, Path(".agent-wayfinder/release-direction")),
+                effort,
+            )
+            outside = project / "outside"
+            outside.mkdir()
+            (outside / "map.md").write_text("# Outside\n", encoding="utf-8")
+            with self.assertRaisesRegex(UnsafeWayfinderState, "below Wayfinder root"):
+                exact_effort(project, Path("outside"))
+
+            target = root / "target"
+            target.mkdir()
+            (target / "map.md").write_text("# Target\n", encoding="utf-8")
+            (root / "linked").symlink_to(target, target_is_directory=True)
+            with self.assertRaisesRegex(UnsafeWayfinderState, "symlink"):
+                exact_effort(project, Path(".agent-wayfinder/linked"))
+
+            linked_project = Path(temporary) / "linked-project"
+            linked_project.symlink_to(project, target_is_directory=True)
+            with self.assertRaisesRegex(UnsafeWayfinderState, "symlink"):
+                exact_effort(
+                    linked_project,
+                    Path(".agent-wayfinder/release-direction"),
+                )
+
+            map_target = project / "map-target.md"
+            map_target.write_text("# Symlink target\n", encoding="utf-8")
+            map_link_effort = root / "map-link"
+            map_link_effort.mkdir()
+            (map_link_effort / "map.md").symlink_to(map_target)
+            with self.assertRaisesRegex(UnsafeWayfinderState, "safe map"):
+                exact_effort(project, Path(".agent-wayfinder/map-link"))
+
+    def test_bounded_effort_selection_resumes_only_one_clear_current_match(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / ".agent-wayfinder"
+            current = root / "current"
+            retired = root / "retired"
+            other = root / "other"
+            for effort in (current, retired, other):
+                effort.mkdir(parents=True)
+            (current / "map.md").write_text(
+                "# Release direction\n\n"
+                "- Destination: Publish the approved release\n"
+                "- Boundary: Packaging only\n",
+                encoding="utf-8",
+            )
+            (retired / "project-notes.md").write_text(
+                "Project-owned content remains after settlement.\n",
+                encoding="utf-8",
+            )
+            (other / "map.md").write_text(
+                "# Other work\n\n"
+                "- Destination: Update documentation\n"
+                "- Boundary: Documentation only\n",
+                encoding="utf-8",
+            )
+
+            self.assertEqual(
+                select_effort(
+                    [other, current],
+                    "Publish the approved release",
+                    "Packaging only",
+                ),
+                current,
+            )
+            self.assertIsNone(
+                select_effort(
+                    [retired],
+                    "Publish the approved release",
+                    "Packaging only",
+                )
+            )
+            linked = root / "linked"
+            linked.symlink_to(current, target_is_directory=True)
+            with self.assertRaisesRegex(UnsafeWayfinderState, "symlink"):
+                select_effort(
+                    [linked],
+                    "Publish the approved release",
+                    "Packaging only",
+                )
+            real_parent = root / "real-parent"
+            nested = real_parent / "nested"
+            nested.mkdir(parents=True)
+            shutil.copy2(current / "map.md", nested / "map.md")
+            linked_parent = root / "linked-parent"
+            linked_parent.symlink_to(real_parent, target_is_directory=True)
+            with self.assertRaisesRegex(UnsafeWayfinderState, "symlink"):
+                select_effort(
+                    [linked_parent / "nested"],
+                    "Publish the approved release",
+                    "Packaging only",
+                )
+            linked_project = Path(temporary) / "linked-project"
+            linked_project.symlink_to(root.parent, target_is_directory=True)
+            with self.assertRaisesRegex(UnsafeWayfinderState, "symlink"):
+                select_effort(
+                    [linked_project / ".agent-wayfinder/current"],
+                    "Publish the approved release",
+                    "Packaging only",
+                )
+            duplicate = root / "duplicate"
+            duplicate.mkdir()
+            shutil.copy2(current / "map.md", duplicate / "map.md")
+            with self.assertRaisesRegex(UnsafeWayfinderState, "ambiguous effort"):
+                select_effort(
+                    [current, duplicate],
+                    "Publish the approved release",
+                    "Packaging only",
+                )
+
+    def test_current_child_rename_requires_reconciled_references(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "project"
+            effort = project / ".agent-wayfinder/effort"
+            unknowns = effort / "unknowns"
+            unknowns.mkdir(parents=True)
+            map_path = effort / "map.md"
+            target = unknowns / "U1-old-title.md"
+            external = project / "current.md"
+            map_path.write_text(
+                "# Rename\n\n[Question](unknowns/U1-old-title.md) remains open.\n",
+                encoding="utf-8",
+            )
+            target.write_text("# U1: Current question\n", encoding="utf-8")
+            external.write_text(
+                "[Question](.agent-wayfinder/effort/unknowns/U1-old-title.md)\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
+                rename_current_child(
+                    effort,
+                    target,
+                    "current-question",
+                    known_references=[external],
+                )
+
+            map_path.write_text(
+                "# Rename\n\nThe current question remains open.\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
+                rename_current_child(
+                    effort,
+                    target,
+                    "current-question",
+                    known_references=[external],
+                )
+            external.write_text("The current question remains open.\n", encoding="utf-8")
+            renamed = rename_current_child(
+                effort,
+                target,
+                "current-question",
+                known_references=[external],
+            )
+            self.assertEqual(renamed, unknowns / "U1-current-question.md")
+            self.assertFalse(target.exists())
+            self.assertEqual(
+                renamed.read_text(encoding="utf-8"),
+                "# U1: Current question\n",
+            )
+
+    def test_ledger_heading_rename_requires_reconciled_anchor_links(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "project"
+            effort = project / ".agent-wayfinder/effort"
+            effort.mkdir(parents=True)
+            map_path = effort / "map.md"
+            external = project / "current.md"
+            ledger = effort / "facts.md"
+            old_link = "facts.md#f1--old-title"
+            map_path.write_text(f"# Rename\n\n[Fact]({old_link})\n", encoding="utf-8")
+            external.write_text(
+                "[Fact](.agent-wayfinder/effort/facts.md#f1--old-title)\n",
+                encoding="utf-8",
+            )
+            remaining = (
+                "## F2 — Unrelated fact\n\n"
+                "[F1](facts.md#f1--old-title) is related.\n"
+            )
+            ledger.write_text(
+                "# Facts\n\n## F1 — Old title\n\nCurrent.\n\n" + remaining,
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "anchor references"):
+                rename_ledger_heading(
+                    effort, "F", 1, "Current title", known_references=[external]
+                )
+            map_path.write_text("# Rename\n\nThe fact remains current.\n", encoding="utf-8")
+            with self.assertRaisesRegex(UnsafeWayfinderState, "anchor references"):
+                rename_ledger_heading(
+                    effort, "F", 1, "Current title", known_references=[external]
+                )
+            external.write_text("The fact remains current.\n", encoding="utf-8")
+            with self.assertRaisesRegex(UnsafeWayfinderState, "anchor references"):
+                rename_ledger_heading(
+                    effort, "F", 1, "Current title", known_references=[external]
+                )
+            ledger.write_text(
+                ledger.read_text(encoding="utf-8").replace(
+                    "[F1](facts.md#f1--old-title) is related.",
+                    "F1 remains related.",
+                ),
+                encoding="utf-8",
+            )
+
+            anchor = rename_ledger_heading(
+                effort, "F", 1, "Current title", known_references=[external]
+            )
+            self.assertEqual(anchor, "f1--current-title")
+            self.assertIn("## F1 — Current title", ledger.read_text(encoding="utf-8"))
+            self.assertIn("## F2 — Unrelated fact", ledger.read_text(encoding="utf-8"))
+            self.assertIn("F1 remains related.", ledger.read_text(encoding="utf-8"))
 
     def test_new_effort_can_remain_map_only_or_create_a_fact_ledger(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -390,7 +978,6 @@ class WayfinderStateContractTests(unittest.TestCase):
                 effort,
                 "F",
                 "The map can stand alone",
-                "- Status: established\n"
                 "- Source: README.md\n\n"
                 "A map-only effort is valid.\n",
             )
@@ -400,10 +987,45 @@ class WayfinderStateContractTests(unittest.TestCase):
                 (effort / "facts.md").read_text(encoding="utf-8"),
                 "# Facts\n\n"
                 "## F1 — The map can stand alone\n\n"
-                "- Status: established\n"
                 "- Source: README.md\n\n"
                 "A map-only effort is valid.\n",
             )
+
+    def test_fact_correction_updates_narrows_or_retires_the_same_identifier(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "effort"
+            effort.mkdir()
+            (effort / "map.md").write_text("# Current conclusion\n", encoding="utf-8")
+            facts = effort / "facts.md"
+            facts.write_text(
+                "# Facts\n\n"
+                "## F1 — Supported environments\n\n"
+                "- Source: compatibility.md\n"
+                "- Scope: All environments\n\n"
+                "The package works in every supported environment.\n",
+                encoding="utf-8",
+            )
+
+            update_ledger_section(
+                effort,
+                "F",
+                1,
+                "- Source: compatibility.md\n"
+                "- Scope: Linux environments\n"
+                "- Limitations: macOS remains unresolved\n\n"
+                "The package works in supported Linux environments.\n",
+            )
+
+            current = facts.read_text(encoding="utf-8")
+            self.assertEqual(read_current_ids(effort, "F"), [1])
+            self.assertIn("## F1 — Supported environments", current)
+            self.assertIn("Scope: Linux environments", current)
+            self.assertNotIn("every supported environment", current)
+
+            self.assertTrue(retire_ledger_section(effort, "F", 1))
+            self.assertFalse(facts.exists())
 
     def test_decision_ledger_allocates_after_the_highest_valid_unique_heading(
         self,
@@ -415,8 +1037,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             ledger = effort / "decisions.md"
             ledger.write_text(
                 "# Decisions\n\n"
-                "## D1 — First choice\n\n- Status: accepted\n\nFirst.\n\n"
-                "## D3 — Third choice\n\n- Status: accepted\n\nThird.\n",
+                "## D1 — First choice\n\n- Authority: project-policy.md\n\nFirst.\n\n"
+                "## D3 — Third choice\n\n- Authority: project-policy.md\n\nThird.\n",
                 encoding="utf-8",
             )
 
@@ -424,7 +1046,6 @@ class WayfinderStateContractTests(unittest.TestCase):
                 effort,
                 "D",
                 "Fourth choice",
-                "- Status: provisional\n"
                 "- Authority: User, 2026-08-25, request\n"
                 "- Revisit when: Tests disagree\n\nFourth.\n",
             )
@@ -445,6 +1066,47 @@ class WayfinderStateContractTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(UnsafeWayfinderState, "malformed current D"):
                 create_current_record(effort, "D", "Blocked", "Blocked.\n")
+
+    def test_current_decision_updates_or_retires_without_status_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "effort"
+            effort.mkdir()
+            (effort / "map.md").write_text("# Current decisions\n", encoding="utf-8")
+            decisions = effort / "decisions.md"
+            decisions.write_text(
+                "# Decisions\n\n"
+                "## D1 — Delivery boundary\n\n"
+                "- Authority: project-policy.md\n\nUse the original boundary.\n",
+                encoding="utf-8",
+            )
+
+            update_ledger_section(
+                effort,
+                "D",
+                1,
+                "- Authority: project-owner.md\n"
+                "- Based on: revised-scope.md\n"
+                "- Consequences: the current boundary is narrower\n\n"
+                "Use the revised boundary.\n",
+            )
+            self.assertEqual(read_current_ids(effort, "D"), [1])
+            self.assertIn("Use the revised boundary", decisions.read_text(encoding="utf-8"))
+
+            self.assertEqual(
+                create_current_record(
+                    effort,
+                    "D",
+                    "Independent release choice",
+                    "- Authority: release-policy.md\n\nPublish after verification.\n",
+                ),
+                "D2",
+            )
+            (effort / "map.md").write_text(
+                "# Current decisions\n\nOnly D2 remains current.\n",
+                encoding="utf-8",
+            )
+            self.assertTrue(retire_ledger_section(effort, "D", 1))
+            self.assertEqual(read_current_ids(effort, "D"), [2])
 
     def test_unrecognized_project_content_is_not_interpreted_as_current_references(
         self,
@@ -520,6 +1182,18 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue(retire_ledger_section(effort, "F", 3))
             self.assertFalse(ledger.exists())
             self.assertFalse(retire_ledger_section(effort, "F", 3))
+
+            preamble = (
+                "# Facts\n\n"
+                "Project note that is not part of the selected record.\n\n"
+            )
+            ledger.write_text(
+                preamble
+                + "## F5 — Retiring fact\n\n- Source: source.md\n\nRetire me.\n",
+                encoding="utf-8",
+            )
+            self.assertTrue(retire_ledger_section(effort, "F", 5))
+            self.assertEqual(ledger.read_text(encoding="utf-8"), preamble)
 
     def test_ledger_append_rereads_before_write_and_preserves_a_concurrent_claim(
         self,
@@ -688,16 +1362,17 @@ class WayfinderStateContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "project"
             shutil.copytree(fixture, root)
-            effort = root / ".agent-wayfinder/provider-state"
-            unknown = effort / "unknowns/U17-provider-tracker-state.md"
-            evidence = effort / "evidence/E12-provider-configuration.md"
+            effort = root / ".agent-wayfinder/release-direction"
+            unknown = effort / "unknowns/U17-source-constraint.md"
+            evidence = effort / "evidence/E12-source-observation.md"
             with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
                 retire_current_child(effort, unknown)
 
             (effort / "map.md").write_text(
-                "# Provider state settlement\n\n- Status: current\n\n"
-                "## Current state\n\n[F8](facts.md#f8--provider-needs-no-tracker-state) and "
-                "[D4](decisions.md#d4--use-the-local-runtime-without-tracker-state) "
+                "# Release direction settlement\n\n"
+                "## Current state\n\n"
+                "[F8](facts.md#f8--published-source-selects-staged-release) and "
+                "[D4](decisions.md#d4--adopt-the-staged-release-direction) "
                 "remain current.\n",
                 encoding="utf-8",
             )
@@ -720,7 +1395,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 unknown.read_text(encoding="utf-8")
                 .replace("Related: E12, F8, D4", "Related: F8, D4")
                 .replace(
-                    "E12 establishes that tracker state is not required.",
+                    "E12 establishes that the release mode is staged.",
                     "The answer is recorded in current state.",
                 ),
                 encoding="utf-8",
@@ -763,6 +1438,37 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue(replacement.exists())
             self.assertTrue((effort / ".wayfinder-mutation-lock").is_dir())
 
+    def test_current_child_retirement_requires_known_external_reconciliation(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "project"
+            effort = project / ".agent-wayfinder/effort"
+            unknown = effort / "unknowns/U1-current-question.md"
+            unknown.parent.mkdir(parents=True)
+            (effort / "map.md").write_text("# Settlement\n", encoding="utf-8")
+            unknown.write_text("# U1: Current question\n", encoding="utf-8")
+            external = project / "current.md"
+            external.write_text(
+                "[Question](.agent-wayfinder/effort/unknowns/U1-current-question.md)\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
+                retire_current_child(
+                    effort,
+                    unknown,
+                    known_references=[external],
+                )
+            external.write_text("The question is settled.\n", encoding="utf-8")
+            self.assertTrue(
+                retire_current_child(
+                    effort,
+                    unknown,
+                    known_references=[external],
+                )
+            )
+
     def test_answered_unknown_without_independent_outcome_can_settle_to_map_only(
         self,
     ) -> None:
@@ -771,11 +1477,11 @@ class WayfinderStateContractTests(unittest.TestCase):
             unknowns = effort / "unknowns"
             unknowns.mkdir(parents=True)
             map_path = effort / "map.md"
-            unknown = unknowns / "U1-tracker-state.md"
+            unknown = unknowns / "U1-source-constraint.md"
             map_path.write_text("# Map only\n\nU1 remains open.\n", encoding="utf-8")
-            unknown.write_text("# U1: Tracker state?\n", encoding="utf-8")
+            unknown.write_text("# U1: Source constraint?\n", encoding="utf-8")
             map_path.write_text(
-                "# Map only\n\nTracker state is not required.\n",
+                "# Map only\n\nThe source constraint is resolved.\n",
                 encoding="utf-8",
             )
             self.assertTrue(retire_current_child(effort, unknown))
@@ -824,20 +1530,150 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue(unknown.exists())
             self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
 
-    def test_unsafe_current_paths_block_allocation(self) -> None:
+    def test_settlement_retires_recognized_state_and_preserves_unknown_bytes(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary)
+            effort = project / ".agent-wayfinder/release-direction"
+            unknown = effort / "project-notes.bin"
+            (effort / "unknowns").mkdir(parents=True)
+            (effort / "evidence").mkdir()
+            (effort / "map.md").write_text("# Release direction\n", encoding="utf-8")
+            (effort / "facts.md").write_text(
+                "# Facts\n\n## F1 — Current fact\n\n- Source: source.md\n\nCurrent.\n",
+                encoding="utf-8",
+            )
+            (effort / "decisions.md").write_text(
+                "# Decisions\n\n## D1 — Current choice\n\n"
+                "- Authority: project-policy.md\n\nChosen.\n",
+                encoding="utf-8",
+            )
+            (effort / "unknowns/U1-question.md").write_text(
+                "# U1: Question?\n", encoding="utf-8"
+            )
+            (effort / "evidence/E1-source.md").write_text(
+                "# E1: Source\n\n- Source: source.md\n", encoding="utf-8"
+            )
+            unknown.write_bytes(b"\x00project-owned\xff\n")
+            canonical = project / "release-direction.md"
+            canonical.write_text(
+                "U1 was dispositioned.\n\n"
+                "[Current map](.agent-wayfinder/release-direction/map.md)\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
+                retire_effort_state(
+                    effort,
+                    known_references=[canonical],
+                    continuity_owners=[canonical],
+                )
+            canonical.write_text(
+                "# Release direction\n\nU1 was dispositioned; the lasting outcome is owned here.\n",
+                encoding="utf-8",
+            )
+            retire_effort_state(
+                effort,
+                known_references=[canonical],
+                continuity_owners=[canonical],
+            )
+
+            self.assertTrue(effort.is_dir())
+            self.assertEqual(unknown.read_bytes(), b"\x00project-owned\xff\n")
+            for relative in (
+                "map.md",
+                "facts.md",
+                "decisions.md",
+                "unknowns/U1-question.md",
+                "evidence/E1-source.md",
+            ):
+                self.assertFalse((effort / relative).exists())
+            with self.assertRaisesRegex(UnsafeWayfinderState, "safe map"):
+                validate_effort(effort)
+
+    def test_effort_retirement_aborts_before_removal_on_concurrent_change(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / ".agent-wayfinder/current-effort"
+            effort.mkdir(parents=True)
+            map_path = effort / "map.md"
+            facts = effort / "facts.md"
+            fact_preamble = (
+                "# Facts\n\n"
+                "Project-owned ledger note that is not a Wayfinder record.\n\n"
+            )
+            map_path.write_text("# Current effort\n", encoding="utf-8")
+            facts.write_text(
+                fact_preamble
+                + "## F1 — Current fact\n\n- Source: source.md\n\nCurrent.\n",
+                encoding="utf-8",
+            )
+
+            def concurrent_change() -> None:
+                map_path.write_text(
+                    "# Current effort\n\nA new frontier appeared.\n", encoding="utf-8"
+                )
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "current state changed"):
+                retire_effort_state(
+                    effort,
+                    before_final_check=concurrent_change,
+                )
+
+            self.assertTrue(map_path.is_file())
+            self.assertTrue(facts.is_file())
+            self.assertIn("## F1 — Current fact", facts.read_text(encoding="utf-8"))
+            self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
+
+            retire_effort_state(effort)
+            self.assertFalse(map_path.exists())
+            self.assertEqual(facts.read_text(encoding="utf-8"), fact_preamble)
+
+    def test_effort_retirement_rejects_a_symlinked_effort_before_locking(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / ".agent-wayfinder"
+            target = root / "target"
+            target.mkdir(parents=True)
+            map_path = target / "map.md"
+            map_path.write_text("# Target\n", encoding="utf-8")
+            linked = root / "linked"
+            linked.symlink_to(target, target_is_directory=True)
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "symlink"):
+                retire_effort_state(linked)
+
+            self.assertTrue(map_path.is_file())
+            self.assertFalse((target / ".wayfinder-mutation-lock").exists())
+
+            nested_target = root / "real-parent/nested"
+            nested_target.mkdir(parents=True)
+            nested_map = nested_target / "map.md"
+            nested_map.write_text("# Nested target\n", encoding="utf-8")
+            linked_parent = root / "linked-parent"
+            linked_parent.symlink_to(root / "real-parent", target_is_directory=True)
+            with self.assertRaisesRegex(UnsafeWayfinderState, "symlink"):
+                retire_effort_state(
+                    linked_parent / "nested",
+                )
+            self.assertTrue(nested_map.is_file())
+            self.assertFalse((nested_target / ".wayfinder-mutation-lock").exists())
+
+    def test_noncanonical_child_ambiguity_is_scoped_to_the_affected_container(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
             directory = effort / "unknowns"
             directory.mkdir(parents=True)
+            (effort / "map.md").write_text("# Scoped ambiguity\n", encoding="utf-8")
             (directory / "notes.md").write_text(
                 "not a canonical child\n", encoding="utf-8"
             )
-            with self.assertRaisesRegex(
-                UnsafeWayfinderState, "unrecognized child filename"
-            ):
-                next_current_id(effort, "U")
+            self.assertEqual(next_current_id(effort, "U"), 1)
+            self.assertEqual(current_markdown(effort), {
+                effort / "map.md": b"# Scoped ambiguity\n",
+            })
 
-            (directory / "notes.md").unlink()
             (directory / "U1.md").write_text("bare\n", encoding="utf-8")
             with self.assertRaisesRegex(
                 UnsafeWayfinderState, "unrecognized child filename"
@@ -850,442 +1686,211 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "duplicate current U"):
                 next_current_id(effort, "U")
 
-    def test_contract_keeps_only_current_roles_and_lock_based_allocation(
+            self.assertEqual(create_current_record(
+                effort,
+                "F",
+                "Independent fact",
+                "- Source: source.md\n\nCurrent.\n",
+            ), "F1")
+            self.assertTrue(retire_ledger_section(effort, "F", 1))
+
+    def test_effort_retirement_requires_continuity_and_preserves_inner_opaque_bytes(
         self,
     ) -> None:
-        for required in (
-            "numeric prefix plus a readable filename slug",
-            "F# and D# use H2 ledger headings",
-            "stable handle within the current Wayfinder representation",
-            "Never renumber an existing current record",
-            "never allow two current records of one type to share a number",
-            "one greater than the highest current same-type identifier",
-            "Do not search for or deliberately recycle interior gaps",
-            "A retired number is not reserved",
-            "`<effort>/.wayfinder-mutation-lock/` directory",
-            "Serialize every map, ledger, U#, or E# mutation for an effort",
-            "retirement's final reference scan and removal indivisible",
-            "U/E files and F/D ledger sections are current durable knowledge",
-            "There is no requirement that the record's exact contents already exist in Git",
-            "never leave a dangling current link",
-            "ordinary highest-current-plus-one rule",
-        ):
-            self.assertIn(required, self.normalized)
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / ".agent-wayfinder/current-effort"
+            (effort / "unknowns").mkdir(parents=True)
+            (effort / "map.md").write_text(
+                "# Current effort\n\nA consequential question remains.\n",
+                encoding="utf-8",
+            )
+            (effort / "unknowns/U1-current-question.md").write_text(
+                "# U1: Current question?\n", encoding="utf-8"
+            )
+            opaque = effort / "unknowns/notes.md"
+            opaque.write_bytes(b"\x00opaque project bytes\xff\n")
+            opaque_target = Path(temporary) / "opaque-target.md"
+            opaque_target.write_text("opaque symlink target\n", encoding="utf-8")
+            opaque_link = effort / "unknowns/reference.md"
+            opaque_link.symlink_to(opaque_target)
 
-    def test_identifier_reference_scope_is_effort_local_and_links_are_durable(
-        self,
-    ) -> None:
-        for semantic_pattern in (
-            r"bare .+ effort-local current-state shorthand",
-            r"uniqueness is scoped to current same-type records within that effort",
-            r"U#/E# readable filename is its canonical filesystem path",
-            r"current F#/D# durable link .+ exact ledger heading",
-            r"outside the selected effort needs a reference .+ repository-relative Markdown link",
-            r"need not retain .+ temporary current record",
-            r"Do not scan the repository or Git history",
-        ):
-            self.assertRegex(self.normalized, semantic_pattern)
+            with self.assertRaisesRegex(UnsafeWayfinderState, "continuity"):
+                retire_effort_state(effort)
+            self.assertTrue((effort / "map.md").is_file())
 
-        self.assertIn("U17 blocks D4", self.contract)
-        self.assertIn("D4 follows from F8", self.contract)
-        self.assertIn("decisions.md#d4--use-a-dedicated-node-group", self.contract)
+            owner = Path(temporary) / "current-outcome.md"
+            owner.write_text(
+                "# Current outcome\n\nU1 remains owned by the project authority.\n",
+                encoding="utf-8",
+            )
+            retire_effort_state(effort, continuity_owners=[owner])
+            self.assertFalse((effort / "map.md").exists())
+            self.assertFalse((effort / "unknowns/U1-current-question.md").exists())
+            self.assertEqual(opaque.read_bytes(), b"\x00opaque project bytes\xff\n")
+            self.assertTrue(opaque_link.is_symlink())
+            self.assertEqual(opaque_target.read_text(encoding="utf-8"), "opaque symlink target\n")
+            self.assertTrue((effort / "unknowns").is_dir())
+
+    def test_contract_has_one_concise_normative_structure(self) -> None:
+        headings = (
+            "## Core invariants",
+            "## Effort shape and selection",
+            "## Current knowledge",
+            "## Safe mutation",
+            "## Reconciliation and retirement",
+        )
+        offsets = [self.contract.index(heading) for heading in headings]
+        self.assertEqual(offsets, sorted(offsets))
         self.assertEqual(
-            heading_anchor("D", 4, "Use a dedicated node group"),
-            "d4--use-a-dedicated-node-group",
+            [line for line in self.contract.splitlines() if line in headings],
+            list(headings),
         )
 
-    def test_contract_defines_current_records_authority_and_unknown_content_safety(
-        self,
-    ) -> None:
+    def test_contract_keeps_the_stable_state_surface(self) -> None:
         for required in (
-            "facts.md # optional current F# ledger",
-            "decisions.md # optional current D# ledger",
-            "unknowns/ # optional independent U# files",
-            "evidence/ # optional substantial E# files",
-            "If a fresh human or agent must read most supporting artifacts",
-            "the effort is over-decomposed and should be reconciled",
-            "Every current fact contains at least one truthful provenance mode",
-            "`Source`, `Authority`, or `Derived from`",
-            "A repeated agent-authored summary is not an independent source",
-            "Working assumptions are not facts",
-            "An agent-created inference does not become established",
-            "accepted | provisional | superseded",
-            "Accepted and provisional decisions require actual project authority",
-            "Evidence can support a choice but cannot create authority",
-            "Revisit when: <required for provisional",
-            "## Recognized current state boundary",
-            "Wayfinder recognizes only an effort's `map.md`",
-            "Content outside that shape is project-owned data",
-            "do not interpret it as current Wayfinder state",
-            "Unknown project-owned content does not by itself block independent current work",
-            "real target or ancestor collision",
-            "semantic ambiguity in a recognized current container",
-            "Preserve every unknown byte when stopping",
-            "Retiring a fact or decision removes only its selected H2 section",
-            "Remove an otherwise empty `facts.md` or `decisions.md`",
-            "Do not implement automatic ledger sharding",
-            "arbitrary F#/D# file-count rule",
+            "Wayfinder recognizes only the contract-defined paths and record forms",
+            "# required re-entry point",
+            "# optional current F# ledger",
+            ".agent-wayfinder/<effort>/map.md",
+            "optional `facts.md`",
+            "optional `decisions.md`",
+            "`unknowns/U<ID>-<slug>.md`",
+            "`evidence/E<ID>-<slug>.md`",
+            "A map-only effort is valid",
+            "makes an effort current and resumable",
+            "Without `map.md`",
         ):
             self.assertIn(required, self.normalized)
 
-    def test_fact_corrections_update_the_same_scoped_fact_in_place(self) -> None:
+    def test_contract_keeps_current_knowledge_and_authority_boundaries(self) -> None:
         for required in (
-            "Treat each F# as the current canonical statement of one scoped factual conclusion",
-            "same subject, corrected value or scope",
-            "update that F# in place",
-            "Do not create a new F# merely to preserve history",
-            "otherwise Git owns the history",
-            "only for an independently useful fact with distinct meaning or scope",
-            "mark the existing fact `disputed` or `stale` rather than creating another established fact",
-            "Keep a `superseded` decision only while it adds current navigational value",
-        ):
-            self.assertIn(required, self.normalized)
-
-    def test_contract_protects_sensitive_data_and_unknown_project_content(
-        self,
-    ) -> None:
-        for required in (
-            "Never persist secrets, tokens, private keys, raw credentials",
-            "sensitive command output",
-            "unnecessary personal data",
+            "`U#`: an unresolved consequential question",
+            "`E#`: independently reusable evidence",
+            "`F#`: a sufficiently supported current scoped descriptive conclusion",
+            "`D#`: a current committed choice",
+            "Presence means the conclusion is sufficiently supported and current",
+            "Decisions are H2 sections",
+            "can record authority; it cannot create it",
             "raw transcripts",
             "private agent memory",
-            "optional `facts.md` and `decisions.md` ledgers",
-            "canonical U#/E# files below `unknowns/` and `evidence/`",
-            "mutate or silently normalize it",
-            "Lifecycle, provider repair, and projection regeneration treat all `.agent-wayfinder/` content as opaque project-owned data",
         ):
             self.assertIn(required, self.normalized)
+        self.assertIn("Presence in `unknowns/` means", self.normalized)
+        self.assertIn("Presence in `decisions.md` means", self.normalized)
 
-    def test_effort_lifecycle_remains_map_owned_and_progressive(self) -> None:
+    def test_contract_uses_current_wayfinder_terminology(self) -> None:
         for required in (
-            "- Status: current | completed | abandoned | superseded",
-            "This single line is the effort lifecycle representation",
-            "an explicit `current` match outranks a similarly named historical match",
-            "Read a historical map when it is directly named",
-            "An older map without a status remains valid",
-            "replace its ready frontier and next work with none for that effort",
+            "An effort is one resumable body of coordination",
+            "Current state is relevant to present coordination according to its type",
+            "Durable state is intentionally preserved across sessions or handoffs",
+            "including unmatched children or ledger sections inside a recognized container",
+            "unrecognized project-owned content",
+            "opaque means preserving bytes without interpreting, normalizing, or mutating them",
+            "Separate preservation is independently useful only when",
+            "These headings guide content; they are not a recognition schema",
+            "The ready frontier contains only coherent work that can proceed now",
+            "A canonical artifact is the designated durable location",
+            "Provenance is traceable",
+            "or a working proposal",
+            "Reconcile means bringing only affected current records",
+            "consequential when resolving it differently would change",
         ):
             self.assertIn(required, self.normalized)
-
-        fixture = FIXTURES / "wayfinder-settlement/.agent-wayfinder"
-        completed = (fixture / "wayfinder-lifecycle-completed/map.md").read_text()
-        abandoned = (fixture / "wayfinder-lifecycle-abandoned/map.md").read_text()
-        superseded = (fixture / "wayfinder-lifecycle-superseded/map.md").read_text()
-        self.assertIn("- Status: completed", completed)
-        self.assertIn("- Status: abandoned", abandoned)
-        self.assertIn("- Status: superseded", superseded)
-        for historical in (completed, abandoned, superseded):
-            self.assertIn("None for this effort.", historical)
-        self.assertIn("../settled-provider-direction/map.md", superseded)
-
-    def test_contract_preserves_specialist_results_without_copying_methods(
-        self,
-    ) -> None:
-        for required in (
-            "## Specialist result boundary",
-            "continue directly or load one materially useful specialist",
-            "Specialists own their methods and native artifacts",
-            "Do not copy a specialist method, transcript, or temporary bookkeeping",
-            "Create no separate specialist continuity record",
-            "accepted D#, specification, or implementation ticket",
-            "no durable Wayfinder state is needed",
+        for obsolete in (
+            "seam",
+            "dispositioned",
+            "non-durable proposal",
+            "noncanonical content",
+            "settlement",
+            "native owner",
         ):
-            self.assertIn(required, self.normalized)
-        for duplicated_method in (
-            "Form 3–5 ranked, falsifiable hypotheses",
-            "Compare only viable alternatives",
-            "Use primary sources for consequential",
-        ):
-            self.assertNotIn(duplicated_method, self.contract)
+            self.assertNotIn(obsolete, self.contract.lower())
 
-    def test_contract_structures_territory_and_converges_without_hierarchy(
-        self,
-    ) -> None:
-        for required in (
-            "## Semantic territory and effort identity",
-            "authoritative project structure",
-            "Otherwise establish it directly when current context supports it confidently",
-            "Territory is provisional, adaptive, and judgment-based",
-            "challenge incomplete framing",
-            "must not silently broaden the user's goal, delegated authority, or implementation scope",
-            "If structural ambiguity remains",
-            "state contract does not own that method",
-            "before substantial U/E/F/D state accumulates",
-            "## Territory",
-            "A semantic area is settled",
-            "proper canonical owner",
-            "Completed efforts should normally shrink",
-        ):
-            self.assertIn(required, self.normalized)
-
-    def test_contract_and_runtime_define_an_adaptive_default_map_shape(self) -> None:
-        for required in (
-            "## Default map shape",
-            "strong defaults, not a rigid schema",
-            "predictable headings improve scanning and re-entry",
-            "`## Destination` — Desired endpoint plus material scope or "
-            "authority boundary",
-            "`## Territory` — Major areas, ownership or operating constraints, "
-            "and important relationships or seams",
-            "one sentence, a few bullets, or a compact table",
-            "`## Current state` — The smallest truthful summary required for re-entry",
-            "authoritative roadmap, specification, ADR, or tracker",
-            "`## Blockers and dependencies` — Only material constraints on progress",
-            "`## Ready frontier` — Coherent work that can proceed now, what "
-            "remains blocked, and the next meaningful milestone or handoff",
-            "`## Key links` — Only the few canonical artifacts needed for continuation",
-            "combined, renamed, or omitted only when its purpose is genuinely "
-            "inapplicable or another structure is materially clearer",
-            "Empty sections must not be created merely to satisfy the outline",
-            "must not duplicate authoritative roadmaps, specifications, trackers, "
-            "facts, decisions, evidence records, generated graphs, or detailed backlogs",
-            "`Current phase` is not universal",
-            "place that information in `Current state`",
-            "`Current position` heading when that materially improves navigation",
-        ):
-            self.assertIn(required, self.normalized)
-
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+    def test_contract_does_not_treat_a_workflow_as_authority(self) -> None:
         self.assertIn(
-            "Apply the contract's default map shape when applicable; omit empty headings, "
-            "allow a materially clearer equivalent, and never copy canonical plans.",
-            runtime,
+            "When the request or delegated scope authorizes mutation",
+            self.normalized,
         )
-
-    def test_runtime_and_contract_promote_only_continuation_worthy_unknowns(
-        self,
-    ) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        promotion_rule = (
-            "A precise question becomes U# when preserving it while unanswered could "
-            "materially improve a later developer’s ability to make or evaluate a decision."
-        )
-        for required in (
-            "Map uncertainty broadly, then promote selectively",
-            promotion_rule,
-            "human or project authority",
-            "external owner or approval",
-            "multiple downstream areas or a meaningful seam",
-            "Ordinary research or debugging fog",
-            "does not by itself justify a U#",
-        ):
-            self.assertIn(required, runtime)
-
-        for required in (
-            promotion_rule,
-            "`unknown`: a precise unresolved question preserved independently while unanswered because it could materially improve a later developer’s ability to make or evaluate a decision",
-            "human or project authority",
-            "external owner or approval",
-            "multiple downstream areas or a meaningful seam",
-            "Keep incidental, routine, easily reconstructed, or merely unspecified detail in the map",
-            "Never create a U# from a template, precision, or item count alone",
-        ):
-            self.assertIn(required, self.normalized)
-
-    def test_runtime_and_contract_define_progressive_loading_and_authority(
-        self,
-    ) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
         self.assertIn(
-            "Live source and accepted project artifacts outrank stale map state.",
-            runtime,
+            "a mutating workflow may change only the requested effort and affected current state",
+            self.normalized,
         )
-        for progressive_loading_rule in (
-            "Route from the request first",
-            "Read the relevant `map.md`",
-            "low-resolution orientation",
-            "Follow only links needed for the current question or work",
-            "do not load unrelated ledger sections or every U/E artifact",
-            "Derive the current frontier from the map and any linked native ticket source",
-        ):
-            self.assertIn(progressive_loading_rule, self.normalized)
+        self.assertNotIn("A mutating workflow authorizes", self.contract)
 
+    def test_contract_allows_transient_retirement_after_reconciliation(self) -> None:
         self.assertIn(
-            "map owns current state, blockers, dependencies, frontier, and next work",
-            runtime,
-        )
-        for surface in (runtime, self.normalized):
-            self.assertIn(
-                "Durable Wayfinder state can record authority; it cannot create authority.",
-                surface,
-            )
-
-    def test_runtime_and_contract_exclude_volatile_git_observations_but_keep_constraints(
-        self,
-    ) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        for runtime_rule in (
-            "Inspect Git/session state when useful for safe execution",
-            "do not normally persist volatile observations",
-            "Retain durable Git constraints and dependencies under the state contract",
-        ):
-            self.assertIn(runtime_rule, runtime)
-
-        for volatile_observation in (
-            "current branch",
-            "HEAD commit",
-            "dirty working-tree status",
-            "ahead/behind status",
-        ):
-            self.assertIn(volatile_observation, self.normalized)
-        for durable_constraint in (
-            "work is authorized only on a named branch",
-            "a branch must remain untouched",
-            "a particular commit is the required baseline",
-            "another branch contains implementation required for continuation",
-        ):
-            self.assertIn(durable_constraint, self.normalized)
-
-        self.assertIn(
-            "Inspect this information when useful for safe execution", self.normalized
-        )
-        self.assertIn("normally do not persist", self.normalized)
-        self.assertIn(
-            "Persist it when it represents a durable constraint or dependency",
+            "Retirement does not require committing a transient record first. "
+            "Preserve any still-useful outcome, reconcile affected current references, "
+            "then remove the record.",
             self.normalized,
         )
 
-    def test_runtime_and_contract_distinguish_map_fog_from_durable_unknowns(
-        self,
-    ) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+    def test_contract_keeps_distinct_pre_v1_and_retirement_safety_rules(self) -> None:
         for required in (
-            "Establish the destination and enough relevant territory to orient the effort before substantial decomposition.",
-            "Precision alone is insufficient",
-            "Not yet specified",
-        ):
-            self.assertIn(required, runtime)
-
-        for required in (
-            "Establish the destination and enough relevant territory to orient the effort before substantial decomposition.",
-            "Keep incidental, routine, easily reconstructed, or merely unspecified detail in the map",
-            "Keep low-value fog under `Not yet specified`",
-            "Precision alone is insufficient",
+            "historical-state interpretation, legacy compatibility, migration, registry, "
+            "synchronization, or lifecycle machinery",
+            "Never commit, steal, or assume an existing lock is abandoned",
+            "never normalize, migrate, rename, delete, or globally scan them",
+            "Do not scan unrelated efforts, the entire repository, or Git history",
+            "Never recursively delete an effort, `unknowns/`, or `evidence/` directory",
+            "Do not retain the predecessor map or add tombstones, redirects, archives, "
+            "or successor metadata",
         ):
             self.assertIn(required, self.normalized)
 
-    def test_resolution_modes_define_sufficient_evidence_or_authority(self) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        rule = (
-            "The resolution method determines what evidence or authority is sufficient "
-            "to answer the question."
-        )
-        for surface in (runtime, self.normalized):
-            self.assertIn(rule, surface)
-            self.assertIn("human clarification", surface)
-            self.assertIn("research", surface)
-            self.assertIn("prototype", surface)
-
+    def test_contract_keeps_identifier_and_anchor_representation(self) -> None:
         for required in (
-            "cannot be supplied by agent inference or substituted research",
-            "appropriate source evidence",
-            "observed or experimental evidence",
-            "Running a named method is not itself resolution",
+            "effort-local, positive, and unique within their type",
+            "`## F<ID> — <title>`",
+            "`## D<ID> — <title>`",
+            "one greater than the highest current same-type identifier",
+            "repository-relative link",
         ):
             self.assertIn(required, self.normalized)
-
-    def test_durable_state_records_but_cannot_create_authority(self) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        authority_rule = (
-            "Durable Wayfinder state can record authority; it cannot create authority."
-        )
-        for surface in (runtime, self.normalized):
-            self.assertIn(authority_rule, surface)
-            self.assertIn("valid delegated scope", surface)
-
-        self.assertIn(
-            "An agent-authored map, U#, E#, F#, D#, or note is not an authority source",
-            self.normalized,
-        )
-
-    def test_answered_unknown_retires_while_authoritative_disposition_stays_open(
-        self,
-    ) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        gate = (
-            "Answer the consequential U#, or canonically record the responsible authority’s "
-            "explicit acceptance of the remaining uncertainty for that boundary."
-        )
-        self.assertIn(gate, runtime)
-        self.assertIn("remains factually unanswered", runtime)
-        self.assertIn("only the named boundary", runtime)
-        self.assertIn("question remains unanswered", self.normalized)
-        self.assertIn("unblock only that boundary", self.normalized)
-        for surface in (runtime, self.normalized):
-            self.assertIn("The ready frontier is the set of coherent scopes", surface)
-            self.assertIn("answered or explicitly dispositioned", surface)
-            self.assertIn("keep the U# open", surface)
-
-        for required in (
-            "An answered U# is no longer current unknown state",
-            "reconcile affected current references and dependencies, then retire the U#",
-            "Do not retain a resolved U# solely for history; Git owns history",
-            "Answering a U# need not create F# or D# before retirement",
-            "A current U# remains open until sufficient evidence or authority answers it and it is retired",
-            "An empty `unknowns/` directory has no semantic meaning",
-            "not a current unknown, blocker, dependency, or frontier item",
-            "requires neither creation nor removal",
-        ):
-            self.assertIn(required, self.normalized)
-
-        template_match = re.search(
-            r"Use U# when a question is consequential enough to track independently:\s*"
-            r"```markdown\n(?P<body>.*?)\n```",
-            self.contract,
-            re.DOTALL,
-        )
-        self.assertIsNotNone(template_match)
-        assert template_match is not None
         self.assertEqual(
-            re.findall(r"(?m)^- Status:.*$", template_match.group("body")),
-            ["- Status: open"],
+            heading_anchor("D", 4, "Adopt the selected approach"),
+            "d4--adopt-the-selected-approach",
         )
-        self.assertNotIn("- Status: open | resolved", self.contract)
-        self.assertNotIn("mark it `resolved`", self.contract)
-        self.assertNotIn("Status: accepted uncertainty", self.contract)
 
-    def test_runtime_and_contract_expose_an_unblocked_ready_frontier(self) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
+    def test_contract_keeps_mutation_and_project_data_safety_boundaries(self) -> None:
         for required in (
-            "coherent ready frontier",
-            "one or more ready scopes",
-            "without advancing work that remains dependency-blocked",
-            "Each Implementation handoff",
-        ):
-            self.assertIn(required, runtime)
-
-        for required in (
-            "coherent ready frontier",
-            "List ready scopes only when useful",
-            "dependency-blocked work",
-            "one coherent scope at a time",
+            "`<effort>/.wayfinder-mutation-lock/`",
+            "Every authorized mutation",
+            "Reread affected state",
+            "preserve the conflict",
+            "Preserve unrecognized bytes",
+            "unrecognized project-owned content",
         ):
             self.assertIn(required, self.normalized)
 
-    def test_runtime_and_contract_surface_only_evidence_backed_navigation_shape(
+    def test_residual_uncertainty_and_effort_recognition_fixtures_preserve_behavior(
         self,
     ) -> None:
-        runtime = " ".join(RUNTIME.read_text(encoding="utf-8").split())
-        for required in (
-            "When dependency evidence is sufficient, surface the navigation shape concisely",
-            "critical path",
-            "independent parallel work",
-            "off-path dependency",
-            "external lead time",
-            "Do not infer a critical path from an unordered backlog or incomplete evidence",
-        ):
-            self.assertIn(required, runtime)
+        residual = (
+            FIXTURES
+            / "wayfinder-accepted-residual-uncertainty/.agent-wayfinder/"
+            "pilot-capacity"
+        )
+        unknown = residual / "unknowns/U1-peak-concurrency.md"
+        approval = (
+            FIXTURES
+            / "wayfinder-accepted-residual-uncertainty/project-approval.md"
+        ).read_text(encoding="utf-8")
+        self.assertTrue(unknown.is_file())
+        self.assertIn("non-production pilot only", approval)
+        self.assertIn("keep its U# current and unresolved", self.normalized)
+        self.assertIn("unblock only that accepted boundary", self.normalized)
 
-        for required in (
-            "When evidence establishes execution order",
-            "critical path",
-            "independent parallel work",
-            "off-path dependency",
-            "external lead time",
-            "Never manufacture a critical path from an unordered backlog or incomplete dependency evidence",
-        ):
-            self.assertIn(required, self.normalized)
+        state_root = FIXTURES / "wayfinder-settlement/.agent-wayfinder"
+        blocked_map = state_root / "blocked-provider-direction/map.md"
+        retired = state_root / "retired-provider-direction"
+        self.assertTrue(blocked_map.is_file())
+        self.assertIn("checksum", blocked_map.read_text(encoding="utf-8"))
+        self.assertFalse((retired / "map.md").exists())
+        self.assertIn(
+            "project-owned note",
+            (retired / "project-notes.txt").read_text(encoding="utf-8"),
+        )
 
     def test_authored_installed_and_generated_surfaces_are_consistent(self) -> None:
         self.assertEqual(CONTRACT.read_bytes(), INSTALLED_CONTRACT.read_bytes())
@@ -1293,43 +1898,24 @@ class WayfinderStateContractTests(unittest.TestCase):
         generated = GENERATED_SKILL.read_text(encoding="utf-8")
         generated_body = generated.split("\n---\n", 1)[1]
         self.assertEqual(runtime, generated_body)
-        normalized_runtime = " ".join(runtime.split())
-        for required in (
+        for heading in (
             "## Core invariants",
             "## Establish territory",
             "## Resolve the frontier progressively",
             "## Reconcile and hand off",
-            "Territory is provisional, adaptive, and judgment-based",
-            "Optional F/D ledger sections and U/E artifacts preserve only useful current knowledge",
-            "Create a separate artifact because it is an independently useful coordination or retrieval unit",
-            "Continue directly when the frontier can be resolved safely",
-            "Discovery",
-            "Debugging",
-            "Research",
-            "Prototype",
-            "Domain Modeling",
-            "create no framework continuity record",
-            "Interpret and mutate only recognized current Wayfinder state",
-            "Preserve unknown project-owned content without interpreting it",
-            "continue independent current work",
-            "Use `to-tickets`",
-            "Verification follows execution",
-            "preferred structural fallback",
-            "before substantial U/E/F/D accumulates",
-            "do not reload Domain Modeling",
-            "later authoritative evidence materially invalidates",
-            "ordinary fog within coherent territory",
-            "If the state contract is unavailable",
+        ):
+            self.assertIn(heading, runtime)
+        normalized_runtime = " ".join(runtime.split())
+        for required in (
+            "Resolve each blocking dependency",
+            "responsible authority's explicit acceptance",
+            "leaves the U# current and unresolved",
+            "unblocks only that named boundary",
+            "does not grant authority",
         ):
             self.assertIn(required, normalized_runtime)
-
-        for contract_only_detail in (
-            ".wayfinder-mutation-lock",
-            "highest currently present",
-            "retired number",
-            "final scan and removal",
-        ):
-            self.assertNotIn(contract_only_detail, normalized_runtime)
+        for obsolete in ("seam", "dispositioned", "native owner"):
+            self.assertNotIn(obsolete, runtime.lower())
 
 
 if __name__ == "__main__":

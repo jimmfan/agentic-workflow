@@ -1,12 +1,12 @@
 schema_version = 1
 id = "wayfinder-answered-unknown-settlement"
-name = "Answered unknown moves to canonical ownership and retires"
+name = "Settled effort moves outcomes to canonical ownership and retires"
 fixture = "wayfinder-reference-settlement"
-request = "Resume the named provider-state effort and settle its Provider requirements area. U17 is answered, source.txt is authoritative, and the project-owner choice in D4 is accepted. Move the durable fact and choice into concise canonical docs/provider-runtime.md, update map.md to link that owner and mark the area settled, then retire redundant U17, E12, F8, and D4. Create no ADR or ticket."
+request = "Resume the named release-direction effort and settle it. U17 is answered, source.txt is authoritative, and the project-owner choice in D4 is accepted. Move the lasting fact and choice into concise canonical docs/release-direction.md, reconcile known references, then retire redundant U17, E12, F8, D4, and map.md under the effort mutation lock. Leave project-notes.txt and its containing directory untouched. Create no ADR, ticket, tombstone, redirect map, or archive."
 starting_state = [
   "This effort currently contains U17, E12, F8, and D4.",
-  "Provider requirements is an active semantic area whose source-supported fact and project-authorized choice are ready for canonical project documentation.",
-  "Once docs/provider-runtime.md and the map carry the durable outcome, no U/E/F/D child retains independent navigational value; Git history is not a retirement prerequisite.",
+  "Source constraint is an active semantic area whose source-supported fact and project-authorized choice are ready for canonical project documentation.",
+  "Once docs/release-direction.md carries the lasting outcome, this effort has no legitimate continuation frontier and no recognized Wayfinder state retains independent value.",
 ]
 expect = [
   "task_completed",
@@ -15,12 +15,14 @@ expect = [
   "project_state_preserved",
 ]
 must_not = [
-  "invent_unknown_answers",
   "overwrite_project_owned_state",
   "unnecessary_planning_artifacts",
 ]
 live = false
-preserve_paths = ["source.txt"]
+preserve_paths = [
+  "source.txt",
+  ".agent-wayfinder/release-direction/project-notes.txt",
+]
 forbid_created_globs = [
   "architecture-decisions",
   "architecture-decisions/**",
@@ -28,62 +30,59 @@ forbid_created_globs = [
   "issues/**",
 ]
 state_must_include = [
-  ".agent-wayfinder/provider-state/map.md",
-  ".agent-wayfinder/provider-state/unknowns/U17-provider-tracker-state.md",
-  ".agent-wayfinder/provider-state/evidence/E12-provider-configuration.md",
-  ".agent-wayfinder/provider-state/facts.md",
-  ".agent-wayfinder/provider-state/decisions.md",
+  ".agent-wayfinder/release-direction/map.md",
+  ".agent-wayfinder/release-direction/unknowns/U17-source-constraint.md",
+  ".agent-wayfinder/release-direction/evidence/E12-source-observation.md",
+  ".agent-wayfinder/release-direction/facts.md",
+  ".agent-wayfinder/release-direction/decisions.md",
   "source.txt",
 ]
-state_must_not_include = []
+state_must_not_include = [
+  ".agent-wayfinder/release-direction/project-notes.txt",
+]
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/unknowns/U17-provider-tracker-state.md"
+path = ".agent-wayfinder/release-direction/unknowns/U17-source-constraint.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/evidence/E12-provider-configuration.md"
+path = ".agent-wayfinder/release-direction/evidence/E12-source-observation.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/facts.md"
+path = ".agent-wayfinder/release-direction/facts.md"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/decisions.md"
+path = ".agent-wayfinder/release-direction/decisions.md"
 
 [[assertions]]
 kind = "path_exists"
-path = "docs/provider-runtime.md"
+path = "docs/release-direction.md"
 
 [[assertions]]
 kind = "path_contains"
-path = "docs/provider-runtime.md"
-value = "provider_requires_tracker_state=false"
+path = "docs/release-direction.md"
+value = "release_mode=staged"
 
 [[assertions]]
 kind = "path_contains"
-path = "docs/provider-runtime.md"
-value = "Use the local runtime without tracker state"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/provider-state/map.md"
-value = "[Provider runtime](../../../../docs/provider-runtime.md)"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/provider-state/map.md"
-value = "Provider requirements — settled"
+path = "docs/release-direction.md"
+value = "Adopt the staged release direction"
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/facts.md"
+path = ".agent-wayfinder/release-direction/map.md"
 
 [[assertions]]
-kind = "path_not_exists"
-path = ".agent-wayfinder/provider-state/decisions.md"
+kind = "path_exists"
+path = ".agent-wayfinder/release-direction/project-notes.txt"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/release-direction/project-notes.txt"
+value = "project-owned note"
 
 [[assertions]]
 kind = "path_not_exists"

@@ -1,7 +1,5 @@
 # Policy execution migration
 
-- Status: current
-
 ## Destination
 
 Separate policy concerns sufficiently to plan the platform migration.

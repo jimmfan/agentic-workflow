@@ -105,18 +105,18 @@ effort is over-decomposed and needs reconciliation. This
 intermediate-granularity default reduces unnecessary retrieval decisions
 without treating one topology as universally superior.
 
-Every current fact carries truthful source, authority, or derivation provenance
-and enough scope to avoid unsupported generalization. Accepted and provisional
-decisions require actual project authority; evidence may support a choice but
-does not create that authority. The map represents current navigation and
-should converge as lasting outcomes move to canonical owners. Exact allocation,
-locking, settlement, retirement, and reference behavior is owned by the
+Every current fact carries traceable source, authority, or derivation provenance
+and enough scope to avoid unsupported generalization. A D#'s presence means it
+is the current committed choice under actual project authority; evidence may
+support a choice but does not create that authority. The map represents current navigation and
+should converge as lasting outcomes move to canonical artifacts. Exact allocation,
+locking, reconciliation, retirement, and reference behavior is owned by the
 progressively loaded Wayfinder state contract and its tests.
 
 Wayfinder recognizes only an effort's map, optional F#/D# ledgers, and
-canonical U#/E# files. Other content below `.agent-wayfinder/` is project-owned
-data that Wayfinder does not interpret, mutate, or silently normalize. Unknown
-content does not by itself block independent authorized work. A mutation stops
+recognized U#/E# files. Other content below `.agent-wayfinder/` is project-owned
+data that Wayfinder does not interpret, mutate, or silently normalize.
+Unrecognized content does not by itself block independent authorized work. A mutation stops
 safely only when the content creates a real path collision, reference conflict,
 semantic ambiguity in a recognized current container, unsafe filesystem
 boundary, or inability to make the current write truthfully. Lifecycle

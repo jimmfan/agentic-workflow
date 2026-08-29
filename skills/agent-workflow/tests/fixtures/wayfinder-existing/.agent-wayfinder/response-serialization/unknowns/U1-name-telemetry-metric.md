@@ -1,6 +1,5 @@
 # U1: Name the telemetry metric
 
-- Status: open
 - Resolution mode: human clarification
 - Blocked by: none
 - Related: none

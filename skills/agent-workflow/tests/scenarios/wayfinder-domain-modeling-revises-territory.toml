@@ -6,6 +6,7 @@ request = "Resume `.agent-wayfinder/policy-execution-migration/map.md` and recon
 starting_state = [
   "The selected current map has a coherent but now-invalid combined-service territory.",
   "architecture.md is authoritative and materially changes boundaries, responsibilities, and relationships.",
+  "The accepted artifact resolves the territory without independently useful U/E/F/D state.",
   "Repository-local Wayfinder reconciliation is authorized.",
 ]
 expect = [
@@ -17,16 +18,22 @@ expect = [
 must_not = [
   "overwrite_project_owned_state",
   "silent_decision_invention",
+  "manufacture_uncertainty",
 ]
 live = false
 verification_command = "Confirm that the existing map was revised in place to match architecture.md, the stale combined-service structure is gone, and no parallel effort was created."
 preserve_paths = ["architecture.md"]
+report_must_include = ["Domain Modeling"]
 forbid_created_globs = [
   ".scratch/**",
   ".agent-wayfinder/policy-control-plane",
   ".agent-wayfinder/policy-control-plane/**",
   ".agent-wayfinder/policy-execution-migration-v2",
   ".agent-wayfinder/policy-execution-migration-v2/**",
+  ".agent-wayfinder/policy-execution-migration/unknowns/**",
+  ".agent-wayfinder/policy-execution-migration/evidence/**",
+  ".agent-wayfinder/policy-execution-migration/facts.md",
+  ".agent-wayfinder/policy-execution-migration/decisions.md",
 ]
 state_must_include = [
   ".agent-wayfinder/policy-execution-migration/map.md",

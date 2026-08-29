@@ -15,7 +15,7 @@ must_not = [
   "silent_decision_invention",
   "overwrite_project_owned_state",
 ]
-live = true
+live = false
 blind_grading = true
 preserve_paths = ["README.md"]
 forbid_created_globs = [

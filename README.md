@@ -135,16 +135,16 @@ Record only durable, evidence-backed coordination context:
 
 - the goal and scope boundary;
 - the important areas and relationships in the effort;
-- established facts with pointers to their authoritative sources;
+- supported current conclusions with pointers to their authoritative sources;
 - consequential unknowns, decisions, dependencies, and blockers; and
 - a concise ready frontier describing what can happen next.
 
 Create a separate unknown or evidence file only when it is an independently
-useful coordination or retrieval unit. When an established fact or committed
-decision warrants durable representation, record it as an F# or D# section in
+useful coordination or retrieval unit. When a supported current conclusion or
+committed decision warrants durable representation, record it as an F# or D# section in
 the optional `facts.md` or `decisions.md` ledger. Treat live source and accepted
 project artifacts as more authoritative than assumptions, chat history, or
-stale Wayfinder state. Do not copy the transcript, invent requirements, or
+outdated Wayfinder claims. Do not copy the transcript, invent requirements, or
 implement product changes during this first pass.
 
 If the current effort cannot be inferred confidently, ask me one concrete scope

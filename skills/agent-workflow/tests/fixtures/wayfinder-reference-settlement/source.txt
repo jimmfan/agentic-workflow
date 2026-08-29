@@ -1,1 +1,1 @@
-provider_requires_tracker_state=false
+release_mode=staged
