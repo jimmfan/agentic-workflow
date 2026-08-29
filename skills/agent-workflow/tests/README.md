@@ -21,14 +21,14 @@ subprocess.
   specialist boundaries, Wayfinder loading, authority blocking, fail-closed
   state loading, and one context-budget proof.
 - `test_wayfinder_state.py` owns deterministic state representation, allocation,
-  locking, concurrency, reconciliation, reference safety, and project-data
-  preservation.
+  changed-state detection, no-overwrite creation, reconciliation, reference
+  safety, and project-data preservation.
 
 ## Behavior harness and Wayfinder behavior
 
 - `test_behavior_harness.py` validates scenario schema and vocabulary, blind
   grading, evaluator assertions, route markers, verification evidence, fixture
-  isolation, destructive-mutation detection, and intentionally-red fixtures.
+  isolation, destructive-change detection, and intentionally-red fixtures.
 - `test_wayfinder_behavior.py` validates Wayfinder scenario semantics, current
   record presence, authority, progressive loading, conflict promotion,
   reconciliation, blocked retirement, full retirement, and no-state outcomes.
@@ -64,10 +64,10 @@ implementation work-item children. Current facts and decisions use optional
 evidence retain U#/E# files. Presence means a U# remains unresolved and a D#
 remains the current authorized choice; neither uses a lifecycle status field.
 Tests cover truthful fact provenance, actual decision authority, relevant-section retrieval without unrelated detail,
-answered unknowns and redundant evidence leaving current state, effort-lock
-serialization across maps, ledgers, U#, and E#, and reference-safe targeted
-retirement without requiring a prior commit. Opaque content inside U/E containers
-is preserved and blocks only an affected ambiguous mutation.
+answered unknowns and redundant evidence leaving current state, reference-safe
+targeted retirement without requiring a prior commit, changed-state rejection,
+and no-overwrite U#/E# creation. Opaque content inside U/E containers
+is preserved, while identity-like malformed entries block the affected U/E operation.
 
 The catalog also covers blocked-effort re-entry, mapless directories being
 excluded from selection, and ensuring that an unrelated existing effort
@@ -76,11 +76,7 @@ authority-owned, external-approval, and cross-area-gating uncertainty without
 promoting incidental fog or requiring an exact artifact count. The live
 Wayfinder contracts preserve an unrelated effort during reconciliation, keep
 outdated-state audits read-only, and require conflicting reconciliation to stop
-without guessing. Framework lifecycle coverage preserves arbitrary unrecognized
-project-owned bytes, including binary data and symlink targets, through every
-supported lifecycle operation. Deterministic state tests prove unknown content
-is not interpreted as current state, independent writes may proceed, and real
-recognized-container ambiguity still fails safely.
+without guessing.
 
 Repository evaluation-tooling tests under `evals/tests/` remain a separate
 network-free CI step and are not part of the distributed package gate.

@@ -16,9 +16,8 @@ rewrites, or removes them.
   fallback, authorization, evidence, and required route-marker rules.
 - `providers.json`: the reviewed optional capability-to-provider declaration.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
-  optional F# and D# ledgers, independently useful U#/E# files, current-state
-  allocation, unknown-content safety, knowledge reconciliation, safe effort
-  retirement, and progressive loading.
+  current maps, optional F#/D# ledgers, independently useful U#/E# files,
+  identifiers, reconciliation, retirement, and progressive loading.
 - `install-manifest.json`: version/revision plus the small external/composite
   evidence required by safe update and removal.
 
@@ -61,11 +60,6 @@ a relevant ledger section or U#/E# artifact.
 Facts require traceable provenance, and decisions require responsible project
 authority rather than evidence alone.
 
-Wayfinder recognizes only the current map, ledgers, and recognized U#/E# files.
-Unrecognized project-owned content is preserved without interpretation or
-mutation; independent current work may proceed unless the content creates an
-actual collision, reference conflict, semantic ambiguity, or unsafe filesystem
-boundary.
 Substantial decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling remain stateless

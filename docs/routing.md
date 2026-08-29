@@ -31,7 +31,7 @@ Runtime ownership is deliberately split:
 | `routing.md` | Selection criteria, route transitions, relevant resume, provider resolution, workflow composition, and detailed marker semantics |
 | `providers.json` | Current host discovery, invocation, availability, configuration, and adapter facts |
 | Provider and local skills | The selected workflow's methodology and its provider-specific execution boundary |
-| State contracts | Storage, identifiers, progressive state loading, conflict handling, reconciliation, and re-entry mechanics |
+| State contracts | Storage, identifiers, progressive state loading, reconciliation, and re-entry mechanics |
 | ADRs and project documentation | Architectural rationale, history, maintenance policy, and compatibility explanation |
 
 This keeps concrete host snapshots and provider methodology out of the router
@@ -77,21 +77,14 @@ owned runtime projection derived from and attributed to Matt Pocock's pinned
 Wayfinder methodology. The map owns current state, blockers, dependencies, and
 next work; sparse F#/D# ledger sections and U#/E# artifacts stay lazy, and new
 decomposed work belongs to native `to-tickets` output. A safe regular map makes
-an effort current and resumable; a mapless directory is not a candidate. Only
-recognized current Wayfinder state is interpreted. Unknown
-project-owned content is preserved without mutation; independent current work
-proceeds unless a real collision, reference conflict, semantic ambiguity, or
-unsafe filesystem boundary requires a safe stop. The router loads the Wayfinder
-contract only after Wayfinder is selected or a relevant effort is being resumed,
-then reads
+an effort current and resumable; a mapless directory is not a candidate. The
+router loads the Wayfinder contract only after Wayfinder is selected or a
+relevant effort is being resumed, then reads
 the map and only relevant F#/D# ledger sections or U#/E# artifacts. An unrelated
-existing map never changes a request's route. Diagnosis, review, explanation,
-and audit requests stay read-only unless the user separately authorizes
-mutation.
+existing map never changes a request's route.
 
 Normal authorized project work may create a lightweight Wayfinder map without a
-second permission request after the router selects it. A read-only request may
-use ephemeral structure but does not create or update Wayfinder state.
+second permission request after the router selects it.
 
 Within a selected effort, continue directly when the frontier is clear. Load
 Discovery, Debugging, Research, Prototype, Domain Modeling, Grilling, or human

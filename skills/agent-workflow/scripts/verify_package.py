@@ -594,10 +594,8 @@ def check_provider_declaration() -> None:
             f"owned Wayfinder runtime lacks required contract: {required}",
         )
     for contract_only_detail in (
-        ".wayfinder-mutation-lock",
         "highest currently present",
         "retired number",
-        "final scan and removal",
     ):
         require(
             contract_only_detail not in projection_text,

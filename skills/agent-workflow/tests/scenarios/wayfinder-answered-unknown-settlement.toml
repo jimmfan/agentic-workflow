@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-answered-unknown-settlement"
 name = "Settled effort moves outcomes to canonical ownership and retires"
 fixture = "wayfinder-reference-settlement"
-request = "Resume the named release-direction effort and settle it. U17 is answered, source.txt is authoritative, and the project-owner choice in D4 is accepted. Move the lasting fact and choice into concise canonical docs/release-direction.md, reconcile known references, then retire redundant U17, E12, F8, D4, and map.md under the effort mutation lock. Leave project-notes.txt and its containing directory untouched. Create no ADR, ticket, tombstone, redirect map, or archive."
+request = "Resume the named release-direction effort and settle it. U17 is answered, source.txt is authoritative, and the project-owner choice in D4 is accepted. Move the lasting fact and choice into concise canonical docs/release-direction.md, reconcile known references, then retire redundant U17, E12, F8, D4, and map.md after rereading the directly affected current state. Leave project-notes.txt and its containing directory untouched. Create no ADR, ticket, tombstone, redirect map, or archive."
 starting_state = [
   "This effort currently contains U17, E12, F8, and D4.",
   "Source constraint is an active semantic area whose source-supported fact and project-authorized choice are ready for canonical project documentation.",

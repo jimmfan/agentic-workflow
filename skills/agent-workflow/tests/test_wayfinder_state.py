@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
 from pathlib import Path
 import re
 import shutil
 import tempfile
-import threading
-import time
 from typing import Callable
 import unittest
 
@@ -110,13 +107,7 @@ def select_effort(
     return matches[0] if matches else None
 
 
-def ledger_sections(effort: Path, kind: str) -> list[tuple[int, str, str]]:
-    path = effort / LEDGER_PATHS[kind]
-    if not path.exists():
-        return []
-    if path.is_symlink() or not path.is_file():
-        raise UnsafeWayfinderState(f"unsafe {kind} ledger")
-    text = path.read_text(encoding="utf-8")
+def parse_ledger_sections(text: str, kind: str) -> list[tuple[int, str, str]]:
     lines = text.splitlines(keepends=True)
     starts: list[tuple[int, int, str]] = []
     for index, line in enumerate(lines):
@@ -134,6 +125,15 @@ def ledger_sections(effort: Path, kind: str) -> list[tuple[int, str, str]]:
         end = starts[position + 1][0] if position + 1 < len(starts) else len(lines)
         sections.append((identifier, title, "".join(lines[start:end])))
     return sections
+
+
+def ledger_sections(effort: Path, kind: str) -> list[tuple[int, str, str]]:
+    path = effort / LEDGER_PATHS[kind]
+    if not path.exists():
+        return []
+    if path.is_symlink() or not path.is_file():
+        raise UnsafeWayfinderState(f"unsafe {kind} ledger")
+    return parse_ledger_sections(path.read_text(encoding="utf-8"), kind)
 
 
 def without_ledger_sections(
@@ -164,9 +164,8 @@ def create_current_record(
     title: str,
     body: str,
     *,
-    before_lock: Callable[[], None] | None = None,
+    before_create: Callable[[], None] | None = None,
     before_final_write: Callable[[], None] | None = None,
-    lock_attempts: int = 1_000,
 ) -> str:
     if kind not in TYPE_DIRECTORIES:
         raise UnsafeWayfinderState("unknown Wayfinder record type")
@@ -176,30 +175,35 @@ def create_current_record(
             kind,
             readable_slug(title),
             body,
-            before_lock=before_lock,
-            lock_attempts=lock_attempts,
+            before_create=before_create,
         )
         return path.name.split("-", 1)[0]
-    if before_lock is not None:
-        before_lock()
-    with effort_mutation_lock(effort, attempts=lock_attempts):
-        path = effort / LEDGER_PATHS[kind]
-        sections = ledger_sections(effort, kind)
-        identifier = max((item[0] for item in sections), default=0) + 1
-        observed = path.read_bytes() if path.exists() else None
-        existing = observed.decode("utf-8") if observed is not None else ""
-        if before_final_write is not None:
-            before_final_write()
-        current = path.read_bytes() if path.exists() else None
-        if current != observed:
-            raise UnsafeWayfinderState("ledger changed before write")
-        prefix = existing.rstrip() if existing else f"# {LEDGER_TITLES[kind]}"
-        content = (
-            f"{prefix}\n\n## {kind}{identifier} — {title}\n\n"
-            f"{body.rstrip()}\n"
-        )
+    path = effort / LEDGER_PATHS[kind]
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise UnsafeWayfinderState(f"unsafe {kind} ledger")
+    observed = path.read_bytes() if path.exists() else None
+    existing = observed.decode("utf-8") if observed is not None else ""
+    sections = parse_ledger_sections(existing, kind)
+    identifier = max((item[0] for item in sections), default=0) + 1
+    if before_final_write is not None:
+        before_final_write()
+    current = path.read_bytes() if path.exists() else None
+    if current != observed:
+        raise UnsafeWayfinderState("ledger changed before write")
+    prefix = existing.rstrip() if existing else f"# {LEDGER_TITLES[kind]}"
+    content = (
+        f"{prefix}\n\n## {kind}{identifier} — {title}\n\n"
+        f"{body.rstrip()}\n"
+    )
+    if observed is None:
+        try:
+            with path.open("x", encoding="utf-8") as handle:
+                handle.write(content)
+        except FileExistsError as error:
+            raise UnsafeWayfinderState("ledger changed before write") from error
+    else:
         path.write_text(content, encoding="utf-8")
-        return f"{kind}{identifier}"
+    return f"{kind}{identifier}"
 
 
 def heading_anchor(kind: str, identifier: int, title: str) -> str:
@@ -245,58 +249,58 @@ def retire_ledger_section(
     identifier: int,
     *,
     known_references: list[Path] | None = None,
-    before_final_check: Callable[[], None] | None = None,
-    lock_attempts: int = 1_000,
 ) -> bool:
     path = effort / LEDGER_PATHS[kind]
-    with effort_mutation_lock(effort, attempts=lock_attempts):
-        if not path.exists():
-            return False
-        original = path.read_text(encoding="utf-8")
-        sections = ledger_sections(effort, kind)
-        matches = [item for item in sections if item[0] == identifier]
-        if not matches:
-            return False
-        _, title, section = matches[0]
-        updated = without_ledger_sections(original, sections, {identifier})
-        if ledger_references(
-            effort,
-            kind,
-            identifier,
-            title,
-            updated,
-            known_references,
-        ):
-            raise UnsafeWayfinderState("current references remain")
-        observed_current = current_markdown(effort)
-        observed_known = {
-            reference: reference.read_bytes()
-            for reference in known_references or []
-            if not reference.is_relative_to(effort)
-        }
-        if before_final_check is not None:
-            before_final_check()
-        if current_markdown(effort) != observed_current:
-            raise UnsafeWayfinderState("current state changed during reconciliation")
-        if any(
-            not reference.is_file() or reference.read_bytes() != observed
-            for reference, observed in observed_known.items()
-        ):
-            raise UnsafeWayfinderState("known reference changed during reconciliation")
-        if ledger_references(
-            effort,
-            kind,
-            identifier,
-            title,
-            updated,
-            known_references,
-        ):
-            raise UnsafeWayfinderState("current references appeared during reconciliation")
-        if updated.strip() in {"", f"# {LEDGER_TITLES[kind]}"}:
-            path.unlink()
-        else:
-            path.write_text(updated, encoding="utf-8")
-        return True
+    if not path.exists():
+        return False
+    if path.is_symlink() or not path.is_file():
+        raise UnsafeWayfinderState(f"unsafe {kind} ledger")
+    original_bytes = path.read_bytes()
+    original = original_bytes.decode("utf-8")
+    sections = parse_ledger_sections(original, kind)
+    matches = [item for item in sections if item[0] == identifier]
+    if not matches:
+        return False
+    _, title, section = matches[0]
+    updated = without_ledger_sections(original, sections, {identifier})
+    if ledger_references(
+        effort,
+        kind,
+        identifier,
+        title,
+        updated,
+        known_references,
+    ):
+        raise UnsafeWayfinderState("current references remain")
+    observed_current = current_markdown(effort)
+    if observed_current.get(path) != original_bytes:
+        raise UnsafeWayfinderState("current state changed during reconciliation")
+    observed_known = {
+        reference: reference.read_bytes()
+        for reference in known_references or []
+        if not reference.is_relative_to(effort)
+    }
+    if current_markdown(effort) != observed_current:
+        raise UnsafeWayfinderState("current state changed during reconciliation")
+    if any(
+        not reference.is_file() or reference.read_bytes() != observed
+        for reference, observed in observed_known.items()
+    ):
+        raise UnsafeWayfinderState("known reference changed during reconciliation")
+    if ledger_references(
+        effort,
+        kind,
+        identifier,
+        title,
+        updated,
+        known_references,
+    ):
+        raise UnsafeWayfinderState("current references appeared during reconciliation")
+    if updated.strip() in {"", f"# {LEDGER_TITLES[kind]}"}:
+        path.unlink()
+    else:
+        path.write_text(updated, encoding="utf-8")
+    return True
 
 
 def update_ledger_section(
@@ -304,38 +308,34 @@ def update_ledger_section(
     kind: str,
     identifier: int,
     body: str,
-    *,
-    before_final_check: Callable[[], None] | None = None,
 ) -> None:
-    with effort_mutation_lock(effort):
-        path = effort / LEDGER_PATHS[kind]
-        original = path.read_text(encoding="utf-8")
-        matches = [item for item in ledger_sections(effort, kind) if item[0] == identifier]
-        if len(matches) != 1:
-            raise UnsafeWayfinderState("ledger section is not current and unique")
-        _, title, section = matches[0]
-        replacement = f"## {kind}{identifier} — {title}\n\n{body.rstrip()}\n"
-        updated = original.replace(section, replacement, 1)
-        observed_current = current_markdown(effort)
-        if before_final_check is not None:
-            before_final_check()
-        if current_markdown(effort) != observed_current:
-            raise UnsafeWayfinderState("current state changed during reconciliation")
-        path.write_text(updated, encoding="utf-8")
+    path = effort / LEDGER_PATHS[kind]
+    if path.is_symlink() or not path.is_file():
+        raise UnsafeWayfinderState(f"unsafe {kind} ledger")
+    original_bytes = path.read_bytes()
+    original = original_bytes.decode("utf-8")
+    matches = [
+        item for item in parse_ledger_sections(original, kind) if item[0] == identifier
+    ]
+    if len(matches) != 1:
+        raise UnsafeWayfinderState("ledger section is not current and unique")
+    _, title, section = matches[0]
+    replacement = f"## {kind}{identifier} — {title}\n\n{body.rstrip()}\n"
+    updated = original.replace(section, replacement, 1)
+    if path.read_bytes() != original_bytes:
+        raise UnsafeWayfinderState("current state changed during reconciliation")
+    path.write_text(updated, encoding="utf-8")
 
 
 def replace_map(
     effort: Path,
     expected: bytes,
     updated: bytes,
-    *,
-    lock_attempts: int = 1_000,
 ) -> None:
-    with effort_mutation_lock(effort, attempts=lock_attempts):
-        path = effort / "map.md"
-        if path.is_symlink() or not path.is_file() or path.read_bytes() != expected:
-            raise UnsafeWayfinderState("map changed before write")
-        path.write_bytes(updated)
+    path = effort / "map.md"
+    if path.is_symlink() or not path.is_file() or path.read_bytes() != expected:
+        raise UnsafeWayfinderState("map changed before write")
+    path.write_bytes(updated)
 
 
 def current_child_paths(
@@ -384,45 +384,32 @@ def next_current_id(effort: Path, kind: str) -> int:
     return max(ids, default=0) + 1
 
 
-@contextmanager
-def effort_mutation_lock(effort: Path, *, attempts: int = 1_000):
-    effort.mkdir(parents=True, exist_ok=True)
-    lock = effort / ".wayfinder-mutation-lock"
-    for _ in range(attempts):
-        try:
-            lock.mkdir()
-        except FileExistsError:
-            time.sleep(0.001)
-            continue
-        break
-    else:
-        raise UnsafeWayfinderState("effort mutation lock is unavailable")
-    try:
-        yield
-    finally:
-        lock.rmdir()
-
-
 def create_current_child(
     effort: Path,
     kind: str,
     slug: str,
     body: str,
-    before_lock: Callable[[], None] | None = None,
-    lock_attempts: int = 1_000,
+    before_create: Callable[[], None] | None = None,
+    before_exclusive_create: Callable[[], None] | None = None,
 ) -> Path:
     if kind not in {"U", "E"}:
         raise UnsafeWayfinderState("F/D records belong in their current ledgers")
-    if before_lock is not None:
-        before_lock()
-    with effort_mutation_lock(effort, attempts=lock_attempts):
-        directory = effort / TYPE_DIRECTORIES[kind]
-        directory.mkdir(parents=True, exist_ok=True)
-        candidate = next_current_id(effort, kind)
-        path = directory / f"{kind}{candidate}-{slug}.md"
+    directory = effort / TYPE_DIRECTORIES[kind]
+    directory.mkdir(parents=True, exist_ok=True)
+    candidate = next_current_id(effort, kind)
+    path = directory / f"{kind}{candidate}-{slug}.md"
+    if before_create is not None:
+        before_create()
+    if next_current_id(effort, kind) != candidate:
+        raise UnsafeWayfinderState("current child identifiers changed before create")
+    if before_exclusive_create is not None:
+        before_exclusive_create()
+    try:
         with path.open("x", encoding="utf-8") as handle:
             handle.write(body)
-        return path
+    except FileExistsError as error:
+        raise UnsafeWayfinderState("current child already exists") from error
+    return path
 
 
 def current_markdown(
@@ -497,42 +484,48 @@ def rename_ledger_heading(
 ) -> str:
     if kind not in LEDGER_PATHS:
         raise UnsafeWayfinderState("only F/D records have ledger headings")
-    with effort_mutation_lock(effort):
-        path = effort / LEDGER_PATHS[kind]
-        original = path.read_text(encoding="utf-8")
-        matches = [item for item in ledger_sections(effort, kind) if item[0] == identifier]
-        if len(matches) != 1:
-            raise UnsafeWayfinderState("ledger heading is not current and unique")
-        _, old_title, section = matches[0]
-        if ledger_anchor_references(
-            effort, kind, identifier, old_title, known_references
-        ):
-            raise UnsafeWayfinderState("current anchor references remain")
-        old_heading = f"## {kind}{identifier} — {old_title}"
-        new_heading = f"## {kind}{identifier} — {title}"
-        updated = original.replace(
-            section,
-            section.replace(old_heading, new_heading, 1),
-            1,
-        )
-        observed_current = current_markdown(effort)
-        observed_known = {
-            reference: reference.read_bytes()
-            for reference in known_references or []
-        }
-        if current_markdown(effort) != observed_current:
-            raise UnsafeWayfinderState("current state changed during reconciliation")
-        if any(
-            not reference.is_file() or reference.read_bytes() != observed
-            for reference, observed in observed_known.items()
-        ):
-            raise UnsafeWayfinderState("known reference changed during reconciliation")
-        if ledger_anchor_references(
-            effort, kind, identifier, old_title, known_references
-        ):
-            raise UnsafeWayfinderState("current anchor references appeared")
-        path.write_text(updated, encoding="utf-8")
-        return heading_anchor(kind, identifier, title)
+    path = effort / LEDGER_PATHS[kind]
+    if path.is_symlink() or not path.is_file():
+        raise UnsafeWayfinderState(f"unsafe {kind} ledger")
+    original_bytes = path.read_bytes()
+    original = original_bytes.decode("utf-8")
+    matches = [
+        item for item in parse_ledger_sections(original, kind) if item[0] == identifier
+    ]
+    if len(matches) != 1:
+        raise UnsafeWayfinderState("ledger heading is not current and unique")
+    _, old_title, section = matches[0]
+    if ledger_anchor_references(
+        effort, kind, identifier, old_title, known_references
+    ):
+        raise UnsafeWayfinderState("current anchor references remain")
+    old_heading = f"## {kind}{identifier} — {old_title}"
+    new_heading = f"## {kind}{identifier} — {title}"
+    updated = original.replace(
+        section,
+        section.replace(old_heading, new_heading, 1),
+        1,
+    )
+    observed_current = current_markdown(effort)
+    if observed_current.get(path) != original_bytes:
+        raise UnsafeWayfinderState("current state changed during reconciliation")
+    observed_known = {
+        reference: reference.read_bytes()
+        for reference in known_references or []
+    }
+    if current_markdown(effort) != observed_current:
+        raise UnsafeWayfinderState("current state changed during reconciliation")
+    if any(
+        not reference.is_file() or reference.read_bytes() != observed
+        for reference, observed in observed_known.items()
+    ):
+        raise UnsafeWayfinderState("known reference changed during reconciliation")
+    if ledger_anchor_references(
+        effort, kind, identifier, old_title, known_references
+    ):
+        raise UnsafeWayfinderState("current anchor references appeared")
+    path.write_text(updated, encoding="utf-8")
+    return heading_anchor(kind, identifier, title)
 
 
 def rename_current_child(
@@ -547,34 +540,33 @@ def rename_current_child(
         raise UnsafeWayfinderState("renaming path has no canonical current ID")
     if readable_slug(slug) != slug or not slug:
         raise UnsafeWayfinderState("rename requires a readable slug")
-    with effort_mutation_lock(effort):
-        current_child_paths(effort, match.group(1), strict=True)
-        if not target.is_file() or target.is_symlink():
-            raise UnsafeWayfinderState("unsafe rename target")
-        if references_to(effort, target, known_references):
-            raise UnsafeWayfinderState("current references remain")
-        observed_target = target.read_bytes()
-        observed_current = current_markdown(effort, excluding=target)
-        observed_known = {
-            reference: reference.read_bytes()
-            for reference in known_references or []
-        }
-        renamed = target.with_name(f"{match.group(1)}{match.group(2)}-{slug}.md")
-        if renamed.exists() or renamed.is_symlink():
-            raise UnsafeWayfinderState("rename target already exists")
-        if target.read_bytes() != observed_target:
-            raise UnsafeWayfinderState("rename target changed")
-        if current_markdown(effort, excluding=target) != observed_current:
-            raise UnsafeWayfinderState("current state changed during reconciliation")
-        if any(
-            not reference.is_file() or reference.read_bytes() != observed
-            for reference, observed in observed_known.items()
-        ):
-            raise UnsafeWayfinderState("known reference changed during reconciliation")
-        if references_to(effort, target, known_references):
-            raise UnsafeWayfinderState("current references appeared during reconciliation")
-        target.rename(renamed)
-        return renamed
+    current_child_paths(effort, match.group(1), strict=True)
+    if not target.is_file() or target.is_symlink():
+        raise UnsafeWayfinderState("unsafe rename target")
+    if references_to(effort, target, known_references):
+        raise UnsafeWayfinderState("current references remain")
+    observed_target = target.read_bytes()
+    observed_current = current_markdown(effort, excluding=target)
+    observed_known = {
+        reference: reference.read_bytes()
+        for reference in known_references or []
+    }
+    renamed = target.with_name(f"{match.group(1)}{match.group(2)}-{slug}.md")
+    if renamed.exists() or renamed.is_symlink():
+        raise UnsafeWayfinderState("rename target already exists")
+    if target.read_bytes() != observed_target:
+        raise UnsafeWayfinderState("rename target changed")
+    if current_markdown(effort, excluding=target) != observed_current:
+        raise UnsafeWayfinderState("current state changed during reconciliation")
+    if any(
+        not reference.is_file() or reference.read_bytes() != observed
+        for reference, observed in observed_known.items()
+    ):
+        raise UnsafeWayfinderState("known reference changed during reconciliation")
+    if references_to(effort, target, known_references):
+        raise UnsafeWayfinderState("current references appeared during reconciliation")
+    target.rename(renamed)
+    return renamed
 
 
 def retire_current_child(
@@ -583,48 +575,46 @@ def retire_current_child(
     *,
     known_references: list[Path] | None = None,
     before_final_check: Callable[[], None] | None = None,
-    lock_attempts: int = 1_000,
 ) -> bool:
     match = CURRENT_ID.fullmatch(target.name)
     if match is not None and match.group(1) in LEDGER_PATHS:
         raise UnsafeWayfinderState("F/D records belong in their current ledgers")
     if match is None or match.group(1) not in {"U", "E"}:
         raise UnsafeWayfinderState("retiring path has no canonical current ID")
-    with effort_mutation_lock(effort, attempts=lock_attempts):
-        current_child_paths(effort, match.group(1), strict=True)
-        if not target.exists():
-            return False
-        references = references_to(effort, target, known_references)
-        if references:
-            raise UnsafeWayfinderState(f"current references remain: {references}")
+    current_child_paths(effort, match.group(1), strict=True)
+    if not target.exists():
+        return False
+    references = references_to(effort, target, known_references)
+    if references:
+        raise UnsafeWayfinderState(f"current references remain: {references}")
 
-        observed_target = target.read_bytes()
-        observed_current = current_markdown(effort, excluding=target)
-        observed_known = {
-            reference: reference.read_bytes()
-            for reference in known_references or []
-        }
-        if before_final_check is not None:
-            before_final_check()
-        if not target.exists() or target.read_bytes() != observed_target:
-            raise UnsafeWayfinderState("retiring child changed during reconciliation")
-        if current_markdown(effort, excluding=target) != observed_current:
-            raise UnsafeWayfinderState("current state changed during reconciliation")
-        if any(
-            not reference.is_file() or reference.read_bytes() != observed
-            for reference, observed in observed_known.items()
-        ):
-            raise UnsafeWayfinderState("known reference changed during reconciliation")
-        if references_to(effort, target, known_references):
-            raise UnsafeWayfinderState(
-                "current references appeared during reconciliation"
-            )
+    observed_target = target.read_bytes()
+    observed_current = current_markdown(effort, excluding=target)
+    observed_known = {
+        reference: reference.read_bytes()
+        for reference in known_references or []
+    }
+    if before_final_check is not None:
+        before_final_check()
+    if not target.exists() or target.read_bytes() != observed_target:
+        raise UnsafeWayfinderState("retiring child changed during reconciliation")
+    if current_markdown(effort, excluding=target) != observed_current:
+        raise UnsafeWayfinderState("current state changed during reconciliation")
+    if any(
+        not reference.is_file() or reference.read_bytes() != observed
+        for reference, observed in observed_known.items()
+    ):
+        raise UnsafeWayfinderState("known reference changed during reconciliation")
+    if references_to(effort, target, known_references):
+        raise UnsafeWayfinderState(
+            "current references appeared during reconciliation"
+        )
 
-        target.unlink()
-        parent = target.parent
-        if not any(parent.iterdir()):
-            parent.rmdir()
-        return True
+    target.unlink()
+    parent = target.parent
+    if not any(parent.iterdir()):
+        parent.rmdir()
+    return True
 
 
 def retire_effort_state(
@@ -644,96 +634,95 @@ def retire_effort_state(
             raise UnsafeWayfinderState(f"unsafe reference path: {reference}")
     if any(owner.is_relative_to(effort) for owner in continuity_owners or []):
         raise UnsafeWayfinderState("continuity owner must outlive the effort")
-    with effort_mutation_lock(effort):
-        validate_effort_location(effort, require_root=True)
-        validate_effort(effort)
-        for kind in ("U", "E"):
-            current_child_paths(effort, kind, strict=True)
-        observed_current = current_markdown(effort)
-        observed_known = {
-            reference: reference.read_bytes() for reference in reference_paths
-        }
-        unresolved = [
-            path.name.split("-", 1)[0]
-            for path in current_child_paths(effort, "U", strict=True)
-        ]
-        owner_text = "\n".join(
-            owner.read_text(encoding="utf-8") for owner in continuity_owners or []
+    validate_effort_location(effort, require_root=True)
+    validate_effort(effort)
+    for kind in ("U", "E"):
+        current_child_paths(effort, kind, strict=True)
+    observed_current = current_markdown(effort)
+    observed_known = {
+        reference: reference.read_bytes() for reference in reference_paths
+    }
+    unresolved = [
+        path.name.split("-", 1)[0]
+        for path in current_child_paths(effort, "U", strict=True)
+    ]
+    owner_text = "\n".join(
+        owner.read_text(encoding="utf-8") for owner in continuity_owners or []
+    )
+    if any(
+        re.search(rf"(?<![A-Z0-9]){re.escape(identifier)}(?![0-9])", owner_text)
+        is None
+        for identifier in unresolved
+    ):
+        raise UnsafeWayfinderState(
+            "unresolved coordination lacks an observable continuity owner"
         )
-        if any(
-            re.search(rf"(?<![A-Z0-9]){re.escape(identifier)}(?![0-9])", owner_text)
-            is None
-            for identifier in unresolved
-        ):
-            raise UnsafeWayfinderState(
-                "unresolved coordination lacks an observable continuity owner"
-            )
-        root_index = max(
-            index
-            for index, part in enumerate(effort.parts)
-            if part == ".agent-wayfinder"
+    root_index = max(
+        index
+        for index, part in enumerate(effort.parts)
+        if part == ".agent-wayfinder"
+    )
+    effort_relative = Path(*effort.parts[root_index:])
+    target_links = {
+        (effort_relative / path.relative_to(effort)).as_posix()
+        for path in observed_current
+    }
+    for reference, content in observed_known.items():
+        text = content.decode("utf-8")
+        if any(target in text for target in target_links):
+            raise UnsafeWayfinderState("current references remain")
+
+    ledger_updates: dict[Path, bytes | None] = {}
+    for kind, name in LEDGER_PATHS.items():
+        path = effort / name
+        if path not in observed_current:
+            continue
+        original = observed_current[path].decode("utf-8")
+        sections = ledger_sections(effort, kind)
+        updated = without_ledger_sections(
+            original,
+            sections,
+            {identifier for identifier, _title, _section in sections},
         )
-        effort_relative = Path(*effort.parts[root_index:])
-        target_links = {
-            (effort_relative / path.relative_to(effort)).as_posix()
-            for path in observed_current
-        }
-        for reference, content in observed_known.items():
-            text = content.decode("utf-8")
-            if any(target in text for target in target_links):
-                raise UnsafeWayfinderState("current references remain")
+        for identifier, title, _section in sections:
+            token = re.compile(rf"(?<![A-Z0-9]){kind}{identifier}(?![0-9])")
+            anchor = f"{name}#{heading_anchor(kind, identifier, title)}"
+            if token.search(updated) or anchor in updated:
+                raise UnsafeWayfinderState("unknown ledger content references a record")
+        ledger_updates[path] = (
+            None
+            if updated.strip() in {"", f"# {LEDGER_TITLES[kind]}"}
+            else updated.encode("utf-8")
+        )
 
-        ledger_updates: dict[Path, bytes | None] = {}
-        for kind, name in LEDGER_PATHS.items():
-            path = effort / name
-            if path not in observed_current:
-                continue
-            original = observed_current[path].decode("utf-8")
-            sections = ledger_sections(effort, kind)
-            updated = without_ledger_sections(
-                original,
-                sections,
-                {identifier for identifier, _title, _section in sections},
-            )
-            for identifier, title, _section in sections:
-                token = re.compile(rf"(?<![A-Z0-9]){kind}{identifier}(?![0-9])")
-                anchor = f"{name}#{heading_anchor(kind, identifier, title)}"
-                if token.search(updated) or anchor in updated:
-                    raise UnsafeWayfinderState("unknown ledger content references a record")
-            ledger_updates[path] = (
-                None
-                if updated.strip() in {"", f"# {LEDGER_TITLES[kind]}"}
-                else updated.encode("utf-8")
-            )
+    if before_final_check is not None:
+        before_final_check()
+    validate_effort_location(effort, require_root=True)
+    for kind in ("U", "E"):
+        current_child_paths(effort, kind, strict=True)
+    if current_markdown(effort) != observed_current:
+        raise UnsafeWayfinderState("current state changed during reconciliation")
+    if any(
+        not reference.is_file() or reference.read_bytes() != observed
+        for reference, observed in observed_known.items()
+    ):
+        raise UnsafeWayfinderState("known reference changed during reconciliation")
 
-        if before_final_check is not None:
-            before_final_check()
-        validate_effort_location(effort, require_root=True)
-        for kind in ("U", "E"):
-            current_child_paths(effort, kind, strict=True)
-        if current_markdown(effort) != observed_current:
-            raise UnsafeWayfinderState("current state changed during reconciliation")
-        if any(
-            not reference.is_file() or reference.read_bytes() != observed
-            for reference, observed in observed_known.items()
-        ):
-            raise UnsafeWayfinderState("known reference changed during reconciliation")
-
-        map_path = effort / "map.md"
-        for path in observed_current:
-            if path == map_path or path in ledger_updates:
-                continue
+    map_path = effort / "map.md"
+    for path in observed_current:
+        if path == map_path or path in ledger_updates:
+            continue
+        path.unlink()
+    for path, content in ledger_updates.items():
+        if content is None:
             path.unlink()
-        for path, content in ledger_updates.items():
-            if content is None:
-                path.unlink()
-            else:
-                path.write_bytes(content)
-        for directory_name in ("unknowns", "evidence"):
-            directory = effort / directory_name
-            if directory.is_dir() and not any(directory.iterdir()):
-                directory.rmdir()
-        map_path.unlink()
+        else:
+            path.write_bytes(content)
+    for directory_name in ("unknowns", "evidence"):
+        directory = effort / directory_name
+        if directory.is_dir() and not any(directory.iterdir()):
+            directory.rmdir()
+    map_path.unlink()
 
 
 class WayfinderStateContractTests(unittest.TestCase):
@@ -1195,23 +1184,23 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue(retire_ledger_section(effort, "F", 5))
             self.assertEqual(ledger.read_text(encoding="utf-8"), preamble)
 
-    def test_ledger_append_rereads_before_write_and_preserves_a_concurrent_claim(
+    def test_ledger_append_rereads_before_write_and_preserves_a_changed_claim(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
             effort.mkdir()
-            (effort / "map.md").write_text("# Concurrent append\n", encoding="utf-8")
+            (effort / "map.md").write_text("# Changed append\n", encoding="utf-8")
             ledger = effort / "facts.md"
             ledger.write_text(
                 "# Facts\n\n## F1 — First\n\n- Source: source.md\n\nFirst.\n",
                 encoding="utf-8",
             )
 
-            def concurrent_claim() -> None:
+            def changed_claim() -> None:
                 ledger.write_text(
                     ledger.read_text(encoding="utf-8").rstrip()
-                    + "\n\n## F2 — Concurrent\n\n- Source: source.md\n\nConcurrent.\n",
+                    + "\n\n## F2 — Competing\n\n- Source: source.md\n\nCompeting.\n",
                     encoding="utf-8",
                 )
 
@@ -1221,18 +1210,17 @@ class WayfinderStateContractTests(unittest.TestCase):
                     "F",
                     "Would overwrite",
                     "- Source: source.md\n\nUnsafe.\n",
-                    before_final_write=concurrent_claim,
+                    before_final_write=changed_claim,
                 )
 
             self.assertEqual(read_current_ids(effort, "F"), [1, 2])
             self.assertNotIn("Would overwrite", ledger.read_text(encoding="utf-8"))
 
-    def test_one_effort_lock_covers_map_ledgers_unknowns_and_evidence(self) -> None:
+    def test_current_children_use_separate_unknown_and_evidence_files(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
             effort.mkdir()
-            map_path = effort / "map.md"
-            map_path.write_text("# Locked effort\n", encoding="utf-8")
+            (effort / "map.md").write_text("# Current records\n", encoding="utf-8")
             self.assertEqual(
                 create_current_record(effort, "U", "Independent question", "Question.\n"),
                 "U1",
@@ -1246,32 +1234,69 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertFalse((effort / "unknowns.md").exists())
             self.assertFalse((effort / "evidence.md").exists())
 
-            lock = effort / ".wayfinder-mutation-lock"
-            lock.mkdir()
-            try:
-                with self.assertRaisesRegex(UnsafeWayfinderState, "effort mutation lock"):
-                    replace_map(
-                        effort,
-                        b"# Locked effort\n",
-                        b"# Changed\n",
-                        lock_attempts=1,
-                    )
-                for kind in ("U", "E", "F", "D"):
-                    with self.subTest(kind=kind):
-                        with self.assertRaisesRegex(
-                            UnsafeWayfinderState, "effort mutation lock"
-                        ):
-                            create_current_record(
-                                effort,
-                                kind,
-                                "Blocked",
-                                "Blocked.\n",
-                                lock_attempts=1,
-                            )
-            finally:
-                lock.rmdir()
+    def test_map_replacement_rejects_changed_current_content(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "effort"
+            effort.mkdir()
+            map_path = effort / "map.md"
+            map_path.write_text("# Current map\n", encoding="utf-8")
+            expected = map_path.read_bytes()
+            map_path.write_text("# Changed map\n", encoding="utf-8")
 
-            self.assertEqual(map_path.read_bytes(), b"# Locked effort\n")
+            with self.assertRaisesRegex(UnsafeWayfinderState, "map changed"):
+                replace_map(effort, expected, b"# Would overwrite\n")
+
+            self.assertEqual(map_path.read_bytes(), b"# Changed map\n")
+
+    def test_current_child_creation_does_not_overwrite_a_late_exact_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "effort"
+            effort.mkdir()
+            (effort / "map.md").write_text("# Child creation\n", encoding="utf-8")
+            target = effort / "unknowns/U1-late-question.md"
+
+            def create_target() -> None:
+                target.write_text("Competing current content.\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "already exists"):
+                create_current_child(
+                    effort,
+                    "U",
+                    "late-question",
+                    "Would overwrite.\n",
+                    before_exclusive_create=create_target,
+                )
+
+            self.assertEqual(
+                target.read_text(encoding="utf-8"),
+                "Competing current content.\n",
+            )
+
+    def test_current_child_creation_rejects_a_late_duplicate_identifier(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary) / "effort"
+            effort.mkdir()
+            (effort / "map.md").write_text("# Child creation\n", encoding="utf-8")
+            competing = effort / "unknowns/U1-competing-question.md"
+            planned = effort / "unknowns/U1-planned-question.md"
+
+            def create_same_identifier() -> None:
+                competing.write_text("Competing current content.\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(UnsafeWayfinderState, "identifiers changed"):
+                create_current_child(
+                    effort,
+                    "U",
+                    "planned-question",
+                    "Planned current content.\n",
+                    before_create=create_same_identifier,
+                )
+
+            self.assertFalse(planned.exists())
+            self.assertEqual(
+                competing.read_text(encoding="utf-8"),
+                "Competing current content.\n",
+            )
 
     def test_current_state_allocation_skips_gaps_and_may_reuse_retired_highest(
         self,
@@ -1311,49 +1336,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertEqual(current[1].rstrip(), preserved[1].rstrip())
             self.assertEqual(current[3].rstrip(), preserved[3].rstrip())
             self.assertTrue((effort / "decisions.md").is_file())
-
-    def test_atomic_effort_lock_serializes_simultaneous_decision_allocations(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            effort = Path(temporary) / "effort"
-            effort.mkdir()
-            (effort / "map.md").write_text("# Concurrent allocation\n", encoding="utf-8")
-            barrier = threading.Barrier(2)
-            created: list[str] = []
-            errors: list[BaseException] = []
-
-            def create(slug: str) -> None:
-                try:
-                    created.append(
-                        create_current_record(
-                            effort,
-                            "D",
-                            slug.title(),
-                            f"{slug.title()}.\n",
-                            before_lock=barrier.wait,
-                        )
-                    )
-                except BaseException as error:  # captured for deterministic assertion
-                    errors.append(error)
-
-            threads = [
-                threading.Thread(target=create, args=("alpha",)),
-                threading.Thread(target=create, args=("beta",)),
-            ]
-            for thread in threads:
-                thread.start()
-            for thread in threads:
-                thread.join()
-
-            self.assertEqual(errors, [])
-            self.assertEqual(set(created), {"D1", "D2"})
-            self.assertEqual(
-                [identifier for identifier, _, _ in ledger_sections(effort, "D")],
-                [1, 2],
-            )
-            self.assertTrue((effort / "decisions.md").is_file())
-            self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
 
     def test_answered_unknown_retirement_requires_reconciled_references_and_is_idempotent(
         self,
@@ -1414,7 +1396,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertTrue(source_link.is_file())
             self.assertNotIn("U17", decision.read_text(encoding="utf-8"))
 
-    def test_uncommitted_child_can_retire_and_busy_lock_preserves_state(self) -> None:
+    def test_uncommitted_child_can_retire_without_a_prior_commit(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
             unknowns = effort / "unknowns"
@@ -1424,19 +1406,6 @@ class WayfinderStateContractTests(unittest.TestCase):
 
             self.assertTrue(retire_current_child(effort, unknown))
             self.assertFalse(unknown.exists())
-
-            unknowns.mkdir()
-            replacement = unknowns / "U1-current.md"
-            replacement.write_text("# U1: Current question\n", encoding="utf-8")
-            (effort / ".wayfinder-mutation-lock").mkdir()
-            with self.assertRaisesRegex(UnsafeWayfinderState, "effort mutation lock"):
-                create_current_child(
-                    effort, "U", "blocked", "blocked\n", lock_attempts=1
-                )
-            with self.assertRaisesRegex(UnsafeWayfinderState, "effort mutation lock"):
-                retire_current_child(effort, replacement, lock_attempts=1)
-            self.assertTrue(replacement.exists())
-            self.assertTrue((effort / ".wayfinder-mutation-lock").is_dir())
 
     def test_current_child_retirement_requires_known_external_reconciliation(
         self,
@@ -1507,17 +1476,17 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertEqual(current_markdown(effort), {map_path: map_path.read_bytes()})
             self.assertTrue(unknowns.is_dir())
 
-    def test_retirement_rechecks_current_state_under_effort_lock(self) -> None:
+    def test_retirement_rechecks_current_state_before_removal(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
             unknowns = effort / "unknowns"
             unknowns.mkdir(parents=True)
             map_path = effort / "map.md"
-            map_path.write_text("# Concurrent retirement\n", encoding="utf-8")
+            map_path.write_text("# Changed retirement\n", encoding="utf-8")
             unknown = unknowns / "U1-transient.md"
             unknown.write_text("# U1: Transient question\n", encoding="utf-8")
 
-            def concurrent_reference() -> None:
+            def changed_reference() -> None:
                 map_path.write_text(
                     map_path.read_text(encoding="utf-8") + "\nU1 is still needed.\n",
                     encoding="utf-8",
@@ -1525,10 +1494,9 @@ class WayfinderStateContractTests(unittest.TestCase):
 
             with self.assertRaisesRegex(UnsafeWayfinderState, "current state changed"):
                 retire_current_child(
-                    effort, unknown, before_final_check=concurrent_reference
+                    effort, unknown, before_final_check=changed_reference
                 )
             self.assertTrue(unknown.exists())
-            self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
 
     def test_settlement_retires_recognized_state_and_preserves_unknown_bytes(
         self,
@@ -1592,7 +1560,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "safe map"):
                 validate_effort(effort)
 
-    def test_effort_retirement_aborts_before_removal_on_concurrent_change(self) -> None:
+    def test_effort_retirement_aborts_before_removal_when_current_state_changes(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / ".agent-wayfinder/current-effort"
             effort.mkdir(parents=True)
@@ -1609,7 +1579,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            def concurrent_change() -> None:
+            def changed_state() -> None:
                 map_path.write_text(
                     "# Current effort\n\nA new frontier appeared.\n", encoding="utf-8"
                 )
@@ -1617,19 +1587,17 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "current state changed"):
                 retire_effort_state(
                     effort,
-                    before_final_check=concurrent_change,
+                    before_final_check=changed_state,
                 )
 
             self.assertTrue(map_path.is_file())
             self.assertTrue(facts.is_file())
             self.assertIn("## F1 — Current fact", facts.read_text(encoding="utf-8"))
-            self.assertFalse((effort / ".wayfinder-mutation-lock").exists())
-
             retire_effort_state(effort)
             self.assertFalse(map_path.exists())
             self.assertEqual(facts.read_text(encoding="utf-8"), fact_preamble)
 
-    def test_effort_retirement_rejects_a_symlinked_effort_before_locking(self) -> None:
+    def test_effort_retirement_rejects_a_symlinked_effort_before_any_change(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / ".agent-wayfinder"
             target = root / "target"
@@ -1643,7 +1611,6 @@ class WayfinderStateContractTests(unittest.TestCase):
                 retire_effort_state(linked)
 
             self.assertTrue(map_path.is_file())
-            self.assertFalse((target / ".wayfinder-mutation-lock").exists())
 
             nested_target = root / "real-parent/nested"
             nested_target.mkdir(parents=True)
@@ -1656,7 +1623,6 @@ class WayfinderStateContractTests(unittest.TestCase):
                     linked_parent / "nested",
                 )
             self.assertTrue(nested_map.is_file())
-            self.assertFalse((nested_target / ".wayfinder-mutation-lock").exists())
 
     def test_noncanonical_child_ambiguity_is_scoped_to_the_affected_container(
         self,
@@ -1736,7 +1702,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Core invariants",
             "## Effort shape and selection",
             "## Current knowledge",
-            "## Safe mutation",
             "## Reconciliation and retirement",
         )
         offsets = [self.contract.index(heading) for heading in headings]
@@ -1783,9 +1748,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "An effort is one resumable body of coordination",
             "Current state is relevant to present coordination according to its type",
             "Durable state is intentionally preserved across sessions or handoffs",
-            "including unmatched children or ledger sections inside a recognized container",
-            "unrecognized project-owned content",
-            "opaque means preserving bytes without interpreting, normalizing, or mutating them",
+            "all other entries remain unchanged",
             "Separate preservation is independently useful only when",
             "These headings guide content; they are not a recognition schema",
             "The ready frontier contains only coherent work that can proceed now",
@@ -1806,17 +1769,6 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertNotIn(obsolete, self.contract.lower())
 
-    def test_contract_does_not_treat_a_workflow_as_authority(self) -> None:
-        self.assertIn(
-            "When the request or delegated scope authorizes mutation",
-            self.normalized,
-        )
-        self.assertIn(
-            "a mutating workflow may change only the requested effort and affected current state",
-            self.normalized,
-        )
-        self.assertNotIn("A mutating workflow authorizes", self.contract)
-
     def test_contract_allows_transient_retirement_after_reconciliation(self) -> None:
         self.assertIn(
             "Retirement does not require committing a transient record first. "
@@ -1825,12 +1777,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.normalized,
         )
 
-    def test_contract_keeps_distinct_pre_v1_and_retirement_safety_rules(self) -> None:
+    def test_contract_keeps_retirement_boundaries(self) -> None:
         for required in (
-            "historical-state interpretation, legacy compatibility, migration, registry, "
-            "synchronization, or lifecycle machinery",
-            "Never commit, steal, or assume an existing lock is abandoned",
-            "never normalize, migrate, rename, delete, or globally scan them",
             "Do not scan unrelated efforts, the entire repository, or Git history",
             "Never recursively delete an effort, `unknowns/`, or `evidence/` directory",
             "Do not retain the predecessor map or add tombstones, redirects, archives, "
@@ -1852,14 +1800,16 @@ class WayfinderStateContractTests(unittest.TestCase):
             "d4--adopt-the-selected-approach",
         )
 
-    def test_contract_keeps_mutation_and_project_data_safety_boundaries(self) -> None:
+    def test_contract_keeps_current_state_integrity_and_project_data_boundaries(
+        self,
+    ) -> None:
         for required in (
-            "`<effort>/.wayfinder-mutation-lock/`",
-            "Every authorized mutation",
-            "Reread affected state",
-            "preserve the conflict",
-            "Preserve unrecognized bytes",
-            "unrecognized project-owned content",
+            "does not coordinate simultaneous writers to the same effort",
+            "create the target without overwriting an existing path",
+            "directly affected files still match",
+            "stop without overwriting them",
+            "all other entries remain unchanged",
+            "identity-like entry that cannot be parsed unambiguously",
         ):
             self.assertIn(required, self.normalized)
 
