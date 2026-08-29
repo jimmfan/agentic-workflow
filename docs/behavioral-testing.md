@@ -22,7 +22,7 @@ hidden reasoning trace.
    command-runner evidence.
 3. **Wayfinder behavioral scenarios** provide fixture-backed observable
    contracts for authority, current-state selection, reconciliation, and
-   retirement without duplicating product implementation.
+   record pruning or effort ending without duplicating product implementation.
 4. **Live behavioral smoke tests** are opt-in. A caller supplies an agent command
    that operates in a disposable fixture workspace. The default set remains a
    representative sample rather than an exhaustive catalog.
@@ -128,7 +128,7 @@ A new scenario should need one TOML file and one small fixture directory. The
 validator rejects unknown behavior names, unsafe paths, missing preserved files,
 unknown fields, and unsupported assertion kinds.
 
-The deterministic catalog includes retirement behavior for answered U# and
+The deterministic catalog includes pruning behavior for answered U# and
 redundant E# files only after reference reconciliation, keeping blocked
 efforts resumable, excluding mapless directories from selection, updating the
 same authorized D# boundary, and preventing reference-system observations from

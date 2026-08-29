@@ -3,7 +3,8 @@
 Use this contract only after routing selects Wayfinder or a request explicitly continues a relevant
 effort. Existing state is never a routing signal.
 
-This contract owns Wayfinder's durable representation, selection, reconciliation, and retirement.
+This contract owns Wayfinder's durable representation, selection, reconciliation, pruning, and
+effort ending.
 The Wayfinder runtime owns navigation and specialist methodology.
 Durable state is intentionally preserved across sessions or handoffs.
 
@@ -187,7 +188,7 @@ readable slugs. F/D records retain these exact H2 representations:
 
 Never renumber or duplicate a current same-type number. Allocate one greater than the highest
 current same-type identifier, or 1 when none exists. Do not deliberately recycle interior gaps;
-a retired highest number is not reserved.
+a pruned highest number is not reserved.
 
 Immediately before assigning an identifier, reread all recognized same-type identifiers and reject
 malformed or duplicate current state. Append an F/D section only if its ledger still matches the
@@ -206,17 +207,18 @@ F/D anchors must retain the established lowercase `f<ID>--<slug>` and `d<ID>--<s
 derived from those headings' em-dash representation. Reconcile affected references before
 renaming a U/E file or F/D heading.
 
-## Reconciliation and retirement
+## Reconciliation and pruning
 
 Keep only current coordination needed to navigate the effort. Reconciliation brings affected
-current records, the map and frontier, and references into agreement with live truth, valid project
-authority, or the canonical artifact that owns the outcome. Retirement removes recognized
-Wayfinder state that no longer has current independent value. Both preserve unrelated state and
-leave historical evolution to Git.
+current state, the map and frontier, and references into agreement with current truth, valid project
+authority, and the artifact that owns each lasting result. Pruning removes recognized Wayfinder
+state that no longer belongs in current coordination after still-useful results are preserved and
+affected current state and references are reconciled. Both preserve unrelated state. Git retains
+committed history.
 
 ### Reconcile affected state
 
-Reconciliation is required before renaming or retiring recognized state and whenever authorized
+Reconciliation is required before renaming or pruning recognized state and whenever authorized
 work changes reality represented by the selected effort before claiming completion. Read-only work
 may report stale or conflicting state but does not change it.
 
@@ -225,7 +227,7 @@ confirm that the directly affected state and known affected references still sup
 mutation. Create a new target without overwriting an existing path. If affected state changed or
 conflicts, stop rather than overwrite it.
 
-Before renaming or retiring state, inspect the selected map, ledgers, U/E files, and known current
+Before renaming or pruning state, inspect the selected map, ledgers, U/E files, and known current
 references outside the effort for affected identifiers, paths, or heading anchors. Do not scan
 unrelated efforts, the entire repository, or Git history.
 
@@ -233,7 +235,7 @@ Use this common sequence for every affected reconciliation:
 
 1. Preserve any still-useful result in its proper canonical owner.
 2. Reconcile affected current state, map consequences and frontier, and known current references.
-3. Retire only recognized state that no longer has current independent value.
+3. Prune from current state only recognized state that no longer has independent current value.
 
 Update only affected records and links to canonical artifacts. Do not copy canonical artifact
 bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
@@ -246,9 +248,9 @@ state and report the blocker.
 
 When evidence strengthens or narrows an F#, update the same F# in place with its current claim,
 scope, provenance, and material limitations. When evidence invalidates its support, narrow or
-remove the unsupported conclusion and reconcile references that treated it as supported. Retire
-the F# when no supported conclusion with independent current value remains. Do not create a second
-fact merely to preserve history.
+remove the unsupported conclusion and reconcile references that treated it as supported. Prune the
+F# from current state when no supported conclusion with independent current value remains. Do not
+create a second fact merely to preserve history.
 
 When an observation independently earns E# preservation through its source, method,
 limitations, or reuse value, preserve it as E#. Otherwise do not create or retain an E# merely as
@@ -257,46 +259,45 @@ consequential current coordination value, and surface it in the map only when it
 Do not create an E#/U# pair by template.
 
 When a U# is answered, preserve any independently useful result through the common sequence and
-retire the U#; an answered question is no longer current unknown state and is not retained as
-history. If responsible authority explicitly accepts residual uncertainty for a named boundary,
-the question remains factually unresolved: keep its U# current and unresolved, record the authority
-source and accepted boundary in its proper canonical artifact, and unblock only that accepted
-boundary. The acceptance does not answer the U#, grant unrelated authority, or unblock another
-dependency.
+prune the U# from current state; an answered question is no longer current unknown state and is not
+retained as history. If responsible authority explicitly accepts residual uncertainty for a named
+boundary, the question remains factually unresolved: keep its U# current and unresolved, record the
+authority source and accepted boundary in its proper canonical artifact, and unblock only that
+accepted boundary. The acceptance does not answer the U#, grant unrelated authority, or unblock
+another dependency.
 
 When factual evidence changes, review dependent D# records and frontier work under the authority
 rule in `## Current knowledge`. When responsible authority changes the choice for the same decision
 boundary, update the same D# and its authority, basis, consequences, revisit condition, and affected
 references. Allocate another D# only for a distinct current decision. When a D# is no longer
-current under project authority, apply the common sequence and retire it; Git retains the prior
-choice.
+current under project authority, apply the common sequence and prune it from current state; Git
+retains the prior choice.
 
-### Retire one record
+### Prune one record
 
-A record may retire only after the common sequence leaves it without a required reference or
-independent current value. Retirement does not require committing a transient record first.
+Prune a record only after affected references are reconciled and the record no longer has
+independent current value. Pruning does not require committing a transient record first.
 
-Retiring U/E removes only the selected file. Retiring F/D removes only the selected H2 section and
-preserves unrelated ledger content byte-for-byte where practical. An otherwise empty ledger may be
-removed. Never recursively delete an effort, `unknowns/`, or `evidence/` directory. Unrecognized
-project-owned content remains unchanged.
+Pruning U/E removes only the selected file. Pruning F/D removes only the selected H2 section. An
+otherwise empty ledger may be removed. Unrelated ledger content remains byte-for-byte unchanged
+where practical, and opaque project-owned content remains unchanged. Never recursively delete an
+effort, `unknowns/`, or `evidence/` directory.
 
-### Keep or retire the effort
+### Keep or end the effort
 
 Keep an effort's map while it may realistically resume, including when it is paused, blocked, or
 waiting. Keep its blockers, dependencies, and truthful frontier sufficient for re-entry. Do not
-retire `map.md` while consequential unresolved coordination still needs continuity. Retain the
+remove `map.md` while consequential unresolved coordination still needs continuity. Retain the
 effort, transfer that coordination to a recognized current successor, or preserve the consequential
-result or constraint in its canonical artifact before retirement.
+result or constraint in its canonical artifact before ending the effort.
 
-Retire an effort only when it has no legitimate continuation frontier because its destination was
-reached, it was intentionally ended, or another direction replaced it. For an authorized
-whole-effort retirement, apply the common sequence across its recognized state after ensuring that
-lasting outcomes and any continuing consequential relationships or constraints have a canonical
-owner or responsible workflow handoff. Remove only recognized files and sections after required
-reference reconciliation. Remove `map.md` last. Never recursively delete the effort directory;
-the absence of `map.md` is sufficient to end recognition, and any unrecognized project-owned bytes
-and their containing directories remain unchanged.
+An effort ends only when it has no legitimate continuation because its objective was reached, it
+was intentionally ended, or another direction replaced it. Ending an effort includes pruning its
+recognized Wayfinder state after lasting outcomes have an appropriate owner, continuing
+relationships or constraints have an appropriate owner, and affected references have been
+reconciled. Apply the common sequence across affected state, then remove `map.md` last. Never
+recursively delete the effort directory; the absence of `map.md` ends Wayfinder recognition, and
+any opaque project-owned bytes and their containing directories remain unchanged.
 
 Record a useful replacement relationship in its successor or canonical artifact. Do not retain the
 predecessor map or add tombstones, redirects, archives, or successor metadata. Do not clean up

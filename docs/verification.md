@@ -145,7 +145,7 @@ The suite prioritizes behavior that matters before 1.0:
 Wayfinder state contracts separately cover a valid map-only effort; creating and
 appending current F# and D# ledger sections; allocating above the highest current
 same-type identifier; rejecting malformed or duplicate identifiers; and
-retiring only the selected section after bounded reference reconciliation. They
+pruning only the selected section after bounded reference reconciliation. They
 also cover empty-ledger removal, changed-state rejection,
 no-overwrite child creation, separate U#/E# artifacts, readable section anchors,
 and progressive retrieval of relevant detail without an arbitrary file count.

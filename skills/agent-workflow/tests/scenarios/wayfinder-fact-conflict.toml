@@ -1,6 +1,6 @@
 schema_version = 1
 id = "wayfinder-fact-conflict"
-name = "Conflicting evidence retires an unsupported fact without inventing authority"
+name = "Conflicting evidence prunes an unsupported fact without inventing authority"
 fixture = "wayfinder-fact-conflict"
 request = "Resume the named deployment-mode Wayfinder effort. Current configuration contradicts F1. Reconcile the durable state: preserve the conflicting observation as E2 with config.txt provenance, scope, and limitations; remove the unsupported F1 conclusion; create U1 for the consequential unresolved deployment-mode question; surface U1 only because it blocks the current route; reconcile references that treated F1 as supported; record that D1 needs authority review without changing its current choice or authority; and make that review the next action."
 starting_state = [

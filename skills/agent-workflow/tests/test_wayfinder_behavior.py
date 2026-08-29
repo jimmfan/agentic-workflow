@@ -160,7 +160,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 with self.subTest(incorrect=incorrect):
                     self.assertFalse(relationships_pass(incorrect))
 
-    def test_answered_authority_scenario_requires_reconciliation_and_retirement(
+    def test_answered_authority_scenario_requires_reconciliation_and_pruning(
         self,
     ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
@@ -276,7 +276,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             (workspace / ".agent-wayfinder/blocked-provider-direction/map.md").unlink()
             (workspace / ".agent-wayfinder/blocked-provider-direction/unknowns/"
              "U1-provider-checksum.md").unlink()
-            retired = behavior.RunEvidence(
+            ended = behavior.RunEvidence(
                 scenario=scenario,
                 workspace=workspace,
                 before=before,
@@ -288,7 +288,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 verification=(),
                 route_components=behavior.route_components(stdout),
             )
-            failed = {item.name for item in behavior.evaluate(retired) if not item.passed}
+            failed = {item.name for item in behavior.evaluate(ended) if not item.passed}
             self.assertIn("expect:blocked_cleanly", failed)
             self.assertIn(
                 "assert:.agent-wayfinder/blocked-provider-direction/map.md:exists",
@@ -408,7 +408,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
 
 
 
-    def test_presence_defines_current_records_and_conflicts_retire_unsupported_facts(
+    def test_presence_defines_current_records_and_conflicts_prune_unsupported_facts(
         self,
     ) -> None:
         for fixture_name, effort_name in (

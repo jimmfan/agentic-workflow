@@ -68,7 +68,7 @@ Wayfinder links that artifact rather than mirroring T# work as a second
 ticket/status surface.
 
 U/E/F/D storage topology, schemas, numbering, filenames, effort selection,
-reconciliation and retirement, statuses, templates, and reference rules are
+reconciliation, pruning, effort ending, statuses, templates, and reference rules are
 contract and test details, not architectural commitments.
 
 ## Alternatives considered
