@@ -10,44 +10,39 @@ retirement. The Wayfinder runtime owns navigation and specialist methodology.
 ## Core invariants
 
 Wayfinder is the sole framework-owned durable coordination model. The selected effort's
-`map.md` is its re-entry and orientation point. No other framework frontier, specialist
-notebook, or continuity record may compete with it.
+`map.md` is its re-entry point; no other framework continuity record may compete with it.
 
-Specialists retain their methods and native artifacts. Wayfinder records only consequential
-current results and links needed for continuation; it does not copy procedures, transcripts,
-or temporary bookkeeping. `to-tickets` owns executable decomposition and its frontier. Link
-that native frontier rather than mirroring tickets in Wayfinder.
+Specialists retain their methods and native artifacts. Wayfinder records consequential results
+and links, not procedures or bookkeeping. `to-tickets` owns executable decomposition and its
+frontier; link it rather than mirroring tickets.
 
-All content below `.agent-wayfinder/` is project-owned durable data. Framework installation,
-status, update, repair, removal, reinstall, projection, and provider operations treat the directory
-as opaque project-owned data. They do not inventory, validate, normalize, migrate, repair,
-reconcile, or delete its contents. They may create the absent root when delivery permits.
+All content below `.agent-wayfinder/` is project-owned durable data. Framework delivery and
+provider operations treat it as opaque: they do not inventory, validate, normalize, migrate,
+repair, reconcile, or delete its contents. They may create an absent root.
 
-Wayfinder recognizes only this current-state surface:
+Wayfinder recognizes this current-state layout. Only `map.md` is required:
 
 ```text
 .agent-wayfinder/
 └── <effort>/
-    ├── map.md
-    ├── facts.md
-    ├── decisions.md
-    ├── unknowns/
+    ├── map.md                    # required re-entry point
+    ├── facts.md                  # optional current F# ledger
+    ├── decisions.md              # optional current D# ledger
+    ├── unknowns/                 # optional current U# files
     │   └── U<ID>-<slug>.md
-    └── evidence/
+    └── evidence/                 # optional reusable E# files
         └── E<ID>-<slug>.md
 ```
 
-A safe regular `.agent-wayfinder/<effort>/map.md` makes that effort current and resumable. It may
-have optional `facts.md`, optional `decisions.md`, canonical `unknowns/U<ID>-<slug>.md` files, and
-canonical `evidence/E<ID>-<slug>.md` files. A map-only effort is valid. Create supporting records
-lazily and only when each has independent coordination, provenance, or retrieval value. Without
-`map.md`, a directory is not a recognized resumable effort.
+A safe regular `.agent-wayfinder/<effort>/map.md` makes an effort current and resumable. A map-only
+effort is valid; optional `facts.md`, optional `decisions.md`, `unknowns/U<ID>-<slug>.md`, and
+`evidence/E<ID>-<slug>.md` records are created lazily when independently useful. Without `map.md`,
+a directory is not a recognized resumable effort.
 
-Except for the transient mutation lock defined below, content outside that recognized
-surface remains uninterpreted project data. Preserve it exactly and continue unrelated work
-unless it creates an actual target or ancestor collision, ambiguity inside a recognized
-container, a reference conflict, an unsafe filesystem boundary, or an inability to perform
-the requested mutation truthfully.
+Except for the transient mutation lock, content outside recognized paths is opaque project-owned data.
+Preserve it exactly; it blocks only a mutation affected by a target or ancestor collision,
+recognized-container ambiguity, reference conflict, unsafe boundary, or inability to mutate
+truthfully.
 
 Read-only work never authorizes Wayfinder mutation. A mutating workflow authorizes changes only
 to its requested effort and affected current state.
@@ -61,10 +56,10 @@ history, registry, synchronization, migration, compatibility, or lifecycle machi
 
 ## Effort shape and selection
 
-The map H1 is the durable human-readable effort name. Its directory slug is a stable storage
-key derived from the destination and material scope boundary, not from a branch, ticket,
-phase, timestamp, or chat title. Establish the destination and boundary before naming a new
-effort.
+The map H1 is the durable human-readable effort name. Its directory slug is a concise,
+lowercase, filesystem-safe, hyphen-separated storage key derived from the destination and
+material scope boundary, not a branch, ticket, phase, timestamp, random suffix, or chat title.
+Use only the shortest meaningful disambiguator for a genuine collision.
 
 An exact effort path must be repository-relative, remain strictly below `.agent-wayfinder/`, cross
 no symlink in the root, ancestors, effort, or `map.md`, and identify a regular `map.md`. Reject an
@@ -74,6 +69,9 @@ Without an exact path, inspect only the smallest plausible candidate set. Compar
 by destination, boundary, and name, and resume only one clear match. If selection remains
 ambiguous, stay read-only: do not guess, merge efforts, create a synonymous duplicate, or
 mutate affected state. A mapless directory is not a candidate.
+
+Selection does not require persistence. If assessment leaves no consequential cross-session
+coordination worth preserving, create no effort, map, or supporting record.
 
 Create a new effort only when durable writes are authorized, persistence is justified, and
 no recognized effort owns materially the same destination and boundary. Immediately before
@@ -102,7 +100,12 @@ purpose is inapplicable or a clearer equivalent exists:
 Do not create empty headings. Keep the map low-resolution and link canonical roadmaps,
 specifications, ADRs, tickets, and project artifacts instead of copying their bodies or
 detailed backlogs. Load only records linked for the current question; do not read every
-ledger section or U/E file.
+ledger section or U/E file. If a fresh session must read most supporting records to recover
+the current route, reconcile the map instead of adding more supporting detail.
+
+Remaining work is not automatically blocked work. A blocker is an unmet dependency,
+unresolved consequential boundary, or missing authority that prevents otherwise coherent
+work from proceeding; planned but unperformed validation alone is not a blocker.
 
 The ready frontier contains only coherent scopes whose material dependencies are answered or
 explicitly dispositioned by responsible authority. Independent ready work may proceed while
@@ -111,7 +114,8 @@ frontier.
 
 ## Current knowledge
 
-U/E/F/D are distinct current-knowledge types, not a mandatory pipeline:
+U/E/F/D classify current knowledge; they are neither a mandatory pipeline nor the effort's
+territory or problem hierarchy:
 
 - `U#`: an unresolved consequential question whose separate preservation materially improves
   a later decision or continuation.
@@ -121,17 +125,19 @@ U/E/F/D are distinct current-knowledge types, not a mandatory pipeline:
   provenance.
 - `D#`: a current committed choice made under actual project authority.
 
-A map may remain the entire current result. Do not create U/E/F/D as ceremony, from a template or
-item count, or merely because information fits a category. An answered U# need not produce E#,
-F#, or D#; evidence need not produce a fact; and a fact need not produce a decision.
+A map may remain the entire result. Do not create U/E/F/D from ceremony, templates, counts, or
+category fit. No type must produce another.
 
-A U# file uses a readable question title, remains `Status: open` while factually unresolved,
-and states why the question matters. Record its resolution mode, dependencies, relevant
-sources, and required authority only when useful for re-entry. The runtime determines
-sufficient resolution methodology.
+Represent areas, seams, relationships, and ownership boundaries in the single `map.md`. Do not
+add area identifiers, nested state by domain or phase, parallel maps, or another state hierarchy.
+
+A U# file uses a readable question title and states why it matters. Presence in `unknowns/`
+means the question is current and unresolved. Record its resolution mode, dependencies,
+sources, and required authority only when useful for re-entry.
 
 An E# file states the reusable observation and enough source, scope, and limitations to evaluate
-it. Prefer a direct source link on a fact when separate evidence adds no independent value.
+it. Record when it was observed only when time materially affects meaning, applicability, or
+validity. Prefer a direct source link on a fact when separate evidence adds no independent value.
 
 Facts are H2 sections in `facts.md`. Presence means the conclusion is sufficiently supported
 and current; a separate status field is not required. Each fact states its scoped descriptive
@@ -139,18 +145,21 @@ conclusion and truthful provenance through at least one `Source`, `Authority`, o
 `Derived from` value, plus material limitations. Repeated agent summaries are not independent
 provenance.
 
-Decisions are H2 sections in `decisions.md`. Each has status `accepted | provisional | superseded`,
-the committed choice, its actual authority, and material basis or consequences. A provisional
-decision also has a real revisit condition. Retain a superseded decision only while it has current
-navigational value.
+Decisions are H2 sections in `decisions.md`. Presence in `decisions.md` means the choice is
+current and committed under actual project authority. Record the choice, authority, decisive
+basis or constraints, material consequences, and a revisit condition only when one genuinely
+applies.
 
 Wayfinder can record authority; it cannot create it. Assumptions, hypotheses, proposals,
 recommendations, inferred preferences, and agent-authored persistence do not become supported
 facts or accepted decisions merely because they are recorded. Link the actual human, project
 artifact, policy, or valid delegated scope for an authority-owned conclusion.
 
-Facts about another system remain facts about that system. Record any current-project conclusion
-separately with its true scope, provenance, status as fact or proposal, and required authority.
+A fact about another system remains a fact about that system; it does not establish a fact about
+the current project. Record a project-specific F# only when project evidence, current source, or
+valid project authority supports it. Otherwise preserve an independently useful external
+observation as E#, a consequential project uncertainty as U#, or a non-durable proposal in the
+map or native specialist artifact, only when that representation independently earns preservation.
 
 Volatile branch, HEAD, working-tree, ahead/behind, and session observations normally remain
 execution context. Persist one only when it is an actual continuing authorization constraint,
@@ -162,28 +171,24 @@ readable slugs. F/D records retain these exact H2 representations:
 - `## F<ID> — <title>`
 - `## D<ID> — <title>`
 
-Never renumber a current record or allow duplicate same-type numbers. Under the effort
-mutation lock, allocate one greater than the highest current same-type identifier, or 1 when
-none exists. Do not deliberately recycle interior gaps. A retired highest number is not
-reserved and may reappear in a later current state.
+Never renumber or duplicate a current same-type number. Under the lock, allocate one greater
+than the highest current same-type identifier, or 1 when none exists. Do not deliberately recycle
+interior gaps; a retired highest number is not reserved.
 
 A bare identifier is local shorthand only. Durable references outside the selected effort
 use a readable repository-relative link to the exact U/E file, F/D heading, or longer-lived
 canonical owner. Inside the effort, prefer links when a path or heading matters.
 
-F/D anchors follow the ordinary Markdown heading rule: lowercase the heading, remove
-punctuation including the em dash, and replace spaces with hyphens. The spaces on both sides
-of the removed em dash therefore retain the established `--` delimiter in the anchor.
-Reconcile affected current references before renaming a U/E file or F/D heading.
+F/D anchors must retain the established lowercase `f<ID>--<slug>` and `d<ID>--<slug>` forms
+derived from those headings' em-dash representation. Reconcile affected references before
+renaming a U/E file or F/D heading.
 
 ## Safe mutation
 
-Every authorized mutation is serialized through the empty
-`<effort>/.wayfinder-mutation-lock/` directory, created atomically. Hold it across affected
-reads, allocation, reference checks, writes, renames, and removals, then remove it. The lock
-contains no data and must not be committed. If it exists, wait through host coordination or
-stop; never steal it or assume it is abandoned. If atomic directory creation is unavailable,
-do not mutate.
+Every authorized mutation is serialized through the empty, atomically created
+`<effort>/.wayfinder-mutation-lock/` directory. Hold it across affected reads, allocation,
+reference checks, writes, renames, and removals, then remove it. Never commit, steal, or assume
+an existing lock is abandoned. Without atomic directory creation, do not mutate.
 
 Reread affected state under the lock immediately before writing, renaming, or removing it.
 For allocation, parse all current canonical same-type identifiers and reject malformed or
@@ -194,9 +199,11 @@ Compare the final reread with the state used to plan the mutation. If any affect
 changed concurrently, preserve the conflict and stop or retry from the new truth. Never
 silently overwrite another writer or infer that similar-looking content is equivalent.
 
-Interpret and mutate only recognized current state required by the authorized operation.
-Unknown content that cannot be safely interpreted remains byte-preserved. Unknown content
-does not require normalization and must not be used for allocation or automatic selection.
+Interpret only recognized current state required by the operation. Content outside recognized
+containers stays opaque and does not block unrelated work. Noncanonical content inside
+`unknowns/` or `evidence/` blocks only an affected allocation, rename, or retirement when safe
+interpretation, identifier allocation, or target selection is ambiguous. Preserve unknown bytes;
+never normalize, migrate, rename, delete, or globally scan them.
 
 Before renaming or retiring state, inspect the selected map, ledgers, U/E files, and known
 current canonical references outside the effort for affected identifiers, paths, or heading
@@ -204,12 +211,11 @@ anchors. Preserve still-useful information in its current canonical owner and re
 affected current reference before removal. Do not scan unrelated efforts, the entire
 repository, or Git history.
 
-Retiring U/E removes only the selected file. Retiring F/D removes only the selected H2
-section and preserves unrelated ledger content byte-for-byte where practical. An otherwise
-empty ledger may be removed; an empty U/E directory may remain or be removed and has no state
-meaning. Never remove a record that still has a required current reference or independently
-useful provenance. Removal does not require a transient record's exact contents to have
-entered Git.
+Retiring U/E removes only the selected file. Retiring F/D removes only the selected H2 section
+and preserves unrelated ledger content byte-for-byte where practical. An otherwise empty ledger
+may be removed. After recognized state retires, a confirmed-empty directory may be removed only
+nonrecursively; leaving it is valid. Never recursively delete an effort, `unknowns/`, or
+`evidence/` directory, or remove a record with a required reference or independent current value.
 
 Whole-effort retirement may remove only recognized files and sections that are safe to retire.
 Remove `map.md` last. Never recursively delete the effort directory. If unknown project-owned
@@ -230,15 +236,15 @@ current claim, scope, provenance, and material limitations. Narrow it when only 
 conclusion remains supported. Retire it after reference reconciliation when it no longer has
 independent current value. Do not create a second fact merely to preserve history.
 
-When a material factual question remains unresolved, remove or narrow the unsupported
-affirmative conclusion from `facts.md` and reconcile references that treated it as supported.
-Preserve independently useful conflicting observations as E# records and create or reopen a
-U# for the precise consequential question only when either has current coordination or
-retrieval value. Surface the U# in the map only when it affects the current route.
+When a material factual question remains unresolved, remove or narrow the unsupported F# and
+reconcile references that treated it as supported. Preserve a conflicting observation as E#
+only when its source, method, limitations, or reuse value independently justify it; create or
+reopen U# only when the precise question has consequential current coordination value. Surface
+it in the map only when it affects the route. Do not create an E#/U# pair by template.
 
 Changed factual evidence requires review of dependent decisions and frontier work. It does
-not create decision authority, silently rewrite an accepted choice, or make a newer decision
-supersede an unrelated fact. A read-only review may report that a fact appears outdated,
+not create decision authority or silently rewrite a current choice. A read-only review may
+report that a fact appears outdated,
 contradicted, or unsupported, but that observation authorizes neither mutation nor a durable
 status label.
 
@@ -247,9 +253,14 @@ evidence, fact, decision, or canonical outcome and reconcile known current refer
 retire the U#. Do not retain it merely as history.
 
 If responsible authority explicitly accepts residual uncertainty for a named boundary, the
-question remains factually unresolved: keep its U# open, record the authority source and
+question remains factually unresolved: keep its U# current and unresolved, record the authority source and
 boundary in a canonical owner, and unblock only that accepted boundary. The disposition
 neither answers the U# nor unblocks other dependencies.
+
+When authority changes the choice for the same decision boundary, update the same D# and its
+authority, basis, consequences, revisit condition, and affected references. Allocate another D#
+only for a distinct current decision. When a D# is no longer current, preserve any lasting result,
+reconcile references, and retire it; Git retains the prior choice. Evidence alone cannot do this.
 
 Authorized work that materially changes reality represented by the selected effort performs
 bounded reconciliation before claiming completion. Update only affected map consequences,
@@ -264,6 +275,10 @@ truthful update, preserve state and report the blocker.
 Keep an effort's map while it may realistically resume, including when it is paused, blocked,
 or waiting. Keep its blockers, dependencies, and truthful frontier sufficient for re-entry.
 
+Do not retire `map.md` while consequential unresolved coordination still needs continuity.
+Retain the effort, transfer that coordination to a recognized current successor, or preserve
+the consequential result or constraint in its canonical owner before retirement.
+
 Settle an effort when it has no legitimate continuation frontier because its destination was
 reached, it was intentionally ended, or another direction replaced it. Under one authorized
 effort mutation:
@@ -274,7 +289,6 @@ effort mutation:
 4. Retire redundant U/E/F/D state.
 5. Retire `map.md` and any remaining recognized state once safe.
 
-Record a materially useful replacement relationship in the successor or another canonical
-artifact. Do not keep the predecessor map, or add a tombstone, redirect map, archive directory,
-lifecycle registry, history ledger, or successor metadata mechanism. Do not migrate or clean up
-other project-owned efforts. Git preserves the retired coordination's history.
+Record a useful replacement relationship in its successor or canonical owner. Do not retain the
+predecessor map or add tombstones, redirects, archives, registries, history ledgers, or successor
+metadata. Do not clean up other efforts; Git preserves history.

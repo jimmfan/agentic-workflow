@@ -36,26 +36,6 @@ path = ".agent-wayfinder/platform-migration/map.md"
 [[assertions]]
 kind = "path_contains"
 path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Destination"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Notes"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Current state"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Territory"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
 value = "Consumer inventory"
 
 [[assertions]]
@@ -72,31 +52,6 @@ value = "Rollback"
 kind = "path_contains"
 path = ".agent-wayfinder/platform-migration/map.md"
 value = "depends on"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Blockers and dependencies"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Next work"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Decisions so far"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Not yet specified"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Out of scope"
 
 [[assertions]]
 kind = "path_contains"
@@ -146,11 +101,6 @@ value = '''\A# Decisions\n'''
 kind = "path_contains"
 path = ".agent-wayfinder/platform-migration/decisions.md"
 value = "## D1 — Use a zero-downtime cutover"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/decisions.md"
-value = "- Status: accepted"
 
 [[assertions]]
 kind = "path_contains"

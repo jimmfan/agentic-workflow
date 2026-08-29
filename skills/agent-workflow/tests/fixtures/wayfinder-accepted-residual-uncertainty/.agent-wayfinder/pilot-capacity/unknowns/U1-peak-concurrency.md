@@ -1,6 +1,5 @@
 # U1: What peak concurrency must the worker platform support?
 
-- Status: open
 - Resolution mode: human clarification
 - Blocked by: project-owner direction
 

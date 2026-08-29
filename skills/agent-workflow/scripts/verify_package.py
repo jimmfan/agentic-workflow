@@ -333,8 +333,10 @@ def check_router_contract() -> None:
     for required in (
         ".agent-wayfinder/<effort>/map.md",
         "A map-only effort is valid",
-        "U/E/F/D are distinct current-knowledge types",
-        "makes that effort current and resumable",
+        "U/E/F/D classify current knowledge",
+        "Presence in `unknowns/` means",
+        "Presence in `decisions.md` means",
+        "makes an effort current and resumable",
         "Without `map.md`",
         "can record authority; it cannot create it",
         "raw transcripts",

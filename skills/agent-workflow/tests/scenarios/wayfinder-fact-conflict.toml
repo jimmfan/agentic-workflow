@@ -2,11 +2,11 @@ schema_version = 1
 id = "wayfinder-fact-conflict"
 name = "Conflicting evidence retires an unsupported fact without inventing authority"
 fixture = "wayfinder-fact-conflict"
-request = "Resume the named deployment-mode Wayfinder effort. Current configuration contradicts F1. Reconcile the durable state: preserve the conflicting observation as E2 with config.txt provenance, scope, and limitations; remove the unsupported F1 conclusion; open U1 for the consequential unresolved deployment-mode question; surface U1 only because it blocks the current route; reconcile references that treated F1 as supported; record that D1 needs authority review without changing its accepted choice or authority; and make that review the next action."
+request = "Resume the named deployment-mode Wayfinder effort. Current configuration contradicts F1. Reconcile the durable state: preserve the conflicting observation as E2 with config.txt provenance, scope, and limitations; remove the unsupported F1 conclusion; create U1 for the consequential unresolved deployment-mode question; surface U1 only because it blocks the current route; reconcile references that treated F1 as supported; record that D1 needs authority review without changing its current choice or authority; and make that review the next action."
 starting_state = [
   "F1 says deployment mode is dedicated and links its original E1 observation.",
   "Current config.txt now says deployment_mode=shared, so the contradiction is unresolved.",
-  "D1 depends on F1 but remains an accepted choice until its authority reviews the new evidence.",
+  "D1 depends on F1 but remains the current choice until its authority reviews the new evidence.",
 ]
 expect = [
   "task_completed",
@@ -73,11 +73,6 @@ path = ".agent-wayfinder/deployment-mode/unknowns/U1-*.md"
 value = "deployment mode"
 
 [[assertions]]
-kind = "glob_contains"
-path = ".agent-wayfinder/deployment-mode/unknowns/U1-*.md"
-value = "- Status: open"
-
-[[assertions]]
 kind = "path_not_exists"
 path = ".agent-wayfinder/deployment-mode/facts.md"
 
@@ -90,11 +85,6 @@ value = "U1"
 kind = "path_contains"
 path = ".agent-wayfinder/deployment-mode/map.md"
 value = "review D1"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/deployment-mode/decisions.md"
-value = "- Status: accepted"
 
 [[assertions]]
 kind = "path_contains"

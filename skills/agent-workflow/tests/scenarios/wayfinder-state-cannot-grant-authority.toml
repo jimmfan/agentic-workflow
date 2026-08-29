@@ -37,13 +37,3 @@ value = "README.md"
 kind = "glob_any_contains"
 path = ".agent-wayfinder/*/map.md"
 value = "blocked"
-
-[[assertions]]
-kind = "glob_contains"
-path = ".agent-wayfinder/*/unknowns/U*.md"
-value = "- Status: open"
-
-[[assertions]]
-kind = "glob_none_contains"
-path = ".agent-wayfinder/*/unknowns/U*.md"
-value = "- Status: resolved"

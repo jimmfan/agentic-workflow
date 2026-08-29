@@ -1,6 +1,5 @@
 # U17: Which release mode does the published source require?
 
-- Status: open
 - Resolution mode: direct
 - Blocked by: none
 - Related: E12, F8, D4

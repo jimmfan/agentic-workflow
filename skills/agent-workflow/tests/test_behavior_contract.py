@@ -24,6 +24,43 @@ behavior = load_behavior()
 
 
 class BehaviorContractTests(unittest.TestCase):
+    def test_wayfinder_assessment_can_end_without_durable_state(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-assessment-needs-no-state"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            stdout = (
+                "No durable Wayfinder state is needed.\n\n"
+                "[route: router → wayfinder → assessed-no-state]"
+            )
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=before,
+                after=before,
+                stdout=stdout,
+                stderr="",
+                returncode=0,
+                report={
+                    "status": "success",
+                    "summary": "No durable Wayfinder state is needed.",
+                },
+                verification=(),
+                route_components=behavior.route_components(stdout),
+            )
+
+            failures = [
+                result.detail
+                for result in behavior.evaluate(evidence)
+                if not result.passed
+            ]
+            self.assertEqual(failures, [])
+            self.assertFalse((workspace / ".agent-wayfinder").exists())
+
     def test_recognized_effort_retirement_can_leave_opaque_project_content(
         self,
     ) -> None:

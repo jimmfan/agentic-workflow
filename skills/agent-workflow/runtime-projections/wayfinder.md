@@ -12,6 +12,8 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 ## Core invariants
 
 - Route before inspecting state; an existing map never selects Wayfinder.
+- Selection may conclude that no consequential continuity earns persistence;
+  in that case create no effort, map, or supporting record.
 - Establish the destination and enough relevant territory to orient the effort
   before substantial decomposition. Keep `map.md` low-resolution and load
   detail only when relevant. Apply the contract's default map shape when
@@ -122,7 +124,7 @@ The ready frontier is the set of coherent scopes whose material decision
 dependencies are answered or explicitly dispositioned and can therefore
 proceed now. Answer the consequential U#, or canonically record the responsible
 authority’s explicit acceptance of the remaining uncertainty for that boundary.
-The U# then remains factually unanswered; keep the U# open, and unblock only
+The U# then remains factually unanswered; keep it current and unresolved, and unblock only
 the named boundary. Reconcile and shrink the map, then
 hand off one or more ready scopes without advancing work that remains
 dependency-blocked. Each Implementation handoff consumes one coherent scope and

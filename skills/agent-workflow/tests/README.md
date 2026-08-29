@@ -64,11 +64,13 @@ question without creating downstream work, Wayfinder assessment concluding that
 no durable state is needed, and creating canonical map-first state without
 implementation work-item children. Current facts and decisions use optional
 `facts.md` and `decisions.md` ledgers; independent unknowns and substantial
-evidence retain U#/E# files. Tests cover truthful fact provenance, actual
-decision authority, relevant-section retrieval without unrelated detail,
+evidence retain U#/E# files. Presence means a U# remains unresolved and a D#
+remains the current authorized choice; neither uses a lifecycle status field.
+Tests cover truthful fact provenance, actual decision authority, relevant-section retrieval without unrelated detail,
 answered unknowns and redundant evidence leaving current state, effort-lock
 serialization across maps, ledgers, U#, and E#, and reference-safe targeted
-retirement without requiring a prior commit.
+retirement without requiring a prior commit. Opaque content inside U/E containers
+is preserved and blocks only an affected ambiguous mutation.
 
 The catalog also covers blocked-effort re-entry, mapless retired directories
 being excluded from selection, and ensuring that an unrelated existing effort
