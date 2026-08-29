@@ -17,7 +17,7 @@ Wayfinder methodology. It chooses how to navigate and resolve the frontier;
 - Establish the destination and enough relevant territory to orient the effort
   before substantial decomposition. Keep `map.md` low-resolution and load
   detail only when relevant. Apply the contract's default map shape when
-  applicable; omit empty headings, allow a materially clearer equivalent, and
+  applicable; omit empty headings, allow a clearer equivalent, and
   never copy canonical plans.
 - The map owns current state, blockers, dependencies, frontier, and next work.
   Optional F/D ledger sections and U/E artifacts preserve only useful current
@@ -43,30 +43,32 @@ Report the incomplete installation.
 ## Establish territory
 
 Reuse accepted project structure when it supplies a useful destination, scope,
-areas, and important seams. Otherwise establish the smallest useful structure
-directly. Territory is provisional, adaptive, and judgment-based. It helps
-Wayfinder explore relevant areas and seams, challenge incomplete framing, and
-revise its understanding as evidence develops. Exploration may broaden
+areas, and important operating boundaries. Otherwise establish the smallest
+useful structure directly. Territory is provisional, adaptive, and judgment-based.
+It is a low-resolution view of major areas, relationships, and ownership or
+operating boundaries. It helps Wayfinder challenge incomplete framing and revise
+its understanding as evidence develops. Exploration may broaden
 understanding, but must not silently broaden the user's goal, delegated
 authority, or implementation scope.
 
 Domain Modeling is the preferred structural fallback when clarifying
 or reorganizing concepts, vocabulary, boundaries, responsibilities, or
-relationships would materially improve the map's usefulness or coherence;
+relationships would make the map clearer or more reliable;
 progress need not already be blocked. When it would help, establish enough
 territory before substantial U/E/F/D accumulates, then derive the effort name
 and stable path from that territory.
 
 On a coherent resume, do not reload Domain Modeling merely because Wayfinder
-resumed. If later authoritative evidence materially invalidates the territory,
-Domain Modeling may re-enter to revise the same map. Reconcile the current
-structure rather than preserving unsupported or parallel territory.
+resumed. If later authoritative evidence shows that the territory no longer
+fits current truth, Domain Modeling may re-enter to revise the same map.
+Reconcile the current structure rather than preserving unsupported or parallel
+territory.
 
 ## Resolve the frontier progressively
 
 Continue directly when the frontier can be resolved safely without additional
-methodology. Load only the smallest specialist whose method would materially
-improve resolution:
+methodology. Load only the smallest specialist needed to resolve or accurately
+frame the frontier:
 
 - **Discovery** for consequential alternatives and tradeoffs.
 - **Debugging** for an observed behavior with an unknown cause.
@@ -103,30 +105,32 @@ canonical artifacts instead of copying them. The state contract defines when
 U/E/F/D detail is worth retaining and how recognized state retires.
 
 Map uncertainty broadly, then promote selectively. A precise question becomes
-U# when preserving it while unanswered could materially improve a later
-developer’s ability to make or evaluate a decision. This applies within
+U# when separate preservation while unanswered is independently useful to a
+later developer making or evaluating a decision. This applies within
 the current destination and relevant territory, especially when the answer
 requires human or project authority, depends on an external owner or approval,
-or gates multiple downstream areas or a meaningful seam. Ask the substantive
-project question when project knowledge determines materiality; do not ask
-merely whether to create a U#. Keep incidental or merely unspecified detail
-under `Not yet specified` in the map. Precision alone is insufficient. Ordinary
-research or debugging fog, a long list, or a template does not by itself
-justify a U#. A temporary U# is useful only when separate preservation improves
-current coordination or later continuation, not as create-and-retire ceremony.
+or gates multiple downstream areas or a consequential boundary. Ask the
+substantive project question when project knowledge determines whether separate
+preservation is useful; do not ask merely whether to create a U#. Keep
+incidental or merely unspecified detail under `Not yet specified` in the map.
+Precision alone is insufficient. Ordinary research or debugging fog, a long
+list, or a template does not by itself justify a U#. A temporary U# is useful
+only when separate preservation improves current coordination or later
+continuation, not as create-and-retire ceremony.
 
 When dependency evidence is sufficient, surface the navigation shape concisely:
 the critical path, independent parallel work, and any off-path dependency whose
-external lead time materially affects the route. Do not infer a critical path
+external lead time changes ordering or readiness. Do not infer a critical path
 from an unordered backlog or incomplete evidence.
 
-The ready frontier is the set of coherent scopes whose material decision
-dependencies are answered or explicitly dispositioned and can therefore
-proceed now. Answer the consequential U#, or canonically record the responsible
-authority’s explicit acceptance of the remaining uncertainty for that boundary.
-The U# then remains factually unanswered; keep it current and unresolved, and unblock only
-the named boundary. Reconcile and shrink the map, then
-hand off one or more ready scopes without advancing work that remains
+The ready frontier is coherent work that can proceed now. Resolve each blocking
+dependency using the evidence or authority its resolution method requires. For
+an unresolved consequential question, either answer the U# or record in a
+canonical artifact the responsible authority's explicit acceptance of the
+remaining uncertainty for one named boundary. That acceptance leaves the U#
+current and unresolved, unblocks only that named boundary, does not grant
+authority, and does not unblock another dependency. Reconcile and shrink the
+map, then hand off one or more ready scopes without advancing work that remains
 dependency-blocked. Each Implementation handoff consumes one coherent scope and
 its acceptance criteria; Verification follows execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
@@ -134,6 +138,6 @@ deliverable sessions, and link its native frontier without a shadow copy.
 
 Read-only work never mutates state. Follow the state contract for every
 authorized mutation. Interpret and mutate only recognized current Wayfinder
-state. Preserve unknown project-owned content without interpreting it, continue
-independent current work, and stop safely for an actual collision, reference
-conflict, semantic ambiguity, or unsafe filesystem boundary.
+state. Preserve unrecognized project-owned content without interpreting it,
+continue independent current work, and stop safely for an actual collision,
+reference conflict, semantic ambiguity, or unsafe filesystem boundary.

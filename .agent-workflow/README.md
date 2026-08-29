@@ -58,13 +58,13 @@ owns current state, blockers, dependencies, and next work, indexing rather than
 duplicating supporting detail; later work orients there before retrieving only
 a relevant ledger section or U#/E# artifact.
 
-Facts require truthful provenance, and decisions require responsible project
+Facts require traceable provenance, and decisions require responsible project
 authority rather than evidence alone.
 
-Wayfinder recognizes only the current map, ledgers, and canonical U#/E# files.
-Unknown project-owned content is preserved without interpretation or mutation;
-independent current work may proceed unless the content creates an actual
-collision, reference conflict, semantic ambiguity, or unsafe filesystem
+Wayfinder recognizes only the current map, ledgers, and recognized U#/E# files.
+Unrecognized project-owned content is preserved without interpretation or
+mutation; independent current work may proceed unless the content creates an
+actual collision, reference conflict, semantic ambiguity, or unsafe filesystem
 boundary.
 Substantial decomposed work belongs to `to-tickets`, not Wayfinder. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.

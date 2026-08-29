@@ -1737,7 +1737,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Effort shape and selection",
             "## Current knowledge",
             "## Safe mutation",
-            "## Reconciliation and settlement",
+            "## Reconciliation and retirement",
         )
         offsets = [self.contract.index(heading) for heading in headings]
         self.assertEqual(offsets, sorted(offsets))
@@ -1748,7 +1748,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
     def test_contract_keeps_the_stable_state_surface(self) -> None:
         for required in (
-            "Wayfinder recognizes this current-state layout",
+            "Wayfinder recognizes only the contract-defined paths and record forms",
             "# required re-entry point",
             "# optional current F# ledger",
             ".agent-wayfinder/<effort>/map.md",
@@ -1778,6 +1778,66 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertIn("Presence in `unknowns/` means", self.normalized)
         self.assertIn("Presence in `decisions.md` means", self.normalized)
 
+    def test_contract_uses_current_wayfinder_terminology(self) -> None:
+        for required in (
+            "An effort is one resumable body of coordination",
+            "Current state is relevant to present coordination according to its type",
+            "Durable state is intentionally preserved across sessions or handoffs",
+            "including unmatched children or ledger sections inside a recognized container",
+            "unrecognized project-owned content",
+            "opaque means preserving bytes without interpreting, normalizing, or mutating them",
+            "Separate preservation is independently useful only when",
+            "These headings guide content; they are not a recognition schema",
+            "The ready frontier contains only coherent work that can proceed now",
+            "A canonical artifact is the designated durable location",
+            "Provenance is traceable",
+            "or a working proposal",
+            "Reconcile means bringing only affected current records",
+            "consequential when resolving it differently would change",
+        ):
+            self.assertIn(required, self.normalized)
+        for obsolete in (
+            "seam",
+            "dispositioned",
+            "non-durable proposal",
+            "noncanonical content",
+            "settlement",
+            "native owner",
+        ):
+            self.assertNotIn(obsolete, self.contract.lower())
+
+    def test_contract_does_not_treat_a_workflow_as_authority(self) -> None:
+        self.assertIn(
+            "When the request or delegated scope authorizes mutation",
+            self.normalized,
+        )
+        self.assertIn(
+            "a mutating workflow may change only the requested effort and affected current state",
+            self.normalized,
+        )
+        self.assertNotIn("A mutating workflow authorizes", self.contract)
+
+    def test_contract_allows_transient_retirement_after_reconciliation(self) -> None:
+        self.assertIn(
+            "Retirement does not require committing a transient record first. "
+            "Preserve any still-useful outcome, reconcile affected current references, "
+            "then remove the record.",
+            self.normalized,
+        )
+
+    def test_contract_keeps_distinct_pre_v1_and_retirement_safety_rules(self) -> None:
+        for required in (
+            "historical-state interpretation, legacy compatibility, migration, registry, "
+            "synchronization, or lifecycle machinery",
+            "Never commit, steal, or assume an existing lock is abandoned",
+            "never normalize, migrate, rename, delete, or globally scan them",
+            "Do not scan unrelated efforts, the entire repository, or Git history",
+            "Never recursively delete an effort, `unknowns/`, or `evidence/` directory",
+            "Do not retain the predecessor map or add tombstones, redirects, archives, "
+            "or successor metadata",
+        ):
+            self.assertIn(required, self.normalized)
+
     def test_contract_keeps_identifier_and_anchor_representation(self) -> None:
         for required in (
             "effort-local, positive, and unique within their type",
@@ -1798,8 +1858,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Every authorized mutation",
             "Reread affected state",
             "preserve the conflict",
-            "Preserve unknown bytes",
-            "opaque project-owned data",
+            "Preserve unrecognized bytes",
+            "unrecognized project-owned content",
         ):
             self.assertIn(required, self.normalized)
 
@@ -1845,6 +1905,17 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Reconcile and hand off",
         ):
             self.assertIn(heading, runtime)
+        normalized_runtime = " ".join(runtime.split())
+        for required in (
+            "Resolve each blocking dependency",
+            "responsible authority's explicit acceptance",
+            "leaves the U# current and unresolved",
+            "unblocks only that named boundary",
+            "does not grant authority",
+        ):
+            self.assertIn(required, normalized_runtime)
+        for obsolete in ("seam", "dispositioned", "native owner"):
+            self.assertNotIn(obsolete, runtime.lower())
 
 
 if __name__ == "__main__":

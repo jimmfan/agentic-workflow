@@ -31,7 +31,7 @@ subprocess.
   isolation, destructive-mutation detection, and intentionally-red fixtures.
 - `test_wayfinder_behavior.py` validates Wayfinder scenario semantics, current
   record presence, authority, progressive loading, conflict promotion,
-  reconciliation, blocked settlement, full settlement, and no-state outcomes.
+  reconciliation, blocked retirement, full retirement, and no-state outcomes.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
