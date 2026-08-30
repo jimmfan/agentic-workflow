@@ -1,8 +1,8 @@
 schema_version = 1
 id = "wayfinder-durable-name-ignores-ephemeral-inputs"
-name = "Durable effort naming ignores ephemeral task labels"
+name = "Durable effort naming ignores session-only task labels"
 fixture = "wayfinder-effort-selection"
-request = "Use Wayfinder to map effort-selection reliability. The current branch is codex/current-work, ticket AW-42 mentions providers.py, the temporary task says 'fix branch', and the chat title is 'Project update'. Durable repository-local state writes are authorized."
+request = "Use Wayfinder to map effort-selection reliability. The current branch is codex/current-work, ticket AW-42 mentions providers.py, the temporary task says 'fix branch', and the chat title is 'Project update'. The user grants action authorization for durable repository-local state writes."
 starting_state = [
   "Wayfinder is explicitly selected and no existing effort has this objective and scope.",
   "Branch, ticket, file, temporary-task, and chat-title labels are all present but none defines the durable effort.",

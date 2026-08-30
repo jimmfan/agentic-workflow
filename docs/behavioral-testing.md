@@ -14,7 +14,7 @@ hidden reasoning trace.
 
 ## Testing layers
 
-1. **Production-owner tests** exercise lifecycle, provider transactions,
+1. **Production-boundary tests** exercise lifecycle, provider transactions,
    package verification, bootstrap safety, routing, and Wayfinder state through
    their public boundaries.
 2. **Behavior-harness tests** validate TOML schema and vocabulary, blind-rubric
@@ -48,7 +48,7 @@ fixture = "example-project"
 request = "Natural-language request given to the live agent."
 starting_state = [
   "A resolved project decision exists.",
-  "One non-blocking unknown remains.",
+  "One non-blocking unresolved question remains.",
 ]
 expect = [
   "existing_state_reused",
@@ -99,7 +99,7 @@ showing the rubric would coach the agent toward the classification under test.
 The live prompt then withholds `expect`, `must_not`, state-loading constraints,
 report requirements, and `verification_command`; hidden evaluation and
 assertions still run normally. The scenario name, request, and starting state
-must remain neutral, and the live workspace uses an opaque case name so the
+must remain neutral, and the live workspace uses a non-descriptive case name so the
 scenario identifier does not reveal the rubric. Prefer ordinary guided smoke
 tests when prompt contamination is not the behavior under evaluation.
 
@@ -125,13 +125,13 @@ consulted, while a known unrelated child must not be. Every named path must be a
 regular file in the starting fixture.
 
 A new scenario should need one TOML file and one small fixture directory. The
-validator rejects unknown behavior names, unsafe paths, missing preserved files,
-unknown fields, and unsupported assertion kinds.
+validator rejects unrecognized behavior names, unsafe paths, missing preserved
+files, unrecognized fields, and unsupported assertion kinds.
 
 The deterministic catalog includes pruning behavior for answered U# and
 redundant E# files only after reference reconciliation, keeping blocked
 efforts resumable, excluding mapless directories from selection, updating the
-same authorized D# boundary, and preventing reference-system observations from
+same D# decision boundary through project decision authority, and preventing reference-system observations from
 becoming unsupported current-project facts. These are human-authored behavior
 contracts, not evidence that an unrun model obeyed them.
 
@@ -200,7 +200,7 @@ python3 skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
 For a live run, use an environment with the chosen agent executable, model
-credentials, and any research/network permission required by the selected
+credentials, and any host permission for research/network access required by the selected
 scenarios. This can consume model quota and contact external services. The
 command must read the prompt from standard input, operate in its current
 working directory, and write only the final user-facing response to standard
@@ -211,7 +211,7 @@ stream. Run:
 
 ```bash
 python3 skills/agent-workflow/tests/behavior.py live \
-  --agent-command-json '["/absolute/path/to/your-agent-adapter"]' \
+  --agent-command-json '["/absolute/path/to/your-agent-command-wrapper"]' \
   --output /tmp/agent-workflow-live-report.json
 ```
 
@@ -220,7 +220,7 @@ If the agent CLI needs explicit paths, the JSON command may use the placeholders
 
 ```bash
 python3 skills/agent-workflow/tests/behavior.py live \
-  --agent-command-json '["/absolute/path/to/your-agent-adapter", "--workspace", "{workspace}", "--prompt", "{prompt_file}"]' \
+  --agent-command-json '["/absolute/path/to/your-agent-command-wrapper", "--workspace", "{workspace}", "--prompt", "{prompt_file}"]' \
   --keep-workspaces /tmp/agent-workflow-live \
   --output /tmp/agent-workflow-live-report.json
 ```
@@ -248,4 +248,4 @@ cleans workspaces automatically.
   separately credentialed environment and are not represented as deterministic
   success.
 - The live runner is command-based rather than tied to one vendor CLI. A host
-  adapter must satisfy the documented stdin/current-directory contract.
+  command wrapper must satisfy the documented stdin/current-directory contract.

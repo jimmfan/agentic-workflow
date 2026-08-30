@@ -16,17 +16,19 @@ developed enough interacting state to warrant durable coordination.
 ## Decision
 
 Begin with the simplest reasonable route. Classify from user intent and cheap
-capability descriptions, then perform only the smallest authorized read-only
-reconnaissance needed when evidence is insufficient. Clear work remains Direct;
-load specialist method, workflow structure, detailed routing policy, or durable
-coordination only when it materially helps.
+capability descriptions, then perform only the smallest read-only
+reconnaissance within delegated scope when evidence is insufficient. Choose
+Direct or one primary workflow, and add only supporting capabilities that
+materially help.
+Load specialist method, detailed routing policy, or durable coordination only
+when its boundary becomes relevant.
 
 Routing is not frozen at the first prompt. Re-evaluate when evidence changes.
-The router may select or escalate to Wayfinder implicitly when durable
-coordination materially reduces the risk of losing or conflating consequential
-state; users need not diagnose that transition themselves. Explicit invocation
-and opt-out remain authoritative, and read-only work never gains write
-authority.
+The router may select or transition to Wayfinder implicitly when durable
+coordination materially reduces the chance of losing or conflating
+consequential state; users need not diagnose that transition themselves.
+Explicit user selection or opt-out controls the route, and read-only scope does
+not grant action authorization for writes.
 
 Keep always-loaded classification context small and progressively load deeper
 methodology, provider policy, and state contracts only after their boundaries
@@ -50,8 +52,8 @@ rewriting this decision.
   it charges maximum context before useful evidence exists.
 - Select Wayfinder at a fixed item count: rejected because quantity alone does
   not establish consequence, interaction, persistence, or coordination risk.
-- Require the user to request every escalation: rejected because the routing
-  layer owns recognizing when its current process is no longer sufficient.
+- Require the user to request every route transition: rejected because the routing
+  layer is responsible for recognizing when its current process is no longer sufficient.
 - Treat workflows as mandatory pipelines: rejected because capability
   composition should follow actual entry conditions and evidence.
 

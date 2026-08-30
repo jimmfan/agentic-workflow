@@ -133,7 +133,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
 
             for correct in (
                 (
-                    "The bounded pilot may proceed and is ready for handoff. "
+                    "The bounded pilot may proceed and is ready for the next workflow transition. "
                     "Production sizing remains blocked."
                 ),
                 (

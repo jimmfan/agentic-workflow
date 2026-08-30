@@ -5,7 +5,7 @@ fixture = "wayfinder-selective-promotion"
 request = "Use Wayfinder to orient the release readiness effort described in README.md. Do not publish implementation tickets or change the source documents."
 starting_state = [
   "README.md is the current repository evidence for this assessment.",
-  "Repository-local Wayfinder writes are authorized; external mutations are not.",
+  "The user grants action authorization for repository-local Wayfinder writes, but not for external mutations.",
 ]
 expect = [
   "uncertainty_recorded_or_blocked",

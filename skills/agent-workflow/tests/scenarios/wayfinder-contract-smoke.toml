@@ -1,8 +1,8 @@
 schema_version = 1
 id = "wayfinder-contract-smoke"
-name = "Map-only Wayfinder continuation hands substantial work to To Tickets"
+name = "Map-only Wayfinder continuation transitions substantial work to To Tickets"
 fixture = "wayfinder-contract-smoke"
-request = "Resume the named runtime-rollout Wayfinder effort as a fresh session and read its map first. Inspect release-policy.txt and the already approved rollout-plan.md. The policy baseline will constrain several implementation sessions, so preserve one independently useful E1 observation with provenance and limitations and record `F1 — Python 3.11 is the minimum supported runtime` as a section in facts.md supported by E1; link the map directly to the F1 section and do not create U# or D# records for settled or obvious material. Publish the three approved dependency-ordered slices through the configured local to-tickets workflow, link the resulting ticket set from map.md, and identify ticket 01 as the ready ticket. Do not implement the rollout."
+request = "Resume the named runtime-rollout Wayfinder effort as a fresh session and read its map first. Inspect release-policy.txt and the already approved rollout-plan.md. The policy baseline will constrain several implementation sessions, so preserve one independently useful E1 with its Source, Scope, Observation, and Limitations and record `F1 — Python 3.11 is the minimum supported runtime` as a section in facts.md supported by E1; link the map directly to the F1 section and do not create U# or D# records for already resolved or obvious material. Publish the three approved dependency-ordered slices through the configured local to-tickets workflow, reference the resulting ticket set from map.md, and identify ticket 01 as the ready ticket. Do not implement the rollout."
 starting_state = [
   "The named effort contains only map.md and is already valid durable Wayfinder state.",
   "release-policy.txt warrants one reusable evidence/fact chain; ordinary fixture instructions do not.",
@@ -20,7 +20,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = true
-verification_command = "Run python verify.py after creating only the justified E1/F1 chain, publishing the approved native tickets, and updating map.md."
+verification_command = "Run python verify.py after creating only the justified E1/F1 chain, publishing the approved provider-native tickets, and updating map.md."
 preserve_paths = [
   "release-policy.txt",
   "rollout-plan.md",

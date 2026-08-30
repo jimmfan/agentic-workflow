@@ -1,10 +1,10 @@
 schema_version = 1
 id = "wayfinder-answered-unknown-authority-choice"
-name = "Authority answer prunes the dependent unknown"
+name = "Project decision authority answer prunes the dependent unresolved question"
 fixture = "wayfinder-authority-answer"
 request = "Resume the rollout-choice Wayfinder effort. As the responsible project owner, I change the existing rollout-strategy decision to Option B: a staged rollout. Update that same D1 boundary in place, reconcile the map's release-checklist dependency and ready work, then prune the answered U1. Preserve D7 and unrelated state. Do not create D2, the allocator-next D8, or retain the superseded choice as history; do not implement the rollout, create an ADR or ticket, or treat the empty unknowns directory as state."
 starting_state = [
-  "U1 is a current unresolved consequential authority-owned question.",
+  "U1 is a current unresolved consequential question requiring project decision authority.",
   "The unresolved rollout-strategy uncertainty recorded in U1 currently blocks the release checklist.",
   "The effort contains unrelated project-owned state that must remain unchanged.",
   "D1 is the existing current choice for this same boundary; D7 is unrelated.",

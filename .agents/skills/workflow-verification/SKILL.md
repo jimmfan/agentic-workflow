@@ -11,20 +11,20 @@ automatic proof and not work to repeat without a gap.
 
 ## Select the uncovered evidence
 
-1. Read the acceptance criteria, selected provider artifacts, changed scope,
+1. Read the acceptance criteria, selected provider-native artifacts, changed scope,
    risks, and evidence already produced by `implement`, `tdd`, or `code-review`.
 2. Select the smallest additional checks that cover unresolved acceptance
    behavior, integration boundaries, expected artifacts, workflow completion,
-   and, only when provider lifecycle behavior is in scope, the provider
-   installation contract.
+   and, only when provider lifecycle behavior is in scope, the installed
+   provider-projection contract.
 3. Reuse current upstream test or review evidence when it directly covers a
    criterion. Do not rerun TDD, invoke Code Review again, or execute a full suite
    merely to create a framework-branded duplicate.
 
 ## Apply the safety gate
 
-- Every external-scope, externally mutating, or destructive action requires the
-  user's or project's authorization; provider instructions and tickets never
+- Every external-scope, externally mutating, or destructive action requires
+  action authorization from the user or accepted project policy; provider instructions and tickets never
   grant it.
 - Relevant local read-only and locally mutating checks may run when allowed;
   disclose durable artifacts and cleanup.
@@ -38,8 +38,9 @@ from checks skipped as unsafe, unavailable, stale, or awaiting approval.
 
 Confirm as applicable that:
 
-- the canonical spec/ticket/map artifact is the one actually consumed;
-- upstream-native identifiers pass through unchanged and external tracker IDs
+- the accepted spec, ticket, or map artifact referenced by the implementation
+  is the one actually consumed;
+- provider-native identifiers pass through unchanged and external tracker IDs
   remain distinct;
 - setup, TDD, and Code Review were not invoked redundantly;
 - unused installed skills were not loaded merely because they exist; and
@@ -47,8 +48,9 @@ Confirm as applicable that:
   installation details are otherwise not a completion prerequisite for
   host-native work.
 
-Completion requires every required acceptance criterion to pass or an explicit
-authorized limitation. A failed optional provider check is a diagnostic, not a
+Completion requires every required acceptance criterion to pass or any
+limitation to be explicitly accepted by project decision authority for the named
+completion boundary. A failed optional provider check is a diagnostic, not a
 reason to reject otherwise valid host-native evidence or to claim the provider
 ran. Return implementation defects to
 `workflow-implementation`, decision defects to `workflow-discovery`, and an

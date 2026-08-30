@@ -7,7 +7,7 @@ Run focused unittest commands with `python3 -m unittest ...`. Python's generated
 need manual cleanup. The full verifier also disables bytecode writes in its test
 subprocess.
 
-## Production-owner unit and integration tests
+## Production-boundary unit and integration tests
 
 - `test_lifecycle.py` owns install, update, status, remove, composite-file and
   project-owned-state preservation boundaries.
@@ -50,30 +50,34 @@ evaluator, and scenario behavior; they do not repeat the full lifecycle matrix.
 
 The default live set is a representative smoke sample covering direct work,
 external research, blocked authority, read-only and writable reconciliation,
-evidence/fact contradiction, map-only continuation with a native `to-tickets`
-handoff, selective uncertainty, verification recovery, blocked work, and the
+evidence/fact contradiction, map-only continuation with a provider-native
+`to-tickets` workflow transition, selective uncertainty, verification recovery,
+blocked work, and the
 valid outcome that Wayfinder assessment creates no state. Live cases are opt-in
 and not part of ordinary pull requests.
 
 The broader deterministic catalog also covers Domain Modeling surfacing
-consequential uncertainty, authority-dependent choices asking a concrete human
-question without creating downstream work, Wayfinder assessment concluding that
-no durable state is needed, and creating canonical map-first state without
-implementation work-item children. Current facts and decisions use optional
-`facts.md` and `decisions.md` ledgers; independent unknowns and substantial
-evidence retain U#/E# files. Presence means a U# remains unresolved and a D#
-remains the current authorized choice; neither uses a lifecycle status field.
-Tests cover truthful fact provenance, actual decision authority, relevant-section retrieval without unrelated detail,
-answered unknowns and redundant evidence leaving current coordination state, reference-safe
-targeted pruning without requiring a prior commit, changed-state rejection,
-and no-overwrite U#/E# creation. Opaque content inside U/E containers
-is preserved, while identity-like malformed entries block the affected U/E operation.
+consequential uncertainty, choices requiring project decision authority asking
+a concrete human question without creating downstream work, Wayfinder assessment
+concluding that no durable state is needed, and creating recognized map-first
+state without implementation work-item children. Current facts and decisions use
+optional `facts.md` and `decisions.md` ledgers; independently useful unresolved
+questions and substantial evidence retain U#/E# files. Presence means a U#
+remains unresolved and a D# remains the current choice committed by project
+decision authority; neither uses a lifecycle status field. Tests cover direct
+fact-source relations, project decision authority, relevant-section retrieval
+without unrelated detail, answered questions and redundant evidence leaving
+current coordination state, reference-safe targeted pruning without requiring a
+prior commit, changed-state rejection, and no-overwrite U#/E# creation.
+Unrecognized content inside U/E containers is preserved, while identity-like
+malformed entries block the affected U/E operation.
 
 The catalog also covers blocked-effort resumption, mapless directories being
 excluded from selection, and ensuring that an unrelated existing effort
 neither captures a simple route nor gets loaded. Selective U#/E# promotion keeps
-authority-owned, external-approval, and cross-area-gating uncertainty without
-promoting incidental uncertainty or requiring an exact artifact count. The live
+questions requiring project decision authority, external-approval questions,
+and cross-area-gating uncertainty without promoting incidental uncertainty or
+requiring an exact artifact count. The live
 Wayfinder contracts preserve an unrelated effort during reconciliation, keep
 outdated-state audits read-only, and require conflicting reconciliation to stop
 without guessing.

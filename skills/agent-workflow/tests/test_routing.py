@@ -17,8 +17,15 @@ EXPECTED_PROJECT_LANGUAGE = {
     "Ready work",
     "Dependency",
     "Blocker",
+    "U# (unresolved question record)",
+    "F# (fact record)",
+    "Project decision authority",
     "Reconciliation",
     "Pruning",
+    "Framework-owned",
+    "Project-owned",
+    "Durable",
+    "Reconstructable",
 }
 
 
@@ -86,6 +93,48 @@ class RoutingContractTests(unittest.TestCase):
                 "File or ledger-section removal carries out pruning",
                 "ending an effort is separate",
             ),
+            "U# (unresolved question record)": (
+                "durable record",
+                "consequential question",
+                "remains unanswered",
+                "record is not itself a blocker",
+            ),
+            "F# (fact record)": (
+                "durable record",
+                "scoped descriptive conclusion",
+                "sufficiently supported",
+                "revisable as evidence changes",
+            ),
+            "Project decision authority": (
+                "person, role, or valid delegate",
+                "choice the project treats as binding",
+                "defined decision boundary",
+                "does not restrict technical judgment already delegated",
+            ),
+            "Reconciliation": (
+                "updating affected current coordination state",
+                "current truth",
+                "choices committed by project decision authority",
+                "designated artifacts that maintain lasting results",
+            ),
+            "Framework-owned": (
+                "content or a delimited region",
+                "install, update, and remove lifecycle",
+                "separate from durability and reconstructability",
+            ),
+            "Project-owned": (
+                "meaning and preservation belong to the consuming project",
+                "reference or interpret a recognized form",
+                "without gaining lifecycle ownership",
+            ),
+            "Durable": (
+                "retained across sessions or workflow transitions",
+                "separate from lifecycle ownership and reconstructability",
+            ),
+            "Reconstructable": (
+                "current declared source or package content",
+                "without losing unique project information",
+            ),
         }
         for term, fragments in expected_fragments.items():
             with self.subTest(term=term):
@@ -117,7 +166,7 @@ class RoutingContractTests(unittest.TestCase):
             "primary standards, official technical documentation, strong engineering evidence, "
             "and peer-reviewed evidence when available",
             "compare alternatives by exact semantics and applicability",
-            "avoid project-specific metaphors when an established or literal term is more precise",
+            "prefer established or literal language only when its semantic precision earns its cognitive cost",
             "state evidence strength and uncertainty honestly",
             "Update `CONTEXT.md` only after the terminology decision is accepted",
             "Keep behavior, architecture, authority, and terminology in their respective owning layers",
@@ -132,7 +181,7 @@ class RoutingContractTests(unittest.TestCase):
         )
 
         self.assertIn(
-            "Explicit compatible skill request | Named skill | Honor unless authorization, "
+            "Explicit compatible skill request | Named skill | Honor unless action authorization, "
             "safety, or compatibility blocks it",
             routing,
         )
@@ -160,17 +209,17 @@ class RoutingContractTests(unittest.TestCase):
 
         self.assertIn(
             "MUST NOT cross a consequential decision boundary without required "
-            "evidence, approval, or authority",
+            "evidence, action authorization, or project decision authority",
             normalized_root,
         )
         self.assertIn(
-            "Explicit responsible-authority acceptance leaves the recorded uncertainty "
-            "unresolved and unblocks only its named boundary",
+            "Explicit acceptance by project decision authority leaves the recorded "
+            "unresolved question unresolved and unblocks only its named boundary",
             normalized_root,
         )
         self.assertNotIn("U#", normalized_root)
         self.assertIn("independent work may continue", normalized_root)
-        self.assertIn("why authority is required", normalized_root)
+        self.assertIn("why that authority is required", normalized_root)
         self.assertIn(
             "Exact external read-only targets permit only that read",
             normalized_root,
@@ -178,6 +227,86 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn(
             "can record authority; it cannot create it", normalized_state_contract
         )
+        for distinction in (
+            "Evidence cannot commit a project choice",
+            "Action authorization does not establish project decision authority",
+            "Host permission does not authorize an action or commit a project choice",
+            "technical judgment already delegated by user direction or accepted project policy",
+            "project artifact that records it",
+        ):
+            with self.subTest(distinction=distinction):
+                self.assertIn(distinction, normalized_state_contract)
+        self.assertNotIn(
+            "project artifact, accepted policy, or valid delegate that establishes "
+            "project decision authority",
+            normalized_state_contract,
+        )
+
+        documented_routing = " ".join(
+            (REPOSITORY_ROOT / "docs/routing.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        self.assertIn(
+            "actions authorized by user direction or accepted project policy",
+            documented_routing,
+        )
+        for workflow in ("workflow-implementation", "workflow-verification"):
+            with self.subTest(workflow=workflow):
+                workflow_text = " ".join(
+                    (
+                        PACKAGE_ROOT / f"payload/skills/{workflow}/SKILL.md"
+                    ).read_text(encoding="utf-8").split()
+                )
+                self.assertIn(
+                    "limitation to be explicitly accepted by project decision authority "
+                    "for the named completion boundary",
+                    workflow_text,
+                )
+
+    def test_route_selection_execution_and_provider_statuses_remain_distinct(
+        self,
+    ) -> None:
+        routing = (
+            PACKAGE_ROOT / "payload/agent-workflow/routing.md"
+        ).read_text(encoding="utf-8")
+
+        sections = {
+            heading: " ".join(
+                routing.split(heading, 1)[1].split("\n## ", 1)[0].split()
+            )
+            for heading in (
+                "## Decide and compose",
+                "## Resolve providers",
+                "## Preserve responsibilities and transitions",
+                "## Report the executed route",
+            )
+        }
+        for fragment in (
+            "Choose Direct or one primary workflow",
+            "supporting capabilities that materially help",
+        ):
+            self.assertIn(fragment, sections["## Decide and compose"])
+        for fragment in (
+            "Route selection chooses Direct or a workflow",
+            "provider resolution identifies the configured provider operation",
+            "skill invocation calls or activates the selected skill",
+            "material execution means the selected method actually ran",
+            "completion and verification require evidence beyond the route marker",
+            "host support",
+            "invocation policy",
+            "configuration readiness",
+            "installed provider-projection status",
+            "host-native fallback",
+        ):
+            self.assertIn(fragment, sections["## Resolve providers"])
+        self.assertIn(
+            "The specialist creates no Agent Workflow durable coordination state",
+            sections["## Preserve responsibilities and transitions"],
+        )
+        reporting = sections["## Report the executed route"]
+        self.assertIn("<skill>-handoff", reporting)
+        self.assertIn("required provider still needs explicit user invocation", reporting)
 
     def test_specialist_selection_has_material_boundaries(self) -> None:
         self._assert_optional_specialist_boundaries()
@@ -187,25 +316,25 @@ class RoutingContractTests(unittest.TestCase):
             (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
         )
         required_boundaries = (
-            "Discovery owns bounded consequential choice",
+            "Discovery is the method for bounded consequential choice",
             "reorganizing the domain would materially improve",
             (
                 "Interdependent human/project-owned decisions materially shape downstream choices "
                 "| Direct or `grilling`"
             ),
-            "factual unknowns and one straightforward clarification use the minimum sufficient method",
+            "factual questions and one straightforward clarification use the minimum sufficient method",
             (
                 "Throwaway implementation would answer a design or behavior question "
                 "| Direct or `prototype`"
             ),
-            "Ordinary production implementation stays Direct or with its dominant workflow",
+            "Ordinary production implementation stays Direct or with its primary workflow",
             (
                 "Module interface, seam, depth, locality, or testability needs explicit design "
                 "| Direct or `codebase-design`"
             ),
             (
                 "when its vocabulary materially improves the design; ordinary edits and refactors "
-                "stay Direct or with their dominant workflow"
+                "stay Direct or with their primary workflow"
             ),
         )
         for boundary in required_boundaries:
@@ -265,7 +394,7 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("For a named skill, a resume", normalized_root)
         self.assertIn("avoid routing loops", normalized_routing.lower())
         self.assertIn("trivial low-risk edits stay direct", normalized_routing.lower())
-        self.assertIn("no safe authorized fallback exists", normalized_routing)
+        self.assertIn("no safe fallback with action authorization exists", normalized_routing)
         self.assertIn("report the host-native activity", normalized_routing)
         self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn(
@@ -278,8 +407,8 @@ class RoutingContractTests(unittest.TestCase):
             normalized_routing,
         )
         self.assertIn(
-            "A supporting capability does not become the dominant workflow or create "
-            "durable state",
+            "A supporting capability does not become the primary workflow or create "
+            "Agent Workflow durable coordination state",
             normalized_routing,
         )
         self.assertIn(

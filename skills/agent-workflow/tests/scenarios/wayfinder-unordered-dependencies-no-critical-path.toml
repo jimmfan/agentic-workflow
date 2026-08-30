@@ -5,7 +5,7 @@ fixture = "wayfinder-unordered-dependencies"
 request = "Use Wayfinder to orient the SDK onboarding refresh described in README.md. Do not publish tickets or edit the guidance."
 starting_state = [
   "README.md contains the complete current work description.",
-  "Repository-local Wayfinder writes are authorized; implementation is not.",
+  "The user grants action authorization for repository-local Wayfinder writes, but not for implementation.",
 ]
 expect = [
   "meaningful_repository_change",

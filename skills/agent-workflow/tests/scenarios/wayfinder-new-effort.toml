@@ -2,11 +2,11 @@ schema_version = 1
 id = "wayfinder-new-effort"
 name = "Complicated migration planning starts lightweight durable state"
 fixture = "wayfinder-new"
-request = "Plan our zero-downtime platform migration. Reuse migration-architecture.md for the objective, scope, major areas, and relationships; that authoritative structure is already clear, so do not rerun Domain Modeling. Preserve unresolved ordering separately and identify concrete work that can begin while part of the plan is blocked."
+request = "Plan our zero-downtime platform migration. Reuse the objective, scope, major areas, and relationships established by migration-architecture.md; that structure is already clear, so do not rerun Domain Modeling. Preserve unresolved ordering separately and identify concrete work that can begin while part of the plan is blocked."
 starting_state = [
   "Several important pieces of migration state are becoming unreliable to hold only in conversational context.",
-  "migration-architecture.md authoritatively defines consumer inventory, cutover orchestration, rollback, ownership, and their seams; the project owner accepted zero downtime, while migration ordering remains unresolved.",
-  "Repository-local durable planning is authorized, but no external tracker mutation is authorized.",
+  "migration-architecture.md establishes consumer inventory, cutover orchestration, rollback, ownership, and their seams; project decision authority in the Project owner role accepted zero downtime, while migration ordering remains unresolved.",
+  "The user grants action authorization for repository-local durable planning, but not for external tracker mutation.",
 ]
 expect = [
   "task_completed",
@@ -17,7 +17,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = false
-verification_command = "Validate that the resulting repository-local planning state preserves the objective, scope, current coordination state, conditions blocking particular work, dependencies, decisions, unknowns, and ready work without creating Wayfinder tickets or a parallel native-ticket copy."
+verification_command = "Validate that the resulting repository-local planning state preserves the objective, scope, current coordination state, conditions blocking particular work, dependencies, committed choices, unresolved questions, and ready work without creating Wayfinder tickets or a parallel provider-native ticket copy."
 preserve_paths = ["migration-architecture.md"]
 route_must_not_include = ["domain-modeling"]
 forbid_created_globs = [

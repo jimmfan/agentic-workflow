@@ -7,7 +7,8 @@
 
 Agent Workflow must be able to install, repair, update, and remove the files it
 manages without risking unique information owned by the project or user.
-Reconstructable framework output does not justify package-manager machinery;
+Framework-owned reconstructable output does not justify package-manager
+machinery;
 the ownership boundary should protect project data and core routing directly.
 
 The source package also contains policies and skill resources destined for an
@@ -17,16 +18,19 @@ installed host discovery locations.
 
 ## Decision
 
-Separate reconstructable framework output from preservation boundaries:
+Separate framework-owned reconstructable output from preservation boundaries:
 
 - `.agent-workflow/` and the finite set of declared provider directories are
-  reconstructable output. Lifecycle operations converge them to the current
-  declared state without requiring historical ownership or checksum evidence.
-  Unrelated skill directories remain independent; local edits inside a declared
-  provider name are disposable.
+  framework-owned reconstructable output. Lifecycle operations converge them to
+  the current declared state without requiring historical install/origin or
+  checksum evidence. Unrelated skill directories remain independent. The
+  declared provider projection is reconstructable from current package content;
+  local edits inside a declared provider name are replaceable rather than
+  preserved as unique project information.
 - `.agent-wayfinder/` is project-owned durable state. Lifecycle operations may
-  establish its root when absent but otherwise treat the entire tree as opaque:
-  they do not inventory, interpret, migrate, rewrite, or remove its contents.
+  establish its root when absent but otherwise treat the entire tree as
+  uninterpreted by lifecycle: they do not inventory, interpret, migrate,
+  rewrite, or remove its contents.
 - Managed regions in composite project files and required external integration
   paths use only the evidence necessary to avoid overwriting or deleting
   ambiguous project or user content. Uncertainty stops mutation.
@@ -41,8 +45,8 @@ data or make core routing reliable.
 
 ## Consequences
 
-Missing, modified, obsolete, or extra reconstructable files can be repaired
-from current package bytes. Project-owned state and ambiguous external content
+Missing, modified, obsolete, or extra framework-owned reconstructable files can
+be repaired from current package bytes. Project-owned state and ambiguous external content
 remain hard preservation boundaries. Provider failure does not invalidate an
 otherwise successful core lifecycle operation.
 
@@ -53,16 +57,17 @@ source, and tests rather than this decision.
 
 ## Alternatives considered
 
-- Preserve historical ownership and restoration metadata for every framework
+- Preserve historical install/origin and restoration metadata for every framework
   file: rejected because reconstructable output does not justify a package
   manager before 1.0.
 - Treat every target as replaceable: rejected because durable state, composite
-  project regions, and unknown external content may contain unique information.
+  project regions, and unrecognized external content may contain unique
+  information.
 - Mirror installed root-policy and host-customization paths literally inside
   the distributable package: rejected because supported adoption needs a clear
   activation boundary.
 - Discover and remove arbitrary provider directories: rejected because only the
-  finite declared provider set is framework-owned.
+  finite declared provider set is lifecycle-managed framework output.
 
 ## Reconsideration trigger
 

@@ -36,15 +36,18 @@ It checks:
 
 - Python syntax, package structure, regular-file modes, and synchronized versions;
 - the exact current source-to-target mapping and synchronized version;
-- the exact allowed authored payload, root-template, workflow-skill, and runtime
+- the exact allowed authored payload, root-template, workflow-skill, and runtime-
   projection inventories;
 - absence of executable or host-customization content in the
   activation-sensitive payload namespace;
-- provider declarations and projection integrity;
+- provider declarations and installed provider-projection integrity;
 - the source-only terminology glossary and project-language policy remain
   present, scoped, and absent from the distributed payload;
-- current Agent Workflow-owned Wayfinder surfaces use concept-specific
-  orientation and ready-work language;
+- current Agent Workflow-owned Wayfinder surfaces distinguish records from
+  represented questions, evidence, conclusions, and choices; project decision
+  authority from action authorization and host permission; route selection from
+  provider resolution, invocation, material execution, and completion evidence;
+  and lifecycle ownership from durability and reconstructability;
 - local Markdown links and behavioral scenario validation;
 - lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and
   stale-release-metadata tests;
@@ -110,10 +113,10 @@ The suite prioritizes behavior that matters before 1.0:
   state, and obsolete internal files disappear;
 - arbitrary unrecognized project-owned `.agent-wayfinder/` contents survive
   install, status, update, remove, reinstall, and provider repair byte-for-byte;
-- canonical local Wayfinder maps, F#/D# ledgers, and U#/E# files survive the
+- recognized local Wayfinder maps, F#/D# ledgers, and U#/E# files survive the
   same lifecycle sequence without schema interpretation or normalization;
 - project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
-- malformed composite markers and unknown external collisions stop before
+- malformed composite markers and unrecognized external collisions stop before
   partial mutation;
 - symlink/root/archive traversal boundaries remain enforced;
 - a source archive with more than 500 unrelated entries still installs when the
@@ -129,16 +132,16 @@ The suite prioritizes behavior that matters before 1.0:
   turning those release checks into an end-user runtime gate;
 - the installed source-checkout provider declaration must match the packaged
   declaration, while the maintainer refresh command refuses package-local output;
-- update completes an exact partial projection, reuses exact existing
+- update completes an exact partial provider projection, reuses exact existing
   directories, and replaces modified, extra-file, malformed, raw-upstream, or
   older declared directories as one rollback-protected transaction;
 - unsafe declared paths block provider mutation, remove deletes only the
-  declared projection, and unrelated skill directories are preserved;
-- the unchanged raw Wayfinder snapshot is recognized before the owned runtime
+  declared provider projection, and unrelated skill directories are preserved;
+- the unchanged raw Wayfinder snapshot is recognized before the framework-owned runtime
   body is projected in release-local staging, while changed target bytes are
   repaired and status remains read-only;
 - the implicit-invocation adapter automatically exposes To Spec, To Tickets,
-  and Implement from the bundled projection, is idempotent,
+  and Implement from the bundled provider projection, is idempotent,
   keeps Setup, Teach, and Triage user-only, and rejects unexpected activation
   metadata without a partial provider projection;
 - ASCII output remains writable on a cp1252 console; and
@@ -154,7 +157,7 @@ also cover empty-ledger removal, changed-state rejection,
 no-overwrite child creation, separate U#/E# artifacts, readable section anchors,
 and progressive retrieval of relevant detail without an arbitrary file count.
 
-Unknown-content coverage proves unmatched project-owned bytes remain unchanged
+Unrecognized-content coverage proves unmatched project-owned bytes remain unchanged
 and are not treated as current references or allocation state. Identity-like
 malformed entries and exact filesystem collisions are rejected. Lifecycle
 preservation exercises
@@ -166,12 +169,13 @@ excludes unrelated detail and efforts, reports outdated state without changing i
 stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
 of a direct route.
 
-The routing catalog separately covers direct work, standalone Discovery,
-direct Wayfinder ready work, specialist-supported resolution of consequential issues,
-Wayfinder-to-Implementation handoff, interrupted-specialist resumption from the map, host-native fallback,
-explicit provider handoff, external read scope, and provider-artifact
-ownership. It is an executable contract check, not proof that a live editor or
-provider service was exercised.
+The routing catalog separately covers direct work, standalone Discovery, direct
+Wayfinder ready work, specialist-supported resolution of consequential issues,
+the workflow transition from Wayfinder to Implementation, interrupted-specialist
+session continuation from the map, host-native fallback, an explicit provider
+invocation instruction, external read scope, and responsibility for
+provider-native artifacts. It is an executable contract check, not proof that a live editor
+or provider service was exercised.
 
 ## Useful failure diagnostics
 
@@ -186,7 +190,7 @@ If the gate fails:
 4. for a release snapshot refresh issue, run the maintainer command in a
    networked environment with GitHub CLI authentication; ordinary target
    install/update must remain fully offline; and
-5. never delete `.agent-wayfinder/` or unknown external content to make a test
+5. never delete `.agent-wayfinder/` or unrecognized external content to make a test
    pass.
 
 The deterministic GitHub Actions gate runs on Ubuntu. Native PowerShell and CMD
