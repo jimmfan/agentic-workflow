@@ -10,19 +10,19 @@
   "external_files": {
     ".agents/skills/workflow-debugging/SKILL.md": {
       "created": true,
-      "sha256": "cb9792a86b655d5a5fe5e0e76f4bc85f7905949fd5709d465bf5e8a9c389cf7f"
+      "sha256": "782bd05168c1848d230258d914c44cb030744d4706cf083a54acfd118cfa5f5d"
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "8d5fb46e3213fd707fbb7ed86bb08585ef294e4c7cd82589ddb25f0cf7242805"
+      "sha256": "459889ee4a6f2f5a9e6e070fb0be5c1ebba5ef4cb0bd9f8b2bb149b95e767fae"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "9637f5b9b7dc652656ae9f408977d39b7299173e0922e64272e616b8d15caa0a"
+      "sha256": "b8c79121ae9320611a2fe6a8f7e93a2ec66726d10ed65ffcc9a1514c1b24f692"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,
-      "sha256": "15a7747ec899a4ef0b7de2b69c0016bbd8f4e59881cf51974f79de2924807f2d"
+      "sha256": "f0b493414c19522e442b06363f4a6e76cc26138b42e43040a447013a34d2e060"
     }
   },
   "framework_version": "0.23.0",

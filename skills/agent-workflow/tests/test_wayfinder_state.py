@@ -38,7 +38,7 @@ def verifier_retired_wayfinder_patterns() -> tuple[str, ...]:
     raise AssertionError("verifier retired-language patterns are missing")
 
 
-RETIRED_CANONICAL_WAYFINDER_PATTERNS = verifier_retired_wayfinder_patterns()
+RETIRED_WAYFINDER_PATTERNS = verifier_retired_wayfinder_patterns()
 CURRENT_WAYFINDER_DOC_SECTIONS = {
     "Agent Workflow README contents": (
         REPOSITORY_ROOT / ".agent-workflow/README.md",
@@ -108,6 +108,18 @@ CURRENT_WAYFINDER_LANGUAGE_SURFACES = {
     ),
     "packaged discovery workflow": (
         PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
+    ),
+    "installed debugging workflow": (
+        REPOSITORY_ROOT / ".agents/skills/workflow-debugging/SKILL.md"
+    ),
+    "packaged debugging workflow": (
+        PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
+    ),
+    "installed verification workflow": (
+        REPOSITORY_ROOT / ".agents/skills/workflow-verification/SKILL.md"
+    ),
+    "packaged verification workflow": (
+        PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md"
     ),
 }
 FIXTURES = PACKAGE_ROOT / "tests/fixtures"
@@ -530,7 +542,7 @@ def references_to(
 ) -> list[Path]:
     match = CURRENT_ID.fullmatch(target.name)
     if match is None:
-        raise UnsafeWayfinderState("pruning path has no canonical current ID")
+        raise UnsafeWayfinderState("pruning path has no recognized current ID")
     identifier = f"{match.group(1)}{match.group(2)}"
     token = re.compile(rf"(?<![A-Z0-9]){re.escape(identifier)}(?![0-9])")
     relative_path = target.relative_to(effort).as_posix()
@@ -630,7 +642,7 @@ def rename_current_child(
 ) -> Path:
     match = CURRENT_ID.fullmatch(target.name)
     if match is None or match.group(1) not in {"U", "E"}:
-        raise UnsafeWayfinderState("renaming path has no canonical current ID")
+        raise UnsafeWayfinderState("renaming path has no recognized current ID")
     if readable_slug(slug) != slug or not slug:
         raise UnsafeWayfinderState("rename requires a readable slug")
     current_child_paths(effort, match.group(1), strict=True)
@@ -673,7 +685,7 @@ def prune_current_child(
     if match is not None and match.group(1) in LEDGER_PATHS:
         raise UnsafeWayfinderState("F/D records belong in their current ledgers")
     if match is None or match.group(1) not in {"U", "E"}:
-        raise UnsafeWayfinderState("pruning path has no canonical current ID")
+        raise UnsafeWayfinderState("pruning path has no recognized current ID")
     current_child_paths(effort, match.group(1), strict=True)
     if not target.exists():
         return False
@@ -714,20 +726,25 @@ def end_effort_state(
     effort: Path,
     *,
     known_references: list[Path] | None = None,
-    continuity_owners: list[Path] | None = None,
+    continuation_artifacts: list[Path] | None = None,
     before_final_check: Callable[[], None] | None = None,
     before_map_removal: Callable[[], None] | None = None,
 ) -> None:
     validate_effort_location(effort, require_root=True)
     validate_effort(effort)
     reference_paths = list(
-        dict.fromkeys([*(known_references or []), *(continuity_owners or [])])
+        dict.fromkeys([*(known_references or []), *(continuation_artifacts or [])])
     )
     for reference in reference_paths:
         if reference.is_symlink() or not reference.is_file():
             raise UnsafeWayfinderState(f"unsafe reference path: {reference}")
-    if any(owner.is_relative_to(effort) for owner in continuity_owners or []):
-        raise UnsafeWayfinderState("continuity owner must outlive the effort")
+    if any(
+        artifact.is_relative_to(effort)
+        for artifact in continuation_artifacts or []
+    ):
+        raise UnsafeWayfinderState(
+            "artifact maintaining continuation must outlive the effort"
+        )
     validate_effort_location(effort, require_root=True)
     validate_effort(effort)
     for kind in ("U", "E"):
@@ -740,16 +757,20 @@ def end_effort_state(
         path.name.split("-", 1)[0]
         for path in current_child_paths(effort, "U", strict=True)
     ]
-    owner_text = "\n".join(
-        owner.read_text(encoding="utf-8") for owner in continuity_owners or []
+    continuation_text = "\n".join(
+        artifact.read_text(encoding="utf-8")
+        for artifact in continuation_artifacts or []
     )
     if any(
-        re.search(rf"(?<![A-Z0-9]){re.escape(identifier)}(?![0-9])", owner_text)
+        re.search(
+            rf"(?<![A-Z0-9]){re.escape(identifier)}(?![0-9])",
+            continuation_text,
+        )
         is None
         for identifier in unresolved
     ):
         raise UnsafeWayfinderState(
-            "unresolved coordination lacks an observable continuity owner"
+            "unresolved coordination lacks an observable continuation artifact"
         )
     root_index = max(
         index
@@ -871,7 +892,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / ".agent-wayfinder"
             current = root / "current"
-            mapless = root / "retired"
+            mapless = root / "mapless"
             other = root / "other"
             for effort in (current, mapless, other):
                 effort.mkdir(parents=True)
@@ -882,7 +903,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (mapless / "project-notes.md").write_text(
-                "Project-owned content remains after settlement.\n",
+                "Project-owned content remains after effort ending.\n",
                 encoding="utf-8",
             )
             (other / "map.md").write_text(
@@ -1497,7 +1518,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertEqual(current[3].rstrip(), preserved[3].rstrip())
             self.assertTrue((effort / "decisions.md").is_file())
 
-    def test_answered_unknown_pruning_requires_reconciled_references_and_is_idempotent(
+    def test_answered_question_pruning_requires_reconciled_references_and_is_idempotent(
         self,
     ) -> None:
         fixture = FIXTURES / "wayfinder-reference-settlement"
@@ -1511,7 +1532,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 prune_current_child(effort, unknown)
 
             (effort / "map.md").write_text(
-                "# Release direction settlement\n\n"
+                "# Release direction ending\n\n"
                 "## Current state\n\n"
                 "[F8](facts.md#f8--published-source-selects-staged-release) and "
                 "[D4](decisions.md#d4--adopt-the-staged-release-direction) "
@@ -1598,7 +1619,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 )
             )
 
-    def test_answered_unknown_without_independent_outcome_can_settle_to_map_only(
+    def test_answered_question_without_independent_outcome_can_end_to_map_only(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1658,7 +1679,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 )
             self.assertTrue(unknown.exists())
 
-    def test_settlement_ends_effort_and_preserves_unknown_bytes(
+    def test_ending_effort_preserves_unrecognized_bytes(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1684,9 +1705,9 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "# E1: Source\n\n- Source: source.md\n", encoding="utf-8"
             )
             unknown.write_bytes(b"\x00project-owned\xff\n")
-            canonical = project / "release-direction.md"
-            canonical.write_text(
-                "U1 was dispositioned.\n\n"
+            lasting_result = project / "release-direction.md"
+            lasting_result.write_text(
+                "U1 was answered.\n\n"
                 "[Current map](.agent-wayfinder/release-direction/map.md)\n",
                 encoding="utf-8",
             )
@@ -1694,17 +1715,17 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "current references"):
                 end_effort_state(
                     effort,
-                    known_references=[canonical],
-                    continuity_owners=[canonical],
+                    known_references=[lasting_result],
+                    continuation_artifacts=[lasting_result],
                 )
-            canonical.write_text(
-                "# Release direction\n\nU1 was dispositioned; the lasting outcome is owned here.\n",
+            lasting_result.write_text(
+                "# Release direction\n\nU1 was answered; this project artifact maintains the lasting result.\n",
                 encoding="utf-8",
             )
             end_effort_state(
                 effort,
-                known_references=[canonical],
-                continuity_owners=[canonical],
+                known_references=[lasting_result],
+                continuation_artifacts=[lasting_result],
             )
 
             self.assertTrue(effort.is_dir())
@@ -1773,8 +1794,11 @@ class WayfinderStateContractTests(unittest.TestCase):
                 encoding="utf-8",
             )
             unknown_path.write_text("# U1: Current question?\n", encoding="utf-8")
-            owner = root / "current-outcome.md"
-            owner.write_text("U1 remains with this owner.\n", encoding="utf-8")
+            continuation_artifact = root / "current-outcome.md"
+            continuation_artifact.write_text(
+                "This artifact maintains the continuing U1 constraint.\n",
+                encoding="utf-8",
+            )
 
             def observe_before_map_removal() -> None:
                 self.assertTrue(map_path.is_file())
@@ -1783,7 +1807,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
             end_effort_state(
                 effort,
-                continuity_owners=[owner],
+                continuation_artifacts=[continuation_artifact],
                 before_map_removal=observe_before_map_removal,
             )
             self.assertFalse(map_path.exists())
@@ -1815,7 +1839,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 )
             self.assertTrue(nested_map.is_file())
 
-    def test_noncanonical_child_ambiguity_is_scoped_to_the_affected_container(
+    def test_unrecognized_child_ambiguity_is_scoped_to_the_affected_container(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1823,8 +1847,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             directory = effort / "unknowns"
             directory.mkdir(parents=True)
             (effort / "map.md").write_text("# Scoped ambiguity\n", encoding="utf-8")
-            opaque = directory / "notes.md"
-            opaque.write_bytes(b"\x00not a canonical child\xff\n")
+            unrecognized = directory / "notes.md"
+            unrecognized.write_bytes(b"\x00not a recognized child\xff\n")
             self.assertEqual(next_current_id(effort, "U"), 1)
             self.assertEqual(current_markdown(effort), {
                 effort / "map.md": b"# Scoped ambiguity\n",
@@ -1855,11 +1879,13 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "- Source: source.md\n\nCurrent.\n",
             ), "F1")
             self.assertTrue(prune_ledger_section(effort, "F", 1))
-            self.assertEqual(opaque.read_bytes(), b"\x00not a canonical child\xff\n")
+            self.assertEqual(
+                unrecognized.read_bytes(), b"\x00not a recognized child\xff\n"
+            )
             self.assertEqual(first.read_bytes(), b"first bytes\n")
             self.assertEqual(duplicate.read_bytes(), b"duplicate bytes\n")
 
-    def test_effort_ending_requires_continuity_and_preserves_inner_opaque_bytes(
+    def test_effort_ending_requires_continuation_and_preserves_unrecognized_bytes(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1872,28 +1898,37 @@ class WayfinderStateContractTests(unittest.TestCase):
             (effort / "unknowns/U1-current-question.md").write_text(
                 "# U1: Current question?\n", encoding="utf-8"
             )
-            opaque = effort / "unknowns/notes.md"
-            opaque.write_bytes(b"\x00opaque project bytes\xff\n")
-            opaque_target = Path(temporary) / "opaque-target.md"
-            opaque_target.write_text("opaque symlink target\n", encoding="utf-8")
-            opaque_link = effort / "unknowns/reference.md"
-            opaque_link.symlink_to(opaque_target)
+            unrecognized = effort / "unknowns/notes.md"
+            unrecognized.write_bytes(b"\x00unrecognized project bytes\xff\n")
+            unrecognized_target = Path(temporary) / "unrecognized-target.md"
+            unrecognized_target.write_text(
+                "unrecognized symlink target\n", encoding="utf-8"
+            )
+            unrecognized_link = effort / "unknowns/reference.md"
+            unrecognized_link.symlink_to(unrecognized_target)
 
-            with self.assertRaisesRegex(UnsafeWayfinderState, "continuity"):
+            with self.assertRaisesRegex(UnsafeWayfinderState, "continuation"):
                 end_effort_state(effort)
             self.assertTrue((effort / "map.md").is_file())
 
-            owner = Path(temporary) / "current-outcome.md"
-            owner.write_text(
-                "# Current outcome\n\nU1 remains owned by the project authority.\n",
+            continuation_artifact = Path(temporary) / "current-outcome.md"
+            continuation_artifact.write_text(
+                "# Current outcome\n\nThis artifact maintains the continuing U1 constraint.\n",
                 encoding="utf-8",
             )
-            end_effort_state(effort, continuity_owners=[owner])
+            end_effort_state(
+                effort, continuation_artifacts=[continuation_artifact]
+            )
             self.assertFalse((effort / "map.md").exists())
             self.assertFalse((effort / "unknowns/U1-current-question.md").exists())
-            self.assertEqual(opaque.read_bytes(), b"\x00opaque project bytes\xff\n")
-            self.assertTrue(opaque_link.is_symlink())
-            self.assertEqual(opaque_target.read_text(encoding="utf-8"), "opaque symlink target\n")
+            self.assertEqual(
+                unrecognized.read_bytes(), b"\x00unrecognized project bytes\xff\n"
+            )
+            self.assertTrue(unrecognized_link.is_symlink())
+            self.assertEqual(
+                unrecognized_target.read_text(encoding="utf-8"),
+                "unrecognized symlink target\n",
+            )
             self.assertTrue((effort / "unknowns").is_dir())
 
     def test_contract_keeps_stable_top_level_navigation(self) -> None:
@@ -1928,10 +1963,34 @@ class WayfinderStateContractTests(unittest.TestCase):
         current_knowledge = " ".join(
             markdown_section(self.contract, "## Current knowledge").lower().split()
         )
-        for identifier in ("`u#`:", "`e#`:", "`f#`:", "`d#`:"):
-            self.assertIn(identifier, current_knowledge)
+        record_semantics = {
+            "`u#` (unresolved question record)": (
+                "current consequential question",
+                "remains unanswered",
+            ),
+            "`e#` (evidence record)": (
+                "source",
+                "scope",
+                "observation",
+                "material limitations",
+            ),
+            "`f#` (fact record)": (
+                "current scoped descriptive conclusion",
+                "sufficiently supported",
+                "revisable as evidence changes",
+            ),
+            "`d#` (decision record)": (
+                "current consequential choice",
+                "project decision authority",
+            ),
+        }
+        for identifier, semantics in record_semantics.items():
+            with self.subTest(identifier=identifier):
+                self.assertIn(identifier, current_knowledge)
+                for semantic in semantics:
+                    self.assertIn(semantic, current_knowledge)
         for authority_boundary in (
-            "actual project authority",
+            "project decision authority",
             "alternatives still under consideration",
             "research findings",
             "evidence changes",
@@ -1939,12 +1998,64 @@ class WayfinderStateContractTests(unittest.TestCase):
             "recommendations",
             "agent inference",
             "routine implementation judgment",
-            "factual support",
-            "evidence may inform a choice",
-            "accept residual uncertainty",
+            "evidence cannot commit a project choice",
+            "action authorization does not establish project decision authority",
+            "host permission does not authorize an action or commit a project choice",
+            "technical judgment already delegated",
+            "accept unresolved uncertainty",
             "cannot create it",
         ):
             self.assertIn(authority_boundary, current_knowledge)
+
+    def test_evidence_relations_are_direct_without_banning_real_provenance(self) -> None:
+        current_knowledge = " ".join(
+            markdown_section(self.contract, "## Current knowledge").split()
+        )
+        for representation in (
+            "`Source:`",
+            "`Authority:`",
+            "`Derived from:`",
+            "`Limitations:`",
+            "`Observation`",
+        ):
+            with self.subTest(representation=representation):
+                self.assertIn(representation, current_knowledge)
+        self.assertNotIn("Provenance is traceable", current_knowledge)
+        self.assertIn(
+            "provider provenance",
+            (REPOSITORY_ROOT / "docs/provider-research.md")
+            .read_text(encoding="utf-8")
+            .casefold(),
+        )
+        self.assertIn(
+            "canonical project language",
+            (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8").casefold(),
+        )
+
+    def test_ownership_durability_and_reconstructability_remain_independent(
+        self,
+    ) -> None:
+        package_skill = (PACKAGE_ROOT / "SKILL.md").read_text(encoding="utf-8")
+        state_model = markdown_section(
+            self.contract, "## State model and boundaries"
+        )
+        provider_decision = (
+            REPOSITORY_ROOT
+            / "architecture-decisions/0010-separate-framework-output-from-project-owned-state.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("framework-owned and reconstructable", package_skill)
+        self.assertIn("project-owned durable data", state_model)
+        self.assertIn("not interpreted as Wayfinder state", state_model)
+        self.assertIn(
+            "declared provider projection is reconstructable from current package content",
+            " ".join(provider_decision.split()),
+        )
+        self.assertIn(
+            "local edits inside a declared provider name are replaceable rather than "
+            "preserved as unique project information",
+            " ".join(provider_decision.split()),
+        )
+        self.assertNotIn("opaque means confidential", self.contract.casefold())
 
     def test_contract_uses_current_wayfinder_terminology(self) -> None:
         generated = GENERATED_SKILL.read_text(encoding="utf-8")
@@ -1979,13 +2090,13 @@ class WayfinderStateContractTests(unittest.TestCase):
             "The research fixture studies territorial fog forecasts.",
         )
         for prose in legitimate_noncanonical_uses:
-            for pattern in RETIRED_CANONICAL_WAYFINDER_PATTERNS:
+            for pattern in RETIRED_WAYFINDER_PATTERNS:
                 with self.subTest(prose=prose, pattern=pattern):
                     self.assertIsNone(re.search(pattern, prose, re.IGNORECASE))
 
         for name, source in surfaces.items():
             text = source.read_text(encoding="utf-8") if isinstance(source, Path) else source
-            for pattern in RETIRED_CANONICAL_WAYFINDER_PATTERNS:
+            for pattern in RETIRED_WAYFINDER_PATTERNS:
                 with self.subTest(surface=name, pattern=pattern):
                     self.assertIsNone(re.search(pattern, text, re.IGNORECASE))
 
@@ -2025,6 +2136,41 @@ class WayfinderStateContractTests(unittest.TestCase):
             ],
         )
         normalized = " ".join(effort_shape.split())
+        default_map_guidance = normalized.split(
+            "Use this brief default map shape", 1
+        )[1].split("The map summarizes", 1)[0]
+        for current_state_semantic in (
+            "smallest semantic coordination state needed for safe resumption",
+            "Transient Git or session observations",
+            "clean working tree",
+            "current HEAD",
+            "branch position",
+            "continuing action authorization constraint, baseline, or dependency",
+        ):
+            with self.subTest(current_state_semantic=current_state_semantic):
+                self.assertIn(current_state_semantic, default_map_guidance)
+        self.assertIn(
+            "Keep **Blockers and dependencies** present",
+            default_map_guidance,
+        )
+        self.assertIn("write `None` explicitly", default_map_guidance)
+        self.assertIn("any other item", default_map_guidance)
+        self.assertIn(
+            "Except for **Blockers and dependencies**",
+            default_map_guidance,
+        )
+
+        for blocker_guidance_phrase in (
+            "actual blockers",
+            "required inputs or dependencies",
+            "ordinary remaining workflow steps",
+            "planned tests",
+            "verification",
+            "commit or push steps",
+            "other unfinished work",
+        ):
+            with self.subTest(blocker_guidance_phrase=blocker_guidance_phrase):
+                self.assertIn(blocker_guidance_phrase, normalized.casefold())
         ready_work = normalized.split("Ready work is", 1)[1].split(
             "## Current knowledge", 1
         )[0]
@@ -2041,8 +2187,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         for condition in (
             "condition that currently prevents particular work",
             "unsatisfied dependency",
-            "unresolved consequential uncertainty",
-            "missing required authority",
+            "unresolved consequential question",
+            "missing required project decision authority",
             "can be a blocker",
             "blocking is scoped to affected work",
             "same condition may block one scope without blocking another",
@@ -2072,8 +2218,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             "unblock only that accepted boundary",
             "may remain a blocker for other work",
             "does not answer the U#",
-            "grant unrelated authority",
-            "unblock another dependency",
+            "grant broader authority",
+            "authorize another action",
+            "satisfy another dependency",
         ):
             with self.subTest(
                 accepted_uncertainty_semantic=accepted_uncertainty_semantic
@@ -2109,7 +2256,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
         current_knowledge = markdown_section(self.contract, "## Current knowledge")
         self.assertEqual(
-            re.findall(r"^- `([A-Z])#`:", current_knowledge, re.MULTILINE),
+            re.findall(r"^- `([A-Z])#` \(", current_knowledge, re.MULTILINE),
             ["U", "E", "F", "D"],
         )
         self.assertNotIn("blockers/", self.contract)
@@ -2124,7 +2271,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         runtime_guidance = " ".join(
             markdown_section(
                 RUNTIME.read_text(encoding="utf-8"),
-                "## Reconcile and hand off",
+                "## Reconcile and transition ready work",
             ).split()
         ).casefold()
         for surface, guidance in (
@@ -2150,8 +2297,8 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "dependencies are satisfied by obtaining",
                 "questions and uncertainties are resolved through",
                 "resolution method",
-                "missing required authority is supplied by responsible authority",
-                "explicitly accept the unresolved uncertainty for one named boundary",
+                "missing project decision authority is supplied by",
+                "explicitly accept unresolved uncertainty for one named boundary",
                 "does not automatically unblock unrelated work",
             ):
                 with self.subTest(surface=surface, semantic=semantic):
@@ -2161,13 +2308,13 @@ class WayfinderStateContractTests(unittest.TestCase):
             "A blocker is a condition",
             "can be a blocker for affected work",
             "Blocking is scoped to affected work",
-            "unresolved U# records a question and is not automatically a blocker",
+            "unresolved U# record contains a question and is not itself a blocker",
         ):
             with self.subTest(runtime_blocker_semantic=blocker_semantic):
                 self.assertIn(blocker_semantic.casefold(), runtime_guidance)
         self.assertNotIn("resolve each blocking dependency", runtime_guidance)
 
-    def test_ticket_artifact_and_map_ownership_are_explicit(self) -> None:
+    def test_ticket_artifact_and_map_responsibilities_are_explicit(self) -> None:
         contract_boundaries = " ".join(
             markdown_section(
                 self.contract,
@@ -2177,7 +2324,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         for responsibility in (
             "ticket artifact or ticket set",
             "ticket contents, dependencies, ordering, and readiness",
-            "links that artifact",
+            "reference that artifact",
             "ticket-level state",
         ):
             with self.subTest(contract_responsibility=responsibility):
@@ -2193,7 +2340,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "summarizes the effort's current coordination state",
             "when no ticket artifact exists",
             "may state ready work directly",
-            "may identify or summarize the current ready handoff",
+            "may include a current ready-work reference",
         ):
             with self.subTest(map_behavior=map_behavior):
                 self.assertIn(map_behavior.casefold(), effort_shape.casefold())
@@ -2237,7 +2384,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         for condition in (
             "objective was achieved",
-            "responsible authority stopped it",
+            "project decision authority stopped it",
             "continuing coordination belongs to a different objective or substantive scope",
         ):
             with self.subTest(ending_condition=condition):
@@ -2319,12 +2466,13 @@ class WayfinderStateContractTests(unittest.TestCase):
             existing_state,
         )
 
-        ticket_handoff = scenarios["wayfinder-contract-smoke"]
+        ticket_transition = scenarios["wayfinder-contract-smoke"]
         self.assertIn(
-            "link the resulting ticket set", ticket_handoff["request"].casefold()
+            "reference the resulting ticket set",
+            ticket_transition["request"].casefold(),
         )
         self.assertIn(
-            "ticket 01 as the ready ticket", ticket_handoff["request"].casefold()
+            "ticket 01 as the ready ticket", ticket_transition["request"].casefold()
         )
 
     def test_contract_keeps_pruning_boundaries(self) -> None:
@@ -2365,7 +2513,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "`## F<ID> — <title>`",
             "`## D<ID> — <title>`",
             "one greater than the highest current same-type identifier",
-            "repository-relative link",
+            "repository-relative Markdown link",
         ):
             self.assertIn(required, self.normalized)
         self.assertEqual(
@@ -2382,15 +2530,15 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         self.assertNotIn("wayfinder-mutation-lock", self.contract.lower())
 
-    def test_residual_uncertainty_and_effort_recognition_fixtures_preserve_behavior(
+    def test_accepted_unresolved_uncertainty_and_effort_recognition_fixtures_preserve_behavior(
         self,
     ) -> None:
-        residual = (
+        accepted = (
             FIXTURES
             / "wayfinder-accepted-residual-uncertainty/.agent-wayfinder/"
             "pilot-capacity"
         )
-        unknown = residual / "unknowns/U1-peak-concurrency.md"
+        unknown = accepted / "unknowns/U1-peak-concurrency.md"
         approval = (
             FIXTURES
             / "wayfinder-accepted-residual-uncertainty/project-approval.md"
@@ -2419,7 +2567,12 @@ class WayfinderStateContractTests(unittest.TestCase):
             (PACKAGE_ROOT / "payload/agent-workflow/README.md").read_bytes(),
             (REPOSITORY_ROOT / ".agent-workflow/README.md").read_bytes(),
         )
-        for workflow in ("workflow-discovery", "workflow-implementation"):
+        for workflow in (
+            "workflow-debugging",
+            "workflow-discovery",
+            "workflow-implementation",
+            "workflow-verification",
+        ):
             with self.subTest(workflow=workflow):
                 self.assertEqual(
                     (PACKAGE_ROOT / f"payload/skills/{workflow}/SKILL.md").read_bytes(),
@@ -2440,7 +2593,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "## Operating rules",
             "## Establish areas and relationships",
             "## Choose the minimum resolution method",
-            "## Reconcile and hand off",
+            "## Reconcile and transition ready work",
         ):
             self.assertIn(heading, runtime)
         minimum_method = markdown_section(
@@ -2476,7 +2629,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertIn(mechanic, operating_rules)
         self.assertNotIn("The map owns", operating_rules)
 
-        handoff = markdown_section(runtime, "## Reconcile and hand off")
+        transition = markdown_section(runtime, "## Reconcile and transition ready work")
         for responsibility in (
             "The map summarizes",
             "no ticket artifact exists",
@@ -2485,8 +2638,8 @@ class WayfinderStateContractTests(unittest.TestCase):
             "does not mirror ticket-level state",
         ):
             with self.subTest(ticket_responsibility=responsibility):
-                self.assertIn(responsibility, handoff)
-        self.assertNotIn("link its ticket ordering and readiness", handoff)
+                self.assertIn(responsibility, transition)
+        self.assertNotIn("link its ticket ordering and readiness", transition)
         self.assertNotIn("settlement", runtime.lower())
 
 

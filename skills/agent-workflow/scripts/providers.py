@@ -388,9 +388,9 @@ def adapter_plan(
                         "a time until the way to the destination is clear.\n"
                     ).encode("utf-8"),
                     (
-                        "description: Keep a lightweight structured map when important unknowns, decisions, "
-                        "dependencies, blockers, or conflicting facts are becoming unreliable to hold in "
-                        "ordinary context.\n"
+                        "description: Keep a lightweight structured map when important unresolved questions, "
+                        "choices, dependencies, blockers, or conflicting conclusions are becoming unreliable "
+                        "to hold in ordinary context.\n"
                     ).encode("utf-8"),
                 ),
                 (
@@ -475,7 +475,7 @@ def method_body_projection(
     version: str,
     expected_heading: bytes,
 ) -> tuple[Path, bytes, bytes]:
-    """Validate pinned provider input and return its owned body projection."""
+    """Validate pinned provider input and return its framework-owned runtime-body projection."""
     if (
         destination_state(root, skill.name) != "present"
         or skill.upstream_body_sha256 is None

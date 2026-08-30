@@ -4,9 +4,9 @@ name = "A reference-system fact does not become a current-project conclusion"
 fixture = "wayfinder-cross-system-boundary"
 request = "Use Wayfinder to coordinate whether the current project may rely on strict request ordering. Inspect the two project documents, preserve only independently useful current coordination, and do not decide the retry design."
 starting_state = [
-  "reference-system.md authoritatively describes one conditional behavior of another system.",
+  "reference-system.md establishes one conditional behavior of another system for the document's stated scope.",
   "current-project.md makes applicability to this project consequential but leaves it unresolved.",
-  "Repository-local Wayfinder writes are authorized; project decisions are not.",
+  "The user grants action authorization for repository-local Wayfinder writes, but no project choice has been committed by project decision authority.",
 ]
 expect = [
   "uncertainty_recorded_or_blocked",

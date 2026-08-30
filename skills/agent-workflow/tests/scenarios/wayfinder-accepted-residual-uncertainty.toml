@@ -5,7 +5,7 @@ fixture = "wayfinder-accepted-residual-uncertainty"
 request = "Resume the relevant Wayfinder effort and reconcile project-approval.md. Do not implement the pilot."
 starting_state = [
   "The repository contains one current Wayfinder effort and two current project documents.",
-  "Repository-local Wayfinder writes are authorized; implementation and external mutations are not.",
+  "The user grants action authorization for repository-local Wayfinder writes, but not for implementation or external mutations.",
 ]
 expect = [
   "existing_state_reused",
@@ -64,4 +64,4 @@ count = 1
 [[assertions]]
 kind = "glob_any_matches"
 path = ".agent-wayfinder/*/unknowns/U1-*.md"
-value = '''(?i)(?:\bremains?\s+(?:unknown|unresolved)\b|\bno\s+authoritative\b[^.!?\n]{0,100}\b(?:requirement|answer)\b)'''
+value = '''(?i)(?:\bremains?\s+unresolved\b|\bno\s+(?:available|current)\s+source\b[^.!?\n]{0,100}\b(?:establishes|supports)\b[^.!?\n]{0,60}\b(?:requirement|answer)\b)'''

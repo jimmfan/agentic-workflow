@@ -2,7 +2,10 @@
 
 Agent Workflow is an experimental routing and coordination layer for coding agents.
 
-It keeps straightforward work direct, loads engineering workflows and specialist skills when they are useful, and uses Wayfinder when an effort needs durable project state across sessions or handoffs.
+It keeps straightforward work direct, loads engineering workflows and specialist
+skills when they are useful, and uses Wayfinder when an effort needs durable
+project state across session continuations, workflow transitions, or agent
+handoffs.
 
 The project is pre-1.0 and actively evolving.
 
@@ -39,7 +42,7 @@ Lifecycle commands use the current directory by default and also accept an expli
 Agent Workflow has three main responsibilities:
 
 - route work to the smallest useful workflow or skill;
-- preserve authorization and project ownership boundaries; and
+- preserve boundaries for action authorization, project decision authority, and project ownership; and
 - keep durable coordination state when an effort needs to survive beyond the current session.
 
 A bounded request can remain Direct.
@@ -56,7 +59,8 @@ Other work can use workflows or specialist methods for areas such as:
 - code review; and
 - verification.
 
-Agent Workflow selects one dominant workflow or activity and adds other capabilities only when they are useful.
+Agent Workflow chooses Direct or one primary workflow and adds only supporting
+capabilities that materially help.
 
 It does not run every potentially relevant skill.
 
@@ -64,13 +68,19 @@ It does not run every potentially relevant skill.
 
 Routing starts Direct.
 
-The root project instructions perform the initial classification. More detailed routing guidance is loaded only when ownership, workflow composition, provider fallback, handoff, or durable resumption is unclear.
+The root project instructions perform the initial classification. More detailed
+routing guidance is loaded only when artifact responsibility, workflow
+composition, provider fallback, a user invocation instruction, agent handoff, or
+durable resumption is unclear.
 
 Routing can change as work develops. For example, a bounded implementation task may expose an unresolved design decision or enough coordination state to justify a different workflow.
 
 The router does not expand the user's authority.
 
-If work depends on evidence, approval, or a project decision that has not been resolved, dependent work does not proceed through that boundary. Independent work may continue.
+If work depends on missing evidence, action authorization, or a choice not yet
+committed by project decision authority, dependent work does not proceed through
+that boundary. Host permission alone does not authorize the action or commit the
+choice. Independent work may continue.
 
 Current source, observed behavior, and accepted project artifacts take precedence over stale workflow state or previous chat history.
 
@@ -80,7 +90,9 @@ See [Workflow routing](docs/routing.md) for the current routing model.
 
 Wayfinder is Agent Workflow's durable coordination mechanism.
 
-It is used when project-owned state would materially help an effort continue across sessions, handoffs, dependencies, or unresolved decisions.
+It is used when project-owned durable state would materially help an effort
+continue across sessions, agent handoffs, dependencies, or unresolved
+consequential choices.
 
 Wayfinder is not required for every task, and the existence of an existing Wayfinder effort does not cause unrelated work to use it.
 
@@ -107,16 +119,23 @@ When resuming a Wayfinder effort, read `map.md` first. It records enough current
 
 A simple effort may need only `map.md`.
 
-Additional state is created only when it is useful to preserve separately:
+Additional records are created only when they are useful to preserve separately:
 
-- `unknown` — an unresolved question worth retaining;
-- `evidence` — an observation or source result with provenance and limitations;
-- `fact` — an established descriptive conclusion;
-- `decision` — a committed project choice.
+- `U#` unresolved question record — one current consequential question that
+  remains unanswered; the record is not itself a blocker;
+- `E#` evidence record — independently useful evidence with source, scope,
+  observation, and limitations;
+- `F#` fact record — one current scoped descriptive conclusion judged
+  sufficiently supported and revisable as evidence changes; and
+- `D#` decision record — one current consequential choice committed by project
+  decision authority.
 
-Wayfinder coordinates this information. It does not replace source code, documentation, architecture decisions, specifications, tickets, or other canonical project artifacts.
+Wayfinder coordinates this information. It does not replace source code,
+documentation, architecture decisions, specifications, tickets, or other
+project artifacts that maintain lasting results.
 
-As work settles, lasting results should live with the artifact that owns them rather than accumulating indefinitely in Wayfinder.
+As work settles, lasting results should live with the artifact designated to
+maintain them rather than accumulating indefinitely in Wayfinder.
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
@@ -137,23 +156,24 @@ Record only durable, evidence-backed coordination context:
 - the objective;
 - the included and excluded scope;
 - the important areas and relationships in the effort;
-- supported current conclusions with pointers to their authoritative sources;
-- consequential unknowns and decisions, dependencies, and conditions blocking
-  particular work; and
+- supported current conclusions with references to the sources that establish
+  them for their stated scope;
+- consequential unresolved questions and committed choices, dependencies, and
+  conditions blocking particular work; and
 - ready work—work to which no blocker currently applies.
 
 A blocker is a condition that currently prevents particular work from proceeding.
-An unsatisfied dependency, unresolved consequential uncertainty, or missing
-required authority can be a blocker for affected work. Blocking is scoped to
+An unsatisfied dependency, unresolved consequential question, or missing
+required project decision authority can be a blocker for affected work. Blocking is scoped to
 that work; independent ready work may proceed while other work remains blocked.
 
-Create a separate unknown or evidence file only when it is an independently
-useful coordination or retrieval unit. When a supported current conclusion or
-committed decision warrants durable representation, record it as an F# or D# section in
-the optional `facts.md` or `decisions.md` ledger. Treat live source and accepted
-project artifacts as more authoritative than assumptions, chat history, or
-outdated Wayfinder claims. Do not copy the transcript, invent requirements, or
-implement product changes during this first pass.
+Create a separate unresolved question or evidence record only when it is an
+independently useful coordination or retrieval unit. When a supported current
+conclusion or committed choice warrants durable representation, record it as an
+F# or D# section in the optional `facts.md` or `decisions.md` ledger. Treat live
+source and accepted project artifacts as stronger support than assumptions,
+chat history, or outdated Wayfinder claims. Do not copy the transcript, invent
+requirements, or implement product changes during this first pass.
 
 If the current effort cannot be inferred confidently, ask me one concrete scope
 question before creating the Wayfinder state. When finished, summarize what you
@@ -201,9 +221,9 @@ Agent Workflow manages only its marked section and preserves project-owned conte
 
 ### Provider artifacts
 
-Specifications, tickets, research, reviews, and other provider-native artifacts remain canonical where they are created.
-
-Agent Workflow links to those artifacts rather than maintaining duplicate copies.
+Specifications, tickets, research, reviews, and other provider-native artifacts
+remain in the locations that maintain their results. Agent Workflow references
+those artifacts rather than maintaining duplicate copies.
 
 ## Progressive loading
 
@@ -300,12 +320,13 @@ The architecture may change as the project produces better evidence.
 
 - Keep bounded work Direct.
 - Use workflows and skills only when they materially help.
-- Do not cross unresolved consequential decision boundaries without the required evidence or authority.
+- Do not cross unresolved consequential decision boundaries without the
+  required evidence, action authorization, or project decision authority.
 - Prefer current repository reality over stale state.
 - Keep durable project state separate from reconstructable framework files.
 - Store coordination state, not execution history.
 - Load detailed instructions and state only when needed.
-- Keep existing project and provider artifacts canonical.
+- Keep lasting results in their designated project or provider-native artifacts.
 - Keep Agent Workflow small.
 
 ## More detail

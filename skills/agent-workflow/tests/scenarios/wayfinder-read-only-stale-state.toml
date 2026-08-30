@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-read-only-stale-state"
 name = "Read-only audit reports stale Wayfinder state without repair"
 fixture = "wayfinder-stale-conflict"
-request = "Audit the deployment rollout state against current source without changing files. Report the exact stale or conflicting claim and the authoritative evidence that does and does not resolve it. Do not inspect unrelated efforts."
+request = "Audit the deployment rollout state against current source without changing files. Report the exact stale or conflicting claim and which evidence sources do and do not establish a resolution for the stated scope. Do not inspect unrelated efforts."
 starting_state = [
   "The deployment-rollout map is the named relevant effort and contains conflicting rollout-coverage claims.",
   "deployment.py proves the feature is enabled but does not prove regional rollout completion.",

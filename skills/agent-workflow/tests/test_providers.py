@@ -418,9 +418,14 @@ class ProviderTests(ProjectTestCase):
             frontmatter,
         )
         self.assertIn(
-            "description: Keep a lightweight structured map",
+            "description: Keep a lightweight structured map when important unresolved questions, choices,",
             frontmatter,
         )
+        self.assertIn(
+            "dependencies, blockers, or conflicting conclusions",
+            frontmatter,
+        )
+        self.assertNotIn("important unknowns, decisions", frontmatter)
         openai_text = (
             self.project / ".agents/skills/wayfinder/agents/openai.yaml"
         ).read_text(encoding="utf-8")

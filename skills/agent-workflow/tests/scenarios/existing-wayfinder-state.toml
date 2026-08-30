@@ -2,9 +2,9 @@ schema_version = 1
 id = "existing-wayfinder-state"
 name = "Existing Wayfinder decisions are consumed and affected state is reconciled"
 fixture = "wayfinder-existing"
-request = "Continue as a fresh session from the existing Wayfinder map, retrieve its linked D1 section from decisions.md, implement the next actionable slice, and verify it. Preserve unresolved non-blocking unknowns without loading their detail."
+request = "Continue as a fresh session from the existing Wayfinder map, retrieve its linked D1 section from decisions.md, implement the next actionable slice, and verify it. Preserve non-blocking unresolved questions recorded as U# without loading their detail."
 starting_state = [
-  "A canonical local Wayfinder map points directly to a settled D1 section in decisions.md.",
+  "The designated local Wayfinder map references a committed D1 section in decisions.md.",
   "The map states the actionable implementation slice under Next work.",
   "The telemetry-naming uncertainty recorded in U1 does not block the actionable implementation slice.",
 ]

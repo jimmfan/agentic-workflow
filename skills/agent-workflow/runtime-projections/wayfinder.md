@@ -1,14 +1,14 @@
 # Wayfinder
 
-Wayfinder is Agent Workflow's sole framework-owned durable coordination
-layer. Use it when consequential state needs reliable continuity across
-sessions, handoffs, owners, or interacting areas. Clear bounded work, one
-isolated unknown, and read-only work stay on their minimum useful route.
+Wayfinder is Agent Workflow's sole durable coordination layer. Use it when
+consequential state needs reliable continuity across session continuations,
+agent handoffs, responsible participants, or interacting areas. Clear bounded work, one isolated
+unresolved question, and read-only work stay on their minimum useful route.
 
 This framework-owned runtime projection is derived from Matt Pocock's
 Wayfinder methodology. It helps orient the effort, choose the minimum resolution
 method, and identify ready work;
-`.agent-workflow/contracts/wayfinder-state.md` owns state mechanics.
+`.agent-workflow/contracts/wayfinder-state.md` defines state mechanics.
 
 ## Operating rules
 
@@ -19,11 +19,12 @@ method, and identify ready work;
   to orient the effort before substantial decomposition. Keep `map.md` brief,
   preserve enough information to resume safely, and load detail only when
   relevant. Apply the contract's default map shape when applicable; omit empty
-  headings, allow a clearer equivalent, and never copy canonical plans.
+  headings, allow a clearer equivalent, and never copy project artifacts that
+  maintain plans.
 - The map summarizes the effort's current coordination state, conditions blocking particular work,
   dependencies, and ready work.
-  Optional F/D ledger sections and U/E artifacts preserve only useful current
-  knowledge.
+  Optional F/D ledger sections and U/E artifacts are records that preserve only
+  useful current conclusions, choices, unresolved questions, and evidence.
 - Create a separate artifact because it is an independently useful coordination
   or retrieval unit, not merely because it belongs to a semantic category.
 - Live source and accepted project artifacts outrank unsupported or outdated
@@ -32,8 +33,10 @@ method, and identify ready work;
   persist volatile observations. Retain durable Git constraints and
   dependencies under the state contract.
 - Durable Wayfinder state can record authority; it cannot create authority.
-  Use an actual human or project source, or valid delegated scope, for an
-  authority-owned choice. Keep the question and what it blocks explicit.
+  Use the person, role, valid delegate, or accepted policy that holds project
+  decision authority for a committed choice. Evidence-backed technical judgment
+  within delegated scope remains valid. Keep the question and what it blocks
+  explicit.
 
 When selecting or resuming Wayfinder, read the state contract before effort state.
 When resuming a Wayfinder effort, read `map.md` first among its effort files.
@@ -62,8 +65,9 @@ areas and relationships before substantial U/E/F/D accumulates, then derive the
 effort name and stable path from the objective and scope.
 
 On resumption, do not reload Domain Modeling merely because Wayfinder resumed.
-If later authoritative evidence shows that the current areas and relationships
-no longer fit current truth, Domain Modeling may be loaded again to revise the same map.
+If later evidence from a source that establishes the relevant scoped claim shows
+that the current areas and relationships no longer fit current truth, Domain
+Modeling may be loaded again to revise the same map.
 Reconcile the current structure rather than preserving unsupported or parallel
 representations.
 
@@ -90,33 +94,35 @@ relationships need improvement or revision.
 The resolution method determines how a question, uncertainty, unexplained cause,
 consequential choice, or structural ambiguity should be addressed and what
 evidence or authority that method requires. It is not merely an artifact label:
-human clarification requires the responsible authority, research requires
-appropriate source evidence, and prototype or debugging requires relevant
-observed or experimental evidence. Existing authoritative evidence may satisfy
+human clarification requires the person with the relevant intent, preference,
+or project decision authority; research requires appropriate source evidence;
+and prototype or debugging requires relevant observed or experimental evidence.
+Existing evidence from a source that establishes the scoped claim may satisfy
 the method without a ceremonial specialist invocation, but one method cannot
 substitute for another's required authority or evidence.
 
-Do not load specialists speculatively. Specialists own their methods and native
-artifacts and create no framework continuity record. If work is interrupted,
+Do not load specialists speculatively. Specialists retain their methods and may
+create provider-native artifacts or evidence. The specialist creates no Agent
+Workflow durable coordination state. If work is interrupted,
 reconcile only consequential questions, uncertainties, unexplained causes,
 choices, structural ambiguity, conditions blocking particular work, evidence or
-conclusions, artifact pointers, the resolution method when useful, and ready
+conclusions, artifact references, the resolution method when useful, and ready
 work into Wayfinder. When resuming, read the map first rather than a specialist
-notebook or continuity record.
+notebook or coordination record.
 
-## Reconcile and hand off
+## Reconcile and transition ready work
 
 The map summarizes the objective, scope, current coordination state, conditions
 blocking particular work, dependencies, and ready work. Keep it sufficient for
-a fresh session to continue the effort. Link canonical artifacts instead of
-copying them. The state contract defines when U/E/F/D detail is worth retaining,
-how records are pruned, and when an effort ends.
+a fresh session to continue the effort. Reference the artifacts that maintain
+lasting results instead of copying them. The state contract defines when U/E/F/D
+records are worth retaining, how records are pruned, and when an effort ends.
 
-Map uncertainty broadly, then promote selectively. A precise question becomes
-U# when separate preservation while unanswered is independently useful to a
+Map uncertainty broadly, then preserve selectively. Record a precise question
+as U# when separate preservation while unanswered is independently useful to a
 later developer making or evaluating a decision. This applies within
 the current objective and scope, especially when the answer
-requires human or project authority, depends on an external owner or approval,
+requires project decision authority, depends on an external participant or approval,
 or gates multiple downstream areas or a consequential boundary. Ask the
 substantive project question when project knowledge determines whether separate
 preservation is useful; do not ask merely whether to create a U#. Keep
@@ -132,10 +138,10 @@ external lead time changes ordering or readiness. Do not infer a critical path
 from an unordered backlog or incomplete evidence.
 
 A blocker is a condition that currently prevents particular work from
-proceeding. An unsatisfied dependency, unresolved consequential uncertainty, or
-missing required authority can be a blocker for affected work. Blocking is
+proceeding. An unsatisfied dependency, unresolved consequential question, or
+missing required project decision authority can be a blocker for affected work. Blocking is
 scoped to affected work: the same condition may block one scope without blocking
-another. An unresolved U# records a question and is not automatically a blocker.
+another. An unresolved U# record contains a question and is not itself a blocker.
 Delay, inconvenience, risk, or unfinished work alone does not make a condition a blocker.
 Ready work is work to which no blocker currently applies. Independent ready work
 may proceed while other work remains blocked.
@@ -143,22 +149,25 @@ may proceed while other work remains blocked.
 Dependencies are satisfied by obtaining the action, artifact, decision,
 participation from a person, system result, external result, or other input they
 require. Questions and uncertainties are resolved through appropriate evidence
-or their resolution method. Missing required authority is supplied by responsible
-authority. Where the state contract permits it, responsible authority may
-explicitly accept the unresolved uncertainty for one named boundary. For an
-unresolved consequential question, either resolve the question or record that
-acceptance in a canonical artifact. The acceptance leaves the U# current and
-unresolved, unblocks only that named boundary, and does not grant unrelated
-authority or unblock another dependency. The same uncertainty may remain a
-blocker for other work. Satisfying a dependency or accepting one boundary
-changes blocking only for affected work and does not automatically unblock
-unrelated work. Reconcile and shrink the map,
-then hand off one or more ready implementation scopes without advancing work that
-remains dependency-blocked. Each Implementation handoff consumes one ready scope
-and its acceptance criteria; Verification follows execution. Use `to-tickets` only
+or their resolution method. Missing project decision authority is supplied by
+the person, role, valid delegate, or accepted policy that holds it for the
+decision boundary. Where the state contract permits it, project decision
+authority may explicitly accept unresolved uncertainty for one named boundary.
+For an unresolved consequential question, either resolve the question or record
+that authority and acceptance in the project artifact recording the choice
+committed by project decision authority. The acceptance leaves the U# current and unresolved, unblocks only that
+named boundary, and does not grant broader authority, authorize another action,
+or satisfy another dependency. The same uncertainty may remain a blocker for
+other work. Satisfying a dependency or accepting unresolved uncertainty for one
+boundary changes blocking only for affected work and does not automatically
+unblock unrelated work. Reconcile and shrink the map, then transition one or
+more ready implementation scopes to the Implementation workflow without
+advancing work that remains dependency-blocked. Each workflow transition to
+Implementation consumes one ready scope and its acceptance criteria;
+Verification follows material execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
 deliverable sessions. When no ticket artifact exists, the map may state ready
-work directly. Once To Tickets creates a ticket artifact or ticket set, it owns
-ticket contents, dependencies, ordering, and readiness. The map links that artifact
-and does not mirror ticket-level state; it may identify or summarize the current
-ready handoff.
+work directly. Once To Tickets creates a ticket artifact or ticket set, that
+artifact maintains ticket contents, dependencies, ordering, and readiness. The
+map links that artifact and does not mirror ticket-level state; it may include
+the current ready-work reference.

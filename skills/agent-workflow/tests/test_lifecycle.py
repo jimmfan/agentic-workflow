@@ -151,7 +151,7 @@ class LifecycleTests(ProjectTestCase):
         installed = (self.project / "AGENTS.md").read_bytes()
         self.assertTrue(installed.startswith(MANAGED_BEGIN))
         self.assertIn(
-            b"Do not manufacture cross-artifact conflicts or parallel canonical state",
+            b"Do not manufacture cross-artifact conflicts or parallel representations",
             installed,
         )
         self.assertTrue(installed.endswith(project_policy))

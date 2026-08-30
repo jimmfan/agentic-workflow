@@ -1,1 +1,1 @@
-"""Canonical Agent Workflow lifecycle implementation."""
+"""Agent Workflow lifecycle implementation."""

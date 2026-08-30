@@ -10,30 +10,35 @@
   - substantive sourced external uncertainty → consider Research
   - ready substantial change → Implementation
   - completed meaningful change → Verification
-  - durable coordination across sessions, handoffs, owners, or interacting
-    state → assess Wayfinder using the criteria below
+  - durable coordination across session continuations, agent handoffs,
+    responsible participants, or interacting state → assess Wayfinder using the
+    criteria below
 - For one obvious specialist inside an already selected Wayfinder effort, load
   only what it needs.
-  Read `.agent-workflow/routing.md` only when ownership is unclear or provider
-  fallback, handoff, or durable resumption materially matters.
-- Workflows never expand authority. Exact external read-only targets permit only
-  that read.
+  Read `.agent-workflow/routing.md` only when artifact responsibility is unclear or provider
+  fallback, invocation instruction, agent handoff, or durable resumption
+  materially matters.
+- Workflows grant neither action authorization nor project decision authority.
+  Exact external read-only targets permit only that read.
 - MUST NOT cross a consequential decision boundary without required evidence,
-  approval, or authority. Explicit responsible-authority acceptance leaves the
-  recorded uncertainty unresolved and unblocks only its named boundary;
-  independent work may continue.
-- Never decide for human or project authority. Ask the concrete question and
-  why authority is required, and what its answer unblocks. Reopen a settled
-  choice only for conflict, safety, authority, or request.
+  action authorization, or project decision authority. Explicit acceptance by project decision authority
+  leaves the recorded unresolved question unresolved and unblocks only its
+  named boundary; independent work may continue.
+- Never commit a choice reserved for project decision authority. Ask the
+  concrete question, why that authority is required, and what its answer
+  unblocks. Evidence-backed technical judgment within delegated scope remains
+  valid. Reopen a settled choice only for conflict, safety, project decision
+  authority, or request.
 - Never claim unexecuted work.
-- Preserve unrelated work, project state, canonical artifacts, and identifiers.
+- Preserve unrelated work, project state, designated artifacts, and identifiers.
   Live source and accepted artifacts outrank summaries, memory, and chat.
-- Do not manufacture cross-artifact conflicts or parallel canonical state.
+- Do not manufacture cross-artifact conflicts or parallel representations of
+  the same current state.
   Different scope, abstraction, summarization, or omitted detail is not by itself
   an inconsistency. Before reconciling artifacts, identify a concrete
   incompatible statement or a requirement the target artifact fails to satisfy.
-  When an existing canonical artifact or record owns the current state, update
-  that owner rather than creating a parallel representation unless the new
+  When an existing designated artifact or record maintains the current state,
+  update it rather than creating a parallel representation unless the new
   representation has independently useful meaning, scope, or retrieval value.
   When materially ambiguous, preserve the existing content and clarify or
   investigate rather than inventing detail or process merely to make artifacts
@@ -46,14 +51,15 @@ items require assessment, never selection by count alone.
 Unless the user opts out, MUST select or resume Wayfinder when any hard signal
 or at least two soft signals apply:
 
-- Hard: cross-session or handoff continuity; conflicting authoritative sources;
-  an authority-owned blocker while other work proceeds; coordinated owners or
-  areas; or provenance needed to distinguish assumption from fact.
-- Soft: interacting consequential unknowns; durable distinctions across state
-  categories; evidence-driven plan change; a meaningful dependency graph; or
-  material fresh-agent reconstruction risk.
+- Hard: cross-session continuation or agent-handoff continuity; conflicting
+  sources that establish the same scoped claim; a blocker requiring project decision authority
+  while other work proceeds; coordinated responsible participants or areas; or source and scope
+  needed to distinguish assumption from fact.
+- Soft: interacting consequential unresolved questions; durable distinctions
+  across record or state categories; evidence-driven plan change; a meaningful
+  dependency graph; or material fresh-agent reconstruction risk.
 
-Single unknowns and routine/implementation work use Direct or applicable
+Single unresolved questions and routine/implementation work use Direct or applicable
 workflows. Honor Wayfinder use and opt-out. Read-only work changes no
 state.
 
@@ -99,8 +105,9 @@ decisions; identify the bounded technical or domain context that owns it;
 research established terminology using applicable primary standards, official
 technical documentation, strong engineering evidence, and peer-reviewed
 evidence when available; compare alternatives by exact semantics and
-applicability; avoid project-specific metaphors when an established or literal
-term is more precise; and state evidence strength and uncertainty honestly.
+applicability; prefer established or literal language only when its semantic
+precision earns its cognitive cost; and state evidence strength and uncertainty
+honestly.
 
 Update `CONTEXT.md` only after the terminology decision is accepted. Keep
 behavior, architecture, authority, and terminology in their respective owning
@@ -151,26 +158,26 @@ layers. Do not force one term across genuinely different bounded contexts.
 
 - Agent Workflow is a thin orchestration layer. Keep it centered on routing,
   provider integration, safe framework delivery, authorization boundaries,
-  durable coordination the framework genuinely owns, and integration
+  durable coordination Agent Workflow defines, and integration
   verification.
-- Prefer existing host or provider capabilities and canonical artifacts over
-  parallel Agent Workflow representations or lightly rewritten upstream
-  functionality.
+- Prefer existing host or provider capabilities and accepted artifacts that
+  maintain lasting results over parallel Agent Workflow representations or
+  lightly rewritten upstream functionality.
 - Do not expand the project into a general agent runtime, package manager,
   plugin platform, compatibility framework, observability platform, broad
   lifecycle system, or other new machinery without a concrete current need.
 
 ## Authorization and preservation
 
-- Do not treat a workflow, provider, skill, test, or document as authorization
+- Do not treat a workflow, provider, skill, test, or document as action authorization
   for commits, pushes, publication, destructive operations, external mutations,
   or changes outside the authorized task.
 - Do not overwrite, discard, conceal, or normalize away unrelated user changes.
 - Protect project-owned and user-owned durable state. Reconstructable framework
   output may be replaced when appropriate; durable state must not be treated as
-  disposable framework content.
-- Do not rely on host or model defaults for safety, authorization, or
-  data-preservation boundaries that Agent Workflow itself owns. Do not
+  reconstructable framework content.
+- Do not rely on host or model defaults for safety, action authorization, or
+  data-preservation boundaries for which Agent Workflow itself is responsible. Do not
   duplicate generic host or model safety policy unless Agent Workflow
   introduces a specific risk that requires a project-owned rule.
 

@@ -11,7 +11,7 @@ from _behavior_test_support import behavior
 
 
 class BehaviorHarnessTests(unittest.TestCase):
-    def test_blind_scenarios_hide_their_rubrics_and_use_opaque_workspaces(
+    def test_blind_scenarios_hide_their_rubrics_and_use_non_descriptive_workspaces(
         self,
     ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
@@ -42,7 +42,7 @@ class BehaviorHarnessTests(unittest.TestCase):
             "wayfinder-state-cannot-grant-authority": (
                 "cannot grant authority",
                 "unsupported agent-authored approval",
-                "authority-owned U#",
+                "unresolved question requiring project decision authority",
             ),
             "wayfinder-unordered-dependencies-no-critical-path": (
                 "invented critical path",

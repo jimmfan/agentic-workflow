@@ -176,7 +176,7 @@ def empty_install_state() -> dict[str, object]:
 
 
 def load_install_state(root: Path) -> dict[str, object]:
-    """Load useful local evidence; missing/malformed framework metadata is disposable."""
+    """Load useful local evidence; missing/malformed framework metadata is conservatively replaceable."""
     data = read_regular(root, INSTALL_MANIFEST)
     if data is None:
         return empty_install_state()
@@ -354,11 +354,11 @@ def rollback_external(
 
 
 def ensure_durable_state(root: Path) -> bool:
-    canonical = checked_target(root, DURABLE_ROOT)
-    if not canonical.exists():
-        canonical.mkdir(mode=0o755)
+    durable_root = checked_target(root, DURABLE_ROOT)
+    if not durable_root.exists():
+        durable_root.mkdir(mode=0o755)
         return True
-    if canonical.is_symlink() or not canonical.is_dir():
+    if durable_root.is_symlink() or not durable_root.is_dir():
         raise AdoptionError(".agent-wayfinder must be a regular non-symlink directory")
     return False
 

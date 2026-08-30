@@ -6,8 +6,8 @@ request = "Use Wayfinder to orient the ambiguous migration described by the repo
 starting_state = [
   "The repository uses consumer and cutover boundary ambiguously.",
   "The intended outcome is a zero-downtime transition, but the durable effort name has not been chosen.",
-  "No authoritative artifact yet establishes the migration's major areas or how consumer inventory, cutover orchestration, and ownership relate.",
-  "Repository-local Wayfinder writes are authorized, but no authority-dependent choice has been accepted.",
+  "No project artifact yet establishes the migration's major areas or how consumer inventory, cutover orchestration, and ownership relate.",
+  "The user grants action authorization for repository-local Wayfinder writes, but project decision authority has committed no choice for the unresolved boundary.",
 ]
 expect = [
   "task_completed",

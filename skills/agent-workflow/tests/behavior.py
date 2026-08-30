@@ -905,7 +905,7 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         "full_discovery_for_lookup": (route_ok and forbidden_ok, route_detail),
         "silent_decision_invention": (
             not decision_artifact_changed(evidence),
-            "no D# or canonical project decision artifact was created or updated",
+            "no D# or project artifact recording a decision was created or updated",
         ),
         "repeat_resolved_discovery": (
             route_ok and forbidden_ok and preserved_ok,
@@ -929,8 +929,8 @@ def copy_fixture(scenario: Scenario, destination: Path) -> Path:
     source = FIXTURE_ROOT / scenario.fixture
     workspace_name = scenario.id
     if scenario.blind_grading:
-        opaque_id = hashlib.sha256(scenario.id.encode("utf-8")).hexdigest()[:12]
-        workspace_name = f"case-{opaque_id}"
+        blinded_id = hashlib.sha256(scenario.id.encode("utf-8")).hexdigest()[:12]
+        workspace_name = f"case-{blinded_id}"
     workspace = destination / workspace_name
     shutil.copytree(source, workspace)
     return workspace
@@ -951,7 +951,7 @@ def run_adopt(command: str, workspace: Path) -> subprocess.CompletedProcess[str]
 def build_prompt(scenario: Scenario) -> str:
     starting = "\n".join(f"- {item}" for item in scenario.starting_state)
     scenario_name = (
-        "Opaque behavioral case" if scenario.blind_grading else scenario.name
+        "Non-descriptive behavioral case" if scenario.blind_grading else scenario.name
     )
     if scenario.blind_grading:
         grading_context = """Use the smallest validation supported by repository evidence.
