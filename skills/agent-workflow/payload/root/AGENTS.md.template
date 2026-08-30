@@ -21,8 +21,8 @@
   evidence is sufficient and either accepted project policy determines the
   choice for that boundary or the person, role, or valid delegate with project
   decision authority commits it. Technical judgment already delegated by the
-  user or accepted project policy remains valid. Dependent work stops at an
-  unresolved project-choice boundary; independent work may continue.
+  user or accepted project policy remains valid. Dependent work stops while a
+  required project choice remains uncommitted; independent work may continue.
 - Perform writes, commands, publication, destructive operations, and external
   mutations only within the action and scope authorized by the current user
   request or accepted project policy. When both the required project choice is
@@ -42,7 +42,7 @@
   boundary; the question remains unresolved, only that boundary becomes
   unblocked, no broader project choice is committed, no unrelated action is
   authorized, and no other dependency is satisfied. Revisit a committed choice
-  only for conflict, safety, authority, or request.
+  only for conflict, safety, project decision authority, or request.
 - Never claim unexecuted work.
 - Preserve unrelated work, project state, designated artifacts, and identifiers.
   Live source and accepted artifacts outrank summaries, memory, and chat.

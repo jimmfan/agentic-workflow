@@ -93,9 +93,11 @@ from and attributed to Matt Pocock's pinned
 Wayfinder methodology. The map summarizes current coordination state, conditions
 blocking particular work, dependencies, and ready work; sparse F#/D# ledger
 sections and U#/E# records stay lazy. F# contains a sufficiently supported,
-scoped, revisable conclusion; D# contains a choice committed by project decision
-authority; U# contains an unresolved question and is not itself a blocker; E#
-contains evidence with source, scope, observation, and limitations. Before
+scoped, revisable conclusion; D# contains a current consequential choice
+determined directly by accepted project policy or committed by the person, role,
+or valid delegate with project decision authority; U# contains an unresolved
+question and is not itself a blocker; E# contains evidence with source, scope,
+observation, and limitations. Before
 detailed decomposition, the map
 may state ready work directly. New decomposed work belongs to the `to-tickets`
 ticket artifact or ticket set, which maintains ticket contents, dependencies,

@@ -23,12 +23,12 @@ evidence is sufficient and either accepted project policy determines the choice
 for that boundary or the person, role, or valid delegate with project decision
 authority commits it. Responsibility alone does not establish that authority.
 
-Dependent work stops at an unresolved project-choice boundary. Independent work
-may continue. Obtain a required project choice from the person, role, or valid
-delegate with project decision authority, apply accepted project policy when it
-already determines the choice, or clarify who may decide when decision authority
-itself is unclear. State the concrete question, why the evidence or choice is
-required, and what its answer will unblock.
+Dependent work stops while a required project choice remains uncommitted;
+independent work may continue. Obtain a required project choice from the person,
+role, or valid delegate with project decision authority, apply accepted project
+policy when it already determines the choice, or clarify who may decide when
+decision authority itself is unclear. State the concrete question, why the
+evidence or choice is required, and what its answer will unblock.
 
 Perform only actions authorized by the current user request or accepted project
 policy and only within that scope. Authorization to perform an action does not

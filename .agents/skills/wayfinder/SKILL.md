@@ -54,7 +54,8 @@ method, and identify ready work;
   project decision authority. If decision authority itself is unclear, clarify who
   may decide. Responsibility alone does not establish project decision authority.
   Evidence-backed technical judgment already delegated by the user or accepted
-  project policy remains valid. Keep the question and what it blocks explicit.
+  project policy remains valid. Keep the question, the unresolved consequential
+  uncertainty, and the affected work explicit.
 - Authorization to perform an action does not commit a project choice, and a
   committed project choice does not authorize an unrelated action. Host permission
   supplies neither. A workflow, skill, provider instruction, test, specification,

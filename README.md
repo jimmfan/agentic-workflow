@@ -80,11 +80,11 @@ The router does not expand the user's authority.
 Do not treat a consequential project choice as committed until required evidence
 is sufficient and either accepted project policy determines the choice for that
 boundary or the person, role, or valid delegate with project decision authority
-commits it. Dependent work stops at an unresolved project-choice boundary;
-independent work may continue. Perform only actions authorized by the current user
-request or accepted project policy and only within that scope. Authorization to act
-does not commit a project choice, a committed choice does not authorize an unrelated
-action, and host permission supplies neither.
+commits it. Dependent work stops while a required project choice remains
+uncommitted; independent work may continue. Perform only actions authorized by the
+current user request or accepted project policy and only within that scope.
+Authorization to act does not commit a project choice, a committed choice does not
+authorize an unrelated action, and host permission supplies neither.
 
 Current source, observed behavior, and accepted project artifacts take precedence over stale workflow state or previous chat history.
 

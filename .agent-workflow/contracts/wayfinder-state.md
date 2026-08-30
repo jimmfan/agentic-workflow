@@ -159,9 +159,10 @@ itself is unclear, clarify who may decide. Responsibility alone does not establi
 project decision authority. The person, role, or valid delegate with that authority
 may explicitly accept unresolved uncertainty for one named boundary where this
 contract permits it. Satisfying a
-dependency, resolving a question or uncertainty, supplying required authority,
-or accepting unresolved uncertainty for one boundary changes blocking only for
-affected work and does not automatically unblock unrelated work.
+dependency, resolving a question or uncertainty, obtaining a required project
+choice, authorizing a required action, or accepting unresolved uncertainty for
+one boundary changes blocking only for affected work and does not automatically
+unblock unrelated work.
 
 ## Current knowledge
 

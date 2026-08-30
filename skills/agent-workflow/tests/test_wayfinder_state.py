@@ -2237,6 +2237,14 @@ class WayfinderStateContractTests(unittest.TestCase):
             "are not blockers merely because they remain",
             runtime_operating,
         )
+        self.assertIn(
+            "Keep the question, the unresolved consequential uncertainty, and the "
+            "affected work explicit",
+            runtime_operating,
+        )
+        self.assertNotIn(
+            "Keep the question and what it blocks explicit", runtime_operating
+        )
 
         for blocker_guidance_phrase in (
             "actual blockers",
@@ -2393,6 +2401,13 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             with self.subTest(runtime_blocker_semantic=blocker_semantic):
                 self.assertIn(blocker_semantic.casefold(), runtime_guidance)
+        direct_blocking_transition = (
+            "satisfying a dependency, resolving a question or uncertainty, obtaining a "
+            "required project choice, authorizing a required action, or accepting unresolved "
+            "uncertainty for one boundary changes blocking only for affected work"
+        )
+        self.assertIn(direct_blocking_transition, contract_guidance)
+        self.assertNotIn("supplying required authority", contract_guidance)
         self.assertNotIn("resolve each blocking dependency", runtime_guidance)
 
     def test_ticket_artifact_and_map_responsibilities_are_explicit(self) -> None:

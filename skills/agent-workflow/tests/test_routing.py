@@ -63,6 +63,13 @@ class RoutingContractTests(unittest.TestCase):
         ):
             self.assertIn(required, project_decision_authority)
         self.assertNotIn("settle", project_decision_authority.casefold())
+        self.assertEqual(
+            entries["Reconciliation"],
+            "Updating affected current coordination state so it agrees with current "
+            "truth, project choices determined by accepted policy or committed by "
+            "project decision authority, and the designated artifacts that maintain "
+            "lasting results.",
+        )
         expected_fragments = {
             "Objective": (
                 "result a Wayfinder effort is intended to achieve",
@@ -120,12 +127,6 @@ class RoutingContractTests(unittest.TestCase):
                 "choice the project treats as binding",
                 "defined decision boundary",
                 "does not restrict technical judgment already delegated",
-            ),
-            "Reconciliation": (
-                "updating affected current coordination state",
-                "current truth",
-                "choices committed by project decision authority",
-                "designated artifacts that maintain lasting results",
             ),
             "Framework-owned": (
                 "content or a delimited region",
@@ -224,7 +225,8 @@ class RoutingContractTests(unittest.TestCase):
             ),
             "action is authorized but project choice is unresolved": (
                 "Authorization to perform an action does not by itself commit a project choice",
-                "Dependent work stops at an unresolved project-choice boundary",
+                "Dependent work stops while a required project choice remains uncommitted; "
+                "independent work may continue",
             ),
             "project choice and action authorization both exist": (
                 "When both the required project choice is committed and the action is "
@@ -252,6 +254,15 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(boundary=boundary):
                 self.assertIn(boundary, normalized_root)
         self.assertIn("Responsibility alone does not establish", normalized_root)
+        self.assertIn(
+            "Revisit a committed choice only for conflict, safety, project decision "
+            "authority, or request",
+            normalized_root,
+        )
+        self.assertNotIn(
+            "Revisit a committed choice only for conflict, safety, authority, or request",
+            normalized_root,
+        )
         self.assertNotIn("U#", normalized_root)
         self.assertIn(
             "Exact external read-only targets permit only that read",
@@ -280,6 +291,16 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertIn(
             "actions authorized by the current user request or accepted project policy",
+            documented_routing,
+        )
+        self.assertIn(
+            "D# contains a current consequential choice determined directly by accepted "
+            "project policy or committed by the person, role, or valid delegate with "
+            "project decision authority",
+            documented_routing,
+        )
+        self.assertNotIn(
+            "D# contains a choice committed by project decision authority",
             documented_routing,
         )
         for workflow in ("workflow-implementation", "workflow-verification"):
@@ -313,7 +334,8 @@ class RoutingContractTests(unittest.TestCase):
             "required evidence is sufficient",
             "accepted project policy determines the choice for that boundary",
             "person, role, or valid delegate with project decision authority commits it",
-            "Independent work may continue",
+            "Dependent work stops while a required project choice remains uncommitted; "
+            "independent work may continue",
             "actions authorized by the current user request or accepted project policy",
             "Authorization to perform an action does not commit a project choice",
             "A committed project choice does not authorize an unrelated action",
@@ -323,6 +345,24 @@ class RoutingContractTests(unittest.TestCase):
         ):
             with self.subTest(adr_boundary=required):
                 self.assertIn(required, adr_decision)
+
+        direct_choice_boundary = (
+            "Dependent work stops while a required project choice remains uncommitted; "
+            "independent work may continue"
+        )
+        for name, path in (
+            ("managed root source", PACKAGE_ROOT / "payload/root/AGENTS.md.template"),
+            ("readme", REPOSITORY_ROOT / "README.md"),
+            (
+                "authority decision",
+                REPOSITORY_ROOT
+                / "architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md",
+            ),
+        ):
+            text = " ".join(path.read_text(encoding="utf-8").split())
+            with self.subTest(direct_choice_boundary=name):
+                self.assertIn(direct_choice_boundary, text)
+                self.assertNotIn("unresolved project-choice boundary", text)
 
     def test_route_selection_execution_and_provider_statuses_remain_distinct(
         self,

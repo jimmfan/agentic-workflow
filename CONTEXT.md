@@ -58,8 +58,8 @@ does not restrict technical judgment already delegated by the user or policy.
 
 **Reconciliation**:
 Updating affected current coordination state so it agrees with current truth,
-choices committed by project decision authority, and the designated artifacts
-that maintain lasting results.
+project choices determined by accepted policy or committed by project decision
+authority, and the designated artifacts that maintain lasting results.
 
 **Pruning**:
 Pruning removes a recognized Wayfinder record from current coordination after
