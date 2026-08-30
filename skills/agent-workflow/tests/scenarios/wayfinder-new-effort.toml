@@ -17,7 +17,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = false
-verification_command = "Validate that the resulting repository-local planning state preserves the objective, scope, current coordination state, blockers, decisions, unknowns, and ready work without creating Wayfinder tickets or a parallel native-ticket copy."
+verification_command = "Validate that the resulting repository-local planning state preserves the objective, scope, current coordination state, conditions blocking particular work, dependencies, decisions, unknowns, and ready work without creating Wayfinder tickets or a parallel native-ticket copy."
 preserve_paths = ["migration-architecture.md"]
 route_must_not_include = ["domain-modeling"]
 forbid_created_globs = [

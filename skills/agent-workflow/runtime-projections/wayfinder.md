@@ -20,7 +20,8 @@ method, and identify ready work;
   preserve enough information to resume safely, and load detail only when
   relevant. Apply the contract's default map shape when applicable; omit empty
   headings, allow a clearer equivalent, and never copy canonical plans.
-- The map summarizes the effort's current coordination state, blockers, dependencies, and ready work.
+- The map summarizes the effort's current coordination state, conditions blocking particular work,
+  dependencies, and ready work.
   Optional F/D ledger sections and U/E artifacts preserve only useful current
   knowledge.
 - Create a separate artifact because it is an independently useful coordination
@@ -70,7 +71,7 @@ representations.
 
 Continue directly when no additional method is needed. Otherwise load only the
 smallest specialist needed to resolve or accurately frame the current question,
-uncertainty, blocker, unexplained cause, consequential choice, or structural ambiguity:
+uncertainty, unexplained cause, consequential choice, or structural ambiguity:
 
 - **Discovery** for consequential alternatives and tradeoffs.
 - **Debugging** for an observed behavior with an unknown cause.
@@ -86,28 +87,30 @@ Debugging investigates an unexplained cause within established areas and
 relationships. They do not replace structural modeling when those areas or
 relationships need improvement or revision.
 
-The resolution method determines what evidence or authority is sufficient for
-the issue. It is not merely an artifact label: human clarification
-requires the responsible authority, research requires appropriate source
-evidence, and prototype or debugging requires relevant observed or experimental
-evidence. Existing authoritative evidence may satisfy the method without a
-ceremonial specialist invocation, but one method cannot substitute for another's
-required authority or evidence.
+The resolution method determines how a question, uncertainty, unexplained cause,
+consequential choice, or structural ambiguity should be addressed and what
+evidence or authority that method requires. It is not merely an artifact label:
+human clarification requires the responsible authority, research requires
+appropriate source evidence, and prototype or debugging requires relevant
+observed or experimental evidence. Existing authoritative evidence may satisfy
+the method without a ceremonial specialist invocation, but one method cannot
+substitute for another's required authority or evidence.
 
 Do not load specialists speculatively. Specialists own their methods and native
 artifacts and create no framework continuity record. If work is interrupted,
-reconcile only the consequential question, uncertainty, blocker, unexplained
-cause, choice, structural ambiguity, evidence or conclusions, artifact pointers,
-resolution mode when useful, and ready work into Wayfinder. When resuming, read
-the map first rather than a specialist notebook or continuity record.
+reconcile only consequential questions, uncertainties, unexplained causes,
+choices, structural ambiguity, conditions blocking particular work, evidence or
+conclusions, artifact pointers, the resolution method when useful, and ready
+work into Wayfinder. When resuming, read the map first rather than a specialist
+notebook or continuity record.
 
 ## Reconcile and hand off
 
-The map summarizes the objective, scope, current coordination state, blockers,
-dependencies, and ready work. Keep it sufficient for a fresh session to continue
-the effort. Link canonical artifacts instead of copying them. The state contract defines when
-U/E/F/D detail is worth retaining, how records are pruned, and when an effort
-ends.
+The map summarizes the objective, scope, current coordination state, conditions
+blocking particular work, dependencies, and ready work. Keep it sufficient for
+a fresh session to continue the effort. Link canonical artifacts instead of
+copying them. The state contract defines when U/E/F/D detail is worth retaining,
+how records are pruned, and when an effort ends.
 
 Map uncertainty broadly, then promote selectively. A precise question becomes
 U# when separate preservation while unanswered is independently useful to a
@@ -128,21 +131,31 @@ the critical path, independent parallel work, and any off-path dependency whose
 external lead time changes ordering or readiness. Do not infer a critical path
 from an unordered backlog or incomplete evidence.
 
-An unsatisfied dependency, unresolved consequential uncertainty, or missing
-required authority is a blocker when it currently prevents particular work from proceeding.
-A blocker applies to particular work, not automatically to the entire effort.
+A blocker is a condition that currently prevents particular work from
+proceeding. An unsatisfied dependency, unresolved consequential uncertainty, or
+missing required authority can be a blocker for affected work. Blocking is
+scoped to affected work: the same condition may block one scope without blocking
+another. An unresolved U# records a question and is not automatically a blocker.
+Delay, inconvenience, risk, or unfinished work alone does not make a condition a blocker.
 Ready work is work to which no blocker currently applies. Independent ready work
-may proceed while other work remains blocked. Resolve each blocking dependency
-using the evidence or authority its resolution method requires. For
-an unresolved consequential question, either answer the U# or record in a
-canonical artifact the responsible authority's explicit acceptance of the
-remaining uncertainty for one named boundary. That acceptance leaves the U#
-current and unresolved, unblocks only that named boundary, and does not grant
-unrelated authority or unblock another dependency. The same uncertainty may
-remain a blocker for other work. Reconcile and shrink the
-map, then hand off one or more ready implementation scopes without advancing work
-that remains dependency-blocked. Each Implementation handoff consumes one ready scope and
-its acceptance criteria; Verification follows execution. Use `to-tickets` only
+may proceed while other work remains blocked.
+
+Dependencies are satisfied by obtaining the action, artifact, decision,
+participation from a person, system result, external result, or other input they
+require. Questions and uncertainties are resolved through appropriate evidence
+or their resolution method. Missing required authority is supplied by responsible
+authority. Where the state contract permits it, responsible authority may
+explicitly accept the unresolved uncertainty for one named boundary. For an
+unresolved consequential question, either resolve the question or record that
+acceptance in a canonical artifact. The acceptance leaves the U# current and
+unresolved, unblocks only that named boundary, and does not grant unrelated
+authority or unblock another dependency. The same uncertainty may remain a
+blocker for other work. Satisfying a dependency or accepting one boundary
+changes blocking only for affected work and does not automatically unblock
+unrelated work. Reconcile and shrink the map,
+then hand off one or more ready implementation scopes without advancing work that
+remains dependency-blocked. Each Implementation handoff consumes one ready scope
+and its acceptance criteria; Verification follows execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
 deliverable sessions. When no ticket artifact exists, the map may state ready
 work directly. Once To Tickets creates a ticket artifact or ticket set, it owns

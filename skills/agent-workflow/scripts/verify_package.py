@@ -668,7 +668,7 @@ def check_provider_declaration() -> None:
         "Create a separate artifact because it is an independently useful coordination or retrieval unit",
         "Specialists own their methods and native artifacts",
         "create no framework continuity record",
-        "current coordination state, blockers, dependencies, and ready work",
+        "current coordination state",
         "one or more ready implementation scopes",
         "Each Implementation handoff consumes one ready scope",
         "Verification follows execution",
@@ -691,21 +691,33 @@ def check_provider_declaration() -> None:
             "Continue directly when no additional method is needed",
             "current question",
             "uncertainty",
-            "blocker",
             "unexplained cause",
             "consequential choice",
             "structural ambiguity",
         ),
         "## Reconcile and hand off": (
+            "A blocker is a condition",
             "unsatisfied dependency",
             "unresolved consequential uncertainty",
             "missing required authority",
-            "particular work",
+            "can be a blocker for affected work",
+            "Blocking is scoped to affected work",
+            "same condition may block one scope without blocking another",
+            "unresolved U# records a question and is not automatically a blocker",
             "Ready work",
             "no blocker currently applies",
             "Independent ready work may proceed",
+            "Dependencies are satisfied by obtaining",
+            "action, artifact, decision",
+            "participation from a person",
+            "system result, external result, or other input",
+            "Questions and uncertainties are resolved through",
+            "resolution method",
+            "Missing required authority is supplied by responsible authority",
+            "explicitly accept the unresolved uncertainty for one named boundary",
             "unblocks only that named boundary",
             "same uncertainty may remain a blocker for other work",
+            "does not automatically unblock unrelated work",
             "ticket artifact or ticket set",
             "ticket contents, dependencies, ordering, and readiness",
             "does not mirror ticket-level state",
@@ -718,6 +730,13 @@ def check_provider_declaration() -> None:
                 required in section,
                 f"owned Wayfinder runtime lacks {heading} contract: {required}",
             )
+    method_selection = projection_section(
+        "## Choose the minimum resolution method"
+    ).split("- **Discovery**", 1)[0]
+    require(
+        "blocker" not in method_selection.casefold(),
+        "owned Wayfinder runtime treats blocker as a resolution-method issue type",
+    )
     for retired in RETIRED_WAYFINDER_RUNTIME_PATTERNS:
         require(
             re.search(retired, projection_text, re.IGNORECASE) is None,

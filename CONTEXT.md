@@ -13,7 +13,7 @@ The result a Wayfinder effort is intended to achieve.
 What a Wayfinder effort includes and excludes, including relevant project or authority limits.
 
 **Consequential**:
-Resolving something differently would change the objective, scope, authority requirement, blocker or dependency, lasting result, or ready work.
+A matter is consequential when handling it differently could change the effort's objective, scope, required authority, lasting result, dependencies, or which work may proceed.
 
 **Current coordination state**:
 The information that remains relevant to coordinating a Wayfinder effort now.
@@ -22,10 +22,11 @@ The information that remains relevant to coordinating a Wayfinder effort now.
 Work to which no blocker currently applies.
 
 **Dependency**:
-Something particular work requires from another action, artifact, decision, person, or system.
+Something particular work requires from an action, artifact, decision, person, system, external result, or other input.
 
 **Blocker**:
-An unsatisfied dependency, unresolved consequential uncertainty, or missing required authority that currently prevents particular work from proceeding.
+A condition that currently prevents particular work from proceeding. An unsatisfied dependency, unresolved consequential uncertainty, or missing required authority can be a blocker for affected work.
+Blocking is scoped to that work and is not a separate Wayfinder record type.
 
 **Reconciliation**:
 Bringing affected current coordination state into agreement with current truth, valid project authority, and the artifact that owns each lasting result.

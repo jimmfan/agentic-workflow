@@ -96,12 +96,12 @@ inventory, validate, checksum, merge, migrate, rewrite, or remove its contents.
 
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
 Their `map.md` is the brief coordination summary and the first effort file read
-when resuming. It summarizes the effort's current coordination state, blockers,
-dependencies, and ready work. When no ticket artifact exists, the map may state
-ready work directly. Once To Tickets owns detailed decomposition, its ticket
-artifact or ticket set owns ticket contents, dependencies, ordering, and readiness;
-the map links it and may summarize the current ready handoff without mirroring
-ticket-level state.
+when resuming. It summarizes the effort's current coordination state, conditions
+blocking particular work, dependencies, and ready work. When no ticket artifact
+exists, the map may state ready work directly. Once To Tickets owns detailed
+decomposition, its ticket artifact or ticket set owns ticket contents,
+dependencies, ordering, and readiness; the map links it and may summarize the
+current ready handoff without mirroring ticket-level state.
 Optional `facts.md` and `decisions.md` ledgers hold current F# and D# sections;
 independently useful U# questions and substantial E# evidence remain separate
 files. The map indexes relevant detail rather than duplicating those stores.

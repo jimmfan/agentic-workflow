@@ -50,14 +50,36 @@ class RoutingContractTests(unittest.TestCase):
             "Objective": (
                 "result a Wayfinder effort is intended to achieve",
             ),
+            "Consequential": (
+                "handling it differently",
+                "effort's objective",
+                "scope",
+                "required authority",
+                "lasting result",
+                "dependencies",
+                "which work may proceed",
+            ),
             "Blocker": (
+                "condition that currently prevents particular work",
                 "unsatisfied dependency",
                 "unresolved consequential uncertainty",
                 "missing required authority",
-                "prevents particular work from proceeding",
+                "can be a blocker",
+                "scoped to",
+                "not a separate Wayfinder record type",
             ),
             "Ready work": (
                 "work to which no blocker currently applies",
+            ),
+            "Dependency": (
+                "particular work requires",
+                "action",
+                "artifact",
+                "decision",
+                "person",
+                "system",
+                "external result",
+                "other input",
             ),
             "Pruning": (
                 "removes a recognized Wayfinder record from current coordination",
@@ -69,6 +91,9 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(term=term):
                 for fragment in fragments:
                     self.assertIn(fragment.casefold(), entries[term].casefold())
+        consequential = entries["Consequential"].casefold()
+        self.assertNotIn("blocker", consequential)
+        self.assertNotIn("ready work", consequential)
         self.assertNotIn("CONTEXT.md", distributed_policy)
         self.assertNotIn("## Project language", distributed_policy)
         self.assertFalse(any(PACKAGE_ROOT.glob("payload/**/CONTEXT.md")))

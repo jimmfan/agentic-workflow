@@ -101,7 +101,7 @@ When resuming a Wayfinder effort, read `map.md` first. It records enough current
 - objective;
 - scope;
 - important areas and relationships;
-- current blockers and dependencies;
+- conditions currently blocking particular work and the relevant dependencies;
 - unresolved questions that matter to the work; and
 - ready work.
 
@@ -138,13 +138,14 @@ Record only durable, evidence-backed coordination context:
 - the included and excluded scope;
 - the important areas and relationships in the effort;
 - supported current conclusions with pointers to their authoritative sources;
-- consequential unknowns, decisions, dependencies, and blockers; and
+- consequential unknowns and decisions, dependencies, and conditions blocking
+  particular work; and
 - ready work—work to which no blocker currently applies.
 
-A blocker is an unsatisfied dependency, unresolved consequential uncertainty,
-or missing required authority that currently prevents particular work from
-proceeding. A blocker applies to particular work; independent ready work may
-proceed while other work remains blocked.
+A blocker is a condition that currently prevents particular work from proceeding.
+An unsatisfied dependency, unresolved consequential uncertainty, or missing
+required authority can be a blocker for affected work. Blocking is scoped to
+that work; independent ready work may proceed while other work remains blocked.
 
 Create a separate unknown or evidence file only when it is an independently
 useful coordination or retrieval unit. When a supported current conclusion or

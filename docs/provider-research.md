@@ -100,11 +100,11 @@ default local-Markdown tracker stores those artifacts below `.scratch/`.
 Agent Workflow deliberately owns its effective runtime and canonical local representation
 under `.agent-wayfinder/` instead. When resuming an effort, it reads the map first
 and then only relevant optional U#/E#/F#/D# knowledge. The map summarizes current
-coordination state, blockers, dependencies, and ready work. Before detailed
-decomposition, the map may state ready work directly. Substantial decomposition
-passes to the native `to-tickets` ticket artifact or ticket set, which owns ticket
-contents, dependencies, ordering, and readiness; the map links it without a shadow
-copy. The pinned release remains the
+coordination state, conditions blocking particular work, dependencies, and ready
+work. Before detailed decomposition, the map may state ready work directly.
+Substantial decomposition passes to the native `to-tickets` ticket artifact or
+ticket set, which owns ticket contents, dependencies, ordering, and readiness;
+the map links it without a shadow copy. The pinned release remains the
 methodological source and reviewed provenance, while the local runtime is an
 intentional derived projection; see
 [ADR-0010](../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md)

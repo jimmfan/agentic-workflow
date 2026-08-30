@@ -1946,15 +1946,6 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(authority_boundary, current_knowledge)
 
-        state_model = " ".join(
-            markdown_section(
-                self.contract,
-                "## State model and boundaries",
-            ).lower().split()
-        )
-        self.assertIn("raw transcripts", state_model)
-        self.assertIn("private agent memory", state_model)
-
     def test_contract_uses_current_wayfinder_terminology(self) -> None:
         generated = GENERATED_SKILL.read_text(encoding="utf-8")
         generated_body = generated.split("\n---\n", 1)[1]
@@ -1969,6 +1960,8 @@ class WayfinderStateContractTests(unittest.TestCase):
                 lowered = instructions.lower()
                 self.assertIn("reconciliation", lowered)
                 self.assertIn("pruning", lowered)
+                self.assertIn("resolution method", lowered)
+                self.assertNotIn("resolution mode", lowered)
                 self.assertNotRegex(lowered, r"\bretir\w*\b")
                 self.assertNotIn("settlement", lowered)
 
@@ -2042,15 +2035,26 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             with self.subTest(ready_work_condition=condition):
                 self.assertIn(condition, ready_work)
-        blocker = normalized.split("A blocker is", 1)[1].split("Ready work is", 1)[0]
+        blocker = normalized.split("A blocker is", 1)[1].split(
+            "Ready work is", 1
+        )[0].casefold()
         for condition in (
+            "condition that currently prevents particular work",
             "unsatisfied dependency",
             "unresolved consequential uncertainty",
             "missing required authority",
-            "prevents particular work from proceeding",
+            "can be a blocker",
+            "blocking is scoped to affected work",
+            "same condition may block one scope without blocking another",
+            "unresolved U# records a question",
+            "not automatically a blocker",
+            (
+                "delay, inconvenience, risk, or unfinished work alone does not "
+                "make a condition a blocker"
+            ),
         ):
             with self.subTest(blocker_condition=condition):
-                self.assertIn(condition, blocker)
+                self.assertIn(condition.casefold(), blocker)
         self.assertIn(
             "When resuming a Wayfinder effort, read `map.md` first",
             self.normalized,
@@ -2083,6 +2087,85 @@ class WayfinderStateContractTests(unittest.TestCase):
             "### Keep or end the effort",
         ):
             self.assertIn(heading, reconciliation)
+
+    def test_blocking_is_relational_not_a_durable_record_type(self) -> None:
+        state_model = " ".join(
+            markdown_section(
+                self.contract,
+                "## State model and boundaries",
+            ).split()
+        )
+        for boundary in (
+            "U/E/F/D are Wayfinder's durable record types",
+            "Blocking is a scoped relationship",
+            "not a separate Wayfinder record type",
+            (
+                "Do not create blocker identifiers, files, ledgers, directories, "
+                "stores, or statuses"
+            ),
+        ):
+            with self.subTest(boundary=boundary):
+                self.assertIn(boundary, state_model)
+
+        current_knowledge = markdown_section(self.contract, "## Current knowledge")
+        self.assertEqual(
+            re.findall(r"^- `([A-Z])#`:", current_knowledge, re.MULTILINE),
+            ["U", "E", "F", "D"],
+        )
+        self.assertNotIn("blockers/", self.contract)
+
+    def test_dependencies_are_satisfied_and_questions_are_resolved(self) -> None:
+        contract_guidance = " ".join(
+            markdown_section(
+                self.contract,
+                "## Effort shape and selection",
+            ).split()
+        ).casefold()
+        runtime_guidance = " ".join(
+            markdown_section(
+                RUNTIME.read_text(encoding="utf-8"),
+                "## Reconcile and hand off",
+            ).split()
+        ).casefold()
+        for surface, guidance in (
+            ("contract", contract_guidance),
+            ("runtime", runtime_guidance),
+        ):
+            dependency_satisfaction = guidance.split(
+                "dependencies are satisfied by obtaining", 1
+            )[1].split("questions and uncertainties", 1)[0]
+            for required_input in (
+                "action",
+                "artifact",
+                "decision",
+                "participation from a person",
+                "system result",
+                "external result",
+                "other input",
+            ):
+                with self.subTest(surface=surface, required_input=required_input):
+                    self.assertIn(required_input.casefold(), dependency_satisfaction)
+
+            for semantic in (
+                "dependencies are satisfied by obtaining",
+                "questions and uncertainties are resolved through",
+                "resolution method",
+                "missing required authority is supplied by responsible authority",
+                "explicitly accept the unresolved uncertainty for one named boundary",
+                "does not automatically unblock unrelated work",
+            ):
+                with self.subTest(surface=surface, semantic=semantic):
+                    self.assertIn(semantic.casefold(), guidance)
+
+        for blocker_semantic in (
+            "A blocker is a condition",
+            "can be a blocker for affected work",
+            "Blocking is scoped to affected work",
+            "unresolved U# records a question and is not automatically a blocker",
+        ):
+            with self.subTest(runtime_blocker_semantic=blocker_semantic):
+                self.assertIn(blocker_semantic.casefold(), runtime_guidance)
+        self.assertNotIn("resolve each blocking dependency", runtime_guidance)
 
     def test_ticket_artifact_and_map_ownership_are_explicit(self) -> None:
         contract_boundaries = " ".join(
@@ -2135,6 +2218,17 @@ class WayfinderStateContractTests(unittest.TestCase):
                     self.assertNotIn(invalid, surface)
 
     def test_effort_ending_uses_non_circular_continuation_conditions(self) -> None:
+        effort_shape = " ".join(
+            markdown_section(
+                self.contract,
+                "## Effort shape and selection",
+            ).split()
+        )
+        self.assertIn(
+            "A different objective or substantive scope requires a new effort",
+            effort_shape,
+        )
+
         ending = " ".join(
             markdown_section(
                 self.contract,
@@ -2143,12 +2237,13 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         for condition in (
             "objective was achieved",
-            "responsible authority stopped the effort",
-            "coordination moved to a different objective and scope",
+            "responsible authority stopped it",
+            "continuing coordination belongs to a different objective or substantive scope",
         ):
             with self.subTest(ending_condition=condition):
                 self.assertIn(condition, ending)
         self.assertNotIn("it was intentionally ended", ending)
+        self.assertNotIn("different objective and scope", ending)
 
     def test_current_wayfinder_documentation_uses_pruning_terminology(self) -> None:
         for name, (path, heading) in CURRENT_WAYFINDER_DOC_SECTIONS.items():
@@ -2199,17 +2294,60 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertIn("objective, scope", new_effort["request"].casefold())
         self.assertIn("ready work", new_effort["verification_command"].casefold())
 
+        authority_answer = " ".join(
+            scenarios["wayfinder-answered-unknown-authority-choice"]["starting_state"]
+        ).casefold()
+        self.assertIn("uncertainty recorded in u1", authority_answer)
+        self.assertIn("blocks the release checklist", authority_answer)
+        self.assertNotIn("blocked by u1", authority_answer)
+
+        fact_conflict = scenarios["wayfinder-fact-conflict"]["request"].casefold()
+        self.assertIn(
+            "uncertainty it records blocks the current route", fact_conflict
+        )
+        self.assertNotIn("u1 only because it blocks", fact_conflict)
+
+        existing_state = " ".join(
+            scenarios["existing-wayfinder-state"]["starting_state"]
+        ).casefold()
+        self.assertIn("uncertainty recorded in u1", existing_state)
+        self.assertIn(
+            "does not block the actionable implementation slice", existing_state
+        )
+        self.assertNotIn(
+            "u1 telemetry naming unknown remains explicitly non-blocking",
+            existing_state,
+        )
+
         ticket_handoff = scenarios["wayfinder-contract-smoke"]
         self.assertIn(
             "link the resulting ticket set", ticket_handoff["request"].casefold()
         )
-        self.assertIn("ticket 01 as the ready ticket", ticket_handoff["request"].casefold())
+        self.assertIn(
+            "ticket 01 as the ready ticket", ticket_handoff["request"].casefold()
+        )
 
     def test_contract_keeps_pruning_boundaries(self) -> None:
-        pruning = markdown_section(
-            self.contract,
-            "## Reconciliation and pruning",
-        ).lower()
+        pruning = " ".join(
+            markdown_section(
+                self.contract,
+                "## Reconciliation and pruning",
+            ).lower().split()
+        )
+        common_sequence = pruning.split(
+            "use this common sequence for every affected reconciliation:", 1
+        )[1].split("update only affected records", 1)[0]
+        self.assertIn(
+            "prune only recognized records that no longer have independent current value",
+            common_sequence,
+        )
+        self.assertNotIn("remove only the recognized record", common_sequence)
+        self.assertIn("pruning u/e removes only the selected file", pruning)
+        self.assertIn("pruning f/d removes only the selected h2 section", pruning)
+        self.assertIn(
+            "removing the selected file or ledger section carries out pruning",
+            pruning,
+        )
         for boundary in (
             "unrelated efforts",
             "entire repository",
@@ -2313,16 +2451,17 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Continue directly when no additional method is needed",
             minimum_method,
         )
+        method_selection = minimum_method.split("- **Discovery**", 1)[0]
         for issue in (
             "current question",
             "uncertainty",
-            "blocker",
             "unexplained cause",
             "consequential choice",
             "structural ambiguity",
         ):
             with self.subTest(issue=issue):
-                self.assertIn(issue, minimum_method)
+                self.assertIn(issue, method_selection)
+        self.assertNotIn("blocker", method_selection.casefold())
 
         operating_rules = markdown_section(runtime, "## Operating rules")
         self.assertIn("The state contract defines", operating_rules)

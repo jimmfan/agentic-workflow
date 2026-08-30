@@ -60,5 +60,5 @@ honest proxy plus proportionate regressions. A vanished symptom without causal
 evidence is a mitigation, not a proven root cause. Do not duplicate Code Review
 already performed by `implement`.
 
-Inside Wayfinder, reconcile only consequential evidence, conclusions, blockers,
-and next work; the map remains the durable owner.
+Inside Wayfinder, reconcile only consequential evidence, conclusions, conditions
+blocking particular work, and next work; the map remains the durable owner.

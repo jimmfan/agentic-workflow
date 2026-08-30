@@ -6,7 +6,7 @@ request = "Continue as a fresh session from the existing Wayfinder map, retrieve
 starting_state = [
   "A canonical local Wayfinder map points directly to a settled D1 section in decisions.md.",
   "The map states the actionable implementation slice under Next work.",
-  "A separate U1 telemetry naming unknown remains explicitly non-blocking.",
+  "The telemetry-naming uncertainty recorded in U1 does not block the actionable implementation slice.",
 ]
 expect = [
   "task_completed",

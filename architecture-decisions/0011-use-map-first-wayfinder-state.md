@@ -26,9 +26,9 @@ state. The current local representation lives under
 
 The map is a brief coordination summary, not a type ledger. It preserves the
 objective, scope, major areas and relationships, current coordination state,
-material blockers and dependencies, and ready work. Optional supporting
-knowledge exists only when durable preservation adds value; a map-only effort
-is valid and supporting detail loads progressively. The contract may
+conditions blocking particular work, relevant dependencies, and ready work.
+Optional supporting knowledge exists only when durable preservation adds value;
+a map-only effort is valid and supporting detail loads progressively. The contract may
 consolidate small same-type records while keeping independently useful
 coordination or retrieval units separate; that representation remains a
 contract and test detail.
@@ -38,10 +38,11 @@ or an append-only journal. Lasting outcomes move to their canonical owners, the
 map and recognized records converge and shrink, and Git preserves committed historical evolution.
 Preserve a question independently only when retaining it or its eventual answer
 could materially improve a later developer's ability to make or evaluate a
-decision. A blocker is an unsatisfied dependency, unresolved consequential
-uncertainty, or missing required authority that currently prevents particular work from
-proceeding. Ready work is work to which no blocker currently applies; independent
-ready work may proceed while other work remains blocked.
+decision. A blocker is a condition that currently prevents particular work from
+proceeding. An unsatisfied dependency, unresolved consequential uncertainty, or
+missing required authority can be a blocker for affected work. Ready work is
+work to which no blocker currently applies; independent ready work may proceed
+while other work remains blocked.
 
 Authorized work that changes represented reality owns scoped reconciliation of
 affected map content, recognized records, and references before claiming completion.

@@ -74,12 +74,13 @@ artifacts remain canonical; the framework does not mirror them. Local Wayfinder
 uses the configured canonical tree under `.agent-wayfinder/`. When resuming a
 Wayfinder effort, read its map first. Its effective skill is an Agent Workflow-
 owned runtime projection derived from and attributed to Matt Pocock's pinned
-Wayfinder methodology. The map summarizes current coordination state, blockers,
-dependencies, and ready work; sparse F#/D# ledger sections and U#/E# artifacts stay lazy. Before
-detailed decomposition, the map may state ready work directly. New decomposed
-work belongs to the `to-tickets` ticket artifact or ticket set, which owns ticket
-contents, dependencies, ordering, and readiness; the map links it without mirroring
-ticket-level state. A safe regular map makes
+Wayfinder methodology. The map summarizes current coordination state, conditions
+blocking particular work, dependencies, and ready work; sparse F#/D# ledger
+sections and U#/E# artifacts stay lazy. Before detailed decomposition, the map
+may state ready work directly. New decomposed work belongs to the `to-tickets`
+ticket artifact or ticket set, which owns ticket contents, dependencies,
+ordering, and readiness; the map links it without mirroring ticket-level state.
+A safe regular map makes
 an effort current and resumable; a mapless directory is not a candidate. The
 router loads the Wayfinder contract only after Wayfinder is selected or a
 relevant effort is being resumed, then reads
@@ -91,12 +92,12 @@ second permission request after the router selects it.
 
 Within a selected effort, continue directly with ready work. Load Discovery,
 Debugging, Research, Prototype, Domain Modeling, Grilling, or human clarification
-only when that method materially improves resolution of a current question,
-uncertainty, blocker, unexplained cause, consequential choice, structural
-ambiguity, or other consequential issue. Specialists
-remain stateless from the framework's perspective and return only consequential
-results for reconciliation. Implementation is a ready-work execution handoff,
-followed by Verification, not a Wayfinder reasoning method or continuity record.
+only when that method materially improves how a current question, uncertainty,
+unexplained cause, consequential choice, or structural ambiguity is addressed.
+Specialists remain stateless from the framework's perspective and return only
+consequential results for reconciliation. Implementation is a ready-work
+execution handoff, followed by Verification, not a Wayfinder reasoning method or
+continuity record.
 
 After meaningful implementation or a causal fix, gather acceptance evidence not
 already supplied by the selected provider. Do not repeat provider-owned TDD or

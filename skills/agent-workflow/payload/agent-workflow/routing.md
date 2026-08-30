@@ -64,8 +64,8 @@ without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses
 the Wayfinder threshold. Inside selected Wayfinder, use each needed specialist
-once for the relevant question, uncertainty, blocker, unexplained cause,
-consequential choice, or structural ambiguity without changing durable ownership.
+once for the relevant question, uncertainty, unexplained cause, consequential
+choice, or structural ambiguity without changing durable ownership.
 Meaningful Implementation runs Verification once. New causal uncertainty returns
 to Debugging; a material unresolved choice returns to Discovery or Wayfinder
 according to the coordination threshold.

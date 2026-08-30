@@ -17,8 +17,8 @@ every method that might help during an effort.
 
 Wayfinder is the sole framework-owned durable coordination model. It persists
 only consequential cross-session coordination: objective, scope, areas and
-relationships, current blockers and dependencies, ready work, optional current
-knowledge, and readable pointers to canonical artifacts.
+relationships, conditions blocking particular work, dependencies, ready work,
+optional current knowledge, and readable pointers to canonical artifacts.
 
 Specialists own their methods and native outputs. They remain stateless from the
 framework's perspective and do not create competing continuity notebooks merely
@@ -33,9 +33,10 @@ Other specialist-native or accepted project artifacts are likewise canonical
 outputs rather than competing framework coordination models.
 
 When interrupted work lacks a sufficient canonical artifact, Wayfinder records
-only consequential coordination needed for resumption—such as a current question,
-blocker, dependency, or ready work—and pointers. Unknown project-owned content is
-not current coordination state or an automatic resumption source.
+only consequential coordination needed for resumption—such as a current
+question, a condition blocking particular work, a dependency, or ready work—and
+pointers. Unknown project-owned content is not current coordination state or an
+automatic resumption source.
 
 ## Consequences
 

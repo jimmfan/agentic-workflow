@@ -18,9 +18,9 @@ state. Upstream `implement` owns its build loop, TDD, and closing Code Review.
    work needs dependency ordering or independently deliverable sessions.
 4. Create no separate implementation continuity record. Resume from canonical artifacts,
    source, and verification evidence. If interruption would lose consequential
-   coordination, preserve only relevant questions, uncertainties, blockers,
-   unexplained causes, choices, structural ambiguity, artifact pointers,
-   dependencies, and ready work in Wayfinder.
+   coordination, preserve only relevant questions, uncertainties, conditions
+   blocking particular work, unexplained causes, choices, structural ambiguity,
+   artifact pointers, dependencies, and ready work in Wayfinder.
 
 ## Execute once
 

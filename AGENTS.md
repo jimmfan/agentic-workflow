@@ -169,6 +169,10 @@ layers. Do not force one term across genuinely different bounded contexts.
 - Protect project-owned and user-owned durable state. Reconstructable framework
   output may be replaced when appropriate; durable state must not be treated as
   disposable framework content.
+- Do not rely on host or model defaults for safety, authorization, or
+  data-preservation boundaries that Agent Workflow itself owns. Do not
+  duplicate generic host or model safety policy unless Agent Workflow
+  introduces a specific risk that requires a project-owned rule.
 
 ## Working practice
 
