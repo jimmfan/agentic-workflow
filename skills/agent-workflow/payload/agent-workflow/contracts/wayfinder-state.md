@@ -98,18 +98,25 @@ work waiting on an external dependency. Represent each condition through map con
 identifies the affected work, relevant dependencies, and any ready work. Do not add a map status
 or historical label.
 
-Use this brief default map shape, combining, renaming, or omitting an item only when its
-purpose is inapplicable or a clearer equivalent exists:
+Use this brief default map shape. Keep **Blockers and dependencies** present even when
+no blocker or dependency currently applies, and write `None` explicitly. Combine,
+rename, or omit any other item only when its purpose is inapplicable or a clearer
+equivalent exists:
 
 - **Objective** — the result the effort is intended to achieve.
 - **Scope** — what the effort includes and excludes, including relevant project or authority limits.
 - **Areas and relationships** — major areas, how they relate, and important ownership or operating constraints.
-- **Current state** — smallest truthful summary needed to resume safely.
-- **Blockers and dependencies** — conditions blocking particular work and relevant dependencies.
+- **Current state** — smallest semantic coordination state needed for safe resumption.
+  Persist only coordination state whose meaning remains relevant to future work.
+  Transient Git or session observations, such as a clean working tree, current HEAD,
+  or branch position, remain execution context unless they are genuinely a continuing
+  action authorization constraint, baseline, or dependency.
+- **Blockers and dependencies** — actual blockers and required inputs or dependencies.
 - **Ready work** — work that may proceed now.
 - **Key links** — the few navigable links to artifacts needed for continuation.
 
-These headings guide content; they are not a recognition schema. Do not create empty headings.
+These headings guide content; they are not a recognition schema. Except for **Blockers
+and dependencies**, do not create empty headings.
 The map summarizes the effort's current coordination state, conditions blocking particular work,
 dependencies, and ready work. When no ticket artifact exists, the map may state ready work
 directly. Once a To Tickets artifact maintains detailed decomposition, the map
@@ -124,12 +131,15 @@ ledger section or U/E file. If a fresh session must read most supporting records
 to recover the current route, reconcile the map instead of adding more
 supporting detail.
 
-Remaining work is not automatically blocked work. A blocker is a condition that currently
-prevents particular work from proceeding. An unsatisfied dependency, unresolved consequential
-question, or missing required project decision authority can be a blocker for affected work. Blocking is scoped
-to affected work: the same condition may block one scope without blocking another. An unresolved
-U# records a question and is not automatically a blocker. Delay, inconvenience, risk, or unfinished
-work alone does not make a condition a blocker; neither does planned but unperformed validation.
+`Blockers and dependencies` records actual blockers and required inputs or dependencies,
+not ordinary remaining workflow steps. Planned tests, verification, commit or push steps,
+and other unfinished work do not belong there merely because they remain. A blocker is a
+condition that currently prevents particular work from proceeding. An unsatisfied dependency,
+unresolved consequential question, or missing required project decision authority can be a
+blocker for affected work. Blocking is scoped to affected work: the same condition may block
+one scope without blocking another. An unresolved U# records a question and is not
+automatically a blocker. Delay, inconvenience, risk, or unfinished work alone does not make a
+condition a blocker.
 
 Ready work is work to which no blocker currently applies. Independent ready work may proceed while
 unrelated work remains blocked.
@@ -224,10 +234,6 @@ that scope. Otherwise preserve independently useful external evidence as E#, a
 consequential unresolved project question as U#, or a working proposal in the
 map or provider-native specialist artifact, only when that representation
 independently earns preservation.
-
-Volatile branch, HEAD, working-tree, ahead/behind, and session observations normally remain
-execution context. Persist one only when it is an actual continuing action authorization constraint,
-baseline, or dependency that would change future work.
 
 ### Identifiers and references
 

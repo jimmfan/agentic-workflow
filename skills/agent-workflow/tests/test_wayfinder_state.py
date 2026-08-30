@@ -2136,6 +2136,41 @@ class WayfinderStateContractTests(unittest.TestCase):
             ],
         )
         normalized = " ".join(effort_shape.split())
+        default_map_guidance = normalized.split(
+            "Use this brief default map shape", 1
+        )[1].split("The map summarizes", 1)[0]
+        for current_state_semantic in (
+            "smallest semantic coordination state needed for safe resumption",
+            "Transient Git or session observations",
+            "clean working tree",
+            "current HEAD",
+            "branch position",
+            "continuing action authorization constraint, baseline, or dependency",
+        ):
+            with self.subTest(current_state_semantic=current_state_semantic):
+                self.assertIn(current_state_semantic, default_map_guidance)
+        self.assertIn(
+            "Keep **Blockers and dependencies** present",
+            default_map_guidance,
+        )
+        self.assertIn("write `None` explicitly", default_map_guidance)
+        self.assertIn("any other item", default_map_guidance)
+        self.assertIn(
+            "Except for **Blockers and dependencies**",
+            default_map_guidance,
+        )
+
+        for blocker_guidance_phrase in (
+            "actual blockers",
+            "required inputs or dependencies",
+            "ordinary remaining workflow steps",
+            "planned tests",
+            "verification",
+            "commit or push steps",
+            "other unfinished work",
+        ):
+            with self.subTest(blocker_guidance_phrase=blocker_guidance_phrase):
+                self.assertIn(blocker_guidance_phrase, normalized.casefold())
         ready_work = normalized.split("Ready work is", 1)[1].split(
             "## Current knowledge", 1
         )[0]
