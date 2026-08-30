@@ -17,7 +17,15 @@ select a workflow.
    materially help.
 2. Confirm host support and the invocation policy for each selected provider
    operation.
-3. Execute only actions with action authorization.
+3. Execute only actions authorized by the current user request or accepted
+   project policy, and only within that scope.
+
+Do not treat a consequential project choice as committed until required
+evidence is sufficient and either accepted project policy determines the choice
+for that boundary or the person, role, or valid delegate with project decision
+authority commits it. Authorization to perform an action does not commit that
+choice, and a committed choice does not authorize an unrelated action. Host
+permission supplies neither.
 
 Installed skill descriptions are the first selection interface. Before making
 or acting on a consequential choice, resolve any material unresolved
@@ -29,13 +37,13 @@ prerequisite using the minimum sufficient method. This table resolves overlaps:
 | Sustained learning intent | `teach` | Ordinary questions stay Direct |
 | Durable coordination threshold crossed | `wayfinder` | Structured project state must materially improve continuity |
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
-| Interdependent human/project-owned decisions materially shape downstream choices | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual questions and one straightforward clarification use the minimum sufficient method |
+| Interdependent choices requiring human input or project decision authority materially shape downstream work | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual questions and one straightforward clarification use the minimum sufficient method |
 | Domain concepts, vocabulary, boundaries, responsibilities, or relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the model materially helps; ordinary vocabulary lookup stays Direct |
 | Throwaway implementation would answer a design or behavior question | Direct or `prototype` | Ordinary production implementation stays Direct or with its primary workflow |
 | Module interface, seam, depth, locality, or testability needs explicit design | Direct or `codebase-design` | Load Codebase Design only when its vocabulary materially improves the design; ordinary edits and refactors stay Direct or with their primary workflow |
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis grants no action authorization for a fix |
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
-| Settled scope needs a specification | `to-spec` | Its artifact maintains the settled scope |
+| A sufficiently defined scope needs a specification | `to-spec` | Its artifact maintains the accepted scope |
 | Approved work needs ordered independent sessions | `to-tickets` | Its ticket artifact maintains ticket contents, ordering, and readiness |
 | One implementation scope is ready | Implementation, then `implement` | Trivial low-risk edits stay Direct; meaningful work ends with Verification |
 | Explicit bounded test-first work | `tdd` | The provider defines its loop |
@@ -62,7 +70,7 @@ directory is not a candidate. An unrelated map never captures the route.
 
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 only relevant F#/D# ledger sections or U#/E# artifacts. Implementation may
-consume ready work from a map, a settled D#, a specification, or a
+consume ready work from a map, a current decision record, a specification, or a
 provider-native ticket without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses
@@ -101,10 +109,11 @@ operation may be supported by the host but require explicit invocation, may be
 invocable but not configuration-ready, or may need its installed projection
 repaired before invocation.
 
-If a preferred provider cannot run, use host-native capability with action authorization when
-it can satisfy the request. Do not imitate the provider or create its
-provider-native artifacts. Stop or give the exact user invocation instruction
-only when the user required that provider or no safe fallback with action authorization exists.
+If a preferred provider cannot run, use host-native capability when the current
+request or accepted project policy authorizes the required actions and it can
+satisfy the request. Do not imitate the provider or create its provider-native
+artifacts. Stop or give the exact user invocation instruction only when the user
+required that provider or no safe authorized fallback exists.
 
 For a user-only operation, form the invocation from the active host's declared
 prefix. If the host is unknown, label supported forms instead of guessing.

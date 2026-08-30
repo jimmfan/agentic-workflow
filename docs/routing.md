@@ -13,7 +13,7 @@ alone never selects it. Wayfinder must start or resume when any hard signal or
 at least two soft signals show that durable coordination is materially safer
 than conversation alone. Hard signals cover session-continuation or
 agent-handoff continuity, conflicting sources that establish the same scoped
-claim, blockers requiring project decision authority alongside work that can
+claim, an uncommitted required project choice alongside independent work that can
 proceed, coordinated areas or responsible participants, and missing source
 traceability. Soft signals cover interacting unresolved questions, multiple
 durable state categories, evidence-driven plan change, dependency graphs, and
@@ -50,13 +50,19 @@ Keep these stages separate:
 4. check host support, invocation policy, configuration readiness, and installed
    provider-projection status;
 5. invoke the selected skill only when policy allows it;
-6. materially execute only actions authorized by user direction or accepted
+6. materially execute only actions authorized by the current user request or accepted
    project policy; and
 7. require completion and verification evidence beyond the route marker.
 
+A project choice is committed only after required evidence is sufficient and
+accepted project policy determines the choice for that boundary or the person,
+role, or valid delegate with project decision authority commits it. That gate is
+independent from authorization to act: either may exist without the other, and
+host permission supplies neither.
+
 Default route sequences are transitions with entry conditions, not mandatory
 pipelines. Host todos hold current-session actions; Wayfinder holds durable
-coordination; specifications hold settled scope and acceptance criteria; tickets
+coordination; specifications hold accepted scope and acceptance criteria; tickets
 hold approved independently deliverable work and blocking edges. Domain Modeling
 joins Discovery or Wayfinder only when conceptual or vocabulary ambiguity is
 material.
@@ -70,8 +76,8 @@ Three seams are intentionally explicit. Trivial local, low-risk edits remain
 Direct even though they mutate files; Implementation is for ready work where its
 orchestration and integration verification add material value. A selected
 provider operation with missing configuration returns the exact setup invocation
-instruction when no host-native equivalent with action authorization can deliver
-the requested outcome.
+instruction when no host-native equivalent authorized within the current scope can
+deliver the requested outcome.
 After a successful host-native fallback, the route marker reports what actually
 ran and omits the unavailable provider; a terminal suffix is reserved for a
 selection that did not become equivalent execution.
@@ -100,8 +106,9 @@ relevant effort is being resumed, then reads the map and only relevant F#/D#
 ledger sections or U#/E# artifacts. An unrelated
 existing map never changes a request's route.
 
-Normal project work with action authorization may create a lightweight Wayfinder
-map without requesting action authorization again after the router selects it.
+When the current request or accepted project policy authorizes repository-local
+Wayfinder writes, routing may create a lightweight map without asking again after
+Wayfinder is selected.
 
 Within a selected effort, continue directly with ready work. Load Discovery,
 Debugging, Research, Prototype, Domain Modeling, Grilling, or human clarification

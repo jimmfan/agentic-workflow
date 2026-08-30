@@ -77,10 +77,14 @@ Routing can change as work develops. For example, a bounded implementation task 
 
 The router does not expand the user's authority.
 
-If work depends on missing evidence, action authorization, or a choice not yet
-committed by project decision authority, dependent work does not proceed through
-that boundary. Host permission alone does not authorize the action or commit the
-choice. Independent work may continue.
+Do not treat a consequential project choice as committed until required evidence
+is sufficient and either accepted project policy determines the choice for that
+boundary or the person, role, or valid delegate with project decision authority
+commits it. Dependent work stops at an unresolved project-choice boundary;
+independent work may continue. Perform only actions authorized by the current user
+request or accepted project policy and only within that scope. Authorization to act
+does not commit a project choice, a committed choice does not authorize an unrelated
+action, and host permission supplies neither.
 
 Current source, observed behavior, and accepted project artifacts take precedence over stale workflow state or previous chat history.
 
@@ -119,6 +123,11 @@ When resuming a Wayfinder effort, read `map.md` first. It records enough current
 
 A simple effort may need only `map.md`.
 
+New default maps retain `Blockers and dependencies` and use `None` when no blocker
+or dependency currently applies; other inapplicable empty headings may be omitted.
+Existing maps remain valid without that heading or marker. This is authoring
+guidance, not a recognition requirement or migration trigger.
+
 Additional records are created only when they are useful to preserve separately:
 
 - `U#` unresolved question record — one current consequential question that
@@ -127,14 +136,15 @@ Additional records are created only when they are useful to preserve separately:
   observation, and limitations;
 - `F#` fact record — one current scoped descriptive conclusion judged
   sufficiently supported and revisable as evidence changes; and
-- `D#` decision record — one current consequential choice committed by project
-  decision authority.
+- `D#` decision record — one current consequential choice determined directly by
+  accepted project policy or committed by the person, role, or valid delegate with
+  project decision authority.
 
 Wayfinder coordinates this information. It does not replace source code,
 documentation, architecture decisions, specifications, tickets, or other
 project artifacts that maintain lasting results.
 
-As work settles, lasting results should live with the artifact designated to
+As lasting results are established, they should live with the artifact designated to
 maintain them rather than accumulating indefinitely in Wayfinder.
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
@@ -163,8 +173,10 @@ Record only durable, evidence-backed coordination context:
 - ready work—work to which no blocker currently applies.
 
 A blocker is a condition that currently prevents particular work from proceeding.
-An unsatisfied dependency, unresolved consequential question, or missing
-required project decision authority can be a blocker for affected work. Blocking is scoped to
+An unsatisfied dependency, unresolved consequential uncertainty, or missing
+required authority can be a blocker for affected work. The missing condition may
+be an uncommitted required project choice, an unauthorized required action, or an
+unsatisfied required dependency. Blocking is scoped to
 that work; independent ready work may proceed while other work remains blocked.
 
 Create a separate unresolved question or evidence record only when it is an
@@ -320,8 +332,8 @@ The architecture may change as the project produces better evidence.
 
 - Keep bounded work Direct.
 - Use workflows and skills only when they materially help.
-- Do not cross unresolved consequential decision boundaries without the
-  required evidence, action authorization, or project decision authority.
+- Keep required evidence and project-choice commitment separate from authorization
+  to act; cross neither boundary until its own gate is satisfied.
 - Prefer current repository reality over stale state.
 - Keep durable project state separate from reconstructable framework files.
 - Store coordination state, not execution history.

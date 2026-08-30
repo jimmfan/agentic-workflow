@@ -18,24 +18,35 @@ specialist, or persists coordination in Wayfinder.
 Agents may make evidence-backed technical judgments within the scope delegated
 by the user or accepted project policy. They must not turn an assumption,
 default, proposal, precedent, or model preference into an accepted project
-choice when that choice is reserved for project decision authority.
+choice. Do not treat a consequential project choice as committed until required
+evidence is sufficient and either accepted project policy determines the choice
+for that boundary or the person, role, or valid delegate with project decision
+authority commits it. Responsibility alone does not establish that authority.
 
-Dependent work must not cross a consequential decision boundary while required
-evidence, action authorization, or project decision authority remains
-unresolved. Independent work may continue. Surface the concrete question,
-explain why the evidence or project decision authority is required, and state
-what its answer will unblock.
+Dependent work stops at an unresolved project-choice boundary. Independent work
+may continue. Obtain a required project choice from the person, role, or valid
+delegate with project decision authority, apply accepted project policy when it
+already determines the choice, or clarify who may decide when decision authority
+itself is unclear. State the concrete question, why the evidence or choice is
+required, and what its answer will unblock.
 
-Project decision authority may explicitly accept unresolved uncertainty for one
-named boundary. The underlying question remains unresolved; any U# recording it
-remains current and unresolved. That acceptance unblocks only the named
-boundary: it does not commit a broader project choice, grant action
-authorization, or unblock any other dependency.
+Perform only actions authorized by the current user request or accepted project
+policy and only within that scope. Authorization to perform an action does not
+commit a project choice. A committed project choice does not authorize an
+unrelated action. Host permission supplies neither action authorization nor a
+committed project choice. A workflow, skill, provider instruction, test,
+specification, ticket, or Wayfinder record grants neither.
 
-Workflows, provider instructions, specifications, tickets, and durable state
-grant neither action authorization nor project decision authority. Durable
-state may record the source that supplied an answer or the project decision
-authority that accepted uncertainty; it cannot create either.
+The person, role, or valid delegate with project decision authority may
+explicitly accept unresolved uncertainty for one named boundary. The underlying
+question remains unresolved; any U# recording it remains current and unresolved.
+That acceptance unblocks only the named boundary: no broader project choice is
+committed, no unrelated action is authorized, and no other dependency is
+satisfied.
+
+Durable state may record the accepted policy that determines a choice, the
+person, role, or valid delegate who commits it, or the authority that accepted
+uncertainty; it cannot create policy, authority, or authorization.
 
 ## Consequences
 
@@ -61,4 +72,5 @@ exact workflow trace.
 ## Reconsideration trigger
 
 Reconsider only if accepted project policy deliberately changes which choices
-agents may make or how project decision authorities handle unresolved questions.
+agents may make or how holders of project decision authority handle unresolved
+questions.

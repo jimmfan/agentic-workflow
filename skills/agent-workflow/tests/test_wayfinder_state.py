@@ -986,6 +986,13 @@ class WayfinderStateContractTests(unittest.TestCase):
             ),
             effort,
         )
+        existing_without_default_marker = effort.parent / "provider-projection"
+        existing_text = (existing_without_default_marker / "map.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("Blockers and dependencies", existing_text)
+        self.assertNotIn("None", existing_text)
+        self.assertTrue(validate_effort(existing_without_default_marker))
 
     def test_current_child_rename_requires_reconciled_references(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1998,10 +2005,13 @@ class WayfinderStateContractTests(unittest.TestCase):
             "recommendations",
             "agent inference",
             "routine implementation judgment",
-            "evidence cannot commit a project choice",
-            "action authorization does not establish project decision authority",
-            "host permission does not authorize an action or commit a project choice",
+            "accepted project policy may determine the choice for a boundary directly",
+            "person, role, or valid delegate with project decision authority may commit it",
+            "authorization to perform an action does not commit a project choice",
+            "a committed project choice does not authorize an unrelated action",
+            "host permission supplies neither action authorization nor a committed project choice",
             "technical judgment already delegated",
+            "responsibility alone does not establish project decision authority",
             "accept unresolved uncertainty",
             "cannot create it",
         ):
@@ -2076,6 +2086,57 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertNotRegex(lowered, r"\bretir\w*\b")
                 self.assertNotIn("settlement", lowered)
 
+    def test_current_settled_constructions_are_replaced_without_rewriting_history(
+        self,
+    ) -> None:
+        focused_replacements = {
+            "root policy": (
+                PACKAGE_ROOT / "payload/root/AGENTS.md.template",
+                "Reopen a settled choice",
+                "Revisit a committed choice",
+            ),
+            "routing specification cue": (
+                PACKAGE_ROOT / "payload/agent-workflow/routing.md",
+                "Settled scope needs a specification",
+                "A sufficiently defined scope needs a specification",
+            ),
+            "routing decision input": (
+                PACKAGE_ROOT / "payload/agent-workflow/routing.md",
+                "a settled D#",
+                "a current decision record",
+            ),
+            "implementation integration": (
+                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md",
+                "settled implementation scope",
+                "ready implementation scope",
+            ),
+            "readme": (
+                REPOSITORY_ROOT / "README.md",
+                "As work settles",
+                "As lasting results are established",
+            ),
+            "routing documentation": (
+                REPOSITORY_ROOT / "docs/routing.md",
+                "specifications hold settled scope",
+                "specifications hold accepted scope",
+            ),
+        }
+        for name, (path, obsolete, replacement) in focused_replacements.items():
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(surface=name):
+                self.assertNotIn(obsolete, text)
+                self.assertIn(replacement, text)
+
+        provider_owned = (
+            PACKAGE_ROOT
+            / "provider-snapshots/matt-pocock-skills/skills/grilling/SKILL.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("prerequisites are already settled", provider_owned)
+        self.assertTrue(
+            (PACKAGE_ROOT / "tests/scenarios/wayfinder-answered-unknown-settlement.toml").is_file()
+        )
+        self.assertTrue((PACKAGE_ROOT / "tests/fixtures/wayfinder-settlement").is_dir())
+
     def test_current_wayfinder_surfaces_use_concept_specific_orientation_language(
         self,
     ) -> None:
@@ -2140,7 +2201,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "Use this brief default map shape", 1
         )[1].split("The map summarizes", 1)[0]
         for current_state_semantic in (
-            "smallest semantic coordination state needed for safe resumption",
+            "smallest truthful coordination summary needed for safe resumption",
             "Transient Git or session observations",
             "clean working tree",
             "current HEAD",
@@ -2150,14 +2211,31 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.subTest(current_state_semantic=current_state_semantic):
                 self.assertIn(current_state_semantic, default_map_guidance)
         self.assertIn(
-            "Keep **Blockers and dependencies** present",
-            default_map_guidance,
-        )
-        self.assertIn("write `None` explicitly", default_map_guidance)
-        self.assertIn("any other item", default_map_guidance)
-        self.assertIn(
             "Except for **Blockers and dependencies**",
             default_map_guidance,
+        )
+
+        runtime_operating = " ".join(
+            markdown_section(
+                RUNTIME.read_text(encoding="utf-8"), "## Operating rules"
+            ).split()
+        )
+        for shared_default in (
+            "New default maps retain **Blockers and dependencies**",
+            "write `None` when no blocker or dependency currently applies",
+            "Other inapplicable empty headings may be omitted",
+            "Existing maps remain valid without that heading or literal `None`",
+            "default authoring guidance",
+            "not an effort-recognition or parser requirement",
+            "does not require migration, compatibility parsing, or rewriting",
+        ):
+            with self.subTest(shared_default=shared_default):
+                self.assertIn(shared_default, default_map_guidance)
+                self.assertIn(shared_default, runtime_operating)
+        self.assertIn(
+            "Unfinished tests, verification, commits, pushes, and other workflow steps "
+            "are not blockers merely because they remain",
+            runtime_operating,
         )
 
         for blocker_guidance_phrase in (
@@ -2187,8 +2265,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         for condition in (
             "condition that currently prevents particular work",
             "unsatisfied dependency",
-            "unresolved consequential question",
-            "missing required project decision authority",
+            "unresolved consequential uncertainty",
+            "missing required authority",
             "can be a blocker",
             "blocking is scoped to affected work",
             "same condition may block one scope without blocking another",
@@ -2218,9 +2296,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             "unblock only that accepted boundary",
             "may remain a blocker for other work",
             "does not answer the U#",
-            "grant broader authority",
-            "authorize another action",
-            "satisfy another dependency",
+            "no broader project choice is committed",
+            "no unrelated action is authorized",
+            "no other dependency is satisfied",
         ):
             with self.subTest(
                 accepted_uncertainty_semantic=accepted_uncertainty_semantic
@@ -2297,7 +2375,10 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "dependencies are satisfied by obtaining",
                 "questions and uncertainties are resolved through",
                 "resolution method",
-                "missing project decision authority is supplied by",
+                "obtain a required project choice from the person, role, or valid delegate",
+                "apply accepted project policy when it already determines the choice",
+                "clarify who may decide",
+                "responsibility alone does not establish project decision authority",
                 "explicitly accept unresolved uncertainty for one named boundary",
                 "does not automatically unblock unrelated work",
             ):
@@ -2384,7 +2465,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         for condition in (
             "objective was achieved",
-            "project decision authority stopped it",
+            "a committed project choice ended it",
             "continuing coordination belongs to a different objective or substantive scope",
         ):
             with self.subTest(ending_condition=condition):

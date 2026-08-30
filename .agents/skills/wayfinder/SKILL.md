@@ -29,9 +29,14 @@ method, and identify ready work;
 - Establish the objective and scope, then enough relevant areas and relationships
   to orient the effort before substantial decomposition. Keep `map.md` brief,
   preserve enough information to resume safely, and load detail only when
-  relevant. Apply the contract's default map shape when applicable; omit empty
-  headings, allow a clearer equivalent, and never copy project artifacts that
-  maintain plans.
+  relevant. New default maps retain **Blockers and dependencies** and write
+  `None` when no blocker or dependency currently applies. Other inapplicable empty
+  headings may be omitted, and a clearer equivalent may be used. Existing maps
+  remain valid without that heading or literal `None`. This is default authoring
+  guidance, not an effort-recognition or parser requirement, and does not require
+  migration, compatibility parsing, or rewriting. Unfinished tests, verification,
+  commits, pushes, and other workflow steps are not blockers merely because they
+  remain. Never copy project artifacts that maintain plans.
 - The map summarizes the effort's current coordination state, conditions blocking particular work,
   dependencies, and ready work.
   Optional F/D ledger sections and U/E artifacts are records that preserve only
@@ -44,10 +49,17 @@ method, and identify ready work;
   persist volatile observations. Retain durable Git constraints and
   dependencies under the state contract.
 - Durable Wayfinder state can record authority; it cannot create authority.
-  Use the person, role, valid delegate, or accepted policy that holds project
-  decision authority for a committed choice. Evidence-backed technical judgment
-  within delegated scope remains valid. Keep the question and what it blocks
-  explicit.
+  Apply accepted project policy when it already determines a choice. Otherwise
+  obtain a required project choice from the person, role, or valid delegate with
+  project decision authority. If decision authority itself is unclear, clarify who
+  may decide. Responsibility alone does not establish project decision authority.
+  Evidence-backed technical judgment already delegated by the user or accepted
+  project policy remains valid. Keep the question and what it blocks explicit.
+- Authorization to perform an action does not commit a project choice, and a
+  committed project choice does not authorize an unrelated action. Host permission
+  supplies neither. A workflow, skill, provider instruction, test, specification,
+  ticket, or Wayfinder record grants neither. When both the required project choice
+  is committed and an action is authorized, proceed only within that authorized scope.
 
 When selecting or resuming Wayfinder, read the state contract before effort state.
 When resuming a Wayfinder effort, read `map.md` first among its effort files.
@@ -105,8 +117,9 @@ relationships need improvement or revision.
 The resolution method determines how a question, uncertainty, unexplained cause,
 consequential choice, or structural ambiguity should be addressed and what
 evidence or authority that method requires. It is not merely an artifact label:
-human clarification requires the person with the relevant intent, preference,
-or project decision authority; research requires appropriate source evidence;
+human clarification requires the person with the relevant intent or preference,
+or the person, role, or valid delegate with project decision authority; research
+requires appropriate source evidence;
 and prototype or debugging requires relevant observed or experimental evidence.
 Existing evidence from a source that establishes the scoped claim may satisfy
 the method without a ceremonial specialist invocation, but one method cannot
@@ -133,7 +146,8 @@ Map uncertainty broadly, then preserve selectively. Record a precise question
 as U# when separate preservation while unanswered is independently useful to a
 later developer making or evaluating a decision. This applies within
 the current objective and scope, especially when the answer
-requires project decision authority, depends on an external participant or approval,
+requires a project choice from the person, role, or valid delegate with project
+decision authority, depends on an external participant or approval,
 or gates multiple downstream areas or a consequential boundary. Ask the
 substantive project question when project knowledge determines whether separate
 preservation is useful; do not ask merely whether to create a U#. Keep
@@ -149,8 +163,11 @@ external lead time changes ordering or readiness. Do not infer a critical path
 from an unordered backlog or incomplete evidence.
 
 A blocker is a condition that currently prevents particular work from
-proceeding. An unsatisfied dependency, unresolved consequential question, or
-missing required project decision authority can be a blocker for affected work. Blocking is
+proceeding. An unsatisfied dependency, unresolved consequential uncertainty, or
+missing required authority can be a blocker for affected work. The missing
+condition may be that a required project choice has not yet been committed, a
+required action has not yet been authorized, or a required dependency remains
+unsatisfied. Blocking is
 scoped to affected work: the same condition may block one scope without blocking
 another. An unresolved U# record contains a question and is not itself a blocker.
 Delay, inconvenience, risk, or unfinished work alone does not make a condition a blocker.
@@ -160,16 +177,19 @@ may proceed while other work remains blocked.
 Dependencies are satisfied by obtaining the action, artifact, decision,
 participation from a person, system result, external result, or other input they
 require. Questions and uncertainties are resolved through appropriate evidence
-or their resolution method. Missing project decision authority is supplied by
-the person, role, valid delegate, or accepted policy that holds it for the
-decision boundary. Where the state contract permits it, project decision
-authority may explicitly accept unresolved uncertainty for one named boundary.
-For an unresolved consequential question, either resolve the question or record
-that authority and acceptance in the project artifact recording the choice
-committed by project decision authority. The acceptance leaves the U# current and unresolved, unblocks only that
-named boundary, and does not grant broader authority, authorize another action,
-or satisfy another dependency. The same uncertainty may remain a blocker for
-other work. Satisfying a dependency or accepting unresolved uncertainty for one
+or their resolution method. Obtain a required project choice from the person,
+role, or valid delegate with project decision authority, or apply accepted project
+policy when it already determines the choice. If decision authority itself is
+unclear, clarify who may decide. Responsibility alone does not establish project
+decision authority. Where the state contract permits it, the person, role, or
+valid delegate with that authority may explicitly accept unresolved uncertainty
+for one named boundary. For an unresolved consequential question, either resolve
+the question or record that authority and acceptance in the project artifact
+recording the committed choice. The acceptance leaves the U# current and unresolved
+and unblocks only that named boundary. The same uncertainty may remain a blocker
+for other work: no broader project choice is committed, no unrelated action is
+authorized, and no other dependency is satisfied. Satisfying a dependency or
+accepting unresolved uncertainty for one
 boundary changes blocking only for affected work and does not automatically
 unblock unrelated work. Reconcile and shrink the map, then transition one or
 more ready implementation scopes to the Implementation workflow without

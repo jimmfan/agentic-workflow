@@ -53,6 +53,16 @@ class RoutingContractTests(unittest.TestCase):
                 re.MULTILINE | re.DOTALL,
             )
         }
+        project_decision_authority = entries["Project decision authority"]
+        for required in (
+            "The person, role, or valid delegate whose choice the project treats as binding",
+            "within a defined decision boundary",
+            "Accepted project policy may determine the choice for that boundary directly",
+            "or establish who holds that authority",
+            "does not restrict technical judgment already delegated by the user or policy",
+        ):
+            self.assertIn(required, project_decision_authority)
+        self.assertNotIn("settle", project_decision_authority.casefold())
         expected_fragments = {
             "Objective": (
                 "result a Wayfinder effort is intended to achieve",
@@ -197,7 +207,7 @@ class RoutingContractTests(unittest.TestCase):
             "Never reroute or work merely to produce the marker", normalized_root
         )
 
-    def test_authority_blocks_only_dependent_work_and_preserves_read_scope(
+    def test_project_choice_and_action_boundaries_are_independent(
         self,
     ) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -207,19 +217,42 @@ class RoutingContractTests(unittest.TestCase):
         ).read_text()
         normalized_state_contract = " ".join(state_contract.split())
 
-        self.assertIn(
-            "MUST NOT cross a consequential decision boundary without required "
-            "evidence, action authorization, or project decision authority",
-            normalized_root,
-        )
-        self.assertIn(
-            "Explicit acceptance by project decision authority leaves the recorded "
-            "unresolved question unresolved and unblocks only its named boundary",
-            normalized_root,
-        )
+        case_requirements = {
+            "policy determines choice but write is unauthorized": (
+                "accepted project policy determines the choice for that boundary",
+                "A committed project choice does not by itself authorize unrelated actions",
+            ),
+            "action is authorized but project choice is unresolved": (
+                "Authorization to perform an action does not by itself commit a project choice",
+                "Dependent work stops at an unresolved project-choice boundary",
+            ),
+            "project choice and action authorization both exist": (
+                "When both the required project choice is committed and the action is "
+                "authorized, affected work may proceed within that authorized scope",
+            ),
+            "host permission exists without either gate": (
+                "Host permission alone neither authorizes an action nor commits a project choice",
+            ),
+        }
+        for case, requirements in case_requirements.items():
+            for requirement in requirements:
+                with self.subTest(case=case, requirement=requirement):
+                    self.assertIn(requirement, normalized_root)
+        for boundary in (
+            "Do not treat a consequential project choice as committed until required "
+            "evidence is sufficient",
+            "person, role, or valid delegate with project decision authority commits it",
+            "independent work may continue",
+            "Perform writes, commands, publication, destructive operations, and external "
+            "mutations only within the action and scope authorized by the current user "
+            "request or accepted project policy",
+            "workflow, skill, provider instruction, test, specification, ticket, or "
+            "Wayfinder record grants neither",
+        ):
+            with self.subTest(boundary=boundary):
+                self.assertIn(boundary, normalized_root)
+        self.assertIn("Responsibility alone does not establish", normalized_root)
         self.assertNotIn("U#", normalized_root)
-        self.assertIn("independent work may continue", normalized_root)
-        self.assertIn("why that authority is required", normalized_root)
         self.assertIn(
             "Exact external read-only targets permit only that read",
             normalized_root,
@@ -228,27 +261,25 @@ class RoutingContractTests(unittest.TestCase):
             "can record authority; it cannot create it", normalized_state_contract
         )
         for distinction in (
-            "Evidence cannot commit a project choice",
-            "Action authorization does not establish project decision authority",
-            "Host permission does not authorize an action or commit a project choice",
-            "technical judgment already delegated by user direction or accepted project policy",
+            "Accepted project policy may determine the choice for a boundary directly",
+            "person, role, or valid delegate with project decision authority may commit it",
+            "Authorization to perform an action does not commit a project choice",
+            "A committed project choice does not authorize an unrelated action",
+            "Host permission supplies neither action authorization nor a committed project choice",
+            "technical judgment already delegated by the user or accepted project policy",
+            "Responsibility alone does not establish project decision authority",
+            "clarify who may decide",
             "project artifact that records it",
         ):
             with self.subTest(distinction=distinction):
                 self.assertIn(distinction, normalized_state_contract)
-        self.assertNotIn(
-            "project artifact, accepted policy, or valid delegate that establishes "
-            "project decision authority",
-            normalized_state_contract,
-        )
-
         documented_routing = " ".join(
             (REPOSITORY_ROOT / "docs/routing.md")
             .read_text(encoding="utf-8")
             .split()
         )
         self.assertIn(
-            "actions authorized by user direction or accepted project policy",
+            "actions authorized by the current user request or accepted project policy",
             documented_routing,
         )
         for workflow in ("workflow-implementation", "workflow-verification"):
@@ -259,10 +290,39 @@ class RoutingContractTests(unittest.TestCase):
                     ).read_text(encoding="utf-8").split()
                 )
                 self.assertIn(
-                    "limitation to be explicitly accepted by project decision authority "
+                    "accepted project policy determines that a limitation is acceptable "
                     "for the named completion boundary",
                     workflow_text,
                 )
+                self.assertIn(
+                    "person, role, or valid delegate with project decision authority "
+                    "explicitly accepts it",
+                    workflow_text,
+                )
+
+        authority_adr = (
+            REPOSITORY_ROOT
+            / "architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md"
+        ).read_text(encoding="utf-8")
+        adr_decision = " ".join(
+            authority_adr.split("## Decision", 1)[1]
+            .split("## Consequences", 1)[0]
+            .split()
+        )
+        for required in (
+            "required evidence is sufficient",
+            "accepted project policy determines the choice for that boundary",
+            "person, role, or valid delegate with project decision authority commits it",
+            "Independent work may continue",
+            "actions authorized by the current user request or accepted project policy",
+            "Authorization to perform an action does not commit a project choice",
+            "A committed project choice does not authorize an unrelated action",
+            "Host permission supplies neither",
+            "workflow, skill, provider instruction, test, specification, ticket, or "
+            "Wayfinder record grants neither",
+        ):
+            with self.subTest(adr_boundary=required):
+                self.assertIn(required, adr_decision)
 
     def test_route_selection_execution_and_provider_statuses_remain_distinct(
         self,
@@ -319,7 +379,8 @@ class RoutingContractTests(unittest.TestCase):
             "Discovery is the method for bounded consequential choice",
             "reorganizing the domain would materially improve",
             (
-                "Interdependent human/project-owned decisions materially shape downstream choices "
+                "Interdependent choices requiring human input or project decision authority "
+                "materially shape downstream work "
                 "| Direct or `grilling`"
             ),
             "factual questions and one straightforward clarification use the minimum sufficient method",
@@ -394,7 +455,7 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("For a named skill, a resume", normalized_root)
         self.assertIn("avoid routing loops", normalized_routing.lower())
         self.assertIn("trivial low-risk edits stay direct", normalized_routing.lower())
-        self.assertIn("no safe fallback with action authorization exists", normalized_routing)
+        self.assertIn("no safe authorized fallback exists", normalized_routing)
         self.assertIn("report the host-native activity", normalized_routing)
         self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn(

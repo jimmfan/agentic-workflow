@@ -8,6 +8,203 @@ from _behavior_test_support import behavior
 
 
 class WayfinderBehaviorTests(unittest.TestCase):
+    def test_project_choice_and_action_gates_have_distinct_behavioral_outcomes(
+        self,
+    ) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        matrix = {
+            "policy choice without mutation authorization": (
+                scenarios["policy-choice-without-action-authorization"],
+                "repository_unchanged",
+                "Accepted project policy determines",
+            ),
+            "authorized state write with unresolved project choice": (
+                scenarios["wayfinder-human-authority-clarification"],
+                "storage_unchanged",
+                "action authorization for repository-local Wayfinder writes",
+            ),
+            "committed project choice and authorized state write": (
+                scenarios["wayfinder-answered-unknown-authority-choice"],
+                "decision_updated",
+                "responsible project owner",
+            ),
+            "host permission without either gate": (
+                scenarios["host-permission-without-authority-or-authorization"],
+                "repository_unchanged",
+                "host permission is not action authorization",
+            ),
+        }
+
+        for label, (scenario, outcome, semantic_marker) in matrix.items():
+            scenario_context = "\n".join((scenario.request, *scenario.starting_state))
+            with self.subTest(case=label, semantic_marker=semantic_marker):
+                self.assertIn(semantic_marker, scenario_context)
+
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as temporary:
+                workspace = behavior.copy_fixture(scenario, Path(temporary))
+                before = behavior.snapshot(workspace)
+
+                if outcome == "decision_updated":
+                    unknown = (
+                        workspace
+                        / ".agent-wayfinder/rollout-choice/unknowns/U1-rollout-strategy.md"
+                    )
+                    unknown.unlink()
+                    decisions = workspace / ".agent-wayfinder/rollout-choice/decisions.md"
+                    decisions.write_text(
+                        decisions.read_text(encoding="utf-8").replace(
+                            "Option A", "Option B"
+                        ),
+                        encoding="utf-8",
+                    )
+                    map_path = workspace / ".agent-wayfinder/rollout-choice/map.md"
+                    map_path.write_text(
+                        map_path.read_text(encoding="utf-8")
+                        .replace("Option A", "Option B")
+                        .replace("U1", "D1")
+                        + "\nThe release checklist is ready.\n",
+                        encoding="utf-8",
+                    )
+                    required = [
+                        item
+                        for item in scenario.assertions
+                        if (
+                            item.path.as_posix()
+                            == ".agent-wayfinder/rollout-choice/unknowns/U1-rollout-strategy.md"
+                            or item.value in {"Option B", "ready"}
+                        )
+                    ]
+                    correct = behavior.RunEvidence(
+                        scenario=scenario,
+                        workspace=workspace,
+                        before=before,
+                        after=behavior.snapshot(workspace),
+                        stdout="",
+                        stderr="",
+                        returncode=0,
+                        report={},
+                        verification=(),
+                        route_components=(),
+                    )
+                    self.assertTrue(
+                        all(
+                            behavior.evaluate_assertion(correct, assertion).passed
+                            for assertion in required
+                        )
+                    )
+                    decisions.write_text(
+                        decisions.read_text(encoding="utf-8").replace(
+                            "Option B", "Option A"
+                        ),
+                        encoding="utf-8",
+                    )
+                    incorrect = behavior.RunEvidence(
+                        scenario=scenario,
+                        workspace=workspace,
+                        before=before,
+                        after=behavior.snapshot(workspace),
+                        stdout="",
+                        stderr="",
+                        returncode=0,
+                        report={},
+                        verification=(),
+                        route_components=(),
+                    )
+                    self.assertTrue(
+                        any(
+                            not behavior.evaluate_assertion(incorrect, assertion).passed
+                            for assertion in required
+                        )
+                    )
+                    continue
+
+                app = workspace / "app.py"
+                if outcome == "storage_unchanged":
+                    storage = workspace / "storage.py"
+                    unchanged = next(
+                        item
+                        for item in scenario.assertions
+                        if item.path.as_posix() == "storage.py"
+                    )
+                    correct = behavior.RunEvidence(
+                        scenario=scenario,
+                        workspace=workspace,
+                        before=before,
+                        after=before,
+                        stdout="",
+                        stderr="",
+                        returncode=0,
+                        report={},
+                        verification=(),
+                        route_components=(),
+                    )
+                    self.assertTrue(
+                        behavior.evaluate_assertion(correct, unchanged).passed
+                    )
+                    storage.write_text(
+                        storage.read_text(encoding="utf-8")
+                        + "\nBACKEND = 'sqlite'\n",
+                        encoding="utf-8",
+                    )
+                    incorrect = behavior.RunEvidence(
+                        scenario=scenario,
+                        workspace=workspace,
+                        before=before,
+                        after=behavior.snapshot(workspace),
+                        stdout="",
+                        stderr="",
+                        returncode=0,
+                        report={},
+                        verification=(),
+                        route_components=(),
+                    )
+                    self.assertFalse(
+                        behavior.evaluate_assertion(incorrect, unchanged).passed
+                    )
+                    continue
+
+                correct = behavior.RunEvidence(
+                    scenario=scenario,
+                    workspace=workspace,
+                    before=before,
+                    after=before,
+                    stdout="Done.\n\n[route: router → direct]",
+                    stderr="",
+                    returncode=0,
+                    report={"status": "success"},
+                    verification=(),
+                    route_components=("direct",),
+                )
+                unchanged = next(
+                    item
+                    for item in behavior.evaluate(correct)
+                    if item.name == "expect:repository_unchanged"
+                )
+                self.assertTrue(unchanged.passed)
+
+                app.write_text(
+                    'def greeting() -> str:\n    return "hello, world!"\n',
+                    encoding="utf-8",
+                )
+                incorrect = behavior.RunEvidence(
+                    scenario=scenario,
+                    workspace=workspace,
+                    before=before,
+                    after=behavior.snapshot(workspace),
+                    stdout="Done.\n\n[route: router → direct]",
+                    stderr="",
+                    returncode=0,
+                    report={"status": "success"},
+                    verification=(),
+                    route_components=("direct",),
+                )
+                changed = next(
+                    item
+                    for item in behavior.evaluate(incorrect)
+                    if item.name == "expect:repository_unchanged"
+                )
+                self.assertFalse(changed.passed)
+
     def test_wayfinder_assessment_can_end_without_durable_state(self) -> None:
         scenario = next(
             item

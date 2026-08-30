@@ -52,8 +52,10 @@ Local Wayfinder data is a configured project-owned durable representation under
 `.agent-wayfinder/`, never a distributed template or framework-owned lifecycle
 tree. A map may stand alone. The current default places F# fact records
 containing supported, scoped, revisable conclusions in optional `facts.md` and
-D# decision records containing choices committed by project decision authority
-in optional `decisions.md`. U# unresolved question records and E# evidence
+D# decision records containing choices determined directly by accepted project
+policy or committed by the person, role, or valid delegate with project decision
+authority in optional `decisions.md`.
+U# unresolved question records and E# evidence
 records with source, scope, observation, and limitations earn separate files
 only when they are independently useful coordination or retrieval units. The map
 summarizes current coordination state, conditions blocking particular work,
@@ -61,9 +63,15 @@ dependencies, and ready work, indexing rather than duplicating supporting
 detail. When resuming, read the map before retrieving a relevant ledger section
 or U#/E# artifact.
 
+New default maps retain `Blockers and dependencies` and use `None` when no blocker
+or dependency applies. Other inapplicable empty headings may be omitted, while
+existing maps remain valid without that heading or marker. This is authoring
+guidance, not a recognition requirement or migration trigger.
+
 Fact records identify the source or records from which their scoped conclusion
-was derived. Decision records identify project decision authority for their
-choice; evidence alone cannot commit that choice.
+was derived. Decision records identify the accepted policy that determines their
+choice or the person, role, or valid delegate with project decision authority who
+commits it; evidence alone cannot commit that choice.
 
 Before detailed decomposition, the map may state ready work directly. Substantial
 decomposed work belongs to `to-tickets`; its ticket artifact or ticket set

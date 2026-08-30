@@ -14,7 +14,7 @@ Workflow durable coordination state.
 1. Read only relevant project evidence, sources, and artifacts that maintain
    accepted results.
 2. Keep read-only work in the current session; a provisional choice does not
-   grant action authorization for a write.
+   authorize a write.
 3. Standalone Discovery returns its result without creating Agent Workflow
    durable coordination state. Select Wayfinder only when the decision crosses
    its durable coordination threshold.
@@ -31,10 +31,13 @@ Workflow durable coordination state.
    Load Research only when its cited artifact and isolated work add value.
 4. Compare viable alternatives by benefits, costs, risks, reversibility, and
    evidence that would change the choice.
-5. Mark a consequential decision accepted only when project decision authority
-   commits the choice. Evidence-backed technical judgment within scope already
-   delegated by the user or accepted project policy remains valid. An autonomous
-   provisional choice must be reversible and state its review trigger.
+5. Treat a consequential project choice as committed only when required evidence
+   is sufficient and either accepted project policy determines the choice for that
+   boundary or the person, role, or valid delegate with project decision authority
+   commits it. Responsibility alone does not establish that authority. Evidence-backed
+   technical judgment within scope already delegated by the user or accepted project
+   policy remains valid. An autonomous provisional choice must be reversible and
+   state its review trigger; it does not authorize an action.
 
 ## Return the result
 
