@@ -47,6 +47,7 @@ class MarkerLine:
     value: bytes
     start: int
     line_end: int
+    newline: bytes
 
 
 @dataclass(frozen=True)
@@ -347,10 +348,12 @@ def marker_lines(data: bytes) -> list[MarkerLine]:
             end = newline
             next_start = newline + 1
         value = data[start:end]
-        if value.endswith(b"\r"):
+        line_ending = b"" if newline < 0 else b"\n"
+        if newline >= 0 and value.endswith(b"\r"):
             value = value[:-1]
+            line_ending = b"\r\n"
         if value.startswith(MARKER_PREFIX):
-            result.append(MarkerLine(value, start, next_start))
+            result.append(MarkerLine(value, start, next_start, line_ending))
         if newline < 0:
             break
         start = next_start
@@ -397,6 +400,19 @@ def parse_agents_composite(
             data[end.line_end :],
         )
 
+    # The exact former standard layout identifies its generated third marker and
+    # all project bytes after it without guessing.
+    if values == [MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER]:
+        begin, end, former_project = markers
+        if begin.start == 0 and is_one_blank_line(
+            data[end.line_end : former_project.start]
+        ):
+            return CompositeParts(
+                data[begin.line_end : end.start],
+                b"",
+                data[former_project.line_end :],
+            )
+
     # Historical LF-only marker detection could append an outer composite around an
     # existing CRLF composite. This exact nested shape has two generated managed
     # bodies and leaves the original project bytes after the inner former marker.
@@ -414,6 +430,14 @@ def parse_agents_composite(
         )
         if (
             outer_begin.start == 0
+            and all(
+                marker.newline == b"\n"
+                for marker in (outer_begin, outer_end, outer_project)
+            )
+            and all(
+                marker.newline == b"\r\n"
+                for marker in (inner_begin, inner_end, inner_project)
+            )
             and is_one_blank_line(data[outer_end.line_end : outer_project.start])
             and outer_project.line_end == inner_begin.start
             and is_one_blank_line(data[inner_end.line_end : inner_project.start])

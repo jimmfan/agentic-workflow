@@ -183,12 +183,6 @@ class LifecycleTests(ProjectTestCase):
     ) -> None:
         cases = {
             "partial": MANAGED_BEGIN + b"\nmissing other markers\n",
-            "former-three-marker": MANAGED_BEGIN
-            + b"\nformer managed bytes\n"
-            + MANAGED_END
-            + b"\n\n"
-            + FORMER_PROJECT_MARKER
-            + b"\nproject bytes\n",
             "unknown-duplicate": MANAGED_BEGIN
             + b"\nfirst managed\n"
             + MANAGED_END
@@ -210,8 +204,6 @@ class LifecycleTests(ProjectTestCase):
         }
         for composite in ("AGENTS.md", "CLAUDE.md"):
             for name, content in cases.items():
-                if composite == "CLAUDE.md" and name == "former-three-marker":
-                    continue
                 with self.subTest(composite=composite, name=name):
                     project = Path(self.temporary.name) / f"{composite}-{name}"
                     project.mkdir()
@@ -255,6 +247,29 @@ class LifecycleTests(ProjectTestCase):
         self.assert_ok(self.lifecycle("remove"))
         self.assertEqual(policy.read_bytes(), project_prefix + project_suffix)
 
+    def test_former_standard_agents_layout_converges_without_project_loss(self) -> None:
+        project_bytes = b"# Original project policy\nKeep exactly.\n"
+        policy = self.project / "AGENTS.md"
+        policy.write_bytes(
+            MANAGED_BEGIN
+            + b"\nstale managed bytes\n"
+            + MANAGED_END
+            + b"\n\n"
+            + FORMER_PROJECT_MARKER
+            + b"\n"
+            + project_bytes
+        )
+        commit_all(self.project, "add former standard composite")
+
+        self.assert_ok(self.lifecycle("update"))
+
+        updated = policy.read_bytes()
+        self.assertEqual(updated.count(MANAGED_BEGIN), 1)
+        self.assertEqual(updated.count(MANAGED_END), 1)
+        self.assertNotIn(FORMER_PROJECT_MARKER, updated)
+        self.assertNotIn(b"stale managed bytes", updated)
+        self.assertTrue(updated.endswith(project_bytes))
+
     def test_known_nested_crlf_duplicate_is_normalized_without_project_loss(
         self,
     ) -> None:
@@ -286,6 +301,49 @@ class LifecycleTests(ProjectTestCase):
         self.assertNotIn(b"outer managed bytes", updated)
         self.assertNotIn(b"inner managed bytes", updated)
         self.assertTrue(updated.endswith(project_bytes))
+
+    def test_nested_duplicate_recovery_requires_the_evidenced_newline_shape(
+        self,
+    ) -> None:
+        layouts = {
+            "all-lf": (b"\n", b"\n"),
+            "reversed": (b"\r\n", b"\n"),
+        }
+        for name, (outer_newline, inner_newline) in layouts.items():
+            with self.subTest(name=name):
+                project = Path(self.temporary.name) / f"nested-{name}"
+                project.mkdir()
+                initialize_repository(project)
+                policy = project / "AGENTS.md"
+                policy.write_bytes(
+                    MANAGED_BEGIN
+                    + outer_newline
+                    + b"outer managed"
+                    + outer_newline
+                    + MANAGED_END
+                    + outer_newline
+                    + outer_newline
+                    + FORMER_PROJECT_MARKER
+                    + outer_newline
+                    + MANAGED_BEGIN
+                    + inner_newline
+                    + b"inner managed"
+                    + inner_newline
+                    + MANAGED_END
+                    + inner_newline
+                    + inner_newline
+                    + FORMER_PROJECT_MARKER
+                    + inner_newline
+                    + b"project bytes\n"
+                )
+                commit_all(project, "add unsupported nested marker layout")
+                before = workspace_snapshot(project)
+
+                result = run_script(LIFECYCLE, "update", project)
+
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("AGENTS.md: managed policy markers", result.stderr)
+                self.assertEqual(workspace_snapshot(project), before)
 
     def test_dry_run_is_immutable(self) -> None:
         before = workspace_snapshot(self.project)

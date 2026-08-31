@@ -34,11 +34,14 @@ Separate framework-owned reconstructable output from preservation boundaries:
 - `.agent-wayfinder/` is project-owned durable state. Lifecycle operations do
   not directly traverse, interpret, or change it. Repository-wide Git
   cleanliness checks may still observe changes under it.
-- `AGENTS.md` is a composite project file. One unambiguous managed region may be
-  replaced or removed idempotently; every byte outside it is project-owned and
-  opaque to Agent Workflow. When no region exists, installation adds one without
-  changing existing project bytes. Ambiguous ownership stops destructive
-  mutation rather than inviting guessed recovery.
+- `AGENTS.md` is a composite project file. In current desired state, one
+  unambiguous managed region may be replaced or removed idempotently; every byte
+  outside it is project-owned and opaque to Agent Workflow. When no region
+  exists, installation adds one without changing existing project bytes. Prior
+  reconstructable framework bytes may be normalized only when their framework
+  ownership and the project-byte boundary are both unambiguous. Otherwise,
+  ambiguous ownership stops destructive mutation rather than inviting guessed
+  recovery.
 - `CLAUDE.md` remains under its existing composite integration for this decision.
   Lifecycle operations continue to preserve its project-authored portion; this
   decision does not change that host protocol or its support boundary.
