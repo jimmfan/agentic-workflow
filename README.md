@@ -208,7 +208,6 @@ target-project/
 │       └── <15 curated skills>
 │
 ├── .agent-workflow/          # framework-owned
-│   ├── install-manifest.json
 │   ├── routing.md
 │   ├── THIRD_PARTY_NOTICES.md
 │   └── contracts/
@@ -222,17 +221,46 @@ target-project/
 
 Framework-owned and reconstructable.
 
-Install and update may replace these files with the current package version.
+Install and update replace this directory with the current package version.
+There is no installed manifest, provenance record, migration history, or
+framework backup. Git is the recovery mechanism.
+
+### `.agents/skills/`
+
+Each of the fifteen current curated skill names is reserved for Agent Workflow.
+Install and update replace those complete skill directories, including extra
+files inside them, while preserving unrelated skill directories. Move or rename
+an existing conflicting directory before installing.
 
 ### `.agent-wayfinder/`
 
 Project-owned durable state.
 
-Install, update, status, remove, and reinstall preserve its contents.
+The lifecycle never creates, reads, inventories, migrates, rewrites, or removes
+this directory. Wayfinder alone owns its use.
 
 ### `AGENTS.md` and `CLAUDE.md`
 
 Agent Workflow manages only its marked section and preserves project-owned content outside that section.
+
+### Lifecycle safety
+
+Mutating lifecycle commands require the exact Git worktree root, a valid `HEAD`,
+and a completely clean tracked and untracked worktree before changing anything.
+They reject ignored managed destinations, untracked managed paths, malformed
+managed markers, symlinks, special entries, and paths that escape the worktree.
+`status` is read-only and reports these blockers without requiring a clean tree.
+
+Install and update converge to the same current package state. Remove deletes
+`.agent-workflow/` and the current curated skill directories and strips the
+managed regions from `AGENTS.md` and `CLAUDE.md`; it deletes a composite file
+only when no project-authored bytes remain. A failure after mutation may leave a
+partial diff: inspect `git status`, restore with Git as appropriate, and retry.
+
+There is no automatic legacy migration. If `.agent-workflow/providers.json` or
+the obsolete Setup, Teach, or Triage skill directory is present, remove the
+legacy `.agent-workflow/` tree and obsolete skill directories in a separate Git
+cleanup commit, then run install.
 
 ### Where results live
 

@@ -1,8 +1,8 @@
 # Curated skills
 
 Agent Workflow distributes fifteen reviewed skills directly through the ordinary
-package payload and lifecycle manifest. Those mapped files are the single
-maintained runtime representation.
+package payload and current distribution map. Those skill directories are the
+single maintained runtime representation.
 
 ## Inventory
 
@@ -27,9 +27,9 @@ The installed surface under `.agents/skills/` is exactly:
 The first eleven are copied from or derived from Matt Pocock's Skills for Real
 Engineers release `v1.2.3`. Agent Workflow maintains their reviewed effective
 installed versions and preserves complete copyright and MIT license attribution
-in the installed `THIRD_PARTY_NOTICES.md`. The frozen exact-transition fixture
-also attributes historical `setup-matt-pocock-skills`, `teach`, and `triage`
-bytes; those three are not current runtime skills.
+in the installed `THIRD_PARTY_NOTICES.md`. The obsolete Setup, Teach, and Triage
+skills are not current runtime content and are not retained as migration
+fixtures.
 
 `wayfinder` and `research` preserve Agent Workflow's reviewed effective contracts.
 `research` returns cited findings in chat by default and writes a repository
@@ -78,16 +78,21 @@ in chat unless publication is separately authorized.
 
 ## Lifecycle and maintenance
 
-Manifest-mapped skill files are framework-owned and reconstructable. Install and
-update restore missing or drifted declared files to current package bytes and
-preserve unrelated skill directories. Removal deletes an external file only
-when valid install evidence says the framework created it and its current bytes
-match the recorded digest.
+The ordinary distribution manifest is only the current source-to-target map.
+Each current curated skill name is reserved for Agent Workflow: install and
+update replace that complete directory with current package bytes, including any
+extra files inside it, and preserve unrelated skill directories. Remove deletes
+the complete current curated skill directories. No installed manifest, content
+hash, provenance record, created-state bit, retirement history, migration proof,
+or rollback journal participates in this lifecycle.
 
-One immutable proof supports the exact former installation inherited from the
-pinned main commit. It is not a generalized migration system. Any near match
-fails closed before mutation. Current install state uses a canonical integrity
-digest and distinguishes absent, valid, and invalid state.
+Mutating commands operate only at an exact, clean Git worktree root with a valid
+`HEAD`, after rejecting untracked or ignored managed destinations, symlinks,
+special entries, path escapes, and malformed composite markers. Git provides
+recovery if a later write fails. Legacy provider state and Setup, Teach, or
+Triage require a separate manual Git cleanup before installation; they are not
+migrated automatically. Lifecycle code never inspects or changes
+`.agent-wayfinder/`.
 
 When maintaining a derived skill, edit the effective payload directly, preserve
 its complete declared directory and local references, classify every prose

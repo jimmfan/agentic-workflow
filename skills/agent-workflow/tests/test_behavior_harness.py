@@ -625,7 +625,7 @@ class BehaviorHarnessTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
-            install = behavior.run_adopt("install", workspace)
+            install = behavior.run_lifecycle("install", workspace)
             self.assertEqual(install.returncode, 0, install.stderr)
             before = behavior.snapshot(workspace)
             target = (

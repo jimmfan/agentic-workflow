@@ -22,7 +22,7 @@ PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 TEST_ROOT = Path(__file__).resolve().parent
 SCENARIO_ROOT = TEST_ROOT / "scenarios"
 FIXTURE_ROOT = TEST_ROOT / "fixtures"
-ADOPT = PACKAGE_ROOT / "scripts" / "adopt.py"
+LIFECYCLE = PACKAGE_ROOT / "scripts" / "lifecycle.py"
 REPORT_PATH = PurePosixPath(".behavior-evidence/report.json")
 VERIFICATION_LOG = PurePosixPath(".behavior-evidence/verification.jsonl")
 SCHEMA_VERSION = 1
@@ -415,6 +415,8 @@ def snapshot(root: Path) -> dict[str, Entry]:
         return result
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root).as_posix()
+        if relative == ".git" or relative.startswith(".git/"):
+            continue
         if path.is_symlink():
             result[relative] = Entry("symlink", os.readlink(path))
         elif path.is_file():
@@ -933,14 +935,39 @@ def copy_fixture(scenario: Scenario, destination: Path) -> Path:
         workspace_name = f"case-{blinded_id}"
     workspace = destination / workspace_name
     shutil.copytree(source, workspace)
+    commands = (
+        ("init", "-q"),
+        ("add", "-A"),
+        (
+            "-c",
+            "user.name=Agent Workflow Behavior",
+            "-c",
+            "user.email=behavior@example.invalid",
+            "commit",
+            "-q",
+            "-m",
+            "behavior fixture baseline",
+        ),
+    )
+    for arguments in commands:
+        result = subprocess.run(
+            ["git", *arguments],
+            cwd=workspace,
+            text=True,
+            capture_output=True,
+            errors="backslashreplace",
+        )
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout).strip()
+            raise BehaviorError(f"cannot prepare Git fixture {scenario.id}: {detail}")
     return workspace
 
 
-def run_adopt(command: str, workspace: Path) -> subprocess.CompletedProcess[str]:
+def run_lifecycle(command: str, workspace: Path) -> subprocess.CompletedProcess[str]:
     environment = os.environ.copy()
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     return subprocess.run(
-        [sys.executable, str(ADOPT), command, str(workspace)],
+        [sys.executable, str(LIFECYCLE), command, str(workspace)],
         text=True,
         capture_output=True,
         errors="backslashreplace",
@@ -1107,7 +1134,7 @@ def run_live_scenario(
     timeout_seconds: int,
 ) -> tuple[RunEvidence, tuple[CheckResult, ...]]:
     workspace = copy_fixture(scenario, workspace_parent)
-    install = run_adopt("install", workspace)
+    install = run_lifecycle("install", workspace)
     if install.returncode != 0:
         raise BehaviorError(
             f"cannot install fixture {scenario.id}: {(install.stderr or install.stdout).strip()}"

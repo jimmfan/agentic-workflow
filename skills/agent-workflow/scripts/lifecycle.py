@@ -1,15 +1,766 @@
 #!/usr/bin/env python3
-"""Run the direct Agent Workflow install, update, status, and remove lifecycle."""
+"""Install, update, inspect, or remove Agent Workflow's managed surfaces."""
 
 from __future__ import annotations
 
-from typing import Iterable
+import argparse
+import json
+import os
+import shutil
+import stat
+import subprocess
+import sys
+import tempfile
+from collections.abc import Iterable, Mapping
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
 
-import adopt
+PACKAGE_ROOT = Path(__file__).resolve().parent.parent
+PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
+DISTRIBUTION_MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
+FRAMEWORK_ROOT = PurePosixPath(".agent-workflow")
+SKILLS_ROOT = PurePosixPath(".agents/skills")
+COMPOSITE_PATHS = (PurePosixPath("AGENTS.md"), PurePosixPath("CLAUDE.md"))
+MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
+MANAGED_END = b"<!-- agent-workflow:managed-end -->\n"
+PROJECT_BEGIN = b"\n<!-- agent-workflow:project-instructions -->\n"
+MARKER_PREFIX = b"<!-- agent-workflow:"
+DISTRIBUTION_SCHEMA = 7
+MINIMUM_PYTHON = (3, 11)
+OBSOLETE_SKILLS = ("setup-matt-pocock-skills", "teach", "triage")
+LEGACY_INSTRUCTION = (
+    "Remove the legacy .agent-workflow/ directory and obsolete skill directories "
+    ".agents/skills/setup-matt-pocock-skills, .agents/skills/teach, and "
+    ".agents/skills/triage in a separate Git-tracked cleanup, commit that cleanup, "
+    "then run the new agent-workflow install."
+)
+
+
+class LifecycleError(RuntimeError):
+    """A preflight or package failure that occurs before lifecycle mutation."""
+
+
+class PartialMutationError(RuntimeError):
+    """An ordinary filesystem failure after lifecycle mutation began."""
+
+
+@dataclass(frozen=True)
+class Distribution:
+    framework: Mapping[PurePosixPath, bytes]
+    skills: Mapping[str, Mapping[PurePosixPath, bytes]]
+    composites: Mapping[PurePosixPath, bytes]
+    destinations: tuple[PurePosixPath, ...]
+
+    @property
+    def skill_names(self) -> tuple[str, ...]:
+        return tuple(sorted(self.skills))
+
+    @property
+    def managed_surfaces(self) -> tuple[PurePosixPath, ...]:
+        return (
+            FRAMEWORK_ROOT,
+            *(SKILLS_ROOT / name for name in self.skill_names),
+            *COMPOSITE_PATHS,
+        )
+
+
+def configure_console() -> None:
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(errors="backslashreplace")
+            except (AttributeError, OSError, ValueError):
+                pass
+
+
+def require_supported_python() -> None:
+    if sys.version_info < MINIMUM_PYTHON:
+        raise LifecycleError("Agent Workflow requires Python 3.11 or newer")
+
+
+def safe_relative(value: object) -> PurePosixPath:
+    if not isinstance(value, str) or not value or "\\" in value or "\x00" in value:
+        raise LifecycleError(f"unsafe distribution path: {value!r}")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise LifecycleError(f"unsafe distribution path: {value!r}") from exc
+    path = PurePosixPath(value)
+    if (
+        path.is_absolute()
+        or not path.parts
+        or path.as_posix() != value
+        or any(part in {"", ".", ".."} for part in path.parts)
+    ):
+        raise LifecycleError(f"unsafe distribution path: {value!r}")
+    return path
+
+
+def load_distribution() -> Distribution:
+    if DISTRIBUTION_MANIFEST.is_symlink() or not DISTRIBUTION_MANIFEST.is_file():
+        raise LifecycleError(
+            f"distribution manifest must be a regular file: {DISTRIBUTION_MANIFEST}"
+        )
+    try:
+        raw = json.loads(DISTRIBUTION_MANIFEST.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise LifecycleError(f"cannot read distribution manifest: {exc}") from exc
+    if not isinstance(raw, dict) or raw.get("schema_version") != DISTRIBUTION_SCHEMA:
+        raise LifecycleError("unsupported distribution manifest schema")
+    mappings = raw.get("framework_owned")
+    if not isinstance(mappings, list):
+        raise LifecycleError("distribution manifest needs a framework_owned array")
+
+    framework: dict[PurePosixPath, bytes] = {}
+    skills: dict[str, dict[PurePosixPath, bytes]] = {}
+    composites: dict[PurePosixPath, bytes] = {}
+    destinations: list[PurePosixPath] = []
+    sources_seen: set[PurePosixPath] = set()
+    targets_seen: set[PurePosixPath] = set()
+
+    for item in mappings:
+        if not isinstance(item, dict) or set(item) != {"source", "target"}:
+            raise LifecycleError("distribution mappings require only source and target")
+        source = safe_relative(item["source"])
+        target = safe_relative(item["target"])
+        if source in sources_seen or target in targets_seen:
+            raise LifecycleError(
+                "distribution mappings must have unique sources and targets"
+            )
+        sources_seen.add(source)
+        targets_seen.add(target)
+
+        source_path = PAYLOAD_ROOT.joinpath(*source.parts)
+        if source_path.is_symlink() or not source_path.is_file():
+            raise LifecycleError(f"payload source is missing or unsafe: {source}")
+        try:
+            data = source_path.read_bytes()
+        except OSError as exc:
+            raise LifecycleError(f"cannot read payload source {source}: {exc}") from exc
+
+        if target in COMPOSITE_PATHS:
+            expected = PurePosixPath("root") / f"{target.name}.template"
+            if source != expected:
+                raise LifecycleError(
+                    f"invalid composite distribution mapping: {target}"
+                )
+            composites[target] = data
+        elif target.parts[0] == FRAMEWORK_ROOT.as_posix() and len(target.parts) > 1:
+            relative = PurePosixPath(*target.parts[1:])
+            if source != PurePosixPath("agent-workflow") / relative:
+                raise LifecycleError(
+                    f"invalid framework distribution mapping: {target}"
+                )
+            framework[relative] = data
+        elif target.parts[:2] == SKILLS_ROOT.parts and len(target.parts) > 3:
+            name = target.parts[2]
+            relative = PurePosixPath(*target.parts[3:])
+            if source != PurePosixPath("skills") / name / relative:
+                raise LifecycleError(f"invalid skill distribution mapping: {target}")
+            skills.setdefault(name, {})[relative] = data
+        else:
+            raise LifecycleError(f"unsupported managed destination: {target}")
+        destinations.append(target)
+
+    if set(composites) != set(COMPOSITE_PATHS) or not framework or not skills:
+        raise LifecycleError(
+            "distribution manifest is missing a required managed surface"
+        )
+    for name, files in skills.items():
+        if PurePosixPath("SKILL.md") not in files:
+            raise LifecycleError(f"curated skill is missing SKILL.md: {name}")
+    return Distribution(framework, skills, composites, tuple(destinations))
+
+
+def validate_target(raw: Path) -> Path:
+    expanded = raw.expanduser().absolute()
+    if not expanded.exists() or expanded.is_symlink() or not expanded.is_dir():
+        raise LifecycleError(
+            f"target must be an existing regular non-symlink directory: {expanded}"
+        )
+    root = expanded.resolve()
+    if root.parent == root:
+        raise LifecycleError("refusing to operate on a filesystem root")
+    return root
+
+
+def run_git(root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+    environment = os.environ.copy()
+    environment["GIT_OPTIONAL_LOCKS"] = "0"
+    try:
+        return subprocess.run(
+            ["git", "-C", str(root), *arguments],
+            text=True,
+            capture_output=True,
+            check=False,
+            env=environment,
+        )
+    except OSError as exc:
+        raise LifecycleError(f"cannot run Git: {exc}") from exc
+
+
+def git_boundary_issues(root: Path) -> list[str]:
+    top = run_git(root, "rev-parse", "--show-toplevel")
+    if top.returncode != 0:
+        return ["target must be exactly a Git worktree root"]
+    try:
+        git_root = Path(top.stdout.strip()).resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        return [f"cannot resolve the Git worktree root: {exc}"]
+    if git_root != root:
+        return ["target must be the exact Git worktree root"]
+    head = run_git(root, "rev-parse", "--verify", "--quiet", "HEAD^{commit}")
+    if head.returncode != 0:
+        return ["Git worktree must have a valid HEAD commit"]
+    return []
+
+
+def path_exists(path: Path) -> bool:
+    return os.path.lexists(path)
+
+
+def require_path_kind(root: Path, relative: PurePosixPath, final_kind: str) -> None:
+    current = root
+    for index, part in enumerate(relative.parts):
+        current = current / part
+        if not path_exists(current):
+            return
+        try:
+            details = os.lstat(current)
+        except OSError as exc:
+            raise LifecycleError(
+                f"cannot inspect managed path {relative}: {exc}"
+            ) from exc
+        if stat.S_ISLNK(details.st_mode):
+            raise LifecycleError(
+                f"managed path contains a symlink: {current.relative_to(root)}"
+            )
+        is_final = index == len(relative.parts) - 1
+        if not is_final and not stat.S_ISDIR(details.st_mode):
+            raise LifecycleError(
+                f"managed path parent is not a directory: {current.relative_to(root)}"
+            )
+        if is_final:
+            expected = stat.S_ISDIR if final_kind == "directory" else stat.S_ISREG
+            if not expected(details.st_mode):
+                raise LifecycleError(
+                    f"managed {final_kind} has an unsupported entry type: {relative}"
+                )
+
+
+def require_managed_roots_safe(root: Path, distribution: Distribution) -> None:
+    require_path_kind(root, FRAMEWORK_ROOT, "directory")
+    require_path_kind(root, PurePosixPath(".agents"), "directory")
+    require_path_kind(root, SKILLS_ROOT, "directory")
+    for name in distribution.skill_names:
+        require_path_kind(root, SKILLS_ROOT / name, "directory")
+    for relative in COMPOSITE_PATHS:
+        require_path_kind(root, relative, "file")
+
+
+def scan_regular_tree(root: Path, relative: PurePosixPath) -> None:
+    start = root.joinpath(*relative.parts)
+    if not path_exists(start):
+        return
+
+    def visit(path: Path, label: PurePosixPath) -> None:
+        try:
+            details = os.lstat(path)
+        except OSError as exc:
+            raise LifecycleError(f"cannot inspect managed path {label}: {exc}") from exc
+        if stat.S_ISLNK(details.st_mode):
+            raise LifecycleError(f"managed tree contains a symlink: {label}")
+        if stat.S_ISREG(details.st_mode):
+            return
+        if not stat.S_ISDIR(details.st_mode):
+            raise LifecycleError(f"managed tree contains a special entry: {label}")
+        try:
+            with os.scandir(path) as iterator:
+                entries = sorted(iterator, key=lambda item: item.name)
+        except OSError as exc:
+            raise LifecycleError(
+                f"cannot inspect managed directory {label}: {exc}"
+            ) from exc
+        for entry in entries:
+            visit(Path(entry.path), label / entry.name)
+
+    visit(start, relative)
+
+
+def legacy_present(root: Path) -> bool:
+    if path_exists(root / ".agent-workflow/providers.json"):
+        return True
+    return any(path_exists(root / ".agents/skills" / name) for name in OBSOLETE_SKILLS)
+
+
+def require_no_legacy(root: Path) -> None:
+    if legacy_present(root):
+        raise LifecycleError(f"legacy clean break required. {LEGACY_INSTRUCTION}")
+
+
+def reserved_skill_collision(
+    root: Path, distribution: Distribution
+) -> PurePosixPath | None:
+    if adoption_present(root):
+        return None
+    for name in distribution.skill_names:
+        relative = SKILLS_ROOT / name
+        if path_exists(root.joinpath(*relative.parts)):
+            return relative
+    return None
+
+
+def reserved_skill_message(relative: PurePosixPath) -> str:
+    return (
+        f"reserved curated skill directory blocks adoption: {relative}; "
+        "move or rename the project-owned skill before installation"
+    )
+
+
+def has_any_marker(data: bytes) -> bool:
+    return MARKER_PREFIX in data
+
+
+def parse_composite(data: bytes) -> tuple[bytes, bytes]:
+    if (
+        data.count(MARKER_PREFIX) != 3
+        or data.count(MANAGED_BEGIN) != 1
+        or data.count(MANAGED_END) != 1
+        or data.count(PROJECT_BEGIN) != 1
+    ):
+        raise LifecycleError(
+            "managed policy markers are missing, duplicated, or partial"
+        )
+    if not data.startswith(MANAGED_BEGIN):
+        raise LifecycleError("managed policy markers are reordered")
+    managed_end = data.find(MANAGED_END, len(MANAGED_BEGIN))
+    project_begin = data.find(PROJECT_BEGIN, managed_end + len(MANAGED_END))
+    if managed_end < 0 or project_begin != managed_end + len(MANAGED_END):
+        raise LifecycleError("managed policy markers are reordered")
+    return (
+        data[len(MANAGED_BEGIN) : managed_end],
+        data[project_begin + len(PROJECT_BEGIN) :],
+    )
+
+
+def read_composite(root: Path, relative: PurePosixPath) -> bytes | None:
+    path = root.joinpath(*relative.parts)
+    if not path_exists(path):
+        return None
+    try:
+        return path.read_bytes()
+    except OSError as exc:
+        raise LifecycleError(f"cannot read composite policy {relative}: {exc}") from exc
+
+
+def adoption_present(root: Path) -> bool:
+    if path_exists(root.joinpath(*FRAMEWORK_ROOT.parts)):
+        return True
+    for relative in COMPOSITE_PATHS:
+        current = read_composite(root, relative)
+        if current is not None and has_any_marker(current):
+            parse_composite(current)
+            return True
+    return False
+
+
+def compose_policy(managed: bytes, project: bytes) -> bytes:
+    return (
+        MANAGED_BEGIN
+        + managed.rstrip(b"\n")
+        + b"\n"
+        + MANAGED_END
+        + PROJECT_BEGIN
+        + project
+    )
+
+
+def plan_composites(
+    root: Path, distribution: Distribution, remove: bool
+) -> dict[PurePosixPath, bytes | None]:
+    plan: dict[PurePosixPath, bytes | None] = {}
+    for relative, managed in distribution.composites.items():
+        current = read_composite(root, relative)
+        if current is None:
+            if not remove:
+                plan[relative] = compose_policy(managed, b"")
+            continue
+        if has_any_marker(current):
+            _old_managed, project = parse_composite(current)
+            if remove:
+                plan[relative] = project if project else None
+            else:
+                plan[relative] = compose_policy(managed, project)
+        elif not remove:
+            plan[relative] = compose_policy(managed, current)
+    return plan
+
+
+def inspect_managed_structure(root: Path, distribution: Distribution) -> None:
+    require_managed_roots_safe(root, distribution)
+    require_no_legacy(root)
+    scan_regular_tree(root, FRAMEWORK_ROOT)
+    for name in distribution.skill_names:
+        scan_regular_tree(root, SKILLS_ROOT / name)
+    plan_composites(root, distribution, remove=False)
+
+
+def split_null_output(value: str) -> list[str]:
+    return [item for item in value.split("\0") if item]
+
+
+def managed_git_issues(root: Path, distribution: Distribution) -> list[str]:
+    surfaces = [path.as_posix() for path in distribution.managed_surfaces]
+    issues: list[str] = []
+
+    untracked = run_git(
+        root,
+        "ls-files",
+        "-z",
+        "--others",
+        "--exclude-standard",
+        "--",
+        *surfaces,
+    )
+    if untracked.returncode != 0:
+        issues.append("Git could not inspect untracked managed files")
+    else:
+        paths = split_null_output(untracked.stdout)
+        if paths:
+            issues.append(f"untracked file under a managed surface: {paths[0]}")
+
+    ignored = run_git(
+        root,
+        "ls-files",
+        "-z",
+        "--others",
+        "--ignored",
+        "--exclude-standard",
+        "--",
+        *surfaces,
+    )
+    if ignored.returncode != 0:
+        issues.append("Git could not inspect ignored managed files")
+    else:
+        paths = split_null_output(ignored.stdout)
+        if paths:
+            issues.append(f"managed destination is ignored: {paths[0]}")
+
+    candidates = {
+        *distribution.destinations,
+        FRAMEWORK_ROOT,
+        SKILLS_ROOT,
+        *(SKILLS_ROOT / name for name in distribution.skill_names),
+        *COMPOSITE_PATHS,
+    }
+    for relative in sorted(candidates, key=lambda item: item.as_posix()):
+        result = run_git(
+            root,
+            "check-ignore",
+            "--no-index",
+            "--quiet",
+            "--",
+            relative.as_posix(),
+        )
+        if result.returncode == 0:
+            issues.append(f"managed destination is ignored: {relative}")
+            break
+        if result.returncode not in {0, 1}:
+            issues.append(f"Git could not inspect ignore rules for {relative}")
+            break
+    return issues
+
+
+def worktree_issue(root: Path) -> str | None:
+    status_result = run_git(root, "status", "--porcelain=v1", "--untracked-files=all")
+    if status_result.returncode != 0:
+        return "Git could not inspect worktree cleanliness"
+    if not status_result.stdout:
+        return None
+    if any(line.startswith("??") for line in status_result.stdout.splitlines()):
+        return "worktree and index must be completely clean, including untracked files"
+    return "worktree and index must be completely clean"
+
+
+def require_mutation_safe(root: Path, distribution: Distribution) -> None:
+    issues = git_boundary_issues(root)
+    if issues:
+        raise LifecycleError("; ".join(issues))
+    inspect_managed_structure(root, distribution)
+    issues = managed_git_issues(root, distribution)
+    collision = reserved_skill_collision(root, distribution)
+    if collision is not None:
+        issues.append(reserved_skill_message(collision))
+    dirty = worktree_issue(root)
+    if dirty is not None:
+        issues.append(dirty)
+    if issues:
+        raise LifecycleError("; ".join(dict.fromkeys(issues)))
+
+
+def expected_directories(files: Mapping[PurePosixPath, bytes]) -> set[PurePosixPath]:
+    result: set[PurePosixPath] = set()
+    for relative in files:
+        for parent in relative.parents:
+            if parent != PurePosixPath("."):
+                result.add(parent)
+    return result
+
+
+def directory_matches(
+    root: Path, relative: PurePosixPath, expected: Mapping[PurePosixPath, bytes]
+) -> bool:
+    start = root.joinpath(*relative.parts)
+    if not path_exists(start) or not start.is_dir():
+        return False
+    actual_files: dict[PurePosixPath, bytes] = {}
+    actual_directories: set[PurePosixPath] = set()
+
+    def visit(path: Path, child: PurePosixPath) -> None:
+        with os.scandir(path) as iterator:
+            entries = sorted(iterator, key=lambda item: item.name)
+        for entry in entries:
+            descendant = (
+                child / entry.name if child.parts else PurePosixPath(entry.name)
+            )
+            details = entry.stat(follow_symlinks=False)
+            if stat.S_ISDIR(details.st_mode):
+                actual_directories.add(descendant)
+                visit(Path(entry.path), descendant)
+            elif stat.S_ISREG(details.st_mode):
+                actual_files[descendant] = Path(entry.path).read_bytes()
+            else:
+                return
+
+    visit(start, PurePosixPath())
+    return actual_files == dict(
+        expected
+    ) and actual_directories == expected_directories(expected)
+
+
+def drift_messages(root: Path, distribution: Distribution) -> list[str]:
+    messages: list[str] = []
+    if not directory_matches(root, FRAMEWORK_ROOT, distribution.framework):
+        messages.append("REPAIR: managed directory differs: .agent-workflow")
+    for name, files in sorted(distribution.skills.items()):
+        relative = SKILLS_ROOT / name
+        if not directory_matches(root, relative, files):
+            messages.append(f"REPAIR: managed skill directory differs: {relative}")
+    for relative, desired in distribution.composites.items():
+        current = read_composite(root, relative)
+        if current is None or not has_any_marker(current):
+            messages.append(f"REPAIR: managed policy region differs: {relative}")
+            continue
+        managed, _project = parse_composite(current)
+        if managed != desired.rstrip(b"\n") + b"\n":
+            messages.append(f"REPAIR: managed policy region differs: {relative}")
+    return messages
+
+
+def status(root: Path, distribution: Distribution) -> int:
+    print(f"STATUS {root}")
+    boundary = git_boundary_issues(root)
+    structural: list[str] = []
+    legacy = False
+    drift: list[str] = []
+
+    try:
+        require_managed_roots_safe(root, distribution)
+        legacy = legacy_present(root)
+        if not legacy:
+            scan_regular_tree(root, FRAMEWORK_ROOT)
+            for name in distribution.skill_names:
+                scan_regular_tree(root, SKILLS_ROOT / name)
+            plan_composites(root, distribution, remove=False)
+            drift = drift_messages(root, distribution)
+            collision = reserved_skill_collision(root, distribution)
+            if collision is not None:
+                structural.append(reserved_skill_message(collision))
+    except (LifecycleError, OSError) as exc:
+        structural.append(str(exc))
+
+    safety = list(boundary)
+    if not boundary:
+        safety.extend(managed_git_issues(root, distribution))
+        dirty = worktree_issue(root)
+        if dirty is not None:
+            safety.append(dirty)
+
+    for issue in dict.fromkeys(safety):
+        print(f"BLOCKED: Git safety boundary would block mutation: {issue}")
+    for issue in structural:
+        print(f"CONFLICT: {issue}")
+    if legacy:
+        print("LEGACY: legacy clean break required")
+        print(LEGACY_INSTRUCTION)
+    for message in drift:
+        print(message)
+
+    if safety or structural or legacy or drift:
+        if legacy:
+            print("Agent Workflow: legacy clean break required")
+        elif structural:
+            print("Agent Workflow: unsafe/conflict")
+        elif safety:
+            print("Agent Workflow: blocked by Git safety boundary")
+        else:
+            print("Agent Workflow: repairable")
+        return 1
+    print("Agent Workflow: healthy")
+    print("OK: No lifecycle action is required.")
+    return 0
+
+
+def ensure_parent_directories(path: Path, root: Path) -> None:
+    missing: list[Path] = []
+    current = path.parent
+    while current != root and not path_exists(current):
+        missing.append(current)
+        current = current.parent
+    if current != root:
+        details = os.lstat(current)
+        if stat.S_ISLNK(details.st_mode) or not stat.S_ISDIR(details.st_mode):
+            raise OSError(
+                f"unsafe parent for managed write: {current.relative_to(root)}"
+            )
+    for directory in reversed(missing):
+        directory.mkdir(mode=0o755)
+
+
+def atomic_write(path: Path, data: bytes, root: Path, mode: int = 0o644) -> None:
+    ensure_parent_directories(path, root)
+    descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    temporary_path = Path(temporary)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temporary_path, mode)
+        os.replace(temporary_path, path)
+    finally:
+        if path_exists(temporary_path):
+            temporary_path.unlink()
+
+
+def replace_directory(
+    root: Path, relative: PurePosixPath, files: Mapping[PurePosixPath, bytes]
+) -> None:
+    target = root.joinpath(*relative.parts)
+    if path_exists(target):
+        shutil.rmtree(target)
+    target.mkdir(parents=True, mode=0o755)
+    for child, data in sorted(files.items(), key=lambda item: item[0].as_posix()):
+        atomic_write(target.joinpath(*child.parts), data, root)
+
+
+def apply_composites(root: Path, plan: Mapping[PurePosixPath, bytes | None]) -> None:
+    for relative, desired in sorted(plan.items(), key=lambda item: item[0].as_posix()):
+        target = root.joinpath(*relative.parts)
+        if desired is None:
+            if path_exists(target):
+                target.unlink()
+            continue
+        mode = 0o644
+        if path_exists(target):
+            mode = stat.S_IMODE(os.lstat(target).st_mode)
+        atomic_write(target, desired, root, mode)
+
+
+def print_plan(command: str, root: Path, distribution: Distribution) -> None:
+    print(f"{command.upper()} PLAN {root}")
+    if command == "remove":
+        print("- remove .agent-workflow/")
+        for name in distribution.skill_names:
+            print(f"- remove .agents/skills/{name}/")
+        print("- remove managed regions from AGENTS.md and CLAUDE.md")
+    else:
+        print("- replace .agent-workflow/ with current package bytes")
+        for name in distribution.skill_names:
+            print(f"- replace .agents/skills/{name}/ with current package bytes")
+        print("- converge managed regions in AGENTS.md and CLAUDE.md")
+
+
+def converge(
+    root: Path, distribution: Distribution, command: str, dry_run: bool
+) -> None:
+    require_mutation_safe(root, distribution)
+    composite_plan = plan_composites(root, distribution, remove=False)
+    if dry_run:
+        print_plan(command, root, distribution)
+        return
+    try:
+        replace_directory(root, FRAMEWORK_ROOT, distribution.framework)
+        for name, files in sorted(distribution.skills.items()):
+            replace_directory(root, SKILLS_ROOT / name, files)
+        apply_composites(root, composite_plan)
+    except (LifecycleError, OSError) as exc:
+        raise PartialMutationError(str(exc)) from exc
+    print(f"OK: Agent Workflow {command} completed.")
+
+
+def remove(root: Path, distribution: Distribution, dry_run: bool) -> None:
+    require_mutation_safe(root, distribution)
+    composite_plan = plan_composites(root, distribution, remove=True)
+    if dry_run:
+        print_plan("remove", root, distribution)
+        return
+    try:
+        framework = root.joinpath(*FRAMEWORK_ROOT.parts)
+        if path_exists(framework):
+            shutil.rmtree(framework)
+        for name in distribution.skill_names:
+            skill = root.joinpath(*(SKILLS_ROOT / name).parts)
+            if path_exists(skill):
+                shutil.rmtree(skill)
+        apply_composites(root, composite_plan)
+    except (LifecycleError, OSError) as exc:
+        raise PartialMutationError(str(exc)) from exc
+    print("OK: Agent Workflow managed surfaces removed.")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("command", choices=("install", "update", "status", "remove"))
+    parser.add_argument("target", type=Path)
+    parser.add_argument("--dry-run", action="store_true")
+    return parser
 
 
 def main(argv: Iterable[str] | None = None) -> int:
-    return adopt.main(argv)
+    configure_console()
+    try:
+        require_supported_python()
+        args = build_parser().parse_args(argv)
+        if args.command == "status" and args.dry_run:
+            raise LifecycleError("status does not accept --dry-run")
+        root = validate_target(args.target)
+        distribution = load_distribution()
+        if args.command == "status":
+            return status(root, distribution)
+        if args.command == "remove":
+            remove(root, distribution, args.dry_run)
+        else:
+            converge(root, distribution, args.command, args.dry_run)
+        return 0
+    except PartialMutationError as exc:
+        print(
+            "ERROR: lifecycle operation failed; partial changes may exist. "
+            "Inspect git status, restore with Git, and retry from a clean worktree: "
+            f"{exc}",
+            file=sys.stderr,
+        )
+        return 2
+    except LifecycleError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(
+            f"ERROR: filesystem operation failed before mutation: {exc}",
+            file=sys.stderr,
+        )
+        return 2
 
 
 if __name__ == "__main__":

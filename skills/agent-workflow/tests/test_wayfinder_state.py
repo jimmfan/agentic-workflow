@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import ast
 from pathlib import Path
 import re
 import shutil
@@ -19,64 +18,6 @@ INSTALLED_SKILL = REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md"
 MAP_FIRST_ADR = REPOSITORY_ROOT / "architecture-decisions/0011-use-map-first-wayfinder-state.md"
 
 
-def verifier_retired_wayfinder_patterns() -> tuple[str, ...]:
-    verifier = PACKAGE_ROOT / "scripts/verify_package.py"
-    syntax = ast.parse(verifier.read_text(encoding="utf-8"), filename=str(verifier))
-    for statement in syntax.body:
-        if not isinstance(statement, ast.Assign):
-            continue
-        if any(
-            isinstance(target, ast.Name)
-            and target.id == "RETIRED_WAYFINDER_PATTERNS"
-            for target in statement.targets
-        ):
-            value = ast.literal_eval(statement.value)
-            if isinstance(value, tuple) and all(
-                isinstance(pattern, str) for pattern in value
-            ):
-                return value
-    raise AssertionError("verifier retired-language patterns are missing")
-
-
-RETIRED_WAYFINDER_PATTERNS = verifier_retired_wayfinder_patterns()
-CURRENT_WAYFINDER_DOC_SECTIONS = {
-    "Agent Workflow README contents": (
-        REPOSITORY_ROOT / ".agent-workflow/README.md",
-        "## Contents",
-    ),
-    "packaged Agent Workflow README contents": (
-        PACKAGE_ROOT / "payload/agent-workflow/README.md",
-        "## Contents",
-    ),
-    "filesystem ownership": (
-        REPOSITORY_ROOT / "docs/architecture.md",
-        "## Filesystem ownership",
-    ),
-    "behavioral testing layers": (
-        REPOSITORY_ROOT / "docs/behavioral-testing.md",
-        "## Testing layers",
-    ),
-    "behavioral scenario format": (
-        REPOSITORY_ROOT / "docs/behavioral-testing.md",
-        "## Human-authored scenario format",
-    ),
-    "verification acceptance boundary": (
-        REPOSITORY_ROOT / "docs/verification.md",
-        "## Acceptance boundary",
-    ),
-    "Wayfinder behavior tests": (
-        PACKAGE_ROOT / "tests/README.md",
-        "## Behavior harness and Wayfinder behavior",
-    ),
-    "human behavioral contracts": (
-        PACKAGE_ROOT / "tests/README.md",
-        "## Human behavioral contracts and live smoke tests",
-    ),
-    "map-first ADR consequences": (
-        MAP_FIRST_ADR,
-        "## Consequences",
-    ),
-}
 CURRENT_WAYFINDER_SCENARIOS = {
     "answered authority question": (
         PACKAGE_ROOT
@@ -88,38 +29,6 @@ CURRENT_WAYFINDER_SCENARIOS = {
     ),
     "unsupported fact": (
         PACKAGE_ROOT / "tests/scenarios/wayfinder-fact-conflict.toml"
-    ),
-}
-CURRENT_WAYFINDER_LANGUAGE_SURFACES = {
-    "packaged contract": CONTRACT,
-    "installed contract": INSTALLED_CONTRACT,
-    "direct Wayfinder skill": WAYFINDER_SKILL,
-    "installed routing policy": REPOSITORY_ROOT / ".agent-workflow/routing.md",
-    "packaged routing policy": PACKAGE_ROOT / "payload/agent-workflow/routing.md",
-    "distributed root policy": PACKAGE_ROOT / "payload/root/AGENTS.md.template",
-    "installed implementation workflow": (
-        REPOSITORY_ROOT / ".agents/skills/workflow-implementation/SKILL.md"
-    ),
-    "packaged implementation workflow": (
-        PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
-    ),
-    "installed discovery workflow": (
-        REPOSITORY_ROOT / ".agents/skills/workflow-discovery/SKILL.md"
-    ),
-    "packaged discovery workflow": (
-        PACKAGE_ROOT / "payload/skills/workflow-discovery/SKILL.md"
-    ),
-    "installed debugging workflow": (
-        REPOSITORY_ROOT / ".agents/skills/workflow-debugging/SKILL.md"
-    ),
-    "packaged debugging workflow": (
-        PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
-    ),
-    "installed verification workflow": (
-        REPOSITORY_ROOT / ".agents/skills/workflow-verification/SKILL.md"
-    ),
-    "packaged verification workflow": (
-        PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md"
     ),
 }
 FIXTURES = PACKAGE_ROOT / "tests/fixtures"
@@ -2056,13 +1965,15 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertIn("framework-owned and reconstructable", package_skill)
         self.assertIn("project-owned durable data", state_model)
         self.assertIn("not interpreted as Wayfinder state", state_model)
+        normalized_ownership = " ".join(ownership_decision.split())
         self.assertIn(
-            "declared curated skill files are framework-owned reconstructable output",
-            " ".join(ownership_decision.split()),
+            "each current curated `.agents/skills/<name>/` directory",
+            normalized_ownership,
         )
+        self.assertIn("replace each complete named surface", normalized_ownership)
         self.assertIn(
             "unrelated skill directories remain independent",
-            " ".join(ownership_decision.split()).casefold(),
+            normalized_ownership.casefold(),
         )
         self.assertNotIn("opaque means confidential", self.contract.casefold())
 
@@ -2134,49 +2045,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             (PACKAGE_ROOT / "tests/scenarios/wayfinder-answered-unknown-settlement.toml").is_file()
         )
         self.assertTrue((PACKAGE_ROOT / "tests/fixtures/wayfinder-settlement").is_dir())
-
-    def test_current_wayfinder_surfaces_use_concept_specific_orientation_language(
-        self,
-    ) -> None:
-        installed = INSTALLED_SKILL.read_text(encoding="utf-8")
-        surfaces = {
-            **CURRENT_WAYFINDER_LANGUAGE_SURFACES,
-            "installed skill": installed.split("\n---\n", 1)[1],
-        }
-        legitimate_noncanonical_uses = (
-            "The deployment destination is /srv/application.",
-            "The historical methodology calls its tracker concept `frontier`.",
-            "The research fixture studies territorial fog forecasts.",
-        )
-        for prose in legitimate_noncanonical_uses:
-            for pattern in RETIRED_WAYFINDER_PATTERNS:
-                with self.subTest(prose=prose, pattern=pattern):
-                    self.assertIsNone(re.search(pattern, prose, re.IGNORECASE))
-
-        for name, source in surfaces.items():
-            text = source.read_text(encoding="utf-8") if isinstance(source, Path) else source
-            for pattern in RETIRED_WAYFINDER_PATTERNS:
-                with self.subTest(surface=name, pattern=pattern):
-                    self.assertIsNone(re.search(pattern, text, re.IGNORECASE))
-
-        historical_skill = (
-            PACKAGE_ROOT
-            / "tests/fixtures/pinned-main-installation/project/.agents/skills/"
-            "grilling/SKILL.md"
-        ).read_text(encoding="utf-8")
-        self.assertIn("frontier", historical_skill)
-
-        for path in (
-            MAP_FIRST_ADR,
-            REPOSITORY_ROOT
-            / "architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md",
-        ):
-            decision = markdown_section(
-                path.read_text(encoding="utf-8"), "## Decision"
-            ).casefold()
-            for current_term in ("objective", "scope", "ready work"):
-                with self.subTest(adr=path.name, term=current_term):
-                    self.assertIn(current_term, decision)
 
     def test_default_map_orientation_and_ready_work_semantics_are_explicit(
         self,
@@ -2492,24 +2360,6 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertIn(condition, ending)
         self.assertNotIn("it was intentionally ended", ending)
         self.assertNotIn("different objective and scope", ending)
-
-    def test_current_wayfinder_documentation_uses_pruning_terminology(self) -> None:
-        for name, (path, heading) in CURRENT_WAYFINDER_DOC_SECTIONS.items():
-            with self.subTest(surface=name):
-                passage = markdown_section(
-                    path.read_text(encoding="utf-8"),
-                    heading,
-                ).lower()
-                self.assertRegex(passage, r"\bprun\w*\b")
-                wayfinder_passage = passage
-                if name == "verification acceptance boundary":
-                    start = passage.index("wayfinder state contracts")
-                    wayfinder_passage = passage[start:]
-                self.assertNotRegex(wayfinder_passage, r"\bretir\w*\b")
-
-        adr = MAP_FIRST_ADR.read_text(encoding="utf-8").lower()
-        self.assertNotIn("dispositioned", adr)
-        self.assertNotIn("settlement", adr)
 
     def test_current_wayfinder_scenario_descriptions_use_pruning_and_ending(
         self,

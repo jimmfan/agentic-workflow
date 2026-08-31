@@ -64,8 +64,7 @@ external locations.
 FRAMEWORK-OWNED, RECONSTRUCTABLE
 ├── .agent-workflow/
 ├── managed AGENTS.md and CLAUDE.md regions
-├── required mapped integration files
-└── declared curated skill files under .agents/skills/
+└── current curated .agents/skills/<name>/ directories
 
 PROJECT-OWNED, DURABLE
 └── .agent-wayfinder/
@@ -94,15 +93,14 @@ activates framework resources by projecting their explicit mappings into the
 repository locations recognized by supported hosts.
 
 `AGENTS.md` and `CLAUDE.md` are composite files. Lifecycle operations replace
-only their unambiguous managed region and preserve project-region bytes. Other
-required external paths use minimal recorded evidence so unrecognized or
-subsequently changed content is preserved rather than overwritten or deleted.
+only their unambiguous managed region and preserve project-region bytes.
 
 ### Project-owned durable state
 
-`.agent-wayfinder/` and every entry below it are project-owned. Install and
-update may establish the root when absent, but lifecycle operations never seed,
-inventory, validate, checksum, merge, migrate, rewrite, or remove its contents.
+`.agent-wayfinder/` and every entry below it are project-owned. Wayfinder creates
+and uses that tree only when durable coordination is needed. Lifecycle operations
+never create, read, inventory, validate, checksum, merge, migrate, rewrite, or
+remove it.
 
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
 Their `map.md` is the brief coordination summary and the first effort file read
@@ -149,16 +147,15 @@ ADR but do not become a second ADR or other project-policy record.
 ## Curated skill boundary
 
 The ordinary distribution manifest maps the complete fifteen-skill reviewed
-payload directly into `.agents/skills/`. Declared files are reconstructable and
-repairable; unrelated local skill directories are preserved. Supported hosts
-discover project skills from that location and expose them to the agent.
+payload directly into `.agents/skills/`. Each current curated skill name is a
+reserved, reconstructable directory that install and update replace completely;
+unrelated local skill directories are preserved. Supported hosts discover
+project skills from that location and expose them to the agent.
 
 Eleven curated skills are maintained derived works of Matt Pocock's `v1.2.3`
 release. Their effective installed versions are the maintained runtime source;
 complete repository, copyright, and MIT license attribution lives in
-`.agent-workflow/THIRD_PARTY_NOTICES.md`. The frozen exact-transition fixture
-retains separately identified historical bytes for three removed skills without
-making them current runtime content.
+`.agent-workflow/THIRD_PARTY_NOTICES.md`.
 
 Wayfinder's effective installed body uses one coherent map-first operational
 model rather than layering local state rules over conflicting upstream tracker
@@ -175,16 +172,26 @@ otherwise report the unmet requirement or give the exact invocation instruction.
 ## Lifecycle and bootstrap boundary
 
 The public bootstrap resolves an immutable source revision and validates archive
-shape and resource bounds before executing package code. `adopt.py` preflights
-install-state integrity, project-data, composite, external-path, retirement, and
-filesystem conflicts before applying current desired state. `lifecycle.py` is
-the public wrapper for that one reconciliation operation.
+shape and resource bounds before executing package code. `lifecycle.py` owns the
+single install, update, status, and remove implementation. The ordinary
+distribution manifest is only its current source-to-target map.
 
-`status` is read-only. `remove` deletes only lifecycle-managed framework-owned
-reconstructable output,
-strips managed composite regions, and preserves `.agent-wayfinder/` plus
-unrecognized or changed external content. Transactions protect current data but do not claim
-database-style crash semantics.
+Install and update converge to current desired state by replacing the complete
+`.agent-workflow/` directory and every current curated skill directory, and by
+updating the managed regions in `AGENTS.md` and `CLAUDE.md`. Remove deletes those
+managed directories and regions while preserving unrelated skill directories
+and project-authored composite bytes. Lifecycle never creates, reads, or changes
+`.agent-wayfinder/`.
+
+Every mutating command requires the exact Git worktree root, a valid `HEAD`, and
+a completely clean tracked and untracked worktree. Preflight also rejects
+untracked or ignored managed destinations, malformed composite markers,
+symlinks, special entries, and path escapes. `status` is read-only and reports
+the same safety blockers without requiring cleanliness. Git supplies recovery;
+there is no installed manifest, provenance database, migration engine,
+retirement history, cross-surface transaction, backup, or rollback mechanism.
+Legacy provider state and obsolete Setup, Teach, or Triage directories require
+a separate manual Git cleanup before install.
 
 Current execution uses Python 3.11+ standard-library APIs on POSIX-style shells
 for macOS, Linux, WSL, and Linux-based devcontainers. Native PowerShell and CMD
@@ -192,32 +199,26 @@ are not supported. These runtime and transport facts are current compatibility
 documentation rather than architecture decisions.
 
 The package is distributed through the repository-owned Python bootstrap rather
-than `gh skill`. GitHub CLI 2.97.0 rewrites every nested `SKILL.md` during a
-recursive skill install, which changes bundled nested-skill bytes and assigns the
-outer package's provenance to inner skills; the current installer behavior is
-visible in GitHub CLI's versioned
-[`installSkill` implementation](https://github.com/cli/cli/blob/v2.97.0/internal/skills/installer/installer.go#L232-L285).
-Changing transports therefore requires demonstrated byte preservation for the
-complete package, not merely successful installation of the outer skill.
+than a recursive skill installer, because the distribution contains root policy,
+routing contracts, and fifteen independently discoverable project skills.
 
 ## Verification boundary
 
 `verify_package.py` is a maintainer, CI, and release gate; bootstrap does not run
-it for consumers. It checks package structure and activation-sensitive payload
-paths, explicit mappings, routing and skill contracts, exact transition and
-attribution checks, deterministic scenarios, local documentation links, and the
-test suite.
+it for consumers. It checks current package structure and activation-sensitive
+payload paths, explicit mappings, routing and skill contracts, attribution,
+deterministic scenarios, local documentation links, and the test suite.
 
 Tests focus on observable boundaries:
 
 - route selection, truthful reporting of skill execution, material
   execution evidence, project-choice commitment, and action authorization;
-- preservation of project-owned state and ambiguous external content;
+- rejection of unsafe managed destinations before mutation;
 - install, update, status, remove, and bootstrap behavior;
 - coherent Wayfinder state and the directly distributed skill files;
-- install-state integrity, exact former-installation proof, and transactional
-  rollback; and
-- preservation of unrelated skills, project composite bytes, and durable state.
+- clean-Git recovery boundaries and truthful partial-failure reporting; and
+- preservation of unrelated skills and project composite bytes while keeping
+  Wayfinder state entirely outside lifecycle access.
 
 Live-model evaluations remain opt-in evidence rather than deterministic release
 requirements.

@@ -4,9 +4,9 @@
     {
       "id": "direct",
       "request": "Read note.txt and report its exact word count. Do not modify files.",
-      "available_resources": ["note.txt", ".agent-workflow/routing.md", ".agents/skills/wayfinder/SKILL.md"],
+      "available_resources": ["note.txt", ".agent-workflow/routing.md"],
       "required_resources": ["note.txt"],
-      "forbidden_resources": [".agent-workflow/routing.md", ".agents/skills/wayfinder/SKILL.md"],
+      "forbidden_resources": [".agent-workflow/routing.md"],
       "expected_first_resources": ["note.txt"],
       "expected_initial_route": "direct",
       "expected_final_route": "direct",
@@ -15,9 +15,8 @@
     {
       "id": "evolving",
       "request": "Inspect task.md and recommend the next planning step. Do not modify files.",
-      "selected_skill": "wayfinder",
-      "available_resources": ["task.md", ".agent-workflow/routing.md", ".agents/skills/wayfinder/SKILL.md", ".agent-workflow/contracts/wayfinder-state.md"],
-      "required_resources": ["task.md", ".agents/skills/wayfinder/SKILL.md", ".agent-workflow/contracts/wayfinder-state.md"],
+      "available_resources": ["task.md", ".agent-workflow/routing.md"],
+      "required_resources": ["task.md"],
       "forbidden_resources": [],
       "expected_first_resources": ["task.md"],
       "expected_initial_route": "direct",

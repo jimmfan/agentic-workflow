@@ -2,17 +2,16 @@ from __future__ import annotations
 
 import importlib.util
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 CLI = PACKAGE_ROOT / "cli.py"
-ADOPT = PACKAGE_ROOT / "scripts" / "adopt.py"
 BOOTSTRAP = PACKAGE_ROOT / "scripts" / "bootstrap.py"
 LIFECYCLE = PACKAGE_ROOT / "scripts" / "lifecycle.py"
 MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
@@ -34,7 +33,33 @@ def run_script(
         errors="strict",
         env=env,
         cwd=cwd,
+        check=False,
     )
+
+
+def run_git(root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        ["git", "-C", str(root), *arguments],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise AssertionError(result.stdout + result.stderr)
+    return result
+
+
+def commit_all(root: Path, message: str) -> None:
+    run_git(root, "add", "-A")
+    run_git(root, "commit", "-q", "-m", message)
+
+
+def initialize_repository(root: Path) -> None:
+    run_git(root, "init", "-q")
+    run_git(root, "config", "user.name", "Agent Workflow Test")
+    run_git(root, "config", "user.email", "agent-workflow@example.invalid")
+    (root / "README.md").write_text("# Test project\n", encoding="utf-8")
+    commit_all(root, "initial project")
 
 
 def load_module(name: str, path: Path):
@@ -61,6 +86,14 @@ def tree_snapshot(root: Path) -> dict[str, tuple[str, bytes | str]]:
     return result
 
 
+def workspace_snapshot(root: Path) -> dict[str, tuple[str, bytes | str]]:
+    return {
+        path: value
+        for path, value in tree_snapshot(root).items()
+        if path != ".git" and not path.startswith(".git/")
+    }
+
+
 class ProjectTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -69,9 +102,6 @@ class ProjectTestCase(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
-
-    def adopt(self, command: str, *extra: object) -> subprocess.CompletedProcess[str]:
-        return run_script(ADOPT, command, self.project, *extra)
 
     def assert_ok(self, result: subprocess.CompletedProcess[str]) -> None:
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -98,7 +128,4 @@ class ProjectTestCase(unittest.TestCase):
                 shutil.copytree(source, target)
             else:
                 shutil.copy2(source, target)
-        # Durable state is deliberately not copied, but a healthy installed
-        # repository has the framework-independent durable root available.
-        (repository_copy / ".agent-wayfinder").mkdir()
         return package_copy

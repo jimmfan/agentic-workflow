@@ -6,37 +6,25 @@ This opt-in evaluation asks two deliberately small questions of multiple models:
 2. Does a request that begins bounded select Wayfinder after reconnaissance
    reveals consequential coordination signals?
 
-The runner sends only the installed root `AGENTS.md`, a harness-derived
-current-session observation, and instruction resources that the model explicitly
-requests from a names-and-size catalog. It does not send project source, project
-documentation, durable state, Git history, credentials, or arbitrary repository
-files.
-
-The evolving case may request the Wayfinder state contract because the root
-policy requires that contract after Wayfinder selection. The contract contains
-framework rules only; no project-owned map or durable record is sent.
+The runner sends the installed root `AGENTS.md` and only the named synthetic case
+evidence or detailed routing policy that the model explicitly requests from a
+names-and-size catalog. It does not send project source, project documentation,
+durable state, Git history, credentials, or arbitrary repository files.
 
 ## What it measures
 
 Each round returns a schema-constrained public decision containing the initial
 route, current route, Wayfinder assessment and selection, requested resources,
-and skill outcome. The harness derives the allowed skill outcomes internally
-from the installed `.agents/skills/` surface and deterministic current-session
-fixtures in `host-fixtures.json`. The accepted outcome labels remain private to
-the harness. The model receives only the selected skill, whether that skill is
-exposed in the simulated session, whether explicit user invocation is required,
-and the instruction resource it may request. A selected skill must load its `SKILL.md`
-instructions before completion; the evolving case also loads the Wayfinder
-state contract required by those instructions and the root policy. The report
-records every revealed resource in order plus the exact prompt bytes and any
-usage metadata exposed by the adapter.
+and a concise explanation. The same routing-only contract is sent through each
+adapter. The harness does not simulate host discovery, skill availability, or
+invocation behavior. The report records every revealed resource in order plus
+the exact prompt bytes and any usage metadata exposed by the adapter.
 
 This isolates cross-model interpretation of the routing contract. It is not
 operating-system file-access tracing and does not prove that every interactive
 coding-agent host will discover or invoke the installed files identically.
-Every deterministic report marks live host discovery as `unverified`; only a
-separately authorized live exercise may report otherwise. End-to-end host
-discovery and invocation therefore remain outside this smoke test's evidence.
+End-to-end host discovery and invocation remain outside this smoke test's
+evidence and require a separately authorized live exercise.
 
 ## Inspect the payload without contacting a model
 
@@ -111,8 +99,8 @@ python3 -m evals.routing_smoke compare \
   /tmp/routing-smoke-small.json
 ```
 
-Selection agreement is evaluated separately from skill outcomes. A
-harness-derived skill outcome does not change the selected route.
+Comparison reports whether the models completed the same case matrix, passed the
+case checks, and agreed on the initial and final routes.
 
 ## Cost and safety limits
 

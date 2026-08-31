@@ -1,14 +1,14 @@
 # Installed Agent Workflow
 
-This directory is the reconstructable part of Agent Workflow. Its purpose is
-to supply the progressively loaded routing policy, state contract, attribution,
-and lifecycle evidence used by the compact root policy. Install/update may replace every
-file here with current package bytes.
+This directory is reconstructable Agent Workflow output. It supplies the
+progressively loaded routing policy, state contract, and attribution used by the
+compact root policy. Install and update replace the complete directory with
+current package bytes.
 
-Durable project-owned state lives only under sibling `.agent-wayfinder/`. Install
-and update may ensure that directory exists, but every lifecycle command otherwise
-treats its contents as uninterpreted project-owned content: none seeds,
-inventories, normalizes, migrates, rewrites, or removes them.
+Durable project-owned Wayfinder state may live under sibling
+`.agent-wayfinder/`, but that tree is outside the lifecycle boundary. Lifecycle
+commands do not create, inspect, inventory, normalize, migrate, rewrite, or
+remove it.
 
 ## Contents
 
@@ -18,10 +18,8 @@ inventories, normalizes, migrates, rewrites, or removes them.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   current maps, optional F#/D# ledgers, independently useful U#/E# files,
   identifiers, reconciliation, pruning, effort ending, and progressive loading.
-- `install-manifest.json`: version/revision plus the small external/composite
-  evidence and integrity digest required by safe update and removal.
 - `THIRD_PARTY_NOTICES.md`: attribution and license terms for retained derived
-  skills and the bounded historical transition fixture.
+  skills.
 
 The root policy and `routing.md` are the runtime. No hook, daemon, lifecycle
 controller, or telemetry analyzer is installed.
@@ -29,24 +27,22 @@ controller, or telemetry analyzer is installed.
 ## Ownership
 
 `.agent-workflow/` is framework-owned, reconstructable, and replaceable from
-current declared package content. A missing, modified, extra, or obsolete file
-is repairable with lifecycle `update`; no historical checksum investigation is
-required. The distribution manifest records install targets, not duplicate
-payload hashes; the installed runtime always uses current mapped source bytes.
+current package content. The ordinary distribution manifest is the current
+source-to-target map; no installed manifest, content hashes, provenance record,
+created-state bits, or history is written to a consuming repository.
 
 `AGENTS.md` and `CLAUDE.md` live outside this directory because hosts require
 root policy files. They contain one framework-owned region and one preserved
 project region. Required local workflow skills similarly live under
-`.agents/skills`. Unrecognized content at an unrecorded non-composite target blocks
-installation instead of being overwritten.
+`.agents/skills`.
 
-The fifteen curated skills live directly under `.agents/skills`. Their declared
-files are framework-owned reconstructable output; other skill directories
-remain outside that boundary. Install/update reconciles all mapped skill files,
-repairs missing or drifted declared files transactionally, and blocks on unsafe
-paths. Remove deletes a declared external file only when valid install evidence
-says the framework created it and its bytes still match the recorded digest.
-Wayfinder and Research are directly distributed reviewed effective versions.
+The fifteen curated skills live directly under `.agents/skills`. Their current
+directory names are reserved for Agent Workflow. Install and update replace
+each complete current curated skill directory, including extra files, while
+preserving unrelated skill directories. Remove deletes those current curated
+directories. A pre-existing conflicting skill must be moved or renamed before
+install. Wayfinder and Research are directly distributed reviewed effective
+versions.
 
 Local Wayfinder data is a configured project-owned durable representation under
 `.agent-wayfinder/`, never a distributed template or framework-owned lifecycle
@@ -86,23 +82,28 @@ execution.
 
 ## Status and recovery
 
-`healthy` means current core files match current desired state. `repairable`
-means update can replace missing/drifted reconstructable or recorded managed
-files. `unsafe/conflict` means invalid install state, an external collision,
-malformed composite, unsafe retirement, or unsafe filesystem boundary needs
-explicit resolution.
+Install, update, and remove require the exact Git worktree root, a valid `HEAD`,
+and a completely clean tracked and untracked worktree. Before mutation they
+reject untracked files under managed surfaces, ignored managed destinations,
+malformed managed markers, symlinks, special entries, and paths that escape the
+worktree. `status` is read-only and reports safety blockers without requiring a
+clean tree.
 
-Invalid install state fails closed for status, install, update, and remove.
-Manual recovery must preserve `.agent-wayfinder/`, project-authored composite
-regions, unrelated skills, and any external content lacking safe deletion
-evidence before re-establishing an absent installation. Deleting
-`.agent-workflow/` alone is not sufficient while a framework-managed composite
-region remains. There is no automatic recovery path.
+Git is the recovery mechanism. There is no cross-surface transaction, backup,
+rollback journal, migration engine, or automatic skill retirement. A failure
+after mutation can leave a partial worktree diff; inspect `git status`, restore
+with Git as appropriate, and retry.
 
-On removal, project state, unrelated skill directories, pre-existing external
-files, and locally changed external files are preserved. Unchanged files
-recorded as framework-created are deleted, and explicit full removal may end
-lifecycle management while truthfully reporting preserved content.
+Install and update converge to the same current package state. Remove deletes
+`.agent-workflow/` and the current curated skill directories, strips the managed
+regions from `AGENTS.md` and `CLAUDE.md`, and deletes either composite file only
+when no project-authored bytes remain. Unrelated skill directories and all
+project-authored composite bytes remain.
+
+Legacy `.agent-workflow/providers.json` and obsolete Setup, Teach, or Triage
+skill directories are detected but never migrated. Remove the legacy
+`.agent-workflow/` tree and obsolete skill directories in a separate Git cleanup
+commit, then install the current framework.
 
 Every user-facing final response ends with one compact route marker such as:
 

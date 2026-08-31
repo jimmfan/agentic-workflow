@@ -7,11 +7,6 @@ The curated `code-review`, `codebase-design`, `domain-modeling`, `grilling`,
 release `v1.2.3`. Agent Workflow maintains the effective packaged versions and
 may modify their invocation metadata or operating instructions.
 
-The frozen historical transition fixture also contains the former effective
-packaged `setup-matt-pocock-skills`, `teach`, and `triage` skill bytes from that release. It exists
-only to prove the one exact supported transition from the pinned prior
-installation; those three skills are not part of the current runtime payload.
-
 ## MIT License
 
 Copyright (c) 2026 Matt Pocock
