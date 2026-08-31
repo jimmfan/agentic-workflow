@@ -39,6 +39,9 @@ Separate framework-owned reconstructable output from preservation boundaries:
   opaque to Agent Workflow. When no region exists, installation adds one without
   changing existing project bytes. Ambiguous ownership stops destructive
   mutation rather than inviting guessed recovery.
+- `CLAUDE.md` remains under its existing composite integration for this decision.
+  Lifecycle operations continue to preserve its project-authored portion; this
+  decision does not change that host protocol or its support boundary.
 - Every mutating lifecycle command requires the target to be an exact Git
   worktree root with a valid `HEAD` and an entirely clean tracked and untracked
   worktree. Managed destinations must not be ignored, and managed roots and

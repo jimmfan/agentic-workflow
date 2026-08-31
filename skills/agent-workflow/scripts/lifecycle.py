@@ -46,7 +46,7 @@ class PartialMutationError(RuntimeError):
 class MarkerLine:
     value: bytes
     start: int
-    end: int
+    line_end: int
 
 
 @dataclass(frozen=True)
@@ -392,20 +392,10 @@ def parse_agents_composite(
     if values == [MANAGED_BEGIN, MANAGED_END]:
         begin, end = markers
         return CompositeParts(
-            data[begin.end : end.start],
+            data[begin.line_end : end.start],
             data[: begin.start],
-            data[end.end :],
+            data[end.line_end :],
         )
-
-    # Normalize the exact composite emitted by the former three-marker protocol.
-    if values == [MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER]:
-        begin, end, former_project = markers
-        if begin.start == 0 and is_one_blank_line(data[end.end : former_project.start]):
-            return CompositeParts(
-                data[begin.end : end.start],
-                b"",
-                data[former_project.end :],
-            )
 
     # Historical LF-only marker detection could append an outer composite around an
     # existing CRLF composite. This exact nested shape has two generated managed
@@ -424,14 +414,14 @@ def parse_agents_composite(
         )
         if (
             outer_begin.start == 0
-            and is_one_blank_line(data[outer_end.end : outer_project.start])
-            and outer_project.end == inner_begin.start
-            and is_one_blank_line(data[inner_end.end : inner_project.start])
+            and is_one_blank_line(data[outer_end.line_end : outer_project.start])
+            and outer_project.line_end == inner_begin.start
+            and is_one_blank_line(data[inner_end.line_end : inner_project.start])
         ):
             return CompositeParts(
-                data[outer_begin.end : outer_end.start],
+                data[outer_begin.line_end : outer_end.start],
                 b"",
-                data[inner_project.end :],
+                data[inner_project.line_end :],
             )
 
     raise marker_error(relative, markers, "missing, duplicated, or reordered")

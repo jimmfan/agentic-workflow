@@ -258,6 +258,8 @@ class DirectDistributionTests(ProjectTestCase):
 
         providers = self.project / ".agent-workflow/providers.json"
         providers.write_bytes(b"obsolete framework bytes\n")
+        notices = self.project / ".agent-workflow/THIRD_PARTY_NOTICES.md"
+        notices.write_bytes(b"former standalone notice\n")
         preserved: dict[Path, bytes] = {}
         for name in ("setup-matt-pocock-skills", "teach", "triage"):
             path = self.project / ".agents/skills" / name / "SKILL.md"
@@ -276,6 +278,7 @@ class DirectDistributionTests(ProjectTestCase):
 
         self.assert_current_payload_installed({path.parent.name for path in preserved})
         self.assertFalse(providers.exists())
+        self.assertFalse(notices.exists())
         for path, content in preserved.items():
             with self.subTest(path=path):
                 self.assertEqual(path.read_bytes(), content)
@@ -283,10 +286,12 @@ class DirectDistributionTests(ProjectTestCase):
 
         commit_all(self.project, "converge prior provider-era surfaces")
         providers.write_bytes(b"another obsolete framework file\n")
-        commit_all(self.project, "restore obsolete framework file")
+        notices.write_bytes(b"another former standalone notice\n")
+        commit_all(self.project, "restore obsolete framework files")
 
         self.assert_ok(self.lifecycle("install"))
         self.assertFalse(providers.exists())
+        self.assertFalse(notices.exists())
         for path, content in preserved.items():
             with self.subTest(repeated_install=path):
                 self.assertEqual(path.read_bytes(), content)
