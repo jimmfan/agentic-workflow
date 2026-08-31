@@ -14,6 +14,3 @@ Once done, use `code-review` to review the work.
 
 Commit only when the current user request or accepted project policy authorizes
 it. Otherwise leave the work uncommitted and report its status.
-
-This skill owns the inner build, test, and Code Review loop. Independent
-acceptance verification remains separate.
