@@ -485,17 +485,20 @@ def require_mutation_safe(root: Path, distribution: Distribution) -> None:
     issues = git_boundary_issues(root)
     if issues:
         raise LifecycleError("; ".join(issues))
+
     inspect_managed_structure(root, distribution)
     issues = managed_git_issues(root, distribution)
-    collision = reserved_skill_collision(root, distribution)
+
+    collision = adoption_collision_message(root, distribution)
     if collision is not None:
-        issues.append(reserved_skill_message(collision))
+        issues.append(collision)
+
     dirty = worktree_issue(root)
     if dirty is not None:
         issues.append(dirty)
+
     if issues:
         raise LifecycleError("; ".join(dict.fromkeys(issues)))
-
 
 def expected_directories(files: Mapping[PurePosixPath, bytes]) -> set[PurePosixPath]:
     result: set[PurePosixPath] = set()
@@ -571,10 +574,12 @@ def status(root: Path, distribution: Distribution) -> int:
             for name in distribution.skill_names:
                 scan_regular_tree(root, SKILLS_ROOT / name)
             plan_composites(root, distribution, remove=False)
-            drift = drift_messages(root, distribution)
-            collision = reserved_skill_collision(root, distribution)
+
+            collision = adoption_collision_message(root, distribution)
             if collision is not None:
-                structural.append(reserved_skill_message(collision))
+                structural.append(collision)
+            else:
+                drift = drift_messages(root, distribution)
     except (LifecycleError, OSError) as exc:
         structural.append(str(exc))
 

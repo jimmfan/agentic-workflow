@@ -3,8 +3,8 @@ description: Implement a defined piece of work.
 disable-model-invocation: false
 name: implement
 ---
-Implement the work described by the current user request or the accepted project
-record designated to maintain the result.
+Implement the defined work supplied by the current user request or invoking
+workflow.
 
 Use `tdd` where possible, at pre-agreed seams.
 

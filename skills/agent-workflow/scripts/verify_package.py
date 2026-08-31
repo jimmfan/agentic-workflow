@@ -500,6 +500,7 @@ def check_semantic_contracts() -> None:
         "Implement",
         implement,
         (
+            "Implement the defined work supplied by the current user request or invoking workflow.",
             "Commit only when the current user request or accepted project policy authorizes it.",
             "Otherwise leave the work uncommitted and report its status.",
         ),

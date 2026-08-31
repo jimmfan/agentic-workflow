@@ -13,8 +13,11 @@ fifteen-skill curated surface mapped by the package.
 
 ## Ownership contract
 
-- `.agent-workflow/` is framework-owned and reconstructable. Install/update
-  replace the complete directory from current package bytes; remove deletes it.
+- `.agent-workflow/` is framework-owned and reconstructable after adoption.
+  Install/update replace the complete directory from current package bytes;
+  remove deletes it. On first adoption, a pre-existing `.agent-workflow/` that
+  is not recognized as an existing Agent Workflow installation blocks adoption
+  instead of being replaced.
 - Each current curated `.agents/skills/<name>/` directory is framework-owned and
   reconstructable. Install/update replace the complete named directory, including
   deleting extra files inside it; remove deletes it. Unrelated skill directories

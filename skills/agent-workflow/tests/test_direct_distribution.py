@@ -173,6 +173,39 @@ class DirectDistributionTests(ProjectTestCase):
         self.assert_current_payload_installed()
         self.assert_wayfinder_untouched()
 
+    def test_fresh_adoption_rejects_preexisting_framework_directory(
+        self,
+    ) -> None:
+        project = Path(self.temporary.name) / "framework-collision"
+        project.mkdir()
+
+        framework_note = project / ".agent-workflow/project-note.txt"
+        framework_note.parent.mkdir(parents=True)
+        framework_note.write_bytes(b"project-owned pre-existing content\n")
+
+        initialize_repository(project)
+        before = workspace_snapshot(project)
+
+        status = run_script(LIFECYCLE, "status", project)
+        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
+        self.assertIn(
+            "existing .agent-workflow directory blocks adoption",
+            status.stdout,
+        )
+        self.assertIn("Agent Workflow: unsafe/conflict", status.stdout)
+        self.assertNotIn("REPAIR:", status.stdout)
+        self.assertEqual(workspace_snapshot(project), before)
+
+        for command in ("install", "update", "remove"):
+            with self.subTest(command=command):
+                result = run_script(LIFECYCLE, command, project)
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertIn(
+                    "existing .agent-workflow directory blocks adoption",
+                    result.stderr,
+                )
+                self.assertEqual(workspace_snapshot(project), before)
+
     def test_fresh_adoption_rejects_a_reserved_skill_despite_framework_directory(
         self,
     ) -> None:
