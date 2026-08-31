@@ -438,9 +438,9 @@ def parse_agents_composite(
                 marker.newline == b"\r\n"
                 for marker in (inner_begin, inner_end, inner_project)
             )
-            and is_one_blank_line(data[outer_end.line_end : outer_project.start])
+            and data[outer_end.line_end : outer_project.start] == b"\n"
             and outer_project.line_end == inner_begin.start
-            and is_one_blank_line(data[inner_end.line_end : inner_project.start])
+            and data[inner_end.line_end : inner_project.start] == b"\r\n"
         ):
             return CompositeParts(
                 data[outer_begin.line_end : outer_end.start],

@@ -306,10 +306,16 @@ class LifecycleTests(ProjectTestCase):
         self,
     ) -> None:
         layouts = {
-            "all-lf": (b"\n", b"\n"),
-            "reversed": (b"\r\n", b"\n"),
+            "all-lf": (b"\n", b"\n", b"\n", b"\n"),
+            "reversed": (b"\r\n", b"\n", b"\r\n", b"\n"),
+            "hybrid-separators": (b"\n", b"\r\n", b"\r\n", b"\n"),
         }
-        for name, (outer_newline, inner_newline) in layouts.items():
+        for name, (
+            outer_newline,
+            inner_newline,
+            outer_separator,
+            inner_separator,
+        ) in layouts.items():
             with self.subTest(name=name):
                 project = Path(self.temporary.name) / f"nested-{name}"
                 project.mkdir()
@@ -322,7 +328,7 @@ class LifecycleTests(ProjectTestCase):
                     + outer_newline
                     + MANAGED_END
                     + outer_newline
-                    + outer_newline
+                    + outer_separator
                     + FORMER_PROJECT_MARKER
                     + outer_newline
                     + MANAGED_BEGIN
@@ -331,7 +337,7 @@ class LifecycleTests(ProjectTestCase):
                     + inner_newline
                     + MANAGED_END
                     + inner_newline
-                    + inner_newline
+                    + inner_separator
                     + FORMER_PROJECT_MARKER
                     + inner_newline
                     + b"project bytes\n"
