@@ -20,9 +20,9 @@ fifteen-skill curated surface mapped by the package.
   deleting extra files inside it; remove deletes it. Unrelated skill directories
   remain untouched. Current curated names are reserved after adoption, so move or
   rename any project-owned skill with the same name before installing.
-- `.agent-wayfinder/` and every entry under it are project-owned durable data
-  completely outside this lifecycle. Never create, inspect, inventory, checksum,
-  rewrite, or remove it.
+- `.agent-wayfinder/` and every entry under it are project-owned durable data.
+  Lifecycle operations do not directly traverse, interpret, or change it.
+  Repository-wide Git cleanliness checks may still observe changes under it.
 - `AGENTS.md` and `CLAUDE.md` are composite. Replace only the unambiguous managed
   region and preserve project-region bytes. Stop on partial, duplicate, or
   reordered markers.

@@ -69,12 +69,8 @@ class RoutingContractTests(unittest.TestCase):
             "current truth",
             "project choices determined by accepted project policy",
             "committed by project decision authority",
-            "source files",
-            "specifications",
-            "tickets",
-            "decisions",
-            "research findings",
-            "review reports",
+            "relevant source",
+            "accepted project record designated to maintain the result",
         ):
             self.assertIn(required, reconciliation)
         self.assertNotIn("artifact designated to maintain", reconciliation)

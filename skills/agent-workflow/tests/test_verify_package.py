@@ -288,22 +288,22 @@ class VerifyPackageTests(ProjectTestCase):
             (
                 "wayfinder-no-project-result-ownership",
                 "payload/skills/wayfinder/SKILL.md",
-                "Never copy a specification",
-                "Copy a specification",
+                "Never copy the accepted project record",
+                "Copy the accepted project record",
                 "Wayfinder lacks load-bearing contract",
             ),
             (
                 "to-spec-destination-and-authorization",
                 "payload/skills/to-spec/SKILL.md",
-                "A known destination does not authorize publication.",
-                "A known destination authorizes publication.",
+                "destination named by the user",
+                "available publication destination",
                 "to-spec lacks load-bearing contract",
             ),
             (
                 "to-tickets-destination-and-authorization",
                 "payload/skills/to-tickets/SKILL.md",
-                "When either the destination or\nauthorization is missing",
-                "When the destination is missing",
+                "Publish only when",
+                "Publish whenever a destination is available",
                 "to-tickets lacks load-bearing contract",
             ),
             (
@@ -345,6 +345,18 @@ class VerifyPackageTests(ProjectTestCase):
                 )
                 self.assert_verify_failure(
                     package, f"{skill} infers a .scratch/ destination"
+                )
+
+            with self.subTest(name=f"{skill}-hard-coded-label"):
+                package = self.copy_package(f"{skill}-hard-coded-label")
+                path = package / f"payload/skills/{skill}/SKILL.md"
+                path.write_text(
+                    path.read_text(encoding="utf-8")
+                    + "\nApply the ready-for-agent label.\n",
+                    encoding="utf-8",
+                )
+                self.assert_verify_failure(
+                    package, f"{skill} hard-codes the ready-for-agent label"
                 )
 
     def test_verifier_rejects_checked_in_projection_drift_and_history(self) -> None:

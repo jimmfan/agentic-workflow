@@ -79,10 +79,11 @@ imitate the skill, and report only what actually ran.
 
 Wayfinder is Agent Workflow's sole durable coordination model; its project-owned
 state lives under `.agent-wayfinder/`.
-Specifications, tickets, research findings, prototypes, domain-model updates,
-and review reports remain in the project, tracker, external service, or chat
-where they were produced. Wayfinder may reference them but does not copy their
-contents. When resuming a Wayfinder effort, read its map first. The map
+Chat output is session-local. The accepted project record designated to maintain
+a result remains authoritative, and Wayfinder links it only when it is durable.
+If a chat-only result later needs continuity, Wayfinder preserves only the
+minimum needed coordination or evidence. When resuming a Wayfinder effort, read
+its map first. The map
 summarizes current coordination state, conditions
 blocking particular work, dependencies, and ready work; sparse F#/D# ledger
 sections and U#/E# records stay lazy. F# contains a sufficiently supported,
@@ -118,17 +119,6 @@ Verification, not a Wayfinder reasoning method or coordination record.
 After meaningful implementation or a causal fix, gather acceptance evidence not
 already supplied by the implementation method. Do not repeat TDD or Code Review
 already completed by that method merely to add a framework stage.
-
-`to-spec` and `to-tickets` resolve a publication destination from the current
-request, then project instructions, then existing project-owned tracker
-configuration; otherwise there is no inferred destination. A known destination
-does not authorize publication. Without both a destination and action
-authorization, both return the complete draft in chat, create no temporary
-repository file, and stop before publication. Conflicting applicable sources
-require clarification. Labels and statuses require both project-defined
-semantics and authorization for that mutation. `code-review` uses tracker access
-only as optional source lookup, completes its Standards axis without a tracker,
-and returns its report in chat unless publication is separately authorized.
 
 Every user-facing final response ends with exactly one truthful instruction-level
 marker such as:

@@ -79,9 +79,6 @@ Present the two reports under `## Standards` and `## Spec` headings, verbatim or
 
 End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
 
-Return the review in chat by default. Publish or mutate an external review,
-issue, or pull request only when that action is separately authorized.
-
 ## Why two axes
 
 A change can pass one axis and fail the other:

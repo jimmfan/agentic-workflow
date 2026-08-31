@@ -2010,20 +2010,10 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "Settled scope needs a specification",
                 "A sufficiently defined scope needs a specification",
             ),
-            "routing decision input": (
-                PACKAGE_ROOT / "payload/agent-workflow/routing.md",
-                "a settled D#",
-                "a current decision record",
-            ),
             "implementation integration": (
                 PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md",
                 "settled implementation scope",
                 "ready implementation scope",
-            ),
-            "readme": (
-                REPOSITORY_ROOT / "README.md",
-                "As work settles",
-                "Wayfinder links them when useful; it does not copy them",
             ),
             "routing documentation": (
                 REPOSITORY_ROOT / "docs/routing.md",
@@ -2287,8 +2277,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         for responsibility in (
             "ticket or ticket set created by `to-tickets`",
             "its contents, dependencies, ordering, and readiness",
-            "links that ticket or ticket set",
-            "ticket-level state",
+            "links it only when an accepted durable project or external record exists",
+            "chat-only draft remains session-local",
         ):
             with self.subTest(contract_responsibility=responsibility):
                 self.assertIn(responsibility, contract_boundaries)
@@ -2301,23 +2291,17 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         for map_behavior in (
             "summarizes the effort's current coordination state",
-            "when no ticket or ticket set exists",
+            "when no durable ticket or ticket set exists",
             "may state ready work directly",
             "may include a current ready-work reference",
+            "without mirroring ticket-level state",
         ):
             with self.subTest(map_behavior=map_behavior):
                 self.assertIn(map_behavior.casefold(), effort_shape.casefold())
 
-        implementation = " ".join(
-            (
-                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
-            ).read_text(encoding="utf-8").split()
-        )
-        self.assertIn("ticket or ticket set produced by `to-tickets`", implementation)
         for surface in (
             self.contract,
             WAYFINDER_SKILL.read_text(encoding="utf-8"),
-            implementation,
         ):
             self.assertNotIn("To Tickets", surface)
         for invalid in (
@@ -2328,7 +2312,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             for name, surface in (
                 ("contract", self.contract),
                 ("direct skill", WAYFINDER_SKILL.read_text(encoding="utf-8")),
-                ("implementation", implementation),
             ):
                 with self.subTest(surface=name, invalid=invalid):
                     self.assertNotIn(invalid, surface)
@@ -2584,13 +2567,18 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertIn(mechanic, operating_rules)
         self.assertNotIn("The map owns", operating_rules)
 
-        transition = markdown_section(runtime, "## Reconcile and transition ready work")
+        transition = " ".join(
+            markdown_section(
+                runtime, "## Reconcile and transition ready work"
+            ).split()
+        )
         for responsibility in (
             "The map summarizes",
-            "no ticket or ticket set exists",
-            "Once `to-tickets` produces a ticket or ticket set",
-            "maintains contents, dependencies, ordering, and readiness",
-            "does not mirror ticket-level state",
+            "A `to-tickets` ticket or ticket set maintains contents,",
+            "dependencies, ordering, and readiness",
+            "Wayfinder links it only when an accepted",
+            "chat-only draft remains",
+            "minimum needed coordination or evidence",
         ):
             with self.subTest(ticket_responsibility=responsibility):
                 self.assertIn(responsibility, transition)

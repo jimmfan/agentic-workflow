@@ -302,7 +302,7 @@ def require_no_legacy(root: Path) -> None:
 def reserved_skill_collision(
     root: Path, distribution: Distribution
 ) -> PurePosixPath | None:
-    if adoption_present(root):
+    if adoption_present(root, distribution):
         return None
     for name in distribution.skill_names:
         relative = SKILLS_ROOT / name
@@ -354,15 +354,13 @@ def read_composite(root: Path, relative: PurePosixPath) -> bytes | None:
         raise LifecycleError(f"cannot read composite policy {relative}: {exc}") from exc
 
 
-def adoption_present(root: Path) -> bool:
-    if path_exists(root.joinpath(*FRAMEWORK_ROOT.parts)):
-        return True
+def adoption_present(root: Path, distribution: Distribution) -> bool:
     for relative in COMPOSITE_PATHS:
         current = read_composite(root, relative)
         if current is not None and has_any_marker(current):
             parse_composite(current)
             return True
-    return False
+    return directory_matches(root, FRAMEWORK_ROOT, distribution.framework)
 
 
 def compose_policy(managed: bytes, project: bytes) -> bytes:

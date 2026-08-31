@@ -1,6 +1,6 @@
 # Curated skills
 
-Agent Workflow distributes fifteen reviewed skills directly through the ordinary
+Agent Workflow distributes fifteen curated skills directly through the ordinary
 package payload and current distribution map. Those skill directories are the
 single maintained runtime representation.
 
@@ -25,13 +25,13 @@ The installed surface under `.agents/skills/` is exactly:
 - `workflow-verification`
 
 The first eleven are copied from or derived from Matt Pocock's Skills for Real
-Engineers release `v1.2.3`. Agent Workflow maintains their reviewed effective
+Engineers release `v1.2.3`. Agent Workflow maintains their effective
 installed versions and preserves complete copyright and MIT license attribution
 in the installed `THIRD_PARTY_NOTICES.md`. The obsolete Setup, Teach, and Triage
 skills are not current runtime content and are not retained as migration
 fixtures.
 
-`wayfinder` and `research` preserve Agent Workflow's reviewed effective contracts.
+`wayfinder` and `research` preserve Agent Workflow's maintained contracts.
 `research` returns cited findings in chat by default and writes a repository
 file only after an explicit authorized request. `wayfinder` remains the sole
 durable coordinator under `.agent-wayfinder/`. `implement` owns its inner build,
@@ -57,24 +57,13 @@ discovery remains unverified unless separately exercised.
 
 ## Tracker and publication boundary
 
-`to-spec` and `to-tickets` resolve a publication destination in this order:
-
-1. the current request;
-2. project instructions;
-3. existing project-owned tracker configuration, including
-   `docs/agents/issue-tracker.md`;
-4. otherwise no inferred destination.
-
-Conflicting applicable sources require clarification. A known destination does
-not authorize a mutation. Without both a destination and authorization, each
-skill returns the complete draft in chat, creates no temporary repository file,
-and stops before publication. Labels, statuses, and blocking links require both
-project-defined semantics and authorization for that mutation.
+`to-spec` and `to-tickets` use a destination named by the user or documented by
+the project and publish only when authorized; otherwise they return the complete
+draft in chat. Neither invents a local destination, label, or status.
 
 `code-review` treats tracker access as optional source lookup. It continues when
-the fixed point and specification are otherwise available, never blocks the
-Standards axis solely because tracker access is absent, and returns its report
-in chat unless publication is separately authorized.
+the fixed point and specification are otherwise available and never blocks the
+Standards axis solely because tracker access is absent.
 
 ## Lifecycle and maintenance
 
@@ -91,8 +80,9 @@ Mutating commands operate only at an exact, clean Git worktree root with a valid
 special entries, path escapes, and malformed composite markers. Git provides
 recovery if a later write fails. Legacy provider state and Setup, Teach, or
 Triage require a separate manual Git cleanup before installation; they are not
-migrated automatically. Lifecycle code never inspects or changes
-`.agent-wayfinder/`.
+migrated automatically. Lifecycle code does not directly traverse, interpret,
+or change `.agent-wayfinder/`; the repository-wide Git cleanliness check may
+still report changes there as part of a dirty worktree.
 
 When maintaining a derived skill, edit the effective payload directly, preserve
 its complete declared directory and local references, classify every prose

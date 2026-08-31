@@ -7,8 +7,9 @@ current package bytes.
 
 Durable project-owned Wayfinder state may live under sibling
 `.agent-wayfinder/`, but that tree is outside the lifecycle boundary. Lifecycle
-commands do not create, inspect, inventory, normalize, migrate, rewrite, or
-remove it.
+commands do not directly traverse, interpret, or change it. The repository-wide
+Git cleanliness check may still report changes there as part of a dirty
+worktree.
 
 ## Contents
 
@@ -41,8 +42,7 @@ directory names are reserved for Agent Workflow. Install and update replace
 each complete current curated skill directory, including extra files, while
 preserving unrelated skill directories. Remove deletes those current curated
 directories. A pre-existing conflicting skill must be moved or renamed before
-install. Wayfinder and Research are directly distributed reviewed effective
-versions.
+install. Wayfinder and Research are directly distributed maintained versions.
 
 Local Wayfinder data is a configured project-owned durable representation under
 `.agent-wayfinder/`, never a distributed template or framework-owned lifecycle
@@ -69,16 +69,15 @@ was derived. Decision records identify the accepted project policy that determin
 choice or the person, role, or valid delegate with project decision authority who
 commits it; evidence alone cannot commit that choice.
 
-Before detailed decomposition, the map may state ready work directly. When
-`to-tickets` decomposes substantial work, the resulting ticket or ticket set
-maintains contents, dependencies, ordering, and readiness. The map links it and
-may identify the current ready work without mirroring ticket-level state. See
+Before detailed decomposition, the map may state ready work directly. A
+`to-tickets` ticket or ticket set maintains contents, dependencies, ordering,
+and readiness. The map links it only when an accepted durable project or
+external record exists; a chat-only draft remains session-local. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling are specialists.
-They may return findings or produce their normal results—for example, a
-research report, prototype, or domain-model update—but create no Agent Workflow
-durable coordination state. Implementation is a workflow transition into
-execution.
+They may return findings or update the accepted project record designated to
+maintain the result, but create no Agent Workflow durable coordination state.
+Implementation is a workflow transition into execution.
 
 ## Status and recovery
 

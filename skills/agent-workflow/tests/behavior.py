@@ -1043,7 +1043,6 @@ Work normally within this repository. Do not expose hidden reasoning or chain-of
   "verification": [{{"command": "command actually run", "exit_code": 0}}],
   "research_sources": ["https://source.example/when-used"],
   "state_used": ["repository-relative state, source, or decision path actually used"],
-  "providers_selected": ["provider selected by routing, if any"],
   "blockers": ["specific unresolved blocker when blocked"]
 }}
 Use empty arrays when a category is not applicable. This report is public test evidence, not private reasoning.

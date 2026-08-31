@@ -7,21 +7,10 @@ name: to-tickets
 
 Break a plan, spec, or conversation into a set of **tickets** — tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
-Resolve the publication destination in this order:
-
-1. the current user request;
-2. project instructions;
-3. project-owned configuration, including `docs/agents/issue-tracker.md`;
-4. no destination.
-
-If applicable project instructions and project-owned configuration establish
-conflicting destinations, stop and ask which project source governs. Do not
-silently use precedence to conceal a project-source conflict. A known destination does not authorize publication. Publication,
-blocking-link creation, status changes, and labels require authorization from
-the current request or accepted project policy. Apply labels or statuses only
-when the project defines their semantics. When either the destination or
-authorization is missing, present the complete ticket drafts in chat, create no
-temporary repository files, and ask for the missing input.
+Use a publication destination named by the user or documented by the project.
+Publish only when the current request or accepted project policy authorizes it;
+otherwise return the complete ticket drafts in chat. Do not invent a local
+destination, label, or status.
 
 ## Process
 
@@ -68,14 +57,14 @@ Ask the user:
 
 Iterate until the user approves the breakdown.
 
-### 5. Publish the tickets to the resolved destination
+### 5. Publish the tickets
 
-Publish the approved tickets only when the destination is known and the
-mutation is authorized. The tickets are the same across destinations; only the
-shape of the blocking edges changes:
+When the publication boundary above permits it, publish the approved tickets to
+the named or documented destination. Preserve blocking edges in the form that
+destination supports:
 
-- **A project-configured local tracker** → follow the project's configured paths and format, preserving one ticket per designated artifact when that is the tracker contract. Declare blocking edges using the local identifiers the project defines.
-- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking or sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Apply a triage label or status only when its project-defined semantics are known and the mutation is authorized.
+- **A project-documented local tracker** → follow its paths and format and declare blocking edges using its identifiers.
+- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking or sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues.
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
@@ -88,8 +77,6 @@ Do NOT close or modify any parent issue.
 **What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective — not a layer-by-layer implementation list.
 
 **Blocked by:** the numbers/titles of the tickets that gate this one, or "None — can start immediately".
-
-**Status:** <project-defined status, when applicable and authorized>
 
 - [ ] Acceptance criterion 1
 - [ ] Acceptance criterion 2

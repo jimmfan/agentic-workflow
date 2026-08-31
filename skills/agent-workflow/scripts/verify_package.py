@@ -464,7 +464,7 @@ def check_semantic_contracts() -> None:
         wayfinder,
         (
             "Wayfinder is Agent Workflow's sole durable coordination layer.",
-            "Never copy a specification, ticket set, research result, review report, ADR, or other project result into the map.",
+            "Never copy the accepted project record designated to maintain the result into the map.",
         ),
     )
 
@@ -474,14 +474,24 @@ def check_semantic_contracts() -> None:
     ):
         text = normalized_text(relative)
         require(".scratch/" not in text, f"{label} infers a .scratch/ destination")
+        require(
+            "ready-for-agent" not in text,
+            f"{label} hard-codes the ready-for-agent label",
+        )
         require_clauses(
             label,
             text,
             (
-                "A known destination does not authorize publication.",
-                "When either the destination or authorization is missing",
-                "present the complete",
+                "destination named by the user",
+                "documented by the project",
+                "Publish only when",
+                "authorizes it",
+                "otherwise return",
                 "in chat",
+                "Do not invent",
+                "local destination",
+                "label",
+                "status",
             ),
         )
 

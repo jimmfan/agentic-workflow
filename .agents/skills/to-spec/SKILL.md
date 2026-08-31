@@ -5,21 +5,10 @@ name: to-spec
 ---
 This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user — just synthesize what you already know.
 
-Resolve the publication destination in this order:
-
-1. the current user request;
-2. project instructions;
-3. project-owned configuration, including `docs/agents/issue-tracker.md`;
-4. no destination.
-
-If applicable project instructions and project-owned configuration establish
-conflicting destinations, stop and ask which project source governs. Do not
-silently use precedence to conceal a project-source conflict. A known destination does not authorize publication. Publication and
-label changes require authorization from the current request or accepted
-project policy. Apply labels only when the project defines their semantics.
-When either the destination or authorization is missing, present the complete
-draft in chat, create no temporary repository file, and ask for the missing
-input.
+Use a publication destination named by the user or documented by the project.
+Publish only when the current request or accepted project policy authorizes it;
+otherwise return the complete draft in chat. Do not invent a local destination,
+label, or status.
 
 ## Process
 
@@ -29,10 +18,7 @@ input.
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below, then either publish it to the
-   resolved destination when authorized or present the complete draft in chat.
-   Apply a project-defined triage label only when its semantics are known and
-   that mutation is authorized.
+3. Write the spec using the template below.
 
 <spec-template>
 

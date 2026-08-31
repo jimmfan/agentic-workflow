@@ -155,9 +155,32 @@ class DirectDistributionTests(ProjectTestCase):
         self.assert_current_payload_installed()
         self.assert_wayfinder_untouched()
 
-    def test_fresh_adoption_rejects_a_project_owned_reserved_skill_name(self) -> None:
+    def test_update_recovers_missing_composites_and_a_drifted_skill(self) -> None:
+        self.assert_ok(self.lifecycle("install"))
+        commit_all(self.project, "install agent workflow")
+        run_git(self.project, "rm", "AGENTS.md", "CLAUDE.md")
+        (self.project / ".agents/skills/research/SKILL.md").write_text(
+            "committed project drift\n", encoding="utf-8"
+        )
+        commit_all(self.project, "commit missing composites and skill drift")
+
+        status = self.lifecycle("status")
+        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
+        self.assertIn("Agent Workflow: repairable", status.stdout)
+        self.assertNotIn("reserved curated skill directory", status.stdout)
+
+        self.assert_ok(self.lifecycle("update"))
+        self.assert_current_payload_installed()
+        self.assert_wayfinder_untouched()
+
+    def test_fresh_adoption_rejects_a_reserved_skill_despite_framework_directory(
+        self,
+    ) -> None:
         project = Path(self.temporary.name) / "reserved-name"
         project.mkdir()
+        framework_note = project / ".agent-workflow/project-note.txt"
+        framework_note.parent.mkdir(parents=True)
+        framework_note.write_bytes(b"project-owned framework-shaped directory\n")
         collision = project / ".agents/skills/research/SKILL.md"
         collision.parent.mkdir(parents=True)
         collision.write_bytes(b"project-owned research skill\n")

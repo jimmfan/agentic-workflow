@@ -24,8 +24,9 @@ blockers that would stop mutation.
 Git is the recovery mechanism. The lifecycle writes no installed manifest,
 hashes, provenance, created-state bits, migration history, backups, or rollback
 journal. If a write fails after mutation begins, inspect `git status`, restore
-with Git as appropriate, and retry. Lifecycle code never creates, reads, or
-changes `.agent-wayfinder/`.
+with Git as appropriate, and retry. Lifecycle code does not directly traverse,
+interpret, or change `.agent-wayfinder/`; repository-wide Git cleanliness checks
+may still observe changes under it.
 
 ## Maintainer and CI gate
 
@@ -48,8 +49,9 @@ The package verifier checks:
 - small behavior-bearing semantics: Research writes repository output only with
   explicit authorization;
   Wayfinder is the sole durable coordinator and does not own specialist results;
-  `to-spec` and `to-tickets` create no `.scratch` output and publish only with
-  a resolved destination plus authorization; `implement` does not infer commit
+  `to-spec` and `to-tickets` create no `.scratch` output, invent no local
+  destination, label, or status, and publish only to a user- or project-named
+  destination with authorization; `implement` does not infer commit
   authorization; and route markers report executed work only;
 - deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder, and
   verifier tests; and
@@ -92,7 +94,9 @@ The deterministic suite proves that:
   bytes remain unchanged;
 - remove deletes the managed directories and regions, deletes a composite file
   only when no project-authored bytes remain, and preserves unrelated skills;
-- no lifecycle command creates or accesses `.agent-wayfinder/`;
+- lifecycle commands do not directly traverse, interpret, or change
+  `.agent-wayfinder/`, while repository-wide Git cleanliness still observes its
+  changes;
 - dirty tracked or untracked state, an invalid or missing `HEAD`, a non-root
   invocation, ignored or untracked managed destinations, unsafe filesystem
   entries, and malformed markers stop mutation before any write;

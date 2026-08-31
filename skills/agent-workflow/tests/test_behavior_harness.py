@@ -11,6 +11,17 @@ from _behavior_test_support import behavior
 
 
 class BehaviorHarnessTests(unittest.TestCase):
+    def test_public_report_prompt_omits_retired_provider_selection_field(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "simple-bounded-task"
+        )
+
+        prompt = behavior.build_prompt(scenario)
+
+        self.assertNotIn('"providers_selected"', prompt)
+
     def test_blind_scenarios_hide_their_rubrics_and_use_non_descriptive_workspaces(
         self,
     ) -> None:

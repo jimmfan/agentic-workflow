@@ -7,6 +7,13 @@ Run focused unittest commands with `python3 -m unittest ...`. Python's generated
 need manual cleanup. The full verifier also disables bytecode writes in its test
 subprocess.
 
+Run `python3 skills/agent-workflow/tests/wheel_smoke.py -v` separately to build
+the wheel through an isolated PEP 517 build, install it into a disposable virtual
+environment, and invoke its `agent-workflow` entry point against one clean,
+disposable Git repository. This single packaging smoke is intentionally outside
+the deterministic unittest discovery gate because resolving the declared build
+backend may require package-index access.
+
 ## Production-boundary unit and integration tests
 
 - `test_lifecycle.py` owns install, update, status, remove, composite-file and
@@ -36,9 +43,10 @@ subprocess.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
-The lifecycle suite proves framework operations never create or access
-`.agent-wayfinder/`. Wayfinder fixtures independently prove reset, evaluator,
-and scenario behavior; they do not participate in lifecycle tests.
+The lifecycle suite proves framework operations do not directly traverse,
+interpret, or change `.agent-wayfinder/`; repository-wide Git cleanliness can
+still observe changes there. Wayfinder fixtures independently prove reset,
+evaluator, and scenario behavior; they do not participate in lifecycle tests.
 
 ## Human behavioral contracts and live smoke tests
 

@@ -6,8 +6,7 @@ Agent Workflow is a thin instruction router over host capability and curated,
 replaceable skills. Its core job is reliable minimum-workflow selection while
 preserving action authorization, project decision authority, and project-owned
 data. It is not a general agent runtime, package manager, hook framework,
-analytics system, duplicate specification store, ticket tracker, research store,
-or review store.
+analytics system, or second representation of accepted project results.
 
 The architecture optimizes for two pre-1.0 priorities:
 
@@ -38,9 +37,9 @@ route.
 
 Routing begins Direct and classifies from user intent plus skill descriptions
 exposed in the current session. Detailed routing loads only when workflow
-composition, agent handoff, durable resumption, or responsibility for a
-Wayfinder map, specification, ticket set, research finding, or review report is
-materially unclear. Routing may change as evidence emerges. Route selection,
+composition, agent handoff, durable resumption, or responsibility for the
+accepted project record designated to maintain a result is materially unclear.
+Routing may change as evidence emerges. Route selection,
 skill selection, material execution, and completion or verification evidence
 remain distinct. Host sandboxing and approvals determine host
 permission; that permission does not itself authorize an action or commit a
@@ -53,10 +52,8 @@ Writes and external mutations proceed only when the current user request or
 accepted project policy authorizes that action and scope.
 
 Wayfinder is Agent Workflow's sole durable coordination model. It keeps only
-consequential continuity and references, while specialists retain their methods.
-Source code, specifications, local tickets or tracker issues, research reports,
-prototypes, domain-model updates, and review reports remain in their project or
-external locations.
+consequential continuity and references, while specialists retain their methods
+and the accepted project record designated to maintain each result.
 
 ## Filesystem ownership
 
@@ -99,17 +96,16 @@ only their unambiguous managed region and preserve project-region bytes.
 
 `.agent-wayfinder/` and every entry below it are project-owned. Wayfinder creates
 and uses that tree only when durable coordination is needed. Lifecycle operations
-never create, read, inventory, validate, checksum, merge, migrate, rewrite, or
-remove it.
+do not directly traverse, interpret, or change it; the repository-wide Git
+cleanliness check may still report changes there as part of a dirty worktree.
 
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
 Their `map.md` is the brief coordination summary and the first effort file read
 when resuming. It summarizes the effort's current coordination state, conditions
-blocking particular work, dependencies, and ready work. When no ticket or ticket
-set exists, the map may state ready work directly. When `to-tickets` creates a
-detailed decomposition, the resulting ticket or ticket set maintains
-ticket contents, dependencies, ordering, and readiness; the map links it and may
-include the current ready-work reference without mirroring ticket-level state.
+blocking particular work, dependencies, and ready work. A `to-tickets` ticket or
+ticket set maintains ticket contents, dependencies, ordering, and readiness. The
+map links it only when an accepted durable project or external record exists; a
+chat-only draft remains session-local.
 New default maps retain `Blockers and dependencies` with `None` when no blocker
 or dependency applies; other inapplicable empty headings may be omitted. Existing
 maps remain valid without that heading or marker because this is authoring guidance,
@@ -133,8 +129,8 @@ for the stated scope or the evidence or record from which it was derived, plus
 material limitations. A D#'s presence means its choice is current and binding
 under the project-choice gate; evidence may inform a recommendation or choice but
 cannot commit it alone. The map represents current coordination state
-and is reconciled as relevant source files, specifications, tickets, accepted
-decisions, and other project records change. The progressively loaded Wayfinder
+and is reconciled as relevant source or the accepted project record designated
+to maintain the result changes. The progressively loaded Wayfinder
 state contract and its tests define exact allocation, reconciliation, pruning,
 effort-ending, and reference behavior.
 
@@ -146,7 +142,7 @@ ADR but do not become a second ADR or other project-policy record.
 
 ## Curated skill boundary
 
-The ordinary distribution manifest maps the complete fifteen-skill reviewed
+The ordinary distribution manifest maps the complete fifteen-skill curated
 payload directly into `.agents/skills/`. Each current curated skill name is a
 reserved, reconstructable directory that install and update replace completely;
 unrelated local skill directories are preserved. Supported hosts discover
@@ -180,8 +176,9 @@ Install and update converge to current desired state by replacing the complete
 `.agent-workflow/` directory and every current curated skill directory, and by
 updating the managed regions in `AGENTS.md` and `CLAUDE.md`. Remove deletes those
 managed directories and regions while preserving unrelated skill directories
-and project-authored composite bytes. Lifecycle never creates, reads, or changes
-`.agent-wayfinder/`.
+and project-authored composite bytes. Lifecycle does not directly traverse,
+interpret, or change `.agent-wayfinder/`; repository-wide Git cleanliness may
+still observe changes under it.
 
 Every mutating command requires the exact Git worktree root, a valid `HEAD`, and
 a completely clean tracked and untracked worktree. Preflight also rejects
@@ -217,8 +214,8 @@ Tests focus on observable boundaries:
 - install, update, status, remove, and bootstrap behavior;
 - coherent Wayfinder state and the directly distributed skill files;
 - clean-Git recovery boundaries and truthful partial-failure reporting; and
-- preservation of unrelated skills and project composite bytes while keeping
-  Wayfinder state entirely outside lifecycle access.
+- preservation of unrelated skills and project composite bytes without direct
+  lifecycle traversal or mutation of Wayfinder state.
 
 Live-model evaluations remain opt-in evidence rather than deterministic release
 requirements.
@@ -227,8 +224,7 @@ requirements.
 
 Live source and observed behavior establish current system facts for their
 stated scope. Accepted ADRs and project documentation record project choices.
-Specifications, tickets, research reports, prototypes, domain-model updates,
-and reviews remain authoritative for the results they record.
+The accepted project record designated to maintain a result remains authoritative.
 `.agent-wayfinder/` is the project-owned durable representation of local workflow
 continuity. These sources and records outrank summaries, private agent memory,
 and chat recollection.

@@ -11,9 +11,9 @@ automatic proof and not work to repeat without a gap.
 
 ## Select the uncovered evidence
 
-1. Read the acceptance criteria; the selected map, decision record,
-   specification, ticket, or ticket set; changed scope; risks; and evidence
-   already produced by `implement`, `tdd`, or `code-review`.
+1. Read the acceptance criteria, current authorized request, relevant source or
+   accepted project record designated to maintain the result, changed scope,
+   risks, and evidence already produced by `implement`, `tdd`, or `code-review`.
 2. Select the smallest additional checks that cover unresolved acceptance
    behavior, integration boundaries, expected results, and workflow completion.
 3. Reuse current test or review evidence when it directly covers a
@@ -38,10 +38,8 @@ approval.
 
 Confirm as applicable that:
 
-- the selected map, accepted specification, or approved ticket referenced by the
-  implementation is the one actually consumed;
-- external identifiers pass through unchanged and tracker IDs
-  remain distinct;
+- the current request, relevant source, or accepted project record referenced by
+  the implementation is the one actually consumed;
 - TDD and Code Review were not invoked redundantly;
 - skills not needed for the verification were not loaded merely because they
   were exposed in the current session; and

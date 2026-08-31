@@ -28,9 +28,9 @@ Separate framework-owned reconstructable output from preservation boundaries:
   Unrelated skill directories remain independent. A curated skill-directory
   name becomes reserved when Agent Workflow is adopted, so a project-owned skill
   with the same name must be moved or renamed before installation.
-- `.agent-wayfinder/` is project-owned durable state completely outside the
-  lifecycle boundary. Lifecycle operations never create, inventory, interpret,
-  migrate, rewrite, or remove it.
+- `.agent-wayfinder/` is project-owned durable state. Lifecycle operations do
+  not directly traverse, interpret, or change it. Repository-wide Git
+  cleanliness checks may still observe changes under it.
 - `AGENTS.md` and `CLAUDE.md` are composite project files. Lifecycle operations
   replace or remove only their unambiguous managed regions and preserve every
   project-authored byte outside those regions. Malformed, duplicated, partial,

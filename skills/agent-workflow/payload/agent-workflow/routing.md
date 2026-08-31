@@ -1,9 +1,9 @@
 # Detailed routing policy
 
 The root policy performs first-pass routing. Read this policy only when
-responsibility for a map, specification, ticket or ticket set, research result,
-or review is unclear; a selected skill is unavailable or requires explicit
-user invocation; an agent handoff occurs; or durable resumption is unclear.
+responsibility for the accepted project record designated to maintain a result
+is unclear; a selected skill is unavailable or requires explicit user
+invocation; an agent handoff occurs; or durable resumption is unclear.
 Direct work, one obvious workflow, and one obvious specialist inside Wayfinder
 do not load it.
 Root rules for action authorization, project decision authority, preservation,
@@ -62,9 +62,9 @@ Re-evaluate when evidence changes uncertainty, scope, coordination, failure
 mode, or action authorization. Apply the root Wayfinder threshold; counts trigger
 assessment, never selection. Explicit Wayfinder use and opt-out control the route.
 
-Resume only relevant work. Continue from the applicable Wayfinder map or the
-current decision record, specification, ticket or ticket set, research result,
-review, or project source for that work. For an unnamed likely Wayfinder resume,
+Resume only relevant work. Continue from the current authorized request,
+relevant source, accepted project record designated to maintain the result, or
+applicable Wayfinder map. For an unnamed likely Wayfinder resume,
 inspect the smallest plausible effort set and resume only one clear
 objective-and-scope match. A safe regular map identifies current resumable
 coordination; a mapless directory is not a candidate. An unrelated map never
@@ -72,8 +72,8 @@ captures the route.
 
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 only relevant F#/D# ledger sections or U#/E# artifacts. Implementation may
-consume ready work from a map, a current decision record, a specification, or a
-ticket without rerunning Wayfinder.
+consume ready work from the current authorized request, relevant source, or
+accepted project record without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses
 the Wayfinder threshold. Inside selected Wayfinder, use each needed specialist
@@ -117,15 +117,13 @@ claim an unavailable skill ran or present Direct work as that skill's result.
 ## Preserve responsibilities and transitions
 
 Each selected skill defines its method, terminology, and evidence requirements.
-Wayfinder is Agent Workflow's sole durable coordinator and stores only
-consequential state and links. Specifications, tickets or ticket sets, research
-results, and reviews remain in their project or external locations; the
-Wayfinder map links them
-instead of copying them. Preserve external identifiers unchanged.
+The accepted project record designated to maintain its result remains
+authoritative. Wayfinder stores only consequential coordination and links that
+record when it is durable; a chat-only result remains session-local.
 
-The Implementation integration supplies one accepted scope, its acceptance
-criteria, and links to the selected map, decision record, specification, ticket,
-or ticket set. `implement` owns its build loop, TDD, and closing Code Review.
+The Implementation integration supplies one accepted scope and its acceptance
+criteria from the current authorized request, relevant source, or accepted
+project record. `implement` owns its build loop, TDD, and closing Code Review.
 Framework Verification runs afterward and adds only uncovered evidence. The
 specialist creates no Agent Workflow durable coordination state.
 
