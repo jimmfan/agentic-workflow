@@ -426,40 +426,45 @@ class RoutingContractTests(unittest.TestCase):
             "decision record, accepted specification, or approved durable ticket "
             "or ticket set"
         )
-        surfaces = {
-            "detailed routing": (
-                PACKAGE_ROOT / "payload/agent-workflow/routing.md",
-                3,
-            ),
-            "implementation": (
-                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md",
-                3,
-            ),
-            "verification": (
-                PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md",
-                2,
-            ),
-        }
-        normalized = {}
-        for label, (path, expected_count) in surfaces.items():
-            text = " ".join(path.read_text(encoding="utf-8").split())
-            normalized[label] = text
-            with self.subTest(surface=label):
-                self.assertEqual(text.count(carrier), expected_count)
 
-        implementation = normalized["implementation"]
+        detailed_routing = " ".join(
+            (
+                PACKAGE_ROOT / "payload/agent-workflow/routing.md"
+            ).read_text(encoding="utf-8").split()
+        )
+        implementation = " ".join(
+            (
+                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+            ).read_text(encoding="utf-8").split()
+        )
+        verification = " ".join(
+            (
+                PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md"
+            ).read_text(encoding="utf-8").split()
+        )
+
+        # Routing owns the detailed cross-workflow carrier contract.
+        self.assertEqual(detailed_routing.count(carrier), 3)
+
+        # Implementation enumerates the accepted carriers once at its input boundary.
+        self.assertEqual(implementation.count(carrier), 1)
+
         for required in (
+            "Resume from the accepted scope and verification evidence",
             "artifact references, dependencies, and ready work in Wayfinder",
             "plus any references to artifacts or records that maintain the scope",
             (
-                "Durable remaining work belongs in the selected Wayfinder map, "
-                "accepted specification, or approved durable ticket or ticket set"
+                "Invoke `workflow-verification` once with the accepted scope and "
+                "its acceptance criteria"
             ),
-            "Do not create a specification or ticket merely to hold remaining work",
+            (
+                "Remaining durable next work must be maintained in the selected "
+                "Wayfinder map, accepted specification, or approved durable ticket "
+                "or ticket set"
+            ),
         ):
             self.assertIn(required, implementation)
 
-        detailed_routing = normalized["detailed routing"]
         for required in (
             (
                 "Selected skills supply their methods, terminology, and evidence. "
@@ -474,10 +479,27 @@ class RoutingContractTests(unittest.TestCase):
         ):
             self.assertIn(required, detailed_routing)
 
-        verification = normalized["verification"]
-        self.assertIn("integration boundaries, and expected artifacts", verification)
+        # Verification consumes the already-established accepted scope rather than
+        # redefining the complete carrier taxonomy.
+        self.assertNotIn(carrier, verification)
         self.assertIn(
-            "expected artifacts, workflow completion, and applicable compatibility behavior",
+            "the accepted scope Implementation actually consumed",
+            verification,
+        )
+        self.assertIn(
+            "the accepted scope referenced by Implementation is the one actually consumed",
+            verification,
+        )
+        self.assertIn(
+            "integration boundaries, and expected artifacts",
+            verification,
+        )
+        self.assertIn(
+            "expected artifacts, and workflow completion",
+            verification,
+        )
+        self.assertNotIn(
+            "applicable compatibility behavior",
             verification,
         )
 
