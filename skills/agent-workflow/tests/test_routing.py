@@ -450,7 +450,7 @@ class RoutingContractTests(unittest.TestCase):
         implementation = normalized["implementation"]
         for required in (
             "artifact references, dependencies, and ready work in Wayfinder",
-            "references to the artifacts or records that maintain it",
+            "plus any references to artifacts or records that maintain the scope",
             (
                 "Durable remaining work belongs in the selected Wayfinder map, "
                 "accepted specification, or approved durable ticket or ticket set"

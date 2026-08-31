@@ -121,14 +121,12 @@ Existing evidence from a source that establishes the scoped claim may satisfy
 the method without a ceremonial specialist invocation, but one method cannot
 substitute for another's required authority or evidence.
 
-Do not load specialists speculatively. Specialists retain their methods and
-results. Any specialist artifacts or evidence remain outside Agent Workflow
-durable coordination state. The specialist creates no Agent Workflow durable
-coordination state. If work is interrupted,
-reconcile only consequential questions, uncertainties, unexplained causes,
-choices, structural ambiguity, conditions blocking particular work, evidence or
-conclusions, artifact references, the resolution method when useful, and
-ready work into Wayfinder. When resuming, read the map first rather than a
+Do not load specialists speculatively. Specialists retain their methods. A
+specialist creates no Agent Workflow durable coordination state. If work is
+interrupted, reconcile only consequential questions, uncertainties, unexplained
+causes, choices, structural ambiguity, conditions blocking particular work,
+evidence or conclusions, artifact references, the resolution method when useful,
+and ready work into Wayfinder. When resuming, read the map first rather than a
 specialist notebook or coordination record.
 
 ## Reconcile and transition ready work

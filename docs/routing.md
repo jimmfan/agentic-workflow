@@ -94,8 +94,9 @@ question and is not itself a blocker; E# contains evidence with source, scope,
 observation, and limitations. Before
 detailed decomposition, the map
 may state ready work directly. When `to-tickets` decomposes work, the resulting
-ticket or ticket set maintains ticket contents, dependencies, ordering, and
-readiness; the map links it without mirroring ticket-level state.
+durable ticket or ticket set maintains ticket contents, dependencies, ordering,
+and readiness; the map links that durable ticket or ticket set without mirroring
+ticket-level state.
 A safe regular map makes an effort current and resumable; a mapless directory is not a candidate. The
 router loads the Wayfinder contract only after Wayfinder is selected or a
 relevant effort is being resumed, then reads the map and only relevant F#/D#

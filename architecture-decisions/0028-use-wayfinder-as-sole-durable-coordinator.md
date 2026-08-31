@@ -21,11 +21,9 @@ relationships, conditions blocking particular work, dependencies, ready work,
 optional current knowledge, and readable references to artifacts or records
 designated to maintain lasting results.
 
-Specialists retain their methods and results. Any specialist artifacts or
-evidence remain outside Agent Workflow durable coordination state. The
-specialist creates no Agent Workflow durable coordination state.
-Direct reasoning remains valid; load only a specialist whose method materially
-helps the current work or unresolved question.
+Specialists retain their methods and create no Agent Workflow durable
+coordination state. Direct reasoning remains valid; load only a specialist whose
+method materially helps the current work or unresolved question.
 
 A durable ticket or ticket set created by `to-tickets` maintains ticket
 contents, dependencies, ordering, and readiness. Wayfinder references that

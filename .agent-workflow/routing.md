@@ -44,7 +44,7 @@ prerequisite using the minimum sufficient method. This table resolves overlaps:
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis grants no action authorization for a fix |
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
 | A sufficiently defined scope needs a specification | `to-spec` | The specification maintains the accepted scope |
-| Approved work needs ordered independent sessions | `to-tickets` | The ticket or ticket set maintains its contents, dependencies, ordering, and readiness |
+| Approved work needs ordered independent sessions | `to-tickets` | The durable ticket or ticket set maintains its contents, dependencies, ordering, and readiness |
 | One implementation scope is ready | Implementation, then `implement` | Trivial low-risk edits stay Direct; meaningful work ends with Verification |
 | Explicit bounded test-first work | `tdd` | The skill defines its loop |
 | Completion audit or meaningful finished change | Verification | Add only uncovered acceptance or integration evidence |

@@ -76,10 +76,8 @@ ticket set and may include the current ready-work reference without mirroring
 ticket-level state; a chat-only draft remains session-local. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling are specialists.
-Specialists retain their methods and results. Any specialist artifacts or
-evidence remain outside Agent Workflow durable coordination state; specialists
-create no Agent Workflow durable coordination state. Implementation is a
-workflow transition into execution.
+Specialists retain their methods and create no Agent Workflow durable
+coordination state. Implementation is a workflow transition into execution.
 
 ## Status and recovery
 

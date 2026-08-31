@@ -16,14 +16,12 @@ Wayfinder is Agent Workflow's sole durable coordination model. The selected effo
 When resuming a Wayfinder effort, read `map.md` first; it is the first effort file, and no
 other Agent Workflow durable coordination record may compete with it.
 
-Each specialist retains its method. Any specialist artifacts or evidence remain
-outside Agent Workflow durable coordination state. The specialist creates no
-Agent Workflow durable coordination state. Wayfinder records
-consequential results and references, not procedures or bookkeeping. A durable
-ticket or ticket set created by `to-tickets` maintains its contents,
-dependencies, ordering, and readiness. Wayfinder uses a readable Markdown link
-to reference that durable ticket or ticket set instead of copying or mirroring
-ticket-level state.
+Each specialist retains its method. A specialist creates no Agent Workflow
+durable coordination state. Wayfinder records consequential results and
+references, not procedures or bookkeeping. A durable ticket or ticket set
+created by `to-tickets` maintains its contents, dependencies, ordering, and
+readiness. Wayfinder uses a readable Markdown link to reference that durable
+ticket or ticket set instead of copying or mirroring ticket-level state.
 
 U/E/F/D are Wayfinder's durable record types. Blocking is a scoped relationship between a
 condition and particular work, not a separate Wayfinder record type. Do not create blocker

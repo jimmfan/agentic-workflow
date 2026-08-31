@@ -28,11 +28,6 @@ Look for the originating spec, in this order:
 3. A spec file under `docs/` or `specs/` matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
-Tracker access is optional source lookup, not a prerequisite for either axis.
-Continue from a supplied fixed point and spec source when those are already
-available. The Standards axis never fails merely because no tracker is
-configured or reachable.
-
 ### 3. Identify the standards sources
 
 Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`.

@@ -30,8 +30,8 @@ and closing Code Review.
 
 Invoke `implement` once. Never simulate its execution or claim it ran.
 
-Pass accepted scope, references to the artifacts or records that maintain it,
-and observable acceptance criteria.
+Pass the accepted scope and observable acceptance criteria, plus any references
+to artifacts or records that maintain the scope.
 
 Do not rerun `tdd` or `code-review` work already completed by `implement` unless
 a distinct request or new evidence creates a gap.

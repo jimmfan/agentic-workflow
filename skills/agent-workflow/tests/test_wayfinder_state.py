@@ -2275,10 +2275,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             ).split()
         )
         for responsibility in (
-            (
-                "Any specialist artifacts or evidence remain outside Agent Workflow "
-                "durable coordination state"
-            ),
+            "A specialist creates no Agent Workflow durable coordination state",
             (
                 "A durable ticket or ticket set created by `to-tickets` maintains "
                 "its contents, dependencies, ordering, and readiness"
@@ -2331,9 +2328,10 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertNotIn("To Tickets", surface)
             self.assertIn(
-                "Any specialist artifacts or evidence remain outside Agent Workflow",
+                "A specialist creates no Agent Workflow durable coordination state",
                 " ".join(surface.split()),
             )
+
         for invalid in (
             "link its ticket ordering and readiness",
             "remain durable in ticket ordering and readiness",
