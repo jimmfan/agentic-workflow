@@ -30,8 +30,7 @@ method, and identify ready work;
   guidance, not an effort-recognition or parser requirement, and does not require
   migration, compatibility parsing, or rewriting. Unfinished tests, verification,
   commits, pushes, and other workflow steps are not blockers merely because they
-  remain. Never copy the accepted project record designated to maintain the
-  result into the map.
+  remain.
 - The map summarizes the effort's current coordination state, conditions blocking particular work,
   dependencies, and ready work.
   Optional F/D ledger sections and U/E artifacts are records that preserve only
@@ -122,10 +121,9 @@ Existing evidence from a source that establishes the scoped claim may satisfy
 the method without a ceremonial specialist invocation, but one method cannot
 substitute for another's required authority or evidence.
 
-Do not load specialists speculatively. Specialists retain their methods and may
-return evidence or create or update the accepted project record designated to
-maintain the result. The specialist creates no Agent Workflow durable
-coordination state. If work is interrupted,
+Do not load specialists speculatively. Specialists retain their methods and
+results. The specialist creates no Agent Workflow durable coordination state.
+If work is interrupted,
 reconcile only consequential questions, uncertainties, unexplained causes,
 choices, structural ambiguity, conditions blocking particular work, evidence or
 conclusions, links to relevant results, the resolution method when useful, and
@@ -196,8 +194,8 @@ advancing work that remains dependency-blocked. Each workflow transition to
 Implementation consumes one ready scope and its acceptance criteria;
 Verification follows material execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
-deliverable sessions. A `to-tickets` ticket or ticket set maintains contents,
-dependencies, ordering, and readiness. Wayfinder links it only when an accepted
-durable project or external record exists. A chat-only draft remains
-session-local; if continuity later requires it, preserve only the minimum needed
-coordination or evidence in Wayfinder.
+deliverable sessions. A durable ticket or ticket set created by `to-tickets`
+maintains its contents, dependencies, ordering, and readiness. When none exists,
+the map may state ready work directly. When one exists, the map links it rather
+than mirroring ticket-level state and may include the current ready-work
+reference.

@@ -40,6 +40,7 @@ Confirm as applicable that:
 
 - the current request, relevant source, or accepted project record referenced by
   the implementation is the one actually consumed;
+- external identifiers pass through unchanged and tracker IDs remain distinct;
 - TDD and Code Review were not invoked redundantly;
 - skills not needed for the verification were not loaded merely because they
   were exposed in the current session; and

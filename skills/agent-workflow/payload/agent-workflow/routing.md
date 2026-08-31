@@ -117,9 +117,8 @@ claim an unavailable skill ran or present Direct work as that skill's result.
 ## Preserve responsibilities and transitions
 
 Each selected skill defines its method, terminology, and evidence requirements.
-The accepted project record designated to maintain its result remains
-authoritative. Wayfinder stores only consequential coordination and links that
-record when it is durable; a chat-only result remains session-local.
+Wayfinder stores only consequential coordination and links durable project or
+external records; chat-only results remain session-local.
 
 The Implementation integration supplies one accepted scope and its acceptance
 criteria from the current authorized request, relevant source, or accepted

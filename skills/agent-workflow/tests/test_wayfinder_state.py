@@ -2277,8 +2277,6 @@ class WayfinderStateContractTests(unittest.TestCase):
         for responsibility in (
             "ticket or ticket set created by `to-tickets`",
             "its contents, dependencies, ordering, and readiness",
-            "links it only when an accepted durable project or external record exists",
-            "chat-only draft remains session-local",
         ):
             with self.subTest(contract_responsibility=responsibility):
                 self.assertIn(responsibility, contract_boundaries)
@@ -2293,8 +2291,10 @@ class WayfinderStateContractTests(unittest.TestCase):
             "summarizes the effort's current coordination state",
             "when no durable ticket or ticket set exists",
             "may state ready work directly",
+            "when one exists, the map links it",
             "may include a current ready-work reference",
             "without mirroring ticket-level state",
+            "chat-only draft is not a durable ticket or ticket set",
         ):
             with self.subTest(map_behavior=map_behavior):
                 self.assertIn(map_behavior.casefold(), effort_shape.casefold())
@@ -2574,11 +2574,10 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         for responsibility in (
             "The map summarizes",
-            "A `to-tickets` ticket or ticket set maintains contents,",
-            "dependencies, ordering, and readiness",
-            "Wayfinder links it only when an accepted",
-            "chat-only draft remains",
-            "minimum needed coordination or evidence",
+            "A durable ticket or ticket set created by `to-tickets`",
+            "maintains its contents, dependencies, ordering, and readiness",
+            "When none exists, the map may state ready work directly",
+            "When one exists, the map links it rather than mirroring ticket-level state",
         ):
             with self.subTest(ticket_responsibility=responsibility):
                 self.assertIn(responsibility, transition)

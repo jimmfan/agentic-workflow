@@ -42,7 +42,7 @@ Invoke `workflow-verification` once with the acceptance criteria, current
 authorized request, relevant source or accepted project record, changed scope,
 existing test and review evidence, and remaining integration risks.
 Verification reuses covered evidence and adds only missing acceptance,
-expected-result, or integration-boundary checks.
+artifact, boundary, or compatibility checks.
 
 Completion requires the scope to be finished and required Verification to pass,
 unless accepted project policy determines that a limitation is acceptable for

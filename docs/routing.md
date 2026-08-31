@@ -79,8 +79,8 @@ imitate the skill, and report only what actually ran.
 
 Wayfinder is Agent Workflow's sole durable coordination model; its project-owned
 state lives under `.agent-wayfinder/`.
-Chat output is session-local. The accepted project record designated to maintain
-a result remains authoritative, and Wayfinder links it only when it is durable.
+Chat output is session-local. Wayfinder links project or external records only
+when they are durable.
 If a chat-only result later needs continuity, Wayfinder preserves only the
 minimum needed coordination or evidence. When resuming a Wayfinder effort, read
 its map first. The map

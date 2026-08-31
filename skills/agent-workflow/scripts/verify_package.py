@@ -464,7 +464,7 @@ def check_semantic_contracts() -> None:
         wayfinder,
         (
             "Wayfinder is Agent Workflow's sole durable coordination layer.",
-            "Never copy the accepted project record designated to maintain the result into the map.",
+            "Reference the accepted project record designated to maintain the result instead of copying it.",
         ),
     )
 

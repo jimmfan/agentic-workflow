@@ -54,9 +54,9 @@
   Different scope, abstraction, summarization, or omitted detail is not by itself
   an inconsistency. Before reconciling, identify a concrete incompatible
   statement or a requirement the relevant source or accepted project record
-  fails to satisfy. Update the accepted project record designated to maintain
-  the result instead of creating another representation unless the new
-  representation has independently useful meaning, scope, or retrieval value.
+  fails to satisfy. When an existing source or accepted project record maintains
+  the current state, update it instead of creating another representation unless
+  the new representation has independently useful meaning, scope, or retrieval value.
   When materially ambiguous, preserve the existing content and clarify or
   investigate rather than inventing detail or process merely to make artifacts
   match.
