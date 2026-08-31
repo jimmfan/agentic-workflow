@@ -153,45 +153,27 @@ Exact Wayfinder representation and reconciliation behavior is defined in the ins
 
 Example text to use Wayfinder:
 ```text
+Project/effort plan path (if available):
+
 Use the installed Agent Workflow and explicitly start Wayfinder for this
 repository's current development effort.
 
-First inspect the project instructions, relevant accepted architecture
-decisions and documentation, repository structure, current Git state, and the
-source and tests relevant to the effort. Then create a lightweight
-`.agent-wayfinder/<stable-effort-name>/map.md` that will help developers and
-future agents resume the work without depending on this chat.
+First inspect any project/effort plan identified above, the project instructions,
+relevant accepted architecture decisions and documentation, repository structure,
+and the source and tests relevant to the effort.
 
-Record only durable, evidence-backed coordination context:
+Use an available project/effort plan to understand the intended objective, scope,
+dependencies, sequencing, and remaining work where applicable. Reference the plan
+from Wayfinder when useful rather than copying it.
 
-- the objective;
-- the included and excluded scope;
-- the important areas and relationships in the effort;
-- supported current conclusions with references to the sources that establish
-  them for their stated scope;
-- consequential unresolved questions and committed choices, dependencies, and
-  conditions blocking particular work; and
-- ready work—work to which no blocker currently applies.
+Create a lightweight `.agent-wayfinder/<stable-effort-name>/map.md` that will
+help developers and future agents resume the work without depending on this chat.
+Do not implement product changes during this first pass.
 
-A blocker is a condition that currently prevents particular work from proceeding.
-An unsatisfied dependency, unresolved consequential uncertainty, or missing
-required authority can be a blocker for affected work. The missing condition may
-be an uncommitted required project choice, an unauthorized required action, or an
-unsatisfied required dependency. Blocking is scoped to
-that work; independent ready work may proceed while other work remains blocked.
-
-Create a separate unresolved question or evidence record only when it is an
-independently useful coordination or retrieval unit. When a supported current
-conclusion or committed choice warrants durable representation, record it as an
-F# or D# section in the optional `facts.md` or `decisions.md` ledger. Treat live
-source and accepted project artifacts as stronger support than assumptions,
-chat history, or outdated Wayfinder claims. Do not copy the transcript, invent
-requirements, or implement product changes during this first pass.
-
-If the current effort cannot be inferred confidently, ask me one concrete scope
-question before creating the Wayfinder state. When finished, summarize what you
-created, what remains uncertain, and the best next prompt for continuing the
-work.
+If the current effort cannot be inferred confidently, ask only the minimum
+concrete scope questions needed before creating the Wayfinder state. When
+finished, summarize what you created, what remains uncertain, and the best next
+prompt for continuing the work.
 ```
 
 ## Project ownership
