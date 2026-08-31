@@ -92,8 +92,6 @@ executed; use `direct` if no workflow or skill ran. If selection did
 not become equivalent execution, report the routing policy's terminal outcome.
 Never reroute or work merely to produce the marker.
 <!-- agent-workflow:managed-end -->
-
-<!-- agent-workflow:project-instructions -->
 ## External action notifications
 
 When progress is blocked on an action the user must take outside the agent

@@ -5,10 +5,6 @@
       "target": ".agent-workflow/README.md"
     },
     {
-      "source": "agent-workflow/THIRD_PARTY_NOTICES.md",
-      "target": ".agent-workflow/THIRD_PARTY_NOTICES.md"
-    },
-    {
       "source": "agent-workflow/contracts/wayfinder-state.md",
       "target": ".agent-workflow/contracts/wayfinder-state.md"
     },

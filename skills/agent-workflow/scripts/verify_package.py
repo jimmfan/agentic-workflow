@@ -25,10 +25,13 @@ SEMVER = re.compile(r"\d+\.\d+\.\d+")
 MARKDOWN_LINK = re.compile(r"\[[^]]*\]\(([^)]+)\)")
 FENCED_CODE = re.compile(r"(?ms)^```[^\n]*\n.*?^```[ \t]*$")
 INLINE_CODE = re.compile(r"`[^`\n]*`")
-MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
-MANAGED_END = b"<!-- agent-workflow:managed-end -->\n"
-PROJECT_BEGIN = b"\n<!-- agent-workflow:project-instructions -->\n"
+MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
+MANAGED_END = b"<!-- agent-workflow:managed-end -->"
+FORMER_PROJECT_MARKER = b"<!-- agent-workflow:project-instructions -->"
 MARKER_PREFIX = b"<!-- agent-workflow:"
+CLAUDE_MANAGED_BEGIN = MANAGED_BEGIN + b"\n"
+CLAUDE_MANAGED_END = MANAGED_END + b"\n"
+CLAUDE_PROJECT_BEGIN = b"\n" + FORMER_PROJECT_MARKER + b"\n"
 
 REQUIRED_PACKAGE_FILES = (
     "__init__.py",
@@ -43,7 +46,6 @@ REQUIRED_PACKAGE_FILES = (
     "payload/root/AGENTS.md.template",
     "payload/root/CLAUDE.md.template",
     "payload/agent-workflow/README.md",
-    "payload/agent-workflow/THIRD_PARTY_NOTICES.md",
     "payload/agent-workflow/routing.md",
     "payload/agent-workflow/contracts/wayfinder-state.md",
 )
@@ -51,7 +53,6 @@ REQUIRED_PACKAGE_FILES = (
 EXPECTED_BASE_PAYLOAD_FILES = frozenset(
     {
         "agent-workflow/README.md",
-        "agent-workflow/THIRD_PARTY_NOTICES.md",
         "agent-workflow/contracts/wayfinder-state.md",
         "agent-workflow/routing.md",
         "distribution/manifest.json",
@@ -70,9 +71,7 @@ EXPECTED_SKILL_FILES = {
     ),
     "grilling": frozenset({"SKILL.md", "agents/openai.yaml"}),
     "implement": frozenset({"SKILL.md", "agents/openai.yaml"}),
-    "prototype": frozenset(
-        {"LOGIC.md", "SKILL.md", "UI.md", "agents/openai.yaml"}
-    ),
+    "prototype": frozenset({"LOGIC.md", "SKILL.md", "UI.md", "agents/openai.yaml"}),
     "research": frozenset({"SKILL.md", "agents/openai.yaml"}),
     "tdd": frozenset({"SKILL.md", "agents/openai.yaml", "mocking.md", "tests.md"}),
     "to-spec": frozenset({"SKILL.md", "agents/openai.yaml"}),
@@ -285,7 +284,9 @@ def check_manifest() -> None:
                 and target.parts[2] in EXPECTED_SKILL_FILES
             )
         )
-        require(allowed_target, f"manifest target is outside managed surfaces: {target}")
+        require(
+            allowed_target, f"manifest target is outside managed surfaces: {target}"
+        )
         sources.append(source.as_posix())
         targets.append(target_value)
     require(len(sources) == len(set(sources)), "manifest source paths are duplicated")
@@ -304,7 +305,11 @@ def markdown_destinations(path: Path) -> Iterable[str]:
     text = INLINE_CODE.sub("", FENCED_CODE.sub("", path.read_text(encoding="utf-8")))
     for destination in MARKDOWN_LINK.findall(text):
         destination = destination.split("#", 1)[0]
-        if destination and "://" not in destination and not destination.startswith("mailto:"):
+        if (
+            destination
+            and "://" not in destination
+            and not destination.startswith("mailto:")
+        ):
             yield destination
 
 
@@ -393,9 +398,7 @@ def check_local_links() -> None:
 
 
 def check_attribution() -> None:
-    notice = (PAYLOAD_ROOT / "agent-workflow/THIRD_PARTY_NOTICES.md").read_text(
-        encoding="utf-8"
-    )
+    notice = (PAYLOAD_ROOT / "agent-workflow/README.md").read_text(encoding="utf-8")
     normalized = " ".join(notice.split())
     for name in sorted(ATTRIBUTED_SKILLS):
         require(
@@ -550,19 +553,35 @@ def require_tree_equal(source: Path, target: Path, label: str) -> None:
 
 def managed_region(path: Path) -> bytes:
     data = path.read_bytes()
-    managed_end = data.find(MANAGED_END, len(MANAGED_BEGIN))
-    project_begin = data.find(PROJECT_BEGIN, managed_end + len(MANAGED_END))
+    if path.name == "CLAUDE.md":
+        managed_end = data.find(CLAUDE_MANAGED_END, len(CLAUDE_MANAGED_BEGIN))
+        project_begin = data.find(
+            CLAUDE_PROJECT_BEGIN, managed_end + len(CLAUDE_MANAGED_END)
+        )
+        require(
+            data.count(MARKER_PREFIX) == 3
+            and data.count(CLAUDE_MANAGED_BEGIN) == 1
+            and data.count(CLAUDE_MANAGED_END) == 1
+            and data.count(CLAUDE_PROJECT_BEGIN) == 1
+            and data.startswith(CLAUDE_MANAGED_BEGIN)
+            and managed_end >= 0
+            and project_begin == managed_end + len(CLAUDE_MANAGED_END),
+            f"checked-in composite has invalid managed markers: {path.name}",
+        )
+        return data[len(CLAUDE_MANAGED_BEGIN) : managed_end]
+
+    managed_begin = MANAGED_BEGIN + b"\n"
+    managed_end_marker = MANAGED_END + b"\n"
+    managed_end = data.find(managed_end_marker, len(managed_begin))
     require(
-        data.count(MARKER_PREFIX) == 3
+        data.count(MARKER_PREFIX) == 2
         and data.count(MANAGED_BEGIN) == 1
         and data.count(MANAGED_END) == 1
-        and data.count(PROJECT_BEGIN) == 1
-        and data.startswith(MANAGED_BEGIN)
-        and managed_end >= 0
-        and project_begin == managed_end + len(MANAGED_END),
+        and data.startswith(managed_begin)
+        and managed_end >= 0,
         f"checked-in composite has invalid managed markers: {path.name}",
     )
-    return data[len(MANAGED_BEGIN) : managed_end]
+    return data[len(managed_begin) : managed_end]
 
 
 def check_checked_in_projection() -> None:

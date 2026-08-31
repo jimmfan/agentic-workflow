@@ -88,10 +88,14 @@ The deterministic suite proves that:
 
 - install and update converge to the same current state by replacing the full
   `.agent-workflow/` directory and all current curated skill directories;
+- a tracked obsolete file inside `.agent-workflow/` is removed by ordinary
+  desired-state replacement without a preliminary cleanup commit;
 - extra files inside a current curated skill directory are removed, while
   unrelated skill directories remain unchanged;
-- `AGENTS.md` and `CLAUDE.md` managed regions update while project-authored
-  bytes remain unchanged;
+- repeated install and update leave exactly one managed block in `AGENTS.md` and
+  `CLAUDE.md` while preserving project-authored bytes byte-for-byte; `AGENTS.md`
+  uses only logical managed-begin/managed-end delimiters, accepts LF or CRLF
+  marker lines, and never appends a second managed region;
 - remove deletes the managed directories and regions, deletes a composite file
   only when no project-authored bytes remain, and preserves unrelated skills;
 - lifecycle commands do not directly traverse, interpret, or change
@@ -103,10 +107,8 @@ The deterministic suite proves that:
 - `status` remains read-only on a dirty tree and reports safety blockers;
 - a deliberately injected later write failure reports possible partial changes
   and directs the user to Git recovery rather than claiming rollback;
-- `.agent-workflow/providers.json` and obsolete Setup, Teach, or Triage skill
-  directories produce one manual clean-break instruction and no mutation;
-- a future removed skill is not retired automatically; cleanup is a separate
-  explicit Git change; and
+- skill directories outside the current curated inventory are preserved without
+  consulting a historical retirement list; and
 - bootstrap archive and root-safety boundaries remain enforced offline.
 
 Git cannot recover ignored or previously untracked files. Tests therefore prove

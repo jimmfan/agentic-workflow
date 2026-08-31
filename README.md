@@ -190,7 +190,7 @@ target-project/
 │
 ├── .agent-workflow/          # framework-owned
 │   ├── routing.md
-│   ├── THIRD_PARTY_NOTICES.md
+│   ├── README.md             # includes third-party MIT notice
 │   └── contracts/
 │
 └── .agent-wayfinder/         # project-owned
@@ -223,7 +223,10 @@ part of a dirty worktree. Wayfinder alone owns its use.
 
 ### `AGENTS.md` and `CLAUDE.md`
 
-Agent Workflow manages only its marked section and preserves project-owned content outside that section.
+Agent Workflow manages only its marked section and preserves project-owned
+content outside that section byte-for-byte. `AGENTS.md` uses one logical
+managed-begin/managed-end region; repeated install and update keep exactly one
+such region. The existing `CLAUDE.md` integration remains unchanged.
 
 ### Lifecycle safety
 
@@ -239,10 +242,10 @@ managed regions from `AGENTS.md` and `CLAUDE.md`; it deletes a composite file
 only when no project-authored bytes remain. A failure after mutation may leave a
 partial diff: inspect `git status`, restore with Git as appropriate, and retry.
 
-There is no automatic legacy migration. If `.agent-workflow/providers.json` or
-the obsolete Setup, Teach, or Triage skill directory is present, remove the
-legacy `.agent-workflow/` tree and obsolete skill directories in a separate Git
-cleanup commit, then run install.
+There is no migration subsystem. A clean existing installation converges in one
+install or update: complete replacement of `.agent-workflow/` removes obsolete
+framework files as part of the resulting Git diff. Skill directories outside
+the current curated inventory are unrelated content and remain untouched.
 
 ### Where results live
 

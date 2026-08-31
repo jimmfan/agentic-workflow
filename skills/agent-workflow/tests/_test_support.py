@@ -14,8 +14,8 @@ REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 CLI = PACKAGE_ROOT / "cli.py"
 BOOTSTRAP = PACKAGE_ROOT / "scripts" / "bootstrap.py"
 LIFECYCLE = PACKAGE_ROOT / "scripts" / "lifecycle.py"
-MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
-MANAGED_END = b"<!-- agent-workflow:managed-end -->\n"
+MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
+MANAGED_END = b"<!-- agent-workflow:managed-end -->"
 
 
 def run_script(

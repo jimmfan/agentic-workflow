@@ -32,14 +32,6 @@ RETAINED_SKILLS = {
     "workflow-implementation",
     "workflow-verification",
 }
-OBSOLETE_SKILLS = {"setup-matt-pocock-skills", "teach", "triage"}
-# These independent literals verify the externally visible clean-break contract.
-LEGACY_INSTRUCTION = (
-    "Remove the legacy .agent-workflow/ directory and obsolete skill directories "
-    ".agents/skills/setup-matt-pocock-skills, .agents/skills/teach, and "
-    ".agents/skills/triage in a separate Git-tracked cleanup, commit that cleanup, "
-    "then run the new agent-workflow install."
-)
 
 
 def file_snapshot(root: Path) -> dict[str, bytes]:
@@ -65,7 +57,9 @@ class DirectDistributionTests(ProjectTestCase):
     def lifecycle(self, command: str, *extra: object):
         return run_script(LIFECYCLE, command, self.project, *extra)
 
-    def assert_current_payload_installed(self) -> None:
+    def assert_current_payload_installed(
+        self, additional_skills: set[str] | None = None
+    ) -> None:
         framework = self.project / ".agent-workflow"
         self.assertEqual(
             file_snapshot(framework),
@@ -76,7 +70,7 @@ class DirectDistributionTests(ProjectTestCase):
         installed = self.project / ".agents/skills"
         self.assertEqual(
             {path.name for path in installed.iterdir() if path.is_dir()},
-            RETAINED_SKILLS | {"project-local"},
+            RETAINED_SKILLS | {"project-local"} | (additional_skills or set()),
         )
         for name in RETAINED_SKILLS:
             with self.subTest(skill=name):
@@ -84,8 +78,6 @@ class DirectDistributionTests(ProjectTestCase):
                     tree_snapshot(installed / name),
                     tree_snapshot(PACKAGE_ROOT / "payload/skills" / name),
                 )
-        for name in OBSOLETE_SKILLS:
-            self.assertFalse((installed / name).exists())
 
     def assert_wayfinder_untouched(self) -> None:
         self.assertEqual(
@@ -258,31 +250,46 @@ class DirectDistributionTests(ProjectTestCase):
         self.assert_current_payload_installed()
         self.assert_wayfinder_untouched()
 
-    def test_legacy_provider_surfaces_require_one_manual_clean_break(self) -> None:
-        cases = ["providers.json", *sorted(OBSOLETE_SKILLS)]
-        for name in cases:
-            with self.subTest(name=name):
-                project = Path(self.temporary.name) / name.replace(".", "-")
-                project.mkdir()
-                initialize_repository(project)
-                if name == "providers.json":
-                    legacy = project / ".agent-workflow/providers.json"
-                else:
-                    legacy = project / ".agents/skills" / name / "SKILL.md"
-                legacy.parent.mkdir(parents=True, exist_ok=True)
-                legacy.write_bytes(b"legacy bytes are deliberately not inspected\n")
-                commit_all(project, "add legacy installation surface")
-                before = workspace_snapshot(project)
+    def test_update_replaces_framework_desired_state_and_preserves_unmanaged_skills(
+        self,
+    ) -> None:
+        self.assert_ok(self.lifecycle("install"))
+        commit_all(self.project, "install agent workflow")
 
-                status = run_script(LIFECYCLE, "status", project)
-                self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
-                self.assertIn("legacy clean break required", status.stdout)
-                self.assertEqual(status.stdout.count(LEGACY_INSTRUCTION), 1)
+        providers = self.project / ".agent-workflow/providers.json"
+        providers.write_bytes(b"obsolete framework bytes\n")
+        preserved: dict[Path, bytes] = {}
+        for name in ("setup-matt-pocock-skills", "teach", "triage"):
+            path = self.project / ".agents/skills" / name / "SKILL.md"
+            path.parent.mkdir(parents=True)
+            content = f"project-owned {name}\n".encode()
+            path.write_bytes(content)
+            preserved[path] = content
+        commit_all(self.project, "add prior provider-era surfaces")
 
-                install = run_script(LIFECYCLE, "install", project)
-                self.assertEqual(install.returncode, 2, install.stdout + install.stderr)
-                self.assertEqual(install.stderr.count(LEGACY_INSTRUCTION), 1)
-                self.assertEqual(workspace_snapshot(project), before)
+        status = self.lifecycle("status")
+        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
+        self.assertIn("Agent Workflow: repairable", status.stdout)
+        self.assertNotIn("clean break", status.stdout)
+
+        self.assert_ok(self.lifecycle("update"))
+
+        self.assert_current_payload_installed({path.parent.name for path in preserved})
+        self.assertFalse(providers.exists())
+        for path, content in preserved.items():
+            with self.subTest(path=path):
+                self.assertEqual(path.read_bytes(), content)
+        self.assert_wayfinder_untouched()
+
+        commit_all(self.project, "converge prior provider-era surfaces")
+        providers.write_bytes(b"another obsolete framework file\n")
+        commit_all(self.project, "restore obsolete framework file")
+
+        self.assert_ok(self.lifecycle("install"))
+        self.assertFalse(providers.exists())
+        for path, content in preserved.items():
+            with self.subTest(repeated_install=path):
+                self.assertEqual(path.read_bytes(), content)
 
 
 if __name__ == "__main__":
