@@ -50,16 +50,16 @@ sufficiently supported. It remains revisable as evidence changes.
 
 **Project decision authority**:
 The person, role, or valid delegate whose choice the project treats as binding
-within a defined decision boundary. Accepted project policy may settle the
-boundary directly or establish who holds that authority; this does not restrict
-technical judgment already delegated by the user or policy.
+within a defined decision boundary. Accepted project policy may determine the
+choice for that boundary directly or establish who holds that authority; this
+does not restrict technical judgment already delegated by the user or policy.
 
 ## Current-state operations
 
 **Reconciliation**:
 Updating affected current coordination state so it agrees with current truth,
-choices committed by project decision authority, and the designated artifacts
-that maintain lasting results.
+project choices determined by accepted project policy or committed by project
+decision authority, and the designated artifacts that maintain lasting results.
 
 **Pruning**:
 Pruning removes a recognized Wayfinder record from current coordination after

@@ -45,6 +45,12 @@ evidence remain distinct. Host sandboxing and approvals determine host
 permission; that permission does not itself authorize an action or commit a
 project choice.
 
+Project-choice commitment and action authorization are separate gates. Required
+evidence must be sufficient before accepted project policy determines a choice or
+the person, role, or valid delegate with project decision authority commits it.
+Writes and external mutations proceed only when the current user request or
+accepted project policy authorizes that action and scope.
+
 Wayfinder is Agent Workflow's sole durable coordination model. It keeps only
 consequential continuity and references, while specialists retain their methods
 and provider-native artifacts. Specifications, tickets, research, reviews,
@@ -105,10 +111,15 @@ exists, the map may state ready work directly. Once a To Tickets artifact
 maintains detailed decomposition, that ticket artifact or ticket set maintains
 ticket contents, dependencies, ordering, and readiness; the map links it and may
 include the current ready-work reference without mirroring ticket-level state.
+New default maps retain `Blockers and dependencies` with `None` when no blocker
+or dependency applies; other inapplicable empty headings may be omitted. Existing
+maps remain valid without that heading or marker because this is authoring guidance,
+not an effort-recognition schema or migration rule.
 Optional `facts.md` and `decisions.md` ledgers hold current F# fact records and
 D# decision records. F# contains a current scoped descriptive conclusion judged
 sufficiently supported and remains revisable; D# contains a current choice
-committed by project decision authority. Independently useful U# unresolved
+determined directly by accepted project policy or committed by the person, role,
+or valid delegate with project decision authority. Independently useful U# unresolved
 question records and E# evidence records with source, scope, observation, and
 limitations remain separate files. The map indexes relevant detail rather than
 duplicating those stores.
@@ -120,9 +131,9 @@ without treating one topology as universally superior.
 
 Every current fact record identifies the source that establishes its conclusion
 for the stated scope or the evidence or record from which it was derived, plus
-material limitations. A D#'s presence means its choice is current and committed
-by project decision authority; evidence may inform a recommendation or choice
-but cannot create that authority. The map represents current coordination state
+material limitations. A D#'s presence means its choice is current and binding
+under the project-choice gate; evidence may inform a recommendation or choice but
+cannot commit it alone. The map represents current coordination state
 and should converge as lasting outcomes move to the artifacts designated to
 maintain them. The progressively loaded Wayfinder state contract and its tests
 define exact allocation, reconciliation, pruning, effort-ending, and reference
@@ -154,9 +165,8 @@ than layering local state rules over conflicting upstream tracker mechanics. It
 uses objective, scope, areas and relationships, unresolved-question or blocker
 language, ready work, readable names, and progressive resolution.
 
-Provider instructions grant neither action authorization nor project decision
-authority. They do not authorize commits, publication, tracker mutation, or
-broader external access. An unavailable or non-invocable provider normally
+Provider instructions do not authorize commits, publication, tracker mutation,
+or broader external access and do not commit project choices. An unavailable or non-invocable provider normally
 falls back to truthful host-native work unless the user specifically requires
 that provider or a real safety boundary prevents fallback.
 
@@ -198,7 +208,7 @@ scenarios, local documentation links, and the test suite.
 Tests focus on observable boundaries:
 
 - route selection, provider resolution, invocation truthfulness, material
-  execution evidence, and action authorization;
+  execution evidence, project-choice commitment, and action authorization;
 - preservation of project-owned state and ambiguous external content;
 - install, update, status, remove, and bootstrap behavior;
 - coherent Wayfinder state and installed provider projection; and

@@ -44,8 +44,8 @@ It checks:
 - the source-only terminology glossary and project-language policy remain
   present, scoped, and absent from the distributed payload;
 - current Agent Workflow-owned Wayfinder surfaces distinguish records from
-  represented questions, evidence, conclusions, and choices; project decision
-  authority from action authorization and host permission; route selection from
+  represented questions, evidence, conclusions, and choices; project-choice
+  commitment from action authorization and host permission; route selection from
   provider resolution, invocation, material execution, and completion evidence;
   and lifecycle ownership from durability and reconstructability;
 - local Markdown links and behavioral scenario validation;

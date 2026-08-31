@@ -335,10 +335,11 @@ class ProviderTests(ProjectTestCase):
             self.project / ".agents/skills/grilling/agents/openai.yaml"
         ).read_text(encoding="utf-8")
         self.assertIn(
-            "Grill the user through interdependent human/project-owned decisions whose answers "
-            "materially shape downstream choices.",
+            "Grill the user through interdependent choices requiring human input or project "
+            "decision authority that materially shape downstream work.",
             skill_text,
         )
+        self.assertNotIn("human/project-owned decisions", skill_text)
         self.assertIn("explicitly asks to be grilled or stress-test", skill_text)
         self.assertIn(
             'short_description: "Resolve interdependent decisions through structured questions"',

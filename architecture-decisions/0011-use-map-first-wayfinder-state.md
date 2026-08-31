@@ -42,13 +42,13 @@ and shrink, and Git preserves committed historical evolution.
 Preserve a question independently only when retaining it or its eventual answer
 could materially improve a later developer's ability to make or evaluate a
 choice. A blocker is a condition that currently prevents particular work from
-proceeding. An unsatisfied dependency, unresolved consequential question, or
-missing required project decision authority can be a blocker for affected work.
+proceeding. An unsatisfied dependency, unresolved consequential uncertainty, or
+missing required authority can be a blocker for affected work.
 Ready work is work to which no blocker currently applies; independent ready work may proceed
 while other work remains blocked.
 
-Work with action authorization that changes represented reality is responsible
-for scoped reconciliation of affected map content, recognized records, and
+Work authorized within the current scope that changes represented reality must
+reconcile affected map content, recognized records, and
 references before claiming completion. Designated project artifacts continue to
 maintain their lasting results. Read-only work may report staleness but does not
 repair project-owned state.

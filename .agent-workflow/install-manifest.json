@@ -14,15 +14,15 @@
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "459889ee4a6f2f5a9e6e070fb0be5c1ebba5ef4cb0bd9f8b2bb149b95e767fae"
+      "sha256": "bdfefd098399253e05818fbb161499054cd0bbeb86b6354b7dc85aaa0fa81ebd"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "b8c79121ae9320611a2fe6a8f7e93a2ec66726d10ed65ffcc9a1514c1b24f692"
+      "sha256": "ef40e69678dce9117d030456911c6193baa6ddc08aa0f0aea1ffaeb1ec744568"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,
-      "sha256": "f0b493414c19522e442b06363f4a6e76cc26138b42e43040a447013a34d2e060"
+      "sha256": "7046f78b160d3ee46e1fe0ee24927cbee1ec3210822ea641ae1234524c70ab29"
     }
   },
   "framework_version": "0.23.0",

@@ -17,17 +17,32 @@
   Read `.agent-workflow/routing.md` only when artifact responsibility is unclear or provider
   fallback, invocation instruction, agent handoff, or durable resumption
   materially matters.
-- Workflows grant neither action authorization nor project decision authority.
-  Exact external read-only targets permit only that read.
-- MUST NOT cross a consequential decision boundary without required evidence,
-  action authorization, or project decision authority. Explicit acceptance by project decision authority
-  leaves the recorded unresolved question unresolved and unblocks only its
-  named boundary; independent work may continue.
-- Never commit a choice reserved for project decision authority. Ask the
-  concrete question, why that authority is required, and what its answer
-  unblocks. Evidence-backed technical judgment within delegated scope remains
-  valid. Reopen a settled choice only for conflict, safety, project decision
-  authority, or request.
+- Do not treat a consequential project choice as committed until required
+  evidence is sufficient and either accepted project policy determines the
+  choice for that boundary or the person, role, or valid delegate with project
+  decision authority commits it. Technical judgment already delegated by the
+  user or accepted project policy remains valid. Dependent work stops while a
+  required project choice remains uncommitted; independent work may continue.
+- Perform writes, commands, publication, destructive operations, and external
+  mutations only within the action and scope authorized by the current user
+  request or accepted project policy. When both the required project choice is
+  committed and the action is authorized, affected work may proceed within that
+  authorized scope. Authorization to perform an action does not by itself commit
+  a project choice. A committed project choice does not by itself authorize
+  unrelated actions. Host permission alone neither authorizes an action nor
+  commits a project choice. A workflow, skill, provider instruction, test,
+  specification, ticket, or Wayfinder record grants neither. Exact external
+  read-only targets permit only that read.
+- When accepted project policy does not already determine a required project
+  choice, obtain it from the person, role, or valid delegate with project
+  decision authority. If that authority is unclear, ask who may decide, why the
+  choice is required, and what it unblocks. Responsibility alone does not
+  establish project decision authority. The person, role, or valid delegate with
+  that authority may explicitly accept unresolved uncertainty for one named
+  boundary; the question remains unresolved, only that boundary becomes
+  unblocked, no broader project choice is committed, no unrelated action is
+  authorized, and no other dependency is satisfied. Revisit a committed choice
+  only for conflict, safety, project decision authority, or request.
 - Never claim unexecuted work.
 - Preserve unrelated work, project state, designated artifacts, and identifiers.
   Live source and accepted artifacts outrank summaries, memory, and chat.
@@ -51,9 +66,9 @@ Unless the user opts out, MUST select or resume Wayfinder when any hard signal
 or at least two soft signals apply:
 
 - Hard: cross-session continuation or agent-handoff continuity; conflicting
-  sources that establish the same scoped claim; a blocker requiring project decision authority
-  while other work proceeds; coordinated responsible participants or areas; or source and scope
-  needed to distinguish assumption from fact.
+  sources that establish the same scoped claim; an uncommitted required project
+  choice while independent work proceeds; coordinated responsible participants
+  or areas; or source and scope needed to distinguish assumption from fact.
 - Soft: interacting consequential unresolved questions; durable distinctions
   across record or state categories; evidence-driven plan change; a meaningful
   dependency graph; or material fresh-agent reconstruction risk.
