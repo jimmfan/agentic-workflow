@@ -8,6 +8,10 @@ FROM mcr.microsoft.com/devcontainers/python:${PYTHON_VARIANT}
 COPY --from=uv /uv /uvx /usr/local/bin/
 
 RUN apt-get update \
+    && apt-get install -y --no-install-recommends ripgrep \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
     && apt-get install -y --no-install-recommends bubblewrap \
     && rm -rf /var/lib/apt/lists/* \
     && install -d -m 0700 -o vscode -g vscode /home/vscode/.codex \

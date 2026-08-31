@@ -44,7 +44,7 @@ That acceptance unblocks only the named boundary: no broader project choice is
 committed, no unrelated action is authorized, and no other dependency is
 satisfied.
 
-Durable state may record the accepted policy that determines a choice, the
+Durable state may record the accepted project policy that determines a choice, the
 person, role, or valid delegate who commits it, or the authority that accepted
 uncertainty; it cannot create policy, authority, or authorization.
 

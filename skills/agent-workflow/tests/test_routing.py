@@ -66,7 +66,7 @@ class RoutingContractTests(unittest.TestCase):
         self.assertEqual(
             entries["Reconciliation"],
             "Updating affected current coordination state so it agrees with current "
-            "truth, project choices determined by accepted policy or committed by "
+            "truth, project choices determined by accepted project policy or committed by "
             "project decision authority, and the designated artifacts that maintain "
             "lasting results.",
         )

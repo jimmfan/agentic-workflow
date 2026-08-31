@@ -69,7 +69,7 @@ existing maps remain valid without that heading or marker. This is authoring
 guidance, not a recognition requirement or migration trigger.
 
 Fact records identify the source or records from which their scoped conclusion
-was derived. Decision records identify the accepted policy that determines their
+was derived. Decision records identify the accepted project policy that determines their
 choice or the person, role, or valid delegate with project decision authority who
 commits it; evidence alone cannot commit that choice.
 
