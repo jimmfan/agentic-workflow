@@ -20,7 +20,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = true
-verification_command = "Run python verify.py after creating only the justified E1/F1 chain, publishing the approved provider-native tickets, and updating map.md."
+verification_command = "Run python verify.py after creating only the justified E1/F1 chain, publishing the approved ticket set, and updating map.md."
 preserve_paths = [
   "release-policy.txt",
   "rollout-plan.md",
@@ -103,13 +103,13 @@ path = ".agent-wayfinder/runtime-rollout/tickets"
 
 [[assertions]]
 kind = "glob_count"
-path = ".scratch/runtime-rollout/issues/*.md"
+path = "docs/agents/runtime-rollout/issues/*.md"
 count = 3
 
 [[assertions]]
 kind = "glob_any_matches"
 path = ".agent-wayfinder/runtime-rollout/map.md"
-value = '''\[[^\]]+\]\([^\)\n]*\.scratch/runtime-rollout/issues/[^\)\n]*\)'''
+value = '''\[[^\]]+\]\([^\)\n]*docs/agents/runtime-rollout/issues/[^\)\n]*\)'''
 
 [[assertions]]
 kind = "glob_any_matches"

@@ -19,17 +19,20 @@ framework rules only; no project-owned map or durable record is sent.
 
 Each round returns a schema-constrained public decision containing the initial
 route, current route, Wayfinder assessment and selection, requested resources,
-and provider outcome. In this synthetic environment, a selected provider-backed
-skill must load provider metadata before completion because no host capability
-catalog is otherwise exposed. This makes availability observed rather than
-inferred without changing the repository's lazy provider-loading boundary. The
+and skill outcome. The harness derives expected availability from the installed
+`.agents/skills/` surface and host-specific invocation rules in
+`host-fixtures.json`. A selected skill must load its instructions and the
+fixture-declared invocation metadata before completion. This preserves the
+repository's progressive-loading boundary without consulting a registry. The
 report records every revealed resource in order plus the exact prompt bytes and
 any usage metadata exposed by the adapter.
 
 This isolates cross-model interpretation of the routing contract. It is not
 operating-system file-access tracing and does not prove that every interactive
-coding-agent host will load files identically. The existing fixture-backed live
-behavior suite remains responsible for end-to-end repository behavior.
+coding-agent host will discover or invoke the installed files identically.
+Every deterministic report marks live host discovery as `unverified`; only a
+separately authorized live exercise may report otherwise. End-to-end host
+discovery and invocation therefore remain outside this smoke test's evidence.
 
 ## Inspect the payload without contacting a model
 
@@ -104,10 +107,9 @@ python3 -m evals.routing_smoke compare \
   /tmp/routing-smoke-small.json
 ```
 
-Selection agreement is evaluated separately from provider outcomes because the
-current registry intentionally makes Wayfinder available to Codex and
-unavailable to Claude. Equivalent interpretation may therefore produce
-different truthful execution outcomes.
+Selection agreement is evaluated separately from skill outcomes. The fixture
+may make a skill available, require explicit invocation, or leave host-native
+fallback as the truthful outcome without changing the selected route.
 
 ## Cost and safety limits
 
@@ -119,11 +121,11 @@ starting another round once the limit is reached. Pricing examples above were
 current on 2026-08-19; verify vendor pricing before a later run.
 
 The dollar guard is an estimate, not a billing-system reservation. A single
-provider request is already in flight before its usage is known, and vendor
+model request is already in flight before its usage is known, and vendor
 caching, hidden host context, reasoning tokens, subscription credits, and price
 changes may affect final accounting. The schema-constrained output and hard
 round/prompt limits bound that residual risk.
 
-Live execution contacts the selected model provider and consumes API quota or
+Live execution contacts the selected model service and consumes API quota or
 subscription credits. Deterministic tests use fake adapters and make no network
 requests.

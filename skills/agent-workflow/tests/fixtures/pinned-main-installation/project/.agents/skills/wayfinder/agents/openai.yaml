@@ -1,0 +1,5 @@
+interface:
+  display_name: "Wayfinder"
+  short_description: "Keep a lightweight map of complicated work"
+policy:
+  allow_implicit_invocation: true

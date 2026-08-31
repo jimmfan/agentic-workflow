@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -18,6 +19,7 @@ from typing import Any, Callable, Iterable, Mapping, Sequence
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 SMOKE_ROOT = Path(__file__).resolve().parent / "routing-smoke"
 CASES_PATH = SMOKE_ROOT / "cases.json"
+HOST_FIXTURES_PATH = SMOKE_ROOT / "host-fixtures.json"
 DEFAULT_MAX_ROUNDS = 4
 DEFAULT_MAX_PROMPT_BYTES = 120_000
 HARD_MAX_COST_USD = 2.0
@@ -25,19 +27,20 @@ CLAUDE_MAX_CALL_USD = 0.20
 
 RESOURCE_PATHS = {
     ".agent-workflow/routing.md": REPOSITORY_ROOT / ".agent-workflow/routing.md",
-    ".agent-workflow/providers.json": REPOSITORY_ROOT
-    / ".agent-workflow/providers.json",
     ".agents/skills/wayfinder/SKILL.md": REPOSITORY_ROOT
     / ".agents/skills/wayfinder/SKILL.md",
+    ".agents/skills/wayfinder/agents/openai.yaml": REPOSITORY_ROOT
+    / ".agents/skills/wayfinder/agents/openai.yaml",
     ".agent-workflow/contracts/wayfinder-state.md": REPOSITORY_ROOT
     / ".agent-workflow/contracts/wayfinder-state.md",
 }
 
 ROUTES = ["direct", "discovery", "debugging", "wayfinder", "other"]
-PROVIDER_OUTCOMES = [
+SKILL_OUTCOMES = [
     "not_checked",
     "direct",
     "available",
+    "explicit_invocation_required",
     "unavailable",
     "host_native_fallback",
 ]
@@ -54,7 +57,7 @@ DECISION_SCHEMA: dict[str, Any] = {
         "current_route": {"type": "string", "enum": ROUTES},
         "wayfinder_assessment": {"type": "boolean"},
         "wayfinder_selected": {"type": "boolean"},
-        "provider_outcome": {"type": "string", "enum": PROVIDER_OUTCOMES},
+        "skill_outcome": {"type": "string", "enum": SKILL_OUTCOMES},
         "summary": {"type": "string"},
     },
     "required": [
@@ -64,7 +67,7 @@ DECISION_SCHEMA: dict[str, Any] = {
         "current_route",
         "wayfinder_assessment",
         "wayfinder_selected",
-        "provider_outcome",
+        "skill_outcome",
         "summary",
     ],
     "additionalProperties": False,
@@ -123,6 +126,210 @@ def load_cases(path: Path = CASES_PATH) -> dict[str, dict[str, Any]]:
     return cases
 
 
+def load_host_fixtures(path: Path = HOST_FIXTURES_PATH) -> dict[str, Any]:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if raw.get("schema_version") != 1:
+        raise SmokeError("routing smoke host fixtures must use schema_version 1")
+    if raw.get("live_host_discovery") != "unverified":
+        raise SmokeError("routing smoke host fixtures must mark live discovery unverified")
+    hosts = raw.get("hosts")
+    if not isinstance(hosts, dict) or not hosts:
+        raise SmokeError("routing smoke host fixtures must declare hosts")
+    for host, fixture in hosts.items():
+        if not isinstance(host, str) or not isinstance(fixture, dict):
+            raise SmokeError("routing smoke host fixtures contain an invalid host")
+        skill_root = fixture.get("skill_root")
+        invocation = fixture.get("invocation")
+        if (
+            not isinstance(skill_root, str)
+            or not _safe_relative_path(skill_root)
+            or not isinstance(invocation, dict)
+        ):
+            raise SmokeError(f"routing smoke host fixture {host!r} is invalid")
+        if set(invocation) != {
+            "metadata_suffix",
+            "field",
+            "default",
+            "true_means",
+        }:
+            raise SmokeError(
+                f"routing smoke host fixture {host!r} has invalid invocation fields"
+            )
+        if (
+            not isinstance(invocation["metadata_suffix"], str)
+            or not _safe_relative_path(invocation["metadata_suffix"])
+            or not isinstance(invocation["field"], str)
+            or not invocation["field"]
+            or not isinstance(invocation["default"], bool)
+            or invocation["true_means"] not in {"implicit", "explicit"}
+        ):
+            raise SmokeError(
+                f"routing smoke host fixture {host!r} has invalid invocation metadata"
+            )
+    return raw
+
+
+def _safe_relative_path(value: str) -> bool:
+    path = Path(value)
+    return bool(value) and not path.is_absolute() and ".." not in path.parts
+
+
+def _regular_file(path: Path) -> bool:
+    try:
+        return stat.S_ISREG(path.lstat().st_mode)
+    except FileNotFoundError:
+        return False
+
+
+def _yaml_boolean(content: str, field: str) -> bool | None:
+    target = field.split(".")
+    stack: list[tuple[int, str]] = []
+    found: list[bool] = []
+    for raw_line in content.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#") or stripped == "---":
+            continue
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        while stack and indent <= stack[-1][0]:
+            stack.pop()
+        if ":" not in stripped:
+            continue
+        key, raw_value = stripped.split(":", 1)
+        key = key.strip()
+        raw_value = raw_value.strip().lower()
+        current = [item[1] for item in stack] + [key]
+        if current == target and raw_value in {"true", "false"}:
+            found.append(raw_value == "true")
+        if not raw_value:
+            stack.append((indent, key))
+    if len(found) > 1:
+        raise SmokeError(f"invocation metadata field {field!r} is duplicated")
+    return found[0] if found else None
+
+
+def _skill_frontmatter(content: str) -> str:
+    lines = content.splitlines()
+    if not lines or lines[0].strip() != "---":
+        raise SmokeError("fixture-declared SKILL.md lacks YAML frontmatter")
+    try:
+        end = next(
+            index for index, line in enumerate(lines[1:], start=1) if line.strip() == "---"
+        )
+    except StopIteration as exc:
+        raise SmokeError("fixture-declared SKILL.md has unterminated frontmatter") from exc
+    return "\n".join(lines[1:end])
+
+
+def derive_skill_environment(
+    case: Mapping[str, Any],
+    *,
+    host: str,
+    repository_root: Path = REPOSITORY_ROOT,
+    host_fixtures: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    fixtures = dict(host_fixtures or load_host_fixtures())
+    hosts = fixtures.get("hosts")
+    fixture = hosts.get(host) if isinstance(hosts, Mapping) else None
+    if not isinstance(fixture, Mapping):
+        raise SmokeError(f"no deterministic host fixture exists for {host!r}")
+    selected_skill = case.get("selected_skill")
+    if selected_skill is None:
+        return {
+            "source": "deterministic_fixture",
+            "skill": None,
+            "installed": False,
+            "invocation": "not_checked",
+            "invocation_metadata": None,
+            "expected_skill_outcomes": ["direct", "not_checked"],
+            "live_host_discovery": fixtures["live_host_discovery"],
+        }
+    if (
+        not isinstance(selected_skill, str)
+        or not selected_skill
+        or "/" in selected_skill
+        or selected_skill in {".", ".."}
+    ):
+        raise SmokeError("routing smoke selected_skill must be one safe name")
+
+    skill_root = Path(str(fixture["skill_root"]))
+    skill_directory = repository_root / skill_root / selected_skill
+    instruction_path = skill_directory / "SKILL.md"
+    invocation = fixture["invocation"]
+    metadata_path = skill_directory / str(invocation["metadata_suffix"])
+    instruction_resource = (skill_root / selected_skill / "SKILL.md").as_posix()
+    metadata_resource = (
+        skill_root / selected_skill / str(invocation["metadata_suffix"])
+    ).as_posix()
+    if not _regular_file(instruction_path):
+        return {
+            "source": "deterministic_fixture",
+            "skill": selected_skill,
+            "installed": False,
+            "installed_surface": [],
+            "invocation": "not_checked",
+            "invocation_metadata": None,
+            "expected_skill_outcomes": ["unavailable", "host_native_fallback"],
+            "live_host_discovery": fixtures["live_host_discovery"],
+        }
+    if not _regular_file(metadata_path):
+        raise SmokeError(
+            f"installed skill {selected_skill!r} lacks fixture-declared invocation metadata"
+        )
+
+    metadata_content = metadata_path.read_text(encoding="utf-8")
+    if metadata_path.name == "SKILL.md":
+        metadata_content = _skill_frontmatter(metadata_content)
+    configured = _yaml_boolean(metadata_content, str(invocation["field"]))
+    source = "metadata" if configured is not None else "default"
+    value = invocation["default"] if configured is None else configured
+    implicit = value if invocation["true_means"] == "implicit" else not value
+    invocation_mode = "implicit" if implicit else "explicit"
+    expected = (
+        ["available"]
+        if implicit
+        else ["explicit_invocation_required", "host_native_fallback"]
+    )
+    return {
+        "source": "deterministic_fixture",
+        "skill": selected_skill,
+        "installed": True,
+        "installed_surface": sorted({instruction_resource, metadata_resource}),
+        "invocation": invocation_mode,
+        "invocation_metadata": {
+            "resource": metadata_resource,
+            "field": invocation["field"],
+            "value": value,
+            "source": source,
+        },
+        "expected_skill_outcomes": expected,
+        "live_host_discovery": fixtures["live_host_discovery"],
+    }
+
+
+def required_resources(case: Mapping[str, Any], host: str) -> list[str]:
+    required = list(case["required_resources"])
+    by_host = case.get("required_resources_by_host", {})
+    if not isinstance(by_host, Mapping):
+        raise SmokeError("required_resources_by_host must be an object")
+    host_required = by_host.get(host, [])
+    if not isinstance(host_required, list) or any(
+        not isinstance(item, str) for item in host_required
+    ):
+        raise SmokeError(f"required resources for host {host!r} must be an array")
+    return list(dict.fromkeys([*required, *host_required]))
+
+
+def model_host_fixture(case: Mapping[str, Any], host: str) -> dict[str, Any]:
+    fixtures = load_host_fixtures()
+    hosts = fixtures["hosts"]
+    if host not in hosts:
+        raise SmokeError(f"no deterministic host fixture exists for {host!r}")
+    fixture = dict(hosts[host])
+    fixture["selected_skill"] = case.get("selected_skill")
+    fixture["live_host_discovery"] = fixtures["live_host_discovery"]
+    return fixture
+
+
 def resource_path(case: Mapping[str, Any], name: str) -> Path:
     fixture = SMOKE_ROOT / "fixtures" / str(case["id"]) / name
     if fixture.is_file():
@@ -151,6 +358,7 @@ def build_prompt(
 ) -> str:
     root_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
     available = json.dumps(resource_catalog(case), indent=2)
+    host_fixture = json.dumps(model_host_fixture(case, host), indent=2)
     loaded_text = (
         "\n\n".join(
             f"<resource name={json.dumps(name)}>\n{content}\n</resource>"
@@ -166,10 +374,14 @@ access a filesystem, or invent resource contents. Request only named resources t
 says are now relevant. Multiple resources may be requested together. Once enough evidence is
 loaded, return status=\"complete\". Keep initial_route as the route justified before any requested
 resource was revealed; current_route may change as evidence accumulates. current_route records
-the router's conceptual selection before host/provider compatibility is applied. Record an
-unavailable provider or host-native fallback separately in provider_outcome.
-After selecting a provider-backed skill, MUST request provider metadata before completing
-unless it is already loaded; use that metadata to report provider_outcome truthfully.
+the router's conceptual selection before installed-skill compatibility is applied. Record an
+unavailable skill, explicit-invocation requirement, or host-native fallback separately in
+skill_outcome. After selecting a skill, MUST request its instructions and declared invocation metadata
+before completing unless they are already loaded; use that evidence to report skill_outcome
+truthfully.
+
+Deterministic host fixture (test input, not live host discovery):
+{host_fixture}
 
 <always_loaded_policy>
 {root_policy}
@@ -216,8 +428,8 @@ def validate_decision(decision: Mapping[str, Any]) -> None:
         or decision["current_route"] not in ROUTES
     ):
         raise SmokeError("adapter returned an invalid route")
-    if decision["provider_outcome"] not in PROVIDER_OUTCOMES:
-        raise SmokeError("adapter returned an invalid provider outcome")
+    if decision["skill_outcome"] not in SKILL_OUTCOMES:
+        raise SmokeError("adapter returned an invalid skill outcome")
     if not isinstance(decision["wayfinder_assessment"], bool) or not isinstance(
         decision["wayfinder_selected"], bool
     ):
@@ -232,16 +444,16 @@ def evaluate_case(
     decisions: Sequence[Mapping[str, Any]],
     *,
     host: str,
+    skill_environment: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     final = decisions[-1] if decisions else {}
     first = decisions[0] if decisions else {}
     first_requested = first.get("requested_resources", [])
-    if case["id"] == "direct":
-        expected_provider_outcomes = {"direct", "not_checked"}
-    elif host == "claude":
-        expected_provider_outcomes = {"unavailable", "host_native_fallback"}
-    else:
-        expected_provider_outcomes = {"available"}
+    environment = dict(
+        skill_environment or derive_skill_environment(case, host=host)
+    )
+    expected_skill_outcomes = set(environment["expected_skill_outcomes"])
+    expected_required_resources = required_resources(case, host)
     checks = [
         {
             "name": "completed",
@@ -266,8 +478,8 @@ def evaluate_case(
         },
         {
             "name": "required-resources",
-            "passed": all(name in loaded_names for name in case["required_resources"]),
-            "detail": f"required={case['required_resources']!r}, loaded={list(loaded_names)!r}",
+            "passed": all(name in loaded_names for name in expected_required_resources),
+            "detail": f"required={expected_required_resources!r}, loaded={list(loaded_names)!r}",
         },
         {
             "name": "forbidden-resources",
@@ -282,9 +494,9 @@ def evaluate_case(
             "detail": f"expected={case['expected_first_resources']!r}, actual={first_requested!r}",
         },
         {
-            "name": "provider-outcome",
-            "passed": final.get("provider_outcome") in expected_provider_outcomes,
-            "detail": f"expected one of={sorted(expected_provider_outcomes)!r}, actual={final.get('provider_outcome')!r}",
+            "name": "skill-outcome",
+            "passed": final.get("skill_outcome") in expected_skill_outcomes,
+            "detail": f"expected one of={sorted(expected_skill_outcomes)!r}, actual={final.get('skill_outcome')!r}",
         },
     ]
     if case["id"] == "evolving":
@@ -325,6 +537,7 @@ def run_case(
     total_prompt_words = 0
     usage_totals: dict[str, int] = {}
     estimated_cost_usd = 0.0
+    skill_environment = derive_skill_environment(case, host=host)
 
     for number in range(1, max_rounds + 1):
         prompt = build_prompt(case, host=host, loaded=loaded, decisions=decisions)
@@ -361,7 +574,13 @@ def run_case(
                 raise SmokeError(f"adapter requested already loaded resource {name!r}")
             loaded[name] = resource_path(case, name).read_text(encoding="utf-8")
 
-    checks = evaluate_case(case, list(loaded), decisions, host=host)
+    checks = evaluate_case(
+        case,
+        list(loaded),
+        decisions,
+        host=host,
+        skill_environment=skill_environment,
+    )
     return {
         "schema_version": 1,
         "case": case["id"],
@@ -369,6 +588,7 @@ def run_case(
         "model": model,
         "passed": all(check["passed"] for check in checks),
         "checks": checks,
+        "skill_environment": skill_environment,
         "resources_loaded": list(loaded),
         "rounds": rounds,
         "final_decision": dict(decisions[-1]) if decisions else None,
@@ -601,27 +821,27 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                     "passed": case.get("passed"),
                     "initial_route": decision.get("initial_route"),
                     "current_route": decision.get("current_route"),
-                    "provider_outcome": decision.get("provider_outcome"),
+                    "skill_outcome": decision.get("skill_outcome"),
                 }
             )
     complete_case_matrix = all(
         case_set == expected_cases for case_set in report_case_sets
     )
     interpretation_agreement = complete_case_matrix
-    provider_outcome_agreement = complete_case_matrix
+    skill_outcome_agreement = complete_case_matrix
     for entries in by_case.values():
         interpretation_signatures = {
             (entry["passed"], entry["initial_route"], entry["current_route"])
             for entry in entries
         }
-        provider_outcomes = {entry["provider_outcome"] for entry in entries}
+        skill_outcomes = {entry["skill_outcome"] for entry in entries}
         interpretation_agreement &= (
             len(entries) == len(reports)
             and all(entry["passed"] is True for entry in entries)
             and len(interpretation_signatures) == 1
         )
-        provider_outcome_agreement &= (
-            len(entries) == len(reports) and len(provider_outcomes) == 1
+        skill_outcome_agreement &= (
+            len(entries) == len(reports) and len(skill_outcomes) == 1
         )
     return {
         "schema_version": 1,
@@ -629,7 +849,7 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "expected_cases": sorted(expected_cases),
         "complete_case_matrix": complete_case_matrix,
         "interpretation_agreement": interpretation_agreement,
-        "provider_outcome_agreement": provider_outcome_agreement,
+        "skill_outcome_agreement": skill_outcome_agreement,
         "cases": by_case,
     }
 
@@ -743,6 +963,7 @@ def compare_command(args: argparse.Namespace) -> int:
 
 def payload_command(_args: argparse.Namespace) -> int:
     root = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    host_fixtures = load_host_fixtures()
     payload = {
         "always_loaded": {
             "name": "AGENTS.md",
@@ -752,6 +973,8 @@ def payload_command(_args: argparse.Namespace) -> int:
         "cases": {
             case_id: resource_catalog(case) for case_id, case in load_cases().items()
         },
+        "deterministic_host_fixtures": host_fixtures["hosts"],
+        "live_host_discovery": host_fixtures["live_host_discovery"],
         "limits": {
             "max_rounds": DEFAULT_MAX_ROUNDS,
             "max_prompt_bytes_per_case": DEFAULT_MAX_PROMPT_BYTES,

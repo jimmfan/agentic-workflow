@@ -11,8 +11,8 @@ Workflow durable coordination state.
 
 ## Establish the boundary
 
-1. Read only relevant project evidence, sources, and artifacts that maintain
-   accepted results.
+1. Read only relevant project evidence and sources, including the artifact
+   designated to maintain the result.
 2. Keep read-only work in the current session; a provisional choice does not
    authorize a write.
 3. Standalone Discovery returns its result without creating Agent Workflow
@@ -45,5 +45,5 @@ Report status, rationale, consequences, rejected alternatives, remaining
 uncertainty, project decision authority, and next workflow transition or ready
 work. For Wayfinder, return only results worth reconciling into the map or
 independently useful U/E/F/D records. A lasting architecture decision belongs
-in the project artifact designated to maintain architecture decisions. Preserve
-provider-native identifiers.
+in the architecture decision record designated by the project. Preserve external
+identifiers.

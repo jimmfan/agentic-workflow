@@ -26,8 +26,6 @@ agent_workflow = [
   "SKILL.md",
   "VERSION",
   "payload/**/*",
-  "provider-snapshots/**/*",
-  "runtime-projections/*.md",
 ]
 
 [dependency-groups]

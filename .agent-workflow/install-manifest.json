@@ -8,24 +8,145 @@
     }
   },
   "external_files": {
+    ".agents/skills/code-review/SKILL.md": {
+      "created": true,
+      "sha256": "fb4d6e749257ff6c7bc9dba00d45fd86451548744575f78bac0da0637c133c6e"
+    },
+    ".agents/skills/code-review/agents/openai.yaml": {
+      "created": true,
+      "sha256": "8229ca854e11dc8e6aef2131ee03f31fb1561cf905fab9ccc325180cf3331352"
+    },
+    ".agents/skills/codebase-design/DEEPENING.md": {
+      "created": true,
+      "sha256": "125e6b77413ad2bc7cf7a772bc74336d580a50f9e797db2178ed133d62333d06"
+    },
+    ".agents/skills/codebase-design/DESIGN-IT-TWICE.md": {
+      "created": true,
+      "sha256": "09f9948ea7636a4d3704c5ab909762e876c0b39849eefb14d2e03a398cc9c7e7"
+    },
+    ".agents/skills/codebase-design/SKILL.md": {
+      "created": true,
+      "sha256": "af9b8b50f4594b6ba446f220073e3ceb23500c183b2887b883f75b388a0188cd"
+    },
+    ".agents/skills/codebase-design/agents/openai.yaml": {
+      "created": true,
+      "sha256": "edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f"
+    },
+    ".agents/skills/domain-modeling/ADR-FORMAT.md": {
+      "created": true,
+      "sha256": "f1f36cd3f8d3b6474ddd5855da4e233bfc4ae1a1c5024909ccf11871819a41b2"
+    },
+    ".agents/skills/domain-modeling/CONTEXT-FORMAT.md": {
+      "created": true,
+      "sha256": "b8cc318f2a4285b530e908b6bc43901c3c5cd11100362636bbc4216639bef597"
+    },
+    ".agents/skills/domain-modeling/SKILL.md": {
+      "created": true,
+      "sha256": "f872a5f3e31044571b42e566dc91bf005b0adb2a223b2bb91383fba37238b9b9"
+    },
+    ".agents/skills/domain-modeling/agents/openai.yaml": {
+      "created": true,
+      "sha256": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b"
+    },
+    ".agents/skills/grilling/SKILL.md": {
+      "created": true,
+      "sha256": "8fb75888f3b07345370d00fec4d7c463bc8fa6dbeb8e3bb71411ac424e3afc83"
+    },
+    ".agents/skills/grilling/agents/openai.yaml": {
+      "created": true,
+      "sha256": "ac0b6a33771456800f983c41b8d4f05630b58eb01f9c90ec7265df20e6d11d54"
+    },
+    ".agents/skills/implement/SKILL.md": {
+      "created": true,
+      "sha256": "36475ac5645ccc8f60cbdc09d12e157c9ea28213ec570a626e720079ff3653e7"
+    },
+    ".agents/skills/implement/agents/openai.yaml": {
+      "created": true,
+      "sha256": "8ba5f1193a4ce3e1bc6c6c0fe465ef03361c38a232e02106f3acc765e2b82898"
+    },
+    ".agents/skills/prototype/LOGIC.md": {
+      "created": true,
+      "sha256": "5aef84c2ef514dd2a7268433abd3ee8e47b35f42b60e0b5f7430ec4937f4f06a"
+    },
+    ".agents/skills/prototype/SKILL.md": {
+      "created": true,
+      "sha256": "3721f298eabccd096640aad2d9f58acd57e7b3e7eb489f57b6bad6a4173cd966"
+    },
+    ".agents/skills/prototype/UI.md": {
+      "created": true,
+      "sha256": "e2ca04434be54acdee2f5df582ef8038fadf582bbcc99be0d2e27737ff8ed096"
+    },
+    ".agents/skills/prototype/agents/openai.yaml": {
+      "created": true,
+      "sha256": "5af65e43ab41a350436697b81e27b7f848d36782043b73c322bb2c9fa9cc55dc"
+    },
+    ".agents/skills/research/SKILL.md": {
+      "created": true,
+      "sha256": "273c6aaf478f7fe9f5e920c346a1df9f98c859b684777063f3fdda0a18fe5e6e"
+    },
+    ".agents/skills/research/agents/openai.yaml": {
+      "created": true,
+      "sha256": "9b4c470d63221c1f68f22df70b83e2f12401b317babe0d1b7b5f24a974474d0d"
+    },
+    ".agents/skills/tdd/SKILL.md": {
+      "created": true,
+      "sha256": "53527d3d71634718bce2b1cec47b82353186270619863a74e4ee05e867bfc56d"
+    },
+    ".agents/skills/tdd/agents/openai.yaml": {
+      "created": true,
+      "sha256": "ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b"
+    },
+    ".agents/skills/tdd/mocking.md": {
+      "created": true,
+      "sha256": "3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef"
+    },
+    ".agents/skills/tdd/tests.md": {
+      "created": true,
+      "sha256": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a"
+    },
+    ".agents/skills/to-spec/SKILL.md": {
+      "created": true,
+      "sha256": "7ed27744e4fd1c8acfd9d9c4da1c5566ed18b99b9bdfafa45ad543636b41d820"
+    },
+    ".agents/skills/to-spec/agents/openai.yaml": {
+      "created": true,
+      "sha256": "3d4c153c1caaa8e7d0475efc5de394be6d89e7b67ff597f0e3763d3fbc3011cb"
+    },
+    ".agents/skills/to-tickets/SKILL.md": {
+      "created": true,
+      "sha256": "22ccfb71d8a18cc928aa7dc08c659525cc1a19cb73a20434332c192b6a7c6398"
+    },
+    ".agents/skills/to-tickets/agents/openai.yaml": {
+      "created": true,
+      "sha256": "bbeaf365ccfa1760e1d4770ffcbb355a56da8da3279ce85ac1a52183a7fe23a0"
+    },
+    ".agents/skills/wayfinder/SKILL.md": {
+      "created": true,
+      "sha256": "ca8891466b642f5687d237ad380e6971e9bab08f0c11654ad5fa6bce8d472f87"
+    },
+    ".agents/skills/wayfinder/agents/openai.yaml": {
+      "created": true,
+      "sha256": "10d005f7d901c2e1e4b3a109bacefe3f51a48c7716a505c17fbb8d068d72d42b"
+    },
     ".agents/skills/workflow-debugging/SKILL.md": {
       "created": true,
       "sha256": "782bd05168c1848d230258d914c44cb030744d4706cf083a54acfd118cfa5f5d"
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "bdfefd098399253e05818fbb161499054cd0bbeb86b6354b7dc85aaa0fa81ebd"
+      "sha256": "7986565c29e2cad53fff742466162b9ba078071ba43fb66f704ea01f4d025dea"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "ef40e69678dce9117d030456911c6193baa6ddc08aa0f0aea1ffaeb1ec744568"
+      "sha256": "034d00721552918602d32903e17d49e7ec7a0c80ba4818facce034b4fe307fa7"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,
-      "sha256": "7046f78b160d3ee46e1fe0ee24927cbee1ec3210822ea641ae1234524c70ab29"
+      "sha256": "c9de648246f865dd0009191c36cb35760c97a73bc62a84e803835183458426d2"
     }
   },
   "framework_version": "0.23.0",
-  "schema_version": 1,
+  "integrity_sha256": "71afb651a650e012e2ee5b7ba7a9db01b8af807f3f8d74c59cf5af313276425c",
+  "schema_version": 2,
   "source_revision": "unreleased-local-package"
 }

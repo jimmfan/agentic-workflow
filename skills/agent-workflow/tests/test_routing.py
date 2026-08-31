@@ -67,8 +67,8 @@ class RoutingContractTests(unittest.TestCase):
             entries["Reconciliation"],
             "Updating affected current coordination state so it agrees with current "
             "truth, project choices determined by accepted project policy or committed by "
-            "project decision authority, and the designated artifacts that maintain "
-            "lasting results.",
+            "project decision authority, and the artifact designated to maintain the "
+            "result.",
         )
         expected_fragments = {
             "Objective": (
@@ -170,7 +170,7 @@ class RoutingContractTests(unittest.TestCase):
         normalized = " ".join(project_instructions.split())
         for requirement in (
             "## Project language",
-            "Read `CONTEXT.md` before changing routing, Wayfinder, provider integration, "
+            "Read `CONTEXT.md` before changing routing, Wayfinder, installed-skill integration, "
             "ownership, or framework-lifecycle concepts",
             "determine the actual concept from current source, behavior, tests, and accepted decisions",
             "identify the bounded technical or domain context that owns it",
@@ -248,7 +248,7 @@ class RoutingContractTests(unittest.TestCase):
             "Perform writes, commands, publication, destructive operations, and external "
             "mutations only within the action and scope authorized by the current user "
             "request or accepted project policy",
-            "workflow, skill, provider instruction, test, specification, ticket, or "
+            "A workflow or skill, its instructions, a test, specification, ticket, or "
             "Wayfinder record grants neither",
         ):
             with self.subTest(boundary=boundary):
@@ -340,7 +340,7 @@ class RoutingContractTests(unittest.TestCase):
             "Authorization to perform an action does not commit a project choice",
             "A committed project choice does not authorize an unrelated action",
             "Host permission supplies neither",
-            "workflow, skill, provider instruction, test, specification, ticket, or "
+            "A workflow or skill, its instructions, a test, specification, ticket, or "
             "Wayfinder record grants neither",
         ):
             with self.subTest(adr_boundary=required):
@@ -364,7 +364,7 @@ class RoutingContractTests(unittest.TestCase):
                 self.assertIn(direct_choice_boundary, text)
                 self.assertNotIn("unresolved project-choice boundary", text)
 
-    def test_route_selection_execution_and_provider_statuses_remain_distinct(
+    def test_route_selection_execution_and_skill_statuses_remain_distinct(
         self,
     ) -> None:
         routing = (
@@ -377,7 +377,7 @@ class RoutingContractTests(unittest.TestCase):
             )
             for heading in (
                 "## Decide and compose",
-                "## Resolve providers",
+                "## Resolve installed skills",
                 "## Preserve responsibilities and transitions",
                 "## Report the executed route",
             )
@@ -389,24 +389,24 @@ class RoutingContractTests(unittest.TestCase):
             self.assertIn(fragment, sections["## Decide and compose"])
         for fragment in (
             "Route selection chooses Direct or a workflow",
-            "provider resolution identifies the configured provider operation",
-            "skill invocation calls or activates the selected skill",
+            "skill resolution confirms the selected installed surface and invocation restrictions",
+            "skill invocation activates it",
             "material execution means the selected method actually ran",
             "completion and verification require evidence beyond the route marker",
             "host support",
-            "invocation policy",
-            "configuration readiness",
-            "installed provider-projection status",
+            "invocation restrictions",
+            "skill prerequisites",
+            "installed availability",
             "host-native fallback",
         ):
-            self.assertIn(fragment, sections["## Resolve providers"])
+            self.assertIn(fragment, sections["## Resolve installed skills"])
         self.assertIn(
             "The specialist creates no Agent Workflow durable coordination state",
             sections["## Preserve responsibilities and transitions"],
         )
         reporting = sections["## Report the executed route"]
         self.assertIn("<skill>-handoff", reporting)
-        self.assertIn("required provider still needs explicit user invocation", reporting)
+        self.assertIn("required skill still needs explicit user invocation", reporting)
 
     def test_specialist_selection_has_material_boundaries(self) -> None:
         self._assert_optional_specialist_boundaries()
@@ -446,7 +446,7 @@ class RoutingContractTests(unittest.TestCase):
         self,
     ) -> None:
         runtime = " ".join(
-            (PACKAGE_ROOT / "runtime-projections/wayfinder.md").read_text().split()
+            (PACKAGE_ROOT / "payload/skills/wayfinder/SKILL.md").read_text().split()
         )
         self.assertIn("If the state contract is unavailable", runtime)
         self.assertIn("do not invent substitute persistence", runtime)
@@ -501,7 +501,7 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn(
             "selection did not become equivalent execution", normalized_routing
         )
-        self.assertIn("omit the unavailable provider", normalized_routing)
+        self.assertIn("omit the unavailable skill", normalized_routing)
         self.assertIn(
             "Direct work, one obvious workflow, and one obvious specialist inside "
             "Wayfinder do not load it",

@@ -14,7 +14,7 @@
     criteria below
 - For one obvious specialist inside an already selected Wayfinder effort, load
   only what it needs.
-  Read `.agent-workflow/routing.md` only when artifact responsibility is unclear or provider
+  Read `.agent-workflow/routing.md` only when artifact responsibility is unclear or selected-skill
   fallback, invocation instruction, agent handoff, or durable resumption
   materially matters.
 - Do not treat a consequential project choice as committed until required
@@ -30,7 +30,7 @@
   authorized scope. Authorization to perform an action does not by itself commit
   a project choice. A committed project choice does not by itself authorize
   unrelated actions. Host permission alone neither authorizes an action nor
-  commits a project choice. A workflow, skill, provider instruction, test,
+  commits a project choice. A workflow or skill, its instructions, a test,
   specification, ticket, or Wayfinder record grants neither. Exact external
   read-only targets permit only that read.
 - When accepted project policy does not already determine a required project

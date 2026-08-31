@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import io
-import json
 import os
 from pathlib import Path
 import tempfile
@@ -138,7 +137,7 @@ class BootstrapSafetyTests(unittest.TestCase):
             with self.assertRaises(self.bootstrap.BootstrapError):
                 self.bootstrap.main(["status", str(link), "--archive-url", "unused"])
 
-    def test_local_archive_bootstrap_installs_core_and_providers_without_external_tools(
+    def test_local_archive_bootstrap_installs_all_direct_skills_without_external_tools(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -162,17 +161,17 @@ class BootstrapSafetyTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertTrue((project / ".agent-workflow/routing.md").is_file())
             self.assertTrue((project / ".agent-wayfinder").is_dir())
-            declaration = json.loads(
-                (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text(
-                    encoding="utf-8"
-                )
+            payload = PACKAGE_ROOT / "payload/skills"
+            installed = project / ".agents/skills"
+            self.assertEqual(
+                {path.name for path in installed.iterdir() if path.is_dir()},
+                {path.name for path in payload.iterdir() if path.is_dir()},
             )
-            names = {item["name"] for item in declaration["provider"]["skills"]}
-            for name in names:
-                with self.subTest(skill=name):
-                    self.assertTrue(
-                        (project / ".agents/skills" / name / "SKILL.md").is_file()
-                    )
+            for source in payload.rglob("*"):
+                if source.is_file():
+                    target = installed / source.relative_to(payload)
+                    with self.subTest(target=target):
+                        self.assertEqual(target.read_bytes(), source.read_bytes())
             self.assertNotIn("GitHub CLI", result.stderr)
 
     def test_cli_exposes_help_and_delegates_every_lifecycle_command(self) -> None:

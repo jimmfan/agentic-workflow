@@ -1,7 +1,7 @@
 # Detailed routing policy
 
 The root policy performs first-pass routing. Read this policy only for
-ambiguous responsibility, material provider fallback, an exact user invocation
+ambiguous responsibility, material selected-skill fallback, an exact user invocation
 instruction, agent handoff, or unclear durable resumption. Direct work, one
 obvious workflow, and one obvious specialist inside Wayfinder do not load it.
 Root rules for action authorization, project decision authority, preservation,
@@ -15,8 +15,8 @@ select a workflow.
 
 1. Choose Direct or one primary workflow; add only supporting capabilities that
    materially help.
-2. Confirm host support and the invocation policy for each selected provider
-   operation.
+2. Confirm that each selected skill is present on the installed repository
+   surface and compatible with its behavior-bearing invocation metadata.
 3. Execute only actions authorized by the current user request or accepted
    project policy, and only within that scope.
 
@@ -34,7 +34,6 @@ prerequisite using the minimum sufficient method. This table resolves overlaps:
 | Signal | Selection | Boundary |
 |---|---|---|
 | Explicit compatible skill request | Named skill | Honor unless action authorization, safety, or compatibility blocks it |
-| Sustained learning intent | `teach` | Ordinary questions stay Direct |
 | Durable coordination threshold crossed | `wayfinder` | Structured project state must materially improve continuity |
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
 | Interdependent choices requiring human input or project decision authority materially shape downstream work | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual questions and one straightforward clarification use the minimum sufficient method |
@@ -43,15 +42,15 @@ prerequisite using the minimum sufficient method. This table resolves overlaps:
 | Module interface, seam, depth, locality, or testability needs explicit design | Direct or `codebase-design` | Load Codebase Design only when its vocabulary materially improves the design; ordinary edits and refactors stay Direct or with their primary workflow |
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis grants no action authorization for a fix |
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
-| A sufficiently defined scope needs a specification | `to-spec` | Its artifact maintains the accepted scope |
-| Approved work needs ordered independent sessions | `to-tickets` | Its ticket artifact maintains ticket contents, ordering, and readiness |
+| A sufficiently defined scope needs a specification | `to-spec` | The specification maintains the accepted scope |
+| Approved work needs ordered independent sessions | `to-tickets` | The ticket or ticket set maintains contents, ordering, and readiness |
 | One implementation scope is ready | Implementation, then `implement` | Trivial low-risk edits stay Direct; meaningful work ends with Verification |
-| Explicit bounded test-first work | `tdd` | The provider defines its loop |
+| Explicit bounded test-first work | `tdd` | The skill defines its loop |
 | Completion audit or meaningful finished change | Verification | Add only uncovered acceptance or integration evidence |
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
 | Clear bounded low-risk request | Direct | Skip workflow ceremony |
 
-Normal intent may select an implicitly invocable provider. Exact skill syntax is
+Normal intent may select an implicitly invocable installed skill. Exact skill syntax is
 needed only for explicit invocation or a user-only operation. A supporting
 capability does not become the primary workflow or create Agent Workflow durable
 coordination state.
@@ -62,8 +61,8 @@ Re-evaluate when evidence changes uncertainty, scope, coordination, failure
 mode, or action authorization. Apply the root Wayfinder threshold; counts trigger
 assessment, never selection. Explicit Wayfinder use and opt-out control the route.
 
-Resume only relevant work. Continue from an exact Wayfinder map or provider-native
-artifact. For an unnamed likely Wayfinder resume, inspect the smallest plausible
+Resume only relevant work. Continue from an exact Wayfinder map or the artifact
+designated to maintain the result. For an unnamed likely Wayfinder resume, inspect the smallest plausible
 effort set and resume only one clear objective-and-scope
 match. A safe regular map identifies current resumable coordination; a mapless
 directory is not a candidate. An unrelated map never captures the route.
@@ -71,7 +70,7 @@ directory is not a candidate. An unrelated map never captures the route.
 After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 only relevant F#/D# ledger sections or U#/E# artifacts. Implementation may
 consume ready work from a map, a current decision record, a specification, or a
-provider-native ticket without rerunning Wayfinder.
+ticket without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses
 the Wayfinder threshold. Inside selected Wayfinder, use each needed specialist
@@ -87,49 +86,43 @@ Domain Modeling when structural ambiguity materially affects that analysis or
 reorganizing the domain would materially improve it; otherwise Discovery runs
 alone.
 
-## Resolve providers
+## Resolve installed skills
 
-Resolve only selected provider operations through
-`.agent-workflow/providers.json`:
-
-- `implicit`: a compatible host may invoke it normally;
-- `user-only`: require the declared explicit prefix;
-- `unavailable`: do not claim it ran.
+Resolve only a selected skill. Its installed repository surface is
+`.agents/skills/<name>/SKILL.md` plus its packaged support files. Read its
+behavior-bearing frontmatter and invocation metadata when the host supports
+those fields. Do not infer availability from a registry, tracker, network
+service, or remembered installation.
 
 Keep the stages distinct. Route selection chooses Direct or a workflow;
-supporting-capability selection chooses additional help; provider resolution
-identifies the configured provider operation; skill invocation calls or
-activates the selected skill; material execution means the selected method
-actually ran; and completion and verification require evidence beyond the route
-marker.
+supporting-capability selection chooses additional help; skill resolution
+confirms the selected installed surface and invocation restrictions; skill
+invocation activates it; material execution means the selected method actually
+ran; and completion and verification require evidence beyond the route marker.
 
-Do not conflate host support, invocation policy, configuration readiness,
-installed provider-projection status, and host-native fallback. A selected
-operation may be supported by the host but require explicit invocation, may be
-invocable but not configuration-ready, or may need its installed projection
-repaired before invocation.
+Do not conflate installed availability, host support, invocation restrictions,
+skill prerequisites, and host-native fallback. A selected skill may be
+installed but unsupported by the current host, or may require explicit user
+invocation. Check any prerequisite only after selecting the skill and let that
+skill's own instructions define it.
 
-If a preferred provider cannot run, use host-native capability when the current
+If a selected skill cannot run, use host-native capability when the current
 request or accepted project policy authorizes the required actions and it can
-satisfy the request. Do not imitate the provider or create its provider-native
-artifacts. Stop or give the exact user invocation instruction only when the user
-required that provider or no safe authorized fallback exists.
-
-For a user-only operation, form the invocation from the active host's declared
-prefix. If the host is unknown, label supported forms instead of guessing.
-Check configuration only after selecting an operation that declares it. Never
-run setup automatically or inspect setup for an unrelated route.
+satisfy the request. Do not imitate the skill or invent the artifact designated
+to maintain the result.
+Stop or give the exact supported invocation instruction only when the user
+required that skill or no safe authorized fallback exists.
 
 ## Preserve responsibilities and transitions
 
-Providers supply their methods, terminology, evidence, and provider-native
-artifacts. Wayfinder is Agent Workflow's sole durable coordinator and stores
-only consequential state and references. Specifications, tickets, research,
-maps, learning workspaces, and reviews remain in the provider-native or project
-artifacts that maintain their results; provider identifiers remain unchanged.
+Skills supply their methods, terminology, and evidence. Wayfinder is Agent Workflow's sole durable coordinator and stores
+only consequential state and references. Specifications, tickets, research
+results, maps, and reviews remain in their project or external locations.
+The artifact designated to maintain the result remains authoritative; external
+identifiers remain unchanged.
 
 The Implementation integration supplies accepted scope, references to the
-artifacts that maintain it, and acceptance criteria. Invoked `implement` is
+artifact designated to maintain the result, and acceptance criteria. Invoked `implement` is
 responsible for its build loop, TDD, and closing Code Review. Framework Verification runs
 afterward and adds only uncovered evidence. The specialist creates no Agent
 Workflow durable coordination state.
@@ -151,14 +144,14 @@ workflow or installed skill ran.
 Use a terminal suffix only when selection did not become equivalent execution:
 
 - `<skill>-handoff`: explicit user invocation remains required;
-- `<skill>-unavailable`: the required provider cannot run;
+- `<skill>-unavailable`: the required skill cannot run;
 - `<skill>-blocked`: action authorization, state, prerequisite, or integrity stopped it.
 
-`<skill>-handoff` means the required provider still needs explicit user
+`<skill>-handoff` means the required skill still needs explicit user
 invocation; the suffix itself is unchanged. After a successful fallback, report
-the host-native activity and omit the unavailable provider. Availability or
+the host-native activity and omit the unavailable skill. Availability or
 status checks, invocation instructions, and unexecuted selections do not count
-as execution. Provider-defined TDD and Code Review remain represented by
+as execution. Skill-defined TDD and Code Review remain represented by
 `implement` unless separately selected. The ASCII `->` separator is valid when
 Unicode is unavailable.
 

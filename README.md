@@ -70,7 +70,7 @@ Routing starts Direct.
 
 The root project instructions perform the initial classification. More detailed
 routing guidance is loaded only when artifact responsibility, workflow
-composition, provider fallback, a user invocation instruction, agent handoff, or
+composition, selected-skill fallback, a user invocation instruction, agent handoff, or
 durable resumption is unclear.
 
 Routing can change as work develops. For example, a bounded implementation task may expose an unresolved design decision or enough coordination state to justify a different workflow.
@@ -142,10 +142,11 @@ Additional records are created only when they are useful to preserve separately:
 
 Wayfinder coordinates this information. It does not replace source code,
 documentation, architecture decisions, specifications, tickets, or other
-project artifacts that maintain lasting results.
+artifacts. Preserve each lasting outcome in the artifact designated to maintain
+the result.
 
-As lasting results are established, they should live with the artifact designated to
-maintain them rather than accumulating indefinitely in Wayfinder.
+As lasting results are established, they should live in the artifact designated
+to maintain the result rather than accumulating indefinitely in Wayfinder.
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
@@ -203,11 +204,12 @@ target-project/
 ├── CLAUDE.md
 ├── .agents/
 │   └── skills/
+│       └── <15 curated skills>
 │
 ├── .agent-workflow/          # framework-owned
 │   ├── install-manifest.json
-│   ├── providers.json
 │   ├── routing.md
+│   ├── THIRD_PARTY_NOTICES.md
 │   └── contracts/
 │
 └── .agent-wayfinder/         # project-owned
@@ -231,11 +233,11 @@ Install, update, status, remove, and reinstall preserve its contents.
 
 Agent Workflow manages only its marked section and preserves project-owned content outside that section.
 
-### Provider artifacts
+### Artifact responsibility
 
-Specifications, tickets, research, reviews, and other provider-native artifacts
-remain in the locations that maintain their results. Agent Workflow references
-those artifacts rather than maintaining duplicate copies.
+Specifications, tickets, research results, and review reports remain in their
+project or external locations. Agent Workflow references the artifact designated
+to maintain the result rather than maintaining a duplicate copy.
 
 ## Progressive loading
 
@@ -257,16 +259,16 @@ Wayfinder works the same way. A later session starts from `map.md` and reads sup
 
 ## Supported hosts
 
-The current provider-skill projection supports:
+The current direct installed-skill surface supports:
 
 - Codex through `.agents/skills/`;
 - GitHub Copilot through `.agents/skills/`.
 
 A Claude model running inside GitHub Copilot uses GitHub Copilot's `.agents/skills/` support.
 
-Native Claude Code can use the installed root policy for routing and host-native work, but Agent Workflow does not currently project provider skills into `.claude/skills/`.
+Native Claude Code can use the installed root policy for routing and host-native work, but Agent Workflow does not currently install a second copy of the skills into `.claude/skills/`.
 
-Provider availability is checked at runtime. Agent Workflow does not report that a provider ran when it did not.
+Selected-skill availability is derived from the installed surface exposed by the host. Agent Workflow does not report that a skill ran when it did not.
 
 ## Requirements
 
@@ -338,7 +340,7 @@ The architecture may change as the project produces better evidence.
 - Keep durable project state separate from reconstructable framework files.
 - Store coordination state, not execution history.
 - Load detailed instructions and state only when needed.
-- Keep lasting results in their designated project or provider-native artifacts.
+- Keep lasting results in the artifact designated to maintain the result.
 - Keep Agent Workflow small.
 
 ## More detail
@@ -347,14 +349,14 @@ The architecture may change as the project produces better evidence.
 - [Workflow routing](docs/routing.md)
 - [Behavioral testing](docs/behavioral-testing.md)
 - [Verification](docs/verification.md)
-- [Provider research](docs/provider-research.md)
+- [Curated skills](docs/skills.md)
 
 Exact behavior is defined by the current source, tests, installed policies and contracts, and accepted architecture decisions.
 
 ## Acknowledgments
 
-Agent Workflow uses a pinned snapshot of [Matt Pocock's Skills for Real Engineers](https://github.com/mattpocock/skills) as an optional provider.
+Eleven curated skills are copied from or derived from [Matt Pocock's Skills for Real Engineers](https://github.com/mattpocock/skills), release `v1.2.3`. Agent Workflow maintains their reviewed effective versions and installs complete copyright and MIT license attribution with the framework.
 
-Its effective Wayfinder runtime is derived from Matt Pocock's Wayfinder methodology. Agent Workflow's routing, Git-native durable state, continuation behavior, and integrations are separate project work.
+Agent Workflow's routing, Git-native durable state, continuation behavior, and integrations are separate project work.
 
 Agent Workflow is available under the [MIT License](LICENSE).

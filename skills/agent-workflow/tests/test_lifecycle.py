@@ -9,7 +9,6 @@ import unittest
 
 from _test_support import (
     ADOPT,
-    LIFECYCLE,
     MANAGED_BEGIN,
     MANAGED_END,
     PACKAGE_ROOT,
@@ -33,16 +32,16 @@ class LifecycleTests(ProjectTestCase):
             },
             {
                 "README.md",
+                "THIRD_PARTY_NOTICES.md",
                 "contracts/wayfinder-state.md",
                 "install-manifest.json",
-                "providers.json",
                 "routing.md",
             },
         )
         manifest = json.loads(
             (self.project / ".agent-workflow/install-manifest.json").read_text()
         )
-        self.assertEqual(manifest["schema_version"], 1)
+        self.assertEqual(manifest["schema_version"], 2)
         self.assertEqual(
             set(manifest),
             {
@@ -51,12 +50,14 @@ class LifecycleTests(ProjectTestCase):
                 "source_revision",
                 "external_files",
                 "composites",
+                "integrity_sha256",
             },
         )
+        self.assertRegex(manifest["integrity_sha256"], r"^[0-9a-f]{64}$")
         self.assertNotIn("framework_files", manifest)
         self.assertNotIn("project_owned", manifest)
 
-    def test_update_repairs_reconstructable_state_without_recreating_absent_external_files(
+    def test_update_repairs_reconstructable_state_and_missing_framework_fails_closed(
         self,
     ) -> None:
         self.assert_ok(self.adopt("install"))
@@ -80,7 +81,25 @@ class LifecycleTests(ProjectTestCase):
             "created": True,
             "sha256": hashlib.sha256(absent.read_bytes()).hexdigest(),
         }
-        manifest_path.write_text(json.dumps(manifest))
+        lifecycle_fields = {
+            key: manifest[key]
+            for key in (
+                "schema_version",
+                "framework_version",
+                "source_revision",
+                "external_files",
+                "composites",
+            )
+        }
+        manifest["integrity_sha256"] = hashlib.sha256(
+            json.dumps(
+                lifecycle_fields,
+                ensure_ascii=False,
+                separators=(",", ":"),
+                sort_keys=True,
+            ).encode("utf-8")
+        ).hexdigest()
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
         absent.unlink()
         self.assert_ok(self.adopt("update"))
         self.assertFalse(absent.exists())
@@ -88,15 +107,12 @@ class LifecycleTests(ProjectTestCase):
         state = self.project / ".agent-wayfinder/custom.txt"
         state.write_text("durable project bytes\n")
         shutil.rmtree(self.project / ".agent-workflow")
-        self.assert_ok(self.adopt("update"))
-        self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
+        before = tree_snapshot(self.project)
+        result = self.adopt("update")
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("manifest is absent", result.stderr)
+        self.assertEqual(tree_snapshot(self.project), before)
         self.assertEqual(state.read_text(), "durable project bytes\n")
-        rebuilt = json.loads(
-            (self.project / ".agent-workflow/install-manifest.json").read_text()
-        )
-        self.assertTrue(
-            all(not details["created"] for details in rebuilt["external_files"].values())
-        )
 
     def test_arbitrary_and_human_edited_state_survives_every_lifecycle_operation(
         self,
@@ -244,69 +260,6 @@ class LifecycleTests(ProjectTestCase):
         result = self.adopt("status")
         self.assertEqual(result.returncode, 1)
         self.assertIn("repairable", result.stdout)
-
-    def test_optional_provider_failures_preserve_the_truthful_core_boundary(self) -> None:
-        package_copy = self.copy_package("corrupt-provider-snapshot")
-        snapshot = (
-            package_copy
-            / "provider-snapshots/matt-pocock-skills/skills/research/SKILL.md"
-        )
-        snapshot.write_text("corrupt bundled provider\n", encoding="utf-8")
-
-        result = run_script(
-            package_copy / "scripts/lifecycle.py", "install", self.project
-        )
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
-        self.assertIn("Optional provider setup did not complete", result.stderr)
-
-    def test_optional_provider_failure_during_remove_reports_truthfully(self) -> None:
-        self.assert_ok(self.adopt("install"))
-        provider_file = self.project / ".agents/skills/wayfinder/personal.txt"
-        provider_file.parent.mkdir(parents=True)
-        provider_file.write_text("preserve provider bytes\n")
-
-        package_copy = self.copy_package("remove-provider-failure")
-        declaration = package_copy / "payload/agent-workflow/providers.json"
-        declaration.write_text("{}\n", encoding="utf-8")
-        result = run_script(
-            package_copy / "scripts/lifecycle.py", "remove", self.project
-        )
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn(
-            "Core removal will continue; inspect the provider error", result.stderr
-        )
-        self.assertNotIn("core router and local workflows remain usable", result.stderr)
-        self.assertFalse((self.project / ".agent-workflow").exists())
-        self.assertEqual(provider_file.read_text(), "preserve provider bytes\n")
-
-    def test_fresh_lifecycle_projects_every_declared_provider_skill(self) -> None:
-        empty_bin = Path(self.temporary.name) / "empty-bin"
-        empty_bin.mkdir()
-        env = os.environ.copy()
-        env["PATH"] = str(empty_bin)
-
-        result = run_script(LIFECYCLE, "install", self.project, env=env)
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        for name in self.declared_provider_names():
-            with self.subTest(skill=name):
-                self.assertTrue(
-                    (self.project / ".agents/skills" / name / "SKILL.md").is_file()
-                )
-
-    def test_lifecycle_status_reports_incomplete_provider_projection_without_failing_core(
-        self,
-    ) -> None:
-        self.assert_ok(self.adopt("install"))
-
-        result = run_script(LIFECYCLE, "status", self.project)
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("Agent Workflow: healthy", result.stdout)
-        self.assertIn("Optional provider projection is incomplete", result.stderr)
 
     def test_cp1252_console_escapes_unrepresentable_project_path(self) -> None:
         project = Path(self.temporary.name) / "project-snow-\u96ea"

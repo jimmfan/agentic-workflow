@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "live_host_discovery": "unverified",
+  "hosts": {
+    "codex": {
+      "skill_root": ".agents/skills",
+      "invocation": {
+        "metadata_suffix": "agents/openai.yaml",
+        "field": "policy.allow_implicit_invocation",
+        "default": true,
+        "true_means": "implicit"
+      }
+    },
+    "claude": {
+      "skill_root": ".agents/skills",
+      "invocation": {
+        "metadata_suffix": "SKILL.md",
+        "field": "disable-model-invocation",
+        "default": false,
+        "true_means": "explicit"
+      }
+    }
+  }
+}

@@ -2,8 +2,8 @@
 
 This development container supplies the complete toolchain needed to develop
 and verify Agent Workflow without changing the macOS host's Python setup. It
-uses Python 3.14 on Debian Bookworm, `uv`, Git, the GitHub CLI version whose
-`gh skill` interface is used by the explicit provider-snapshot refresh tool, and an
+uses Python 3.14 on Debian Bookworm, `uv`, Git, the GitHub CLI for authorized
+GitHub work, and an
 exactly pinned Codex extension with a persistent project-specific login volume.
 
 The project itself has no third-party Python dependencies: its runtime,
@@ -65,10 +65,9 @@ environment, use this equivalent command in the **same Dev Container terminal**:
 uv run --no-project python skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
-Normal lifecycle install and update use the bundled provider snapshot and need
-no GitHub CLI authentication or network access. Authentication is needed only
-for an explicit maintainer snapshot refresh or other authorized GitHub work. If
-that work is required, run this persistent login in the **Dev Container
+Normal lifecycle install and update use direct packaged skill bytes and need no
+GitHub CLI authentication or network access. Authentication is needed only for
+separately authorized GitHub work. If that work is required, run this persistent login in the **Dev Container
 terminal**:
 
 ```bash

@@ -1,6 +1,6 @@
 ---
 name: agent-workflow
-description: Install, update, inspect, or safely remove the Agent Workflow router and its optional curated provider skills in a project.
+description: Install, update, inspect, or safely remove the Agent Workflow router and its directly distributed curated skills in a project.
 license: MIT
 ---
 
@@ -8,8 +8,8 @@ license: MIT
 
 Use this skill only for adoption and lifecycle maintenance. It installs a compact
 instruction router that keeps simple work direct and progressively loads one
-useful workflow for consequential work. Successful adoption leaves core routing
-usable even when every optional provider is unavailable.
+useful workflow for consequential work. Successful adoption installs the exact
+fifteen-skill curated surface mapped by the package.
 
 ## Ownership contract
 
@@ -24,14 +24,16 @@ usable even when every optional provider is unavailable.
 - Other required external integrations are created when absent, reused when
   exactly matching, and blocked when unknown content differs. The small install
   manifest records only evidence needed for safe external deletion.
-- The finite provider set declared by the package is framework-owned,
-  reconstructable output. Install/update may replace those exact directories,
-  and remove deletes them; every unrelated skill directory is preserved. Apply
-  adapters only to recognized pinned input in staging before target mutation.
+- Declared curated skill files are framework-owned reconstructable output.
+  Install/update restores those exact files to current package bytes while
+  preserving every unrelated skill directory. Remove deletes an external file
+  only when valid evidence says the framework created it and current bytes still
+  match the recorded managed digest.
 
-Do not treat a missing previously recorded file, obsolete manifest detail,
-durable project content, provider, or setup file as package corruption. Current
-desired state is authoritative.
+Do not treat a missing previously recorded target, stale framework version,
+different valid source revision, or durable project content as package
+corruption. Invalid install state fails closed and is never treated as an empty
+installation. Current desired package bytes are authoritative after preflight.
 
 ## Lifecycle commands
 
@@ -51,31 +53,28 @@ installation. It delegates to the bootstrap transport, which resolves an
 immutable revision and validates archive paths, types, counts, sizes, modes,
 and minimum runtime files.
 
-Install/update first preflight composite boundaries, external collisions, and
-target symlinks. They then stage the new
+Install/update first preflight install-state integrity, composite boundaries,
+external collisions, retirements, symlinks, and special entries. They then stage the new
 `.agent-workflow/`, apply rollback-protected external writes, swap the framework
 directory, and verify current desired bytes. Missing or drifted reconstructable
 files are replaced without historical checksum forensics.
 
-After core success, lifecycle makes a best-effort offline projection from the
-release's bundled, checksummed provider snapshot. It stages all 14 declared
-skills, applies the owned Wayfinder runtime projection and routed implicit-invocation adapters,
-validates the effective projection, and reconciles every repairable declaration
-together.
-Runtime provider setup needs no GitHub CLI, Git, npm, npx, authentication, or
-network access.
+One explicitly bounded transition recognizes only the exact pinned-main former
+installation using an immutable declaration digest and complete no-follow proof
+of all fourteen former skill trees. Only after complete proof does the same
+transaction transfer eleven retained trees, remove Setup, Teach, and Triage,
+retire the former declaration, and write current integrity-protected install
+state. Any near match is an unsafe conflict with no mutation.
 
-The 14 declared directories are framework-owned reconstructable output. An
-exact directory is reused; a missing or different declared directory is
-repaired from staging, and an unsafe path blocks the complete provider change.
-Provider failure remains a warning and never rolls back or invalidates the core.
-Status is incomplete until all 14 effective directories match. Remove deletes
-exactly those declarations and preserves unrelated skill directories.
+Fresh install and ordinary update distribute fifteen curated skills directly
+from the ordinary payload. Missing or drifted declared files are repaired
+together. A retirement conflict aborts before any target or manifest changes.
 
 `status` is read-only and reports core `healthy`, `repairable`, or
-`unsafe/conflict`. Missing optional state files and providers are normal. A
-repairable result should be fixed with `update`; an unsafe path requires
-resolving the named filesystem boundary first.
+`unsafe/conflict`. A missing desired target is repairable; malformed, truncated,
+duplicate-key, bad-digest, or unsafe install state is a conflict. A repairable
+result should be fixed with `update`; a conflict requires conservative manual
+resolution of the named state or filesystem boundary first.
 
 `remove` removes managed composite regions,
 deletes only unchanged external files recorded as framework-created, removes
@@ -91,7 +90,8 @@ python3 scripts/verify_package.py --tests
 ```
 
 It strictly checks the explicit source-to-target mapping, synchronized versions,
-package safety, routing/provider contracts, documentation, and acceptance tests.
+package safety, routing and skill contracts, exact transition proof,
+attribution, documentation, and acceptance tests.
 Ordinary edits to already mapped payload files require no metadata refresh.
 After adding, removing, or remapping a packaged file, or changing the framework
 version, inspect the diff and then refresh only the generated manifest:

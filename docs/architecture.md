@@ -6,7 +6,7 @@ Agent Workflow is a thin instruction router over host capability and curated,
 replaceable skills. Its core job is reliable minimum-workflow selection while
 preserving action authorization, project decision authority, and project-owned
 data. It is not a general agent runtime, package manager, hook framework,
-analytics system, or second representation of provider artifacts.
+analytics system, or second representation of the artifact designated to maintain the result.
 
 The architecture optimizes for two pre-1.0 priorities:
 
@@ -21,9 +21,9 @@ flowchart TD
     router --> direct["Direct work"]
     router --> workflow["One primary workflow"]
     workflow --> capability["Only useful supporting capabilities"]
-    capability --> provider{"Provider invocable?"}
-    provider -->|yes| native["Provider-native method and artifact"]
-    provider -->|no| fallback["Host-native fallback or invocation instruction"]
+    capability --> skill{"Installed skill invocable?"}
+    skill -->|yes| native["Skill method"]
+    skill -->|no| fallback["Host-native fallback or invocation instruction"]
     direct --> evidence["Truthful result and evidence"]
     native --> evidence
     fallback --> evidence
@@ -37,10 +37,10 @@ route.
 
 Routing begins Direct and classifies from user intent plus cheap installed-skill
 descriptions. Detailed routing loads only when artifact responsibility,
-composition, provider fallback, a user invocation instruction, agent handoff, or
+composition, selected-skill fallback, a user invocation instruction, agent handoff, or
 durable resumption is materially unclear. Routing may change as evidence
-emerges. Route or workflow selection, supporting-capability selection, provider
-resolution, skill invocation, material execution, and completion or verification
+emerges. Route or workflow selection, supporting-capability selection, installed
+skill resolution, skill invocation, material execution, and completion or verification
 evidence remain distinct. Host sandboxing and approvals determine host
 permission; that permission does not itself authorize an action or commit a
 project choice.
@@ -52,10 +52,10 @@ Writes and external mutations proceed only when the current user request or
 accepted project policy authorizes that action and scope.
 
 Wayfinder is Agent Workflow's sole durable coordination model. It keeps only
-consequential continuity and references, while specialists retain their methods
-and provider-native artifacts. Specifications, tickets, research, reviews,
-learning workspaces, and other provider results remain in the provider-native
-artifacts that maintain them.
+consequential continuity and references, while specialists retain their methods.
+Specifications, local tickets or tracker issues, research results, and review
+reports remain in their project or external locations. Each is the artifact
+designated to maintain the result for its scope.
 
 ## Filesystem ownership
 
@@ -64,7 +64,7 @@ FRAMEWORK-OWNED, RECONSTRUCTABLE
 ├── .agent-workflow/
 ├── managed AGENTS.md and CLAUDE.md regions
 ├── required mapped integration files
-└── declared provider names under .agents/skills/
+└── declared curated skill files under .agents/skills/
 
 PROJECT-OWNED, DURABLE
 └── .agent-wayfinder/
@@ -106,9 +106,9 @@ inventory, validate, checksum, merge, migrate, rewrite, or remove its contents.
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
 Their `map.md` is the brief coordination summary and the first effort file read
 when resuming. It summarizes the effort's current coordination state, conditions
-blocking particular work, dependencies, and ready work. When no ticket artifact
-exists, the map may state ready work directly. Once a To Tickets artifact
-maintains detailed decomposition, that ticket artifact or ticket set maintains
+blocking particular work, dependencies, and ready work. When no ticket or ticket
+set exists, the map may state ready work directly. Once To Tickets maintains
+detailed decomposition, that ticket or ticket set maintains
 ticket contents, dependencies, ordering, and readiness; the map links it and may
 include the current ready-work reference without mirroring ticket-level state.
 New default maps retain `Blockers and dependencies` with `None` when no blocker
@@ -134,49 +134,51 @@ for the stated scope or the evidence or record from which it was derived, plus
 material limitations. A D#'s presence means its choice is current and binding
 under the project-choice gate; evidence may inform a recommendation or choice but
 cannot commit it alone. The map represents current coordination state
-and should converge as lasting outcomes move to the artifacts designated to
-maintain them. The progressively loaded Wayfinder state contract and its tests
+and should converge as each lasting outcome moves to the artifact designated to
+maintain the result. The progressively loaded Wayfinder state contract and its tests
 define exact allocation, reconciliation, pruning, effort-ending, and reference
 behavior.
 
 This source repository's project instructions designate
 `architecture-decisions/`. Elsewhere, a consuming project's declared convention
-or the selected provider's own artifact convention designates the location;
+or the selected skill's artifact convention designates the location;
 Agent Workflow imposes no additional ADR path. Wayfinder decision records may link an
 ADR but do not become a parallel project-policy artifact.
 
-## Provider boundary
+## Curated skill boundary
 
-`.agent-workflow/providers.json` declares the reviewed upstream provider
-identity, bundled snapshot, license, supported-host invocation policy, adapters,
-and configuration requirements. The release projects only that finite declared
-set. Declared names are reconstructable and repairable; unrelated local skill
-directories are preserved.
+The ordinary distribution manifest maps the complete fifteen-skill reviewed
+payload directly into `.agents/skills/`. Declared files are reconstructable and
+repairable; unrelated local skill directories are preserved. Skill availability
+comes from the installed repository surface and behavior-bearing invocation
+metadata.
 
-Provider reconciliation stages and validates the complete declared provider
-projection before replacing it. Provider failure does not invalidate a successful core
-lifecycle operation. Exact snapshot hashes, adapter preconditions, staging,
-comparison, and cleanup behavior are implementation and test details.
+Eleven curated skills are maintained derived works of Matt Pocock's `v1.2.3`
+release. Their effective installed versions are the maintained runtime source;
+complete repository, copyright, and MIT license attribution lives in
+`.agent-workflow/THIRD_PARTY_NOTICES.md`. The frozen exact-transition fixture
+retains separately identified historical bytes for three removed skills without
+making them current runtime content.
 
-Wayfinder is a deliberate derived-runtime exception. The raw pinned snapshot
-and its provider-owned vocabulary remain unchanged as reviewed provenance, while
-the effective installed body uses one coherent map-first operational model rather
-than layering local state rules over conflicting upstream tracker mechanics. It
-uses objective, scope, areas and relationships, unresolved-question or blocker
-language, ready work, readable names, and progressive resolution.
+Wayfinder's effective installed body uses one coherent map-first operational
+model rather than layering local state rules over conflicting upstream tracker
+mechanics. It uses objective, scope, areas and relationships,
+unresolved-question or blocker language, ready work, readable names, and
+progressive resolution.
 
-Provider instructions do not authorize commits, publication, tracker mutation,
-or broader external access and do not commit project choices. An unavailable or non-invocable provider normally
-falls back to truthful host-native work unless the user specifically requires
-that provider or a real safety boundary prevents fallback.
+Skill instructions do not authorize commits, publication, tracker mutation, or
+broader external access and do not commit project choices. An unavailable or
+non-invocable skill normally falls back to truthful host-native work unless the
+user specifically requires that skill or a real safety boundary prevents
+fallback.
 
 ## Lifecycle and bootstrap boundary
 
 The public bootstrap resolves an immutable source revision and validates archive
 shape and resource bounds before executing package code. `adopt.py` preflights
-project-data, composite, external-path, and filesystem conflicts before applying
-current desired state. `lifecycle.py` runs core reconciliation before the
-independent optional-provider operation.
+install-state integrity, project-data, composite, external-path, retirement, and
+filesystem conflicts before applying current desired state. `lifecycle.py` is
+the public wrapper for that one reconciliation operation.
 
 `status` is read-only. `remove` deletes only lifecycle-managed framework-owned
 reconstructable output,
@@ -191,7 +193,7 @@ documentation rather than architecture decisions.
 
 The package is distributed through the repository-owned Python bootstrap rather
 than `gh skill`. GitHub CLI 2.97.0 rewrites every nested `SKILL.md` during a
-recursive skill install, which changes bundled provider bytes and assigns the
+recursive skill install, which changes bundled nested-skill bytes and assigns the
 outer package's provenance to inner skills; the current installer behavior is
 visible in GitHub CLI's versioned
 [`installSkill` implementation](https://github.com/cli/cli/blob/v2.97.0/internal/skills/installer/installer.go#L232-L285).
@@ -202,17 +204,19 @@ complete package, not merely successful installation of the outer skill.
 
 `verify_package.py` is a maintainer, CI, and release gate; bootstrap does not run
 it for consumers. It checks package structure and activation-sensitive payload
-paths, explicit mappings, routing and provider contracts, deterministic
+paths, explicit mappings, routing and skill contracts, exact transition and attribution checks, deterministic
 scenarios, local documentation links, and the test suite.
 
 Tests focus on observable boundaries:
 
-- route selection, provider resolution, invocation truthfulness, material
+- route selection, installed-skill resolution, invocation truthfulness, material
   execution evidence, project-choice commitment, and action authorization;
 - preservation of project-owned state and ambiguous external content;
 - install, update, status, remove, and bootstrap behavior;
-- coherent Wayfinder state and installed provider projection; and
-- isolation of optional-provider failure from core lifecycle success.
+- coherent Wayfinder state and the direct installed skill surface;
+- install-state integrity, exact former-installation proof, and transactional
+  rollback; and
+- preservation of unrelated skills, project composite bytes, and durable state.
 
 Live-model evaluations remain opt-in evidence rather than deterministic release
 requirements.
@@ -221,7 +225,8 @@ requirements.
 
 Live source and observed behavior establish current system facts for their
 stated scope. Accepted ADRs and project documentation record project choices.
-Provider-native artifacts maintain provider results. `.agent-wayfinder/` is the
+The artifact designated to maintain the result remains authoritative for that
+result. `.agent-wayfinder/` is the
 project-owned durable representation of local workflow continuity. These sources
 and artifacts outrank summaries, private agent memory, and chat recollection.
 

@@ -15,12 +15,12 @@ tighter distributable-package member allowance. These checks prevent unsafe
 extraction and execution.
 
 The bootstrap does not run the full package verifier. Runtime reconciliation
-requires only the current source-to-target mapping and readable current source
-files. Optional provider setup similarly validates only the inventory, safe
-filesystem shape, references, metadata, and adapter preconditions needed to
-project usable skills. Release checksum, provenance, and license bookkeeping is
-left to the maintainer gate. The distribution manifest does not duplicate
-payload content hashes.
+requires the current source-to-target mapping, readable current source files,
+valid install-state integrity, and safe target boundaries. The one exact
+pinned-main transition additionally validates its immutable declaration and
+complete former-tree proof before mutation. Attribution and frozen-fixture
+self-verification remain maintainer-gate concerns. The distribution manifest
+does not duplicate payload content hashes.
 
 ## Maintainer and CI gate
 
@@ -36,20 +36,21 @@ It checks:
 
 - Python syntax, package structure, regular-file modes, and synchronized versions;
 - the exact current source-to-target mapping and synchronized version;
-- the exact allowed authored payload, root-template, workflow-skill, and runtime-
-  projection inventories;
+- the exact allowed authored payload, root-template, fifteen-skill, and
+  thirty-four-skill-file inventories;
 - absence of executable or host-customization content in the
   activation-sensitive payload namespace;
-- provider declarations and installed provider-projection integrity;
+- direct skill frontmatter, support-file closure, local references, complete
+  attribution, frozen-fixture integrity, and production transition-proof parity;
 - the source-only terminology glossary and project-language policy remain
   present, scoped, and absent from the distributed payload;
 - current Agent Workflow-owned Wayfinder surfaces distinguish records from
   represented questions, evidence, conclusions, and choices; project-choice
   commitment from action authorization and host permission; route selection from
-  provider resolution, invocation, material execution, and completion evidence;
+  installed-skill resolution, invocation, material execution, and completion evidence;
   and lifecycle ownership from durability and reconstructability;
 - local Markdown links and behavioral scenario validation;
-- lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and
+- lifecycle, install-state integrity, transaction rollback, data-safety, routing, cp1252, bootstrap, and
   stale-release-metadata tests;
 - human-authored TOML behavioral scenario schema and fixture references; and
 - deterministic behavior-harness, Wayfinder scenario, evaluator, and fixture
@@ -112,7 +113,7 @@ The suite prioritizes behavior that matters before 1.0:
 - missing and drifted `.agent-workflow/` files are restored from current desired
   state, and obsolete internal files disappear;
 - arbitrary unrecognized project-owned `.agent-wayfinder/` contents survive
-  install, status, update, remove, reinstall, and provider repair byte-for-byte;
+  install, status, update, remove, reinstall, and direct-skill repair byte-for-byte;
 - recognized local Wayfinder maps, F#/D# ledgers, and U#/E# files survive the
   same lifecycle sequence without schema interpretation or normalization;
 - project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
@@ -122,28 +123,31 @@ The suite prioritizes behavior that matters before 1.0:
 - a source archive with more than 500 unrelated entries still installs when the
   package is within bounds, while excessive package contents and the separate
   whole-archive ceiling still fail closed;
-- provider failure leaves a successful core install usable;
-- a fresh bootstrap archive projects all 14 declared provider skills with an
-  empty `PATH`, proving runtime setup does not require GitHub CLI, Git, npm,
-  npx, authentication, or network access;
-- the maintainer gate binds the bundled provider checksum, exact inventory,
-  resolved commit provenance, per-skill source metadata, local-reference
-  closure, and MIT license to the exact reviewed release identity without
-  turning those release checks into an end-user runtime gate;
-- the installed source-checkout provider declaration must match the packaged
-  declaration, while the maintainer refresh command refuses package-local output;
-- update completes an exact partial provider projection, reuses exact existing
-  directories, and replaces modified, extra-file, malformed, raw-upstream, or
-  older declared directories as one rollback-protected transaction;
-- unsafe declared paths block provider mutation, remove deletes only the
-  declared provider projection, and unrelated skill directories are preserved;
-- the unchanged raw Wayfinder snapshot is recognized before the framework-owned runtime
-  body is projected in release-local staging, while changed target bytes are
-  repaired and status remains read-only;
-- the implicit-invocation adapter automatically exposes To Spec, To Tickets,
-  and Implement from the bundled provider projection, is idempotent,
-  keeps Setup, Teach, and Triage user-only, and rejects unexpected activation
-  metadata without a partial provider projection;
+- a fresh bootstrap archive installs all fifteen curated skills without GitHub
+  CLI, Git, npm, npx, authentication, or network access;
+- the maintainer gate binds the exact direct inventory and MIT attribution to
+  the retained `v1.2.3` derived skills while distinguishing fixture-only former
+  bytes;
+- the raw `proof.json` byte stream is pinned by SHA-256 before parsing; the
+  frozen fixture then verifies every path, entry type, and file digest before
+  use and matches the immutable production proof for the fourteen former roots;
+- only the exact pinned-main former installation transitions; declaration drift,
+  missing or unexpected descendants, altered files, symlinks, special entries,
+  and unsafe roots fail with zero mutation;
+- a successful exact transition retains eleven derived skills, deletes Setup,
+  Teach, and Triage, retires the former declaration, preserves four valid
+  workflow `created` bits, and writes integrity-protected current state;
+- fresh install records absent files as created and exact pre-existing files as
+  not created; repair preserves that bit, and unknown differing content blocks;
+- update repairs missing or drifted declared files, while retirement requires a
+  missing target or matching framework-created evidence and otherwise aborts
+  atomically;
+- malformed, truncated, duplicate-key, bad-digest, invalid-type, invalid-path,
+  or invalid-encoding install state fails closed for every lifecycle command;
+- both injected transaction failures restore an identical canonical snapshot of
+  bytes, entry types, existence, empty directories, and relevant modes;
+- status is read-only and uses update's preflight, so `repairable` means update
+  can actually complete;
 - ASCII output remains writable on a cp1252 console; and
 - mapped payload content changes require no metadata refresh, while an added,
   removed, or remapped payload file fails the release gate until the explicit
@@ -161,7 +165,7 @@ Unrecognized-content coverage proves unmatched project-owned bytes remain unchan
 and are not treated as current references or allocation state. Identity-like
 malformed entries and exact filesystem collisions are rejected. Lifecycle
 preservation exercises
-install, update, status, remove, reinstall, and provider repair byte-for-byte.
+install, update, status, remove, reinstall, and direct-skill repair byte-for-byte.
 The behavioral suite also keeps
 implementation work-item artifacts out of Wayfinder, resumes relevant efforts
 from the map, reconciles affected state after implementation,
@@ -172,10 +176,10 @@ of a direct route.
 The routing catalog separately covers direct work, standalone Discovery, direct
 Wayfinder ready work, specialist-supported resolution of consequential issues,
 the workflow transition from Wayfinder to Implementation, interrupted-specialist
-session continuation from the map, host-native fallback, an explicit provider
-invocation instruction, external read scope, and responsibility for
-provider-native artifacts. It is an executable contract check, not proof that a live editor
-or provider service was exercised.
+session continuation from the map, host-native fallback, an explicit skill
+invocation instruction, external read scope, and responsibility for the artifact
+designated to maintain the result. It is an executable contract check, not proof
+that a live editor or host skill-discovery service was exercised.
 
 ## Useful failure diagnostics
 
@@ -187,16 +191,16 @@ If the gate fails:
 3. for a lifecycle fixture, rerun that named `unittest` from the source root
    with `python3 -m unittest ...`; generated Python caches are ignored by Git
    and package verification and need no manual cleanup;
-4. for a release snapshot refresh issue, run the maintainer command in a
-   networked environment with GitHub CLI authentication; ordinary target
-   install/update must remain fully offline; and
+4. for an exact-transition fixture failure, inspect the frozen proof and pinned
+   provenance; never regenerate it by installing the current package and editing
+   it backward; and
 5. never delete `.agent-wayfinder/` or unrecognized external content to make a test
    pass.
 
 The deterministic GitHub Actions gate runs on Ubuntu. Native PowerShell and CMD
 execution is outside the supported platform contract; Git Bash on native
 Windows is best-effort. Do not claim live validation of any host, editor,
-provider network, or host extension unless it was actually performed and
+installed-skill discovery surface, or host extension unless it was actually performed and
 reported separately.
 
 ## Behavioral layers

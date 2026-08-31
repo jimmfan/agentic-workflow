@@ -31,7 +31,7 @@ Explicit user selection or opt-out controls the route, and read-only scope does
 not grant action authorization for writes.
 
 Keep always-loaded classification context small and progressively load deeper
-methodology, provider policy, and state contracts only after their boundaries
+methodology, installed-skill invocation policy, and state contracts only after their boundaries
 become relevant. Route sequences are default transitions with entry conditions,
 not mandatory pipelines.
 
@@ -41,7 +41,7 @@ Bounded work and one obvious skill avoid unrelated routing policy. Complex
 composition still pays for the instructions it needs. The design depends on
 concise skill descriptions and truthful re-evaluation as new evidence appears.
 
-The exact Wayfinder assessment signals, route marker, provider fallback rules,
+The exact Wayfinder assessment signals, route marker, skill-availability fallback rules,
 thresholds, context budgets, and evaluation outcomes remain in root policy,
 routing contracts, tests, and evaluation history. They may evolve without
 rewriting this decision.

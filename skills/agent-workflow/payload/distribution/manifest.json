@@ -5,16 +5,136 @@
       "target": ".agent-workflow/README.md"
     },
     {
+      "source": "agent-workflow/THIRD_PARTY_NOTICES.md",
+      "target": ".agent-workflow/THIRD_PARTY_NOTICES.md"
+    },
+    {
       "source": "agent-workflow/contracts/wayfinder-state.md",
       "target": ".agent-workflow/contracts/wayfinder-state.md"
     },
     {
-      "source": "agent-workflow/providers.json",
-      "target": ".agent-workflow/providers.json"
-    },
-    {
       "source": "agent-workflow/routing.md",
       "target": ".agent-workflow/routing.md"
+    },
+    {
+      "source": "skills/code-review/SKILL.md",
+      "target": ".agents/skills/code-review/SKILL.md"
+    },
+    {
+      "source": "skills/code-review/agents/openai.yaml",
+      "target": ".agents/skills/code-review/agents/openai.yaml"
+    },
+    {
+      "source": "skills/codebase-design/DEEPENING.md",
+      "target": ".agents/skills/codebase-design/DEEPENING.md"
+    },
+    {
+      "source": "skills/codebase-design/DESIGN-IT-TWICE.md",
+      "target": ".agents/skills/codebase-design/DESIGN-IT-TWICE.md"
+    },
+    {
+      "source": "skills/codebase-design/SKILL.md",
+      "target": ".agents/skills/codebase-design/SKILL.md"
+    },
+    {
+      "source": "skills/codebase-design/agents/openai.yaml",
+      "target": ".agents/skills/codebase-design/agents/openai.yaml"
+    },
+    {
+      "source": "skills/domain-modeling/ADR-FORMAT.md",
+      "target": ".agents/skills/domain-modeling/ADR-FORMAT.md"
+    },
+    {
+      "source": "skills/domain-modeling/CONTEXT-FORMAT.md",
+      "target": ".agents/skills/domain-modeling/CONTEXT-FORMAT.md"
+    },
+    {
+      "source": "skills/domain-modeling/SKILL.md",
+      "target": ".agents/skills/domain-modeling/SKILL.md"
+    },
+    {
+      "source": "skills/domain-modeling/agents/openai.yaml",
+      "target": ".agents/skills/domain-modeling/agents/openai.yaml"
+    },
+    {
+      "source": "skills/grilling/SKILL.md",
+      "target": ".agents/skills/grilling/SKILL.md"
+    },
+    {
+      "source": "skills/grilling/agents/openai.yaml",
+      "target": ".agents/skills/grilling/agents/openai.yaml"
+    },
+    {
+      "source": "skills/implement/SKILL.md",
+      "target": ".agents/skills/implement/SKILL.md"
+    },
+    {
+      "source": "skills/implement/agents/openai.yaml",
+      "target": ".agents/skills/implement/agents/openai.yaml"
+    },
+    {
+      "source": "skills/prototype/LOGIC.md",
+      "target": ".agents/skills/prototype/LOGIC.md"
+    },
+    {
+      "source": "skills/prototype/SKILL.md",
+      "target": ".agents/skills/prototype/SKILL.md"
+    },
+    {
+      "source": "skills/prototype/UI.md",
+      "target": ".agents/skills/prototype/UI.md"
+    },
+    {
+      "source": "skills/prototype/agents/openai.yaml",
+      "target": ".agents/skills/prototype/agents/openai.yaml"
+    },
+    {
+      "source": "skills/research/SKILL.md",
+      "target": ".agents/skills/research/SKILL.md"
+    },
+    {
+      "source": "skills/research/agents/openai.yaml",
+      "target": ".agents/skills/research/agents/openai.yaml"
+    },
+    {
+      "source": "skills/tdd/SKILL.md",
+      "target": ".agents/skills/tdd/SKILL.md"
+    },
+    {
+      "source": "skills/tdd/agents/openai.yaml",
+      "target": ".agents/skills/tdd/agents/openai.yaml"
+    },
+    {
+      "source": "skills/tdd/mocking.md",
+      "target": ".agents/skills/tdd/mocking.md"
+    },
+    {
+      "source": "skills/tdd/tests.md",
+      "target": ".agents/skills/tdd/tests.md"
+    },
+    {
+      "source": "skills/to-spec/SKILL.md",
+      "target": ".agents/skills/to-spec/SKILL.md"
+    },
+    {
+      "source": "skills/to-spec/agents/openai.yaml",
+      "target": ".agents/skills/to-spec/agents/openai.yaml"
+    },
+    {
+      "source": "skills/to-tickets/SKILL.md",
+      "target": ".agents/skills/to-tickets/SKILL.md"
+    },
+    {
+      "source": "skills/to-tickets/agents/openai.yaml",
+      "target": ".agents/skills/to-tickets/agents/openai.yaml"
+    },
+    {
+      "source": "skills/wayfinder/SKILL.md",
+      "target": ".agents/skills/wayfinder/SKILL.md"
+    },
+    {
+      "source": "skills/wayfinder/agents/openai.yaml",
+      "target": ".agents/skills/wayfinder/agents/openai.yaml"
     },
     {
       "source": "skills/workflow-debugging/SKILL.md",

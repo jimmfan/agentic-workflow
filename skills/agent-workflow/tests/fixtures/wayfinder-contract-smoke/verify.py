@@ -10,7 +10,7 @@ mapping = (effort / "map.md").read_text(encoding="utf-8")
 evidence = sorted((effort / "evidence").glob("E*.md"))
 facts_path = effort / "facts.md"
 facts = facts_path.read_text(encoding="utf-8") if facts_path.is_file() else ""
-native_tickets = sorted(Path(".scratch/runtime-rollout/issues").glob("*.md"))
+native_tickets = sorted(Path("docs/agents/runtime-rollout/issues").glob("*.md"))
 wayfinder_text = "\n".join(
     path.read_text(encoding="utf-8") for path in effort.rglob("*.md")
 )
@@ -50,7 +50,7 @@ checks = [
     if len(native_tickets) > 2
     else False,
     re.search(
-        r"\[[^\]]+\]\([^\)\n]*\.scratch/runtime-rollout/issues/[^\)\n]*\)",
+        r"\[[^\]]+\]\([^\)\n]*docs/agents/runtime-rollout/issues/[^\)\n]*\)",
         mapping,
     )
     is not None,

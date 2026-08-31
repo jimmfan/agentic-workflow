@@ -9,12 +9,12 @@ verification, state use, research grounding, or clean blocker behavior is
 observable—and prohibited repository effects did not occur.
 
 The framework uses only Python 3.11 standard-library modules. Normal pull
-requests do not need a model, network credential, provider, Git repository, or
+requests do not need a model, network credential, installed-skill host, Git repository, or
 hidden reasoning trace.
 
 ## Testing layers
 
-1. **Production-boundary tests** exercise lifecycle, provider transactions,
+1. **Production-boundary tests** exercise lifecycle, direct-skill transactions,
    package verification, bootstrap safety, routing, and Wayfinder state through
    their public boundaries.
 2. **Behavior-harness tests** validate TOML schema and vocabulary, blind-rubric
@@ -159,7 +159,7 @@ The evaluator uses public artifacts only:
   `.behavior-evidence/verification.jsonl`, including exit codes and ordering;
 - a concise agent-written `.behavior-evidence/report.json` containing status,
   commands/exit codes, cited research URLs, state paths actually consumed,
-  selected/executed provider claims, and blockers;
+  selected/executed skill claims, and blockers;
 - exactly one syntactically valid route marker ending the agent's stdout final
   response; and
 - case-specific path assertions.
@@ -244,7 +244,7 @@ cleans workspaces automatically.
 - Required route markers remain agent claims rather than proof of execution;
   scenario evidence and route-specific checks establish truthfulness where
   observable.
-- Provider-native tracker interactions and live editor-host behavior need a
+- Live tracker interactions and editor-host skill behavior need a
   separately credentialed environment and are not represented as deterministic
   success.
 - The live runner is command-based rather than tied to one vendor CLI. A host

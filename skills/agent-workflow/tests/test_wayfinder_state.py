@@ -14,8 +14,8 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = PACKAGE_ROOT.parents[1]
 CONTRACT = PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
 INSTALLED_CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md"
-RUNTIME = PACKAGE_ROOT / "runtime-projections/wayfinder.md"
-GENERATED_SKILL = REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md"
+WAYFINDER_SKILL = PACKAGE_ROOT / "payload/skills/wayfinder/SKILL.md"
+INSTALLED_SKILL = REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md"
 MAP_FIRST_ADR = REPOSITORY_ROOT / "architecture-decisions/0011-use-map-first-wayfinder-state.md"
 
 
@@ -27,7 +27,7 @@ def verifier_retired_wayfinder_patterns() -> tuple[str, ...]:
             continue
         if any(
             isinstance(target, ast.Name)
-            and target.id == "RETIRED_WAYFINDER_RUNTIME_PATTERNS"
+            and target.id == "RETIRED_WAYFINDER_PATTERNS"
             for target in statement.targets
         ):
             value = ast.literal_eval(statement.value)
@@ -93,7 +93,7 @@ CURRENT_WAYFINDER_SCENARIOS = {
 CURRENT_WAYFINDER_LANGUAGE_SURFACES = {
     "packaged contract": CONTRACT,
     "installed contract": INSTALLED_CONTRACT,
-    "runtime projection": RUNTIME,
+    "direct Wayfinder skill": WAYFINDER_SKILL,
     "installed routing policy": REPOSITORY_ROOT / ".agent-workflow/routing.md",
     "packaged routing policy": PACKAGE_ROOT / "payload/agent-workflow/routing.md",
     "distributed root policy": PACKAGE_ROOT / "payload/root/AGENTS.md.template",
@@ -2017,7 +2017,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(authority_boundary, current_knowledge)
 
-    def test_evidence_relations_are_direct_without_banning_real_provenance(self) -> None:
+    def test_evidence_relations_are_direct_without_banning_real_attribution(self) -> None:
         current_knowledge = " ".join(
             markdown_section(self.contract, "## Current knowledge").split()
         )
@@ -2032,8 +2032,8 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertIn(representation, current_knowledge)
         self.assertNotIn("Provenance is traceable", current_knowledge)
         self.assertIn(
-            "provider provenance",
-            (REPOSITORY_ROOT / "docs/provider-research.md")
+            "copyright and mit license attribution",
+            (REPOSITORY_ROOT / "docs/skills.md")
             .read_text(encoding="utf-8")
             .casefold(),
         )
@@ -2049,7 +2049,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         state_model = markdown_section(
             self.contract, "## State model and boundaries"
         )
-        provider_decision = (
+        ownership_decision = (
             REPOSITORY_ROOT
             / "architecture-decisions/0010-separate-framework-output-from-project-owned-state.md"
         ).read_text(encoding="utf-8")
@@ -2057,24 +2057,23 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertIn("project-owned durable data", state_model)
         self.assertIn("not interpreted as Wayfinder state", state_model)
         self.assertIn(
-            "declared provider projection is reconstructable from current package content",
-            " ".join(provider_decision.split()),
+            "declared curated skill files are framework-owned reconstructable output",
+            " ".join(ownership_decision.split()),
         )
         self.assertIn(
-            "local edits inside a declared provider name are replaceable rather than "
-            "preserved as unique project information",
-            " ".join(provider_decision.split()),
+            "unrelated skill directories remain independent",
+            " ".join(ownership_decision.split()).casefold(),
         )
         self.assertNotIn("opaque means confidential", self.contract.casefold())
 
     def test_contract_uses_current_wayfinder_terminology(self) -> None:
-        generated = GENERATED_SKILL.read_text(encoding="utf-8")
-        generated_body = generated.split("\n---\n", 1)[1]
+        installed = INSTALLED_SKILL.read_text(encoding="utf-8")
+        installed_body = installed.split("\n---\n", 1)[1]
         authoritative_instructions = {
             "packaged contract": self.contract,
             "installed contract": INSTALLED_CONTRACT.read_text(encoding="utf-8"),
-            "runtime": RUNTIME.read_text(encoding="utf-8"),
-            "generated runtime": generated_body,
+            "packaged skill": WAYFINDER_SKILL.read_text(encoding="utf-8"),
+            "installed skill": installed_body,
         }
         for name, instructions in authoritative_instructions.items():
             with self.subTest(surface=name):
@@ -2127,11 +2126,10 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertNotIn(obsolete, text)
                 self.assertIn(replacement, text)
 
-        provider_owned = (
-            PACKAGE_ROOT
-            / "provider-snapshots/matt-pocock-skills/skills/grilling/SKILL.md"
-        ).read_text(encoding="utf-8")
-        self.assertIn("prerequisites are already settled", provider_owned)
+        inherited = (PACKAGE_ROOT / "payload/skills/grilling/SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("prerequisites are already settled", inherited)
         self.assertTrue(
             (PACKAGE_ROOT / "tests/scenarios/wayfinder-answered-unknown-settlement.toml").is_file()
         )
@@ -2140,14 +2138,14 @@ class WayfinderStateContractTests(unittest.TestCase):
     def test_current_wayfinder_surfaces_use_concept_specific_orientation_language(
         self,
     ) -> None:
-        generated = GENERATED_SKILL.read_text(encoding="utf-8")
+        installed = INSTALLED_SKILL.read_text(encoding="utf-8")
         surfaces = {
             **CURRENT_WAYFINDER_LANGUAGE_SURFACES,
-            "generated runtime": generated.split("\n---\n", 1)[1],
+            "installed skill": installed.split("\n---\n", 1)[1],
         }
         legitimate_noncanonical_uses = (
             "The deployment destination is /srv/application.",
-            "The pinned provider calls its tracker concept `frontier`.",
+            "The historical methodology calls its tracker concept `frontier`.",
             "The research fixture studies territorial fog forecasts.",
         )
         for prose in legitimate_noncanonical_uses:
@@ -2161,11 +2159,12 @@ class WayfinderStateContractTests(unittest.TestCase):
                 with self.subTest(surface=name, pattern=pattern):
                     self.assertIsNone(re.search(pattern, text, re.IGNORECASE))
 
-        provider_research = (
-            REPOSITORY_ROOT / "docs/provider-research.md"
+        historical_skill = (
+            PACKAGE_ROOT
+            / "tests/fixtures/pinned-main-installation/project/.agents/skills/"
+            "grilling/SKILL.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("Wayfinder v1.2.3 defines", provider_research)
-        self.assertIn("frontier", provider_research)
+        self.assertIn("frontier", historical_skill)
 
         for path in (
             MAP_FIRST_ADR,
@@ -2217,7 +2216,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
         runtime_operating = " ".join(
             markdown_section(
-                RUNTIME.read_text(encoding="utf-8"), "## Operating rules"
+                WAYFINDER_SKILL.read_text(encoding="utf-8"), "## Operating rules"
             ).split()
         )
         for shared_default in (
@@ -2356,7 +2355,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         ).casefold()
         runtime_guidance = " ".join(
             markdown_section(
-                RUNTIME.read_text(encoding="utf-8"),
+                WAYFINDER_SKILL.read_text(encoding="utf-8"),
                 "## Reconcile and transition ready work",
             ).split()
         ).casefold()
@@ -2410,7 +2409,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertNotIn("supplying required authority", contract_guidance)
         self.assertNotIn("resolve each blocking dependency", runtime_guidance)
 
-    def test_ticket_artifact_and_map_responsibilities_are_explicit(self) -> None:
+    def test_ticket_and_map_responsibilities_are_explicit(self) -> None:
         contract_boundaries = " ".join(
             markdown_section(
                 self.contract,
@@ -2418,9 +2417,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             ).split()
         )
         for responsibility in (
-            "ticket artifact or ticket set",
+            "To Tickets ticket or ticket set",
             "ticket contents, dependencies, ordering, and readiness",
-            "reference that artifact",
+            "reference that ticket or ticket set",
             "ticket-level state",
         ):
             with self.subTest(contract_responsibility=responsibility):
@@ -2434,7 +2433,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         for map_behavior in (
             "summarizes the effort's current coordination state",
-            "when no ticket artifact exists",
+            "when no ticket or ticket set exists",
             "may state ready work directly",
             "may include a current ready-work reference",
         ):
@@ -2446,7 +2445,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
             ).read_text(encoding="utf-8").split()
         )
-        self.assertIn("ticket artifact or ticket set", implementation)
+        self.assertIn("To Tickets ticket or ticket set", implementation)
         for invalid in (
             "link its ticket ordering and readiness",
             "remain durable in ticket ordering and readiness",
@@ -2454,7 +2453,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             for name, surface in (
                 ("contract", self.contract),
-                ("runtime", RUNTIME.read_text(encoding="utf-8")),
+                ("direct skill", WAYFINDER_SKILL.read_text(encoding="utf-8")),
                 ("implementation", implementation),
             ):
                 with self.subTest(surface=name, invalid=invalid):
@@ -2496,7 +2495,11 @@ class WayfinderStateContractTests(unittest.TestCase):
                     heading,
                 ).lower()
                 self.assertRegex(passage, r"\bprun\w*\b")
-                self.assertNotRegex(passage, r"\bretir\w*\b")
+                wayfinder_passage = passage
+                if name == "verification acceptance boundary":
+                    start = passage.index("wayfinder state contracts")
+                    wayfinder_passage = passage[start:]
+                self.assertNotRegex(wayfinder_passage, r"\bretir\w*\b")
 
         adr = MAP_FIRST_ADR.read_text(encoding="utf-8").lower()
         self.assertNotIn("dispositioned", adr)
@@ -2681,10 +2684,10 @@ class WayfinderStateContractTests(unittest.TestCase):
             PACKAGE_ROOT / "payload/root/AGENTS.md.template"
         ).read_text(encoding="utf-8").strip()
         self.assertEqual(packaged_policy, managed)
-        runtime = RUNTIME.read_text(encoding="utf-8")
-        generated = GENERATED_SKILL.read_text(encoding="utf-8")
-        generated_body = generated.split("\n---\n", 1)[1]
-        self.assertEqual(runtime, generated_body)
+        packaged = WAYFINDER_SKILL.read_text(encoding="utf-8")
+        installed = INSTALLED_SKILL.read_text(encoding="utf-8")
+        self.assertEqual(packaged, installed)
+        runtime = packaged.split("\n---\n", 1)[1]
         for heading in (
             "## Operating rules",
             "## Establish areas and relationships",
@@ -2728,8 +2731,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         transition = markdown_section(runtime, "## Reconcile and transition ready work")
         for responsibility in (
             "The map summarizes",
-            "no ticket artifact exists",
-            "ticket artifact or ticket set",
+            "no ticket or ticket set exists",
+            "ticket or ticket set",
             "ticket contents, dependencies, ordering, and readiness",
             "does not mirror ticket-level state",
         ):

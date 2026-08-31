@@ -24,7 +24,7 @@ paragraph with one coherent native-ticket next action.
 
 ## Notes
 
-- The local Markdown tracker is `.scratch/runtime-rollout/issues/`.
+- The local Markdown tracker is `docs/agents/runtime-rollout/issues/`.
 - The ticket breakdown and blocking edges in `rollout-plan.md` are approved.
 - Do not implement the rollout in this smoke.
 

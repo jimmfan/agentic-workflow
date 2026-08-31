@@ -20,13 +20,11 @@ installed host discovery locations.
 
 Separate framework-owned reconstructable output from preservation boundaries:
 
-- `.agent-workflow/` and the finite set of declared provider directories are
-  framework-owned reconstructable output. Lifecycle operations converge them to
-  the current declared state without requiring historical install/origin or
-  checksum evidence. Unrelated skill directories remain independent. The
-  declared provider projection is reconstructable from current package content;
-  local edits inside a declared provider name are replaceable rather than
-  preserved as unique project information.
+- `.agent-workflow/` and declared curated skill files are framework-owned
+  reconstructable output. Lifecycle operations converge them to current package
+  bytes. Unrelated skill directories remain independent. Valid install evidence
+  preserves whether each external file was framework-created or genuinely
+  pre-existing so removal never guesses about ownership.
 - `.agent-wayfinder/` is project-owned durable state. Lifecycle operations may
   establish its root when absent but otherwise treat the entire tree as
   uninterpreted by lifecycle: they do not inventory, interpret, migrate,
@@ -47,11 +45,11 @@ data or make core routing reliable.
 
 Missing, modified, obsolete, or extra framework-owned reconstructable files can
 be repaired from current package bytes. Project-owned state and ambiguous external content
-remain hard preservation boundaries. Provider failure does not invalidate an
-otherwise successful core lifecycle operation.
+remain hard preservation boundaries. A retirement conflict or invalid install
+state stops the complete lifecycle mutation before evidence is discarded.
 
 The distribution manifest, external-write evidence, staging, validation,
-rollback, archive limits, supported runtimes, and provider adapters are current
+rollback, archive limits, supported runtimes, and the exact former-installation transition are current
 implementation and contract details. They belong in architecture documentation,
 source, and tests rather than this decision.
 
@@ -66,10 +64,11 @@ source, and tests rather than this decision.
 - Mirror installed root-policy and host-customization paths literally inside
   the distributable package: rejected because supported adoption needs a clear
   activation boundary.
-- Discover and remove arbitrary provider directories: rejected because only the
-  finite declared provider set is lifecycle-managed framework output.
+- Discover and remove arbitrary skill directories: rejected because only
+  manifest-declared files with valid deletion evidence are lifecycle-managed
+  external output.
 
 ## Reconsideration trigger
 
 Reconsider when a concrete data-loss or core-routing failure cannot be handled
-by current desired-state reconciliation and host or provider capabilities.
+by current desired-state reconciliation and host or installed-skill capabilities.

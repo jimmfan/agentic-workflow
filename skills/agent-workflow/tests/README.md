@@ -11,10 +11,11 @@ subprocess.
 
 - `test_lifecycle.py` owns install, update, status, remove, composite-file and
   project-owned-state preservation boundaries.
-- `test_providers.py` owns provider reconciliation, projections, adapters,
-  status, transactions, rollback, recovery reporting, and removal.
-- `test_verify_package.py` owns package shape, manifest and provider declaration
-  integrity, projection provenance, and refresh validation.
+- `test_direct_distribution.py` owns direct skill mapping, install-state
+  integrity, the exact former-installation transition, retirement, transactions,
+  rollback, recovery reporting, and removal.
+- `test_verify_package.py` owns package shape, exact payload inventory,
+  attribution, frozen-proof parity, semantic contracts, and manifest refresh validation.
 - `test_bootstrap.py` owns archive parsing, extraction and root safety, offline
   bootstrap, and CLI delegation.
 - `test_routing.py` owns direct/progressive routing, explicit selection,
@@ -50,8 +51,8 @@ evaluator, and scenario behavior; they do not repeat the full lifecycle matrix.
 
 The default live set is a representative smoke sample covering direct work,
 external research, blocked authority, read-only and writable reconciliation,
-evidence/fact contradiction, map-only continuation with a provider-native
-`to-tickets` workflow transition, selective uncertainty, verification recovery,
+evidence/fact contradiction, map-only continuation with a `to-tickets` ticket
+or ticket set workflow transition, selective uncertainty, verification recovery,
 blocked work, and the
 valid outcome that Wayfinder assessment creates no state. Live cases are opt-in
 and not part of ordinary pull requests.

@@ -32,6 +32,7 @@ RUNTIME_PACKAGE_REQUIREMENTS = (
     (PurePosixPath("VERSION"), "package version"),
     (PurePosixPath("scripts/lifecycle.py"), "lifecycle entrypoint"),
     (PurePosixPath("scripts/adopt.py"), "framework reconciliation entrypoint"),
+    (PurePosixPath("scripts/legacy_transition.py"), "exact legacy transition proof"),
     (PurePosixPath("payload/distribution/manifest.json"), "lifecycle mapping metadata"),
 )
 ARCHIVE_MODE_VARIANTS = {
