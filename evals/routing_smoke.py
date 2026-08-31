@@ -29,8 +29,6 @@ RESOURCE_PATHS = {
     ".agent-workflow/routing.md": REPOSITORY_ROOT / ".agent-workflow/routing.md",
     ".agents/skills/wayfinder/SKILL.md": REPOSITORY_ROOT
     / ".agents/skills/wayfinder/SKILL.md",
-    ".agents/skills/wayfinder/agents/openai.yaml": REPOSITORY_ROOT
-    / ".agents/skills/wayfinder/agents/openai.yaml",
     ".agent-workflow/contracts/wayfinder-state.md": REPOSITORY_ROOT
     / ".agent-workflow/contracts/wayfinder-state.md",
 }
@@ -42,7 +40,7 @@ SKILL_OUTCOMES = [
     "available",
     "explicit_invocation_required",
     "unavailable",
-    "host_native_fallback",
+    "direct_fallback",
 ]
 
 DECISION_SCHEMA: dict[str, Any] = {
@@ -268,12 +266,12 @@ def derive_skill_environment(
             "installed_surface": [],
             "invocation": "not_checked",
             "invocation_metadata": None,
-            "expected_skill_outcomes": ["unavailable", "host_native_fallback"],
+            "expected_skill_outcomes": ["unavailable", "direct_fallback"],
             "live_host_discovery": fixtures["live_host_discovery"],
         }
     if not _regular_file(metadata_path):
         raise SmokeError(
-            f"installed skill {selected_skill!r} lacks fixture-declared invocation metadata"
+            f"selected skill {selected_skill!r} lacks fixture-declared invocation metadata"
         )
 
     metadata_content = metadata_path.read_text(encoding="utf-8")
@@ -287,7 +285,7 @@ def derive_skill_environment(
     expected = (
         ["available"]
         if implicit
-        else ["explicit_invocation_required", "host_native_fallback"]
+        else ["explicit_invocation_required", "direct_fallback"]
     )
     return {
         "source": "deterministic_fixture",
@@ -306,28 +304,28 @@ def derive_skill_environment(
     }
 
 
-def required_resources(case: Mapping[str, Any], host: str) -> list[str]:
-    required = list(case["required_resources"])
-    by_host = case.get("required_resources_by_host", {})
-    if not isinstance(by_host, Mapping):
-        raise SmokeError("required_resources_by_host must be an object")
-    host_required = by_host.get(host, [])
-    if not isinstance(host_required, list) or any(
-        not isinstance(item, str) for item in host_required
-    ):
-        raise SmokeError(f"required resources for host {host!r} must be an array")
-    return list(dict.fromkeys([*required, *host_required]))
-
-
-def model_host_fixture(case: Mapping[str, Any], host: str) -> dict[str, Any]:
-    fixtures = load_host_fixtures()
-    hosts = fixtures["hosts"]
-    if host not in hosts:
-        raise SmokeError(f"no deterministic host fixture exists for {host!r}")
-    fixture = dict(hosts[host])
-    fixture["selected_skill"] = case.get("selected_skill")
-    fixture["live_host_discovery"] = fixtures["live_host_discovery"]
-    return fixture
+def model_skill_observation(environment: Mapping[str, Any]) -> dict[str, Any]:
+    selected_skill = environment["skill"]
+    installed_surface = environment.get("installed_surface", [])
+    instruction_resource = next(
+        (
+            resource
+            for resource in installed_surface
+            if isinstance(resource, str) and resource.endswith("/SKILL.md")
+        ),
+        None,
+    )
+    skill_exposed = instruction_resource is not None
+    explicit_user_invocation_required = (
+        environment.get("invocation") == "explicit" if skill_exposed else None
+    )
+    return {
+        "selected_skill": selected_skill,
+        "instruction_resource": instruction_resource,
+        "skill_exposed": skill_exposed,
+        "explicit_user_invocation_required": explicit_user_invocation_required,
+        "live_host_discovery": environment["live_host_discovery"],
+    }
 
 
 def resource_path(case: Mapping[str, Any], name: str) -> Path:
@@ -355,10 +353,14 @@ def build_prompt(
     host: str,
     loaded: Mapping[str, str],
     decisions: Sequence[Mapping[str, Any]],
+    skill_environment: Mapping[str, Any] | None = None,
 ) -> str:
     root_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
     available = json.dumps(resource_catalog(case), indent=2)
-    host_fixture = json.dumps(model_host_fixture(case, host), indent=2)
+    environment = dict(
+        skill_environment or derive_skill_environment(case, host=host)
+    )
+    skill_observation = json.dumps(model_skill_observation(environment), indent=2)
     loaded_text = (
         "\n\n".join(
             f"<resource name={json.dumps(name)}>\n{content}\n</resource>"
@@ -374,14 +376,13 @@ access a filesystem, or invent resource contents. Request only named resources t
 says are now relevant. Multiple resources may be requested together. Once enough evidence is
 loaded, return status=\"complete\". Keep initial_route as the route justified before any requested
 resource was revealed; current_route may change as evidence accumulates. current_route records
-the router's conceptual selection before installed-skill compatibility is applied. Record an
-unavailable skill, explicit-invocation requirement, or host-native fallback separately in
-skill_outcome. After selecting a skill, MUST request its instructions and declared invocation metadata
-before completing unless they are already loaded; use that evidence to report skill_outcome
-truthfully.
+the selected route; skill_outcome separately records what happened when a skill was selected.
+If you select the named skill, request its SKILL.md instruction resource before completing unless
+it is already loaded. Apply the routing policy to the observable session facts below; the harness
+keeps its accepted outcome set separate from the model-facing prompt.
 
-Deterministic host fixture (test input, not live host discovery):
-{host_fixture}
+Harness-derived current-session observation (observable test input; live discovery not exercised):
+{skill_observation}
 
 <always_loaded_policy>
 {root_policy}
@@ -453,7 +454,7 @@ def evaluate_case(
         skill_environment or derive_skill_environment(case, host=host)
     )
     expected_skill_outcomes = set(environment["expected_skill_outcomes"])
-    expected_required_resources = required_resources(case, host)
+    expected_required_resources = list(case["required_resources"])
     checks = [
         {
             "name": "completed",
@@ -540,7 +541,13 @@ def run_case(
     skill_environment = derive_skill_environment(case, host=host)
 
     for number in range(1, max_rounds + 1):
-        prompt = build_prompt(case, host=host, loaded=loaded, decisions=decisions)
+        prompt = build_prompt(
+            case,
+            host=host,
+            loaded=loaded,
+            decisions=decisions,
+            skill_environment=skill_environment,
+        )
         prompt_bytes = len(prompt.encode("utf-8"))
         if total_prompt_bytes + prompt_bytes > max_prompt_bytes:
             raise SmokeError(

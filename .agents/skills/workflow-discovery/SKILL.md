@@ -11,8 +11,7 @@ Workflow durable coordination state.
 
 ## Establish the boundary
 
-1. Read only relevant project evidence and sources, including the artifact
-   designated to maintain the result.
+1. Read only relevant project evidence and sources.
 2. Keep read-only work in the current session; a provisional choice does not
    authorize a write.
 3. Standalone Discovery returns its result without creating Agent Workflow

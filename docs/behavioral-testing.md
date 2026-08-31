@@ -9,8 +9,8 @@ verification, state use, research grounding, or clean blocker behavior is
 observable—and prohibited repository effects did not occur.
 
 The framework uses only Python 3.11 standard-library modules. Normal pull
-requests do not need a model, network credential, installed-skill host, Git repository, or
-hidden reasoning trace.
+requests do not need a model, network credential, live skill discovery, Git
+repository, or hidden reasoning trace.
 
 ## Testing layers
 

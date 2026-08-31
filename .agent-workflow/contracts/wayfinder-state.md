@@ -16,12 +16,11 @@ Wayfinder is Agent Workflow's sole durable coordination model. The selected effo
 When resuming a Wayfinder effort, read `map.md` first; it is the first effort file, and no
 other Agent Workflow durable coordination record may compete with it.
 
-Each specialist retains its method and the artifact designated to maintain the
-result. The specialist creates no Agent Workflow durable coordination state.
-Wayfinder records consequential results and references, not procedures or
-bookkeeping. The To Tickets ticket or ticket set maintains ticket
-contents, dependencies, ordering, and readiness. Wayfinder uses a readable
-Markdown link to reference that ticket or ticket set
+Each specialist defines its own method and produces its own result. The
+specialist creates no Agent Workflow durable coordination state. Wayfinder
+records consequential results and links, not procedures or bookkeeping. A
+ticket or ticket set created by `to-tickets` maintains its contents,
+dependencies, ordering, and readiness. Wayfinder links that ticket or ticket set
 instead of copying or mirroring ticket-level state.
 
 U/E/F/D are Wayfinder's durable record types. Blocking is a scoped relationship between a
@@ -59,9 +58,10 @@ type; its presence does not claim that every current U# or E# is established pro
 
 A matter is consequential when handling it differently could change the effort's objective,
 scope, required authority, lasting result, dependencies, or which work may proceed. Wayfinder
-represents current, resumable coordination, not a permanent journal. Preserve a
-lasting outcome in the artifact designated to maintain the result; Git maintains
-historical evolution.
+represents current, resumable coordination, not a permanent journal. Preserve
+lasting outcomes in the source, specification, decision record, ticket,
+research result, review, or other accepted project record where they belong;
+Git maintains historical evolution.
 
 ## Effort shape and selection
 
@@ -122,8 +122,8 @@ These headings guide content; they are not a recognition schema. Except for **Bl
 and dependencies** in a new default map, do not create empty headings.
 The map summarizes the effort's current coordination state, conditions blocking particular work,
 dependencies, and ready work. When no ticket or ticket set exists, the map may state ready work
-directly. Once To Tickets maintains detailed decomposition, the map
-links its ticket or ticket set and may include a current ready-work
+directly. Once `to-tickets` produces a ticket or ticket set for detailed
+decomposition, the map links it and may include a current ready-work
 reference without mirroring ticket-level state.
 
 Keep the map brief, preserve enough information to resume safely, and link
@@ -255,8 +255,9 @@ establish a conclusion about the current project. Record a project-specific F#
 only when project evidence or current source sufficiently supports the claim for
 that scope. Otherwise preserve independently useful external evidence as E#, a
 consequential unresolved project question as U#, or a working proposal in the
-map or in the artifact designated to maintain the result, only when that representation
-independently earns preservation.
+map or an applicable specification, ticket, research result, review report,
+ADR, or project record, only when that representation independently earns
+preservation.
 
 ### Identifiers and references
 
@@ -281,8 +282,9 @@ automatically block unrelated work elsewhere; ambiguous content remains unchange
 
 A bare identifier is local shorthand only. Durable references outside the selected effort
 use a readable repository-relative Markdown link to the exact U/E file, F/D
-heading, or the artifact designated to maintain the result. Inside
-the effort, prefer navigable links when a path or heading matters.
+heading, specification, ticket, decision, research result, review report, or
+other project record. Inside the effort, prefer navigable links when a path or
+heading matters.
 
 F/D anchors must retain the established lowercase `f<ID>--<slug>` and `d<ID>--<slug>` forms
 derived from those headings' em-dash representation. Reconcile affected references before
@@ -292,8 +294,9 @@ renaming a U/E file or F/D heading.
 
 Keep only current coordination needed to navigate the effort. Reconciliation
 updates affected map content, recognized records, conditions blocking affected
-work, dependencies, ready work, and references so they agree with current truth,
-binding project choices, and the artifact designated to maintain the result.
+work, dependencies, ready work, and links so they agree with current truth,
+binding project choices, and the current source, specification, decision record,
+ticket, research result, or review they reference.
 Pruning removes a recognized Wayfinder record from
 current coordination after still-useful results are preserved and affected
 references are reconciled. Removing the selected file or ledger section carries
@@ -318,17 +321,20 @@ unrelated efforts, the entire repository, or Git history.
 
 Use this common sequence for every affected reconciliation:
 
-1. Preserve any still-useful result in the artifact designated to maintain the result.
+1. Preserve any still-useful result in the source, specification, decision
+   record, ticket, research result, review, or other accepted project record
+   where it belongs.
 2. Update affected map content, records, conditions blocking affected work, dependencies, ready
    work, and known references.
 3. Prune only recognized records that no longer have independent current value.
 
-Update only affected records and references to the artifact designated to
-maintain the result. Do not copy its body, normalize unchanged files, resolve
-unrelated questions, or reconcile unrelated efforts. Do not manufacture
-inconsistency merely because one artifact summarizes, abstracts, or omits detail
-held elsewhere. Reconcile only a concrete incompatible statement or a
-requirement the artifact designated to maintain the result no longer satisfies. When evidence is
+Update only affected records and references to specifications, tickets,
+research results, review reports, ADRs, and other project records that hold
+relevant results. Do not copy their bodies, normalize unchanged files, resolve
+unrelated questions, or reconcile unrelated efforts. Do not infer inconsistency
+merely because a Wayfinder record summarizes, abstracts, or omits detail held in
+a linked source or record. Reconcile only a concrete incompatible statement or
+a requirement the linked source or record no longer satisfies. When evidence is
 insufficient for a truthful update, preserve state and report what prevents the
 affected work from proceeding.
 
@@ -385,19 +391,23 @@ waiting. Keep its map content current enough for safe resumption, including cond
 particular work, dependencies, and any ready work. Do not remove `map.md` while consequential
 unresolved coordination still needs continuity. Retain the effort, transfer
 that coordination to a recognized current successor, or preserve the
-consequential result or constraint in the artifact designated to maintain the result
-before ending the effort.
+consequential result or constraint in the relevant source, specification,
+decision record, ticket, research result, review, or successor map before ending
+the effort.
 
 An effort ends only when it has no legitimate continuation because its objective was achieved,
 a committed project choice ended it, or continuing coordination belongs to a different objective
-or substantive scope. Before removing recognized Wayfinder records, preserve lasting outcomes and
-continuing relationships or constraints in the artifact designated to maintain the result and reconcile affected
-references. Apply the common sequence across affected records, then remove `map.md` last. Never
+or substantive scope. Before removing recognized Wayfinder records, preserve
+lasting outcomes and continuing relationships or constraints in the relevant
+current source, specification, decision record, ticket, research result, review,
+or successor map, and reconcile affected references. Apply the common sequence
+across affected records, then remove `map.md` last. Never
 recursively delete the effort directory; the absence of `map.md` ends Wayfinder recognition, and
 any unrecognized project-owned bytes and their containing directories remain
 unchanged and uninterpreted by Wayfinder.
 
-Record a useful replacement relationship in its successor or the artifact
-designated to maintain the result. Do not retain the predecessor map or add
+Record a useful replacement relationship in its successor map or in the current
+project record where that relationship remains useful.
+Do not retain the predecessor map or add
 tombstones, redirects, archives, or successor metadata. Do not clean up other
 efforts; Git preserves history.

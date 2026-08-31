@@ -63,13 +63,21 @@ class RoutingContractTests(unittest.TestCase):
         ):
             self.assertIn(required, project_decision_authority)
         self.assertNotIn("settle", project_decision_authority.casefold())
-        self.assertEqual(
-            entries["Reconciliation"],
-            "Updating affected current coordination state so it agrees with current "
-            "truth, project choices determined by accepted project policy or committed by "
-            "project decision authority, and the artifact designated to maintain the "
-            "result.",
-        )
+        reconciliation = entries["Reconciliation"]
+        for required in (
+            "Updating affected current coordination state",
+            "current truth",
+            "project choices determined by accepted project policy",
+            "committed by project decision authority",
+            "source files",
+            "specifications",
+            "tickets",
+            "decisions",
+            "research findings",
+            "review reports",
+        ):
+            self.assertIn(required, reconciliation)
+        self.assertNotIn("artifact designated to maintain", reconciliation)
         expected_fragments = {
             "Objective": (
                 "result a Wayfinder effort is intended to achieve",
@@ -170,7 +178,7 @@ class RoutingContractTests(unittest.TestCase):
         normalized = " ".join(project_instructions.split())
         for requirement in (
             "## Project language",
-            "Read `CONTEXT.md` before changing routing, Wayfinder, installed-skill integration, "
+            "Read `CONTEXT.md` before changing routing, Wayfinder, direct skill distribution, "
             "ownership, or framework-lifecycle concepts",
             "determine the actual concept from current source, behavior, tests, and accepted decisions",
             "identify the bounded technical or domain context that owns it",
@@ -186,14 +194,14 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, normalized)
 
-    def test_explicit_compatible_skill_selection_still_takes_precedence(self) -> None:
+    def test_explicit_available_skill_selection_still_takes_precedence(self) -> None:
         routing = " ".join(
             (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
         )
 
         self.assertIn(
-            "Explicit compatible skill request | Named skill | Honor unless action authorization, "
-            "safety, or compatibility blocks it",
+            "Explicit skill request | Named skill | Honor when available unless action "
+            "authorization or safety blocks execution; otherwise apply the unavailable-skill rule",
             routing,
         )
 
@@ -364,7 +372,7 @@ class RoutingContractTests(unittest.TestCase):
                 self.assertIn(direct_choice_boundary, text)
                 self.assertNotIn("unresolved project-choice boundary", text)
 
-    def test_route_selection_execution_and_skill_statuses_remain_distinct(
+    def test_route_selection_loading_execution_and_completion_remain_distinct(
         self,
     ) -> None:
         routing = (
@@ -377,7 +385,7 @@ class RoutingContractTests(unittest.TestCase):
             )
             for heading in (
                 "## Decide and compose",
-                "## Resolve installed skills",
+                "## Use selected skills",
                 "## Preserve responsibilities and transitions",
                 "## Report the executed route",
             )
@@ -387,26 +395,35 @@ class RoutingContractTests(unittest.TestCase):
             "supporting capabilities that materially help",
         ):
             self.assertIn(fragment, sections["## Decide and compose"])
+        selected_skills = sections["## Use selected skills"]
         for fragment in (
-            "Route selection chooses Direct or a workflow",
-            "skill resolution confirms the selected installed surface and invocation restrictions",
-            "skill invocation activates it",
-            "material execution means the selected method actually ran",
-            "completion and verification require evidence beyond the route marker",
-            "host support",
-            "invocation restrictions",
-            "skill prerequisites",
-            "installed availability",
-            "host-native fallback",
+            "exposed in the current session",
+            "Read the selected skill's instructions",
+            "Selecting a skill is not execution",
+            "Route selection",
+            "material execution",
+            "completion and verification",
+            "cannot run without explicit user invocation",
+            "available capabilities can satisfy the request",
+            "Never claim an unavailable skill ran",
         ):
-            self.assertIn(fragment, sections["## Resolve installed skills"])
+            self.assertIn(fragment, selected_skills)
+        for obsolete_abstraction in (
+            "behavior-bearing",
+            "user-only operation",
+            "skill resolution",
+            "installed availability",
+            "skill prerequisites",
+            "registry",
+        ):
+            self.assertNotIn(obsolete_abstraction, selected_skills)
         self.assertIn(
             "The specialist creates no Agent Workflow durable coordination state",
             sections["## Preserve responsibilities and transitions"],
         )
         reporting = sections["## Report the executed route"]
         self.assertIn("<skill>-handoff", reporting)
-        self.assertIn("required skill still needs explicit user invocation", reporting)
+        self.assertIn("explicit user invocation remains required", reporting)
 
     def test_specialist_selection_has_material_boundaries(self) -> None:
         self._assert_optional_specialist_boundaries()
@@ -479,6 +496,10 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertIn("Read `.agent-workflow/routing.md` only when", normalized_root)
         self.assertIn(
+            "a selected skill is unavailable or requires explicit user invocation",
+            normalized_root,
+        )
+        self.assertIn(
             "Three or more meaningful items require assessment, never selection by count alone",
             normalized_root,
         )
@@ -495,20 +516,30 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("For a named skill, a resume", normalized_root)
         self.assertIn("avoid routing loops", normalized_routing.lower())
         self.assertIn("trivial low-risk edits stay direct", normalized_routing.lower())
-        self.assertIn("no safe authorized fallback exists", normalized_routing)
-        self.assertIn("report the host-native activity", normalized_routing)
+        self.assertIn(
+            "available capabilities can satisfy the request", normalized_routing
+        )
+        self.assertIn(
+            "unavailable or cannot run without explicit user invocation",
+            normalized_routing,
+        )
+        self.assertIn("After a successful Direct fallback", normalized_routing)
         self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn(
             "selection did not become equivalent execution", normalized_routing
         )
-        self.assertIn("omit the unavailable skill", normalized_routing)
+        self.assertIn("omit the skill that could not run", normalized_routing)
         self.assertIn(
             "Direct work, one obvious workflow, and one obvious specialist inside "
             "Wayfinder do not load it",
             normalized_routing,
         )
         self.assertIn(
-            "A supporting capability does not become the primary workflow or create "
+            "a selected skill is unavailable or requires explicit user invocation",
+            normalized_routing,
+        )
+        self.assertIn(
+            "A supporting skill does not become the primary workflow or create "
             "Agent Workflow durable coordination state",
             normalized_routing,
         )

@@ -49,9 +49,9 @@ remain hard preservation boundaries. A retirement conflict or invalid install
 state stops the complete lifecycle mutation before evidence is discarded.
 
 The distribution manifest, external-write evidence, staging, validation,
-rollback, archive limits, supported runtimes, and the exact former-installation transition are current
-implementation and contract details. They belong in architecture documentation,
-source, and tests rather than this decision.
+rollback, archive limits, supported runtimes, and the exact former-installation
+transition are current implementation and contract details. They belong in
+architecture documentation, source, and tests rather than this decision.
 
 ## Alternatives considered
 
@@ -71,4 +71,5 @@ source, and tests rather than this decision.
 ## Reconsideration trigger
 
 Reconsider when a concrete data-loss or core-routing failure cannot be handled
-by current desired-state reconciliation and host or installed-skill capabilities.
+by current desired-state reconciliation without weakening supported host
+behavior.

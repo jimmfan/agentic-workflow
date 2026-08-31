@@ -40,14 +40,15 @@ It checks:
   thirty-four-skill-file inventories;
 - absence of executable or host-customization content in the
   activation-sensitive payload namespace;
-- direct skill frontmatter, support-file closure, local references, complete
-  attribution, frozen-fixture integrity, and production transition-proof parity;
+- directly distributed skill inventory and frontmatter, support-file closure,
+  local references, complete attribution, frozen-fixture integrity, and
+  production transition-proof parity;
 - the source-only terminology glossary and project-language policy remain
   present, scoped, and absent from the distributed payload;
 - current Agent Workflow-owned Wayfinder surfaces distinguish records from
   represented questions, evidence, conclusions, and choices; project-choice
   commitment from action authorization and host permission; route selection from
-  installed-skill resolution, invocation, material execution, and completion evidence;
+  truthful reporting of skill use, material execution, and completion evidence;
   and lifecycle ownership from durability and reconstructability;
 - local Markdown links and behavioral scenario validation;
 - lifecycle, install-state integrity, transaction rollback, data-safety, routing, cp1252, bootstrap, and
@@ -113,7 +114,8 @@ The suite prioritizes behavior that matters before 1.0:
 - missing and drifted `.agent-workflow/` files are restored from current desired
   state, and obsolete internal files disappear;
 - arbitrary unrecognized project-owned `.agent-wayfinder/` contents survive
-  install, status, update, remove, reinstall, and direct-skill repair byte-for-byte;
+  install, status, update, remove, reinstall, and repair of directly distributed
+  skill files byte-for-byte;
 - recognized local Wayfinder maps, F#/D# ledgers, and U#/E# files survive the
   same lifecycle sequence without schema interpretation or normalization;
 - project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
@@ -157,17 +159,17 @@ Wayfinder state contracts separately cover a valid map-only effort; creating and
 appending current F# and D# ledger sections; allocating above the highest current
 same-type identifier; rejecting malformed or duplicate identifiers; and
 pruning only the selected section after bounded reference reconciliation. They
-also cover empty-ledger removal, changed-state rejection,
-no-overwrite child creation, separate U#/E# artifacts, readable section anchors,
-and progressive retrieval of relevant detail without an arbitrary file count.
+also cover empty-ledger removal, changed-state rejection, no-overwrite child
+creation, separate U#/E# files, readable section anchors, and progressive
+retrieval of relevant detail without an arbitrary file count.
 
 Unrecognized-content coverage proves unmatched project-owned bytes remain unchanged
 and are not treated as current references or allocation state. Identity-like
 malformed entries and exact filesystem collisions are rejected. Lifecycle
-preservation exercises
-install, update, status, remove, reinstall, and direct-skill repair byte-for-byte.
-The behavioral suite also keeps
-implementation work-item artifacts out of Wayfinder, resumes relevant efforts
+preservation exercises install, update, status, remove, reinstall, and repair of
+directly distributed skill files byte-for-byte.
+The behavioral suite also keeps implementation tickets and other work-item
+records out of Wayfinder, resumes relevant efforts
 from the map, reconciles affected state after implementation,
 excludes unrelated detail and efforts, reports outdated state without changing it during read-only work,
 stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
@@ -176,10 +178,12 @@ of a direct route.
 The routing catalog separately covers direct work, standalone Discovery, direct
 Wayfinder ready work, specialist-supported resolution of consequential issues,
 the workflow transition from Wayfinder to Implementation, interrupted-specialist
-session continuation from the map, host-native fallback, an explicit skill
-invocation instruction, external read scope, and responsibility for the artifact
-designated to maintain the result. It is an executable contract check, not proof
-that a live editor or host skill-discovery service was exercised.
+session continuation from the map, direct continuation when an optional skill is
+unavailable, an explicit user-invocation handoff, external read scope, and
+responsibility for specifications, decisions, tickets, research findings,
+prototypes, domain-model updates, and review reports. It is an executable
+contract check, not proof that live skill discovery by an editor or host was
+exercised.
 
 ## Useful failure diagnostics
 
@@ -199,9 +203,9 @@ If the gate fails:
 
 The deterministic GitHub Actions gate runs on Ubuntu. Native PowerShell and CMD
 execution is outside the supported platform contract; Git Bash on native
-Windows is best-effort. Do not claim live validation of any host, editor,
-installed-skill discovery surface, or host extension unless it was actually performed and
-reported separately.
+Windows is best-effort. Do not claim live validation of host or editor skill
+discovery, or of a host extension, unless it was actually performed and reported
+separately.
 
 ## Behavioral layers
 

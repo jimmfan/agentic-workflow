@@ -2112,7 +2112,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "readme": (
                 REPOSITORY_ROOT / "README.md",
                 "As work settles",
-                "As lasting results are established",
+                "Wayfinder links them when useful; it does not copy them",
             ),
             "routing documentation": (
                 REPOSITORY_ROOT / "docs/routing.md",
@@ -2417,9 +2417,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             ).split()
         )
         for responsibility in (
-            "To Tickets ticket or ticket set",
-            "ticket contents, dependencies, ordering, and readiness",
-            "reference that ticket or ticket set",
+            "ticket or ticket set created by `to-tickets`",
+            "its contents, dependencies, ordering, and readiness",
+            "links that ticket or ticket set",
             "ticket-level state",
         ):
             with self.subTest(contract_responsibility=responsibility):
@@ -2445,7 +2445,13 @@ class WayfinderStateContractTests(unittest.TestCase):
                 PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
             ).read_text(encoding="utf-8").split()
         )
-        self.assertIn("To Tickets ticket or ticket set", implementation)
+        self.assertIn("ticket or ticket set produced by `to-tickets`", implementation)
+        for surface in (
+            self.contract,
+            WAYFINDER_SKILL.read_text(encoding="utf-8"),
+            implementation,
+        ):
+            self.assertNotIn("To Tickets", surface)
         for invalid in (
             "link its ticket ordering and readiness",
             "remain durable in ticket ordering and readiness",
@@ -2732,13 +2738,14 @@ class WayfinderStateContractTests(unittest.TestCase):
         for responsibility in (
             "The map summarizes",
             "no ticket or ticket set exists",
-            "ticket or ticket set",
-            "ticket contents, dependencies, ordering, and readiness",
+            "Once `to-tickets` produces a ticket or ticket set",
+            "maintains contents, dependencies, ordering, and readiness",
             "does not mirror ticket-level state",
         ):
             with self.subTest(ticket_responsibility=responsibility):
                 self.assertIn(responsibility, transition)
         self.assertNotIn("link its ticket ordering and readiness", transition)
+        self.assertNotIn("To Tickets", transition)
         self.assertNotIn("settlement", runtime.lower())
 
 

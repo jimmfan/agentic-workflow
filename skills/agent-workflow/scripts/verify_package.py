@@ -137,8 +137,8 @@ EXPECTED_SKILL_DESCRIPTIONS = {
     "wayfinder": "Keep a lightweight structured map when important unresolved questions, choices, dependencies, blockers, or conflicting conclusions are becoming unreliable to hold in ordinary context.",
     "workflow-debugging": "Diagnose an existing unexplained failure through an evidence-driven feedback loop and falsifiable hypotheses. Use for an observable failure, regression, or performance symptom whose cause is unknown; distinguish diagnosis from a fix with separate action authorization.",
     "workflow-discovery": "Resolve one bounded consequential project choice when explicit alternative and tradeoff analysis materially helps; operate standalone or inside Wayfinder without creating Agent Workflow durable coordination state.",
-    "workflow-implementation": "Orchestrate one ready implementation scope through the curated implement skill and independent framework verification. Use after material consequential choices are resolved; skip trivial direct edits and unexplained failures.",
-    "workflow-verification": "Independently verify the overall result against acceptance criteria, integration boundaries, expected artifacts, and skill compatibility. Use after meaningful implementation or when auditing completion; reuse existing evidence instead of mechanically repeating it.",
+    "workflow-implementation": "Orchestrate one ready implementation scope through `implement` and independent framework verification. Use after material consequential choices are resolved; skip trivial direct edits and unexplained failures.",
+    "workflow-verification": "Independently verify the overall result against acceptance criteria, integration boundaries, and expected project results. Use after meaningful implementation or when auditing completion; reuse existing evidence instead of mechanically repeating it.",
 }
 
 EXPECTED_OPENAI_INTERFACES = {
@@ -190,6 +190,20 @@ RETIRED_WAYFINDER_PATTERNS = (
     r"\bre-ent(?:ry|er(?:s|ed|ing)?)\b",
     r"\b(?:ordinary|research|debugging)\s+fog\b",
     r"\b(?:resolve|frame|reconcile|return|native|current|ready|coherent)\s+(?:the\s+)?frontier\b",
+)
+
+RETIRED_SKILL_RESOLVER_LANGUAGE = (
+    "installed-skill",
+    "installed repository surface",
+    "behavior-bearing invocation metadata",
+    "installed availability",
+    "skill prerequisites",
+    "host-native",
+    "installed skill contract",
+    "skill compatibility",
+    "incompatible skill metadata",
+    "optional skill check",
+    "unused installed skills",
 )
 
 
@@ -377,7 +391,7 @@ def check_source_project_language() -> None:
     normalized = " ".join(project_policy.split())
     for clause in (
         "## Project language",
-        "Read `CONTEXT.md` before changing routing, Wayfinder, installed-skill integration, ownership, or framework-lifecycle concepts",
+        "Read `CONTEXT.md` before changing routing, Wayfinder, direct skill distribution, ownership, or framework-lifecycle concepts",
         "determine the actual concept from current source, behavior, tests, and accepted decisions",
         "identify the bounded technical or domain context that owns it",
         "Update `CONTEXT.md` only after the terminology decision is accepted",
@@ -733,6 +747,26 @@ def require_order(label: str, text: str, clauses: Sequence[str]) -> None:
 
 
 def check_semantic_contracts() -> None:
+    root_routing = normalized_text("root/AGENTS.md.template")
+    require_clauses(
+        "Root routing",
+        root_routing,
+        (
+            "a selected skill is unavailable or requires explicit user invocation",
+        ),
+    )
+
+    discovery = normalized_text("skills/workflow-discovery/SKILL.md")
+    require_clauses(
+        "Discovery",
+        discovery,
+        ("Read only relevant project evidence and sources.",),
+    )
+    require(
+        "artifact designated to maintain the result" not in discovery.lower(),
+        "Discovery retains imprecise generic result-artifact wording",
+    )
+
     research = normalized_text("skills/research/SKILL.md")
     require_clauses(
         "Research",
@@ -756,10 +790,13 @@ def check_semantic_contracts() -> None:
             "Route before inspecting state; an existing map never selects Wayfinder.",
             "read the state contract before effort state",
             "If the state contract is unavailable, fail closed",
-            "create the artifact designated to maintain the result or return evidence",
+            "return evidence or create or update a specification, ticket, research result, review report, ADR, or other project result",
+            "The specialist creates no Agent Workflow durable coordination state.",
+            "Reference relevant specifications, tickets, research results, review reports, ADRs, and other project records instead of copying them.",
             "Authorization to perform an action does not commit a project choice",
             "Host permission supplies neither.",
             "Implementation consumes one ready scope and its acceptance criteria; Verification follows material execution.",
+            "Once `to-tickets` produces a ticket or ticket set, that ticket or ticket set maintains contents, dependencies, ordering, and readiness.",
         ),
     )
     for pattern in RETIRED_WAYFINDER_PATTERNS:
@@ -773,7 +810,7 @@ def check_semantic_contracts() -> None:
     to_spec = normalized_text("skills/to-spec/SKILL.md")
     to_tickets = normalized_text("skills/to-tickets/SKILL.md")
     precedence = ("the current user request", "project instructions", "project-owned configuration", "no destination")
-    for label, text in (("To Spec", to_spec), ("To Tickets", to_tickets)):
+    for label, text in (("to-spec", to_spec), ("to-tickets", to_tickets)):
         require_order(label, text, precedence)
         require_clauses(
             label,
@@ -788,7 +825,7 @@ def check_semantic_contracts() -> None:
             ),
         )
     require_clauses(
-        "To Tickets",
+        "to-tickets",
         to_tickets,
         (
             "blocking-link creation, status changes, and labels require authorization",
@@ -832,10 +869,19 @@ def check_semantic_contracts() -> None:
             "Meaningful Implementation runs Verification once.",
             "New causal uncertainty returns to Debugging; a material unresolved choice returns to Discovery or Wayfinder",
             "workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and `workflow-verification` become `discovery`, `debugging`, `implement`, and `verification`",
-            "`<skill>-handoff`",
-            "`<skill>-unavailable`",
-            "`<skill>-blocked`",
-            "Specifications, tickets, research results, maps, and reviews remain in their project or external locations. The artifact designated to maintain the result remains authoritative",
+            "Use a skill only when it is exposed in the current session.",
+            "a selected skill is unavailable or requires explicit user invocation",
+            "Selecting a skill is not execution: include it in the route marker only when its method actually ran.",
+            "If a selected skill is unavailable or cannot run without explicit user invocation",
+            "continue Direct only when the user did not require that skill",
+            "give the exact supported invocation instruction and stop with `<skill>-handoff` when explicit user invocation remains required",
+            "Never claim an unavailable skill ran or present Direct work as that skill's result.",
+            "- `<skill>-handoff`:",
+            "- `<skill>-unavailable`:",
+            "- `<skill>-blocked`:",
+            "Specifications, tickets or ticket sets, research results, and reviews remain in their project or external locations",
+            "the Wayfinder map links them instead of copying them",
+            "Preserve external identifiers unchanged.",
         ),
     )
     implementation = normalized_text("skills/workflow-implementation/SKILL.md")
@@ -845,10 +891,16 @@ def check_semantic_contracts() -> None:
         (
             "Return a material unresolved choice to Discovery or Wayfinder",
             "an unexplained failure to Debugging",
-            "Invoke the installed `implement` skill once",
+            "Invoke `implement` once with the accepted scope, observable acceptance criteria",
+            "references to the selected map, decision record, specification, ticket, or ticket set",
+            "Never simulate its execution or claim it ran",
             "Invoke `workflow-verification` once",
-            "the artifact designated to maintain the result",
+            "the ticket or ticket set produced by `to-tickets`",
         ),
+    )
+    require(
+        "cannot load `implement`, return to the router" not in implementation.lower(),
+        "Implementation integration invents a skill-availability transition",
     )
     verification = normalized_text("skills/workflow-verification/SKILL.md")
     require_clauses(
@@ -858,9 +910,22 @@ def check_semantic_contracts() -> None:
             "Return implementation defects to `workflow-implementation`",
             "decision defects to `workflow-discovery`",
             "an unexplained symptom to `workflow-debugging`",
-            "the artifact designated to maintain the result",
+            "the selected map, decision record, specification, ticket, or ticket set",
+            "unresolved acceptance behavior, integration boundaries, expected results, and workflow completion",
+            "Missing required tools do not silently pass.",
+            "skills not needed for the verification were not loaded merely because they were exposed in the current session",
+            "every skill named in the route marker actually ran.",
         ),
     )
+    for translated_check in (
+        "skill's instructions materially govern the work being verified",
+        "required skill instructions",
+        "check about an optional skill",
+    ):
+        require(
+            translated_check not in verification.lower(),
+            "Verification integration retains a translated provider-only check",
+        )
 
 
 def iter_current_text_paths() -> Iterable[Path]:
@@ -885,6 +950,14 @@ def iter_current_text_paths() -> Iterable[Path]:
             yield path
 
 
+def is_agent_facing_policy_path(path: Path) -> bool:
+    try:
+        relative = path.relative_to(PAYLOAD_ROOT)
+    except ValueError:
+        return False
+    return path.suffix == ".md" or relative == Path("root/AGENTS.md.template")
+
+
 def check_retired_architecture_and_conventions() -> None:
     for relative in (
         "provider-snapshots",
@@ -905,7 +978,33 @@ def check_retired_architecture_and_conventions() -> None:
         )
     for path in iter_current_text_paths():
         text = path.read_text(encoding="utf-8")
+        normalized_prose = " ".join(text.split())
         relative = path.relative_to(REPOSITORY_ROOT)
+        to_tickets_display_name = EXPECTED_OPENAI_INTERFACES["to-tickets"][0]
+        allowed_to_tickets_lines = {
+            Path("skills/agent-workflow/payload/skills/to-tickets/SKILL.md"): {
+                f"# {to_tickets_display_name}"
+            },
+        }.get(relative, set())
+        if is_agent_facing_policy_path(path):
+            for line_number, line in enumerate(text.splitlines(), start=1):
+                if to_tickets_display_name not in line:
+                    continue
+                require(
+                    line.strip() in allowed_to_tickets_lines,
+                    "normative prose must use the `to-tickets` skill identifier: "
+                    f"{relative}:{line_number}",
+                )
+            normalized_without_display = normalized_prose
+            if allowed_to_tickets_lines:
+                normalized_without_display = normalized_without_display.replace(
+                    f"# {to_tickets_display_name}", "", 1
+                )
+            require(
+                to_tickets_display_name not in normalized_without_display,
+                "normative prose must use the `to-tickets` skill identifier: "
+                f"{relative}",
+            )
         for literal in (".scratch/", "skill-owned artifact", "skill lifecycle"):
             require(
                 literal.lower() not in text.lower(),
@@ -928,9 +1027,16 @@ def check_retired_architecture_and_conventions() -> None:
         ):
             require(
                 literal.lower() not in text.lower(),
-                "current surface substitutes for required result-artifact terminology "
+                "current surface uses imprecise generic result-artifact wording "
                 f"{literal!r}: {relative}",
             )
+        if is_agent_facing_policy_path(path):
+            for literal in RETIRED_SKILL_RESOLVER_LANGUAGE:
+                require(
+                    literal.lower() not in normalized_prose.lower(),
+                    "agent-facing policy retains retired skill-resolver language "
+                    f"{literal!r}: {relative}",
+                )
         require(
             HOST_PREFIX.search(text) is None,
             f"current surface retains host-specific tdd/code-review invocation: {relative}",
@@ -1107,11 +1213,23 @@ def check_behavior_scenarios() -> None:
                 if isinstance((value := assertion.get(key)), str)
             )
         active_text = "\n".join(active_values)
+        normalized_active_text = " ".join(active_text.split())
+        require(
+            EXPECTED_OPENAI_INTERFACES["to-tickets"][0] not in normalized_active_text,
+            "normative prose must use the `to-tickets` skill identifier: "
+            f"{path.relative_to(REPOSITORY_ROOT)}",
+        )
         for literal in (".scratch/", "skill-owned artifact", "skill lifecycle"):
             require(
                 literal.lower() not in active_text.lower(),
                 f"active behavioral scenario retains forbidden convention {literal!r}: "
                 f"{path.relative_to(REPOSITORY_ROOT)}",
+            )
+        for literal in RETIRED_SKILL_RESOLVER_LANGUAGE:
+            require(
+                literal.lower() not in normalized_active_text.lower(),
+                "active behavioral scenario retains retired skill-resolver language "
+                f"{literal!r}: {path.relative_to(REPOSITORY_ROOT)}",
             )
         require(
             HOST_PREFIX.search(active_text) is None,

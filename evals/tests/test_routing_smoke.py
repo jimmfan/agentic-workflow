@@ -44,9 +44,51 @@ class RoutingSmokeTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertNotIn(resource_text.strip(), prompt)
-        self.assertIn("Deterministic host fixture", prompt)
+        self.assertIn("Harness-derived current-session observation", prompt)
         self.assertIn('"live_host_discovery": "unverified"', prompt)
-        self.assertIn("MUST request its instructions and declared invocation metadata", prompt)
+        self.assertIn('"skill_exposed": false', prompt)
+        self.assertIn('"explicit_user_invocation_required": null', prompt)
+        self.assertNotIn('"allowed_skill_outcomes"', prompt)
+        for resolver_detail in (
+            '"skill_root"',
+            '"invocation"',
+            '"invocation_metadata"',
+            '"installed"',
+            '"expected_skill_outcomes"',
+            "metadata_suffix",
+            "true_means",
+            "policy.allow_implicit_invocation",
+            "declared invocation metadata",
+            "installed-skill compatibility",
+            "without consulting a registry",
+        ):
+            with self.subTest(resolver_detail=resolver_detail):
+                self.assertNotIn(resolver_detail, prompt)
+
+    def test_model_receives_observable_skill_facts_without_raw_host_fixture(self) -> None:
+        case = routing_smoke.load_cases()["evolving"]
+        environment = routing_smoke.derive_skill_environment(case, host="codex")
+
+        prompt = routing_smoke.build_prompt(
+            case,
+            host="codex",
+            loaded={},
+            decisions=[],
+            skill_environment=environment,
+        )
+
+        self.assertIn('"selected_skill": "wayfinder"', prompt)
+        self.assertIn(
+            '"instruction_resource": ".agents/skills/wayfinder/SKILL.md"',
+            prompt,
+        )
+        self.assertIn('"skill_exposed": true', prompt)
+        self.assertIn('"explicit_user_invocation_required": false', prompt)
+        self.assertNotIn('"allowed_skill_outcomes"', prompt)
+        self.assertNotIn('"expected_skill_outcomes"', prompt)
+        self.assertNotIn(".agents/skills/wayfinder/agents/openai.yaml", prompt)
+        self.assertNotIn("metadata_suffix", prompt)
+        self.assertNotIn("true_means", prompt)
 
     def test_installed_surface_uses_invocation_default_from_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -88,7 +130,17 @@ class RoutingSmokeTests(unittest.TestCase):
         self.assertEqual(environment["invocation_metadata"]["source"], "metadata")
         self.assertEqual(
             environment["expected_skill_outcomes"],
-            ["explicit_invocation_required", "host_native_fallback"],
+            ["explicit_invocation_required", "direct_fallback"],
+        )
+        self.assertEqual(
+            routing_smoke.model_skill_observation(environment),
+            {
+                "selected_skill": "wayfinder",
+                "instruction_resource": ".agents/skills/wayfinder/SKILL.md",
+                "skill_exposed": True,
+                "explicit_user_invocation_required": True,
+                "live_host_discovery": "unverified",
+            },
         )
 
     def test_skill_invocation_metadata_is_read_only_from_frontmatter(self) -> None:
@@ -124,7 +176,17 @@ class RoutingSmokeTests(unittest.TestCase):
         self.assertEqual(environment["invocation"], "not_checked")
         self.assertEqual(
             environment["expected_skill_outcomes"],
-            ["unavailable", "host_native_fallback"],
+            ["unavailable", "direct_fallback"],
+        )
+        self.assertEqual(
+            routing_smoke.model_skill_observation(environment),
+            {
+                "selected_skill": "wayfinder",
+                "instruction_resource": None,
+                "skill_exposed": False,
+                "explicit_user_invocation_required": None,
+                "live_host_discovery": "unverified",
+            },
         )
         self.assertEqual(environment["live_host_discovery"], "unverified")
 
@@ -185,7 +247,6 @@ class RoutingSmokeTests(unittest.TestCase):
                     "status": "request_resources",
                     "requested_resources": [
                         ".agents/skills/wayfinder/SKILL.md",
-                        ".agents/skills/wayfinder/agents/openai.yaml",
                         ".agent-workflow/contracts/wayfinder-state.md",
                     ],
                     "initial_route": "direct",
@@ -203,7 +264,7 @@ class RoutingSmokeTests(unittest.TestCase):
                     "wayfinder_assessment": True,
                     "wayfinder_selected": True,
                     "skill_outcome": "available",
-                    "summary": "Wayfinder is installed and implicitly invocable in the fixture.",
+                    "summary": "The supplied observation says Wayfinder can run.",
                 },
             ]
         )
@@ -217,6 +278,10 @@ class RoutingSmokeTests(unittest.TestCase):
 
         self.assertTrue(report["passed"], report["checks"])
         self.assertEqual(report["resources_loaded"][0], "task.md")
+        self.assertNotIn(
+            ".agents/skills/wayfinder/agents/openai.yaml",
+            report["resources_loaded"],
+        )
         self.assertEqual(report["final_decision"]["current_route"], "wayfinder")
         self.assertTrue(report["final_decision"]["wayfinder_selected"])
         self.assertEqual(report["skill_environment"]["invocation"], "implicit")
@@ -285,16 +350,27 @@ class RoutingSmokeTests(unittest.TestCase):
             }
 
         comparison = routing_smoke.compare_reports(
-            [report("codex", "available"), report("claude", "host_native_fallback")]
+            [report("codex", "available"), report("claude", "direct_fallback")]
         )
 
         self.assertTrue(comparison["interpretation_agreement"])
         self.assertFalse(comparison["skill_outcome_agreement"])
 
-    def test_route_labels_and_transition_are_unchanged(self) -> None:
+    def test_route_outcome_labels_and_transition_are_unchanged(self) -> None:
         self.assertEqual(
             routing_smoke.ROUTES,
             ["direct", "discovery", "debugging", "wayfinder", "other"],
+        )
+        self.assertEqual(
+            routing_smoke.SKILL_OUTCOMES,
+            [
+                "not_checked",
+                "direct",
+                "available",
+                "explicit_invocation_required",
+                "unavailable",
+                "direct_fallback",
+            ],
         )
         evolving = routing_smoke.load_cases()["evolving"]
         self.assertEqual(evolving["expected_initial_route"], "direct")

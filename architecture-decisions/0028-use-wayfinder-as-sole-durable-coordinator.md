@@ -7,9 +7,10 @@
 
 Multiple specialist-specific continuity systems would create competing resume
 identities, statuses, and lifecycle behavior. Specialists already provide
-better methods, while the artifact designated to maintain the result remains
-outside Wayfinder, so copying
-their procedures into Wayfinder would increase context and create drift.
+better methods, and their results belong in source files, specifications,
+tickets, research reports, prototypes, domain-model updates, or review
+reports—not Wayfinder. Copying their procedures into Wayfinder would increase
+context and create drift.
 
 The project needs one small durable coordination model, not mandatory durable state for
 every method that might help during an effort.
@@ -19,33 +20,35 @@ every method that might help during an effort.
 Agent Workflow defines Wayfinder as its sole durable coordination model. It persists
 only consequential cross-session coordination: objective, scope, areas and
 relationships, conditions blocking particular work, dependencies, ready work,
-optional current knowledge, and readable references to the artifact designated
-to maintain the result.
+optional current knowledge, and readable references to relevant source files,
+specifications, tickets, accepted decisions, research reports, prototypes,
+domain-model updates, and reviews.
 
-Each specialist retains responsibility for its method and the artifact
-designated to maintain the result. A specialist may create that durable artifact or
-evidence. The specialist creates no Agent Workflow durable coordination state.
+Each specialist retains its method and produces the result described by its
+skill. The specialist creates no Agent Workflow durable coordination state.
 Direct reasoning remains valid; load only a specialist whose method materially
 helps the current work or unresolved question.
 
-The artifact designated to maintain the result remains in its designated location.
-In particular, the `to-tickets` ticket or ticket set maintains ticket
-contents, dependencies, ordering, and readiness. Wayfinder may reference that
-output and identify the current ready-work reference but never mirrors T# work
-as a second ticket/status surface. The artifact designated to maintain the
-result likewise remains outside the coordination model.
+The ticket or ticket set produced by `to-tickets` remains in its project or
+tracker location and maintains ticket contents, dependencies, ordering, and
+readiness. Wayfinder may reference it and identify the current ready-work
+reference but never mirrors T# work as a second ticket or status surface.
+Specifications, research results, prototypes, domain-model updates, and reviews
+likewise remain where they were produced.
 
-When interrupted work lacks an artifact sufficient for continuation, Wayfinder records
+When interrupted work lacks a source file, specification, ticket, research
+finding, review, or other record sufficient for continuation, Wayfinder records
 only consequential coordination needed for resumption—such as a current
 question, a condition blocking particular work, a dependency, or ready work—and
-references. Unrecognized project-owned content is not current coordination state or an
-automatic resumption source.
+links to relevant results. Unrecognized project-owned content is not current
+coordination state or an automatic resumption source.
 
 ## Consequences
 
 Fresh sessions have one Agent Workflow resumption model. Standalone specialist
-work may still create the artifact designated to maintain the result or evidence without creating Agent
-Workflow coordination state, while specialist methodology stays in its skill.
+work may still return findings or produce its normal result without creating
+Agent Workflow coordination state, while specialist methodology stays in its
+skill.
 
 This decision does not require Wayfinder's current Markdown representation.
 Representation and resumption are governed separately by ADR-0011, so either
@@ -63,11 +66,12 @@ contracts, tests, and history rather than this decision.
 - Copy specialist methods into Wayfinder: rejected because the coordinator
   would become large and drift from the specialist method.
 - Add a generic specialist-result or workflow-transition record: rejected because
-  the map and the artifact designated to maintain the result already carry the required references
-  and next work.
+  the map and its referenced specifications, tickets, research reports,
+  prototypes, domain-model updates, or reviews already carry the required
+  references and next work.
 
 ## Reconsideration trigger
 
 Reconsider if a specialist demonstrates a durable coordination need that cannot
-be represented safely by the artifact designated to maintain the result plus a concise Wayfinder
+be represented safely by the specialist's normal result plus a concise Wayfinder
 reference.

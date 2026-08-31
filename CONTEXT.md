@@ -57,9 +57,10 @@ does not restrict technical judgment already delegated by the user or policy.
 ## Current-state operations
 
 **Reconciliation**:
-Updating affected current coordination state so it agrees with current truth,
-project choices determined by accepted project policy or committed by project
-decision authority, and the artifact designated to maintain the result.
+Updating affected current coordination state to reflect current truth and project
+choices determined by accepted project policy or committed by project decision
+authority, including changes in relevant source files, specifications, tickets,
+decisions, research findings, or review reports.
 
 **Pruning**:
 Pruning removes a recognized Wayfinder record from current coordination after

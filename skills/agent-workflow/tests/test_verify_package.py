@@ -370,10 +370,10 @@ class VerifyPackageTests(ProjectTestCase):
                 "Wayfinder lacks load-bearing contract",
             ),
             (
-                "wayfinder-artifact-reference",
+                "wayfinder-specialist-state-boundary",
                 "payload/skills/wayfinder/SKILL.md",
-                "create the artifact designated to maintain the result",
-                "create a separate report for the result",
+                "The specialist creates no Agent\nWorkflow durable coordination state.",
+                "The specialist creates its own Agent\nWorkflow durable coordination state.",
                 "Wayfinder lacks load-bearing contract",
             ),
             (
@@ -467,7 +467,7 @@ class VerifyPackageTests(ProjectTestCase):
             "1. project instructions;\n2. the current user request;",
         )
         self.assert_verify_failure(
-            destination, "To Spec destination precedence is missing or reordered"
+            destination, "to-spec destination precedence is missing or reordered"
         )
 
         authorization = self.copy_package("tracker-mutation-authorization")
@@ -478,7 +478,7 @@ class VerifyPackageTests(ProjectTestCase):
             "blocking links may be created when useful",
         )
         self.assert_verify_failure(
-            authorization, "To Tickets lacks load-bearing contract"
+            authorization, "to-tickets lacks load-bearing contract"
         )
 
         publication = self.copy_package("tracker-publication-authorization")
@@ -488,7 +488,7 @@ class VerifyPackageTests(ProjectTestCase):
             "A known destination does not authorize publication.",
             "A known destination authorizes publication.",
         )
-        self.assert_verify_failure(publication, "To Spec lacks load-bearing contract")
+        self.assert_verify_failure(publication, "to-spec lacks load-bearing contract")
 
         labels = self.copy_package("tracker-label-semantics")
         self.replace_once(
@@ -497,16 +497,58 @@ class VerifyPackageTests(ProjectTestCase):
             "Apply labels only when the project defines their semantics.",
             "Apply labels when they appear useful.",
         )
-        self.assert_verify_failure(labels, "To Spec lacks load-bearing contract")
+        self.assert_verify_failure(labels, "to-spec lacks load-bearing contract")
 
-    def test_verifier_enforces_workflow_and_result_artifact_contracts(self) -> None:
+    def test_verifier_enforces_workflow_execution_and_result_contracts(self) -> None:
         cases = (
+            (
+                "root-selected-skill-fallback-trigger",
+                "payload/root/AGENTS.md.template",
+                "a\n  selected skill is unavailable or requires explicit user invocation",
+                "a\n  requested skill is unavailable or requires explicit user invocation",
+                "Root routing lacks load-bearing contract",
+            ),
+            (
+                "detailed-selected-skill-fallback-trigger",
+                "payload/agent-workflow/routing.md",
+                "a selected skill is unavailable or requires explicit\nuser invocation",
+                "a requested skill is unavailable or requires explicit\nuser invocation",
+                "Routing lacks load-bearing contract",
+            ),
+            (
+                "discovery-relevant-sources",
+                "payload/skills/workflow-discovery/SKILL.md",
+                "Read only relevant project evidence and sources.",
+                "Read all available project files.",
+                "Discovery lacks load-bearing contract",
+            ),
+            (
+                "discovery-no-generic-result-artifact",
+                "payload/skills/workflow-discovery/SKILL.md",
+                "Read only relevant project evidence and sources.",
+                "Read only relevant project evidence and sources. Also read the artifact designated to maintain the result.",
+                "Discovery retains imprecise generic result-artifact wording",
+            ),
             (
                 "implementation-single-invocation",
                 "payload/skills/workflow-implementation/SKILL.md",
-                "Invoke the installed `implement` skill once",
-                "Invoke the installed `implement` skill twice",
+                "Invoke `implement` once",
+                "Invoke `implement` twice",
                 "Implementation integration lacks load-bearing contract",
+            ),
+            (
+                "implementation-truthful-execution",
+                "payload/skills/workflow-implementation/SKILL.md",
+                "Never simulate its execution or claim it ran.",
+                "Simulate its execution when the skill is unavailable.",
+                "Implementation integration lacks load-bearing contract",
+            ),
+            (
+                "implementation-no-invented-availability-transition",
+                "payload/skills/workflow-implementation/SKILL.md",
+                "Never simulate its execution or claim it ran.",
+                "Never simulate its execution or claim it ran. If the current session cannot load `implement`, return to the router.",
+                "Implementation integration invents a skill-availability transition",
             ),
             (
                 "verification-return-path",
@@ -516,24 +558,59 @@ class VerifyPackageTests(ProjectTestCase):
                 "Verification integration lacks load-bearing contract",
             ),
             (
-                "implementation-designated-result-artifact",
+                "implementation-concrete-inputs",
                 "payload/skills/workflow-implementation/SKILL.md",
-                "the artifact designated to maintain the result",
-                "the selected artifacts",
+                "specification, ticket, or\nticket set",
+                "selected project records",
                 "Implementation integration lacks load-bearing contract",
             ),
             (
-                "verification-designated-result-artifact",
+                "verification-concrete-inputs",
                 "payload/skills/workflow-verification/SKILL.md",
-                "the artifact designated to maintain the result",
-                "the selected artifacts",
+                "selected map, decision record,\n   specification, ticket, or ticket set",
+                "selected project records",
                 "Verification integration lacks load-bearing contract",
             ),
             (
-                "designated-result-artifacts",
+                "verification-workflow-completion",
+                "payload/skills/workflow-verification/SKILL.md",
+                "expected results, and workflow completion",
+                "expected results and skill compatibility",
+                "Verification integration lacks load-bearing contract",
+            ),
+            (
+                "verification-unused-skills",
+                "payload/skills/workflow-verification/SKILL.md",
+                "skills not needed for the verification were not loaded merely because they\n  were exposed in the current session",
+                "all exposed skills were loaded",
+                "Verification integration lacks load-bearing contract",
+            ),
+            (
+                "verification-required-tools",
+                "payload/skills/workflow-verification/SKILL.md",
+                "Missing required tools do not silently pass.",
+                "Missing required tools may silently pass.",
+                "Verification integration lacks load-bearing contract",
+            ),
+            (
+                "verification-no-translated-provider-checks",
+                "payload/skills/workflow-verification/SKILL.md",
+                "Missing required tools do not silently pass.",
+                "Missing required tools do not silently pass. Required skill instructions do not silently pass.",
+                "Verification integration retains a translated provider-only check",
+            ),
+            (
+                "routing-concrete-result-responsibilities",
                 "payload/agent-workflow/routing.md",
-                "The artifact designated to maintain the result remains authoritative",
-                "Project or external artifacts designated to maintain their results remain authoritative",
+                "Specifications, tickets or ticket sets, research\nresults, and reviews remain in their project or external locations; the\nWayfinder map links them\ninstead of copying them.",
+                "Skills maintain all accepted work;",
+                "Routing lacks load-bearing contract",
+            ),
+            (
+                "routing-truthful-skill-execution",
+                "payload/agent-workflow/routing.md",
+                "Selecting a skill is not execution: include it in the route marker only when its\nmethod actually ran.",
+                "Assume a selected skill ran.",
                 "Routing lacks load-bearing contract",
             ),
             (
@@ -546,8 +623,8 @@ class VerifyPackageTests(ProjectTestCase):
             (
                 "routing-label",
                 "payload/agent-workflow/routing.md",
-                "`<skill>-blocked`",
-                "`<skill>-stopped`",
+                "- `<skill>-blocked`:",
+                "- `<skill>-stopped`:",
                 "Routing lacks load-bearing contract",
             ),
         )
@@ -556,6 +633,45 @@ class VerifyPackageTests(ProjectTestCase):
                 package = self.copy_package(name)
                 self.replace_once(package, relative, original, replacement)
                 self.assert_verify_failure(package, expected)
+
+    def test_verifier_rejects_to_tickets_display_name_in_normative_prose(self) -> None:
+        cases = (
+            (
+                "routing",
+                "payload/agent-workflow/routing.md",
+                "\nTo Tickets maintains decomposed work.\n",
+            ),
+            (
+                "skill-body",
+                "payload/skills/to-tickets/SKILL.md",
+                "\nTo Tickets publishes the ticket set.\n",
+            ),
+        )
+        for name, relative, addition in cases:
+            with self.subTest(name=name):
+                package = self.copy_package(f"to-tickets-normative-{name}")
+                path = package / relative
+                path.write_text(
+                    path.read_text(encoding="utf-8") + addition,
+                    encoding="utf-8",
+                )
+                self.assert_verify_failure(
+                    package,
+                    "normative prose must use the `to-tickets` skill identifier",
+                )
+
+        scenario = self.copy_package("to-tickets-normative-scenario")
+        self.replace_once(
+            scenario,
+            "tests/scenarios/wayfinder-contract-smoke.toml",
+            "through `to-tickets`",
+            "to To Tickets",
+        )
+        self.reconcile_projection(scenario)
+        self.assert_verify_failure(
+            scenario,
+            "normative prose must use the `to-tickets` skill identifier",
+        )
 
     def test_verifier_rejects_retired_architecture_on_current_surfaces(self) -> None:
         current = self.copy_package("retired-current-language")
@@ -569,11 +685,50 @@ class VerifyPackageTests(ProjectTestCase):
             current, "current surface retains retired runtime architecture"
         )
 
+        resolver = self.copy_package("retired-skill-resolver-language")
+        routing = resolver / "payload/agent-workflow/routing.md"
+        routing.write_text(
+            routing.read_text(encoding="utf-8")
+            + "\nInstalled\navailability determines the fallback.\n",
+            encoding="utf-8",
+        )
+        self.assert_verify_failure(
+            resolver, "agent-facing policy retains retired skill-resolver language"
+        )
+
+        scenario = self.copy_package("retired-scenario-language")
+        self.replace_once(
+            scenario,
+            "tests/scenarios/wayfinder-contract-smoke.toml",
+            "Map-only Wayfinder continuation",
+            "Installed\\navailability controls a Map-only Wayfinder continuation",
+        )
+        self.reconcile_projection(scenario)
+        self.assert_verify_failure(
+            scenario,
+            "active behavioral scenario retains retired skill-resolver language",
+        )
+
         tree = self.copy_package("retired-runtime-tree")
         retired = tree / "provider-snapshots"
         retired.mkdir()
         (retired / "README.md").write_text("retired\n", encoding="utf-8")
         self.assert_verify_failure(tree, "retired runtime architecture remains")
+
+    def test_verifier_allows_bounded_maintainer_terminology(self) -> None:
+        package = self.copy_package("bounded-maintainer-language")
+        readme = package.parents[1] / "README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8")
+            + "\nA host-native diagnostic may be useful to package maintainers. "
+            + "The human-facing display label is To Tickets.\n",
+            encoding="utf-8",
+        )
+        self.reconcile_projection(package)
+
+        result = self.verify(package)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_retired_architecture_scan_excludes_notices_tests_and_history(self) -> None:
         package = self.copy_package("retired-scan-exclusions")

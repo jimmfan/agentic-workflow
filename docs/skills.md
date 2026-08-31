@@ -31,35 +31,33 @@ in the installed `THIRD_PARTY_NOTICES.md`. The frozen exact-transition fixture
 also attributes historical `setup-matt-pocock-skills`, `teach`, and `triage`
 bytes; those three are not current runtime skills.
 
-Wayfinder and Research preserve Agent Workflow's reviewed effective contracts.
-Research returns cited findings in chat by default and writes a repository
-artifact only after an explicit authorized request. Wayfinder remains the sole
+`wayfinder` and `research` preserve Agent Workflow's reviewed effective contracts.
+`research` returns cited findings in chat by default and writes a repository
+file only after an explicit authorized request. `wayfinder` remains the sole
 durable coordinator under `.agent-wayfinder/`. `implement` owns its inner build,
-TDD, and Code Review loop; `workflow-implementation` remains the outer
+TDD, and `code-review` loop; `workflow-implementation` remains the outer
 transition into execution and independent acceptance verification.
 
 ## Discovery and invocation
 
-Codex and GitHub Copilot document project-skill discovery under
-`.agents/skills`. The portable [Agent Skills specification](https://agentskills.io/specification)
+Codex and GitHub Copilot discover project skills under `.agents/skills`. The
+portable [Agent Skills specification](https://agentskills.io/specification)
 defines the skill directory and basic frontmatter but does not standardize
-automatic model invocation. Behavior-bearing `SKILL.md` frontmatter and
-`agents/openai.yaml` metadata therefore remain host-specific contracts. See the
-[Codex skill documentation](https://developers.openai.com/codex/skills),
+automatic model invocation. Agent Workflow preserves each complete skill
+directory, including `SKILL.md` frontmatter and `agents/openai.yaml` when present;
+hosts interpret those files and decide which skills are exposed in a session.
+See the [Codex skill documentation](https://developers.openai.com/codex/skills),
 [VS Code Agent Skills documentation](https://code.visualstudio.com/docs/agent-customization/agent-skills),
 and [Claude Code skills documentation](https://code.claude.com/docs/en/skills).
 
-The router derives availability from the installed surface exposed by the host
-and reads invocation restrictions only for a selected skill. It does not probe a
-tracker, editor service, network, or registry. A selected skill that cannot run
-may fall back to truthful host-native work when the requested actions are
-authorized and equivalent. Never claim that a skill ran merely because its
-files are installed. Deterministic routing fixtures test this boundary; live
-host discovery remains unverified unless separately exercised.
+At runtime, use only the skills exposed in the current session and follow the
+selected skill's instructions. Never claim that a skill ran unless its method
+ran. Deterministic fixtures validate the packaged files and mappings; live host
+discovery remains unverified unless separately exercised.
 
 ## Tracker and publication boundary
 
-To Spec and To Tickets resolve a publication destination in this order:
+`to-spec` and `to-tickets` resolve a publication destination in this order:
 
 1. the current request;
 2. project instructions;
@@ -68,12 +66,12 @@ To Spec and To Tickets resolve a publication destination in this order:
 4. otherwise no inferred destination.
 
 Conflicting applicable sources require clarification. A known destination does
-not authorize a mutation. Without both a destination and authorization, the
+not authorize a mutation. Without both a destination and authorization, each
 skill returns the complete draft in chat, creates no temporary repository file,
 and stops before publication. Labels, statuses, and blocking links require both
 project-defined semantics and authorization for that mutation.
 
-Code Review treats tracker access as optional source lookup. It continues when
+`code-review` treats tracker access as optional source lookup. It continues when
 the fixed point and specification are otherwise available, never blocks the
 Standards axis solely because tracker access is absent, and returns its report
 in chat unless publication is separately authorized.
@@ -92,6 +90,6 @@ fails closed before mutation. Current install state uses a canonical integrity
 digest and distinguishes absent, valid, and invalid state.
 
 When maintaining a derived skill, edit the effective payload directly, preserve
-support files and behavior-bearing invocation metadata, classify every prose
+its complete declared directory and local references, classify every prose
 change, keep attribution complete, and run the package verifier. Upstream
 network research is optional maintainer evidence, never a runtime requirement.

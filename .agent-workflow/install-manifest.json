@@ -122,7 +122,7 @@
     },
     ".agents/skills/wayfinder/SKILL.md": {
       "created": true,
-      "sha256": "ca8891466b642f5687d237ad380e6971e9bab08f0c11654ad5fa6bce8d472f87"
+      "sha256": "1ed81f5950ffb53b7c37985f73c6771ac5910af1fa824e72286e73be83ac9411"
     },
     ".agents/skills/wayfinder/agents/openai.yaml": {
       "created": true,
@@ -134,19 +134,19 @@
     },
     ".agents/skills/workflow-discovery/SKILL.md": {
       "created": true,
-      "sha256": "7986565c29e2cad53fff742466162b9ba078071ba43fb66f704ea01f4d025dea"
+      "sha256": "40588ddfea66f5d31e5b3eceb45a5e98276edcc7b31e6e758c191e09832ed57b"
     },
     ".agents/skills/workflow-implementation/SKILL.md": {
       "created": true,
-      "sha256": "034d00721552918602d32903e17d49e7ec7a0c80ba4818facce034b4fe307fa7"
+      "sha256": "a48f8deb821488f89434e507937bff65590b69fa0721c45646086ccb247b683b"
     },
     ".agents/skills/workflow-verification/SKILL.md": {
       "created": true,
-      "sha256": "c9de648246f865dd0009191c36cb35760c97a73bc62a84e803835183458426d2"
+      "sha256": "91c328db20959a13cb67dfe6f13e8e19a17a404d736912359b1e2dc6d1ef69d3"
     }
   },
   "framework_version": "0.23.0",
-  "integrity_sha256": "71afb651a650e012e2ee5b7ba7a9db01b8af807f3f8d74c59cf5af313276425c",
+  "integrity_sha256": "3898e8ca59dbfe7c9057486d413baac504d9d39c1b01a7922e0695ac90faed7a",
   "schema_version": 2,
   "source_revision": "unreleased-local-package"
 }

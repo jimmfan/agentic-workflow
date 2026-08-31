@@ -15,9 +15,10 @@
     criteria below
 - For one obvious specialist inside an already selected Wayfinder effort, load
   only what it needs.
-  Read `.agent-workflow/routing.md` only when artifact responsibility is unclear or selected-skill
-  fallback, invocation instruction, agent handoff, or durable resumption
-  materially matters.
+  Read `.agent-workflow/routing.md` only when responsibility for a map,
+  specification, ticket or ticket set, research result, or review is unclear; a
+  selected skill is unavailable or requires explicit user invocation; an agent
+  handoff occurs; or durable resumption materially matters.
 - Do not treat a consequential project choice as committed until required
   evidence is sufficient and either accepted project policy determines the
   choice for that boundary or the person, role, or valid delegate with project
@@ -45,15 +46,17 @@
   authorized, and no other dependency is satisfied. Revisit a committed choice
   only for conflict, safety, project decision authority, or request.
 - Never claim unexecuted work.
-- Preserve unrelated work, project state, designated artifacts, and identifiers.
-  Live source and accepted artifacts outrank summaries, memory, and chat.
-- Do not manufacture cross-artifact conflicts or parallel representations of
-  the same current state.
+- Preserve unrelated work, project state, maps, specifications, decision
+  records, tickets, research results, reviews, and identifiers. Live source and
+  accepted project records outrank summaries, memory, and chat.
+- Do not manufacture conflicts between sources or records or create a parallel
+  representation of the same current state.
   Different scope, abstraction, summarization, or omitted detail is not by itself
-  an inconsistency. Before reconciling artifacts, identify a concrete
-  incompatible statement or a requirement the target artifact fails to satisfy.
-  When an existing designated artifact or record maintains the current state,
-  update it rather than creating a parallel representation unless the new
+  an inconsistency. Before reconciling records, identify a concrete incompatible
+  statement or a requirement the current source, map, specification, decision
+  record, ticket, research result, or review fails to satisfy. Update the
+  existing source or record that maintains the current state instead of creating
+  another representation unless the new
   representation has independently useful meaning, scope, or retrieval value.
   When materially ambiguous, preserve the existing content and clarify or
   investigate rather than inventing detail or process merely to make artifacts
@@ -110,7 +113,7 @@ Agent Workflow source repository.
 
 ## Project language
 
-Read `CONTEXT.md` before changing routing, Wayfinder, installed-skill integration,
+Read `CONTEXT.md` before changing routing, Wayfinder, direct skill distribution,
 ownership, or framework-lifecycle concepts in a way that uses or changes
 canonical project language.
 
@@ -175,9 +178,9 @@ layers. Do not force one term across genuinely different bounded contexts.
   direct skill distribution, safe framework delivery, authorization boundaries,
   durable coordination Agent Workflow defines, and integration
   verification.
-- Prefer existing host or curated skill capabilities and accepted artifacts that
-  maintain lasting results over parallel Agent Workflow representations or
-  lightly rewritten upstream functionality.
+- Prefer existing host or curated skill capabilities. Use accepted source files,
+  specifications, tickets, research results, and reviews instead of parallel
+  Agent Workflow representations or lightly rewritten upstream functionality.
 - Do not expand the project into a general agent runtime, package manager,
   plugin platform, compatibility framework, observability platform, broad
   lifecycle system, or other new machinery without a concrete current need.
@@ -206,7 +209,8 @@ For substantial changes:
   branch, base, and relevant diff.
 - Read the applicable contracts and architectural decisions and determine which
   layer owns the behavior.
-- Check whether a host or installed skill already supplies the capability.
+- Check whether a capability or skill exposed in the current session already
+  supplies the behavior.
 - Prefer the smallest coherent and reversible change that preserves accepted
   behavior.
 - Update tests and durable documentation when the resulting contract changes.
@@ -219,7 +223,7 @@ Keep experiments reversible and isolated until adoption is intentional.
 ## Testing and verification
 
 - Test Agent Workflow's contracts and boundaries rather than reproducing
-  installed-skill internals.
+  distributed-skill internals.
 - Prefer deterministic tests for normal development. Keep live-agent evaluation
   opt-in, benchmark-specific, scheduled, or release-gated.
 - Follow `docs/verification.md` and the applicable evaluation documentation for

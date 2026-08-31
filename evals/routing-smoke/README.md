@@ -6,10 +6,11 @@ This opt-in evaluation asks two deliberately small questions of multiple models:
 2. Does a request that begins bounded select Wayfinder after reconnaissance
    reveals consequential coordination signals?
 
-The runner sends only the installed root `AGENTS.md`, a synthetic fixture, and
-instruction resources that the model explicitly requests from a names-and-size
-catalog. It does not send project source, project documentation, durable state,
-Git history, credentials, or arbitrary repository files.
+The runner sends only the installed root `AGENTS.md`, a harness-derived
+current-session observation, and instruction resources that the model explicitly
+requests from a names-and-size catalog. It does not send project source, project
+documentation, durable state, Git history, credentials, or arbitrary repository
+files.
 
 The evolving case may request the Wayfinder state contract because the root
 policy requires that contract after Wayfinder selection. The contract contains
@@ -19,13 +20,16 @@ framework rules only; no project-owned map or durable record is sent.
 
 Each round returns a schema-constrained public decision containing the initial
 route, current route, Wayfinder assessment and selection, requested resources,
-and skill outcome. The harness derives expected availability from the installed
-`.agents/skills/` surface and host-specific invocation rules in
-`host-fixtures.json`. A selected skill must load its instructions and the
-fixture-declared invocation metadata before completion. This preserves the
-repository's progressive-loading boundary without consulting a registry. The
-report records every revealed resource in order plus the exact prompt bytes and
-any usage metadata exposed by the adapter.
+and skill outcome. The harness derives the allowed skill outcomes internally
+from the installed `.agents/skills/` surface and deterministic current-session
+fixtures in `host-fixtures.json`. The accepted outcome labels remain private to
+the harness. The model receives only the selected skill, whether that skill is
+exposed in the simulated session, whether explicit user invocation is required,
+and the instruction resource it may request. A selected skill must load its `SKILL.md`
+instructions before completion; the evolving case also loads the Wayfinder
+state contract required by those instructions and the root policy. The report
+records every revealed resource in order plus the exact prompt bytes and any
+usage metadata exposed by the adapter.
 
 This isolates cross-model interpretation of the routing contract. It is not
 operating-system file-access tracing and does not prove that every interactive
@@ -107,9 +111,8 @@ python3 -m evals.routing_smoke compare \
   /tmp/routing-smoke-small.json
 ```
 
-Selection agreement is evaluated separately from skill outcomes. The fixture
-may make a skill available, require explicit invocation, or leave host-native
-fallback as the truthful outcome without changing the selected route.
+Selection agreement is evaluated separately from skill outcomes. A
+harness-derived skill outcome does not change the selected route.
 
 ## Cost and safety limits
 

@@ -9,9 +9,11 @@ evaluation is part of the deterministic release gate.
 The [routing interpretation smoke test](routing-smoke/README.md) checks whether
 Direct and evidence-triggered Wayfinder routing are interpreted consistently
 while revealing only requested policy. It is opt-in, contacts the selected
-model service, and must write reports outside the repository. Installed-skill
-availability comes from deterministic repository-surface and invocation
-fixtures; live host discovery remains unverified.
+model service, and must write reports outside the repository. Expected skill
+outcomes are derived inside the harness from deterministic repository-surface
+and current-session fixtures. The accepted labels stay private to the harness;
+the model sees only observable simulated-session facts about the selected skill.
+Live host discovery remains unverified.
 
 Token forensics analyzes an existing Codex trace without running a model:
 

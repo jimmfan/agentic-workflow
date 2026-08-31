@@ -10,11 +10,12 @@ shape of an effort without loading a complete activity history. One
 undifferentiated flat ledger used as the whole coordination model loses semantic
 relationships, while an ever-growing structured notebook becomes an organized
 warehouse. This does not preclude bounded same-type ledgers beneath a map-first
-orientation surface. Duplicating the artifact designated to maintain the result
-or an external tracker would create competing maintained representations.
+orientation surface. Duplicating source files, specifications, tickets, accepted
+decisions, research reports, or other lasting project records inside Wayfinder—or
+mirroring an external tracker—would create competing maintained representations.
 
-Agent Workflow's map-first model and workflow transition to the `to-tickets`
-ticket or ticket set also differ materially from the upstream Wayfinder
+Agent Workflow's map-first model and its transition from coordination into
+decomposition by `to-tickets` also differ materially from the upstream Wayfinder
 issue-tracker runtime. Presenting
 both operational models at once would force each agent to reconcile conflicting
 instructions.
@@ -35,8 +36,9 @@ coordination or retrieval units separate; that representation remains a
 contract and test detail.
 
 Wayfinder represents current coordination state rather than permanent identities
-or an append-only journal. Lasting outcomes move to the artifact designated to
-maintain the result, the map and recognized records converge and shrink, and Git
+or an append-only journal. Source files, specifications, tickets, accepted
+decisions, research reports, and other project records continue to hold their
+lasting results; the map and recognized records converge and shrink, and Git
 preserves committed historical evolution.
 Preserve a question independently only when retaining it or its eventual answer
 could materially improve a later developer's ability to make or evaluate a
@@ -47,10 +49,10 @@ Ready work is work to which no blocker currently applies; independent ready work
 while other work remains blocked.
 
 Work authorized within the current scope that changes represented reality must
-reconcile affected map content, recognized records, and
-references before claiming completion. The artifact designated to maintain the
-result remains authoritative. Read-only work may report staleness but does not
-repair project-owned state.
+reconcile affected map content, recognized records, and references with current
+source files, specifications, tickets, accepted decisions, research reports, and
+other relevant project records before claiming completion. Read-only work may
+report staleness but does not repair project-owned state.
 
 The effective Wayfinder instructions present one coherent operational model
 rather than prepend local state rules to a contradictory tracker specification.
@@ -83,8 +85,9 @@ contract and test details, not architectural commitments.
 
 - Persist a complete journal or permanent child identities: rejected because
   current coordination state should converge instead of accumulating maintenance state.
-- Duplicate the artifact designated to maintain the result inside Wayfinder: rejected because
-  two maintained representations would drift.
+- Duplicate source files, specifications, tickets, accepted decisions, research
+  reports, or other project records inside Wayfinder: rejected because two
+  maintained representations would drift.
 - Layer map-first rules over the upstream tracker runtime: rejected because one
   effective skill must describe one coherent way of operating.
 - Require a database, graph index, external tracker, or lifecycle-wide Markdown

@@ -12,8 +12,9 @@ inventories, normalizes, migrates, rewrites, or removes them.
 
 ## Contents
 
-- `routing.md`: detailed minimum-workflow selection, composition, invocation,
-  fallback, action authorization, evidence, and required route-marker rules.
+- `routing.md`: detailed minimum-workflow selection, composition, handling of
+  unavailable selected skills, action authorization, evidence, and required
+  route-marker rules.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   current maps, optional F#/D# ledgers, independently useful U#/E# files,
   identifiers, reconciliation, pruning, effort ending, and progressive loading.
@@ -72,15 +73,16 @@ was derived. Decision records identify the accepted project policy that determin
 choice or the person, role, or valid delegate with project decision authority who
 commits it; evidence alone cannot commit that choice.
 
-Before detailed decomposition, the map may state ready work directly. Substantial
-decomposed work belongs to `to-tickets`; its ticket or ticket set
-maintains ticket contents, dependencies, ordering, and readiness. The map links the ticket or ticket set
-and may include the current ready-work reference without mirroring ticket-level state. See
+Before detailed decomposition, the map may state ready work directly. When
+`to-tickets` decomposes substantial work, the resulting ticket or ticket set
+maintains contents, dependencies, ordering, and readiness. The map links it and
+may identify the current ready work without mirroring ticket-level state. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling are specialists.
-Each specialist may create the artifact designated to maintain the result or return evidence, but creates
-no Agent Workflow durable coordination state. Implementation is a workflow
-transition into execution.
+They may return findings or produce their normal results—for example, a
+research report, prototype, or domain-model update—but create no Agent Workflow
+durable coordination state. Implementation is a workflow transition into
+execution.
 
 ## Status and recovery
 

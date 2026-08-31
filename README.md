@@ -69,9 +69,10 @@ It does not run every potentially relevant skill.
 Routing starts Direct.
 
 The root project instructions perform the initial classification. More detailed
-routing guidance is loaded only when artifact responsibility, workflow
-composition, selected-skill fallback, a user invocation instruction, agent handoff, or
-durable resumption is unclear.
+routing guidance is loaded only when workflow composition, a selected skill
+cannot run or requires explicit user invocation, agent handoff, durable
+resumption, or responsibility for a Wayfinder map, specification, ticket set,
+research finding, or review report is unclear.
 
 Routing can change as work develops. For example, a bounded implementation task may expose an unresolved design decision or enough coordination state to justify a different workflow.
 
@@ -86,7 +87,9 @@ current user request or accepted project policy and only within that scope.
 Authorization to act does not commit a project choice, a committed choice does not
 authorize an unrelated action, and host permission supplies neither.
 
-Current source, observed behavior, and accepted project artifacts take precedence over stale workflow state or previous chat history.
+Current source, observed behavior, accepted specifications and decisions, and
+current tickets take precedence over stale workflow state or previous chat
+history.
 
 See [Workflow routing](docs/routing.md) for the current routing model.
 
@@ -140,13 +143,10 @@ Additional records are created only when they are useful to preserve separately:
   accepted project policy or committed by the person, role, or valid delegate with
   project decision authority.
 
-Wayfinder coordinates this information. It does not replace source code,
-documentation, architecture decisions, specifications, tickets, or other
-artifacts. Preserve each lasting outcome in the artifact designated to maintain
-the result.
-
-As lasting results are established, they should live in the artifact designated
-to maintain the result rather than accumulating indefinitely in Wayfinder.
+Wayfinder coordinates this information. Source code, documentation, architecture
+decisions, specifications, and tickets continue to record their own results.
+Wayfinder links them when useful; it does not copy them or accumulate their
+contents.
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
@@ -184,9 +184,10 @@ Create a separate unresolved question or evidence record only when it is an
 independently useful coordination or retrieval unit. When a supported current
 conclusion or committed choice warrants durable representation, record it as an
 F# or D# section in the optional `facts.md` or `decisions.md` ledger. Treat live
-source and accepted project artifacts as stronger support than assumptions,
-chat history, or outdated Wayfinder claims. Do not copy the transcript, invent
-requirements, or implement product changes during this first pass.
+source, accepted specifications and decisions, and current tickets as stronger
+support than assumptions, chat history, or outdated Wayfinder claims. Do not
+copy the transcript, invent requirements, or implement product changes during
+this first pass.
 
 If the current effort cannot be inferred confidently, ask me one concrete scope
 question before creating the Wayfinder state. When finished, summarize what you
@@ -233,11 +234,12 @@ Install, update, status, remove, and reinstall preserve its contents.
 
 Agent Workflow manages only its marked section and preserves project-owned content outside that section.
 
-### Artifact responsibility
+### Where results live
 
-Specifications, tickets, research results, and review reports remain in their
-project or external locations. Agent Workflow references the artifact designated
-to maintain the result rather than maintaining a duplicate copy.
+Specifications, tickets, research findings, prototypes, domain-model updates,
+and review reports remain where the project or selected skill produces them.
+Agent Workflow references those results when useful rather than maintaining
+duplicate copies.
 
 ## Progressive loading
 
@@ -259,16 +261,22 @@ Wayfinder works the same way. A later session starts from `map.md` and reads sup
 
 ## Supported hosts
 
-The current direct installed-skill surface supports:
+Agent Workflow installs its skills under `.agents/skills/`, which is supported
+by:
 
 - Codex through `.agents/skills/`;
 - GitHub Copilot through `.agents/skills/`.
 
 A Claude model running inside GitHub Copilot uses GitHub Copilot's `.agents/skills/` support.
 
-Native Claude Code can use the installed root policy for routing and host-native work, but Agent Workflow does not currently install a second copy of the skills into `.claude/skills/`.
+Native Claude Code can use the installed root policy for routing and work
+directly, but Agent Workflow does not currently copy the skills into
+`.claude/skills/`.
 
-Selected-skill availability is derived from the installed surface exposed by the host. Agent Workflow does not report that a skill ran when it did not.
+At runtime, use only skills exposed in the current session. Agent Workflow does
+not report that a named skill ran when it did not. If an optional selected skill
+is unavailable or cannot run without explicit user invocation, authorized Direct
+work may continue only when available capabilities can satisfy the request.
 
 ## Requirements
 
@@ -340,7 +348,9 @@ The architecture may change as the project produces better evidence.
 - Keep durable project state separate from reconstructable framework files.
 - Store coordination state, not execution history.
 - Load detailed instructions and state only when needed.
-- Keep lasting results in the artifact designated to maintain the result.
+- Keep lasting source changes, specifications, decisions, tickets, research
+  reports, prototypes, domain-model updates, and reviews where they were
+  produced; do not duplicate them in Wayfinder.
 - Keep Agent Workflow small.
 
 ## More detail

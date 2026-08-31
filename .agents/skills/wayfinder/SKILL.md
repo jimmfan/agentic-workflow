@@ -30,13 +30,15 @@ method, and identify ready work;
   guidance, not an effort-recognition or parser requirement, and does not require
   migration, compatibility parsing, or rewriting. Unfinished tests, verification,
   commits, pushes, and other workflow steps are not blockers merely because they
-  remain. Never copy the plan or the artifact designated to maintain the result.
+  remain. Never copy a specification, ticket set, research result, review
+  report, ADR, or other project result into the map.
 - The map summarizes the effort's current coordination state, conditions blocking particular work,
   dependencies, and ready work.
   Optional F/D ledger sections and U/E artifacts are records that preserve only
   useful current conclusions, choices, unresolved questions, and evidence.
-- Create a separate artifact because it is an independently useful coordination
-  or retrieval unit, not merely because it belongs to a semantic category.
+- Create a separate U/E/F/D record because it is an independently useful
+  coordination or retrieval unit, not merely because it belongs to a semantic
+  category.
 - Live source and accepted project artifacts outrank unsupported or outdated
   map claims.
 - Inspect Git/session state when useful for safe execution, but do not normally
@@ -121,20 +123,22 @@ the method without a ceremonial specialist invocation, but one method cannot
 substitute for another's required authority or evidence.
 
 Do not load specialists speculatively. Specialists retain their methods and may
-create the artifact designated to maintain the result or return evidence. The specialist creates no Agent
+return evidence or create or update a specification, ticket, research result,
+review report, ADR, or other project result. The specialist creates no Agent
 Workflow durable coordination state. If work is interrupted,
 reconcile only consequential questions, uncertainties, unexplained causes,
 choices, structural ambiguity, conditions blocking particular work, evidence or
-conclusions, artifact references, the resolution method when useful, and ready
-work into Wayfinder. When resuming, read the map first rather than a specialist
-notebook or coordination record.
+conclusions, links to relevant results, the resolution method when useful, and
+ready work into Wayfinder. When resuming, read the map first rather than a
+specialist notebook or coordination record.
 
 ## Reconcile and transition ready work
 
 The map summarizes the objective, scope, current coordination state, conditions
 blocking particular work, dependencies, and ready work. Keep it sufficient for
-a fresh session to continue the effort. Reference the artifact designated to
-maintain the result instead of copying it. The state contract defines when U/E/F/D
+a fresh session to continue the effort. Reference relevant specifications,
+tickets, research results, review reports, ADRs, and other project records
+instead of copying them. The state contract defines when U/E/F/D
 records are worth retaining, how records are pruned, and when an effort ends.
 
 Map uncertainty broadly, then preserve selectively. Record a precise question
@@ -193,7 +197,7 @@ Implementation consumes one ready scope and its acceptance criteria;
 Verification follows material execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
 deliverable sessions. When no ticket or ticket set exists, the map may state
-ready work directly. Once To Tickets creates a ticket or ticket set, it
-maintains ticket contents, dependencies, ordering, and readiness. The map links
-that ticket or ticket set and does not mirror ticket-level state; it may include
-the current ready-work reference.
+ready work directly. Once `to-tickets` produces a ticket or ticket set, that
+ticket or ticket set maintains contents, dependencies, ordering, and readiness.
+The map links it and does not mirror ticket-level state; it may include the
+current ready-work reference.

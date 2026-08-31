@@ -6,7 +6,8 @@ Agent Workflow is a thin instruction router over host capability and curated,
 replaceable skills. Its core job is reliable minimum-workflow selection while
 preserving action authorization, project decision authority, and project-owned
 data. It is not a general agent runtime, package manager, hook framework,
-analytics system, or second representation of the artifact designated to maintain the result.
+analytics system, duplicate specification store, ticket tracker, research store,
+or review store.
 
 The architecture optimizes for two pre-1.0 priorities:
 
@@ -21,9 +22,9 @@ flowchart TD
     router --> direct["Direct work"]
     router --> workflow["One primary workflow"]
     workflow --> capability["Only useful supporting capabilities"]
-    capability --> skill{"Installed skill invocable?"}
+    capability --> skill{"Selected skill available in this session?"}
     skill -->|yes| native["Skill method"]
-    skill -->|no| fallback["Host-native fallback or invocation instruction"]
+    skill -->|no| fallback["Continue directly or report missing required skill"]
     direct --> evidence["Truthful result and evidence"]
     native --> evidence
     fallback --> evidence
@@ -35,13 +36,13 @@ The root `AGENTS.md`, selected skills, and progressively loaded
 controller, background daemon, telemetry service, or host hook enforcing the
 route.
 
-Routing begins Direct and classifies from user intent plus cheap installed-skill
-descriptions. Detailed routing loads only when artifact responsibility,
-composition, selected-skill fallback, a user invocation instruction, agent handoff, or
-durable resumption is materially unclear. Routing may change as evidence
-emerges. Route or workflow selection, supporting-capability selection, installed
-skill resolution, skill invocation, material execution, and completion or verification
-evidence remain distinct. Host sandboxing and approvals determine host
+Routing begins Direct and classifies from user intent plus skill descriptions
+exposed in the current session. Detailed routing loads only when workflow
+composition, agent handoff, durable resumption, or responsibility for a
+Wayfinder map, specification, ticket set, research finding, or review report is
+materially unclear. Routing may change as evidence emerges. Route selection,
+skill selection, material execution, and completion or verification evidence
+remain distinct. Host sandboxing and approvals determine host
 permission; that permission does not itself authorize an action or commit a
 project choice.
 
@@ -53,9 +54,9 @@ accepted project policy authorizes that action and scope.
 
 Wayfinder is Agent Workflow's sole durable coordination model. It keeps only
 consequential continuity and references, while specialists retain their methods.
-Specifications, local tickets or tracker issues, research results, and review
-reports remain in their project or external locations. Each is the artifact
-designated to maintain the result for its scope.
+Source code, specifications, local tickets or tracker issues, research reports,
+prototypes, domain-model updates, and review reports remain in their project or
+external locations.
 
 ## Filesystem ownership
 
@@ -107,8 +108,8 @@ Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
 Their `map.md` is the brief coordination summary and the first effort file read
 when resuming. It summarizes the effort's current coordination state, conditions
 blocking particular work, dependencies, and ready work. When no ticket or ticket
-set exists, the map may state ready work directly. Once To Tickets maintains
-detailed decomposition, that ticket or ticket set maintains
+set exists, the map may state ready work directly. When `to-tickets` creates a
+detailed decomposition, the resulting ticket or ticket set maintains
 ticket contents, dependencies, ordering, and readiness; the map links it and may
 include the current ready-work reference without mirroring ticket-level state.
 New default maps retain `Blockers and dependencies` with `None` when no blocker
@@ -124,7 +125,7 @@ question records and E# evidence records with source, scope, observation, and
 limitations remain separate files. The map indexes relevant detail rather than
 duplicating those stores.
 After map orientation, only the relevant ledger section or U#/E# file loads. If
-most supporting artifacts are needed merely to recover the current route, the
+most supporting records are needed merely to recover the current route, the
 effort is over-decomposed and needs reconciliation. This
 intermediate-granularity default reduces unnecessary retrieval decisions
 without treating one topology as universally superior.
@@ -134,24 +135,23 @@ for the stated scope or the evidence or record from which it was derived, plus
 material limitations. A D#'s presence means its choice is current and binding
 under the project-choice gate; evidence may inform a recommendation or choice but
 cannot commit it alone. The map represents current coordination state
-and should converge as each lasting outcome moves to the artifact designated to
-maintain the result. The progressively loaded Wayfinder state contract and its tests
-define exact allocation, reconciliation, pruning, effort-ending, and reference
-behavior.
+and is reconciled as relevant source files, specifications, tickets, accepted
+decisions, and other project records change. The progressively loaded Wayfinder
+state contract and its tests define exact allocation, reconciliation, pruning,
+effort-ending, and reference behavior.
 
 This source repository's project instructions designate
 `architecture-decisions/`. Elsewhere, a consuming project's declared convention
-or the selected skill's artifact convention designates the location;
+or the selected skill's instructions determine where its result is recorded;
 Agent Workflow imposes no additional ADR path. Wayfinder decision records may link an
-ADR but do not become a parallel project-policy artifact.
+ADR but do not become a second ADR or other project-policy record.
 
 ## Curated skill boundary
 
 The ordinary distribution manifest maps the complete fifteen-skill reviewed
 payload directly into `.agents/skills/`. Declared files are reconstructable and
-repairable; unrelated local skill directories are preserved. Skill availability
-comes from the installed repository surface and behavior-bearing invocation
-metadata.
+repairable; unrelated local skill directories are preserved. Supported hosts
+discover project skills from that location and expose them to the agent.
 
 Eleven curated skills are maintained derived works of Matt Pocock's `v1.2.3`
 release. Their effective installed versions are the maintained runtime source;
@@ -166,11 +166,11 @@ mechanics. It uses objective, scope, areas and relationships,
 unresolved-question or blocker language, ready work, readable names, and
 progressive resolution.
 
-Skill instructions do not authorize commits, publication, tracker mutation, or
-broader external access and do not commit project choices. An unavailable or
-non-invocable skill normally falls back to truthful host-native work unless the
-user specifically requires that skill or a real safety boundary prevents
-fallback.
+Skill instructions do not authorize commits, publication, tracker mutation,
+broader external access, or project choices. If a selected skill is unavailable
+or cannot run without explicit user invocation, continue directly only when the
+skill was optional and an authorized equivalent can satisfy the request;
+otherwise report the unmet requirement or give the exact invocation instruction.
 
 ## Lifecycle and bootstrap boundary
 
@@ -204,16 +204,17 @@ complete package, not merely successful installation of the outer skill.
 
 `verify_package.py` is a maintainer, CI, and release gate; bootstrap does not run
 it for consumers. It checks package structure and activation-sensitive payload
-paths, explicit mappings, routing and skill contracts, exact transition and attribution checks, deterministic
-scenarios, local documentation links, and the test suite.
+paths, explicit mappings, routing and skill contracts, exact transition and
+attribution checks, deterministic scenarios, local documentation links, and the
+test suite.
 
 Tests focus on observable boundaries:
 
-- route selection, installed-skill resolution, invocation truthfulness, material
+- route selection, truthful reporting of skill execution, material
   execution evidence, project-choice commitment, and action authorization;
 - preservation of project-owned state and ambiguous external content;
 - install, update, status, remove, and bootstrap behavior;
-- coherent Wayfinder state and the direct installed skill surface;
+- coherent Wayfinder state and the directly distributed skill files;
 - install-state integrity, exact former-installation proof, and transactional
   rollback; and
 - preservation of unrelated skills, project composite bytes, and durable state.
@@ -225,10 +226,11 @@ requirements.
 
 Live source and observed behavior establish current system facts for their
 stated scope. Accepted ADRs and project documentation record project choices.
-The artifact designated to maintain the result remains authoritative for that
-result. `.agent-wayfinder/` is the
-project-owned durable representation of local workflow continuity. These sources
-and artifacts outrank summaries, private agent memory, and chat recollection.
+Specifications, tickets, research reports, prototypes, domain-model updates,
+and reviews remain authoritative for the results they record.
+`.agent-wayfinder/` is the project-owned durable representation of local workflow
+continuity. These sources and records outrank summaries, private agent memory,
+and chat recollection.
 
 Current architectural rationale is intentionally limited to:
 
