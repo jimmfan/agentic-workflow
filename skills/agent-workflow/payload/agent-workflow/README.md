@@ -69,15 +69,17 @@ was derived. Decision records identify the accepted project policy that determin
 choice or the person, role, or valid delegate with project decision authority who
 commits it; evidence alone cannot commit that choice.
 
-Before detailed decomposition, the map may state ready work directly. A
-`to-tickets` ticket or ticket set maintains contents, dependencies, ordering,
-and readiness. The map links it only when an accepted durable project or
-external record exists; a chat-only draft remains session-local. See
+Before detailed decomposition, the map may state ready work directly. A durable
+ticket or ticket set created by `to-tickets` maintains ticket contents,
+dependencies, ordering, and readiness. The map links that durable ticket or
+ticket set and may include the current ready-work reference without mirroring
+ticket-level state; a chat-only draft remains session-local. See
 `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling are specialists.
-They may return findings or update the accepted project record designated to
-maintain the result, but create no Agent Workflow durable coordination state.
-Implementation is a workflow transition into execution.
+Specialists retain their methods and results. Any specialist artifacts or
+evidence remain outside Agent Workflow durable coordination state; specialists
+create no Agent Workflow durable coordination state. Implementation is a
+workflow transition into execution.
 
 ## Status and recovery
 

@@ -15,10 +15,9 @@
     criteria below
 - For one obvious specialist inside an already selected Wayfinder effort, load
   only what it needs.
-  Read `.agent-workflow/routing.md` only when responsibility for the accepted
-  project record designated to maintain a result is unclear; a selected skill is
-  unavailable or requires explicit user invocation; an agent handoff occurs; or
-  durable resumption materially matters.
+  Read `.agent-workflow/routing.md` only when artifact or record responsibility
+  is unclear or selected-skill availability, an exact invocation instruction,
+  agent handoff, or durable resumption materially matters.
 - Do not treat a consequential project choice as committed until required
   evidence is sufficient and either accepted project policy determines the
   choice for that boundary or the person, role, or valid delegate with project
@@ -46,17 +45,16 @@
   authorized, and no other dependency is satisfied. Revisit a committed choice
   only for conflict, safety, project decision authority, or request.
 - Never claim unexecuted work.
-- Preserve unrelated work, project state, accepted project records designated
-  to maintain results, and identifiers. Live source and accepted project records
-  outrank summaries, memory, and chat.
-- Do not manufacture conflicts between sources or accepted records or create a parallel
-  representation of the same current state.
+- Preserve unrelated work, project state, designated artifacts, and identifiers.
+  Live source and accepted artifacts outrank summaries, memory, and chat.
+- Do not manufacture cross-artifact conflicts or parallel representations of
+  the same current state.
   Different scope, abstraction, summarization, or omitted detail is not by itself
-  an inconsistency. Before reconciling, identify a concrete incompatible
-  statement or a requirement the relevant source or accepted project record
-  fails to satisfy. When an existing source or accepted project record maintains
-  the current state, update it instead of creating another representation unless
-  the new representation has independently useful meaning, scope, or retrieval value.
+  an inconsistency. Before reconciling artifacts, identify a concrete
+  incompatible statement or a requirement the target artifact fails to satisfy.
+  When an existing designated artifact or record maintains the current state,
+  update it rather than creating a parallel representation unless the new
+  representation has independently useful meaning, scope, or retrieval value.
   When materially ambiguous, preserve the existing content and clarify or
   investigate rather than inventing detail or process merely to make artifacts
   match.
@@ -177,9 +175,9 @@ layers. Do not force one term across genuinely different bounded contexts.
   direct skill distribution, safe framework delivery, authorization boundaries,
   durable coordination Agent Workflow defines, and integration
   verification.
-- Prefer existing host or curated skill capabilities. Use the relevant source or
-  accepted project record designated to maintain the result instead of parallel
-  Agent Workflow representations or lightly rewritten upstream functionality.
+- Prefer existing host or curated skill capabilities and accepted artifacts that
+  maintain lasting results over parallel Agent Workflow representations or
+  lightly rewritten upstream functionality.
 - Do not expand the project into a general agent runtime, package manager,
   plugin platform, compatibility framework, observability platform, broad
   lifecycle system, or other new machinery without a concrete current need.

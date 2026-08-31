@@ -63,17 +63,13 @@ class RoutingContractTests(unittest.TestCase):
         ):
             self.assertIn(required, project_decision_authority)
         self.assertNotIn("settle", project_decision_authority.casefold())
-        reconciliation = entries["Reconciliation"]
-        for required in (
-            "Updating affected current coordination state",
-            "current truth",
-            "project choices determined by accepted project policy",
-            "committed by project decision authority",
-            "relevant source",
-            "accepted project record designated to maintain the result",
-        ):
-            self.assertIn(required, reconciliation)
-        self.assertNotIn("artifact designated to maintain", reconciliation)
+        self.assertEqual(
+            entries["Reconciliation"],
+            "Updating affected current coordination state so it agrees with current "
+            "truth, project choices determined by accepted project policy or committed by "
+            "project decision authority, and the designated artifacts that maintain "
+            "lasting results.",
+        )
         expected_fragments = {
             "Objective": (
                 "result a Wayfinder effort is intended to achieve",
@@ -424,6 +420,67 @@ class RoutingContractTests(unittest.TestCase):
     def test_specialist_selection_has_material_boundaries(self) -> None:
         self._assert_optional_specialist_boundaries()
 
+    def test_implementation_scope_carriers_are_precise_and_consistent(self) -> None:
+        carrier = (
+            "the current authorized request, selected Wayfinder map, current "
+            "decision record, accepted specification, or approved durable ticket "
+            "or ticket set"
+        )
+        surfaces = {
+            "detailed routing": (
+                PACKAGE_ROOT / "payload/agent-workflow/routing.md",
+                3,
+            ),
+            "implementation": (
+                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md",
+                3,
+            ),
+            "verification": (
+                PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md",
+                2,
+            ),
+        }
+        normalized = {}
+        for label, (path, expected_count) in surfaces.items():
+            text = " ".join(path.read_text(encoding="utf-8").split())
+            normalized[label] = text
+            with self.subTest(surface=label):
+                self.assertEqual(text.count(carrier), expected_count)
+
+        implementation = normalized["implementation"]
+        for required in (
+            "artifact references, dependencies, and ready work in Wayfinder",
+            "references to the artifacts or records that maintain it",
+            (
+                "Durable remaining work belongs in the selected Wayfinder map, "
+                "accepted specification, or approved durable ticket or ticket set"
+            ),
+            "Do not create a specification or ticket merely to hold remaining work",
+        ):
+            self.assertIn(required, implementation)
+
+        detailed_routing = normalized["detailed routing"]
+        for required in (
+            (
+                "Selected skills supply their methods, terminology, and evidence. "
+                "Wayfinder is Agent Workflow's sole durable coordinator and stores "
+                "only consequential state and references."
+            ),
+            (
+                "Specifications, tickets, research, maps, and reviews remain in the "
+                "artifacts or records designated to maintain their results; external "
+                "identifiers remain unchanged."
+            ),
+        ):
+            self.assertIn(required, detailed_routing)
+
+        verification = normalized["verification"]
+        self.assertIn("integration boundaries, and expected artifacts", verification)
+        self.assertIn(
+            "expected artifacts, workflow completion, and applicable compatibility behavior",
+            verification,
+        )
+
     def _assert_optional_specialist_boundaries(self) -> None:
         routing = " ".join(
             (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text().split()
@@ -478,8 +535,10 @@ class RoutingContractTests(unittest.TestCase):
     def test_thin_router_is_direct_first_and_progressively_loaded(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text()
+        readme = (REPOSITORY_ROOT / "README.md").read_text()
         normalized_root = " ".join(root_policy.split())
         normalized_routing = " ".join(routing.split())
+        normalized_readme = " ".join(readme.split())
 
         self.assertIn("Direct is default", normalized_root)
         self.assertIn("skill selects a workflow", normalized_root)
@@ -492,8 +551,28 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertIn("Read `.agent-workflow/routing.md` only when", normalized_root)
         self.assertIn(
-            "a selected skill is unavailable or requires explicit user invocation",
+            (
+                "artifact or record responsibility is unclear or selected-skill "
+                "availability, an exact invocation instruction, agent handoff, or "
+                "durable resumption materially matters"
+            ),
             normalized_root,
+        )
+        self.assertIn(
+            (
+                "artifact or record responsibility is unclear or selected-skill "
+                "availability, an exact invocation instruction, agent handoff, or "
+                "durable resumption materially matters"
+            ),
+            normalized_routing,
+        )
+        self.assertIn(
+            (
+                "artifact or record responsibility or workflow composition is "
+                "unclear, or selected-skill availability, an exact invocation "
+                "instruction, agent handoff, or durable resumption materially matters"
+            ),
+            normalized_readme,
         )
         self.assertIn(
             "Three or more meaningful items require assessment, never selection by count alone",
@@ -528,10 +607,6 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn(
             "Direct work, one obvious workflow, and one obvious specialist inside "
             "Wayfinder do not load it",
-            normalized_routing,
-        )
-        self.assertIn(
-            "a selected skill is unavailable or requires explicit user invocation",
             normalized_routing,
         )
         self.assertIn(

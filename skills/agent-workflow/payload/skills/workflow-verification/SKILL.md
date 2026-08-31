@@ -1,6 +1,6 @@
 ---
 name: workflow-verification
-description: Independently verify the overall result against acceptance criteria, integration boundaries, and expected project results. Use after meaningful implementation or when auditing completion; reuse existing evidence instead of mechanically repeating it.
+description: Independently verify the overall result against acceptance criteria, integration boundaries, and expected artifacts. Use after meaningful implementation or when auditing completion; reuse existing evidence instead of mechanically repeating it.
 ---
 
 # Integration and acceptance verification
@@ -11,11 +11,14 @@ automatic proof and not work to repeat without a gap.
 
 ## Select the uncovered evidence
 
-1. Read the acceptance criteria, current authorized request, relevant source or
-   accepted project record designated to maintain the result, changed scope,
-   risks, and evidence already produced by `implement`, `tdd`, or `code-review`.
+1. Read the acceptance criteria, expected artifacts, whichever of the current
+   authorized request, selected Wayfinder map, current decision record, accepted
+   specification, or approved durable ticket or ticket set Implementation
+   actually consumed, changed scope, risks, and evidence already produced by
+   `implement`, `tdd`, or `code-review`.
 2. Select the smallest additional checks that cover unresolved acceptance
-   behavior, integration boundaries, expected results, and workflow completion.
+   behavior, integration boundaries, expected artifacts, workflow completion,
+   and applicable compatibility behavior.
 3. Reuse current test or review evidence when it directly covers a
    criterion. Do not rerun TDD, invoke Code Review again, or execute a full suite
    merely to create a framework-branded duplicate.
@@ -38,8 +41,9 @@ approval.
 
 Confirm as applicable that:
 
-- the current request, relevant source, or accepted project record referenced by
-  the implementation is the one actually consumed;
+- the current authorized request, selected Wayfinder map, current decision
+  record, accepted specification, or approved durable ticket or ticket set
+  referenced by Implementation is the one actually consumed;
 - external identifiers pass through unchanged and tracker IDs remain distinct;
 - TDD and Code Review were not invoked redundantly;
 - skills not needed for the verification were not loaded merely because they

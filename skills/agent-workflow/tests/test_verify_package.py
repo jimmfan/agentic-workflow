@@ -286,10 +286,10 @@ class VerifyPackageTests(ProjectTestCase):
                 "Wayfinder lacks load-bearing contract",
             ),
             (
-                "wayfinder-references-project-result",
+                "wayfinder-references-lasting-results",
                 "payload/skills/wayfinder/SKILL.md",
-                "Reference the accepted project record",
-                "Copy the accepted project record",
+                "Reference the artifacts that maintain",
+                "Copy the artifacts that maintain",
                 "Wayfinder lacks load-bearing contract",
             ),
             (

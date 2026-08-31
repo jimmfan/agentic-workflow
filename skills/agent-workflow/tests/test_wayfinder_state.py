@@ -2275,8 +2275,18 @@ class WayfinderStateContractTests(unittest.TestCase):
             ).split()
         )
         for responsibility in (
-            "ticket or ticket set created by `to-tickets`",
-            "its contents, dependencies, ordering, and readiness",
+            (
+                "Any specialist artifacts or evidence remain outside Agent Workflow "
+                "durable coordination state"
+            ),
+            (
+                "A durable ticket or ticket set created by `to-tickets` maintains "
+                "its contents, dependencies, ordering, and readiness"
+            ),
+            (
+                "Wayfinder uses a readable Markdown link to reference that durable "
+                "ticket or ticket set instead of copying or mirroring ticket-level state"
+            ),
         ):
             with self.subTest(contract_responsibility=responsibility):
                 self.assertIn(responsibility, contract_boundaries)
@@ -2291,7 +2301,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "summarizes the effort's current coordination state",
             "when no durable ticket or ticket set exists",
             "may state ready work directly",
-            "when one exists, the map links it",
+            "once a durable ticket or ticket set exists, the map links it",
             "may include a current ready-work reference",
             "without mirroring ticket-level state",
             "chat-only draft is not a durable ticket or ticket set",
@@ -2299,11 +2309,31 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.subTest(map_behavior=map_behavior):
                 self.assertIn(map_behavior.casefold(), effort_shape.casefold())
 
+        implementation = " ".join(
+            (
+                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
+            ).read_text(encoding="utf-8").split()
+        )
+        for remaining_work_boundary in (
+            "artifact references, dependencies, and ready work in Wayfinder",
+            (
+                "Durable remaining work belongs in the selected Wayfinder map, "
+                "accepted specification, or approved durable ticket or ticket set"
+            ),
+            "Do not create a specification or ticket merely to hold remaining work",
+        ):
+            with self.subTest(remaining_work_boundary=remaining_work_boundary):
+                self.assertIn(remaining_work_boundary, implementation)
+
         for surface in (
             self.contract,
             WAYFINDER_SKILL.read_text(encoding="utf-8"),
         ):
             self.assertNotIn("To Tickets", surface)
+            self.assertIn(
+                "Any specialist artifacts or evidence remain outside Agent Workflow",
+                " ".join(surface.split()),
+            )
         for invalid in (
             "link its ticket ordering and readiness",
             "remain durable in ticket ordering and readiness",
@@ -2574,10 +2604,11 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         for responsibility in (
             "The map summarizes",
-            "A durable ticket or ticket set created by `to-tickets`",
-            "maintains its contents, dependencies, ordering, and readiness",
-            "When none exists, the map may state ready work directly",
-            "When one exists, the map links it rather than mirroring ticket-level state",
+            "When no durable ticket or ticket set exists, the map may state ready work directly",
+            "Once `to-tickets` creates a durable ticket or ticket set",
+            "that ticket or ticket set maintains its contents, dependencies, ordering, and readiness",
+            "The map links that durable ticket or ticket set and does not mirror ticket-level state",
+            "A chat-only draft is not a durable ticket or ticket set",
         ):
             with self.subTest(ticket_responsibility=responsibility):
                 self.assertIn(responsibility, transition)

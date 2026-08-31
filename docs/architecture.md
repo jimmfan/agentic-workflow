@@ -37,11 +37,11 @@ route.
 
 Routing begins Direct and classifies from user intent plus skill descriptions
 exposed in the current session. Detailed routing loads only when workflow
-composition, agent handoff, durable resumption, or responsibility for the
-accepted project record designated to maintain a result is materially unclear.
-Routing may change as evidence emerges. Route selection,
-skill selection, material execution, and completion or verification evidence
-remain distinct. Host sandboxing and approvals determine host
+composition or artifact or record responsibility is unclear or selected-skill
+availability, an exact invocation instruction, agent handoff, or durable
+resumption materially matters. Routing may change as evidence emerges. Route
+selection, skill selection, material execution, and completion or verification
+evidence remain distinct. Host sandboxing and approvals determine host
 permission; that permission does not itself authorize an action or commit a
 project choice.
 
@@ -53,7 +53,8 @@ accepted project policy authorizes that action and scope.
 
 Wayfinder is Agent Workflow's sole durable coordination model. It keeps only
 consequential continuity and references, while specialists retain their methods
-and the accepted project record designated to maintain each result.
+and artifacts. Specifications, tickets, research, reviews, and other specialist
+results remain in the artifacts or records designated to maintain them.
 
 ## Filesystem ownership
 
@@ -102,10 +103,13 @@ cleanliness check may still report changes there as part of a dirty worktree.
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
 Their `map.md` is the brief coordination summary and the first effort file read
 when resuming. It summarizes the effort's current coordination state, conditions
-blocking particular work, dependencies, and ready work. A `to-tickets` ticket or
-ticket set maintains ticket contents, dependencies, ordering, and readiness. The
-map links it only when an accepted durable project or external record exists; a
-chat-only draft remains session-local.
+blocking particular work, dependencies, and ready work. When no durable ticket
+or ticket set exists, the map may state ready work directly. Once `to-tickets`
+creates a durable ticket or ticket set, that ticket or ticket set maintains its
+contents, dependencies, ordering, and readiness. The map links that durable
+ticket or ticket set and may include the current ready-work reference without
+mirroring ticket-level state. A ticket draft returned only in chat remains
+session-local and is not a durable reference target.
 New default maps retain `Blockers and dependencies` with `None` when no blocker
 or dependency applies; other inapplicable empty headings may be omitted. Existing
 maps remain valid without that heading or marker because this is authoring guidance,
@@ -129,14 +133,14 @@ for the stated scope or the evidence or record from which it was derived, plus
 material limitations. A D#'s presence means its choice is current and binding
 under the project-choice gate; evidence may inform a recommendation or choice but
 cannot commit it alone. The map represents current coordination state
-and is reconciled as relevant source or the accepted project record designated
-to maintain the result changes. The progressively loaded Wayfinder
-state contract and its tests define exact allocation, reconciliation, pruning,
-effort-ending, and reference behavior.
+and should converge as lasting outcomes move to the artifacts designated to
+maintain them. The progressively loaded Wayfinder state contract and its tests
+define exact allocation, reconciliation, pruning, effort-ending, and reference
+behavior.
 
 This source repository's project instructions designate
 `architecture-decisions/`. Elsewhere, a consuming project's declared convention
-or the selected skill's instructions determine where its result is recorded;
+or the selected skill's artifact convention designates the location;
 Agent Workflow imposes no additional ADR path. Wayfinder decision records may link an
 ADR but do not become a second ADR or other project-policy record.
 
@@ -224,10 +228,10 @@ requirements.
 
 Live source and observed behavior establish current system facts for their
 stated scope. Accepted ADRs and project documentation record project choices.
-The accepted project record designated to maintain a result remains authoritative.
+Designated artifacts and records maintain their results.
 `.agent-wayfinder/` is the project-owned durable representation of local workflow
-continuity. These sources and records outrank summaries, private agent memory,
-and chat recollection.
+continuity. These sources, artifacts, and records outrank summaries, private agent
+memory, and chat recollection.
 
 Current architectural rationale is intentionally limited to:
 

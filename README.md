@@ -69,10 +69,9 @@ It does not run every potentially relevant skill.
 Routing starts Direct.
 
 The root project instructions perform the initial classification. More detailed
-routing guidance is loaded only when workflow composition, a selected skill
-cannot run or requires explicit user invocation, agent handoff, durable
-resumption, or responsibility for the accepted project record designated to
-maintain a result is unclear.
+routing guidance is loaded only when artifact or record responsibility or
+workflow composition is unclear, or selected-skill availability, an exact
+invocation instruction, agent handoff, or durable resumption materially matters.
 
 Routing can change as work develops. For example, a bounded implementation task may expose an unresolved design decision or enough coordination state to justify a different workflow.
 
@@ -87,8 +86,8 @@ current user request or accepted project policy and only within that scope.
 Authorization to act does not commit a project choice, a committed choice does not
 authorize an unrelated action, and host permission supplies neither.
 
-Current source, observed behavior, and accepted project records take precedence
-over stale workflow state or previous chat history.
+Current source, observed behavior, and accepted project artifacts take
+precedence over stale workflow state or previous chat history.
 
 See [Workflow routing](docs/routing.md) for the current routing model.
 
@@ -142,9 +141,12 @@ Additional records are created only when they are useful to preserve separately:
   accepted project policy or committed by the person, role, or valid delegate with
   project decision authority.
 
-Wayfinder coordinates this information. It does not replace the accepted project
-record designated to maintain the result, and links that record only when useful
-for durable coordination.
+Wayfinder coordinates this information. It does not replace source code,
+documentation, architecture decisions, specifications, tickets, or other
+artifacts or records designated to maintain lasting results.
+
+As lasting results are established, they should live with the artifact or record
+designated to maintain them rather than accumulating indefinitely in Wayfinder.
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
@@ -182,8 +184,8 @@ Create a separate unresolved question or evidence record only when it is an
 independently useful coordination or retrieval unit. When a supported current
 conclusion or committed choice warrants durable representation, record it as an
 F# or D# section in the optional `facts.md` or `decisions.md` ledger. Treat live
-source and accepted project records as stronger support than assumptions, chat
-history, or outdated Wayfinder claims. Do not copy the transcript, invent
+source and accepted project artifacts as stronger support than assumptions,
+chat history, or outdated Wayfinder claims. Do not copy the transcript, invent
 requirements, or implement product changes during this first pass.
 
 If the current effort cannot be inferred confidently, ask me one concrete scope
@@ -262,10 +264,11 @@ cleanup commit, then run install.
 
 ### Where results live
 
-The accepted project record designated to maintain a result remains
-authoritative. Chat output is session-local; Wayfinder links only an accepted
-durable project or external record and otherwise preserves the minimum
-coordination or evidence needed for continuity.
+Specifications, tickets, research, reviews, and other artifacts or records
+remain in the locations designated to maintain their results. Agent Workflow
+references those artifacts and records rather than maintaining duplicate copies.
+Chat output is session-local; a durable ticket, artifact, or record may be linked
+when useful for continuity.
 
 ## Progressive loading
 
@@ -374,8 +377,7 @@ The architecture may change as the project produces better evidence.
 - Keep durable project state separate from reconstructable framework files.
 - Store coordination state, not execution history.
 - Load detailed instructions and state only when needed.
-- Keep lasting results in the accepted project record designated to maintain
-  them; do not duplicate them in Wayfinder.
+- Keep lasting results in the artifacts or records designated to maintain them.
 - Keep Agent Workflow small.
 
 ## More detail

@@ -122,11 +122,12 @@ the method without a ceremonial specialist invocation, but one method cannot
 substitute for another's required authority or evidence.
 
 Do not load specialists speculatively. Specialists retain their methods and
-results. The specialist creates no Agent Workflow durable coordination state.
-If work is interrupted,
+results. Any specialist artifacts or evidence remain outside Agent Workflow
+durable coordination state. The specialist creates no Agent Workflow durable
+coordination state. If work is interrupted,
 reconcile only consequential questions, uncertainties, unexplained causes,
 choices, structural ambiguity, conditions blocking particular work, evidence or
-conclusions, links to relevant results, the resolution method when useful, and
+conclusions, artifact references, the resolution method when useful, and
 ready work into Wayfinder. When resuming, read the map first rather than a
 specialist notebook or coordination record.
 
@@ -134,9 +135,8 @@ specialist notebook or coordination record.
 
 The map summarizes the objective, scope, current coordination state, conditions
 blocking particular work, dependencies, and ready work. Keep it sufficient for
-a fresh session to continue the effort. Reference the accepted project record
-designated to maintain the result instead of copying it. The state contract
-defines when U/E/F/D
+a fresh session to continue the effort. Reference the artifacts that maintain
+lasting results instead of copying them. The state contract defines when U/E/F/D
 records are worth retaining, how records are pruned, and when an effort ends.
 
 Map uncertainty broadly, then preserve selectively. Record a precise question
@@ -194,8 +194,9 @@ advancing work that remains dependency-blocked. Each workflow transition to
 Implementation consumes one ready scope and its acceptance criteria;
 Verification follows material execution. Use `to-tickets` only
 when approved work needs substantial dependency ordering or independently
-deliverable sessions. A durable ticket or ticket set created by `to-tickets`
-maintains its contents, dependencies, ordering, and readiness. When none exists,
-the map may state ready work directly. When one exists, the map links it rather
-than mirroring ticket-level state and may include the current ready-work
-reference.
+deliverable sessions. When no durable ticket or ticket set exists, the map may
+state ready work directly. Once `to-tickets` creates a durable ticket or ticket
+set, that ticket or ticket set maintains its contents, dependencies, ordering,
+and readiness. The map links that durable ticket or ticket set and does not
+mirror ticket-level state; it may include the current ready-work reference. A
+chat-only draft is not a durable ticket or ticket set.
