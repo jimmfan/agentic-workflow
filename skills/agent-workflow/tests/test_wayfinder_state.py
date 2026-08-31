@@ -2314,10 +2314,10 @@ class WayfinderStateContractTests(unittest.TestCase):
         for remaining_work_boundary in (
             "artifact references, dependencies, and ready work in Wayfinder",
             (
-                "Durable remaining work belongs in the selected Wayfinder map, "
+                "Remaining durable next work must be maintained in the selected "
+                "Wayfinder map, "
                 "accepted specification, or approved durable ticket or ticket set"
             ),
-            "Do not create a specification or ticket merely to hold remaining work",
         ):
             with self.subTest(remaining_work_boundary=remaining_work_boundary):
                 self.assertIn(remaining_work_boundary, implementation)

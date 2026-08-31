@@ -318,6 +318,24 @@ def reserved_skill_message(relative: PurePosixPath) -> str:
     )
 
 
+def adoption_collision_message(
+    root: Path, distribution: Distribution
+) -> str | None:
+    collision = reserved_skill_collision(root, distribution)
+    if collision is not None:
+        return reserved_skill_message(collision)
+
+    if not adoption_present(root, distribution) and path_exists(
+        root.joinpath(*FRAMEWORK_ROOT.parts)
+    ):
+        return (
+            "existing .agent-workflow directory blocks adoption; "
+            "move or rename the project-owned directory before installation"
+        )
+
+    return None
+
+
 def has_any_marker(data: bytes) -> bool:
     return MARKER_PREFIX in data
 
