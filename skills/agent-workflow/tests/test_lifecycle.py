@@ -1,323 +1,237 @@
 from __future__ import annotations
 
-import hashlib
-import json
+import io
 import os
-from pathlib import Path
-import shutil
+import tempfile
 import unittest
+from contextlib import redirect_stderr
+from pathlib import Path
+from unittest import mock
 
 from _test_support import (
-    ADOPT,
     LIFECYCLE,
     MANAGED_BEGIN,
     MANAGED_END,
-    PACKAGE_ROOT,
     ProjectTestCase,
+    commit_all,
+    initialize_repository,
+    load_module,
+    run_git,
     run_script,
-    tree_snapshot,
+    workspace_snapshot,
 )
+
+PROJECT_BEGIN = b"\n<!-- agent-workflow:project-instructions -->\n"
 
 
 class LifecycleTests(ProjectTestCase):
-    def test_install_creates_only_current_framework_and_empty_state_root(self) -> None:
-        self.assert_ok(self.adopt("install"))
-        self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
-        self.assertTrue((self.project / ".agent-wayfinder").is_dir())
-        self.assertEqual(list((self.project / ".agent-wayfinder").iterdir()), [])
-        self.assertEqual(
-            {
-                path.relative_to(self.project / ".agent-workflow").as_posix()
-                for path in (self.project / ".agent-workflow").rglob("*")
-                if path.is_file()
-            },
-            {
-                "README.md",
-                "contracts/wayfinder-state.md",
-                "install-manifest.json",
-                "providers.json",
-                "routing.md",
-            },
-        )
-        manifest = json.loads(
-            (self.project / ".agent-workflow/install-manifest.json").read_text()
-        )
-        self.assertEqual(manifest["schema_version"], 1)
-        self.assertEqual(
-            set(manifest),
-            {
-                "schema_version",
-                "framework_version",
-                "source_revision",
-                "external_files",
-                "composites",
-            },
-        )
-        self.assertNotIn("framework_files", manifest)
-        self.assertNotIn("project_owned", manifest)
+    def setUp(self) -> None:
+        super().setUp()
+        initialize_repository(self.project)
 
-    def test_update_repairs_reconstructable_state_without_recreating_absent_external_files(
-        self,
-    ) -> None:
-        self.assert_ok(self.adopt("install"))
-        routing = self.project / ".agent-workflow/routing.md"
-        expected = routing.read_bytes()
-        routing.write_bytes(b"locally drifted framework bytes\n")
-        (self.project / ".agent-workflow/README.md").unlink()
-        obsolete = self.project / ".agent-workflow/obsolete-runtime-note.md"
-        obsolete.write_text("historical framework file\n")
-        self.assert_ok(self.adopt("update"))
-        self.assertEqual(routing.read_bytes(), expected)
-        self.assertTrue((self.project / ".agent-workflow/README.md").is_file())
-        self.assertFalse(obsolete.exists())
+    def lifecycle(self, command: str, *extra: object):
+        return run_script(LIFECYCLE, command, self.project, *extra)
 
-        manifest_path = self.project / ".agent-workflow/install-manifest.json"
-        manifest = json.loads(manifest_path.read_text())
-        absent = self.project / ".agents/skills/removed-local-skill/SKILL.md"
-        absent.parent.mkdir(parents=True)
-        absent.write_bytes(b"previously recorded managed bytes\n")
-        manifest["external_files"][".agents/skills/removed-local-skill/SKILL.md"] = {
-            "created": True,
-            "sha256": hashlib.sha256(absent.read_bytes()).hexdigest(),
-        }
-        manifest_path.write_text(json.dumps(manifest))
-        absent.unlink()
-        self.assert_ok(self.adopt("update"))
-        self.assertFalse(absent.exists())
+    def test_mutation_requires_exact_git_root_with_valid_head(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            non_repository = Path(temporary) / "plain"
+            non_repository.mkdir()
+            result = run_script(LIFECYCLE, "install", non_repository)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("Git worktree root", result.stderr)
 
-        state = self.project / ".agent-wayfinder/custom.txt"
-        state.write_text("durable project bytes\n")
-        shutil.rmtree(self.project / ".agent-workflow")
-        self.assert_ok(self.adopt("update"))
-        self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
-        self.assertEqual(state.read_text(), "durable project bytes\n")
-        rebuilt = json.loads(
-            (self.project / ".agent-workflow/install-manifest.json").read_text()
-        )
-        self.assertTrue(
-            all(not details["created"] for details in rebuilt["external_files"].values())
-        )
+            unborn = Path(temporary) / "unborn"
+            unborn.mkdir()
+            run_git(unborn, "init", "-q")
+            result = run_script(LIFECYCLE, "install", unborn)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("valid HEAD", result.stderr)
 
-    def test_arbitrary_and_human_edited_state_survives_every_lifecycle_operation(
-        self,
-    ) -> None:
-        state = self.project / ".agent-wayfinder"
-        unknown = state / "unrecognized-project-data"
-        (unknown / "nested").mkdir(parents=True)
-        (unknown / "note.txt").write_bytes(b"project-owned note\n")
-        (unknown / "nested/data.bin").write_bytes(b"\x00project\xffstate")
-        (unknown / "metadata.json").write_bytes(b'{"owner":"project"}\n')
-        try:
-            (unknown / "data-link").symlink_to("nested/data.bin")
-        except OSError:
-            pass
-        effort = self.project / ".agent-wayfinder/custom-effort"
-        (effort / "unknowns").mkdir(parents=True)
-        (effort / "unrecognized-project-data").mkdir()
-        (effort / "map.md").write_text(
-            "# Personal layout\n\nNo standard headings; keep exactly.\n",
-            encoding="utf-8",
-        )
-        (effort / "facts.md").write_text(
-            "# Facts\n\n## F1 — Ledger fact\n\n- Source: source.md\n\nKeep exactly.\n",
-            encoding="utf-8",
-        )
-        (effort / "unrecognized-project-data/note.txt").write_text(
-            "Human-owned content outside the current state shape.\n",
-            encoding="utf-8",
-        )
-        (effort / "decisions.md").write_text(
-            "# Decisions\n\n## D1 — Ledger decision\n\n"
-            "- Authority: User\n\nKeep exactly.\n",
-            encoding="utf-8",
-        )
-        (effort / "unknowns/U9-free-form.md").write_text(
-            "A human can structure this however they find useful.\n",
-            encoding="utf-8",
-        )
-        original = tree_snapshot(state)
-
-        for command in ("install", "status", "update", "remove", "install"):
-            with self.subTest(command=command):
-                self.assert_ok(self.adopt(command))
-                self.assertEqual(tree_snapshot(state), original)
-
-    def test_composite_policy_preserves_project_region_through_update_and_remove(
-        self,
-    ) -> None:
-        project_policy = b"# Project policy\n\nKeep this byte-for-byte.\n"
-        (self.project / "AGENTS.md").write_bytes(project_policy)
-        self.assert_ok(self.adopt("install"))
-        installed = (self.project / "AGENTS.md").read_bytes()
-        self.assertTrue(installed.startswith(MANAGED_BEGIN))
-        self.assertIn(
-            b"Do not manufacture cross-artifact conflicts or parallel representations",
-            installed,
-        )
-        self.assertTrue(installed.endswith(project_policy))
-
-        managed_end = installed.index(MANAGED_END)
-        drifted = MANAGED_BEGIN + b"drifted managed text\n" + installed[managed_end:]
-        (self.project / "AGENTS.md").write_bytes(drifted)
-        self.assert_ok(self.adopt("update"))
-        repaired = (self.project / "AGENTS.md").read_bytes()
-        self.assertNotIn(b"drifted managed text", repaired)
-        self.assertTrue(repaired.endswith(project_policy))
-
-        self.assert_ok(self.adopt("remove"))
-        self.assertEqual((self.project / "AGENTS.md").read_bytes(), project_policy)
-        self.assertFalse((self.project / "CLAUDE.md").exists())
-
-    def test_malformed_composite_boundary_stops_without_partial_mutation(self) -> None:
-        self.assert_ok(self.adopt("install"))
-        policy = self.project / "AGENTS.md"
-        policy.write_bytes(MANAGED_BEGIN + b"missing the other boundaries\n")
-        routing = self.project / ".agent-workflow/routing.md"
-        routing.write_bytes(b"drift that must remain after failed preflight\n")
-        before = tree_snapshot(self.project)
-        result = self.adopt("update")
+        child = self.project / "nested"
+        child.mkdir()
+        (child / ".gitkeep").write_bytes(b"")
+        commit_all(self.project, "add nested directory")
+        result = run_script(LIFECYCLE, "install", child)
         self.assertEqual(result.returncode, 2)
-        self.assertIn("markers", result.stderr)
-        self.assertEqual(tree_snapshot(self.project), before)
+        self.assertIn("exact Git worktree root", result.stderr)
 
-    def test_unknown_external_collision_is_never_overwritten(self) -> None:
-        collision = self.project / ".agents/skills/workflow-debugging/SKILL.md"
-        collision.parent.mkdir(parents=True)
-        collision.write_text("project-owned skill\n")
-        result = self.adopt("install")
+    def test_mutation_requires_a_completely_clean_worktree(self) -> None:
+        tracked = self.project / "README.md"
+        tracked.write_text("changed\n", encoding="utf-8")
+        result = self.lifecycle("install")
         self.assertEqual(result.returncode, 2)
-        self.assertIn("unknown external content", result.stderr)
-        self.assertEqual(collision.read_text(), "project-owned skill\n")
+        self.assertIn("worktree and index must be completely clean", result.stderr)
         self.assertFalse((self.project / ".agent-workflow").exists())
-        self.assertFalse((self.project / ".agent-wayfinder").exists())
 
-    def test_remove_preserves_external_files_not_owned_at_removal(self) -> None:
-        source = PACKAGE_ROOT / "payload/skills/workflow-debugging/SKILL.md"
-        for case in ("preexisting-exact", "locally-modified"):
-            with self.subTest(case=case):
-                project = Path(self.temporary.name) / case
-                project.mkdir()
-                target = project / ".agents/skills/workflow-debugging/SKILL.md"
-                if case == "preexisting-exact":
-                    target.parent.mkdir(parents=True)
-                    expected = source.read_bytes()
-                    target.write_bytes(expected)
-                    self.assert_ok(run_script(ADOPT, "install", project))
-                else:
-                    self.assert_ok(run_script(ADOPT, "install", project))
-                    expected = b"project changed this managed integration\n"
-                    target.write_bytes(expected)
-                self.assert_ok(run_script(ADOPT, "remove", project))
-                self.assertEqual(target.read_bytes(), expected)
+        run_git(self.project, "restore", "README.md")
+        (self.project / "untracked.txt").write_text("untracked\n", encoding="utf-8")
+        result = self.lifecycle("install")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("untracked", result.stderr)
+        self.assertFalse((self.project / ".agent-workflow").exists())
 
-    def test_unsafe_project_and_framework_roots_are_rejected(self) -> None:
+    def test_untracked_or_ignored_managed_content_is_rejected(self) -> None:
+        managed_untracked = self.project / ".agents/skills/research/local.txt"
+        managed_untracked.parent.mkdir(parents=True)
+        managed_untracked.write_text("cannot be recovered by Git\n", encoding="utf-8")
+        result = self.lifecycle("install")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("untracked file under a managed surface", result.stderr)
+
+        managed_untracked.unlink()
+        managed_untracked.parent.rmdir()
+        (self.project / ".gitignore").write_text(".agents/\n", encoding="utf-8")
+        commit_all(self.project, "ignore agents directory")
+        result = self.lifecycle("install")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("managed destination is ignored", result.stderr)
+        self.assertFalse((self.project / ".agent-workflow").exists())
+
+    def test_symlink_in_a_managed_parent_is_rejected_without_escape(self) -> None:
         outside = Path(self.temporary.name) / "outside"
         outside.mkdir()
-        (outside / "sentinel").write_text("safe\n")
-        (self.project / ".agent-workflow").symlink_to(outside, target_is_directory=True)
-        result = self.adopt("update")
-        self.assertEqual(result.returncode, 2)
-        self.assertEqual((outside / "sentinel").read_text(), "safe\n")
+        sentinel = outside / "sentinel.txt"
+        sentinel.write_text("outside\n", encoding="utf-8")
+        (self.project / ".agents").symlink_to(outside, target_is_directory=True)
+        commit_all(self.project, "track managed-parent symlink")
 
-        (self.project / ".agent-workflow").unlink()
-        (self.project / ".agent-wayfinder").symlink_to(
-            outside, target_is_directory=True
+        before = workspace_snapshot(self.project)
+        result = self.lifecycle("install")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("symlink", result.stderr)
+        self.assertEqual(sentinel.read_text(encoding="utf-8"), "outside\n")
+        self.assertEqual(workspace_snapshot(self.project), before)
+
+    def test_special_entry_in_a_managed_tree_is_rejected(self) -> None:
+        framework = self.project / ".agent-workflow"
+        framework.mkdir()
+        fifo = framework / "unsupported"
+        try:
+            fifo_path = os.fspath(fifo)
+            os.mkfifo(fifo_path)
+        except (AttributeError, OSError) as exc:
+            self.skipTest(f"FIFO creation is unavailable: {exc}")
+
+        result = self.lifecycle("install")
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("special entry", result.stderr)
+        self.assertTrue(fifo.exists())
+
+    def test_composite_project_bytes_survive_install_update_and_remove(self) -> None:
+        project_policy = b"# Project policy\n\nKeep this byte-for-byte.\n"
+        policy = self.project / "AGENTS.md"
+        policy.write_bytes(project_policy)
+        commit_all(self.project, "add project policy")
+
+        self.assert_ok(self.lifecycle("install"))
+        installed = policy.read_bytes()
+        self.assertTrue(installed.startswith(MANAGED_BEGIN))
+        self.assertTrue(installed.endswith(project_policy))
+        self.assertFalse((self.project / ".agent-wayfinder").exists())
+        commit_all(self.project, "install agent workflow")
+
+        managed_end = installed.index(MANAGED_END)
+        policy.write_bytes(
+            MANAGED_BEGIN + b"committed managed drift\n" + installed[managed_end:]
         )
-        result = self.adopt("install")
-        self.assertEqual(result.returncode, 2)
-        self.assertEqual((outside / "sentinel").read_text(), "safe\n")
+        commit_all(self.project, "commit managed drift")
+        self.assert_ok(self.lifecycle("update"))
+        repaired = policy.read_bytes()
+        self.assertNotIn(b"committed managed drift", repaired)
+        self.assertTrue(repaired.endswith(project_policy))
+        commit_all(self.project, "repair managed drift")
 
-    def test_filesystem_root_target_is_rejected(self) -> None:
-        result = run_script(ADOPT, "status", Path(Path.cwd().anchor))
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("filesystem root", result.stderr)
+        self.assert_ok(self.lifecycle("remove"))
+        self.assertEqual(policy.read_bytes(), project_policy)
+        self.assertFalse((self.project / "CLAUDE.md").exists())
+        self.assertFalse((self.project / ".agent-wayfinder").exists())
 
-    def test_status_treats_optional_files_as_normal_and_drift_as_repairable(
+    def test_malformed_duplicated_partial_and_reordered_markers_fail_preflight(
         self,
     ) -> None:
-        self.assert_ok(self.adopt("install"))
-        result = self.adopt("status")
+        cases = {
+            "partial": MANAGED_BEGIN + b"missing other markers\n",
+            "duplicated": MANAGED_BEGIN
+            + b"managed\n"
+            + MANAGED_END
+            + PROJECT_BEGIN
+            + PROJECT_BEGIN,
+            "reordered": MANAGED_END + MANAGED_BEGIN + PROJECT_BEGIN,
+            "crlf": MANAGED_BEGIN.replace(b"\n", b"\r\n")
+            + b"managed\r\n"
+            + MANAGED_END.replace(b"\n", b"\r\n")
+            + PROJECT_BEGIN.replace(b"\n", b"\r\n"),
+            "missing-line-ending": b"<!-- agent-workflow:managed-begin -->",
+            "partial-token": b"<!-- agent-workflow:managed-beg",
+        }
+        for name, content in cases.items():
+            with self.subTest(name=name):
+                project = Path(self.temporary.name) / name
+                project.mkdir()
+                initialize_repository(project)
+                (project / "AGENTS.md").write_bytes(content)
+                commit_all(project, f"add {name} markers")
+                before = workspace_snapshot(project)
+
+                result = run_script(LIFECYCLE, "install", project)
+
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("markers", result.stderr)
+                self.assertEqual(workspace_snapshot(project), before)
+
+    def test_dry_run_is_immutable(self) -> None:
+        before = workspace_snapshot(self.project)
+        result = self.lifecycle("install", "--dry-run")
         self.assert_ok(result)
-        self.assertIn("Agent Workflow: healthy", result.stdout)
-        self.assertEqual(list((self.project / ".agent-wayfinder").iterdir()), [])
-        (self.project / ".agent-workflow/routing.md").unlink()
-        result = self.adopt("status")
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("repairable", result.stdout)
+        self.assertIn("INSTALL PLAN", result.stdout)
+        self.assertEqual(workspace_snapshot(self.project), before)
 
-    def test_optional_provider_failures_preserve_the_truthful_core_boundary(self) -> None:
-        package_copy = self.copy_package("corrupt-provider-snapshot")
-        snapshot = (
-            package_copy
-            / "provider-snapshots/matt-pocock-skills/skills/research/SKILL.md"
-        )
-        snapshot.write_text("corrupt bundled provider\n", encoding="utf-8")
-
-        result = run_script(
-            package_copy / "scripts/lifecycle.py", "install", self.project
-        )
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.project / ".agent-workflow/routing.md").is_file())
-        self.assertIn("Optional provider setup did not complete", result.stderr)
-
-    def test_optional_provider_failure_during_remove_reports_truthfully(self) -> None:
-        self.assert_ok(self.adopt("install"))
-        provider_file = self.project / ".agents/skills/wayfinder/personal.txt"
-        provider_file.parent.mkdir(parents=True)
-        provider_file.write_text("preserve provider bytes\n")
-
-        package_copy = self.copy_package("remove-provider-failure")
-        declaration = package_copy / "payload/agent-workflow/providers.json"
-        declaration.write_text("{}\n", encoding="utf-8")
-        result = run_script(
-            package_copy / "scripts/lifecycle.py", "remove", self.project
-        )
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn(
-            "Core removal will continue; inspect the provider error", result.stderr
-        )
-        self.assertNotIn("core router and local workflows remain usable", result.stderr)
-        self.assertFalse((self.project / ".agent-workflow").exists())
-        self.assertEqual(provider_file.read_text(), "preserve provider bytes\n")
-
-    def test_fresh_lifecycle_projects_every_declared_provider_skill(self) -> None:
-        empty_bin = Path(self.temporary.name) / "empty-bin"
-        empty_bin.mkdir()
-        env = os.environ.copy()
-        env["PATH"] = str(empty_bin)
-
-        result = run_script(LIFECYCLE, "install", self.project, env=env)
-
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        for name in self.declared_provider_names():
-            with self.subTest(skill=name):
-                self.assertTrue(
-                    (self.project / ".agents/skills" / name / "SKILL.md").is_file()
-                )
-
-    def test_lifecycle_status_reports_incomplete_provider_projection_without_failing_core(
+    def test_status_reports_repair_and_git_safety_without_requiring_cleanliness(
         self,
     ) -> None:
-        self.assert_ok(self.adopt("install"))
+        status = self.lifecycle("status")
+        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
+        self.assertIn("repairable", status.stdout)
 
-        result = run_script(LIFECYCLE, "status", self.project)
+        self.assert_ok(self.lifecycle("install"))
+        commit_all(self.project, "install agent workflow")
 
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("Agent Workflow: healthy", result.stdout)
-        self.assertIn("Optional provider projection is incomplete", result.stderr)
+        untracked = self.project / "untracked.txt"
+        untracked.write_text("work in progress\n", encoding="utf-8")
+        status = self.lifecycle("status")
+        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
+        self.assertIn("Git safety boundary would block mutation", status.stdout)
+        self.assertIn("untracked", status.stdout)
+        self.assertIn("Agent Workflow: blocked by Git safety boundary", status.stdout)
+        self.assertNotIn("Agent Workflow: repairable", status.stdout)
+        self.assertEqual(untracked.read_text(encoding="utf-8"), "work in progress\n")
 
-    def test_cp1252_console_escapes_unrepresentable_project_path(self) -> None:
-        project = Path(self.temporary.name) / "project-snow-\u96ea"
-        project.mkdir()
-        env = os.environ.copy()
-        env["PYTHONIOENCODING"] = "cp1252"
-        install = run_script(ADOPT, "install", project, env=env, encoding="cp1252")
-        self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
-        status = run_script(ADOPT, "status", project, env=env, encoding="cp1252")
-        self.assertEqual(status.returncode, 0, status.stdout + status.stderr)
-        self.assertIn("\\u96ea", status.stdout)
+    def test_mid_operation_write_failure_reports_truthful_partial_state(self) -> None:
+        lifecycle = load_module("partial_failure_lifecycle", LIFECYCLE)
+        real_replace = lifecycle.os.replace
+        replacements = 0
+
+        def fail_second_replace(source: object, target: object) -> None:
+            nonlocal replacements
+            replacements += 1
+            if replacements == 2:
+                raise OSError("injected ordinary replace failure")
+            real_replace(source, target)
+
+        stderr = io.StringIO()
+        with (
+            mock.patch.object(lifecycle.os, "replace", side_effect=fail_second_replace),
+            redirect_stderr(stderr),
+        ):
+            result = lifecycle.main(["install", str(self.project)])
+
+        self.assertEqual(result, 2)
+        self.assertIn("partial changes may exist", stderr.getvalue())
+        self.assertIn("inspect git status", stderr.getvalue().lower())
+        self.assertTrue((self.project / ".agent-workflow").is_dir())
+        self.assertLess(len(list((self.project / ".agent-workflow").rglob("*"))), 6)
+        self.assertNotEqual(run_git(self.project, "status", "--porcelain").stdout, "")
 
 
 if __name__ == "__main__":

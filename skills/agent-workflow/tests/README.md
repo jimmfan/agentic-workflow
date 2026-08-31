@@ -7,14 +7,22 @@ Run focused unittest commands with `python3 -m unittest ...`. Python's generated
 need manual cleanup. The full verifier also disables bytecode writes in its test
 subprocess.
 
+Run `python3 skills/agent-workflow/tests/wheel_smoke.py -v` separately to build
+the wheel through an isolated PEP 517 build, install it into a disposable virtual
+environment, and invoke its `agent-workflow` entry point against one clean,
+disposable Git repository. This single packaging smoke is intentionally outside
+the deterministic unittest discovery gate because resolving the declared build
+backend may require package-index access.
+
 ## Production-boundary unit and integration tests
 
 - `test_lifecycle.py` owns install, update, status, remove, composite-file and
-  project-owned-state preservation boundaries.
-- `test_providers.py` owns provider reconciliation, projections, adapters,
-  status, transactions, rollback, recovery reporting, and removal.
-- `test_verify_package.py` owns package shape, manifest and provider declaration
-  integrity, projection provenance, and refresh validation.
+  clean-Git safety boundaries.
+- `test_direct_distribution.py` owns whole-directory direct skill replacement,
+  current mapping, reserved-name conflicts, unrelated-skill preservation,
+  legacy clean-break diagnostics, partial-failure reporting, and removal.
+- `test_verify_package.py` owns package shape, exact payload inventory,
+  attribution, focused semantic contracts, and distribution-map refresh validation.
 - `test_bootstrap.py` owns archive parsing, extraction and root safety, offline
   bootstrap, and CLI delegation.
 - `test_routing.py` owns direct/progressive routing, explicit selection,
@@ -35,9 +43,10 @@ subprocess.
 - `behavior.py validate` checks every human-authored scenario and fixture
   reference as part of static package verification.
 
-The lifecycle suite directly proves framework operations preserve arbitrary and
-human-edited `.agent-wayfinder/` bytes. Fixtures therefore need only prove reset,
-evaluator, and scenario behavior; they do not repeat the full lifecycle matrix.
+The lifecycle suite proves framework operations do not directly traverse,
+interpret, or change `.agent-wayfinder/`; repository-wide Git cleanliness can
+still observe changes there. Wayfinder fixtures independently prove reset,
+evaluator, and scenario behavior; they do not participate in lifecycle tests.
 
 ## Human behavioral contracts and live smoke tests
 
@@ -50,8 +59,8 @@ evaluator, and scenario behavior; they do not repeat the full lifecycle matrix.
 
 The default live set is a representative smoke sample covering direct work,
 external research, blocked authority, read-only and writable reconciliation,
-evidence/fact contradiction, map-only continuation with a provider-native
-`to-tickets` workflow transition, selective uncertainty, verification recovery,
+evidence/fact contradiction, map-only continuation with a `to-tickets` ticket
+or ticket set workflow transition, selective uncertainty, verification recovery,
 blocked work, and the
 valid outcome that Wayfinder assessment creates no state. Live cases are opt-in
 and not part of ordinary pull requests.

@@ -25,22 +25,9 @@ CLAUDE_MAX_CALL_USD = 0.20
 
 RESOURCE_PATHS = {
     ".agent-workflow/routing.md": REPOSITORY_ROOT / ".agent-workflow/routing.md",
-    ".agent-workflow/providers.json": REPOSITORY_ROOT
-    / ".agent-workflow/providers.json",
-    ".agents/skills/wayfinder/SKILL.md": REPOSITORY_ROOT
-    / ".agents/skills/wayfinder/SKILL.md",
-    ".agent-workflow/contracts/wayfinder-state.md": REPOSITORY_ROOT
-    / ".agent-workflow/contracts/wayfinder-state.md",
 }
 
 ROUTES = ["direct", "discovery", "debugging", "wayfinder", "other"]
-PROVIDER_OUTCOMES = [
-    "not_checked",
-    "direct",
-    "available",
-    "unavailable",
-    "host_native_fallback",
-]
 
 DECISION_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -54,7 +41,6 @@ DECISION_SCHEMA: dict[str, Any] = {
         "current_route": {"type": "string", "enum": ROUTES},
         "wayfinder_assessment": {"type": "boolean"},
         "wayfinder_selected": {"type": "boolean"},
-        "provider_outcome": {"type": "string", "enum": PROVIDER_OUTCOMES},
         "summary": {"type": "string"},
     },
     "required": [
@@ -64,7 +50,6 @@ DECISION_SCHEMA: dict[str, Any] = {
         "current_route",
         "wayfinder_assessment",
         "wayfinder_selected",
-        "provider_outcome",
         "summary",
     ],
     "additionalProperties": False,
@@ -145,7 +130,6 @@ def resource_catalog(case: Mapping[str, Any]) -> list[dict[str, Any]]:
 def build_prompt(
     case: Mapping[str, Any],
     *,
-    host: str,
     loaded: Mapping[str, str],
     decisions: Sequence[Mapping[str, Any]],
 ) -> str:
@@ -159,17 +143,15 @@ def build_prompt(
         or "(none)"
     )
     history = json.dumps(list(decisions), indent=2)
-    return f"""Evaluate how an agent on host {host!r} interprets the repository routing policy.
+    return f"""Evaluate how an agent interprets the repository routing policy.
 
 This is a public behavioral decision, not a request for hidden reasoning. Do not use tools,
 access a filesystem, or invent resource contents. Request only named resources that the policy
 says are now relevant. Multiple resources may be requested together. Once enough evidence is
 loaded, return status=\"complete\". Keep initial_route as the route justified before any requested
-resource was revealed; current_route may change as evidence accumulates. current_route records
-the router's conceptual selection before host/provider compatibility is applied. Record an
-unavailable provider or host-native fallback separately in provider_outcome.
-After selecting a provider-backed skill, MUST request provider metadata before completing
-unless it is already loaded; use that metadata to report provider_outcome truthfully.
+resource was revealed; current_route may change as evidence accumulates. Evaluate only routing
+interpretation: whether the request remains Direct or transitions to another workflow after the
+revealed evidence. Do not assess host discovery, skill availability, or invocation behavior.
 
 <always_loaded_policy>
 {root_policy}
@@ -216,8 +198,6 @@ def validate_decision(decision: Mapping[str, Any]) -> None:
         or decision["current_route"] not in ROUTES
     ):
         raise SmokeError("adapter returned an invalid route")
-    if decision["provider_outcome"] not in PROVIDER_OUTCOMES:
-        raise SmokeError("adapter returned an invalid provider outcome")
     if not isinstance(decision["wayfinder_assessment"], bool) or not isinstance(
         decision["wayfinder_selected"], bool
     ):
@@ -230,18 +210,11 @@ def evaluate_case(
     case: Mapping[str, Any],
     loaded_names: Sequence[str],
     decisions: Sequence[Mapping[str, Any]],
-    *,
-    host: str,
 ) -> list[dict[str, Any]]:
     final = decisions[-1] if decisions else {}
     first = decisions[0] if decisions else {}
     first_requested = first.get("requested_resources", [])
-    if case["id"] == "direct":
-        expected_provider_outcomes = {"direct", "not_checked"}
-    elif host == "claude":
-        expected_provider_outcomes = {"unavailable", "host_native_fallback"}
-    else:
-        expected_provider_outcomes = {"available"}
+    expected_required_resources = list(case["required_resources"])
     checks = [
         {
             "name": "completed",
@@ -266,8 +239,8 @@ def evaluate_case(
         },
         {
             "name": "required-resources",
-            "passed": all(name in loaded_names for name in case["required_resources"]),
-            "detail": f"required={case['required_resources']!r}, loaded={list(loaded_names)!r}",
+            "passed": all(name in loaded_names for name in expected_required_resources),
+            "detail": f"required={expected_required_resources!r}, loaded={list(loaded_names)!r}",
         },
         {
             "name": "forbidden-resources",
@@ -280,11 +253,6 @@ def evaluate_case(
             "name": "first-resources",
             "passed": first_requested == case["expected_first_resources"],
             "detail": f"expected={case['expected_first_resources']!r}, actual={first_requested!r}",
-        },
-        {
-            "name": "provider-outcome",
-            "passed": final.get("provider_outcome") in expected_provider_outcomes,
-            "detail": f"expected one of={sorted(expected_provider_outcomes)!r}, actual={final.get('provider_outcome')!r}",
         },
     ]
     if case["id"] == "evolving":
@@ -325,9 +293,12 @@ def run_case(
     total_prompt_words = 0
     usage_totals: dict[str, int] = {}
     estimated_cost_usd = 0.0
-
     for number in range(1, max_rounds + 1):
-        prompt = build_prompt(case, host=host, loaded=loaded, decisions=decisions)
+        prompt = build_prompt(
+            case,
+            loaded=loaded,
+            decisions=decisions,
+        )
         prompt_bytes = len(prompt.encode("utf-8"))
         if total_prompt_bytes + prompt_bytes > max_prompt_bytes:
             raise SmokeError(
@@ -361,7 +332,7 @@ def run_case(
                 raise SmokeError(f"adapter requested already loaded resource {name!r}")
             loaded[name] = resource_path(case, name).read_text(encoding="utf-8")
 
-    checks = evaluate_case(case, list(loaded), decisions, host=host)
+    checks = evaluate_case(case, list(loaded), decisions)
     return {
         "schema_version": 1,
         "case": case["id"],
@@ -601,27 +572,21 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                     "passed": case.get("passed"),
                     "initial_route": decision.get("initial_route"),
                     "current_route": decision.get("current_route"),
-                    "provider_outcome": decision.get("provider_outcome"),
                 }
             )
     complete_case_matrix = all(
         case_set == expected_cases for case_set in report_case_sets
     )
     interpretation_agreement = complete_case_matrix
-    provider_outcome_agreement = complete_case_matrix
     for entries in by_case.values():
         interpretation_signatures = {
             (entry["passed"], entry["initial_route"], entry["current_route"])
             for entry in entries
         }
-        provider_outcomes = {entry["provider_outcome"] for entry in entries}
         interpretation_agreement &= (
             len(entries) == len(reports)
             and all(entry["passed"] is True for entry in entries)
             and len(interpretation_signatures) == 1
-        )
-        provider_outcome_agreement &= (
-            len(entries) == len(reports) and len(provider_outcomes) == 1
         )
     return {
         "schema_version": 1,
@@ -629,7 +594,6 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "expected_cases": sorted(expected_cases),
         "complete_case_matrix": complete_case_matrix,
         "interpretation_agreement": interpretation_agreement,
-        "provider_outcome_agreement": provider_outcome_agreement,
         "cases": by_case,
     }
 

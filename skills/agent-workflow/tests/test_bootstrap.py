@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 import io
-import json
-import os
-from pathlib import Path
-import tempfile
 import tarfile
+import tempfile
 import unittest
+from pathlib import Path
 
-from _test_support import BOOTSTRAP, CLI, PACKAGE_ROOT, load_module, run_script
+from _test_support import (
+    BOOTSTRAP,
+    CLI,
+    PACKAGE_ROOT,
+    commit_all,
+    initialize_repository,
+    load_module,
+    run_script,
+)
 
 
 class BootstrapSafetyTests(unittest.TestCase):
@@ -61,9 +67,11 @@ class BootstrapSafetyTests(unittest.TestCase):
         return output.getvalue()
 
     def test_corrupt_archive_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            with self.assertRaises(self.bootstrap.BootstrapError):
-                self.bootstrap.extract_package(b"not a tar archive", Path(temporary))
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            self.assertRaises(self.bootstrap.BootstrapError),
+        ):
+            self.bootstrap.extract_package(b"not a tar archive", Path(temporary))
 
     def test_traversal_and_link_entries_are_rejected(self) -> None:
         cases = [
@@ -75,17 +83,16 @@ class BootstrapSafetyTests(unittest.TestCase):
             with (
                 self.subTest(entries=entries),
                 tempfile.TemporaryDirectory() as temporary,
+                self.assertRaises(self.bootstrap.BootstrapError),
             ):
-                with self.assertRaises(self.bootstrap.BootstrapError):
-                    self.bootstrap.extract_package(
-                        self.archive(entries), Path(temporary)
-                    )
+                self.bootstrap.extract_package(self.archive(entries), Path(temporary))
 
     def test_unrelated_repository_entries_do_not_exhaust_package_limit(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             project = root / "project"
             project.mkdir()
+            initialize_repository(project)
             archive = root / "repository.tar.gz"
             archive.write_bytes(
                 self.package_archive(self.bootstrap.MAX_PACKAGE_MEMBERS + 1)
@@ -108,12 +115,14 @@ class BootstrapSafetyTests(unittest.TestCase):
             for index in range(self.bootstrap.MAX_PACKAGE_MEMBERS + 1)
         ]
 
-        with tempfile.TemporaryDirectory() as temporary:
-            with self.assertRaisesRegex(
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            self.assertRaisesRegex(
                 self.bootstrap.BootstrapError,
                 f"package contains more than {self.bootstrap.MAX_PACKAGE_MEMBERS} entries",
-            ):
-                self.bootstrap.extract_package(self.archive(entries), Path(temporary))
+            ),
+        ):
+            self.bootstrap.extract_package(self.archive(entries), Path(temporary))
 
     def test_whole_archive_parsing_ceiling_is_retained(self) -> None:
         entries = [
@@ -121,12 +130,14 @@ class BootstrapSafetyTests(unittest.TestCase):
             for index in range(self.bootstrap.MAX_ARCHIVE_MEMBERS + 1)
         ]
 
-        with tempfile.TemporaryDirectory() as temporary:
-            with self.assertRaisesRegex(
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            self.assertRaisesRegex(
                 self.bootstrap.BootstrapError,
                 f"source archive contains more than {self.bootstrap.MAX_ARCHIVE_MEMBERS} entries",
-            ):
-                self.bootstrap.extract_package(self.archive(entries), Path(temporary))
+            ),
+        ):
+            self.bootstrap.extract_package(self.archive(entries), Path(temporary))
 
     def test_bootstrap_rejects_a_symlink_project_root_before_download(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -138,41 +149,41 @@ class BootstrapSafetyTests(unittest.TestCase):
             with self.assertRaises(self.bootstrap.BootstrapError):
                 self.bootstrap.main(["status", str(link), "--archive-url", "unused"])
 
-    def test_local_archive_bootstrap_installs_core_and_providers_without_external_tools(
-        self,
-    ) -> None:
+    def test_local_archive_bootstrap_installs_all_direct_skills(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             project = root / "project"
             project.mkdir()
+            state = project / ".agent-wayfinder/keep.txt"
+            state.parent.mkdir()
+            state.write_text("project-owned\n", encoding="utf-8")
+            initialize_repository(project)
             archive = root / "package.tar.gz"
             archive.write_bytes(self.package_archive())
-            empty_bin = root / "bin"
-            empty_bin.mkdir()
-            env = os.environ.copy()
-            env["PATH"] = str(empty_bin)
             result = run_script(
                 BOOTSTRAP,
                 "install",
                 project,
                 "--archive-url",
                 archive.as_uri(),
-                env=env,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertTrue((project / ".agent-workflow/routing.md").is_file())
-            self.assertTrue((project / ".agent-wayfinder").is_dir())
-            declaration = json.loads(
-                (PACKAGE_ROOT / "payload/agent-workflow/providers.json").read_text(
-                    encoding="utf-8"
-                )
+            self.assertEqual(state.read_text(encoding="utf-8"), "project-owned\n")
+            self.assertFalse(
+                (project / ".agent-workflow/install-manifest.json").exists()
             )
-            names = {item["name"] for item in declaration["provider"]["skills"]}
-            for name in names:
-                with self.subTest(skill=name):
-                    self.assertTrue(
-                        (project / ".agents/skills" / name / "SKILL.md").is_file()
-                    )
+            payload = PACKAGE_ROOT / "payload/skills"
+            installed = project / ".agents/skills"
+            self.assertEqual(
+                {path.name for path in installed.iterdir() if path.is_dir()},
+                {path.name for path in payload.iterdir() if path.is_dir()},
+            )
+            for source in payload.rglob("*"):
+                if source.is_file():
+                    target = installed / source.relative_to(payload)
+                    with self.subTest(target=target):
+                        self.assertEqual(target.read_bytes(), source.read_bytes())
             self.assertNotIn("GitHub CLI", result.stderr)
 
     def test_cli_exposes_help_and_delegates_every_lifecycle_command(self) -> None:
@@ -180,6 +191,10 @@ class BootstrapSafetyTests(unittest.TestCase):
             root = Path(temporary)
             project = root / "project"
             project.mkdir()
+            state = project / ".agent-wayfinder/keep.txt"
+            state.parent.mkdir()
+            state.write_text("project-owned\n", encoding="utf-8")
+            initialize_repository(project)
             archive = root / "package.tar.gz"
             archive.write_bytes(self.package_archive())
             archive_url = archive.as_uri()
@@ -194,6 +209,7 @@ class BootstrapSafetyTests(unittest.TestCase):
                 CLI, "install", "--archive-url", archive_url, cwd=project
             )
             self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
+            commit_all(project, "install agent workflow")
 
             for command in ("update", "status"):
                 with self.subTest(command=command):
@@ -204,13 +220,21 @@ class BootstrapSafetyTests(unittest.TestCase):
                         result.returncode, 0, result.stdout + result.stderr
                     )
 
-            state = project / ".agent-wayfinder"
-            sentinel = state / "keep.txt"
-            sentinel.write_text("project-owned\n", encoding="utf-8")
             result = run_script(CLI, "remove", project, "--archive-url", archive_url)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertEqual(sentinel.read_text(encoding="utf-8"), "project-owned\n")
+            self.assertEqual(state.read_text(encoding="utf-8"), "project-owned\n")
             self.assertFalse((project / ".agent-workflow").exists())
+
+    def test_runtime_package_requires_only_the_single_lifecycle_implementation(
+        self,
+    ) -> None:
+        required = {
+            path.as_posix()
+            for path, _label in self.bootstrap.RUNTIME_PACKAGE_REQUIREMENTS
+        }
+        self.assertIn("scripts/lifecycle.py", required)
+        self.assertNotIn("scripts/adopt.py", required)
+        self.assertNotIn("scripts/legacy_transition.py", required)
 
     def test_minimum_runtime_files_are_required(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -2,10 +2,10 @@
 
 The installed router solves one problem: choose the minimum useful way to handle
 the request without granting action authorization or project decision authority
-beyond the user's direction. It starts Direct, classifies
-from intent and installed skill descriptions, and may perform the smallest
-read-only reconnaissance within delegated scope when evidence is insufficient. One
-obvious skill loads directly; availability alone never selects a capability.
+beyond the user's direction. It starts Direct, classifies from intent and skill
+descriptions exposed in the current session, and may perform the smallest
+read-only reconnaissance within delegated scope when evidence is insufficient.
+One obvious skill loads directly; availability alone never selects a capability.
 
 Routing is dynamic. After reconnaissance, the agent must assess Wayfinder before
 completing. Three or more meaningful items also prompt an assessment, but count
@@ -21,8 +21,9 @@ fresh-agent reconstruction risk. This is an activation rubric, not a weighted
 complexity score. Explicit user selection and opt-out control the route.
 
 The compact always-loaded rules live in `payload/root/AGENTS.md.template`.
-Detailed overlap resolution, composition, transitions, provider fallback,
-unclear durable resumption responsibility, and route-marker edge cases live in
+Detailed overlap resolution, composition, transitions, unavailable-skill
+handling, exact user-invocation instructions, unclear responsibility for
+resumption records, and route-marker edge cases live in
 `payload/agent-workflow/routing.md`. They load only after the thin gate identifies
 one of those needs, not for Direct work or one obvious selected skill.
 
@@ -31,25 +32,25 @@ Runtime responsibility is deliberately split:
 | Surface | Runtime responsibility |
 |---|---|
 | Root `AGENTS.md` | Every-request routing, action authorization, project decision authority, preservation, truthfulness, progressive-loading gates, and the marker requirement |
-| `routing.md` | Selection criteria, route transitions, relevant resumption, provider resolution, workflow composition, and detailed marker semantics |
-| `providers.json` | Current host discovery, invocation, availability, configuration, and adapter facts |
-| Provider and local skills | The selected workflow's methodology and its provider-specific execution boundary |
+| `routing.md` | Selection criteria, route transitions, relevant resumption, workflow composition, and detailed marker semantics |
+| Skills exposed in the current session | The selected method and its execution instructions |
 | State contracts | Storage, identifiers, progressive state loading, reconciliation, and map-first resumption mechanics |
 | ADRs and project documentation | Architectural rationale, history, maintenance policy, and compatibility explanation |
 
-This keeps concrete host snapshots and provider methodology out of the router
-while retaining the routing consequence of those facts. For example, the router
-must consult the active host's declared invocation prefix, but it does not need
-an embedded list of which hosts currently use `$` or `/`.
+Host-specific discovery stays outside the router. Once a skill is selected, that
+skill's instructions define its method.
 
 Keep these stages separate:
 
 1. choose Direct or one primary workflow;
 2. add only supporting capabilities that materially help;
-3. resolve each selected provider operation;
-4. check host support, invocation policy, configuration readiness, and installed
-   provider-projection status;
-5. invoke the selected skill only when policy allows it;
+3. if a skill is selected, use the version exposed in the current session and
+   follow its instructions;
+4. if a selected skill is unavailable or cannot run without explicit user
+   invocation, continue directly only when it was optional and an authorized
+   equivalent can satisfy the request; otherwise report the limitation or give
+   the exact invocation instruction;
+5. never claim a skill ran unless its method ran;
 6. materially execute only actions authorized by the current user request or accepted
    project policy; and
 7. require completion and verification evidence beyond the route marker.
@@ -61,36 +62,29 @@ independent from authorization to act: either may exist without the other, and
 host permission supplies neither.
 
 Default route sequences are transitions with entry conditions, not mandatory
-pipelines. Host todos hold current-session actions; Wayfinder holds durable
+pipelines. Current-session actions remain in the session; Wayfinder holds durable
 coordination; specifications hold accepted scope and acceptance criteria; tickets
 hold approved independently deliverable work and blocking edges. Domain Modeling
 joins Discovery or Wayfinder only when conceptual or vocabulary ambiguity is
 material.
 
-Unavailable or user-only providers normally fall back to truthful host-native
-work. Give an exact `$skill-name` or `/skill-name` invocation instruction only
-when the user explicitly requires that provider or a real configuration
-boundary prevents host-native progress. Never simulate provider execution.
-
-Three seams are intentionally explicit. Trivial local, low-risk edits remain
+Two boundaries are intentionally explicit. Trivial local, low-risk edits remain
 Direct even though they mutate files; Implementation is for ready work where its
-orchestration and integration verification add material value. A selected
-provider operation with missing configuration returns the exact setup invocation
-instruction when no host-native equivalent authorized within the current scope can
-deliver the requested outcome.
-After a successful host-native fallback, the route marker reports what actually
-ran and omits the unavailable provider; a terminal suffix is reserved for a
-selection that did not become equivalent execution.
+orchestration and integration verification add material value. Use a skill only
+when it is exposed in the current session. If a selected skill is unavailable or
+cannot run without explicit user invocation, continue Direct only when it was
+optional and available capabilities can satisfy the authorized request.
+Otherwise report the limitation or give the exact invocation instruction. Never
+imitate the skill, and report only what actually ran.
 
-Wayfinder is Agent Workflow's sole durable coordination model;
-`.agent-wayfinder/` is its project-owned durable representation.
-Provider-native tickets, specifications, research, reviews, and learning
-artifacts remain in the locations that maintain their results; Agent Workflow
-does not mirror them. Local Wayfinder uses the genuinely designated canonical
-tree under `.agent-wayfinder/`. When resuming a Wayfinder effort, read its map
-first. Its effective skill uses a framework-owned runtime projection derived
-from and attributed to Matt Pocock's pinned
-Wayfinder methodology. The map summarizes current coordination state, conditions
+Wayfinder is Agent Workflow's sole durable coordination model; its project-owned
+state lives under `.agent-wayfinder/`.
+Chat output is session-local. Wayfinder links project or external records only
+when they are durable.
+If a chat-only result later needs continuity, Wayfinder preserves only the
+minimum needed coordination or evidence. When resuming a Wayfinder effort, read
+its map first. The map
+summarizes current coordination state, conditions
 blocking particular work, dependencies, and ready work; sparse F#/D# ledger
 sections and U#/E# records stay lazy. F# contains a sufficiently supported,
 scoped, revisable conclusion; D# contains a current consequential choice
@@ -99,13 +93,14 @@ or valid delegate with project decision authority; U# contains an unresolved
 question and is not itself a blocker; E# contains evidence with source, scope,
 observation, and limitations. Before
 detailed decomposition, the map
-may state ready work directly. New decomposed work belongs to the `to-tickets`
-ticket artifact or ticket set, which maintains ticket contents, dependencies,
-ordering, and readiness; the map links it without mirroring ticket-level state.
+may state ready work directly. When `to-tickets` decomposes work, the resulting
+durable ticket or ticket set maintains ticket contents, dependencies, ordering,
+and readiness; the map links that durable ticket or ticket set without mirroring
+ticket-level state.
 A safe regular map makes an effort current and resumable; a mapless directory is not a candidate. The
 router loads the Wayfinder contract only after Wayfinder is selected or a
 relevant effort is being resumed, then reads the map and only relevant F#/D#
-ledger sections or U#/E# artifacts. An unrelated
+ledger sections or U#/E# files. An unrelated
 existing map never changes a request's route.
 
 When the current request or accepted project policy authorizes repository-local
@@ -116,15 +111,15 @@ Within a selected effort, continue directly with ready work. Load Discovery,
 Debugging, Research, Prototype, Domain Modeling, Grilling, or human clarification
 only when that method materially improves how a current question, uncertainty,
 unexplained cause, consequential choice, or structural ambiguity is addressed.
-The specialist creates no Agent Workflow durable coordination state, but may
-create a provider-native artifact, produce evidence, or return consequential
-results for Wayfinder reconciliation. Implementation is a workflow transition
-for ready work, followed by Verification, not a Wayfinder reasoning method or
-coordination record.
+The specialist creates no Agent Workflow durable coordination state. It may
+return findings or produce the normal result described by its skill; Wayfinder
+records only consequential results or references needed for coordination.
+Implementation is a workflow transition for ready work, followed by
+Verification, not a Wayfinder reasoning method or coordination record.
 
 After meaningful implementation or a causal fix, gather acceptance evidence not
-already supplied by the selected provider. Do not repeat provider-defined TDD or
-Code Review merely to add a framework stage.
+already supplied by the implementation method. Do not repeat TDD or Code Review
+already completed by that method merely to add a framework stage.
 
 Every user-facing final response ends with exactly one truthful instruction-level
 marker such as:
@@ -135,5 +130,6 @@ marker such as:
 
 The marker is required observability, not telemetry or proof that work ran, and
 must not trigger additional workflow work. The unchanged `<skill>-handoff`
-terminal suffix means the required provider still needs explicit user invocation.
+terminal suffix means the selected skill still requires explicit user
+invocation and no Direct fallback satisfied the request.
 Detailed syntax and terminal outcomes are defined by the installed routing policy.

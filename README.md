@@ -69,9 +69,9 @@ It does not run every potentially relevant skill.
 Routing starts Direct.
 
 The root project instructions perform the initial classification. More detailed
-routing guidance is loaded only when artifact responsibility, workflow
-composition, provider fallback, a user invocation instruction, agent handoff, or
-durable resumption is unclear.
+routing guidance is loaded only when artifact or record responsibility or
+workflow composition is unclear, or selected-skill availability, an exact
+invocation instruction, agent handoff, or durable resumption materially matters.
 
 Routing can change as work develops. For example, a bounded implementation task may expose an unresolved design decision or enough coordination state to justify a different workflow.
 
@@ -86,7 +86,8 @@ current user request or accepted project policy and only within that scope.
 Authorization to act does not commit a project choice, a committed choice does not
 authorize an unrelated action, and host permission supplies neither.
 
-Current source, observed behavior, and accepted project artifacts take precedence over stale workflow state or previous chat history.
+Current source, observed behavior, and accepted project artifacts take
+precedence over stale workflow state or previous chat history.
 
 See [Workflow routing](docs/routing.md) for the current routing model.
 
@@ -142,55 +143,37 @@ Additional records are created only when they are useful to preserve separately:
 
 Wayfinder coordinates this information. It does not replace source code,
 documentation, architecture decisions, specifications, tickets, or other
-project artifacts that maintain lasting results.
+artifacts or records designated to maintain lasting results.
 
-As lasting results are established, they should live with the artifact designated to
-maintain them rather than accumulating indefinitely in Wayfinder.
+As lasting results are established, they should live with the artifact or record
+designated to maintain them rather than accumulating indefinitely in Wayfinder.
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
 
 Example text to use Wayfinder:
 ```text
+Project/effort plan path (if available):
+
 Use the installed Agent Workflow and explicitly start Wayfinder for this
 repository's current development effort.
 
-First inspect the project instructions, relevant accepted architecture
-decisions and documentation, repository structure, current Git state, and the
-source and tests relevant to the effort. Then create a lightweight
-`.agent-wayfinder/<stable-effort-name>/map.md` that will help developers and
-future agents resume the work without depending on this chat.
+First inspect any project/effort plan identified above, the project instructions,
+relevant accepted architecture decisions and documentation, repository structure,
+and the source and tests relevant to the effort.
 
-Record only durable, evidence-backed coordination context:
+Use an available project/effort plan to understand the intended objective, scope,
+dependencies, sequencing, and remaining work where applicable. Reference the plan
+from Wayfinder when useful rather than copying it.
 
-- the objective;
-- the included and excluded scope;
-- the important areas and relationships in the effort;
-- supported current conclusions with references to the sources that establish
-  them for their stated scope;
-- consequential unresolved questions and committed choices, dependencies, and
-  conditions blocking particular work; and
-- ready work—work to which no blocker currently applies.
+Create a lightweight `.agent-wayfinder/<stable-effort-name>/map.md` that will
+help developers and future agents resume the work without depending on this chat.
+Do not implement product changes during this first pass.
 
-A blocker is a condition that currently prevents particular work from proceeding.
-An unsatisfied dependency, unresolved consequential uncertainty, or missing
-required authority can be a blocker for affected work. The missing condition may
-be an uncommitted required project choice, an unauthorized required action, or an
-unsatisfied required dependency. Blocking is scoped to
-that work; independent ready work may proceed while other work remains blocked.
-
-Create a separate unresolved question or evidence record only when it is an
-independently useful coordination or retrieval unit. When a supported current
-conclusion or committed choice warrants durable representation, record it as an
-F# or D# section in the optional `facts.md` or `decisions.md` ledger. Treat live
-source and accepted project artifacts as stronger support than assumptions,
-chat history, or outdated Wayfinder claims. Do not copy the transcript, invent
-requirements, or implement product changes during this first pass.
-
-If the current effort cannot be inferred confidently, ask me one concrete scope
-question before creating the Wayfinder state. When finished, summarize what you
-created, what remains uncertain, and the best next prompt for continuing the
-work.
+If the current effort cannot be inferred confidently, ask only the minimum
+concrete scope questions needed before creating the Wayfinder state. When
+finished, summarize what you created, what remains uncertain, and the best next
+prompt for continuing the work.
 ```
 
 ## Project ownership
@@ -203,11 +186,11 @@ target-project/
 ├── CLAUDE.md
 ├── .agents/
 │   └── skills/
+│       └── <15 curated skills>
 │
 ├── .agent-workflow/          # framework-owned
-│   ├── install-manifest.json
-│   ├── providers.json
 │   ├── routing.md
+│   ├── THIRD_PARTY_NOTICES.md
 │   └── contracts/
 │
 └── .agent-wayfinder/         # project-owned
@@ -219,23 +202,55 @@ target-project/
 
 Framework-owned and reconstructable.
 
-Install and update may replace these files with the current package version.
+Install and update replace this directory with the current package version.
+There is no installed manifest, provenance record, migration history, or
+framework backup. Git is the recovery mechanism.
+
+### `.agents/skills/`
+
+Each of the fifteen current curated skill names is reserved for Agent Workflow.
+Install and update replace those complete skill directories, including extra
+files inside them, while preserving unrelated skill directories. Move or rename
+an existing conflicting directory before installing.
 
 ### `.agent-wayfinder/`
 
 Project-owned durable state.
 
-Install, update, status, remove, and reinstall preserve its contents.
+The lifecycle does not directly traverse, interpret, or change this directory.
+The repository-wide Git cleanliness check may still report changes there as
+part of a dirty worktree. Wayfinder alone owns its use.
 
 ### `AGENTS.md` and `CLAUDE.md`
 
 Agent Workflow manages only its marked section and preserves project-owned content outside that section.
 
-### Provider artifacts
+### Lifecycle safety
 
-Specifications, tickets, research, reviews, and other provider-native artifacts
-remain in the locations that maintain their results. Agent Workflow references
-those artifacts rather than maintaining duplicate copies.
+Mutating lifecycle commands require the exact Git worktree root, a valid `HEAD`,
+and a completely clean tracked and untracked worktree before changing anything.
+They reject ignored managed destinations, untracked managed paths, malformed
+managed markers, symlinks, special entries, and paths that escape the worktree.
+`status` is read-only and reports these blockers without requiring a clean tree.
+
+Install and update converge to the same current package state. Remove deletes
+`.agent-workflow/` and the current curated skill directories and strips the
+managed regions from `AGENTS.md` and `CLAUDE.md`; it deletes a composite file
+only when no project-authored bytes remain. A failure after mutation may leave a
+partial diff: inspect `git status`, restore with Git as appropriate, and retry.
+
+There is no automatic legacy migration. If `.agent-workflow/providers.json` or
+the obsolete Setup, Teach, or Triage skill directory is present, remove the
+legacy `.agent-workflow/` tree and obsolete skill directories in a separate Git
+cleanup commit, then run install.
+
+### Where results live
+
+Specifications, tickets, research, reviews, and other artifacts or records
+remain in the locations designated to maintain their results. Agent Workflow
+references those artifacts and records rather than maintaining duplicate copies.
+Chat output is session-local; a durable ticket, artifact, or record may be linked
+when useful for continuity.
 
 ## Progressive loading
 
@@ -257,16 +272,22 @@ Wayfinder works the same way. A later session starts from `map.md` and reads sup
 
 ## Supported hosts
 
-The current provider-skill projection supports:
+Agent Workflow installs its skills under `.agents/skills/`, which is supported
+by:
 
 - Codex through `.agents/skills/`;
 - GitHub Copilot through `.agents/skills/`.
 
 A Claude model running inside GitHub Copilot uses GitHub Copilot's `.agents/skills/` support.
 
-Native Claude Code can use the installed root policy for routing and host-native work, but Agent Workflow does not currently project provider skills into `.claude/skills/`.
+Native Claude Code can use the installed root policy for routing and work
+directly, but Agent Workflow does not currently copy the skills into
+`.claude/skills/`.
 
-Provider availability is checked at runtime. Agent Workflow does not report that a provider ran when it did not.
+At runtime, use only skills exposed in the current session. Agent Workflow does
+not report that a named skill ran when it did not. If an optional selected skill
+is unavailable or cannot run without explicit user invocation, authorized Direct
+work may continue only when available capabilities can satisfy the request.
 
 ## Requirements
 
@@ -338,7 +359,7 @@ The architecture may change as the project produces better evidence.
 - Keep durable project state separate from reconstructable framework files.
 - Store coordination state, not execution history.
 - Load detailed instructions and state only when needed.
-- Keep lasting results in their designated project or provider-native artifacts.
+- Keep lasting results in the artifacts or records designated to maintain them.
 - Keep Agent Workflow small.
 
 ## More detail
@@ -347,14 +368,14 @@ The architecture may change as the project produces better evidence.
 - [Workflow routing](docs/routing.md)
 - [Behavioral testing](docs/behavioral-testing.md)
 - [Verification](docs/verification.md)
-- [Provider research](docs/provider-research.md)
+- [Curated skills](docs/skills.md)
 
 Exact behavior is defined by the current source, tests, installed policies and contracts, and accepted architecture decisions.
 
 ## Acknowledgments
 
-Agent Workflow uses a pinned snapshot of [Matt Pocock's Skills for Real Engineers](https://github.com/mattpocock/skills) as an optional provider.
+Eleven curated skills are copied from or derived from [Matt Pocock's Skills for Real Engineers](https://github.com/mattpocock/skills), release `v1.2.3`. Agent Workflow maintains their effective versions and installs complete copyright and MIT license attribution with the framework.
 
-Its effective Wayfinder runtime is derived from Matt Pocock's Wayfinder methodology. Agent Workflow's routing, Git-native durable state, continuation behavior, and integrations are separate project work.
+Agent Workflow's routing, Git-native durable state, continuation behavior, and integrations are separate project work.
 
 Agent Workflow is available under the [MIT License](LICENSE).

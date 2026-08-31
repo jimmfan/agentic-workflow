@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from contextlib import redirect_stdout
+import io
+import json
 import unittest
 
 from evals import routing_smoke
@@ -11,7 +14,6 @@ class RoutingSmokeTests(unittest.TestCase):
         catalog = routing_smoke.resource_catalog(case)
         prompt = routing_smoke.build_prompt(
             case,
-            host="codex",
             loaded={},
             decisions=[],
         )
@@ -23,7 +25,28 @@ class RoutingSmokeTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertNotIn(resource_text.strip(), prompt)
-        self.assertIn("MUST request provider metadata before completing", prompt)
+        for removed_simulation in (
+            "host fixture",
+            "current-session observation",
+            "live host discovery",
+            "live_host_discovery",
+            "selected_skill",
+            "skill_exposed",
+            "explicit_user_invocation_required",
+            "skill_outcome",
+            "invocation metadata",
+        ):
+            with self.subTest(removed_simulation=removed_simulation):
+                self.assertNotIn(removed_simulation, prompt.lower())
+
+    def test_payload_describes_only_routing_inputs_and_limits(self) -> None:
+        output = io.StringIO()
+        with redirect_stdout(output):
+            result = routing_smoke.main(["payload"])
+
+        self.assertEqual(result, 0)
+        payload = json.loads(output.getvalue())
+        self.assertEqual(set(payload), {"always_loaded", "cases", "limits"})
 
     def test_direct_case_requests_only_target_then_completes_direct(self) -> None:
         responses = iter(
@@ -35,7 +58,6 @@ class RoutingSmokeTests(unittest.TestCase):
                     "current_route": "direct",
                     "wayfinder_assessment": False,
                     "wayfinder_selected": False,
-                    "provider_outcome": "not_checked",
                     "summary": "The bounded read needs only its target.",
                 },
                 {
@@ -45,7 +67,6 @@ class RoutingSmokeTests(unittest.TestCase):
                     "current_route": "direct",
                     "wayfinder_assessment": False,
                     "wayfinder_selected": False,
-                    "provider_outcome": "not_checked",
                     "summary": "Report the five-word result directly.",
                 },
             ]
@@ -62,6 +83,7 @@ class RoutingSmokeTests(unittest.TestCase):
         self.assertEqual(report["resources_loaded"], ["note.txt"])
         self.assertNotIn(".agent-workflow/routing.md", report["resources_loaded"])
         self.assertEqual(report["final_decision"]["current_route"], "direct")
+        self.assertNotIn("skill_environment", report)
         self.assertEqual(len(report["rounds"]), 2)
 
     def test_evolving_case_reconnoiters_before_wayfinder_escalation(self) -> None:
@@ -74,22 +96,7 @@ class RoutingSmokeTests(unittest.TestCase):
                     "current_route": "direct",
                     "wayfinder_assessment": False,
                     "wayfinder_selected": False,
-                    "provider_outcome": "not_checked",
                     "summary": "Inspect the bounded target before classifying further.",
-                },
-                {
-                    "status": "request_resources",
-                    "requested_resources": [
-                        ".agent-workflow/providers.json",
-                        ".agents/skills/wayfinder/SKILL.md",
-                        ".agent-workflow/contracts/wayfinder-state.md",
-                    ],
-                    "initial_route": "direct",
-                    "current_route": "wayfinder",
-                    "wayfinder_assessment": True,
-                    "wayfinder_selected": True,
-                    "provider_outcome": "not_checked",
-                    "summary": "Accumulated evidence contains several hard Wayfinder signals.",
                 },
                 {
                     "status": "complete",
@@ -98,8 +105,7 @@ class RoutingSmokeTests(unittest.TestCase):
                     "current_route": "wayfinder",
                     "wayfinder_assessment": True,
                     "wayfinder_selected": True,
-                    "provider_outcome": "available",
-                    "summary": "Wayfinder is available, but read-only scope prevents durable writes.",
+                    "summary": "The inspected evidence contains hard Wayfinder signals.",
                 },
             ]
         )
@@ -112,9 +118,10 @@ class RoutingSmokeTests(unittest.TestCase):
         )
 
         self.assertTrue(report["passed"], report["checks"])
-        self.assertEqual(report["resources_loaded"][0], "task.md")
+        self.assertEqual(report["resources_loaded"], ["task.md"])
         self.assertEqual(report["final_decision"]["current_route"], "wayfinder")
         self.assertTrue(report["final_decision"]["wayfinder_selected"])
+        self.assertEqual(len(report["rounds"]), 2)
 
     def test_direct_case_fails_when_detailed_router_is_loaded(self) -> None:
         responses = iter(
@@ -126,7 +133,6 @@ class RoutingSmokeTests(unittest.TestCase):
                     "current_route": "direct",
                     "wayfinder_assessment": False,
                     "wayfinder_selected": False,
-                    "provider_outcome": "not_checked",
                     "summary": "Loaded the detailed router unnecessarily.",
                 },
                 {
@@ -136,7 +142,6 @@ class RoutingSmokeTests(unittest.TestCase):
                     "current_route": "direct",
                     "wayfinder_assessment": False,
                     "wayfinder_selected": False,
-                    "provider_outcome": "direct",
                     "summary": "Completed directly after excess loading.",
                 },
             ]
@@ -152,8 +157,8 @@ class RoutingSmokeTests(unittest.TestCase):
         failed = {check["name"] for check in report["checks"] if not check["passed"]}
         self.assertEqual(failed, {"first-resources", "forbidden-resources"})
 
-    def test_comparison_separates_route_agreement_from_provider_outcomes(self) -> None:
-        def report(model: str, provider_outcome: str) -> dict[str, object]:
+    def test_comparison_reports_routing_interpretation_agreement(self) -> None:
+        def report(model: str) -> dict[str, object]:
             return {
                 "model": model,
                 "host": "claude" if model == "claude" else "codex",
@@ -172,18 +177,25 @@ class RoutingSmokeTests(unittest.TestCase):
                         "final_decision": {
                             "initial_route": "direct",
                             "current_route": "wayfinder",
-                            "provider_outcome": provider_outcome,
                         },
                     },
                 ],
             }
 
-        comparison = routing_smoke.compare_reports(
-            [report("codex", "available"), report("claude", "host_native_fallback")]
-        )
+        comparison = routing_smoke.compare_reports([report("codex"), report("claude")])
 
         self.assertTrue(comparison["interpretation_agreement"])
-        self.assertFalse(comparison["provider_outcome_agreement"])
+        self.assertNotIn("skill_outcome_agreement", comparison)
+
+    def test_route_labels_and_transition_are_unchanged(self) -> None:
+        self.assertEqual(
+            routing_smoke.ROUTES,
+            ["direct", "discovery", "debugging", "wayfinder", "other"],
+        )
+        self.assertNotIn("skill_outcome", routing_smoke.DECISION_SCHEMA["properties"])
+        evolving = routing_smoke.load_cases()["evolving"]
+        self.assertEqual(evolving["expected_initial_route"], "direct")
+        self.assertEqual(evolving["expected_final_route"], "wayfinder")
 
     def test_prompt_budget_stops_before_contacting_adapter(self) -> None:
         contacted = False
@@ -230,7 +242,7 @@ class RoutingSmokeTests(unittest.TestCase):
         ):
             budget.add({"input_tokens": 400_000, "output_tokens": 0})
 
-    def test_comparison_fails_when_matching_models_both_miss_the_contract(self) -> None:
+    def test_comparison_fails_when_matching_models_both_miss_contract(self) -> None:
         failed = {
             "model": "failed",
             "host": "codex",
@@ -241,7 +253,6 @@ class RoutingSmokeTests(unittest.TestCase):
                     "final_decision": {
                         "initial_route": "direct",
                         "current_route": "direct",
-                        "provider_outcome": "direct",
                     },
                 }
             ],

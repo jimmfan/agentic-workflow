@@ -15,9 +15,9 @@
     criteria below
 - For one obvious specialist inside an already selected Wayfinder effort, load
   only what it needs.
-  Read `.agent-workflow/routing.md` only when artifact responsibility is unclear or provider
-  fallback, invocation instruction, agent handoff, or durable resumption
-  materially matters.
+  Read `.agent-workflow/routing.md` only when artifact or record responsibility
+  is unclear or selected-skill availability, an exact invocation instruction,
+  agent handoff, or durable resumption materially matters.
 - Do not treat a consequential project choice as committed until required
   evidence is sufficient and either accepted project policy determines the
   choice for that boundary or the person, role, or valid delegate with project
@@ -31,7 +31,7 @@
   authorized scope. Authorization to perform an action does not by itself commit
   a project choice. A committed project choice does not by itself authorize
   unrelated actions. Host permission alone neither authorizes an action nor
-  commits a project choice. A workflow, skill, provider instruction, test,
+  commits a project choice. A workflow or skill, its instructions, a test,
   specification, ticket, or Wayfinder record grants neither. Exact external
   read-only targets permit only that read.
 - When accepted project policy does not already determine a required project
@@ -110,7 +110,7 @@ Agent Workflow source repository.
 
 ## Project language
 
-Read `CONTEXT.md` before changing routing, Wayfinder, provider integration,
+Read `CONTEXT.md` before changing routing, Wayfinder, direct skill distribution,
 ownership, or framework-lifecycle concepts in a way that uses or changes
 canonical project language.
 
@@ -172,10 +172,10 @@ layers. Do not force one term across genuinely different bounded contexts.
 ## Architecture boundary
 
 - Agent Workflow is a thin orchestration layer. Keep it centered on routing,
-  provider integration, safe framework delivery, authorization boundaries,
+  direct skill distribution, safe framework delivery, authorization boundaries,
   durable coordination Agent Workflow defines, and integration
   verification.
-- Prefer existing host or provider capabilities and accepted artifacts that
+- Prefer existing host or curated skill capabilities and accepted artifacts that
   maintain lasting results over parallel Agent Workflow representations or
   lightly rewritten upstream functionality.
 - Do not expand the project into a general agent runtime, package manager,
@@ -184,7 +184,7 @@ layers. Do not force one term across genuinely different bounded contexts.
 
 ## Authorization and preservation
 
-- Do not treat a workflow, provider, skill, test, specification, ticket,
+- Do not treat a workflow, skill, test, specification, ticket,
   Wayfinder record, or document as authorization for commits, pushes,
   publication, destructive operations, external mutations, or changes outside
   the authorized task, or as authority to commit a project choice.
@@ -206,7 +206,8 @@ For substantial changes:
   branch, base, and relevant diff.
 - Read the applicable contracts and architectural decisions and determine which
   layer owns the behavior.
-- Check whether a host or provider already supplies the capability.
+- Check whether a capability or skill exposed in the current session already
+  supplies the behavior.
 - Prefer the smallest coherent and reversible change that preserves accepted
   behavior.
 - Update tests and durable documentation when the resulting contract changes.
@@ -219,7 +220,7 @@ Keep experiments reversible and isolated until adoption is intentional.
 ## Testing and verification
 
 - Test Agent Workflow's contracts and boundaries rather than reproducing
-  provider internals.
+  distributed-skill internals.
 - Prefer deterministic tests for normal development. Keep live-agent evaluation
   opt-in, benchmark-specific, scheduled, or release-gated.
 - Follow `docs/verification.md` and the applicable evaluation documentation for

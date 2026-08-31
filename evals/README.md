@@ -9,7 +9,9 @@ evaluation is part of the deterministic release gate.
 The [routing interpretation smoke test](routing-smoke/README.md) checks whether
 Direct and evidence-triggered Wayfinder routing are interpreted consistently
 while revealing only requested policy. It is opt-in, contacts the selected
-model provider, and must write reports outside the repository.
+model service, and must write reports outside the repository. Every adapter
+receives the same routing-only cases; the harness does not simulate host
+discovery, skill availability, or invocation behavior.
 
 Token forensics analyzes an existing Codex trace without running a model:
 

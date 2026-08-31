@@ -2,84 +2,116 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
 import unittest
 
-from _test_support import (
-    PACKAGE_ROOT,
-    REFRESH_PROVIDERS,
-    ProjectTestCase,
-    load_module,
-    run_script,
-)
+from _test_support import ProjectTestCase, run_script
 
 
 class VerifyPackageTests(ProjectTestCase):
-    def test_verifier_requires_the_source_only_project_language_glossary(self) -> None:
-        package_copy = self.copy_package("missing-source-language")
-        (package_copy.parents[1] / "CONTEXT.md").unlink()
+    def verify(
+        self, package: Path, *arguments: str
+    ) -> subprocess.CompletedProcess[str]:
+        return run_script(package / "scripts/verify_package.py", *arguments)
 
-        verify = run_script(package_copy / "scripts/verify_package.py")
+    def assert_verify_failure(
+        self, package: Path, expected: str, *arguments: str
+    ) -> None:
+        result = self.verify(package, *arguments)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn(expected, result.stderr)
 
-        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("source terminology glossary is missing", verify.stderr)
+    def replace_once(
+        self, package: Path, relative: str, original: str, replacement: str
+    ) -> None:
+        path = package / relative
+        text = path.read_text(encoding="utf-8")
+        self.assertEqual(
+            text.count(original), 1, f"unexpected fixture text in {relative}"
+        )
+        path.write_text(text.replace(original, replacement), encoding="utf-8")
+
+    def sync_projection(
+        self, package: Path, source_relative: str, target_relative: str
+    ) -> None:
+        source = package / "payload" / source_relative
+        target = package.parents[1] / target_relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(source.read_bytes())
+
+    def test_verifier_accepts_the_current_direct_distribution(self) -> None:
+        package = self.copy_package("current-direct-distribution")
+
+        result = self.verify(package)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_distribution_manifest_is_only_the_current_source_target_map(self) -> None:
+        package = self.copy_package("current-map-only")
+        manifest = json.loads(
+            (package / "payload/distribution/manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual(set(manifest), {"schema_version", "framework_owned"})
+        self.assertTrue(manifest["framework_owned"])
+        self.assertTrue(
+            all(
+                set(mapping) == {"source", "target"}
+                for mapping in manifest["framework_owned"]
+            )
+        )
+
+        manifest["install_history"] = []
+        (package / "payload/distribution/manifest.json").write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        self.assert_verify_failure(
+            package, "distribution manifest contains installation history"
+        )
 
     def test_payload_content_edits_need_no_manifest_refresh(self) -> None:
-        package_copy = self.copy_package("mapping-change")
-
-        source = package_copy / "payload/agent-workflow/README.md"
+        package = self.copy_package("content-change")
+        manifest = package / "payload/distribution/manifest.json"
+        manifest_before = manifest.read_bytes()
+        source = package / "payload/agent-workflow/README.md"
         source.write_text(
             source.read_text(encoding="utf-8")
             + "\nCurrent package bytes are authoritative.\n",
             encoding="utf-8",
         )
-
-        runtime = run_script(package_copy / "scripts/adopt.py", "install", self.project)
-        self.assertEqual(runtime.returncode, 0, runtime.stdout + runtime.stderr)
-        self.assertEqual(
-            (self.project / ".agent-workflow/README.md").read_bytes(),
-            source.read_bytes(),
+        self.sync_projection(
+            package,
+            "agent-workflow/README.md",
+            ".agent-workflow/README.md",
         )
 
-        verify = run_script(package_copy / "scripts/verify_package.py")
-        self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
+        result = self.verify(package)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(manifest.read_bytes(), manifest_before)
 
     def test_verifier_rejects_unmapped_payload_surfaces(self) -> None:
-        package_copy = self.copy_package("unmapped-payload")
-        unmapped = package_copy / "payload/agent-workflow/contracts/new-contract.md"
+        package = self.copy_package("unmapped-payload")
+        unmapped = package / "payload/agent-workflow/contracts/new-contract.md"
         unmapped.write_text("# Newly packaged contract\n", encoding="utf-8")
-        for arguments in ((), ("--refresh-manifest",)):
-            with self.subTest(arguments=arguments):
-                result = run_script(
-                    package_copy / "scripts/verify_package.py", *arguments
-                )
-                self.assertEqual(result.returncode, 1)
-                self.assertIn(
-                    "authored payload differs from the exact current package surface",
-                    result.stderr,
-                )
 
-    def test_version_file_drives_verification_and_install_metadata(self) -> None:
-        package_copy = self.copy_package("version-source")
-        (package_copy / "VERSION").write_text("9.8.7\n", encoding="utf-8")
-
-        verify = run_script(package_copy / "scripts/verify_package.py")
-        self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
-
-        install = run_script(
-            package_copy / "scripts/adopt.py", "install", self.project
+        self.assert_verify_failure(
+            package,
+            "authored payload differs from the exact current package surface",
         )
-        self.assertEqual(install.returncode, 0, install.stdout + install.stderr)
-        installed = json.loads(
-            (self.project / ".agent-workflow/install-manifest.json").read_text()
-        )
-        self.assertEqual(installed["framework_version"], "9.8.7")
 
-    def test_verifier_rejects_duplicate_payload_version(self) -> None:
-        duplicate = self.copy_package("duplicate-payload-version")
-        (duplicate / "payload/VERSION").write_text("0.0.0\n", encoding="utf-8")
-        verify = run_script(duplicate / "scripts/verify_package.py")
-        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("payload/VERSION must remain absent", verify.stderr)
+    def test_package_version_is_the_only_version_source(self) -> None:
+        package = self.copy_package("version-source")
+        (package / "VERSION").write_text("9.8.7\n", encoding="utf-8")
+
+        result = self.verify(package)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+        (package / "payload/VERSION").write_text("9.8.7\n", encoding="utf-8")
+        self.assert_verify_failure(package, "payload/VERSION must remain absent")
 
     def test_verifier_rejects_activation_sensitive_payload_paths(self) -> None:
         cases = (
@@ -89,262 +121,301 @@ class VerifyPackageTests(ProjectTestCase):
         )
         for name, relative in cases:
             with self.subTest(relative=relative):
-                package_copy = self.copy_package(name)
-                path = package_copy / relative
+                package = self.copy_package(name)
+                path = package / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("activation-sensitive fixture\n", encoding="utf-8")
 
-                verify = run_script(package_copy / "scripts/verify_package.py")
-
-                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-                self.assertIn("activation-sensitive payload path", verify.stderr)
-
-    def test_verifier_rejects_incomplete_provider_declarations(self) -> None:
-        package_copy = self.copy_package("provider-declaration")
-        declaration = package_copy / "payload/agent-workflow/providers.json"
-        valid = json.loads(declaration.read_text(encoding="utf-8"))
-        declared = {item["name"]: item for item in valid["provider"]["skills"]}
-        self.assertEqual(declared["implement"]["requires_configuration"], [])
-        self.assertEqual(declared["code-review"]["requires_configuration"], [])
-        self.assertIn(
-            "issue-tracker", declared["to-spec"]["requires_configuration"]
-        )
-        self.assertIn(
-            "issue-tracker", declared["to-tickets"]["requires_configuration"]
-        )
-
-        cases = (
-            ("empty skill name", "name", "", "invalid provider skill name"),
-            ("missing skill path", "path", None, "needs a path"),
-            (
-                "incomplete invocation hosts",
-                "invocation",
-                {},
-                "invocation hosts differ",
-            ),
-            (
-                "unknown configuration requirement",
-                "requires_configuration",
-                ["not-declared"],
-                "invalid configuration requirements",
-            ),
-            (
-                "non-string configuration requirement",
-                "requires_configuration",
-                [{}],
-                "invalid configuration requirements",
-            ),
-        )
-        for label, field, value, expected in cases:
-            with self.subTest(label=label):
-                candidate = json.loads(json.dumps(valid))
-                skill = candidate["provider"]["skills"][0]
-                if value is None:
-                    skill.pop(field)
-                else:
-                    skill[field] = value
-                declaration.write_text(json.dumps(candidate), encoding="utf-8")
-                verify = run_script(package_copy / "scripts/verify_package.py")
-                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-                self.assertIn(expected, verify.stderr)
-
-    def test_verifier_requires_each_declared_projection_adapter(self) -> None:
-        cases = (
-            ("wayfinder", "Wayfinder must declare"),
-            (
-                "setup-matt-pocock-skills",
-                "setup must declare the current-coordination adapter",
-            ),
-            ("implement", "implement must declare the implicit-invocation adapter"),
-            ("grilling", "grilling must declare the discovery adapter"),
-            ("research", "research must declare the chat-output adapter"),
-        )
-        for name, expected in cases:
-            with self.subTest(skill=name):
-                package_copy = self.copy_package(f"missing-{name}-adapter")
-                declaration = package_copy / "payload/agent-workflow/providers.json"
-                raw = json.loads(declaration.read_text(encoding="utf-8"))
-                skill = next(
-                    item for item in raw["provider"]["skills"] if item["name"] == name
+                self.assert_verify_failure(
+                    package, "activation-sensitive payload path"
                 )
-                skill.pop("agent_workflow_adapter")
-                if name == "wayfinder":
-                    skill["invocation"] = {
-                        host: "user-only" for host in skill["invocation"]
-                    }
-                declaration.write_text(json.dumps(raw), encoding="utf-8")
-                verify = run_script(package_copy / "scripts/verify_package.py")
-                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-                self.assertIn(expected, verify.stderr)
 
-    def test_verifier_rejects_conflicting_owned_wayfinder_runtime_content(self) -> None:
-        package_copy = self.copy_package("conflicting-wayfinder-runtime")
-        projection = package_copy / "runtime-projections/wayfinder.md"
-        projection.write_text(
-            projection.read_text(encoding="utf-8")
-            + "\nEach ticket is a **child issue** of the map.\n",
+    def test_verifier_requires_complete_curated_skill_directories(self) -> None:
+        missing = self.copy_package("missing-skill-file")
+        (missing / "payload/skills/tdd/tests.md").unlink()
+        self.assert_verify_failure(missing, "curated skill tdd is incomplete")
+
+        extra = self.copy_package("extra-skill-file")
+        (extra / "payload/skills/research/notes.md").write_text(
+            "unexpected\n", encoding="utf-8"
+        )
+        self.assert_verify_failure(
+            extra, "curated skill research is incomplete or contains unexpected files"
+        )
+
+        wrong_name = self.copy_package("wrong-skill-name")
+        self.replace_once(
+            wrong_name,
+            "payload/skills/research/SKILL.md",
+            "name: research",
+            "name: not-research",
+        )
+        self.assert_verify_failure(
+            wrong_name, "curated skill name differs from its directory"
+        )
+
+    def test_verifier_does_not_lock_descriptions_or_interface_copy(self) -> None:
+        package = self.copy_package("description-copy")
+        self.replace_once(
+            package,
+            "payload/skills/research/SKILL.md",
+            "description: Investigate substantive questions against high-trust primary sources and return cited findings in chat. Create a repository artifact only when the user explicitly requests durable research output.",
+            "description: Research substantive questions and return cited findings.",
+        )
+        self.replace_once(
+            package,
+            "payload/skills/research/agents/openai.yaml",
+            'short_description: "Research from high-trust sources"',
+            'short_description: "Research substantive questions"',
+        )
+        self.sync_projection(
+            package,
+            "skills/research/SKILL.md",
+            ".agents/skills/research/SKILL.md",
+        )
+        self.sync_projection(
+            package,
+            "skills/research/agents/openai.yaml",
+            ".agents/skills/research/agents/openai.yaml",
+        )
+
+        result = self.verify(package)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_verifier_does_not_apply_a_broad_prose_blacklist(self) -> None:
+        package = self.copy_package("historical-prose")
+        readme = package.parents[1] / "README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8")
+            + "\nHistorical note: the former provider-native design was replaced.\n",
             encoding="utf-8",
         )
 
-        verify = run_script(package_copy / "scripts/verify_package.py")
+        result = self.verify(package)
 
-        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn(
-            "owned Wayfinder runtime contains incompatible tracker mechanics",
-            verify.stderr,
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_verifier_rejects_missing_and_escaping_skill_links(self) -> None:
+        cases = (
+            (
+                "missing-link",
+                "[Missing support](missing-support.md)",
+                "curated skill link target is missing",
+            ),
+            (
+                "escaping-link",
+                "[Another skill](../wayfinder/SKILL.md)",
+                "curated skill link escapes its skill root",
+            ),
         )
-
-    def test_verifier_rejects_retired_owned_wayfinder_runtime_language(self) -> None:
-        package_copy = self.copy_package("retired-wayfinder-language")
-        projection = package_copy / "runtime-projections/wayfinder.md"
-        projection.write_text(
-            projection.read_text(encoding="utf-8")
-            + "\nThe ready frontier is available.\n",
-            encoding="utf-8",
-        )
-
-        verify = run_script(package_copy / "scripts/verify_package.py")
-
-        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn(
-            "owned Wayfinder runtime retains retired canonical language",
-            verify.stderr,
-        )
-
-    def test_verifier_rejects_generic_reentry_on_owned_wayfinder_runtime(self) -> None:
-        mutations = (
-            "Generic re-entry guidance remains.",
-            "Domain Modeling may re-enter for this effort.",
-        )
-        for index, mutation in enumerate(mutations):
-            with self.subTest(mutation=mutation):
-                package_copy = self.copy_package(f"generic-wayfinder-reentry-{index}")
-                projection = package_copy / "runtime-projections/wayfinder.md"
-                projection.write_text(
-                    projection.read_text(encoding="utf-8") + f"\n{mutation}\n",
+        for name, link, expected in cases:
+            with self.subTest(name=name):
+                package = self.copy_package(name)
+                path = package / "payload/skills/research/SKILL.md"
+                path.write_text(
+                    path.read_text(encoding="utf-8") + f"\n{link}\n",
                     encoding="utf-8",
                 )
+                self.assert_verify_failure(package, expected)
 
-                verify = run_script(package_copy / "scripts/verify_package.py")
+    def test_verifier_requires_complete_third_party_attribution(self) -> None:
+        cases = (
+            (
+                "current-skill",
+                "`code-review`, ",
+                "",
+                "third-party notice omits attributed skill",
+            ),
+            (
+                "upstream-repository",
+                "https://github.com/mattpocock/skills",
+                "https://example.invalid/upstream",
+                "third-party attribution lacks",
+            ),
+            (
+                "upstream-release",
+                "release `v1.2.3`",
+                "an upstream release",
+                "third-party attribution lacks",
+            ),
+            (
+                "copyright",
+                "Copyright (c) 2026 Matt Pocock",
+                "Copyright omitted",
+                "third-party attribution lacks",
+            ),
+            (
+                "license",
+                "Permission is hereby granted, free of charge",
+                "Permission is granted",
+                "canonical MIT permission terms",
+            ),
+            (
+                "disclaimer",
+                'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR',
+                "THE SOFTWARE HAS NO WARRANTY",
+                "canonical MIT warranty disclaimer",
+            ),
+        )
+        for name, original, replacement, expected in cases:
+            with self.subTest(name=name):
+                package = self.copy_package(f"attribution-{name}")
+                self.replace_once(
+                    package,
+                    "payload/agent-workflow/THIRD_PARTY_NOTICES.md",
+                    original,
+                    replacement,
+                )
+                self.assert_verify_failure(package, expected)
 
-                self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-                self.assertIn(
-                    "owned Wayfinder runtime retains retired canonical language",
-                    verify.stderr,
+    def test_verifier_enforces_only_load_bearing_semantic_contracts(self) -> None:
+        cases = (
+            (
+                "research-write-authorization",
+                "payload/skills/research/SKILL.md",
+                "writes have action authorization",
+                "writes are convenient",
+                "Research lacks load-bearing contract",
+            ),
+            (
+                "wayfinder-sole-coordinator",
+                "payload/skills/wayfinder/SKILL.md",
+                "sole durable coordination layer",
+                "a durable coordination layer",
+                "Wayfinder lacks load-bearing contract",
+            ),
+            (
+                "wayfinder-references-lasting-results",
+                "payload/skills/wayfinder/SKILL.md",
+                "Reference the artifacts that maintain",
+                "Copy the artifacts that maintain",
+                "Wayfinder lacks load-bearing contract",
+            ),
+            (
+                "to-spec-destination-and-authorization",
+                "payload/skills/to-spec/SKILL.md",
+                "destination named by the user",
+                "available publication destination",
+                "to-spec lacks load-bearing contract",
+            ),
+            (
+                "to-tickets-destination-and-authorization",
+                "payload/skills/to-tickets/SKILL.md",
+                "Publish only when",
+                "Publish whenever a destination is available",
+                "to-tickets lacks load-bearing contract",
+            ),
+            (
+                "implement-commit-authorization",
+                "payload/skills/implement/SKILL.md",
+                "Commit only when the current user request",
+                "Commit whenever the current user request",
+                "Implement lacks load-bearing contract",
+            ),
+            (
+                "root-route-marker",
+                "payload/root/AGENTS.md.template",
+                "Report only what\nexecuted",
+                "Report what was selected",
+                "Root routing lacks load-bearing contract",
+            ),
+            (
+                "detailed-route-marker",
+                "payload/agent-workflow/routing.md",
+                "include it in the route marker only when its\nmethod actually ran",
+                "include it in the route marker when selected",
+                "Routing lacks load-bearing contract",
+            ),
+        )
+        for name, relative, original, replacement, expected in cases:
+            with self.subTest(name=name):
+                package = self.copy_package(name)
+                self.replace_once(package, relative, original, replacement)
+                self.assert_verify_failure(package, expected)
+
+        for skill in ("to-spec", "to-tickets"):
+            with self.subTest(name=f"{skill}-scratch"):
+                package = self.copy_package(f"{skill}-scratch")
+                path = package / f"payload/skills/{skill}/SKILL.md"
+                path.write_text(
+                    path.read_text(encoding="utf-8")
+                    + "\nUse .scratch/ when no destination is configured.\n",
+                    encoding="utf-8",
+                )
+                self.assert_verify_failure(
+                    package, f"{skill} infers a .scratch/ destination"
                 )
 
-    def test_verifier_accepts_equivalent_ready_work_wording(self) -> None:
-        package_copy = self.copy_package("equivalent-ready-work-wording")
-        projection = package_copy / "runtime-projections/wayfinder.md"
-        original = projection.read_text(encoding="utf-8")
-        revised = original.replace(
-            "Ready work is work to which no blocker currently applies.",
-            "Ready work exists when no blocker currently applies to it.",
+            with self.subTest(name=f"{skill}-hard-coded-label"):
+                package = self.copy_package(f"{skill}-hard-coded-label")
+                path = package / f"payload/skills/{skill}/SKILL.md"
+                path.write_text(
+                    path.read_text(encoding="utf-8")
+                    + "\nApply the ready-for-agent label.\n",
+                    encoding="utf-8",
+                )
+                self.assert_verify_failure(
+                    package, f"{skill} hard-codes the ready-for-agent label"
+                )
+
+    def test_verifier_rejects_checked_in_projection_drift_and_history(self) -> None:
+        drift = self.copy_package("checked-projection-drift")
+        installed = drift.parents[1] / ".agents/skills/research/SKILL.md"
+        installed.write_text(
+            installed.read_text(encoding="utf-8") + "\nlocal drift\n",
+            encoding="utf-8",
         )
-        self.assertNotEqual(revised, original)
-        projection.write_text(
-            revised,
+        self.assert_verify_failure(
+            drift, "checked-in projection differs from direct payload"
+        )
+
+        history = self.copy_package("checked-history")
+        (history.parents[1] / ".agent-workflow/install-manifest.json").write_text(
+            "{}\n", encoding="utf-8"
+        )
+        self.assert_verify_failure(
+            history, "checked-in projection must not contain an install manifest"
+        )
+
+        malformed_composite = self.copy_package("checked-composite-markers")
+        agents = malformed_composite.parents[1] / "AGENTS.md"
+        agents.write_bytes(
+            agents.read_bytes().replace(
+                b"\n<!-- agent-workflow:project-instructions -->\n",
+                b"\n",
+                1,
+            )
+        )
+        self.assert_verify_failure(
+            malformed_composite, "checked-in composite has invalid managed markers"
+        )
+
+        extra_prefix = self.copy_package("checked-composite-extra-prefix")
+        agents = extra_prefix.parents[1] / "AGENTS.md"
+        agents.write_bytes(
+            agents.read_bytes() + b"\n<!-- agent-workflow:partial-marker"
+        )
+        self.assert_verify_failure(
+            extra_prefix, "checked-in composite has invalid managed markers"
+        )
+
+    def test_verifier_ignores_unrelated_project_skill_projection(self) -> None:
+        package = self.copy_package("unrelated-projected-skill")
+        unrelated = package.parents[1] / ".agents/skills/project-local"
+        unrelated.mkdir(parents=True)
+        (unrelated / "SKILL.md").write_text(
+            "---\nname: project-local\ndescription: Project-owned skill.\n---\n",
             encoding="utf-8",
         )
 
-        verify = run_script(package_copy / "scripts/verify_package.py")
+        result = self.verify(package)
 
-        self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
-
-    def test_verifier_allows_quoted_provider_frontier_language(self) -> None:
-        package_copy = self.copy_package("quoted-provider-language")
-        projection = package_copy / "runtime-projections/wayfinder.md"
-        projection.write_text(
-            projection.read_text(encoding="utf-8")
-            + "\nThe pinned provider calls its tracker concept `frontier`.\n",
-            encoding="utf-8",
-        )
-
-        verify = run_script(package_copy / "scripts/verify_package.py")
-
-        self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
-
-    def test_verifier_rejects_provider_snapshot_checksum_drift(self) -> None:
-        package_copy = self.copy_package("provider-snapshot-integrity")
-        snapshot = (
-            package_copy
-            / "provider-snapshots/matt-pocock-skills/skills/research/SKILL.md"
-        )
-        original = snapshot.read_bytes()
-        snapshot.write_bytes(original + b"\ncorrupt\n")
-
-        verify = run_script(package_copy / "scripts/verify_package.py")
-
-        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("snapshot checksum", verify.stderr)
-
-    def test_verifier_rejects_provider_provenance_drift(self) -> None:
-        package_copy = self.copy_package("provider-provenance")
-        declaration = package_copy / "payload/agent-workflow/providers.json"
-        raw = json.loads(declaration.read_text(encoding="utf-8"))
-        raw["provider"]["resolved_commit"] = "0" * 40
-        declaration.write_text(json.dumps(raw), encoding="utf-8")
-
-        verify = run_script(package_copy / "scripts/verify_package.py")
-
-        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("resolved_commit", verify.stderr)
-
-    def test_verifier_rejects_source_and_installed_declaration_drift(self) -> None:
-        parity_copy = self.copy_package("provider-declaration-parity")
-        installed = parity_copy.parents[1] / ".agent-workflow/providers.json"
-        installed.parent.mkdir()
-        installed.write_text("{}\n", encoding="utf-8")
-        verify = run_script(parity_copy / "scripts/verify_package.py")
-        self.assertEqual(verify.returncode, 1, verify.stdout + verify.stderr)
-        self.assertIn("source and packaged provider declarations differ", verify.stderr)
-
-    def test_provider_snapshot_references_cannot_escape_the_skill(self) -> None:
-        snapshot_module = load_module(
-            "agent_workflow_provider_snapshot",
-            PACKAGE_ROOT / "scripts/provider_snapshot.py",
-        )
-        skill = Path(self.temporary.name) / "referencing-skill"
-        skill.mkdir()
-        (skill / "SKILL.md").write_text(
-            "Use [shared](../shared.md).\n", encoding="utf-8"
-        )
-        with self.assertRaisesRegex(snapshot_module.SnapshotTreeError, "escape"):
-            snapshot_module.validate_local_references(skill)
-
-    def test_provider_refresh_refuses_to_write_inside_the_package(self) -> None:
-        candidate = PACKAGE_ROOT / "candidate-provider-snapshot"
-        self.assertFalse(candidate.exists())
-
-        result = run_script(REFRESH_PROVIDERS, candidate)
-
-        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
-        self.assertIn("outside the Agent Workflow package", result.stderr)
-        self.assertFalse(candidate.exists())
-
-    def test_provider_refresh_accepts_exact_commit_tree_bytes(self) -> None:
-        refresh, output = self.run_fake_provider_refresh("exact-provider-refresh")
-
-        refresh.generate(output)
-
-        self.assertTrue((output / "skills/demo/SKILL.md").is_file())
-
-    def test_provider_refresh_rejects_drifted_commit_tree_bytes(self) -> None:
-        for mutation in ("modified", "extra", "extra-directory"):
-            with self.subTest(mutation=mutation):
-                refresh, output = self.run_fake_provider_refresh(
-                    f"{mutation}-provider-refresh",
-                    mutation=mutation,
-                )
-
-                with self.assertRaisesRegex(refresh.RefreshError, "pinned commit tree"):
-                    refresh.generate(output)
-
-                self.assertFalse(output.exists())
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_verifier_ignores_existing_cache_and_does_not_add_cache_files(self) -> None:
-        package_copy = self.copy_package("verifier-bytecode")
-        cache = package_copy / "scripts/__pycache__"
+        package = self.copy_package("verifier-bytecode")
+        cache = package / "scripts/__pycache__"
         cache.mkdir(exist_ok=True)
         generated = cache / "local-test.cpython-311.pyc"
         generated.write_bytes(b"generated test cache\n")
@@ -352,7 +423,7 @@ class VerifyPackageTests(ProjectTestCase):
             path.name: path.read_bytes() for path in cache.iterdir() if path.is_file()
         }
 
-        result = run_script(package_copy / "scripts/verify_package.py")
+        result = self.verify(package)
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         after = {

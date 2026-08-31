@@ -14,62 +14,80 @@ the ownership boundary should protect project data and core routing directly.
 The source package also contains policies and skill resources destined for an
 installed repository. The supported bootstrap and adoption path needs an
 explicit activation boundary between stored package resources and their
-installed host discovery locations.
+installed host discovery locations. Agent Workflow is pre-1.0, has one current
+user, and operates only in Git-tracked projects, so Git can provide the recovery
+boundary instead of an installation-history database.
 
 ## Decision
 
 Separate framework-owned reconstructable output from preservation boundaries:
 
-- `.agent-workflow/` and the finite set of declared provider directories are
-  framework-owned reconstructable output. Lifecycle operations converge them to
-  the current declared state without requiring historical install/origin or
-  checksum evidence. Unrelated skill directories remain independent. The
-  declared provider projection is reconstructable from current package content;
-  local edits inside a declared provider name are replaceable rather than
-  preserved as unique project information.
-- `.agent-wayfinder/` is project-owned durable state. Lifecycle operations may
-  establish its root when absent but otherwise treat the entire tree as
-  uninterpreted by lifecycle: they do not inventory, interpret, migrate,
-  rewrite, or remove its contents.
-- Managed regions in composite project files and required external integration
-  paths use only the evidence necessary to avoid overwriting or deleting
-  ambiguous project or user content. Uncertainty stops mutation.
+- `.agent-workflow/` and each current curated `.agents/skills/<name>/` directory
+  are framework-owned reconstructable surfaces. Install and update replace each
+  complete named surface with current package bytes; remove deletes them.
+  Unrelated skill directories remain independent. A curated skill-directory
+  name becomes reserved when Agent Workflow is adopted, so a project-owned skill
+  with the same name must be moved or renamed before installation.
+- `.agent-wayfinder/` is project-owned durable state. Lifecycle operations do
+  not directly traverse, interpret, or change it. Repository-wide Git
+  cleanliness checks may still observe changes under it.
+- `AGENTS.md` and `CLAUDE.md` are composite project files. Lifecycle operations
+  replace or remove only their unambiguous managed regions and preserve every
+  project-authored byte outside those regions. Malformed, duplicated, partial,
+  or reordered markers stop mutation.
+- Every mutating lifecycle command requires the target to be an exact Git
+  worktree root with a valid `HEAD` and an entirely clean tracked and untracked
+  worktree. Managed destinations must not be ignored, and managed roots and
+  parents must not be symlinks or escape the worktree. These checks occur before
+  mutation because Git cannot recover ignored, untracked, or out-of-worktree
+  content.
 - The supported bootstrap and adoption path keeps distributable root policies
   under non-active template names and activates framework resources only by
   projecting explicit source-to-target mappings into host discovery locations.
 
-Prefer current desired-state reconciliation over package-manager-style history,
-compatibility, or migration machinery. Add deeper lifecycle machinery only
-after a concrete current failure shows it is needed to protect project-owned
-data or make core routing reliable.
+The ordinary distribution manifest is only the current source-to-target map. Do
+not maintain installed manifests, origin or deletion provenance, content
+integrity state, historical inventories, automatic retirement, legacy
+migration, backup trees, global transactions, or rollback machinery. Git records
+and recovers lifecycle changes. A partial failure is reported truthfully and is
+recovered by inspecting and restoring the worktree with Git before retrying.
 
 ## Consequences
 
-Missing, modified, obsolete, or extra framework-owned reconstructable files can
-be repaired from current package bytes. Project-owned state and ambiguous external content
-remain hard preservation boundaries. Provider failure does not invalidate an
-otherwise successful core lifecycle operation.
+Missing, modified, obsolete, or extra files inside a managed surface are replaced
+from current package bytes after the Git safety gate passes. Project-authored
+composite regions, unrelated skill directories, and `.agent-wayfinder/` remain
+hard preservation boundaries.
 
-The distribution manifest, external-write evidence, staging, validation,
-rollback, archive limits, supported runtimes, and provider adapters are current
-implementation and contract details. They belong in architecture documentation,
-source, and tests rather than this decision.
+Removing a skill from the curated inventory does not authorize automatic cleanup
+of its former directory in consuming projects. Future retirement is a manual,
+Git-tracked cleanup. Former provider installations likewise require a separate
+manual cleanup commit before the current lifecycle may run.
 
 ## Alternatives considered
 
 - Preserve historical install/origin and restoration metadata for every framework
   file: rejected because reconstructable output does not justify a package
   manager before 1.0.
-- Treat every target as replaceable: rejected because durable state, composite
-  project regions, and unrecognized external content may contain unique
-  information.
+- Treat every project target as replaceable: rejected because durable state,
+  composite project regions, and unrelated skills may contain unique information.
+  Only the explicitly named managed directories and composite regions are
+  replaceable.
 - Mirror installed root-policy and host-customization paths literally inside
   the distributable package: rejected because supported adoption needs a clear
   activation boundary.
-- Discover and remove arbitrary provider directories: rejected because only the
-  finite declared provider set is lifecycle-managed framework output.
+- Track per-file creation or deletion evidence: rejected because the clean Git
+  worktree and reserved managed-directory names make the current ownership
+  boundary explicit without persistent provenance.
+- Automatically retire skills or migrate provider installations: rejected
+  because historical inventory is not current package state and Git-tracked
+  manual cleanup is simpler and reviewable.
+- Roll back a cross-surface transaction: rejected because Git is the recovery
+  mechanism and a truthful partial-failure report is sufficient for the current
+  pre-1.0 use case.
 
 ## Reconsideration trigger
 
 Reconsider when a concrete data-loss or core-routing failure cannot be handled
-by current desired-state reconciliation and host or provider capabilities.
+by the clean Git boundary and current desired-state replacement without
+weakening supported host behavior.

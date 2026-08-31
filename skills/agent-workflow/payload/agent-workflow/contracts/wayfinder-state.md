@@ -16,13 +16,12 @@ Wayfinder is Agent Workflow's sole durable coordination model. The selected effo
 When resuming a Wayfinder effort, read `map.md` first; it is the first effort file, and no
 other Agent Workflow durable coordination record may compete with it.
 
-Specialists retain their methods and provider-native artifacts. The specialist
-creates no Agent Workflow durable coordination state. Wayfinder records
-consequential results and references, not procedures or bookkeeping. The
-provider-native To Tickets ticket artifact or ticket set maintains ticket
-contents, dependencies, ordering, and readiness. Wayfinder uses a readable
-Markdown link to reference that artifact
-instead of copying or mirroring ticket-level state.
+Each specialist retains its method. A specialist creates no Agent Workflow
+durable coordination state. Wayfinder records consequential results and
+references, not procedures or bookkeeping. A durable ticket or ticket set
+created by `to-tickets` maintains its contents, dependencies, ordering, and
+readiness. Wayfinder uses a readable Markdown link to reference that durable
+ticket or ticket set instead of copying or mirroring ticket-level state.
 
 U/E/F/D are Wayfinder's durable record types. Blocking is a scoped relationship between a
 condition and particular work, not a separate Wayfinder record type. Do not create blocker
@@ -60,8 +59,8 @@ type; its presence does not claim that every current U# or E# is established pro
 A matter is consequential when handling it differently could change the effort's objective,
 scope, required authority, lasting result, dependencies, or which work may proceed. Wayfinder
 represents current, resumable coordination, not a permanent journal. Preserve a
-lasting outcome in the project or provider artifact designated to maintain it;
-Git maintains historical evolution.
+lasting outcome in the artifact or record designated to maintain it; Git
+maintains historical evolution.
 
 ## Effort shape and selection
 
@@ -121,10 +120,10 @@ compatibility parsing, or rewriting:
 These headings guide content; they are not a recognition schema. Except for **Blockers
 and dependencies** in a new default map, do not create empty headings.
 The map summarizes the effort's current coordination state, conditions blocking particular work,
-dependencies, and ready work. When no ticket artifact exists, the map may state ready work
-directly. Once a To Tickets artifact maintains detailed decomposition, the map
-links its ticket artifact or ticket set and may include a current ready-work
-reference without mirroring ticket-level state.
+dependencies, and ready work. When no durable ticket or ticket set exists, the map may state ready
+work directly. Once a durable ticket or ticket set exists, the map links it and
+may include a current ready-work reference without mirroring ticket-level state.
+A chat-only draft is not a durable ticket or ticket set.
 
 Keep the map brief, preserve enough information to resume safely, and link
 detailed roadmaps, specifications, ADRs, tickets, project artifacts, and sources
@@ -230,7 +229,7 @@ for a boundary directly, or the person, role, or valid delegate with project
 decision authority may commit it. Authorization to perform an action does not
 commit a project choice. A committed project choice does not authorize an unrelated
 action. Host permission supplies neither action authorization nor a committed
-project choice. A workflow, skill, provider instruction, test, specification,
+project choice. A workflow or skill, its instructions, a test, specification,
 ticket, or Wayfinder record grants neither. These gates and delegated scope may
 each exist without the others. When both a required project choice is committed
 and an action is authorized, affected work may proceed only within the authorized
@@ -255,8 +254,8 @@ establish a conclusion about the current project. Record a project-specific F#
 only when project evidence or current source sufficiently supports the claim for
 that scope. Otherwise preserve independently useful external evidence as E#, a
 consequential unresolved project question as U#, or a working proposal in the
-map or provider-native specialist artifact, only when that representation
-independently earns preservation.
+map or specialist artifact, only when that representation independently earns
+preservation.
 
 ### Identifiers and references
 
@@ -293,8 +292,8 @@ renaming a U/E file or F/D heading.
 Keep only current coordination needed to navigate the effort. Reconciliation
 updates affected map content, recognized records, conditions blocking affected
 work, dependencies, ready work, and references so they agree with current truth,
-binding project choices, and designated artifacts that
-maintain lasting results. Pruning removes a recognized Wayfinder record from
+binding project choices, and designated artifacts that maintain lasting results.
+Pruning removes a recognized Wayfinder record from
 current coordination after still-useful results are preserved and affected
 references are reconciled. Removing the selected file or ledger section carries
 out pruning; ending the effort is separate. Both preserve unrelated state. Git
@@ -392,12 +391,14 @@ An effort ends only when it has no legitimate continuation because its objective
 a committed project choice ended it, or continuing coordination belongs to a different objective
 or substantive scope. Before removing recognized Wayfinder records, ensure lasting outcomes and
 continuing relationships or constraints have a designated maintaining artifact and reconcile affected
-references. Apply the common sequence across affected records, then remove `map.md` last. Never
+references. Apply the common sequence
+across affected records, then remove `map.md` last. Never
 recursively delete the effort directory; the absence of `map.md` ends Wayfinder recognition, and
 any unrecognized project-owned bytes and their containing directories remain
 unchanged and uninterpreted by Wayfinder.
 
 Record a useful replacement relationship in its successor or the artifact that
-maintains the lasting result. Do not retain the predecessor map or add
+maintains the lasting result.
+Do not retain the predecessor map or add
 tombstones, redirects, archives, or successor metadata. Do not clean up other
 efforts; Git preserves history.

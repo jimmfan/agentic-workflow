@@ -45,5 +45,4 @@ Report status, rationale, consequences, rejected alternatives, remaining
 uncertainty, project decision authority, and next workflow transition or ready
 work. For Wayfinder, return only results worth reconciling into the map or
 independently useful U/E/F/D records. A lasting architecture decision belongs
-in the project artifact designated to maintain architecture decisions. Preserve
-provider-native identifiers.
+in the project record designated to maintain architecture decisions.

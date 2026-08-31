@@ -6,30 +6,25 @@ This opt-in evaluation asks two deliberately small questions of multiple models:
 2. Does a request that begins bounded select Wayfinder after reconnaissance
    reveals consequential coordination signals?
 
-The runner sends only the installed root `AGENTS.md`, a synthetic fixture, and
-instruction resources that the model explicitly requests from a names-and-size
-catalog. It does not send project source, project documentation, durable state,
-Git history, credentials, or arbitrary repository files.
-
-The evolving case may request the Wayfinder state contract because the root
-policy requires that contract after Wayfinder selection. The contract contains
-framework rules only; no project-owned map or durable record is sent.
+The runner sends the installed root `AGENTS.md` and only the named synthetic case
+evidence or detailed routing policy that the model explicitly requests from a
+names-and-size catalog. It does not send project source, project documentation,
+durable state, Git history, credentials, or arbitrary repository files.
 
 ## What it measures
 
 Each round returns a schema-constrained public decision containing the initial
 route, current route, Wayfinder assessment and selection, requested resources,
-and provider outcome. In this synthetic environment, a selected provider-backed
-skill must load provider metadata before completion because no host capability
-catalog is otherwise exposed. This makes availability observed rather than
-inferred without changing the repository's lazy provider-loading boundary. The
-report records every revealed resource in order plus the exact prompt bytes and
-any usage metadata exposed by the adapter.
+and a concise explanation. The same routing-only contract is sent through each
+adapter. The harness does not simulate host discovery, skill availability, or
+invocation behavior. The report records every revealed resource in order plus
+the exact prompt bytes and any usage metadata exposed by the adapter.
 
 This isolates cross-model interpretation of the routing contract. It is not
 operating-system file-access tracing and does not prove that every interactive
-coding-agent host will load files identically. The existing fixture-backed live
-behavior suite remains responsible for end-to-end repository behavior.
+coding-agent host will discover or invoke the installed files identically.
+End-to-end host discovery and invocation remain outside this smoke test's
+evidence and require a separately authorized live exercise.
 
 ## Inspect the payload without contacting a model
 
@@ -104,10 +99,8 @@ python3 -m evals.routing_smoke compare \
   /tmp/routing-smoke-small.json
 ```
 
-Selection agreement is evaluated separately from provider outcomes because the
-current registry intentionally makes Wayfinder available to Codex and
-unavailable to Claude. Equivalent interpretation may therefore produce
-different truthful execution outcomes.
+Comparison reports whether the models completed the same case matrix, passed the
+case checks, and agreed on the initial and final routes.
 
 ## Cost and safety limits
 
@@ -119,11 +112,11 @@ starting another round once the limit is reached. Pricing examples above were
 current on 2026-08-19; verify vendor pricing before a later run.
 
 The dollar guard is an estimate, not a billing-system reservation. A single
-provider request is already in flight before its usage is known, and vendor
+model request is already in flight before its usage is known, and vendor
 caching, hidden host context, reasoning tokens, subscription credits, and price
 changes may affect final accounting. The schema-constrained output and hard
 round/prompt limits bound that residual risk.
 
-Live execution contacts the selected model provider and consumes API quota or
+Live execution contacts the selected model service and consumes API quota or
 subscription credits. Deterministic tests use fake adapters and make no network
 requests.

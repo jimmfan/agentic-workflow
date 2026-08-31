@@ -1,59 +1,61 @@
 # Verification model
 
-Verification is split so stale release bookkeeping cannot block safe end-user
-reconciliation.
+Verification covers the current package and its observable boundaries. It does
+not preserve or prove former installations.
 
 ## Consumer safety
 
 `bootstrap.py` is the public download boundary. Before executing package code it
 resolves mutable refs to an immutable commit and rejects corrupt or oversized
 archives, excessive package contents, excessive whole-archive parsing,
-absolute/traversing/duplicate paths, links, special entries, unreviewed modes,
-filesystem-root targets, and packages missing the minimum lifecycle files.
-The archive is streamed, and unrelated repository entries do not consume the
-tighter distributable-package member allowance. These checks prevent unsafe
-extraction and execution.
+absolute, traversing, or duplicate paths, links, special entries, unreviewed
+modes, filesystem-root targets, and packages missing the minimum lifecycle
+files. The archive is streamed, and unrelated repository entries do not consume
+the tighter distributable-package member allowance.
 
-The bootstrap does not run the full package verifier. Runtime reconciliation
-requires only the current source-to-target mapping and readable current source
-files. Optional provider setup similarly validates only the inventory, safe
-filesystem shape, references, metadata, and adapter preconditions needed to
-project usable skills. Release checksum, provenance, and license bookkeeping is
-left to the maintainer gate. The distribution manifest does not duplicate
-payload content hashes.
+`lifecycle.py` is the only install, update, status, and remove implementation.
+Mutating commands require the exact Git worktree root, a valid `HEAD`, and a
+completely clean porcelain status including untracked files. Before mutation
+they also reject untracked files under managed surfaces, ignored managed
+destinations, malformed managed markers, symlinks, special entries, and path
+escapes. `status` is read-only, does not require a clean tree, and reports the
+blockers that would stop mutation.
+
+Git is the recovery mechanism. The lifecycle writes no installed manifest,
+hashes, provenance, created-state bits, migration history, backups, or rollback
+journal. If a write fails after mutation begins, inspect `git status`, restore
+with Git as appropriate, and retry. Lifecycle code does not directly traverse,
+interpret, or change `.agent-wayfinder/`; repository-wide Git cleanliness checks
+may still observe changes under it.
 
 ## Maintainer and CI gate
 
-Run this read-only command from the **source repository root** in Bash on macOS,
-Linux, WSL, or inside a Linux-based devcontainer. Zsh and similar POSIX shells
-are also expected to work:
+Run from the source repository root:
 
 ```bash
-python3 skills/agent-workflow/scripts/verify_package.py --tests
+uv run python skills/agent-workflow/scripts/verify_package.py --tests
+uv run python -m unittest discover -s evals/tests -p 'test_*.py' -v
 ```
 
-It checks:
+The package verifier checks:
 
-- Python syntax, package structure, regular-file modes, and synchronized versions;
-- the exact current source-to-target mapping and synchronized version;
-- the exact allowed authored payload, root-template, workflow-skill, and runtime-
-  projection inventories;
-- absence of executable or host-customization content in the
-  activation-sensitive payload namespace;
-- provider declarations and installed provider-projection integrity;
-- the source-only terminology glossary and project-language policy remain
-  present, scoped, and absent from the distributed payload;
-- current Agent Workflow-owned Wayfinder surfaces distinguish records from
-  represented questions, evidence, conclusions, and choices; project-choice
-  commitment from action authorization and host permission; route selection from
-  provider resolution, invocation, material execution, and completion evidence;
-  and lifecycle ownership from durability and reconstructability;
-- local Markdown links and behavioral scenario validation;
-- lifecycle, data-safety, routing, provider-isolation, cp1252, bootstrap, and
-  stale-release-metadata tests;
-- human-authored TOML behavioral scenario schema and fixture references; and
-- deterministic behavior-harness, Wayfinder scenario, evaluator, and fixture
-  reset tests.
+- required package structure, the current `VERSION` format and single-source
+  boundary, and required files being regular non-symlink files;
+- the ordinary current source-to-target distribution mapping;
+- the exact current fifteen-skill payload inventory and activation-sensitive
+  path exclusions;
+- skill frontmatter, packaged support-file closure, local links, the checked-in
+  installed projection, and complete attribution for retained derived skills;
+- small behavior-bearing semantics: Research writes repository output only with
+  explicit authorization;
+  Wayfinder is the sole durable coordinator and does not own specialist results;
+  `to-spec` and `to-tickets` create no `.scratch` output, invent no local
+  destination, label, or status, and publish only to a user- or project-named
+  destination with authorization; `implement` does not infer commit
+  authorization; and route markers report executed work only;
+- deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder, and
+  verifier tests; and
+- local documentation links.
 
 Success ends with:
 
@@ -61,149 +63,85 @@ Success ends with:
 OK: Agent Workflow package verification passed.
 ```
 
-The pre-merge CI job then runs the repository evaluation-tooling tests as a
-separate deterministic, network-free step:
+The `evals/` unit tests are a separate deterministic, network-free step because
+evaluation tooling is not part of the distributed package.
+
+## Distribution-map refresh
+
+After intentionally adding, removing, or remapping a packaged file, inspect the
+diff and run:
 
 ```bash
-python3 -m unittest discover -s evals/tests -p 'test_*.py' -v
+uv run python skills/agent-workflow/scripts/verify_package.py --refresh-manifest
+uv run python skills/agent-workflow/scripts/verify_package.py --tests
 ```
 
-They remain separate because `evals/` is repository tooling, not part of the
-distributable package.
+Refresh rewrites only
+`skills/agent-workflow/payload/distribution/manifest.json`. Ordinary content
+edits to an already mapped file do not require a refresh. The manifest is a
+current source-to-target map, not installed state and not a content-hash or
+retirement ledger.
+
+## Lifecycle acceptance boundary
+
+The deterministic suite proves that:
+
+- install and update converge to the same current state by replacing the full
+  `.agent-workflow/` directory and all current curated skill directories;
+- extra files inside a current curated skill directory are removed, while
+  unrelated skill directories remain unchanged;
+- `AGENTS.md` and `CLAUDE.md` managed regions update while project-authored
+  bytes remain unchanged;
+- remove deletes the managed directories and regions, deletes a composite file
+  only when no project-authored bytes remain, and preserves unrelated skills;
+- lifecycle commands do not directly traverse, interpret, or change
+  `.agent-wayfinder/`, while repository-wide Git cleanliness still observes its
+  changes;
+- dirty tracked or untracked state, an invalid or missing `HEAD`, a non-root
+  invocation, ignored or untracked managed destinations, unsafe filesystem
+  entries, and malformed markers stop mutation before any write;
+- `status` remains read-only on a dirty tree and reports safety blockers;
+- a deliberately injected later write failure reports possible partial changes
+  and directs the user to Git recovery rather than claiming rollback;
+- `.agent-workflow/providers.json` and obsolete Setup, Teach, or Triage skill
+  directories produce one manual clean-break instruction and no mutation;
+- a future removed skill is not retired automatically; cleanup is a separate
+  explicit Git change; and
+- bootstrap archive and root-safety boundaries remain enforced offline.
+
+Git cannot recover ignored or previously untracked files. Tests therefore prove
+those managed-path cases fail before mutation instead of relying on recovery.
+
+Wayfinder's state and behavioral tests remain separate from lifecycle tests.
+They cover map-first coordination, records, allocation, reconciliation,
+reference safety, progressive loading, and project-choice authority without
+making lifecycle code interpret durable state.
 
 ## Release tags
 
 `skills/agent-workflow/VERSION` is the sole authored framework version and the
-human-controlled release switch. Ordinary changes can reach `main` without
-changing it. The distribution manifest contains only package mappings; a
-version-only change does not require refreshing it. Adoption reads the version
-directly from the package and records it in generated install metadata. After
-the deterministic verifier succeeds on a push to `main`, a `VERSION` change
-requests one annotated release tag on that exact verified commit.
+human-controlled release switch. After the deterministic verifier succeeds on a
+push to `main`, a version change requests one annotated release tag on that exact
+verified commit. The release job accepts only `x.y.z`, requires a version greater
+than existing semantic release tags, and never reuses, moves, or force-pushes a
+tag.
 
-The release job accepts only the package's `x.y.z` format, requires the version
-to be greater than every existing semantic release tag, and refuses to reuse or
-move an existing `vX.Y.Z` tag. It serializes release attempts and pushes only
-the new tag without force. The first version increase after this workflow
-reaches `main` will establish the first trustworthy release-tag baseline;
-earlier history is intentionally not backfilled.
+Do not create a release tag while preparing a branch; the verified `main`
+workflow owns tag creation.
 
-Do not create the release tag manually while preparing a branch; the verified
-`main` workflow owns tag creation.
+## Failure diagnostics and limits
 
-After intentionally adding, removing, or remapping a packaged payload file,
-first inspect the diff. Then run this persistent refresh from the **source
-repository root**:
+Use the first reported error or failed test as the primary diagnostic. For a
+mapping mismatch, inspect the source and target inventories before refreshing.
+For a lifecycle failure, inspect `git status`; never delete project files merely
+to make a test pass. Generated Python caches are ignored by Git and package
+verification and need no manual cleanup.
 
-```bash
-python3 skills/agent-workflow/scripts/verify_package.py --refresh-manifest --tests
-```
+The deterministic gate runs on Ubuntu. macOS, Linux, WSL, and Linux-based
+devcontainers with a POSIX-style shell are supported; native PowerShell and CMD
+are not. Live model runs remain opt-in and must be reported separately. Static
+verification does not prove live host or editor skill discovery, external
+tracker behavior, or authenticated publication.
 
-The refresh rewrites only
-`skills/agent-workflow/payload/distribution/manifest.json`, then runs the same
-gate. Ordinary edits to an already mapped payload file do not require a refresh.
-Revert an unwanted refresh with version control. Do not refresh metadata to
-conceal an unexplained mapping or version difference.
-
-## Acceptance boundary
-
-The suite prioritizes behavior that matters before 1.0:
-
-- missing and drifted `.agent-workflow/` files are restored from current desired
-  state, and obsolete internal files disappear;
-- arbitrary unrecognized project-owned `.agent-wayfinder/` contents survive
-  install, status, update, remove, reinstall, and provider repair byte-for-byte;
-- recognized local Wayfinder maps, F#/D# ledgers, and U#/E# files survive the
-  same lifecycle sequence without schema interpretation or normalization;
-- project regions in `AGENTS.md` and `CLAUDE.md` survive update and removal;
-- malformed composite markers and unrecognized external collisions stop before
-  partial mutation;
-- symlink/root/archive traversal boundaries remain enforced;
-- a source archive with more than 500 unrelated entries still installs when the
-  package is within bounds, while excessive package contents and the separate
-  whole-archive ceiling still fail closed;
-- provider failure leaves a successful core install usable;
-- a fresh bootstrap archive projects all 14 declared provider skills with an
-  empty `PATH`, proving runtime setup does not require GitHub CLI, Git, npm,
-  npx, authentication, or network access;
-- the maintainer gate binds the bundled provider checksum, exact inventory,
-  resolved commit provenance, per-skill source metadata, local-reference
-  closure, and MIT license to the exact reviewed release identity without
-  turning those release checks into an end-user runtime gate;
-- the installed source-checkout provider declaration must match the packaged
-  declaration, while the maintainer refresh command refuses package-local output;
-- update completes an exact partial provider projection, reuses exact existing
-  directories, and replaces modified, extra-file, malformed, raw-upstream, or
-  older declared directories as one rollback-protected transaction;
-- unsafe declared paths block provider mutation, remove deletes only the
-  declared provider projection, and unrelated skill directories are preserved;
-- the unchanged raw Wayfinder snapshot is recognized before the framework-owned runtime
-  body is projected in release-local staging, while changed target bytes are
-  repaired and status remains read-only;
-- the implicit-invocation adapter automatically exposes To Spec, To Tickets,
-  and Implement from the bundled provider projection, is idempotent,
-  keeps Setup, Teach, and Triage user-only, and rejects unexpected activation
-  metadata without a partial provider projection;
-- ASCII output remains writable on a cp1252 console; and
-- mapped payload content changes require no metadata refresh, while an added,
-  removed, or remapped payload file fails the release gate until the explicit
-  install map is refreshed.
-
-Wayfinder state contracts separately cover a valid map-only effort; creating and
-appending current F# and D# ledger sections; allocating above the highest current
-same-type identifier; rejecting malformed or duplicate identifiers; and
-pruning only the selected section after bounded reference reconciliation. They
-also cover empty-ledger removal, changed-state rejection,
-no-overwrite child creation, separate U#/E# artifacts, readable section anchors,
-and progressive retrieval of relevant detail without an arbitrary file count.
-
-Unrecognized-content coverage proves unmatched project-owned bytes remain unchanged
-and are not treated as current references or allocation state. Identity-like
-malformed entries and exact filesystem collisions are rejected. Lifecycle
-preservation exercises
-install, update, status, remove, reinstall, and provider repair byte-for-byte.
-The behavioral suite also keeps
-implementation work-item artifacts out of Wayfinder, resumes relevant efforts
-from the map, reconciles affected state after implementation,
-excludes unrelated detail and efforts, reports outdated state without changing it during read-only work,
-stops on unresolved reconciliation conflicts, and keeps unrelated efforts out
-of a direct route.
-
-The routing catalog separately covers direct work, standalone Discovery, direct
-Wayfinder ready work, specialist-supported resolution of consequential issues,
-the workflow transition from Wayfinder to Implementation, interrupted-specialist
-session continuation from the map, host-native fallback, an explicit provider
-invocation instruction, external read scope, and responsibility for
-provider-native artifacts. It is an executable contract check, not proof that a live editor
-or provider service was exercised.
-
-## Useful failure diagnostics
-
-If the gate fails:
-
-1. use the first reported error or failed test as the primary diagnostic;
-2. for stale metadata, inspect payload inventory, mapping, and version changes
-   before refreshing;
-3. for a lifecycle fixture, rerun that named `unittest` from the source root
-   with `python3 -m unittest ...`; generated Python caches are ignored by Git
-   and package verification and need no manual cleanup;
-4. for a release snapshot refresh issue, run the maintainer command in a
-   networked environment with GitHub CLI authentication; ordinary target
-   install/update must remain fully offline; and
-5. never delete `.agent-wayfinder/` or unrecognized external content to make a test
-   pass.
-
-The deterministic GitHub Actions gate runs on Ubuntu. Native PowerShell and CMD
-execution is outside the supported platform contract; Git Bash on native
-Windows is best-effort. Do not claim live validation of any host, editor,
-provider network, or host extension unless it was actually performed and
-reported separately.
-
-## Behavioral layers
-
-The same pre-merge command includes deterministic behavioral contract and
-fixture tests. Live model runs remain opt-in because they require credentials,
-may access external sources, consume quota, and are nondeterministic. Run and
-interpret them using [Behavioral testing](behavioral-testing.md); never represent
-their absence as a deterministic gate failure or a simulated fixture as live
-agent evidence.
+See [Behavioral testing](behavioral-testing.md) for behavioral scenario evidence,
+commands, side effects, and limitations.

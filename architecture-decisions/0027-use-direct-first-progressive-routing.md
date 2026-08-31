@@ -6,17 +6,17 @@
 ## Context
 
 Loading maximum classification and workflow policy before gathering evidence
-charges the most context at the point of least understanding. Installed skill
-descriptions already provide a cheap first selection interface, while raw item
-counts are poor proxies for consequence or coordination risk.
+charges the most context at the point of least understanding. Skill descriptions
+exposed in the current session provide a cheap first selection interface, while
+raw item counts are poor proxies for consequence or coordination risk.
 
 Users also should not need to recognize that an initially bounded task has
 developed enough interacting state to warrant durable coordination.
 
 ## Decision
 
-Begin with the simplest reasonable route. Classify from user intent and cheap
-capability descriptions, then perform only the smallest read-only
+Begin with the simplest reasonable route. Classify from user intent and skill
+descriptions, then perform only the smallest read-only
 reconnaissance within delegated scope when evidence is insufficient. Choose
 Direct or one primary workflow, and add only supporting capabilities that
 materially help.
@@ -30,10 +30,9 @@ consequential state; users need not diagnose that transition themselves.
 Explicit user selection or opt-out controls the route, and read-only scope does
 not grant action authorization for writes.
 
-Keep always-loaded classification context small and progressively load deeper
-methodology, provider policy, and state contracts only after their boundaries
-become relevant. Route sequences are default transitions with entry conditions,
-not mandatory pipelines.
+Keep always-loaded classification context small and load a selected skill's
+instructions or a state contract only when needed. Route sequences are default
+transitions with entry conditions, not mandatory pipelines.
 
 ## Consequences
 
@@ -41,10 +40,10 @@ Bounded work and one obvious skill avoid unrelated routing policy. Complex
 composition still pays for the instructions it needs. The design depends on
 concise skill descriptions and truthful re-evaluation as new evidence appears.
 
-The exact Wayfinder assessment signals, route marker, provider fallback rules,
-thresholds, context budgets, and evaluation outcomes remain in root policy,
-routing contracts, tests, and evaluation history. They may evolve without
-rewriting this decision.
+The exact Wayfinder assessment signals, route marker, handling of selected skills
+that cannot run, thresholds, context budgets, and evaluation outcomes remain in
+root policy, routing contracts, tests, and evaluation history. They may evolve
+without rewriting this decision.
 
 ## Alternatives considered
 
@@ -60,5 +59,5 @@ rewriting this decision.
 ## Reconsideration trigger
 
 Reconsider if observed agents repeatedly miss applicable workflows, fresh
-sessions lose consequential state, or host-native capability selection makes an
-explicit Direct-first router unnecessary.
+sessions lose consequential state, or supported hosts make an explicit
+Direct-first router unnecessary.

@@ -9,14 +9,14 @@ verification, state use, research grounding, or clean blocker behavior is
 observable—and prohibited repository effects did not occur.
 
 The framework uses only Python 3.11 standard-library modules. Normal pull
-requests do not need a model, network credential, provider, Git repository, or
-hidden reasoning trace.
+requests do not need a model, network credential, live skill discovery, Git
+repository, or hidden reasoning trace.
 
 ## Testing layers
 
-1. **Production-boundary tests** exercise lifecycle, provider transactions,
-   package verification, bootstrap safety, routing, and Wayfinder state through
-   their public boundaries.
+1. **Production-boundary tests** exercise lifecycle convergence and Git safety,
+   direct skill distribution, package verification, bootstrap safety, routing,
+   and Wayfinder state through their public boundaries.
 2. **Behavior-harness tests** validate TOML schema and vocabulary, blind-rubric
    isolation, evaluator failure modes, route-marker syntax, fixture reset, and
    command-runner evidence.
@@ -142,7 +142,7 @@ the minimum repository evidence and validation command needed to make the
 starting state understandable. They do not copy framework payload files.
 
 Each deterministic or live run uses `shutil.copytree` into a newly created
-temporary directory, installs the current framework with `adopt.py`, and takes
+temporary directory, installs the current framework with `lifecycle.py`, and takes
 its baseline snapshot only after installation. The source fixture is never
 mutated. `--keep-workspaces` creates a unique run directory under a caller-owned
 location when post-run inspection is useful; otherwise temporary workspaces are
@@ -159,7 +159,7 @@ The evaluator uses public artifacts only:
   `.behavior-evidence/verification.jsonl`, including exit codes and ordering;
 - a concise agent-written `.behavior-evidence/report.json` containing status,
   commands/exit codes, cited research URLs, state paths actually consumed,
-  selected/executed provider claims, and blockers;
+  selected/executed skill claims, and blockers;
 - exactly one syntactically valid route marker ending the agent's stdout final
   response; and
 - case-specific path assertions.
@@ -244,7 +244,7 @@ cleans workspaces automatically.
 - Required route markers remain agent claims rather than proof of execution;
   scenario evidence and route-specific checks establish truthfulness where
   observable.
-- Provider-native tracker interactions and live editor-host behavior need a
+- Live tracker interactions and editor-host skill behavior need a
   separately credentialed environment and are not represented as deterministic
   success.
 - The live runner is command-based rather than tied to one vendor CLI. A host

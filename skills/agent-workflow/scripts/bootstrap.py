@@ -6,21 +6,19 @@ from __future__ import annotations
 import argparse
 import io
 import json
-from pathlib import Path, PurePosixPath
 import re
 import stat
 import subprocess
 import sys
 import tarfile
 import tempfile
-from typing import Optional, Sequence, Tuple
+from collections.abc import Sequence
+from pathlib import Path, PurePosixPath
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-
 REPOSITORY = "jimmfan/agentic-workflow"
 DEFAULT_REF = "main"
-LOCAL_SOURCE_REVISION = "unreleased-local-package"
 PACKAGE_MARKER = ("skills", "agent-workflow")
 MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
@@ -31,7 +29,6 @@ MINIMUM_PYTHON = (3, 11)
 RUNTIME_PACKAGE_REQUIREMENTS = (
     (PurePosixPath("VERSION"), "package version"),
     (PurePosixPath("scripts/lifecycle.py"), "lifecycle entrypoint"),
-    (PurePosixPath("scripts/adopt.py"), "framework reconciliation entrypoint"),
     (PurePosixPath("payload/distribution/manifest.json"), "lifecycle mapping metadata"),
 )
 ARCHIVE_MODE_VARIANTS = {
@@ -89,17 +86,14 @@ def resolve_revision(ref: str) -> str:
     return revision
 
 
-def select_source(
-    action: str, target: Path, ref: str, archive_url: Optional[str]
-) -> Tuple[str, str]:
+def select_source(ref: str, archive_url: str | None) -> str:
     if archive_url:
-        revision = ref if re.fullmatch(r"[0-9a-f]{40}", ref) else LOCAL_SOURCE_REVISION
-        return revision, archive_url
+        return archive_url
     revision = resolve_revision(ref)
-    return revision, f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"
+    return f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"
 
 
-def package_relative(name: str) -> Optional[PurePosixPath]:
+def package_relative(name: str) -> PurePosixPath | None:
     path = PurePosixPath(name)
     parts = path.parts
     for index in range(len(parts) - 1):
@@ -141,8 +135,7 @@ def extract_package(archive: bytes, destination: Path) -> Path:
     archive_members = 0
     package_members = 0
     try:
-        opened = tarfile.open(fileobj=io.BytesIO(archive), mode="r|gz")
-        with opened:
+        with tarfile.open(fileobj=io.BytesIO(archive), mode="r|gz") as opened:
             for member in opened:
                 archive_members += 1
                 if archive_members > MAX_ARCHIVE_MEMBERS:
@@ -236,9 +229,7 @@ def validate_runtime_package(package: Path) -> None:
             ) from exc
 
 
-def run_package(
-    package: Path, action: str, target: Path, dry_run: bool, revision: str
-) -> int:
+def run_package(package: Path, action: str, target: Path, dry_run: bool) -> int:
     validate_runtime_package(package)
     lifecycle = package / "scripts" / "lifecycle.py"
     command = [
@@ -246,12 +237,10 @@ def run_package(
         str(lifecycle),
         action,
         str(target),
-        "--source-revision",
-        revision,
     ]
     if dry_run:
         command.append("--dry-run")
-    return subprocess.run(command).returncode
+    return subprocess.run(command, check=False).returncode
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
@@ -277,7 +266,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     require_supported_python()
     configure_console()
     args = parse_args(argv or sys.argv[1:])
@@ -288,13 +277,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         )
     if target == Path(target.anchor):
         raise BootstrapError("refusing to operate on a filesystem root")
-    revision, archive_url = select_source(
-        args.action, target, args.ref, args.archive_url
-    )
+    archive_url = select_source(args.ref, args.archive_url)
     archive = request_bytes(archive_url)
     with tempfile.TemporaryDirectory(prefix="agent-workflow-") as temporary:
         package = extract_package(archive, Path(temporary))
-        return run_package(package, args.action, target, args.dry_run, revision)
+        return run_package(package, args.action, target, args.dry_run)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 ---
 name: agent-workflow
-description: Install, update, inspect, or safely remove the Agent Workflow router and its optional curated provider skills in a project.
+description: Install, update, inspect, or safely remove the Agent Workflow router and its directly distributed curated skills in a project.
 license: MIT
 ---
 
@@ -8,30 +8,32 @@ license: MIT
 
 Use this skill only for adoption and lifecycle maintenance. It installs a compact
 instruction router that keeps simple work direct and progressively loads one
-useful workflow for consequential work. Successful adoption leaves core routing
-usable even when every optional provider is unavailable.
+useful workflow for consequential work. Successful adoption installs the exact
+fifteen-skill curated surface mapped by the package.
 
 ## Ownership contract
 
-- `.agent-workflow/` is framework-owned and reconstructable. Install/update may
-  replace the directory from current package bytes.
+- `.agent-workflow/` is framework-owned and reconstructable after adoption.
+  Install/update replace the complete directory from current package bytes;
+  remove deletes it. On first adoption, a pre-existing `.agent-workflow/` that
+  is not recognized as an existing Agent Workflow installation blocks adoption
+  instead of being replaced.
+- Each current curated `.agents/skills/<name>/` directory is framework-owned and
+  reconstructable. Install/update replace the complete named directory, including
+  deleting extra files inside it; remove deletes it. Unrelated skill directories
+  remain untouched. Current curated names are reserved after adoption, so move or
+  rename any project-owned skill with the same name before installing.
 - `.agent-wayfinder/` and every entry under it are project-owned durable data.
-  Create the directory when absent during install/update, but never seed,
-  inventory, checksum, rewrite, or remove its contents.
+  Lifecycle operations do not directly traverse, interpret, or change it.
+  Repository-wide Git cleanliness checks may still observe changes under it.
 - `AGENTS.md` and `CLAUDE.md` are composite. Replace only the unambiguous managed
   region and preserve project-region bytes. Stop on partial, duplicate, or
   reordered markers.
-- Other required external integrations are created when absent, reused when
-  exactly matching, and blocked when unknown content differs. The small install
-  manifest records only evidence needed for safe external deletion.
-- The finite provider set declared by the package is framework-owned,
-  reconstructable output. Install/update may replace those exact directories,
-  and remove deletes them; every unrelated skill directory is preserved. Apply
-  adapters only to recognized pinned input in staging before target mutation.
 
-Do not treat a missing previously recorded file, obsolete manifest detail,
-durable project content, provider, or setup file as package corruption. Current
-desired state is authoritative.
+The ordinary distribution manifest is only the current source-to-target map.
+There is no installed manifest, content-integrity state, origin or deletion
+provenance, historical inventory, automatic retirement, backup tree,
+cross-surface transaction, or rollback mechanism. Git is the recovery boundary.
 
 ## Lifecycle commands
 
@@ -45,42 +47,38 @@ python3 scripts/lifecycle.py status /path/to/project
 python3 scripts/lifecycle.py remove /path/to/project
 ```
 
-The target must be an existing non-root directory. All entrypoints require
-Python 3.11 or newer. Use the packaged `agent-workflow` CLI for normal end-user
-installation. It delegates to the bootstrap transport, which resolves an
-immutable revision and validates archive paths, types, counts, sizes, modes,
-and minimum runtime files.
+The target must be exactly a Git worktree root with a valid `HEAD`. Before
+`install`, `update`, or `remove`, the full tracked and untracked worktree must be
+clean, no managed destination may be ignored, and no managed root or parent may
+be a symlink, special entry, or escape from the worktree. These commands stop
+before mutation when a gate fails. `status` is read-only and does not require a
+clean worktree, but reports any condition that would block mutation. All
+entrypoints require Python 3.11 or newer.
 
-Install/update first preflight composite boundaries, external collisions, and
-target symlinks. They then stage the new
-`.agent-workflow/`, apply rollback-protected external writes, swap the framework
-directory, and verify current desired bytes. Missing or drifted reconstructable
-files are replaced without historical checksum forensics.
+Use the packaged `agent-workflow` CLI for normal end-user installation. It uses
+the bootstrap transport, which resolves an immutable revision and validates
+archive paths, types, counts, sizes, modes, and minimum runtime files before
+calling this lifecycle.
 
-After core success, lifecycle makes a best-effort offline projection from the
-release's bundled, checksummed provider snapshot. It stages all 14 declared
-skills, applies the owned Wayfinder runtime projection and routed implicit-invocation adapters,
-validates the effective projection, and reconciles every repairable declaration
-together.
-Runtime provider setup needs no GitHub CLI, Git, npm, npx, authentication, or
-network access.
+`install` and `update` use the same convergence operation: replace
+`.agent-workflow/`, replace every current curated skill directory, and update
+managed composite regions while preserving project bytes and unrelated skills.
+`remove` deletes those current managed directories and removes the composite
+regions, deleting a composite file only when no project bytes remain. `--dry-run`
+reports the operation without changing the target.
 
-The 14 declared directories are framework-owned reconstructable output. An
-exact directory is reused; a missing or different declared directory is
-repaired from staging, and an unsafe path blocks the complete provider change.
-Provider failure remains a warning and never rolls back or invalidates the core.
-Status is incomplete until all 14 effective directories match. Remove deletes
-exactly those declarations and preserves unrelated skill directories.
+There is no automatic provider migration. If
+`.agent-workflow/providers.json` or `setup-matt-pocock-skills`, `teach`, or
+`triage` is present, status reports a legacy clean-break requirement and mutating
+commands stop. Remove the legacy `.agent-workflow/` directory and obsolete skill
+directories in a separate Git-tracked cleanup, commit it, then run install.
+Future curated-skill retirement is likewise a manual Git cleanup; do not add a
+historical retired-name list.
 
-`status` is read-only and reports core `healthy`, `repairable`, or
-`unsafe/conflict`. Missing optional state files and providers are normal. A
-repairable result should be fixed with `update`; an unsafe path requires
-resolving the named filesystem boundary first.
-
-`remove` removes managed composite regions,
-deletes only unchanged external files recorded as framework-created, removes
-`.agent-workflow/`, and preserves `.agent-wayfinder/`, changed/pre-existing
-external files, and unrelated skills.
+Writes are intentionally not globally transactional. If an ordinary write fails
+mid-operation, the command reports that partial changes may exist and directs the
+operator to inspect `git status`, restore with Git, and retry from a clean
+worktree.
 
 ## Release verification
 
@@ -90,16 +88,16 @@ Maintainers run this read-only gate from the skill directory:
 python3 scripts/verify_package.py --tests
 ```
 
-It strictly checks the explicit source-to-target mapping, synchronized versions,
-package safety, routing/provider contracts, documentation, and acceptance tests.
+It checks the current source-to-target mapping, package safety, complete curated
+skill directories, attribution, a small set of load-bearing routing and skill
+contracts, checked-in projection equality, and acceptance tests.
 Ordinary edits to already mapped payload files require no metadata refresh.
-After adding, removing, or remapping a packaged file, or changing the framework
-version, inspect the diff and then refresh only the generated manifest:
+After adding, removing, or remapping a packaged file, inspect the diff and then
+refresh only the generated manifest:
 
 ```bash
 python3 scripts/verify_package.py --refresh-manifest --tests
 ```
 
-Never refresh metadata to hide an unexplained change, edit install evidence to
-force deletion, call `adopt.py` alone for a public network install, or delete
-`.agent-wayfinder/` as a lifecycle repair.
+Never refresh metadata to hide an unexplained change, create installation
+history, or touch `.agent-wayfinder/` as a lifecycle repair.
