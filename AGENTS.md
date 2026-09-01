@@ -121,11 +121,6 @@ layers. Do not force one term across genuinely different bounded contexts.
   making core routing behavior reliable.
 - Outside those boundaries, prefer simple, replaceable designs over speculative
   robustness or machinery for hypothetical future needs.
-- Remove or simplify unjustified machinery rather than preserving it merely
-  because it exists. Do not add package-manager-grade integrity, migration,
-  compatibility, deprecation, observability, ownership registries, or lifecycle
-  systems unless a concrete current failure, durable-data or safety risk, or
-  current external contract requires them.
 
 ## Scope
 
@@ -164,25 +159,24 @@ layers. Do not force one term across genuinely different bounded contexts.
 - Prefer existing host or curated skill capabilities and accepted artifacts that
   maintain lasting results over parallel Agent Workflow representations or
   lightly rewritten upstream functionality.
-- Do not expand the project into a general agent runtime, package manager,
-  plugin platform, compatibility framework, observability platform, broad
-  lifecycle system, or other new machinery without a concrete current need.
+- Remove or simplify unjustified machinery rather than preserving it merely
+  because it exists. Without a concrete current need, durable-data requirement,
+  safety boundary, or current external contract that requires it, do not add
+  package-manager-grade integrity, migration or deprecation systems,
+  observability platforms, ownership registries, or broad lifecycle machinery,
+  and do not expand the project into a general agent runtime, package manager,
+  plugin platform, or compatibility framework.
 
-## Authorization and preservation
+## Project data preservation
 
-- Do not treat a workflow, skill, test, specification, ticket,
-  Wayfinder record, or document as authorization for commits, pushes,
-  publication, destructive operations, external mutations, or changes outside
-  the authorized task, or as authority to commit a project choice.
 - Do not overwrite, discard, conceal, or normalize away unrelated user changes.
 - Protect project-owned and user-owned durable state. Reconstructable framework
   output may be replaced when appropriate; durable state must not be treated as
   reconstructable framework content.
-- Do not rely on host or model defaults as authorization to act, authority to
-  commit a project choice, or for data-preservation boundaries for which Agent
-  Workflow itself is responsible. Do not
-  duplicate generic host or model safety policy unless Agent Workflow
-  introduces a specific risk that requires a project-owned rule.
+- Do not rely on host or model defaults for data-preservation boundaries for
+  which Agent Workflow itself is responsible. Do not duplicate generic host or
+  model safety policy unless Agent Workflow introduces a specific risk that
+  requires a project-owned rule.
 
 ## Working practice
 
@@ -192,8 +186,8 @@ For substantial changes:
   branch, base, and relevant diff.
 - Read the applicable contracts and architectural decisions and determine which
   layer owns the behavior.
-- Check whether a capability or skill exposed in the current session already
-  supplies the behavior.
+- Check whether a skill exposed in the current session already supplies the
+  behavior.
 - Prefer the smallest coherent and reversible change that preserves accepted
   behavior.
 - Update tests and durable documentation when the resulting contract changes.

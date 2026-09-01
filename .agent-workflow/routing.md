@@ -39,7 +39,8 @@ overlaps:
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
 | Clear bounded low-risk request | Direct | Skip workflow ceremony |
 
-A supporting skill creates no Agent Workflow durable coordination state.
+The table selects methods for a route; it does not assign every skill a
+permanent workflow or specialist class.
 
 ## Re-evaluate and resume
 
@@ -81,11 +82,12 @@ skill's instructions and only the support files needed for the current request.
 Selecting a skill is not execution: include it in the route marker only when its
 method actually ran.
 
-Keep the stages distinct. Route selection chooses Direct or a workflow;
-supporting-capability selection chooses additional help; loading a selected
-skill makes its instructions available; material execution means its method
-actually ran; and completion and verification require evidence beyond the route
-marker.
+Keep the stages distinct. Route selection chooses Direct or one primary
+workflow. Skill selection may supply a bounded method directly while the route
+remains Direct, or add a selected method as a supporting capability; neither
+role makes that skill a primary workflow. Loading a selected skill makes its
+instructions available; material execution means its method actually ran; and
+completion and verification require evidence beyond the route marker.
 
 If a selected skill is unavailable or cannot run without explicit user
 invocation, continue Direct only when the user did not require that skill and
@@ -111,8 +113,9 @@ artifacts or records that maintain it, and acceptance criteria from the current
 authorized request, selected Wayfinder map, current decision record, accepted
 specification, or approved durable ticket or ticket set. Invoked `implement` is
 responsible for its build loop, TDD, and closing Code Review. Framework
-Verification runs afterward and adds only uncovered evidence. The specialist
-creates no Agent Workflow durable coordination state.
+Verification runs afterward and adds only uncovered evidence. A selected skill
+acting as a supporting capability creates no Agent Workflow durable coordination
+state.
 
 ## Report the executed route
 

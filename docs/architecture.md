@@ -20,7 +20,9 @@ flowchart TD
     request["User intent"] --> router["Small root router"]
     router --> direct["Direct work"]
     router --> workflow["One primary workflow"]
-    workflow --> capability["Only useful supporting capabilities"]
+    workflow --> skill
+    workflow -. additional help .-> capability["Supporting capability role"]
+    direct -. bounded selected skill .-> skill
     capability --> skill{"Selected skill available in this session?"}
     skill -->|yes| native["Skill method"]
     skill -->|no| fallback["Continue directly or report missing required skill"]
@@ -41,7 +43,9 @@ composition or artifact or record responsibility is unclear or selected-skill
 availability, an exact invocation instruction, agent handoff, or durable
 resumption materially matters. Routing may change as evidence emerges. Route
 selection, skill selection, material execution, and completion or verification
-evidence remain distinct. Host sandboxing and approvals determine host
+evidence remain distinct. The routing-role model for directly selected skills,
+primary workflows, supporting capabilities, and bounded specialists is defined
+in [Workflow routing](routing.md). Host sandboxing and approvals determine host
 permission; that permission does not itself authorize an action or commit a
 project choice.
 
@@ -52,9 +56,9 @@ Writes and external mutations proceed only when the current user request or
 accepted project policy authorizes that action and scope.
 
 Wayfinder is Agent Workflow's sole durable coordination model. It keeps only
-consequential continuity and references, while specialists retain their methods
-and artifacts. Specifications, tickets, research, reviews, and other specialist
-results remain in the artifacts or records designated to maintain them.
+consequential continuity and references, while selected skills retain their
+methods and artifacts. Specifications, tickets, research, reviews, and other
+skill results remain in the artifacts or records designated to maintain them.
 
 ## Filesystem ownership
 

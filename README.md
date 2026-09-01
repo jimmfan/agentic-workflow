@@ -2,10 +2,10 @@
 
 Agent Workflow is an experimental routing and coordination layer for coding agents.
 
-It keeps straightforward work direct, loads engineering workflows and specialist
-skills when they are useful, and uses Wayfinder when an effort needs durable
-project state across session continuations, workflow transitions, or agent
-handoffs.
+It keeps straightforward work direct, uses skills directly or through workflow
+composition when they are useful, and uses Wayfinder when an effort needs
+durable project state across session continuations, workflow transitions, or
+agent handoffs.
 
 The project is pre-1.0 and actively evolving.
 
@@ -52,7 +52,8 @@ Agent Workflow has three main responsibilities:
 
 A bounded request can remain Direct.
 
-Other work can use workflows or specialist methods for areas such as:
+Other work can select a bounded skill method directly, choose one primary
+workflow, or add supporting capabilities for areas such as:
 
 - discovery and design decisions;
 - debugging;
