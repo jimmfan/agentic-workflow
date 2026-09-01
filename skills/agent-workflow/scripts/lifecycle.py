@@ -535,6 +535,17 @@ def confirm_first_install_skill_replacement(
         raise LifecycleError("installation cancelled; no lifecycle mutation occurred")
 
 
+def require_recognized_skill_removal(root: Path, distribution: Distribution) -> None:
+    collisions = reserved_skill_collisions(root, distribution)
+    if not collisions:
+        return
+    rendered = ", ".join(f"{relative.as_posix()}/" for relative in collisions)
+    raise LifecycleError(
+        "cannot remove current curated skill directories because no recognizable "
+        f"Agent Workflow installation exists; these paths may be project-owned: {rendered}"
+    )
+
+
 def drift_messages(root: Path, distribution: Distribution) -> list[str]:
     messages: list[str] = []
     if not directory_matches(root, FRAMEWORK_ROOT, distribution.framework):
@@ -674,6 +685,7 @@ def converge(
 
 def remove(root: Path, distribution: Distribution, dry_run: bool) -> None:
     inspect_managed_structure(root, distribution)
+    require_recognized_skill_removal(root, distribution)
     composite_plan = plan_composites(root, distribution, remove=True)
     if dry_run:
         print_plan("remove", root, distribution)

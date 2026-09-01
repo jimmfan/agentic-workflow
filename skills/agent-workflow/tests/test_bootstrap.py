@@ -336,16 +336,25 @@ target = Path(sys.argv[2])
         self.assertNotIn("scripts/legacy_transition.py", required)
 
     def test_default_source_selects_the_latest_stable_semantic_release(self) -> None:
-        tags_url = f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags?per_page=100"
+        first_tags_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags"
+            "?per_page=100&page=1"
+        )
+        second_tags_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags"
+            "?per_page=100&page=2"
+        )
         commit_url = (
             f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/v0.10.0"
         )
         revision = "a" * 40
         responses = {
-            tags_url: json.dumps(
+            first_tags_url: json.dumps(
+                [{"name": "v0.9.0"}]
+                + [{"name": f"unrelated-{index}"} for index in range(99)]
+            ).encode(),
+            second_tags_url: json.dumps(
                 [
-                    {"name": "unrelated"},
-                    {"name": "v0.9.0"},
                     {"name": "v0.10.0-rc.1"},
                     {"name": "v0.10.0"},
                     {"name": "v2"},
@@ -367,7 +376,7 @@ target = Path(sys.argv[2])
         )
         self.assertEqual(
             [call.args[0] for call in request_bytes.call_args_list],
-            [tags_url, commit_url],
+            [first_tags_url, second_tags_url, commit_url],
         )
 
         with (
@@ -444,7 +453,10 @@ target = Path(sys.argv[2])
             (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip(),
             "0.26.0",
         )
-        tags_url = f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags?per_page=100"
+        tags_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags"
+            "?per_page=100&page=1"
+        )
         commit_url = (
             f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/v0.27.0"
         )

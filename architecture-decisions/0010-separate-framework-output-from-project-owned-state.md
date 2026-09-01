@@ -78,7 +78,9 @@ An existing installation is recognized without persistent state when either a
 valid managed composite region or the exact current `.agent-workflow/` surface
 is present. Once recognized, current curated skill directories converge
 automatically even when modified. Ambiguous composite markers remain a hard
-preflight failure and never become an overwrite-confirmation path.
+preflight failure and never become an overwrite-confirmation path. Remove also
+refuses current curated-name collisions on an unrecognized target rather than
+assuming they are framework-owned.
 
 ## Consequences
 

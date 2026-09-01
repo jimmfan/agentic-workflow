@@ -80,7 +80,9 @@ managed composite regions while preserving project bytes and unrelated skills.
 Repeated convergence leaves exactly one managed block in each composite file.
 `remove` deletes those current managed directories and removes the composite
 regions, deleting a composite file only when no project bytes remain. `--dry-run`
-reports the operation without changing the target.
+reports the operation without changing the target. If current curated-name
+directories exist but no installation is recognizable, `remove` refuses before
+mutation rather than assuming those directories are framework-owned.
 
 There is no migration subsystem. Complete replacement of `.agent-workflow/`
 removes obsolete framework files during ordinary convergence, so an existing

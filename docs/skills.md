@@ -80,7 +80,8 @@ the complete conflicting directories and ask once before replacement; `y` or
 `yes` proceeds, while a decline or noninteractive invocation stops before
 mutation. A valid managed composite region or an exact current
 `.agent-workflow/` surface recognizes an installation, after which current
-curated directories converge automatically without confirmation.
+curated directories converge automatically without confirmation. Remove refuses
+current curated-name directory collisions when no installation is recognizable.
 
 Mutating commands accept any explicit existing non-root target directory. With
 no target, the CLI may use Git only to discover the containing worktree root;

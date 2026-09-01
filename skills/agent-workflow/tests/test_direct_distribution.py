@@ -199,6 +199,17 @@ class DirectDistributionTests(ProjectTestCase):
         self.assertIn("interactive terminal", stderr)
         self.assertEqual(workspace_snapshot(self.project), before)
 
+    def test_unrecognized_remove_preserves_curated_name_collision(self) -> None:
+        self.add_project_skill("research")
+        before = workspace_snapshot(self.project)
+
+        result, stdout, stderr = self.lifecycle_in_process("remove")
+
+        self.assertEqual(result, 2, stdout + stderr)
+        self.assertIn(".agents/skills/research/", stderr)
+        self.assertIn("no recognizable Agent Workflow installation", stderr)
+        self.assertEqual(workspace_snapshot(self.project), before)
+
     def test_ambiguous_composite_fails_before_collision_confirmation(self) -> None:
         self.add_project_skill("research")
         (self.project / "AGENTS.md").write_bytes(

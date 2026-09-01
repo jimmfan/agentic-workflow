@@ -253,6 +253,10 @@ only when no project-authored bytes remain. A failure after mutation may leave a
 partial result; resolve the reported filesystem error and rerun the command to
 converge.
 
+On a target with current curated-name directories but no recognizable Agent
+Workflow installation, remove refuses before mutation because those directories
+may be project-owned.
+
 There is no migration subsystem. Existing installations converge in one install
 or update: complete replacement of `.agent-workflow/` removes obsolete framework
 files. Skill directories outside the current curated inventory are unrelated

@@ -117,8 +117,9 @@ The deterministic suite proves that:
   logical LF or CRLF marker lines and narrowly recover the evidenced historical
   duplicate, while `AGENTS.md` uses only managed-begin/managed-end delimiters and
   the existing `CLAUDE.md` output protocol remains unchanged;
-- remove deletes the managed directories and regions, deletes a composite file
-  only when no project-authored bytes remain, and preserves unrelated skills;
+- remove deletes recognized managed directories and regions, deletes a composite
+  file only when no project-authored bytes remain, preserves unrelated skills,
+  and refuses current curated-name collisions on an unrecognized target;
 - lifecycle commands do not directly traverse, interpret, or change
   `.agent-wayfinder/`;
 - plain non-Git targets, invalid or missing `HEAD`, explicit nested targets, and

@@ -144,6 +144,10 @@ regions from `AGENTS.md` and `CLAUDE.md`, and deletes either composite file only
 when no project-authored bytes remain. Unrelated skill directories and all
 project-authored composite bytes remain.
 
+If current curated-name directories exist but no Agent Workflow installation is
+recognizable, remove refuses before mutation rather than assuming those
+directories are framework-owned.
+
 There is no migration subsystem. Install and update replace this complete
 directory, so obsolete framework files disappear through ordinary convergence.
 Skill directories outside the current curated inventory remain untouched.

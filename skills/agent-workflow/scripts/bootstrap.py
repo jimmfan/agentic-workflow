@@ -42,20 +42,29 @@ class BootstrapError(RuntimeError):
 
 
 def latest_stable_ref() -> str:
-    url = f"https://api.github.com/repos/{REPOSITORY}/tags?per_page=100"
-    try:
-        value = json.loads(request_bytes(url).decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise BootstrapError("GitHub returned an invalid release tag response") from exc
-    if not isinstance(value, list):
-        raise BootstrapError("GitHub returned an invalid release tag response")
-
     releases = []
-    for tag in value:
-        name = tag.get("name") if isinstance(tag, dict) else None
-        match = STABLE_RELEASE_TAG.fullmatch(name) if isinstance(name, str) else None
-        if match is not None:
-            releases.append((tuple(int(part) for part in match.groups()), name))
+    page = 1
+    while True:
+        url = f"https://api.github.com/repos/{REPOSITORY}/tags?per_page=100&page={page}"
+        try:
+            value = json.loads(request_bytes(url).decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise BootstrapError(
+                "GitHub returned an invalid release tag response"
+            ) from exc
+        if not isinstance(value, list):
+            raise BootstrapError("GitHub returned an invalid release tag response")
+
+        for tag in value:
+            name = tag.get("name") if isinstance(tag, dict) else None
+            match = (
+                STABLE_RELEASE_TAG.fullmatch(name) if isinstance(name, str) else None
+            )
+            if match is not None:
+                releases.append((tuple(int(part) for part in match.groups()), name))
+        if len(value) < 100:
+            break
+        page += 1
     if not releases:
         raise BootstrapError(
             f"no stable semantic release tag (vX.Y.Z) is available in {REPOSITORY}"

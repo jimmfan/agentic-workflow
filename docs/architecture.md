@@ -192,7 +192,9 @@ Install and update converge to current desired state by replacing the complete
 updating the managed regions in `AGENTS.md` and `CLAUDE.md`. Remove deletes those
 managed directories and regions while preserving unrelated skill directories
 and project-authored composite bytes. Lifecycle does not directly traverse,
-interpret, or change `.agent-wayfinder/`.
+interpret, or change `.agent-wayfinder/`. On an unrecognized target, remove
+refuses current curated-name directory collisions before mutation because their
+ownership is not established.
 
 Lifecycle is desired-state filesystem convergence over explicitly owned
 surfaces. An explicit existing non-root directory is used directly. When the CLI
