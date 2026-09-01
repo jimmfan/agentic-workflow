@@ -3,34 +3,22 @@
 The root policy performs first-pass routing. Read this policy only when artifact
 or record responsibility is unclear or selected-skill availability, an exact
 invocation instruction, agent handoff, or durable resumption materially matters.
-Direct work, one obvious workflow, and one obvious specialist inside Wayfinder do
-not load it.
 Root rules for action authorization, project decision authority, preservation,
 and reporting remain binding.
 
 ## Decide and compose
 
 Choose the minimum useful process justified by intent, uncertainty, impact,
-reversibility, and expected duration. File count and skill availability do not
-select a workflow.
+reversibility, and expected duration. File count does not select a workflow.
 
 1. Choose Direct or one primary workflow; add only supporting capabilities that
    materially help.
 2. Read the instructions for each selected skill and only the support files
    those instructions require.
-3. Execute only actions authorized by the current user request or accepted
-   project policy, and only within that scope.
 
-Do not treat a consequential project choice as committed until required
-evidence is sufficient and either accepted project policy determines the choice
-for that boundary or the person, role, or valid delegate with project decision
-authority commits it. Authorization to perform an action does not commit that
-choice, and a committed choice does not authorize an unrelated action. Host
-permission supplies neither.
-
-Choose skills from the descriptions exposed in the current session. Before
-making or acting on a consequential choice, resolve any material unresolved
-prerequisite using the minimum sufficient method. This table resolves overlaps:
+Before making or acting on a consequential choice, resolve any material
+unresolved prerequisite using the minimum sufficient method. This table resolves
+overlaps:
 
 | Signal | Selection | Boundary |
 |---|---|---|
@@ -51,15 +39,12 @@ prerequisite using the minimum sufficient method. This table resolves overlaps:
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
 | Clear bounded low-risk request | Direct | Skip workflow ceremony |
 
-Clear intent or an explicit request may select a skill exposed in the current
-session. A supporting skill does not become the primary workflow or create
-Agent Workflow durable coordination state.
+A supporting skill creates no Agent Workflow durable coordination state.
 
 ## Re-evaluate and resume
 
 Re-evaluate when evidence changes uncertainty, scope, coordination, failure
-mode, or action authorization. Apply the root Wayfinder threshold; counts trigger
-assessment, never selection. Explicit Wayfinder use and opt-out control the route.
+mode, or action authorization. Apply the root Wayfinder threshold.
 
 Resume only relevant work. Continue from the current authorized request,
 selected Wayfinder map, current decision record, accepted specification, or
@@ -104,9 +89,8 @@ marker.
 
 If a selected skill is unavailable or cannot run without explicit user
 invocation, continue Direct only when the user did not require that skill and
-available capabilities can satisfy the request. Direct work remains subject to
-the current request's or accepted project policy's action authorization.
-Otherwise, give the exact supported invocation instruction and stop with
+available capabilities can satisfy the request. Otherwise, give the exact
+supported invocation instruction and stop with
 `<skill>-handoff` when explicit user invocation remains required, or stop with
 `<skill>-unavailable` when the skill is unavailable.
 

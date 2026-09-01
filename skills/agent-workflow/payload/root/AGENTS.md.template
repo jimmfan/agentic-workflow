@@ -1,67 +1,58 @@
-# Mandatory — no exceptions
+# Agent Workflow
 
-- MUST route every request. Direct is default; clear intent or an applicable
-  skill selects a workflow.
-- Use cues when the method materially helps; encountering the topic alone never
-  forces a specialist:
-  - unexplained causal failure → consider Debugging
-  - consequential choice needing alternative analysis → consider Discovery
-  - substantive sourced external uncertainty → consider Research
-  - ready substantial change → Implementation
-  - completed meaningful change → Verification
-  - durable coordination across session continuations, agent handoffs,
-    responsible participants, or interacting state → assess Wayfinder using the
-    criteria below
-- For one obvious specialist inside an already selected Wayfinder effort, load
-  only what it needs.
-  Read `.agent-workflow/routing.md` only when artifact or record responsibility
-  is unclear or selected-skill availability, an exact invocation instruction,
-  agent handoff, or durable resumption materially matters.
-- Do not treat a consequential project choice as committed until required
-  evidence is sufficient and either accepted project policy determines the
-  choice for that boundary or the person, role, or valid delegate with project
-  decision authority commits it. Technical judgment already delegated by the
-  user or accepted project policy remains valid. Dependent work stops while a
+- MUST route every request. Direct is default. Make first-pass selection from
+  the current user intent and skill descriptions exposed in the session. Topic
+  overlap or skill availability alone does not select a specialist.
+- Choose Direct or one primary workflow; add only supporting capabilities that
+  materially help. Re-evaluate the route when evidence changes.
+- Read `.agent-workflow/routing.md` only when detailed composition,
+  selected-skill availability or invocation, artifact or record responsibility,
+  handoff, or durable resumption guidance materially matters.
+- Treat a consequential project choice as committed only when required evidence
+  is sufficient and either accepted project policy determines the choice for
+  its boundary or the person, role, or valid delegate with project decision
+  authority commits it. Evidence-backed technical judgment already delegated by
+  the user or accepted project policy remains valid. Responsibility alone does
+  not establish project decision authority. Dependent work stops while a
   required project choice remains uncommitted; independent work may continue.
+  If accepted project policy does not determine a required choice, obtain it
+  from the person, role, or valid delegate with that authority. If authority is
+  unclear, identify the concrete question, who may decide, why the choice is
+  required, and what it unblocks.
+  Revisit a committed choice only for conflict, safety, project decision
+  authority, or request.
 - Perform writes, commands, publication, destructive operations, and external
-  mutations only within the action and scope authorized by the current user
-  request or accepted project policy. When both the required project choice is
-  committed and the action is authorized, affected work may proceed within that
-  authorized scope. Authorization to perform an action does not by itself commit
-  a project choice. A committed project choice does not by itself authorize
-  unrelated actions. Host permission alone neither authorizes an action nor
-  commits a project choice. A workflow or skill, its instructions, a test,
-  specification, ticket, or Wayfinder record grants neither. Exact external
-  read-only targets permit only that read.
-- When accepted project policy does not already determine a required project
-  choice, obtain it from the person, role, or valid delegate with project
-  decision authority. If that authority is unclear, ask who may decide, why the
-  choice is required, and what it unblocks. Responsibility alone does not
-  establish project decision authority. The person, role, or valid delegate with
-  that authority may explicitly accept unresolved uncertainty for one named
-  boundary; the question remains unresolved, only that boundary becomes
-  unblocked, no broader project choice is committed, no unrelated action is
-  authorized, and no other dependency is satisfied. Revisit a committed choice
-  only for conflict, safety, project decision authority, or request.
+  mutations only when the current user request or accepted project policy
+  authorizes that action and scope. An exact external read-only target authorizes
+  only that read. When both the required project choice is committed and the
+  action is authorized, affected work may proceed only within the authorized scope.
+  Action authorization does not commit a project choice. A committed project
+  choice does not authorize an unrelated action. Host permission supplies
+  neither. Workflows, skills and their instructions, tests, specifications,
+  tickets, and Wayfinder records supply neither.
+- The person, role, or valid delegate with project decision authority may
+  explicitly accept unresolved uncertainty for one named boundary. The question
+  remains unresolved; only that boundary becomes unblocked, no broader project
+  choice is committed, no unrelated action is authorized, and no other
+  dependency is satisfied.
 - Never claim unexecuted work.
-- Preserve unrelated work, project state, designated artifacts, and identifiers.
+- Preserve unrelated work, project-owned state, designated artifacts, and
+  identifiers.
   Live source and accepted artifacts outrank summaries, memory, and chat.
 - Do not manufacture cross-artifact conflicts or parallel representations of
-  the same current state.
-  Different scope, abstraction, summarization, or omitted detail is not by itself
-  an inconsistency. Before reconciling artifacts, identify a concrete
-  incompatible statement or a requirement the target artifact fails to satisfy.
-  When an existing designated artifact or record maintains the current state,
-  update it rather than creating a parallel representation unless the new
-  representation has independently useful meaning, scope, or retrieval value.
-  When materially ambiguous, preserve the existing content and clarify or
-  investigate rather than inventing detail or process merely to make artifacts
-  match.
+  the same current state. Differences in scope, abstraction, summarization, or
+  omitted detail are not by themselves conflicts. Reconcile only a concrete
+  incompatible statement or an unmet requirement. Update the artifact or record
+  that maintains current state instead of creating a competing representation
+  unless the new representation has independently useful meaning, scope, or
+  retrieval value. When materially ambiguous, preserve the existing content and
+  clarify or investigate rather than inventing detail or process merely to make
+  artifacts agree.
 
 ## When to use Wayfinder
 
-After reconnaissance, assess durable coordination. Three or more meaningful
-items require assessment, never selection by count alone.
+Assess durable coordination after any needed reconnaissance; item count alone
+never selects Wayfinder.
 Unless the user opts out, MUST select or resume Wayfinder when any hard signal
 or at least two soft signals apply:
 
@@ -73,15 +64,9 @@ or at least two soft signals apply:
   across record or state categories; evidence-driven plan change; a meaningful
   dependency graph; or material fresh-agent reconstruction risk.
 
-Single unresolved questions and routine/implementation work use Direct or applicable
-workflows. Honor Wayfinder use and opt-out. Read-only work changes no
-state.
-
-## Load state only when selected
-
-For selected/resumed Wayfinder, read
-`.agent-workflow/contracts/wayfinder-state.md` before the map. An unrelated map
-never selects Wayfinder. Never seed state.
+One isolated unresolved question and routine work use Direct or an applicable
+workflow. Honor explicit Wayfinder use and opt-out. Read-only work changes no
+state. Existing state, including an unrelated map, never selects Wayfinder.
 
 ## Report the route
 

@@ -200,13 +200,75 @@ class RoutingContractTests(unittest.TestCase):
     def test_route_marker_is_required_without_becoming_runtime_telemetry(self) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
         normalized_root = " ".join(root_policy.split())
+        detailed_routing = " ".join(
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
         self.assertIn(
             "End each user-facing final response with exactly one truthful",
             normalized_root,
         )
+        self.assertIn("Report only what executed", normalized_root)
+        self.assertIn("use `direct` if no workflow or skill ran", normalized_root)
+        self.assertIn(
+            "selection did not become equivalent execution", normalized_root
+        )
         self.assertIn(
             "Never reroute or work merely to produce the marker", normalized_root
         )
+        for compact_label in (
+            "`workflow-discovery`",
+            "`workflow-debugging`",
+            "`workflow-implementation`",
+            "`workflow-verification`",
+            "`discovery`",
+            "`debugging`",
+            "`implement`",
+            "`verification`",
+        ):
+            with self.subTest(compact_label=compact_label):
+                self.assertIn(compact_label, detailed_routing)
+        for terminal_suffix in (
+            "`<skill>-handoff`",
+            "`<skill>-unavailable`",
+            "`<skill>-blocked`",
+        ):
+            with self.subTest(terminal_suffix=terminal_suffix):
+                self.assertIn(terminal_suffix, detailed_routing)
+        self.assertIn(
+            "listing only workflows and composed capabilities that executed, in "
+            "effective-use order",
+            detailed_routing,
+        )
+        self.assertIn("The ASCII `->` separator is valid", detailed_routing)
+
+    def test_root_preserves_source_precedence_and_cross_artifact_boundaries(
+        self,
+    ) -> None:
+        root_policy = " ".join(
+            (PACKAGE_ROOT / "payload/root/AGENTS.md.template")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+
+        for boundary in (
+            "Preserve unrelated work, project-owned state, designated artifacts, and "
+            "identifiers",
+            "Live source and accepted artifacts outrank summaries, memory, and chat",
+            "Do not manufacture cross-artifact conflicts or parallel representations of "
+            "the same current state",
+            "Differences in scope, abstraction, summarization, or omitted detail are not "
+            "by themselves conflicts",
+            "Reconcile only a concrete incompatible statement or an unmet requirement",
+            "Update the artifact or record that maintains current state instead of creating "
+            "a competing representation unless the new representation has independently "
+            "useful meaning, scope, or retrieval value",
+            "When materially ambiguous, preserve the existing content and clarify or "
+            "investigate rather than inventing detail or process merely to make artifacts agree",
+        ):
+            with self.subTest(boundary=boundary):
+                self.assertIn(boundary, root_policy)
 
     def test_project_choice_and_action_boundaries_are_independent(
         self,
@@ -218,42 +280,58 @@ class RoutingContractTests(unittest.TestCase):
         ).read_text()
         normalized_state_contract = " ".join(state_contract.split())
 
-        case_requirements = {
-            "policy determines choice but write is unauthorized": (
-                "accepted project policy determines the choice for that boundary",
-                "A committed project choice does not by itself authorize unrelated actions",
+        boundary_requirements = {
+            "project-choice commitment gate": (
+                "required evidence is sufficient",
+                "accepted project policy determines the choice for its boundary",
+                "person, role, or valid delegate with project decision authority commits it",
             ),
-            "action is authorized but project choice is unresolved": (
-                "Authorization to perform an action does not by itself commit a project choice",
+            "delegated technical judgment": (
+                "Evidence-backed technical judgment already delegated by the user or "
+                "accepted project policy remains valid",
+            ),
+            "authority source": (
+                "Responsibility alone does not establish project decision authority",
+                "from the person, role, or valid delegate with that authority",
+                "identify the concrete question",
+                "who may decide",
+                "why the choice is required",
+                "what it unblocks",
+            ),
+            "blocked and independent work": (
                 "Dependent work stops while a required project choice remains uncommitted; "
                 "independent work may continue",
             ),
-            "project choice and action authorization both exist": (
-                "When both the required project choice is committed and the action is "
-                "authorized, affected work may proceed within that authorized scope",
+            "authorized action scope": (
+                "Perform writes, commands, publication, destructive operations, and external "
+                "mutations only when the current user request or accepted project policy "
+                "authorizes that action and scope",
+                "An exact external read-only target authorizes only that read",
             ),
-            "host permission exists without either gate": (
-                "Host permission alone neither authorizes an action nor commits a project choice",
+            "independent gates": (
+                "Action authorization does not commit a project choice",
+                "A committed project choice does not authorize an unrelated action",
+                "Host permission supplies neither",
+                "Workflows, skills and their instructions, tests, specifications, "
+                "tickets, and Wayfinder records supply neither",
+            ),
+            "both gates satisfied": (
+                "When both the required project choice is committed and the action is "
+                "authorized, affected work may proceed only within the authorized scope",
+            ),
+            "accepted unresolved uncertainty": (
+                "explicitly accept unresolved uncertainty for one named boundary",
+                "The question remains unresolved",
+                "only that boundary becomes unblocked",
+                "no broader project choice is committed",
+                "no unrelated action is authorized",
+                "no other dependency is satisfied",
             ),
         }
-        for case, requirements in case_requirements.items():
+        for case, requirements in boundary_requirements.items():
             for requirement in requirements:
                 with self.subTest(case=case, requirement=requirement):
                     self.assertIn(requirement, normalized_root)
-        for boundary in (
-            "Do not treat a consequential project choice as committed until required "
-            "evidence is sufficient",
-            "person, role, or valid delegate with project decision authority commits it",
-            "independent work may continue",
-            "Perform writes, commands, publication, destructive operations, and external "
-            "mutations only within the action and scope authorized by the current user "
-            "request or accepted project policy",
-            "A workflow or skill, its instructions, a test, specification, ticket, or "
-            "Wayfinder record grants neither",
-        ):
-            with self.subTest(boundary=boundary):
-                self.assertIn(boundary, normalized_root)
-        self.assertIn("Responsibility alone does not establish", normalized_root)
         self.assertIn(
             "Revisit a committed choice only for conflict, safety, project decision "
             "authority, or request",
@@ -263,11 +341,12 @@ class RoutingContractTests(unittest.TestCase):
             "Revisit a committed choice only for conflict, safety, authority, or request",
             normalized_root,
         )
-        self.assertNotIn("U#", normalized_root)
-        self.assertIn(
-            "Exact external read-only targets permit only that read",
-            normalized_root,
+        revisit_rule = re.search(
+            r"Revisit a committed choice only for [^.]+\.", normalized_root
         )
+        self.assertIsNotNone(revisit_rule)
+        self.assertNotIn("evidence", revisit_rule.group().casefold())
+        self.assertNotIn("U#", normalized_root)
         self.assertIn(
             "can record authority; it cannot create it", normalized_state_contract
         )
@@ -543,15 +622,45 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("If the state contract is unavailable", runtime)
         self.assertIn("do not invent substitute persistence", runtime)
 
-    def test_wayfinder_route_loads_the_state_contract_before_the_map(
+    def test_wayfinder_post_selection_loading_is_owned_by_skill_and_contract(
         self,
     ) -> None:
-        root_policy = " ".join(
-            (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text().split()
+        root_policy = (
+            PACKAGE_ROOT / "payload/root/AGENTS.md.template"
+        ).read_text(encoding="utf-8")
+        wayfinder_skill = " ".join(
+            (PACKAGE_ROOT / "payload/skills/wayfinder/SKILL.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        state_contract = " ".join(
+            (PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        normalized_root = " ".join(root_policy.split())
+
+        self.assertNotIn("## Load state only when selected", root_policy)
+        self.assertNotIn("Never seed state", root_policy)
+        self.assertNotIn("read the state contract before effort state", normalized_root)
+        self.assertIn(
+            "When selecting or resuming Wayfinder, read the state contract before effort state",
+            wayfinder_skill,
         )
         self.assertIn(
-            "read `.agent-workflow/contracts/wayfinder-state.md` before the map",
-            root_policy.casefold(),
+            "When resuming a Wayfinder effort, read `map.md` first among its effort files",
+            wayfinder_skill,
+        )
+        self.assertIn("Load this state contract before effort state", state_contract)
+        self.assertIn(
+            "When resuming a Wayfinder effort, read `map.md` first",
+            state_contract,
+        )
+        self.assertIn("Existing state is never a routing signal", state_contract)
+        self.assertIn(
+            "Selection may conclude that no consequential continuity earns persistence; "
+            "in that case create no effort, map, or supporting record",
+            wayfinder_skill,
         )
 
     def test_thin_router_is_direct_first_and_progressively_loaded(self) -> None:
@@ -562,21 +671,42 @@ class RoutingContractTests(unittest.TestCase):
         normalized_routing = " ".join(routing.split())
         normalized_readme = " ".join(readme.split())
 
+        self.assertTrue(root_policy.startswith("# Agent Workflow\n"))
+        self.assertNotIn("# Mandatory — no exceptions", root_policy)
+        self.assertIn("MUST route every request", normalized_root)
         self.assertIn("Direct is default", normalized_root)
-        self.assertIn("skill selects a workflow", normalized_root)
         self.assertIn(
-            "encountering the topic alone never forces a specialist", normalized_root
+            "first-pass selection from the current user intent and skill descriptions "
+            "exposed in the session",
+            normalized_root,
         )
         self.assertIn(
+            "Topic overlap or skill availability alone does not select a specialist",
+            normalized_root,
+        )
+        self.assertIn("Choose Direct or one primary workflow", normalized_root)
+        self.assertIn(
+            "supporting capabilities that materially help", normalized_root
+        )
+        self.assertIn("Re-evaluate the route when evidence changes", normalized_root)
+        for removed_cue in (
+            "unexplained causal failure",
+            "consequential choice needing alternative analysis",
+            "substantive sourced external uncertainty",
+            "ready substantial change",
+            "completed meaningful change",
+        ):
+            with self.subTest(removed_cue=removed_cue):
+                self.assertNotIn(removed_cue, normalized_root)
+        self.assertNotIn(
             "one obvious specialist inside an already selected Wayfinder effort",
             normalized_root,
         )
-        self.assertIn("Read `.agent-workflow/routing.md` only when", normalized_root)
         self.assertIn(
             (
-                "artifact or record responsibility is unclear or selected-skill "
-                "availability, an exact invocation instruction, agent handoff, or "
-                "durable resumption materially matters"
+                "Read `.agent-workflow/routing.md` only when detailed composition, "
+                "selected-skill availability or invocation, artifact or record "
+                "responsibility, handoff, or durable resumption guidance materially matters"
             ),
             normalized_root,
         )
@@ -597,15 +727,37 @@ class RoutingContractTests(unittest.TestCase):
             normalized_readme,
         )
         self.assertIn(
-            "Three or more meaningful items require assessment, never selection by count alone",
+            "Assess durable coordination after any needed reconnaissance; item count alone "
+            "never selects Wayfinder",
+            normalized_root,
+        )
+        self.assertNotIn("Three or more meaningful items", normalized_root)
+        self.assertIn("MUST select or resume Wayfinder", normalized_root)
+        self.assertIn("any hard signal or at least two soft signals", normalized_root)
+        self.assertIn(
+            "Hard: cross-session continuation or agent-handoff continuity; conflicting "
+            "sources that establish the same scoped claim; an uncommitted required project "
+            "choice while independent work proceeds; coordinated responsible participants "
+            "or areas; or source and scope needed to distinguish assumption from fact",
             normalized_root,
         )
         self.assertIn(
-            "After reconnaissance, assess durable coordination", normalized_root
+            "Soft: interacting consequential unresolved questions; durable distinctions "
+            "across record or state categories; evidence-driven plan change; a meaningful "
+            "dependency graph; or material fresh-agent reconstruction risk",
+            normalized_root,
         )
-        self.assertIn("MUST select or resume Wayfinder", normalized_root)
-        self.assertIn("any hard signal or at least two soft signals", normalized_root)
+        self.assertIn(
+            "One isolated unresolved question and routine work use Direct or an "
+            "applicable workflow",
+            normalized_root,
+        )
+        self.assertIn("Honor explicit Wayfinder use and opt-out", normalized_root)
         self.assertIn("Read-only work changes no state", normalized_root)
+        self.assertIn(
+            "Existing state, including an unrelated map, never selects Wayfinder",
+            normalized_root,
+        )
         self.assertNotIn("\n* ", root_policy)
         self.assertNotIn(
             "If it is unclear whether the work is clearly bounded", normalized_root
@@ -626,20 +778,59 @@ class RoutingContractTests(unittest.TestCase):
             "selection did not become equivalent execution", normalized_routing
         )
         self.assertIn("omit the skill that could not run", normalized_routing)
+        self.assertNotIn("one obvious specialist inside Wayfinder", normalized_routing)
         self.assertIn(
-            "Direct work, one obvious workflow, and one obvious specialist inside "
-            "Wayfinder do not load it",
+            "A supporting skill creates no Agent Workflow durable coordination state",
             normalized_routing,
         )
-        self.assertIn(
-            "A supporting skill does not become the primary workflow or create "
-            "Agent Workflow durable coordination state",
-            normalized_routing,
+
+        documented_routing = " ".join(
+            (REPOSITORY_ROOT / "docs/routing.md")
+            .read_text(encoding="utf-8")
+            .split()
         )
         self.assertIn(
+            "Assess durable coordination after any needed reconnaissance; item count "
+            "alone never selects Wayfinder",
+            documented_routing,
+        )
+        self.assertNotIn("Three or more meaningful items", documented_routing)
+
+    def test_detailed_router_defers_global_policy_to_the_root(self) -> None:
+        routing = (
+            PACKAGE_ROOT / "payload/agent-workflow/routing.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join(routing.split())
+
+        self.assertIn(
+            "Root rules for action authorization, project decision authority, "
+            "preservation, and reporting remain binding",
+            normalized,
+        )
+        for root_owned_restatement in (
+            "Execute only actions authorized by the current user request",
+            "Do not treat a consequential project choice as committed until",
+            "Choose skills from the descriptions exposed in the current session",
+            "Direct work remains subject to the current request's or accepted project "
+            "policy's action authorization",
+            "counts trigger assessment, never selection",
+            "Explicit Wayfinder use and opt-out control the route",
+        ):
+            with self.subTest(root_owned_restatement=root_owned_restatement):
+                self.assertNotIn(root_owned_restatement, normalized)
+
+        for route_specific_behavior in (
+            "This table resolves overlaps",
+            "Resume only relevant work",
             "After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map",
-            normalized_routing,
-        )
+            "Avoid routing loops",
+            "If a selected skill is unavailable",
+            "stop with `<skill>-blocked`",
+            "Use compact labels",
+            "Use a terminal suffix only when selection did not become equivalent execution",
+        ):
+            with self.subTest(route_specific_behavior=route_specific_behavior):
+                self.assertIn(route_specific_behavior, normalized)
 
 
 if __name__ == "__main__":

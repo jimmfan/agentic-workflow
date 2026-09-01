@@ -7,12 +7,11 @@ descriptions exposed in the current session, and may perform the smallest
 read-only reconnaissance within delegated scope when evidence is insufficient.
 One obvious skill loads directly; availability alone never selects a capability.
 
-Routing is dynamic. After reconnaissance, the agent must assess Wayfinder before
-completing. Three or more meaningful items also prompt an assessment, but count
-alone never selects it. Wayfinder must start or resume when any hard signal or
-at least two soft signals show that durable coordination is materially safer
-than conversation alone. Hard signals cover session-continuation or
-agent-handoff continuity, conflicting sources that establish the same scoped
+Routing is dynamic. Assess durable coordination after any needed reconnaissance;
+item count alone never selects Wayfinder. Wayfinder must start or resume when
+any hard signal or at least two soft signals show that durable coordination is
+materially safer than conversation alone. Hard signals cover session-continuation
+or agent-handoff continuity, conflicting sources that establish the same scoped
 claim, an uncommitted required project choice alongside independent work that can
 proceed, coordinated areas or responsible participants, and missing source
 traceability. Soft signals cover interacting unresolved questions, multiple
