@@ -381,24 +381,10 @@ def is_one_blank_line(data: bytes) -> bool:
     return data in {b"\n", b"\r\n"}
 
 
-def parse_agents_composite(
-    data: bytes, relative: PurePosixPath
+def parse_former_three_marker_layout(
+    data: bytes, markers: list[MarkerLine]
 ) -> CompositeParts | None:
-    markers = marker_lines(data)
-    if not markers:
-        return None
-    known_values = {MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER}
-    if any(line.value not in known_values for line in markers):
-        raise marker_error(relative, markers, "unknown or partial")
-
     values = [line.value for line in markers]
-    if values == [MANAGED_BEGIN, MANAGED_END]:
-        begin, end = markers
-        return CompositeParts(
-            data[begin.line_end : end.start],
-            data[: begin.start],
-            data[end.line_end :],
-        )
 
     # The exact former standard layout identifies its generated third marker and
     # all project bytes after it without guessing.
@@ -448,45 +434,48 @@ def parse_agents_composite(
                 data[inner_project.line_end :],
             )
 
+    return None
+
+
+def parse_agents_composite(
+    data: bytes, relative: PurePosixPath
+) -> CompositeParts | None:
+    markers = marker_lines(data)
+    if not markers:
+        return None
+    known_values = {MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER}
+    if any(line.value not in known_values for line in markers):
+        raise marker_error(relative, markers, "unknown or partial")
+
+    values = [line.value for line in markers]
+    if values == [MANAGED_BEGIN, MANAGED_END]:
+        begin, end = markers
+        return CompositeParts(
+            data[begin.line_end : end.start],
+            data[: begin.start],
+            data[end.line_end :],
+        )
+
+    former = parse_former_three_marker_layout(data, markers)
+    if former is not None:
+        return former
+
     raise marker_error(relative, markers, "missing, duplicated, or reordered")
 
 
 def parse_claude_composite(
     data: bytes, relative: PurePosixPath
 ) -> CompositeParts | None:
-    if MARKER_PREFIX not in data:
+    markers = marker_lines(data)
+    if not markers:
         return None
-    marker_count = data.count(MARKER_PREFIX)
-    managed_begin_count = data.count(CLAUDE_MANAGED_BEGIN)
-    managed_end_count = data.count(CLAUDE_MANAGED_END)
-    project_begin_count = data.count(CLAUDE_PROJECT_BEGIN)
-    counts = (
-        f"managed-begin={managed_begin_count}, managed-end={managed_end_count}, "
-        f"project-instructions={project_begin_count}, "
-        f"total-agent-workflow={marker_count}"
-    )
-    managed_end = data.find(CLAUDE_MANAGED_END, len(CLAUDE_MANAGED_BEGIN))
-    project_begin = data.find(
-        CLAUDE_PROJECT_BEGIN, managed_end + len(CLAUDE_MANAGED_END)
-    )
-    if not (
-        marker_count == 3
-        and managed_begin_count == 1
-        and managed_end_count == 1
-        and project_begin_count == 1
-        and data.startswith(CLAUDE_MANAGED_BEGIN)
-        and managed_end >= 0
-        and project_begin == managed_end + len(CLAUDE_MANAGED_END)
-    ):
-        raise LifecycleError(
-            f"{relative}: managed policy markers are missing, duplicated, partial, "
-            f"or reordered; expected the existing Claude composite layout; found {counts}"
-        )
-    return CompositeParts(
-        data[len(CLAUDE_MANAGED_BEGIN) : managed_end],
-        b"",
-        data[project_begin + len(CLAUDE_PROJECT_BEGIN) :],
-    )
+    known_values = {MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER}
+    if any(line.value not in known_values for line in markers):
+        raise marker_error(relative, markers, "unknown or partial")
+    former = parse_former_three_marker_layout(data, markers)
+    if former is None:
+        raise marker_error(relative, markers, "missing, duplicated, or reordered")
+    return former
 
 
 def parse_composite(data: bytes, relative: PurePosixPath) -> CompositeParts | None:

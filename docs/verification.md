@@ -93,9 +93,10 @@ The deterministic suite proves that:
 - extra files inside a current curated skill directory are removed, while
   unrelated skill directories remain unchanged;
 - repeated install and update leave exactly one managed block in `AGENTS.md` and
-  `CLAUDE.md` while preserving project-authored bytes byte-for-byte; `AGENTS.md`
-  uses only logical managed-begin/managed-end delimiters, accepts LF or CRLF
-  marker lines, and never appends a second managed region;
+  `CLAUDE.md` while preserving project-authored bytes byte-for-byte; both accept
+  logical LF or CRLF marker lines and narrowly recover the evidenced historical
+  duplicate, while `AGENTS.md` uses only managed-begin/managed-end delimiters and
+  the existing `CLAUDE.md` output protocol remains unchanged;
 - remove deletes the managed directories and regions, deletes a composite file
   only when no project-authored bytes remain, and preserves unrelated skills;
 - lifecycle commands do not directly traverse, interpret, or change

@@ -28,8 +28,9 @@ fifteen-skill curated surface mapped by the package.
   Repository-wide Git cleanliness checks may still observe changes under it.
 - `AGENTS.md` is composite. Replace only one unambiguous managed region and
   preserve every byte outside it as opaque project content. Stop on unknown,
-  partial, duplicate, interleaved, or reordered marker layouts. The existing
-  `CLAUDE.md` composite protocol remains unchanged.
+  partial, duplicate, interleaved, or reordered marker layouts. Both composite
+  parsers accept logical LF or CRLF marker lines; the existing `CLAUDE.md`
+  output protocol remains unchanged.
 
 The ordinary distribution manifest is only the current source-to-target map.
 There is no installed manifest, content-integrity state, origin or deletion
