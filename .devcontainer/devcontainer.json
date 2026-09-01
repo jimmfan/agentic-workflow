@@ -8,9 +8,11 @@
       "UV_VERSION": "0.11.32"
     }
   },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1.1.0": {
-      "version": "2.97.0"
+      "version": "2.98.0"
     }
   },
   "mounts": [
@@ -36,7 +38,8 @@
       ],
       "settings": {
         "extensions.supportNodeGlobalNavigator": true,
-        "python.defaultInterpreterPath": "/usr/local/bin/python3",
+        "python.defaultInterpreterPath": "python3",
+        "python.languageServer": "Pylance",
         "python.testing.pytestEnabled": false,
         "python.testing.unittestEnabled": true,
         "python.testing.unittestArgs": [

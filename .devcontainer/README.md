@@ -36,18 +36,20 @@ For this repository's sibling-checkout layout, the container adds a secondary
 mount of the workspace's parent directory at the same absolute path used on the
 macOS host. This is required when the workspace is a linked Git worktree: its
 `.git` file points to metadata in the main checkout using an absolute host path.
-Preserving that path makes the metadata reachable while the workspace itself
-retains its conventional `/workspaces/<repository>` container path. The main
-checkout must remain beneath the workspace's parent directory. The secondary
-bind mount is writable, so container processes can also modify sibling files
-beneath that parent, although VS Code opens only this workspace.
+Preserving that path makes the metadata reachable without depending on either
+checkout's directory name. VS Code always opens the explicit short path
+`/workspace`, avoiding the secondary host-path alias.
 
 After the workspace opens, the post-create check runs automatically. Success
 ends with output resembling:
 
 ```text
-OK: development container is ready (Python 3.14.x; uv 0.11.32; git version ...; GitHub CLI 2.97.0; Codex 26.715.31925).
+OK: development container is ready (Python 3.14.x; uv 0.11.32; git version ...; GitHub CLI 2.98.0; Codex 26.715.31925).
 ```
+
+The repository also selects `python3` as the default interpreter and Pylance as
+the language server in both local and container VS Code windows. This prevents
+VS Code from falling back to Jedi with a stale, deleted `.venv` interpreter.
 
 ## Verify and develop
 

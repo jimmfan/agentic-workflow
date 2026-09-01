@@ -14,11 +14,12 @@ import sys
 from typing import Sequence
 
 
-MINIMUM_GH_VERSION = (2, 97, 0)
+MINIMUM_GH_VERSION = (2, 98, 0)
 EXPECTED_CODEX_EXTENSION = "openai.chatgpt@26.715.31925"
 EXPECTED_CODEX_HOME = Path("/home/vscode/.codex")
 CODEX_SYSTEM_CONFIG = Path("/etc/codex/config.toml")
 DEVCONTAINER_CONFIG = Path(".devcontainer/devcontainer.json")
+VSCODE_SETTINGS = Path(".vscode/settings.json")
 
 
 def run(command: Sequence[str]) -> str:
@@ -87,6 +88,23 @@ def require_codex_configuration() -> None:
     run([unshare, "--user", "--map-root-user", "true"])
 
 
+def require_editor_configuration() -> None:
+    devcontainer = json.loads(DEVCONTAINER_CONFIG.read_text(encoding="utf-8"))
+    container_settings = devcontainer["customizations"]["vscode"]["settings"]
+    workspace_settings = json.loads(VSCODE_SETTINGS.read_text(encoding="utf-8"))
+    for location, settings in (
+        ("Dev Container", container_settings),
+        ("workspace", workspace_settings),
+    ):
+        if settings.get("python.defaultInterpreterPath") != "python3":
+            raise RuntimeError(
+                f"{location} must use python3 as its default interpreter"
+            )
+        if settings.get("python.languageServer") != "Pylance":
+            raise RuntimeError(
+                f"{location} must select Pylance instead of falling back to Jedi"
+            )
+
 def main() -> int:
     if sys.version_info[:2] != (3, 14):
         found = ".".join(str(part) for part in sys.version_info[:3])
@@ -128,6 +146,7 @@ def main() -> int:
         )
 
     require_codex_configuration()
+    require_editor_configuration()
 
     python_version = ".".join(str(part) for part in sys.version_info[:3])
     print(
