@@ -684,6 +684,20 @@ class RoutingContractTests(unittest.TestCase):
             "Topic overlap or skill availability alone does not select a specialist",
             normalized_root,
         )
+        reconnaissance_requirements = {
+            "evidence-insufficient entry condition": (
+                "When evidence is insufficient to select or re-evaluate the route"
+            ),
+            "smallest necessary reconnaissance": "smallest read-only reconnaissance",
+            "read-only reconnaissance": "read-only reconnaissance",
+            "delegated scope": "within the scope delegated",
+            "delegated scope source": (
+                "scope delegated by the current user request or accepted project policy"
+            ),
+        }
+        for requirement, fragment in reconnaissance_requirements.items():
+            with self.subTest(reconnaissance_requirement=requirement):
+                self.assertIn(fragment, normalized_root)
         self.assertIn("Choose Direct or one primary workflow", normalized_root)
         self.assertIn(
             "supporting capabilities that materially help", normalized_root

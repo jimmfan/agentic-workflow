@@ -3,6 +3,9 @@
 - MUST route every request. Direct is default. Make first-pass selection from
   the current user intent and skill descriptions exposed in the session. Topic
   overlap or skill availability alone does not select a specialist.
+- When evidence is insufficient to select or re-evaluate the route, perform only
+  the smallest read-only reconnaissance within the scope delegated by the current
+  user request or accepted project policy.
 - Choose Direct or one primary workflow; add only supporting capabilities that
   materially help. Re-evaluate the route when evidence changes.
 - Read `.agent-workflow/routing.md` only when detailed composition,
