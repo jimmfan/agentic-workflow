@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-14
+- Amended: 2026-08-31
 
 ## Context
 
@@ -13,9 +14,9 @@ it does not justify package-manager machinery or manual migration ceremony.
 The source package also contains policies and skill resources destined for an
 installed repository. The supported bootstrap and adoption path needs an
 explicit activation boundary between stored package resources and their
-installed host discovery locations. Agent Workflow is pre-1.0, has one current
-user, and operates only in Git-tracked projects, so Git can provide the recovery
-boundary instead of an installation-history database.
+installed host discovery locations. Agent Workflow is pre-1.0, and normal
+lifecycle use should converge declared framework surfaces regardless of whether
+the target is Git-tracked or what unrelated repository state exists.
 
 ## Decision
 
@@ -28,12 +29,10 @@ Separate framework-owned reconstructable output from preservation boundaries:
   a complete framework-owned reconstructable surface. Install and update replace
   each complete named surface; remove deletes it. Unrelated skill directories
   remain independent and are not deleted or interpreted through historical skill
-  inventories. A current curated name is reserved when Agent Workflow is adopted,
-  so a project-owned skill with the same name must be moved or renamed before
-  installation.
+  inventories. Current curated names are reserved framework surfaces, and
+  existing content at those names is ordinary install/update convergence input.
 - `.agent-wayfinder/` is project-owned durable state. Lifecycle operations do
-  not directly traverse, interpret, or change it. Repository-wide Git
-  cleanliness checks may still observe changes under it.
+  not directly traverse, interpret, or change it.
 - `AGENTS.md` is a composite project file. In current desired state, one
   unambiguous managed region may be replaced or removed idempotently; every byte
   outside it is project-owned and opaque to Agent Workflow. When no region
@@ -45,38 +44,62 @@ Separate framework-owned reconstructable output from preservation boundaries:
 - `CLAUDE.md` remains under its existing composite integration for this decision.
   Lifecycle operations continue to preserve its project-authored portion; this
   decision does not change that host protocol or its support boundary.
-- Every mutating lifecycle command requires the target to be an exact Git
-  worktree root with a valid `HEAD` and an entirely clean tracked and untracked
-  worktree. Managed destinations must not be ignored, and managed roots and
-  parents must not be symlinks or escape the worktree. These checks occur before
-  mutation because Git cannot recover ignored, untracked, or out-of-worktree
-  content.
+- Every lifecycle command requires an existing non-root target directory. An
+  explicit target is used directly. When the CLI target is omitted, Git may be
+  used only to discover the containing worktree root; failed or unavailable
+  discovery falls back to the current directory. Repository state, `HEAD`,
+  tracked changes, untracked files, and ignore rules are not prerequisites or
+  recovery boundaries. Managed roots and their parents must not themselves be
+  symlinks, unsupported entry types, or escapes from the target, and ambiguous
+  composite ownership stops mutation before project-authored bytes can be lost.
+  Nested entries inside a replaceable managed directory are ordinary convergence
+  input.
 - The supported bootstrap and adoption path keeps distributable root policies
   under non-active template names and activates framework resources only by
   projecting explicit source-to-target mappings into host discovery locations.
+  By default, the installed CLI acts as a thin transport: it selects the highest
+  stable `vX.Y.Z` release tag, resolves that tag to an immutable commit, downloads
+  one repository snapshot, and runs that snapshot's lifecycle against that same
+  snapshot's payload. Explicit refs remain development and testing overrides.
 
 The ordinary distribution manifest is only the current source-to-target map.
 Agent Workflow maintains no installation history or migration subsystem: no
 installed manifests, origin or deletion provenance, content-integrity state,
 historical inventories, retirement registries, legacy-name policy, backup
 trees, global transactions, or rollback machinery. Pre-1.0 historical layouts
-do not become permanent runtime migration policy. Git records and recovers
-lifecycle changes. A partial failure is reported truthfully and is recovered by
-inspecting and restoring the worktree with Git before retrying.
+do not become permanent runtime migration policy. A partial filesystem failure
+is reported truthfully; after resolving the concrete error, rerunning the
+command converges the managed surfaces.
+
+For remove only, a valid managed composite region or the exact current
+`.agent-workflow/` surface establishes an existing installation. Remove refuses
+current curated-name collisions on an otherwise unrecognized target rather than
+assuming they are framework-owned. This conservative removal guard does not
+participate in install or update. Ambiguous composite markers remain a hard
+preflight failure.
 
 ## Consequences
 
 Missing, modified, obsolete, or extra files inside a managed surface are replaced
-from current package bytes after the Git safety gate passes. Project-owned bytes
+from current package bytes. Project-owned bytes
 outside a composite managed region, unrelated skill directories, and
 `.agent-wayfinder/` remain hard preservation boundaries.
 
-A clean existing installation normally converges with one install or update and
-produces one reviewable Git diff. An obsolete file inside `.agent-workflow/`
-disappears through complete replacement; no preliminary deletion or cleanup
-commit is required. A skill name absent from the current curated inventory is
-outside current lifecycle ownership and remains untouched unless the project
-explicitly removes it.
+An existing installation normally converges with one install or update despite
+ordinary repository state. An obsolete file inside `.agent-workflow/` disappears
+through complete replacement; no preliminary deletion or cleanup commit is
+required. A skill name absent from the current curated inventory is outside
+current lifecycle ownership and remains untouched unless the project explicitly
+removes it.
+
+Fresh and existing projects converge all current curated-name directories during
+install and update without prompts, recognition, manifests, provenance,
+migration state, force flags, backups, or a generalized adoption subsystem.
+
+The framework release selected by an ordinary install or update is independent
+of the installed bootstrap package version. A normal update therefore does not
+require a preliminary CLI upgrade, while lifecycle code and payload remain
+coherent because both are executed from one immutable downloaded snapshot.
 
 ## Alternatives considered
 
@@ -90,19 +113,22 @@ explicitly removes it.
 - Mirror installed root-policy and host-customization paths literally inside
   the distributable package: rejected because supported adoption needs a clear
   activation boundary.
-- Track per-file creation or deletion evidence: rejected because the clean Git
-  worktree and reserved managed-directory names make the current ownership
+- Track per-file creation or deletion evidence: rejected because the declared
+  managed-directory names make the current ownership
   boundary explicit without persistent provenance.
 - Maintain historical layout or skill-name rules as permanent runtime policy:
   rejected because current desired state and current ownership boundaries are
   sufficient; pre-1.0 history does not justify a migration or retirement
   subsystem.
-- Roll back a cross-surface transaction: rejected because Git is the recovery
-  mechanism and a truthful partial-failure report is sufficient for the current
-  pre-1.0 use case.
+- Require Git cleanliness and use Git as lifecycle recovery: superseded because
+  ordinary repository state is unrelated to the declared ownership boundary and
+  creates user-facing ceremony without preventing loss of project-owned data.
+- Roll back a cross-surface transaction: rejected because truthful
+  partial-failure reporting plus rerunnable convergence is sufficient for the
+  current pre-1.0 use case.
 
 ## Reconsideration trigger
 
-Reconsider when a concrete data-loss or core-routing failure cannot be handled
-by the clean Git boundary and current desired-state replacement without
-weakening supported host behavior.
+Reconsider when a concrete project-data-loss or core-routing failure cannot be
+handled by current desired-state replacement and the managed-path safety checks
+without weakening supported host behavior.

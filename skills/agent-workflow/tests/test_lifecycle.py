@@ -32,60 +32,59 @@ class LifecycleTests(ProjectTestCase):
     def lifecycle(self, command: str, *extra: object):
         return run_script(LIFECYCLE, command, self.project, *extra)
 
-    def test_mutation_requires_exact_git_root_with_valid_head(self) -> None:
+    def test_explicit_targets_do_not_depend_on_git_repository_state(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             non_repository = Path(temporary) / "plain"
             non_repository.mkdir()
             result = run_script(LIFECYCLE, "install", non_repository)
-            self.assertEqual(result.returncode, 2)
-            self.assertIn("Git worktree root", result.stderr)
+            self.assert_ok(result)
+            obsolete = non_repository / ".agent-workflow/providers.json"
+            obsolete.write_bytes(b"obsolete framework content\n")
+            result = run_script(LIFECYCLE, "update", non_repository)
+            self.assert_ok(result)
+            self.assertFalse(obsolete.exists())
 
             unborn = Path(temporary) / "unborn"
             unborn.mkdir()
             run_git(unborn, "init", "-q")
             result = run_script(LIFECYCLE, "install", unborn)
-            self.assertEqual(result.returncode, 2)
-            self.assertIn("valid HEAD", result.stderr)
+            self.assert_ok(result)
+
+            without_git = Path(temporary) / "without-git"
+            without_git.mkdir()
+            environment = os.environ.copy()
+            environment["PATH"] = ""
+            result = run_script(
+                LIFECYCLE,
+                "update",
+                without_git,
+                env=environment,
+            )
+            self.assert_ok(result)
 
         child = self.project / "nested"
         child.mkdir()
-        (child / ".gitkeep").write_bytes(b"")
-        commit_all(self.project, "add nested directory")
         result = run_script(LIFECYCLE, "install", child)
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("exact Git worktree root", result.stderr)
+        self.assert_ok(result)
+        self.assertTrue((child / ".agent-workflow/routing.md").is_file())
+        self.assertFalse((self.project / ".agent-workflow").exists())
 
-    def test_mutation_requires_a_completely_clean_worktree(self) -> None:
+        (self.project / ".gitignore").write_text("ignored/\n", encoding="utf-8")
+        commit_all(self.project, "add ignore rule")
         tracked = self.project / "README.md"
         tracked.write_text("changed\n", encoding="utf-8")
-        result = self.lifecycle("install")
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("worktree and index must be completely clean", result.stderr)
-        self.assertFalse((self.project / ".agent-workflow").exists())
-
-        run_git(self.project, "restore", "README.md")
         (self.project / "untracked.txt").write_text("untracked\n", encoding="utf-8")
+        ignored = self.project / "ignored/local.txt"
+        ignored.parent.mkdir()
+        ignored.write_text("ignored\n", encoding="utf-8")
         result = self.lifecycle("install")
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("untracked", result.stderr)
-        self.assertFalse((self.project / ".agent-workflow").exists())
-
-    def test_untracked_or_ignored_managed_content_is_rejected(self) -> None:
-        managed_untracked = self.project / ".agents/skills/research/local.txt"
-        managed_untracked.parent.mkdir(parents=True)
-        managed_untracked.write_text("cannot be recovered by Git\n", encoding="utf-8")
-        result = self.lifecycle("install")
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("untracked file under a managed surface", result.stderr)
-
-        managed_untracked.unlink()
-        managed_untracked.parent.rmdir()
-        (self.project / ".gitignore").write_text(".agents/\n", encoding="utf-8")
-        commit_all(self.project, "ignore agents directory")
-        result = self.lifecycle("install")
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("managed destination is ignored", result.stderr)
-        self.assertFalse((self.project / ".agent-workflow").exists())
+        self.assert_ok(result)
+        status = self.lifecycle("status")
+        self.assert_ok(status)
+        self.assertIn("Agent Workflow: healthy", status.stdout)
+        self.assertNotIn("Git", status.stdout)
+        self.assertEqual(tracked.read_text(encoding="utf-8"), "changed\n")
+        self.assertEqual(ignored.read_text(encoding="utf-8"), "ignored\n")
 
     def test_symlink_in_a_managed_parent_is_rejected_without_escape(self) -> None:
         outside = Path(self.temporary.name) / "outside"
@@ -102,21 +101,39 @@ class LifecycleTests(ProjectTestCase):
         self.assertEqual(sentinel.read_text(encoding="utf-8"), "outside\n")
         self.assertEqual(workspace_snapshot(self.project), before)
 
-    def test_special_entry_in_a_managed_tree_is_rejected(self) -> None:
+    def test_special_entries_are_scoped_to_concrete_replacement_hazards(self) -> None:
         framework = self.project / ".agent-workflow"
         framework.mkdir()
         fifo = framework / "unsupported"
+        outside = Path(self.temporary.name) / "outside.txt"
+        outside.write_text("outside\n", encoding="utf-8")
+        link = framework / "outside-link"
         try:
             fifo_path = os.fspath(fifo)
             os.mkfifo(fifo_path)
+            link.symlink_to(outside)
         except (AttributeError, OSError) as exc:
             self.skipTest(f"FIFO creation is unavailable: {exc}")
 
         result = self.lifecycle("install")
 
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("special entry", result.stderr)
-        self.assertTrue(fifo.exists())
+        self.assert_ok(result)
+        self.assertFalse(fifo.exists())
+        self.assertFalse(link.exists())
+        self.assertEqual(outside.read_text(encoding="utf-8"), "outside\n")
+
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "project"
+            project.mkdir()
+            managed_root = project / ".agent-workflow"
+            os.mkfifo(os.fspath(managed_root))
+
+            result = run_script(LIFECYCLE, "update", project)
+
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("unsupported entry type", result.stderr)
+            self.assertTrue(managed_root.exists())
+            self.assertFalse((project / ".agents").exists())
 
     def test_composite_project_bytes_survive_install_update_and_remove(self) -> None:
         project_policy = b"# Project policy\n\nKeep this byte-for-byte.\n"
@@ -412,26 +429,6 @@ class LifecycleTests(ProjectTestCase):
         self.assertIn("INSTALL PLAN", result.stdout)
         self.assertEqual(workspace_snapshot(self.project), before)
 
-    def test_status_reports_repair_and_git_safety_without_requiring_cleanliness(
-        self,
-    ) -> None:
-        status = self.lifecycle("status")
-        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
-        self.assertIn("repairable", status.stdout)
-
-        self.assert_ok(self.lifecycle("install"))
-        commit_all(self.project, "install agent workflow")
-
-        untracked = self.project / "untracked.txt"
-        untracked.write_text("work in progress\n", encoding="utf-8")
-        status = self.lifecycle("status")
-        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
-        self.assertIn("Git safety boundary would block mutation", status.stdout)
-        self.assertIn("untracked", status.stdout)
-        self.assertIn("Agent Workflow: blocked by Git safety boundary", status.stdout)
-        self.assertNotIn("Agent Workflow: repairable", status.stdout)
-        self.assertEqual(untracked.read_text(encoding="utf-8"), "work in progress\n")
-
     def test_mid_operation_write_failure_reports_truthful_partial_state(self) -> None:
         lifecycle = load_module("partial_failure_lifecycle", LIFECYCLE)
         real_replace = lifecycle.os.replace
@@ -453,7 +450,8 @@ class LifecycleTests(ProjectTestCase):
 
         self.assertEqual(result, 2)
         self.assertIn("partial changes may exist", stderr.getvalue())
-        self.assertIn("inspect git status", stderr.getvalue().lower())
+        self.assertIn("resolve the filesystem error and rerun", stderr.getvalue())
+        self.assertNotIn("Git", stderr.getvalue())
         self.assertTrue((self.project / ".agent-workflow").is_dir())
         self.assertLess(len(list((self.project / ".agent-workflow").rglob("*"))), 6)
         self.assertNotEqual(run_git(self.project, "status", "--porcelain").stdout, "")

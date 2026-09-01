@@ -18,8 +18,8 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 REPOSITORY = "jimmfan/agentic-workflow"
-DEFAULT_REF = "main"
 PACKAGE_MARKER = ("skills", "agent-workflow")
+STABLE_RELEASE_TAG = re.compile(r"v(\d+)\.(\d+)\.(\d+)")
 MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
 MAX_PACKAGE_MEMBERS = 500
@@ -39,6 +39,37 @@ ARCHIVE_MODE_VARIANTS = {
 
 class BootstrapError(RuntimeError):
     """A bounded bootstrap failure with an actionable message."""
+
+
+def latest_stable_ref() -> str:
+    releases = []
+    page = 1
+    while True:
+        url = f"https://api.github.com/repos/{REPOSITORY}/tags?per_page=100&page={page}"
+        try:
+            value = json.loads(request_bytes(url).decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise BootstrapError(
+                "GitHub returned an invalid release tag response"
+            ) from exc
+        if not isinstance(value, list):
+            raise BootstrapError("GitHub returned an invalid release tag response")
+
+        for tag in value:
+            name = tag.get("name") if isinstance(tag, dict) else None
+            match = (
+                STABLE_RELEASE_TAG.fullmatch(name) if isinstance(name, str) else None
+            )
+            if match is not None:
+                releases.append((tuple(int(part) for part in match.groups()), name))
+        if len(value) < 100:
+            break
+        page += 1
+    if not releases:
+        raise BootstrapError(
+            f"no stable semantic release tag (vX.Y.Z) is available in {REPOSITORY}"
+        )
+    return max(releases)[1]
 
 
 def configure_console() -> None:
@@ -86,10 +117,10 @@ def resolve_revision(ref: str) -> str:
     return revision
 
 
-def select_source(ref: str, archive_url: str | None) -> str:
+def select_source(ref: str | None, archive_url: str | None) -> str:
     if archive_url:
         return archive_url
-    revision = resolve_revision(ref)
+    revision = resolve_revision(ref if ref is not None else latest_stable_ref())
     return f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"
 
 
@@ -243,6 +274,22 @@ def run_package(package: Path, action: str, target: Path, dry_run: bool) -> int:
     return subprocess.run(command, check=False).returncode
 
 
+def default_target() -> Path:
+    current = Path.cwd().absolute()
+    try:
+        discovered = subprocess.run(
+            ["git", "-C", str(current), "rev-parse", "--show-toplevel"],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return current
+    if discovered.returncode != 0 or not discovered.stdout.strip():
+        return current
+    return Path(discovered.stdout.strip()).absolute()
+
+
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -251,7 +298,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         default="install",
         choices=("install", "update", "status", "remove"),
     )
-    parser.add_argument("target", nargs="?", default=Path.cwd(), type=Path)
+    parser.add_argument("target", nargs="?", type=Path)
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -259,8 +306,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "--ref",
-        default=DEFAULT_REF,
-        help="Git tag, branch, or commit for install/update",
+        help="Git tag, branch, or commit (default: newest stable release)",
     )
     parser.add_argument("--archive-url", help=argparse.SUPPRESS)
     return parser.parse_args(argv)
@@ -270,7 +316,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     require_supported_python()
     configure_console()
     args = parse_args(argv or sys.argv[1:])
-    target = args.target.expanduser().absolute()
+    target = args.target if args.target is not None else default_target()
+    target = target.expanduser().absolute()
     if target.is_symlink() or not target.is_dir():
         raise BootstrapError(
             f"target must be an existing regular non-symlink directory: {target}"

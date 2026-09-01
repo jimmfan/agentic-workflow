@@ -14,9 +14,9 @@ repository, or hidden reasoning trace.
 
 ## Testing layers
 
-1. **Production-boundary tests** exercise lifecycle convergence and Git safety,
-   direct skill distribution, package verification, bootstrap safety, routing,
-   and Wayfinder state through their public boundaries.
+1. **Production-boundary tests** exercise lifecycle convergence and managed-path
+   safety, direct skill distribution, package verification, bootstrap safety,
+   routing, and Wayfinder state through their public boundaries.
 2. **Behavior-harness tests** validate TOML schema and vocabulary, blind-rubric
    isolation, evaluator failure modes, route-marker syntax, fixture reset, and
    command-runner evidence.

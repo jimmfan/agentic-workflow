@@ -7,9 +7,7 @@ current package bytes.
 
 Durable project-owned Wayfinder state may live under sibling
 `.agent-wayfinder/`, but that tree is outside the lifecycle boundary. Lifecycle
-commands do not directly traverse, interpret, or change it. The repository-wide
-Git cleanliness check may still report changes there as part of a dirty
-worktree.
+commands do not directly traverse, interpret, or change it.
 
 ## Contents
 
@@ -72,8 +70,9 @@ The fifteen curated skills live directly under `.agents/skills`. Their current
 directory names are reserved for Agent Workflow. Install and update replace
 each complete current curated skill directory, including extra files, while
 preserving unrelated skill directories. Remove deletes those current curated
-directories. A pre-existing conflicting skill must be moved or renamed before
-install. Wayfinder and Research are directly distributed maintained versions.
+directories. Existing content at those reserved names is ordinary install/update
+convergence input. Wayfinder and Research are directly distributed maintained
+versions.
 
 Local Wayfinder data is a configured project-owned durable representation under
 `.agent-wayfinder/`, never a distributed template or framework-owned lifecycle
@@ -112,17 +111,24 @@ coordination state. Implementation is a workflow transition into execution.
 
 ## Status and recovery
 
-Install, update, and remove require the exact Git worktree root, a valid `HEAD`,
-and a completely clean tracked and untracked worktree. Before mutation they
-reject untracked files under managed surfaces, ignored managed destinations,
-malformed managed markers, symlinks, special entries, and paths that escape the
-worktree. `status` is read-only and reports safety blockers without requiring a
-clean tree.
+With no explicit target, the CLI uses the containing Git worktree root when Git
+can discover one and otherwise uses the current directory. Explicit targets are
+used directly. Repository state, `HEAD`, tracked changes, untracked files, and
+ignore rules do not gate lifecycle operations.
 
-Git is the recovery mechanism. There is no cross-surface transaction, backup,
-rollback journal, migration engine, or automatic skill retirement. A failure
-after mutation can leave a partial worktree diff; inspect `git status`, restore
-with Git as appropriate, and retry.
+The bootstrap selects the highest stable `vX.Y.Z` release tag, resolves it to an
+immutable commit, and uses the lifecycle and payload from that one downloaded
+snapshot. Ordinary framework updates do not require a separate CLI upgrade. An
+explicit ref such as `--ref main` is an opt-in development or testing override.
+
+Before mutation, the lifecycle checks composite ownership and managed roots and
+parents for malformed markers, symlink or unsupported entries, and escapes from
+the target. Nested entries inside a replaceable managed directory are removed
+through ordinary convergence. `status` reports managed drift or conflicts
+without a repository-wide Git safety concept. There is no cross-surface
+transaction, backup, rollback journal, migration engine, or automatic skill
+retirement. If a filesystem failure leaves partial changes, resolve the reported
+error and rerun the command to converge.
 
 Install and update converge to the same current package state. Remove deletes
 `.agent-workflow/` and the current curated skill directories, strips the managed
@@ -130,9 +136,13 @@ regions from `AGENTS.md` and `CLAUDE.md`, and deletes either composite file only
 when no project-authored bytes remain. Unrelated skill directories and all
 project-authored composite bytes remain.
 
+If current curated-name directories exist but no Agent Workflow installation is
+recognizable, remove refuses before mutation rather than assuming those
+directories are framework-owned.
+
 There is no migration subsystem. Install and update replace this complete
-directory, so obsolete framework files disappear in the same reviewable Git
-diff. Skill directories outside the current curated inventory remain untouched.
+directory, so obsolete framework files disappear through ordinary convergence.
+Skill directories outside the current curated inventory remain untouched.
 
 Every user-facing final response ends with one compact route marker such as:
 

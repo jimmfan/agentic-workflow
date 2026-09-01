@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import io
+import json
+import os
 import tarfile
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from _test_support import (
     BOOTSTRAP,
@@ -65,6 +68,47 @@ class BootstrapSafetyTests(unittest.TestCase):
                 member.size = len(data)
                 archive.addfile(member, io.BytesIO(data))
         return output.getvalue()
+
+    def release_probe_archive(self, version: str) -> bytes:
+        lifecycle = f"""\
+from pathlib import Path
+import sys
+
+LIFECYCLE_RELEASE = {version!r}
+package = Path(__file__).resolve().parent.parent
+package_version = (package / "VERSION").read_text(encoding="utf-8").strip()
+payload_version = (package / "payload/framework-version.txt").read_text(encoding="utf-8").strip()
+if package_version != LIFECYCLE_RELEASE or payload_version != LIFECYCLE_RELEASE:
+    raise SystemExit("downloaded lifecycle and payload releases differ")
+target = Path(sys.argv[2])
+(target / "selected-framework-version.txt").write_text(
+    f"{{LIFECYCLE_RELEASE}}\\n", encoding="utf-8"
+)
+""".encode()
+        return self.archive(
+            [
+                (
+                    "source/skills/agent-workflow/VERSION",
+                    f"{version}\n".encode(),
+                    "file",
+                ),
+                (
+                    "source/skills/agent-workflow/scripts/lifecycle.py",
+                    lifecycle,
+                    "file",
+                ),
+                (
+                    "source/skills/agent-workflow/payload/distribution/manifest.json",
+                    b"{}\n",
+                    "file",
+                ),
+                (
+                    "source/skills/agent-workflow/payload/framework-version.txt",
+                    f"{version}\n".encode(),
+                    "file",
+                ),
+            ]
+        )
 
     def test_corrupt_archive_is_rejected(self) -> None:
         with (
@@ -186,6 +230,61 @@ class BootstrapSafetyTests(unittest.TestCase):
                         self.assertEqual(target.read_bytes(), source.read_bytes())
             self.assertNotIn("GitHub CLI", result.stderr)
 
+    def test_default_target_discovers_git_root_and_explicit_target_is_literal(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            archive = root / "package.tar.gz"
+            archive.write_bytes(self.package_archive())
+            archive_url = archive.as_uri()
+
+            repository = root / "repository"
+            nested = repository / "terraform/prod"
+            nested.mkdir(parents=True)
+            initialize_repository(repository)
+            result = run_script(
+                CLI,
+                "install",
+                "--archive-url",
+                archive_url,
+                cwd=nested,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((repository / ".agent-workflow/routing.md").is_file())
+            self.assertFalse((nested / ".agent-workflow").exists())
+
+            explicit_repository = root / "explicit-repository"
+            explicit_nested = explicit_repository / "terraform/prod"
+            explicit_nested.mkdir(parents=True)
+            initialize_repository(explicit_repository)
+            result = run_script(
+                CLI,
+                "update",
+                explicit_nested,
+                "--archive-url",
+                archive_url,
+                cwd=explicit_repository,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((explicit_nested / ".agent-workflow/routing.md").is_file())
+            self.assertFalse((explicit_repository / ".agent-workflow").exists())
+
+            plain = root / "plain"
+            plain.mkdir()
+            environment = os.environ.copy()
+            environment["PATH"] = ""
+            result = run_script(
+                CLI,
+                "install",
+                "--archive-url",
+                archive_url,
+                cwd=plain,
+                env=environment,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((plain / ".agent-workflow/routing.md").is_file())
+
     def test_cli_exposes_help_and_delegates_every_lifecycle_command(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -235,6 +334,164 @@ class BootstrapSafetyTests(unittest.TestCase):
         self.assertIn("scripts/lifecycle.py", required)
         self.assertNotIn("scripts/adopt.py", required)
         self.assertNotIn("scripts/legacy_transition.py", required)
+
+    def test_default_source_selects_the_latest_stable_semantic_release(self) -> None:
+        first_tags_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags"
+            "?per_page=100&page=1"
+        )
+        second_tags_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags"
+            "?per_page=100&page=2"
+        )
+        commit_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/v0.10.0"
+        )
+        revision = "a" * 40
+        responses = {
+            first_tags_url: json.dumps(
+                [{"name": "v0.9.0"}]
+                + [{"name": f"unrelated-{index}"} for index in range(99)]
+            ).encode(),
+            second_tags_url: json.dumps(
+                [
+                    {"name": "v0.10.0-rc.1"},
+                    {"name": "v0.10.0"},
+                    {"name": "v2"},
+                ]
+            ).encode(),
+            commit_url: json.dumps({"sha": revision}).encode(),
+        }
+
+        with mock.patch.object(
+            self.bootstrap,
+            "request_bytes",
+            side_effect=lambda url: responses[url],
+        ) as request_bytes:
+            source = self.bootstrap.select_source(None, None)
+
+        self.assertEqual(
+            source,
+            f"https://codeload.github.com/{self.bootstrap.REPOSITORY}/tar.gz/{revision}",
+        )
+        self.assertEqual(
+            [call.args[0] for call in request_bytes.call_args_list],
+            [first_tags_url, second_tags_url, commit_url],
+        )
+
+        with (
+            mock.patch.object(
+                self.bootstrap,
+                "request_bytes",
+                return_value=json.dumps(
+                    [{"name": "main"}, {"name": "v0.10.0-rc.1"}]
+                ).encode(),
+            ),
+            self.assertRaisesRegex(
+                self.bootstrap.BootstrapError,
+                "no stable semantic release tag",
+            ),
+        ):
+            self.bootstrap.select_source(None, None)
+
+    def test_argument_parsing_leaves_default_release_discovery_to_the_transport(
+        self,
+    ) -> None:
+        self.assertIsNone(self.bootstrap.parse_args(["update", "."]).ref)
+        for ref in (
+            "main",
+            "fix/pre-v1-install-simplification",
+            "v0.26.0",
+            "a" * 40,
+        ):
+            with self.subTest(ref=ref):
+                self.assertEqual(
+                    self.bootstrap.parse_args(["update", ".", "--ref", ref]).ref,
+                    ref,
+                )
+
+    def test_explicit_refs_bypass_latest_release_discovery(self) -> None:
+        revision = "b" * 40
+        with (
+            mock.patch.object(
+                self.bootstrap,
+                "latest_stable_ref",
+                side_effect=AssertionError("release discovery must not run"),
+            ),
+            mock.patch.object(
+                self.bootstrap,
+                "resolve_revision",
+                return_value=revision,
+            ) as resolve_revision,
+        ):
+            for ref in (
+                "main",
+                "fix/pre-v1-install-simplification",
+                "v0.26.0",
+                "a" * 40,
+            ):
+                with self.subTest(ref=ref):
+                    self.assertEqual(
+                        self.bootstrap.select_source(ref, None),
+                        f"https://codeload.github.com/{self.bootstrap.REPOSITORY}/tar.gz/{revision}",
+                    )
+
+        self.assertEqual(
+            [call.args[0] for call in resolve_revision.call_args_list],
+            [
+                "main",
+                "fix/pre-v1-install-simplification",
+                "v0.26.0",
+                "a" * 40,
+            ],
+        )
+
+    def test_older_bootstrap_updates_from_one_newer_coherent_release_snapshot(
+        self,
+    ) -> None:
+        self.assertEqual(
+            (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip(),
+            "0.26.0",
+        )
+        tags_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags"
+            "?per_page=100&page=1"
+        )
+        commit_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/v0.27.0"
+        )
+        revision = "c" * 40
+        archive_url = (
+            f"https://codeload.github.com/{self.bootstrap.REPOSITORY}/tar.gz/{revision}"
+        )
+        responses = {
+            tags_url: json.dumps([{"name": "v0.26.0"}, {"name": "v0.27.0"}]).encode(),
+            commit_url: json.dumps({"sha": revision}).encode(),
+            archive_url: self.release_probe_archive("0.27.0"),
+        }
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(
+                self.bootstrap,
+                "request_bytes",
+                side_effect=lambda url: responses[url],
+            ) as request_bytes,
+        ):
+            target = Path(temporary) / "plain-project"
+            target.mkdir()
+
+            result = self.bootstrap.main(["update", str(target)])
+
+            self.assertEqual(result, 0)
+            self.assertEqual(
+                (target / "selected-framework-version.txt").read_text(encoding="utf-8"),
+                "0.27.0\n",
+            )
+            self.assertEqual(
+                [call.args[0] for call in request_bytes.call_args_list],
+                [tags_url, commit_url, archive_url],
+            )
 
     def test_minimum_runtime_files_are_required(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -74,14 +74,20 @@ the complete current curated skill directories. No installed manifest, content
 hash, provenance record, created-state bit, retirement history, migration proof,
 or rollback journal participates in this lifecycle.
 
-Mutating commands operate only at an exact, clean Git worktree root with a valid
-`HEAD`, after rejecting untracked or ignored managed destinations, symlinks,
-special entries, path escapes, and malformed composite markers. Git provides
-recovery if a later write fails. Complete replacement of `.agent-workflow/`
-removes obsolete files in the same reviewable diff, while skill directories
-outside the current curated inventory remain untouched. Lifecycle code does not
-directly traverse, interpret, or change `.agent-wayfinder/`; the repository-wide
-Git cleanliness check may still report changes there as part of a dirty worktree.
+Install and update replace current curated-name directories unconditionally after
+the concrete managed-path and composite preflight; they perform no installation
+recognition or interaction. Remove alone refuses current curated-name directory
+collisions when no installation is recognizable.
+
+Mutating commands accept any explicit existing non-root target directory. With
+no target, the CLI may use Git only to discover the containing worktree root;
+repository state does not gate the lifecycle. Preflight rejects symlinks,
+unsupported entry types, and path escapes at managed roots or parents, plus
+malformed composite markers. Nested entries inside a replaceable directory are
+removed through ordinary convergence. Complete replacement of
+`.agent-workflow/` removes obsolete files, while skill directories outside the
+current curated inventory remain untouched. Lifecycle code does not directly
+traverse, interpret, or change `.agent-wayfinder/`.
 
 When maintaining a derived skill, edit the effective payload directly, preserve
 its complete declared directory and local references, classify every prose
