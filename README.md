@@ -42,6 +42,11 @@ Install and update select the newest stable Agent Workflow release, so ordinary
 framework updates do not require a separate CLI upgrade. `--ref` remains an
 explicit development and testing override for a branch, tag, or commit.
 
+On first installation only, if a current curated skill directory already exists,
+Agent Workflow lists every conflicting directory and asks once before replacing
+them. Existing installations update without that prompt. A noninteractive first
+installation with a conflict stops safely and names the paths to review.
+
 ## What it does
 
 Agent Workflow has three main responsibilities:

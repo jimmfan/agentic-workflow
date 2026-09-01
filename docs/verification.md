@@ -27,6 +27,14 @@ hazards at managed roots and parents. Nested entries inside a replaceable manage
 directory are removed through convergence. `status` is read-only and reports
 only managed drift or conflicts.
 
+For an unrecognized first adoption, existing current curated skill directories
+are listed and require one interactive confirmation before replacement. Only
+`y` or `yes` proceeds. Noninteractive collisions fail with actionable paths.
+A valid managed composite region or exact current `.agent-workflow/` surface
+recognizes an existing installation without persistent state, so modified current
+curated skills then converge without a prompt. Ambiguous composite ownership
+fails before reaching confirmation.
+
 The lifecycle writes no installed manifest, hashes, provenance, created-state
 bits, migration history, backups, or rollback journal. If a write fails after
 mutation begins, resolve the reported filesystem error and rerun the command to
@@ -97,6 +105,13 @@ The deterministic suite proves that:
   desired-state replacement without a preliminary cleanup commit;
 - extra files inside a current curated skill directory are removed, while
   unrelated skill directories remain unchanged;
+- first installation without a current curated-name collision does not prompt;
+  collisions are listed once, accepted confirmation replaces those complete
+  directories, decline and noninteractive use perform no mutation, and unrelated
+  skill names never participate;
+- a recognizable existing installation replaces modified current curated skills
+  automatically without prompting, while ambiguous composite ownership still
+  fails before confirmation;
 - repeated install and update leave exactly one managed block in `AGENTS.md` and
   `CLAUDE.md` while preserving project-authored bytes byte-for-byte; both accept
   logical LF or CRLF marker lines and narrowly recover the evidenced historical

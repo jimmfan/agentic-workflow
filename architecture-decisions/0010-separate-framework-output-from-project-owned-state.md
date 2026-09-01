@@ -29,9 +29,11 @@ Separate framework-owned reconstructable output from preservation boundaries:
   a complete framework-owned reconstructable surface. Install and update replace
   each complete named surface; remove deletes it. Unrelated skill directories
   remain independent and are not deleted or interpreted through historical skill
-  inventories. Current curated names are reserved framework surfaces; existing
-  content at those names does not require adoption recognition before
-  replacement.
+  inventories. On first adoption, before an existing installation is recognizable,
+  a directory at a current curated name may instead contain project-owned data.
+  Install and update therefore list all such directory collisions and obtain one
+  interactive confirmation before replacement. Only `y` or `yes` proceeds;
+  noninteractive use fails before mutation with the conflicting paths.
 - `.agent-wayfinder/` is project-owned durable state. Lifecycle operations do
   not directly traverse, interpret, or change it.
 - `AGENTS.md` is a composite project file. In current desired state, one
@@ -72,6 +74,12 @@ do not become permanent runtime migration policy. A partial filesystem failure
 is reported truthfully; after resolving the concrete error, rerunning the
 command converges the managed surfaces.
 
+An existing installation is recognized without persistent state when either a
+valid managed composite region or the exact current `.agent-workflow/` surface
+is present. Once recognized, current curated skill directories converge
+automatically even when modified. Ambiguous composite markers remain a hard
+preflight failure and never become an overwrite-confirmation path.
+
 ## Consequences
 
 Missing, modified, obsolete, or extra files inside a managed surface are replaced
@@ -85,6 +93,11 @@ through complete replacement; no preliminary deletion or cleanup commit is
 required. A skill name absent from the current curated inventory is outside
 current lifecycle ownership and remains untouched unless the project explicitly
 removes it.
+
+A fresh project with no current curated-name collision installs without a prompt.
+When a first-adoption collision exists, one confirmation protects the complete
+conflicting directories without adding manifests, provenance, migration state,
+force flags, backups, or a generalized adoption subsystem.
 
 The framework release selected by an ordinary install or update is independent
 of the installed bootstrap package version. A normal update therefore does not

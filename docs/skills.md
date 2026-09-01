@@ -74,6 +74,14 @@ the complete current curated skill directories. No installed manifest, content
 hash, provenance record, created-state bit, retirement history, migration proof,
 or rollback journal participates in this lifecycle.
 
+If no existing Agent Workflow installation is recognizable, existing directories
+at current curated names are first-adoption collisions. Install and update list
+the complete conflicting directories and ask once before replacement; `y` or
+`yes` proceeds, while a decline or noninteractive invocation stops before
+mutation. A valid managed composite region or an exact current
+`.agent-workflow/` surface recognizes an installation, after which current
+curated directories converge automatically without confirmation.
+
 Mutating commands accept any explicit existing non-root target directory. With
 no target, the CLI may use Git only to discover the containing worktree root;
 repository state does not gate the lifecycle. Preflight rejects symlinks,

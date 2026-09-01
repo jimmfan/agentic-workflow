@@ -70,9 +70,10 @@ The fifteen curated skills live directly under `.agents/skills`. Their current
 directory names are reserved for Agent Workflow. Install and update replace
 each complete current curated skill directory, including extra files, while
 preserving unrelated skill directories. Remove deletes those current curated
-directories. Existing content at a current curated name is replaced without
-adoption recognition. Wayfinder and Research are directly distributed maintained
-versions.
+directories. Before first adoption is recognizable, existing directories at
+current curated names are listed together and require one confirmation before
+replacement. Recognized installations converge them without prompting.
+Wayfinder and Research are directly distributed maintained versions.
 
 Local Wayfinder data is a configured project-owned durable representation under
 `.agent-wayfinder/`, never a distributed template or framework-owned lifecycle
@@ -120,6 +121,13 @@ The bootstrap selects the highest stable `vX.Y.Z` release tag, resolves it to an
 immutable commit, and uses the lifecycle and payload from that one downloaded
 snapshot. Ordinary framework updates do not require a separate CLI upgrade. An
 explicit ref such as `--ref main` is an opt-in development or testing override.
+
+First adoption recognizes an existing installation only from a valid managed
+composite region or exact current `.agent-workflow/` surface. If no installation
+is recognizable and current curated skill directories already exist, install or
+update lists them and asks once before replacement. Noninteractive collisions
+fail with the conflicting paths; ambiguous composite ownership still fails before
+confirmation.
 
 Before mutation, the lifecycle checks composite ownership and managed roots and
 parents for malformed markers, symlink or unsupported entries, and escapes from

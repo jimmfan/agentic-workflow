@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import io
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 from _test_support import (
     LIFECYCLE,
@@ -9,9 +12,11 @@ from _test_support import (
     ProjectTestCase,
     commit_all,
     initialize_repository,
+    load_module,
     run_git,
     run_script,
     tree_snapshot,
+    workspace_snapshot,
 )
 
 RETAINED_SKILLS = {
@@ -31,6 +36,11 @@ RETAINED_SKILLS = {
     "workflow-implementation",
     "workflow-verification",
 }
+
+
+class InteractiveInput(io.StringIO):
+    def isatty(self) -> bool:
+        return True
 
 
 def file_snapshot(root: Path) -> dict[str, bytes]:
@@ -55,6 +65,33 @@ class DirectDistributionTests(ProjectTestCase):
 
     def lifecycle(self, command: str, *extra: object):
         return run_script(LIFECYCLE, command, self.project, *extra)
+
+    def lifecycle_in_process(
+        self,
+        command: str,
+        *,
+        project: Path | None = None,
+        stdin: io.StringIO | None = None,
+    ) -> tuple[int, str, str]:
+        lifecycle = load_module(
+            f"interactive_lifecycle_{id(stdin)}_{command}",
+            LIFECYCLE,
+        )
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with (
+            mock.patch.object(lifecycle.sys, "stdin", stdin or io.StringIO()),
+            redirect_stdout(stdout),
+            redirect_stderr(stderr),
+        ):
+            result = lifecycle.main([command, str(project or self.project)])
+        return result, stdout.getvalue(), stderr.getvalue()
+
+    def add_project_skill(self, name: str, content: bytes = b"project-owned\n") -> Path:
+        path = self.project / ".agents/skills" / name / "SKILL.md"
+        path.parent.mkdir(parents=True)
+        path.write_bytes(content)
+        return path
 
     def assert_current_payload_installed(
         self, additional_skills: set[str] | None = None
@@ -96,6 +133,105 @@ class DirectDistributionTests(ProjectTestCase):
         self.assert_ok(status)
         self.assertIn("Agent Workflow: healthy", status.stdout)
         self.assertNotIn(".agent-wayfinder", status.stdout)
+
+    def test_fresh_install_without_reserved_collision_does_not_prompt(self) -> None:
+        result, stdout, stderr = self.lifecycle_in_process(
+            "install",
+            stdin=InteractiveInput("no\n"),
+        )
+
+        self.assertEqual(result, 0, stdout + stderr)
+        self.assertNotIn("Continue and replace", stdout)
+
+    def test_fresh_install_collision_prompts_once_and_names_directories(self) -> None:
+        self.add_project_skill("research")
+        self.add_project_skill("tdd")
+
+        result, stdout, stderr = self.lifecycle_in_process(
+            "install",
+            stdin=InteractiveInput("no\n"),
+        )
+
+        self.assertEqual(result, 2, stdout + stderr)
+        self.assertEqual(stdout.count("Continue and replace"), 1)
+        self.assertIn(".agents/skills/research/", stdout)
+        self.assertIn(".agents/skills/tdd/", stdout)
+
+    def test_accepted_first_install_collision_replaces_curated_skill(self) -> None:
+        research = self.add_project_skill("research")
+
+        result, stdout, stderr = self.lifecycle_in_process(
+            "install",
+            stdin=InteractiveInput("yes\n"),
+        )
+
+        self.assertEqual(result, 0, stdout + stderr)
+        self.assertIn("Continue and replace", stdout)
+        self.assertEqual(
+            tree_snapshot(research.parent),
+            tree_snapshot(PACKAGE_ROOT / "payload/skills/research"),
+        )
+
+    def test_declined_first_install_collision_performs_no_mutation(self) -> None:
+        self.add_project_skill("research")
+        before = workspace_snapshot(self.project)
+
+        result, stdout, stderr = self.lifecycle_in_process(
+            "install",
+            stdin=InteractiveInput("n\n"),
+        )
+
+        self.assertEqual(result, 2, stdout + stderr)
+        self.assertIn("cancelled", stderr)
+        self.assertEqual(workspace_snapshot(self.project), before)
+
+    def test_noninteractive_first_install_collision_fails_with_paths(self) -> None:
+        self.add_project_skill("research")
+        before = workspace_snapshot(self.project)
+
+        result, stdout, stderr = self.lifecycle_in_process(
+            "install",
+            stdin=io.StringIO("yes\n"),
+        )
+
+        self.assertEqual(result, 2, stdout + stderr)
+        self.assertIn(".agents/skills/research/", stderr)
+        self.assertIn("interactive terminal", stderr)
+        self.assertEqual(workspace_snapshot(self.project), before)
+
+    def test_ambiguous_composite_fails_before_collision_confirmation(self) -> None:
+        self.add_project_skill("research")
+        (self.project / "AGENTS.md").write_bytes(
+            b"<!-- agent-workflow:managed-begin -->\nambiguous\n"
+        )
+        before = workspace_snapshot(self.project)
+
+        result, stdout, stderr = self.lifecycle_in_process(
+            "install",
+            stdin=InteractiveInput("yes\n"),
+        )
+
+        self.assertEqual(result, 2, stdout + stderr)
+        self.assertIn("AGENTS.md: managed policy markers", stderr)
+        self.assertNotIn("Continue and replace", stdout)
+        self.assertEqual(workspace_snapshot(self.project), before)
+
+    def test_recognized_install_updates_modified_skill_without_prompt(self) -> None:
+        self.assert_ok(self.lifecycle("install"))
+        research = self.project / ".agents/skills/research"
+        (research / "SKILL.md").write_bytes(b"modified current skill\n")
+
+        result, stdout, stderr = self.lifecycle_in_process(
+            "update",
+            stdin=InteractiveInput("no\n"),
+        )
+
+        self.assertEqual(result, 0, stdout + stderr)
+        self.assertNotIn("Continue and replace", stdout)
+        self.assertEqual(
+            tree_snapshot(research),
+            tree_snapshot(PACKAGE_ROOT / "payload/skills/research"),
+        )
 
     def test_update_completely_replaces_managed_directories_only(self) -> None:
         self.assert_ok(self.lifecycle("install"))
@@ -190,7 +326,13 @@ class DirectDistributionTests(ProjectTestCase):
         self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
         self.assertIn("Agent Workflow: repairable", status.stdout)
 
-        self.assert_ok(run_script(LIFECYCLE, "install", project))
+        result, stdout, stderr = self.lifecycle_in_process(
+            "install",
+            project=project,
+            stdin=InteractiveInput("yes\n"),
+        )
+        self.assertEqual(result, 0, stdout + stderr)
+        self.assertIn(".agents/skills/research/", stdout)
         self.assertFalse(framework_note.exists())
         self.assertEqual(
             tree_snapshot(project / ".agents/skills/research"),

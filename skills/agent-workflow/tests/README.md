@@ -21,7 +21,8 @@ backend may require package-index access.
   managed-path safety boundaries.
 - `test_direct_distribution.py` owns whole-directory direct skill replacement,
   current mapping, current-name convergence, unrelated-skill preservation,
-  obsolete framework-file convergence, partial-failure reporting, and removal.
+  first-adoption curated-name confirmation, obsolete framework-file convergence,
+  partial-failure reporting, and removal.
 - `test_verify_package.py` owns package shape, exact payload inventory,
   attribution, focused semantic contracts, and distribution-map refresh validation.
 - `test_bootstrap.py` owns latest-stable semantic release selection, immutable

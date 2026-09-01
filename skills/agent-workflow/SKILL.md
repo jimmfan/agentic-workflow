@@ -18,8 +18,10 @@ fifteen-skill curated surface mapped by the package.
 - Each current curated `.agents/skills/<name>/` directory is framework-owned and
   reconstructable. Install/update replace the complete named directory, including
   deleting extra files inside it; remove deletes it. Unrelated skill directories
-  remain untouched. Current curated names are reserved framework surfaces and
-  existing content at those names is replaced during convergence.
+  remain untouched. On an unrecognized first installation, existing directories
+  at current curated names are possible project-owned collisions: list all such
+  complete directories and obtain one interactive confirmation before replacing
+  them. A recognized installation converges them without confirmation.
 - `.agent-wayfinder/` and every entry under it are project-owned durable data.
   Lifecycle operations do not directly traverse, interpret, or change it.
 - `AGENTS.md` is composite. Replace only one unambiguous managed region and
@@ -55,6 +57,13 @@ These commands stop before mutation when a concrete managed-path or composite
 ownership hazard is found.
 `status` is read-only and reports only managed drift or conflicts. All entrypoints
 require Python 3.11 or newer.
+
+Recognition uses only an unambiguous existing managed composite region or an
+exact current `.agent-workflow/` surface; it writes no adoption state. If no
+installation is recognizable and a current curated skill directory already
+exists, `install` or `update` asks once for all conflicting directories. Only
+`y` or `yes` proceeds. Noninteractive execution fails with the conflicting paths,
+and ambiguous composite ownership fails before any confirmation.
 
 Use the packaged `agent-workflow` CLI for normal end-user installation. It uses
 the bootstrap transport, which selects the highest stable `vX.Y.Z` release tag,
