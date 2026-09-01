@@ -483,60 +483,24 @@ def directory_matches(
     )
 
 
-def recognizable_installation(root: Path, distribution: Distribution) -> bool:
+def unrecognized_remove_collisions(
+    root: Path, distribution: Distribution
+) -> tuple[PurePosixPath, ...]:
     for relative in COMPOSITE_PATHS:
         current = read_composite(root, relative)
         if current is not None and parse_composite(current, relative) is not None:
-            return True
-    return directory_matches(root, FRAMEWORK_ROOT, distribution.framework)
-
-
-def reserved_skill_collisions(
-    root: Path, distribution: Distribution
-) -> tuple[PurePosixPath, ...]:
-    if recognizable_installation(root, distribution):
+            return ()
+    if directory_matches(root, FRAMEWORK_ROOT, distribution.framework):
         return ()
-    collisions = []
-    for name in distribution.skill_names:
-        relative = SKILLS_ROOT / name
-        if path_exists(root.joinpath(*relative.parts)):
-            collisions.append(relative)
-    return tuple(collisions)
-
-
-def confirm_first_install_skill_replacement(
-    root: Path, distribution: Distribution
-) -> None:
-    collisions = reserved_skill_collisions(root, distribution)
-    if not collisions:
-        return
-    rendered = tuple(f"{relative.as_posix()}/" for relative in collisions)
-    if not sys.stdin.isatty():
-        raise LifecycleError(
-            "first installation requires confirmation before replacing existing "
-            f"curated skill directories: {', '.join(rendered)}; rerun in an "
-            "interactive terminal to review and confirm"
-        )
-
-    print(
-        "Agent Workflow is not already recognizable and installation will replace "
-        "these existing curated skill directories:"
+    return tuple(
+        SKILLS_ROOT / name
+        for name in distribution.skill_names
+        if path_exists(root.joinpath(*(SKILLS_ROOT / name).parts))
     )
-    for relative in rendered:
-        print(f"- {relative}")
-    try:
-        response = input("Continue and replace these directories? [y/N] ")
-    except (EOFError, OSError) as exc:
-        raise LifecycleError(
-            "interactive confirmation became unavailable before any lifecycle "
-            f"mutation; conflicting directories: {', '.join(rendered)}"
-        ) from exc
-    if response.strip().lower() not in {"y", "yes"}:
-        raise LifecycleError("installation cancelled; no lifecycle mutation occurred")
 
 
 def require_recognized_skill_removal(root: Path, distribution: Distribution) -> None:
-    collisions = reserved_skill_collisions(root, distribution)
+    collisions = unrecognized_remove_collisions(root, distribution)
     if not collisions:
         return
     rendered = ", ".join(f"{relative.as_posix()}/" for relative in collisions)
@@ -672,7 +636,6 @@ def converge(
     if dry_run:
         print_plan(command, root, distribution)
         return
-    confirm_first_install_skill_replacement(root, distribution)
     try:
         replace_directory(root, FRAMEWORK_ROOT, distribution.framework)
         for name, files in sorted(distribution.skills.items()):

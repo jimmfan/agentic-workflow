@@ -155,13 +155,11 @@ reserved, reconstructable directory that install and update replace completely;
 unrelated local skill directories are preserved. Supported hosts discover
 project skills from that location and expose them to the agent.
 
-Before first adoption is recognizable, an existing directory at a current
-curated name may contain project-owned data. Install and update list all such
-complete-directory collisions and ask once before replacement. Recognition uses
-an unambiguous managed composite region or an exact current `.agent-workflow/`
-surface and creates no persistent state. Recognized installations converge
-modified curated skills automatically; noninteractive collisions and ambiguous
-composite markers fail before mutation.
+Install and update treat every current curated name as a reserved framework
+surface and replace the complete directory without recognition, interaction, or
+collision state. The conservative recognition check applies only to remove on an
+otherwise unrecognized target. Ambiguous composite markers remain a hard
+preflight failure for every mutating lifecycle operation.
 
 Eleven curated skills are maintained derived works of Matt Pocock's `v1.2.3`
 release. Their effective installed versions are the maintained runtime source;
