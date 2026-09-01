@@ -90,8 +90,12 @@ files and top-level host-customization trees inside the payload. Adoption
 activates framework resources by projecting their explicit mappings into the
 repository locations recognized by supported hosts.
 
-`AGENTS.md` and `CLAUDE.md` are composite files. Lifecycle operations replace
-only their unambiguous managed region and preserve project-region bytes.
+`AGENTS.md` is a composite file. Lifecycle operations replace only one
+unambiguous managed region and preserve every project-owned byte before and
+after it. Repeated convergence leaves exactly one two-delimiter managed region;
+ambiguous marker states stop before mutation. The existing `CLAUDE.md`
+integration remains unchanged pending a host-compatible replacement with no
+support regression.
 
 ### Project-owned durable state
 
@@ -155,7 +159,7 @@ project skills from that location and expose them to the agent.
 Eleven curated skills are maintained derived works of Matt Pocock's `v1.2.3`
 release. Their effective installed versions are the maintained runtime source;
 complete repository, copyright, and MIT license attribution lives in
-`.agent-workflow/THIRD_PARTY_NOTICES.md`.
+`.agent-workflow/README.md`.
 
 Wayfinder's effective installed body uses one coherent map-first operational
 model rather than layering local state rules over conflicting upstream tracker
@@ -191,8 +195,9 @@ symlinks, special entries, and path escapes. `status` is read-only and reports
 the same safety blockers without requiring cleanliness. Git supplies recovery;
 there is no installed manifest, provenance database, migration engine,
 retirement history, cross-surface transaction, backup, or rollback mechanism.
-Legacy provider state and obsolete Setup, Teach, or Triage directories require
-a separate manual Git cleanup before install.
+Obsolete files inside `.agent-workflow/` disappear through complete desired-state
+replacement. Skill directories outside the current curated inventory remain
+untouched; historical skill names do not participate in runtime policy.
 
 Current execution uses Python 3.11+ standard-library APIs on POSIX-style shells
 for macOS, Linux, WSL, and Linux-based devcontainers. Native PowerShell and CMD

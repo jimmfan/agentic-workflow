@@ -20,7 +20,7 @@ backend may require package-index access.
   clean-Git safety boundaries.
 - `test_direct_distribution.py` owns whole-directory direct skill replacement,
   current mapping, reserved-name conflicts, unrelated-skill preservation,
-  legacy clean-break diagnostics, partial-failure reporting, and removal.
+  obsolete framework-file convergence, partial-failure reporting, and removal.
 - `test_verify_package.py` owns package shape, exact payload inventory,
   attribution, focused semantic contracts, and distribution-map refresh validation.
 - `test_bootstrap.py` owns archive parsing, extraction and root safety, offline

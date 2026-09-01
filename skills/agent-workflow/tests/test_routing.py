@@ -165,7 +165,7 @@ class RoutingContractTests(unittest.TestCase):
         )
 
         project_instructions = source_policy.split(
-            "<!-- agent-workflow:project-instructions -->", 1
+            "<!-- agent-workflow:managed-end -->", 1
         )[1]
         normalized = " ".join(project_instructions.split())
         for requirement in (

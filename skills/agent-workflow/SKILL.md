@@ -26,9 +26,11 @@ fifteen-skill curated surface mapped by the package.
 - `.agent-wayfinder/` and every entry under it are project-owned durable data.
   Lifecycle operations do not directly traverse, interpret, or change it.
   Repository-wide Git cleanliness checks may still observe changes under it.
-- `AGENTS.md` and `CLAUDE.md` are composite. Replace only the unambiguous managed
-  region and preserve project-region bytes. Stop on partial, duplicate, or
-  reordered markers.
+- `AGENTS.md` is composite. Replace only one unambiguous managed region and
+  preserve every byte outside it as opaque project content. Stop on unknown,
+  partial, duplicate, interleaved, or reordered marker layouts. Both composite
+  parsers accept logical LF or CRLF marker lines; the existing `CLAUDE.md`
+  output protocol remains unchanged.
 
 The ordinary distribution manifest is only the current source-to-target map.
 There is no installed manifest, content-integrity state, origin or deletion
@@ -63,17 +65,16 @@ calling this lifecycle.
 `install` and `update` use the same convergence operation: replace
 `.agent-workflow/`, replace every current curated skill directory, and update
 managed composite regions while preserving project bytes and unrelated skills.
+Repeated convergence leaves exactly one managed block in each composite file.
 `remove` deletes those current managed directories and removes the composite
 regions, deleting a composite file only when no project bytes remain. `--dry-run`
 reports the operation without changing the target.
 
-There is no automatic provider migration. If
-`.agent-workflow/providers.json` or `setup-matt-pocock-skills`, `teach`, or
-`triage` is present, status reports a legacy clean-break requirement and mutating
-commands stop. Remove the legacy `.agent-workflow/` directory and obsolete skill
-directories in a separate Git-tracked cleanup, commit it, then run install.
-Future curated-skill retirement is likewise a manual Git cleanup; do not add a
-historical retired-name list.
+There is no migration subsystem. Complete replacement of `.agent-workflow/`
+removes obsolete framework files during ordinary convergence, so a clean
+existing installation needs no preliminary cleanup commit. Skill directories
+outside the current curated inventory remain untouched; do not add a historical
+retired-name list.
 
 Writes are intentionally not globally transactional. If an ordinary write fails
 mid-operation, the command reports that partial changes may exist and directs the

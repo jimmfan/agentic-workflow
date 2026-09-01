@@ -19,11 +19,40 @@ worktree.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   current maps, optional F#/D# ledgers, independently useful U#/E# files,
   identifiers, reconciliation, pruning, effort ending, and progressive loading.
-- `THIRD_PARTY_NOTICES.md`: attribution and license terms for retained derived
-  skills.
 
 The root policy and `routing.md` are the runtime. No hook, daemon, lifecycle
 controller, or telemetry analyzer is installed.
+
+## Third-party license
+
+The curated `code-review`, `codebase-design`, `domain-modeling`, `grilling`,
+`implement`, `prototype`, `research`, `tdd`, `to-spec`, `to-tickets`, and
+`wayfinder` skills are copied from or derived from
+[Matt Pocock's Skills for Real Engineers](https://github.com/mattpocock/skills),
+release `v1.2.3`.
+
+### MIT License
+
+Copyright (c) 2026 Matt Pocock
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 
 ## Ownership
 
@@ -33,9 +62,11 @@ source-to-target map; no installed manifest, content hashes, provenance record,
 created-state bits, or history is written to a consuming repository.
 
 `AGENTS.md` and `CLAUDE.md` live outside this directory because hosts require
-root policy files. They contain one framework-owned region and one preserved
-project region. Required local workflow skills similarly live under
-`.agents/skills`.
+root policy files. In `AGENTS.md`, one framework-owned region is bounded by the
+logical managed-begin and managed-end lines; every byte outside it is preserved
+as opaque project content. Repeated install and update keep exactly one such
+region. The existing `CLAUDE.md` composite integration remains unchanged.
+Required local workflow skills similarly live under `.agents/skills`.
 
 The fifteen curated skills live directly under `.agents/skills`. Their current
 directory names are reserved for Agent Workflow. Install and update replace
@@ -99,10 +130,9 @@ regions from `AGENTS.md` and `CLAUDE.md`, and deletes either composite file only
 when no project-authored bytes remain. Unrelated skill directories and all
 project-authored composite bytes remain.
 
-Legacy `.agent-workflow/providers.json` and obsolete Setup, Teach, or Triage
-skill directories are detected but never migrated. Remove the legacy
-`.agent-workflow/` tree and obsolete skill directories in a separate Git cleanup
-commit, then install the current framework.
+There is no migration subsystem. Install and update replace this complete
+directory, so obsolete framework files disappear in the same reviewable Git
+diff. Skill directories outside the current curated inventory remain untouched.
 
 Every user-facing final response ends with one compact route marker such as:
 

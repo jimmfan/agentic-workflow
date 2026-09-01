@@ -20,20 +20,18 @@ PAYLOAD_ROOT = PACKAGE_ROOT / "payload"
 DISTRIBUTION_MANIFEST = PAYLOAD_ROOT / "distribution" / "manifest.json"
 FRAMEWORK_ROOT = PurePosixPath(".agent-workflow")
 SKILLS_ROOT = PurePosixPath(".agents/skills")
-COMPOSITE_PATHS = (PurePosixPath("AGENTS.md"), PurePosixPath("CLAUDE.md"))
-MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->\n"
-MANAGED_END = b"<!-- agent-workflow:managed-end -->\n"
-PROJECT_BEGIN = b"\n<!-- agent-workflow:project-instructions -->\n"
+AGENTS_PATH = PurePosixPath("AGENTS.md")
+CLAUDE_PATH = PurePosixPath("CLAUDE.md")
+COMPOSITE_PATHS = (AGENTS_PATH, CLAUDE_PATH)
+MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
+MANAGED_END = b"<!-- agent-workflow:managed-end -->"
+FORMER_PROJECT_MARKER = b"<!-- agent-workflow:project-instructions -->"
 MARKER_PREFIX = b"<!-- agent-workflow:"
+CLAUDE_MANAGED_BEGIN = MANAGED_BEGIN + b"\n"
+CLAUDE_MANAGED_END = MANAGED_END + b"\n"
+CLAUDE_PROJECT_BEGIN = b"\n" + FORMER_PROJECT_MARKER + b"\n"
 DISTRIBUTION_SCHEMA = 7
 MINIMUM_PYTHON = (3, 11)
-OBSOLETE_SKILLS = ("setup-matt-pocock-skills", "teach", "triage")
-LEGACY_INSTRUCTION = (
-    "Remove the legacy .agent-workflow/ directory and obsolete skill directories "
-    ".agents/skills/setup-matt-pocock-skills, .agents/skills/teach, and "
-    ".agents/skills/triage in a separate Git-tracked cleanup, commit that cleanup, "
-    "then run the new agent-workflow install."
-)
 
 
 class LifecycleError(RuntimeError):
@@ -42,6 +40,21 @@ class LifecycleError(RuntimeError):
 
 class PartialMutationError(RuntimeError):
     """An ordinary filesystem failure after lifecycle mutation began."""
+
+
+@dataclass(frozen=True)
+class MarkerLine:
+    value: bytes
+    start: int
+    line_end: int
+    newline: bytes
+
+
+@dataclass(frozen=True)
+class CompositeParts:
+    managed: bytes
+    before: bytes
+    after: bytes
 
 
 @dataclass(frozen=True)
@@ -288,17 +301,6 @@ def scan_regular_tree(root: Path, relative: PurePosixPath) -> None:
     visit(start, relative)
 
 
-def legacy_present(root: Path) -> bool:
-    if path_exists(root / ".agent-workflow/providers.json"):
-        return True
-    return any(path_exists(root / ".agents/skills" / name) for name in OBSOLETE_SKILLS)
-
-
-def require_no_legacy(root: Path) -> None:
-    if legacy_present(root):
-        raise LifecycleError(f"legacy clean break required. {LEGACY_INSTRUCTION}")
-
-
 def reserved_skill_collision(
     root: Path, distribution: Distribution
 ) -> PurePosixPath | None:
@@ -318,9 +320,7 @@ def reserved_skill_message(relative: PurePosixPath) -> str:
     )
 
 
-def adoption_collision_message(
-    root: Path, distribution: Distribution
-) -> str | None:
+def adoption_collision_message(root: Path, distribution: Distribution) -> str | None:
     collision = reserved_skill_collision(root, distribution)
     if collision is not None:
         return reserved_skill_message(collision)
@@ -336,30 +336,152 @@ def adoption_collision_message(
     return None
 
 
-def has_any_marker(data: bytes) -> bool:
-    return MARKER_PREFIX in data
+def marker_lines(data: bytes) -> list[MarkerLine]:
+    result: list[MarkerLine] = []
+    start = 0
+    while start < len(data):
+        newline = data.find(b"\n", start)
+        if newline < 0:
+            end = len(data)
+            next_start = end
+        else:
+            end = newline
+            next_start = newline + 1
+        value = data[start:end]
+        line_ending = b"" if newline < 0 else b"\n"
+        if newline >= 0 and value.endswith(b"\r"):
+            value = value[:-1]
+            line_ending = b"\r\n"
+        if value.startswith(MARKER_PREFIX):
+            result.append(MarkerLine(value, start, next_start, line_ending))
+        if newline < 0:
+            break
+        start = next_start
+    return result
 
 
-def parse_composite(data: bytes) -> tuple[bytes, bytes]:
-    if (
-        data.count(MARKER_PREFIX) != 3
-        or data.count(MANAGED_BEGIN) != 1
-        or data.count(MANAGED_END) != 1
-        or data.count(PROJECT_BEGIN) != 1
-    ):
-        raise LifecycleError(
-            "managed policy markers are missing, duplicated, or partial"
-        )
-    if not data.startswith(MANAGED_BEGIN):
-        raise LifecycleError("managed policy markers are reordered")
-    managed_end = data.find(MANAGED_END, len(MANAGED_BEGIN))
-    project_begin = data.find(PROJECT_BEGIN, managed_end + len(MANAGED_END))
-    if managed_end < 0 or project_begin != managed_end + len(MANAGED_END):
-        raise LifecycleError("managed policy markers are reordered")
-    return (
-        data[len(MANAGED_BEGIN) : managed_end],
-        data[project_begin + len(PROJECT_BEGIN) :],
+def marker_error(
+    relative: PurePosixPath, markers: list[MarkerLine], reason: str
+) -> LifecycleError:
+    managed_begin_count = sum(line.value == MANAGED_BEGIN for line in markers)
+    managed_end_count = sum(line.value == MANAGED_END for line in markers)
+    former_project_count = sum(line.value == FORMER_PROJECT_MARKER for line in markers)
+    counts = (
+        f"managed-begin={managed_begin_count}, managed-end={managed_end_count}, "
+        f"former-project-instructions={former_project_count}, "
+        f"total-agent-workflow={len(markers)}"
     )
+    return LifecycleError(
+        f"{relative}: managed policy markers are {reason}; "
+        f"expected one unambiguous managed-begin/managed-end region; found {counts}"
+    )
+
+
+def is_one_blank_line(data: bytes) -> bool:
+    return data in {b"\n", b"\r\n"}
+
+
+def parse_former_three_marker_layout(
+    data: bytes, markers: list[MarkerLine]
+) -> CompositeParts | None:
+    values = [line.value for line in markers]
+
+    # The exact former standard layout identifies its generated third marker and
+    # all project bytes after it without guessing.
+    if values == [MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER]:
+        begin, end, former_project = markers
+        if begin.start == 0 and is_one_blank_line(
+            data[end.line_end : former_project.start]
+        ):
+            return CompositeParts(
+                data[begin.line_end : end.start],
+                b"",
+                data[former_project.line_end :],
+            )
+
+    # Historical LF-only marker detection could append an outer composite around an
+    # existing CRLF composite. This exact nested shape has two generated managed
+    # bodies and leaves the original project bytes after the inner former marker.
+    historical_duplicate = [
+        MANAGED_BEGIN,
+        MANAGED_END,
+        FORMER_PROJECT_MARKER,
+        MANAGED_BEGIN,
+        MANAGED_END,
+        FORMER_PROJECT_MARKER,
+    ]
+    if values == historical_duplicate:
+        outer_begin, outer_end, outer_project, inner_begin, inner_end, inner_project = (
+            markers
+        )
+        if (
+            outer_begin.start == 0
+            and all(
+                marker.newline == b"\n"
+                for marker in (outer_begin, outer_end, outer_project)
+            )
+            and all(
+                marker.newline == b"\r\n"
+                for marker in (inner_begin, inner_end, inner_project)
+            )
+            and data[outer_end.line_end : outer_project.start] == b"\n"
+            and outer_project.line_end == inner_begin.start
+            and data[inner_end.line_end : inner_project.start] == b"\r\n"
+        ):
+            return CompositeParts(
+                data[outer_begin.line_end : outer_end.start],
+                b"",
+                data[inner_project.line_end :],
+            )
+
+    return None
+
+
+def parse_agents_composite(
+    data: bytes, relative: PurePosixPath
+) -> CompositeParts | None:
+    markers = marker_lines(data)
+    if not markers:
+        return None
+    known_values = {MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER}
+    if any(line.value not in known_values for line in markers):
+        raise marker_error(relative, markers, "unknown or partial")
+
+    values = [line.value for line in markers]
+    if values == [MANAGED_BEGIN, MANAGED_END]:
+        begin, end = markers
+        return CompositeParts(
+            data[begin.line_end : end.start],
+            data[: begin.start],
+            data[end.line_end :],
+        )
+
+    former = parse_former_three_marker_layout(data, markers)
+    if former is not None:
+        return former
+
+    raise marker_error(relative, markers, "missing, duplicated, or reordered")
+
+
+def parse_claude_composite(
+    data: bytes, relative: PurePosixPath
+) -> CompositeParts | None:
+    markers = marker_lines(data)
+    if not markers:
+        return None
+    known_values = {MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER}
+    if any(line.value not in known_values for line in markers):
+        raise marker_error(relative, markers, "unknown or partial")
+    former = parse_former_three_marker_layout(data, markers)
+    if former is None:
+        raise marker_error(relative, markers, "missing, duplicated, or reordered")
+    return former
+
+
+def parse_composite(data: bytes, relative: PurePosixPath) -> CompositeParts | None:
+    if relative == CLAUDE_PATH:
+        return parse_claude_composite(data, relative)
+    return parse_agents_composite(data, relative)
 
 
 def read_composite(root: Path, relative: PurePosixPath) -> bytes | None:
@@ -375,20 +497,34 @@ def read_composite(root: Path, relative: PurePosixPath) -> bytes | None:
 def adoption_present(root: Path, distribution: Distribution) -> bool:
     for relative in COMPOSITE_PATHS:
         current = read_composite(root, relative)
-        if current is not None and has_any_marker(current):
-            parse_composite(current)
-            return True
+        if current is not None:
+            parts = parse_composite(current, relative)
+            if parts is not None:
+                return True
     return directory_matches(root, FRAMEWORK_ROOT, distribution.framework)
 
 
-def compose_policy(managed: bytes, project: bytes) -> bytes:
+def compose_policy(
+    relative: PurePosixPath, managed: bytes, before: bytes, after: bytes
+) -> bytes:
+    if relative == CLAUDE_PATH:
+        return (
+            CLAUDE_MANAGED_BEGIN
+            + managed.rstrip(b"\n")
+            + b"\n"
+            + CLAUDE_MANAGED_END
+            + CLAUDE_PROJECT_BEGIN
+            + after
+        )
     return (
-        MANAGED_BEGIN
-        + managed.rstrip(b"\n")
+        before
+        + MANAGED_BEGIN
+        + b"\n"
+        + managed.rstrip(b"\r\n")
         + b"\n"
         + MANAGED_END
-        + PROJECT_BEGIN
-        + project
+        + b"\n"
+        + after
     )
 
 
@@ -400,22 +536,24 @@ def plan_composites(
         current = read_composite(root, relative)
         if current is None:
             if not remove:
-                plan[relative] = compose_policy(managed, b"")
+                plan[relative] = compose_policy(relative, managed, b"", b"")
             continue
-        if has_any_marker(current):
-            _old_managed, project = parse_composite(current)
+        parts = parse_composite(current, relative)
+        if parts is not None:
             if remove:
+                project = parts.before + parts.after
                 plan[relative] = project if project else None
             else:
-                plan[relative] = compose_policy(managed, project)
+                plan[relative] = compose_policy(
+                    relative, managed, parts.before, parts.after
+                )
         elif not remove:
-            plan[relative] = compose_policy(managed, current)
+            plan[relative] = compose_policy(relative, managed, b"", current)
     return plan
 
 
 def inspect_managed_structure(root: Path, distribution: Distribution) -> None:
     require_managed_roots_safe(root, distribution)
-    require_no_legacy(root)
     scan_regular_tree(root, FRAMEWORK_ROOT)
     for name in distribution.skill_names:
         scan_regular_tree(root, SKILLS_ROOT / name)
@@ -518,6 +656,7 @@ def require_mutation_safe(root: Path, distribution: Distribution) -> None:
     if issues:
         raise LifecycleError("; ".join(dict.fromkeys(issues)))
 
+
 def expected_directories(files: Mapping[PurePosixPath, bytes]) -> set[PurePosixPath]:
     result: set[PurePosixPath] = set()
     for relative in files:
@@ -568,11 +707,13 @@ def drift_messages(root: Path, distribution: Distribution) -> list[str]:
             messages.append(f"REPAIR: managed skill directory differs: {relative}")
     for relative, desired in distribution.composites.items():
         current = read_composite(root, relative)
-        if current is None or not has_any_marker(current):
+        if current is None:
             messages.append(f"REPAIR: managed policy region differs: {relative}")
             continue
-        managed, _project = parse_composite(current)
-        if managed != desired.rstrip(b"\n") + b"\n":
+        parts = parse_composite(current, relative)
+        if parts is None or current != compose_policy(
+            relative, desired, parts.before, parts.after
+        ):
             messages.append(f"REPAIR: managed policy region differs: {relative}")
     return messages
 
@@ -581,23 +722,20 @@ def status(root: Path, distribution: Distribution) -> int:
     print(f"STATUS {root}")
     boundary = git_boundary_issues(root)
     structural: list[str] = []
-    legacy = False
     drift: list[str] = []
 
     try:
         require_managed_roots_safe(root, distribution)
-        legacy = legacy_present(root)
-        if not legacy:
-            scan_regular_tree(root, FRAMEWORK_ROOT)
-            for name in distribution.skill_names:
-                scan_regular_tree(root, SKILLS_ROOT / name)
-            plan_composites(root, distribution, remove=False)
+        scan_regular_tree(root, FRAMEWORK_ROOT)
+        for name in distribution.skill_names:
+            scan_regular_tree(root, SKILLS_ROOT / name)
+        plan_composites(root, distribution, remove=False)
 
-            collision = adoption_collision_message(root, distribution)
-            if collision is not None:
-                structural.append(collision)
-            else:
-                drift = drift_messages(root, distribution)
+        collision = adoption_collision_message(root, distribution)
+        if collision is not None:
+            structural.append(collision)
+        else:
+            drift = drift_messages(root, distribution)
     except (LifecycleError, OSError) as exc:
         structural.append(str(exc))
 
@@ -612,16 +750,11 @@ def status(root: Path, distribution: Distribution) -> int:
         print(f"BLOCKED: Git safety boundary would block mutation: {issue}")
     for issue in structural:
         print(f"CONFLICT: {issue}")
-    if legacy:
-        print("LEGACY: legacy clean break required")
-        print(LEGACY_INSTRUCTION)
     for message in drift:
         print(message)
 
-    if safety or structural or legacy or drift:
-        if legacy:
-            print("Agent Workflow: legacy clean break required")
-        elif structural:
+    if safety or structural or drift:
+        if structural:
             print("Agent Workflow: unsafe/conflict")
         elif safety:
             print("Agent Workflow: blocked by Git safety boundary")

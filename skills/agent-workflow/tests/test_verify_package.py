@@ -49,9 +49,7 @@ class VerifyPackageTests(ProjectTestCase):
     def test_distribution_manifest_is_only_the_current_source_target_map(self) -> None:
         package = self.copy_package("current-map-only")
         manifest = json.loads(
-            (package / "payload/distribution/manifest.json").read_text(
-                encoding="utf-8"
-            )
+            (package / "payload/distribution/manifest.json").read_text(encoding="utf-8")
         )
 
         self.assertEqual(set(manifest), {"schema_version", "framework_owned"})
@@ -126,9 +124,7 @@ class VerifyPackageTests(ProjectTestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("activation-sensitive fixture\n", encoding="utf-8")
 
-                self.assert_verify_failure(
-                    package, "activation-sensitive payload path"
-                )
+                self.assert_verify_failure(package, "activation-sensitive payload path")
 
     def test_verifier_requires_complete_curated_skill_directories(self) -> None:
         missing = self.copy_package("missing-skill-file")
@@ -263,7 +259,7 @@ class VerifyPackageTests(ProjectTestCase):
                 package = self.copy_package(f"attribution-{name}")
                 self.replace_once(
                     package,
-                    "payload/agent-workflow/THIRD_PARTY_NOTICES.md",
+                    "payload/agent-workflow/README.md",
                     original,
                     replacement,
                 )
@@ -382,7 +378,7 @@ class VerifyPackageTests(ProjectTestCase):
         agents = malformed_composite.parents[1] / "AGENTS.md"
         agents.write_bytes(
             agents.read_bytes().replace(
-                b"\n<!-- agent-workflow:project-instructions -->\n",
+                b"<!-- agent-workflow:managed-end -->\n",
                 b"\n",
                 1,
             )
