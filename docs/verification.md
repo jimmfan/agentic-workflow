@@ -6,10 +6,12 @@ not preserve or prove former installations.
 ## Consumer safety
 
 `bootstrap.py` is the public download boundary. Its default ref is the release
-tag matching the installed CLI version; an explicit ref such as `--ref main` is
-an opt-in development override. Before executing package code it resolves the
-selected ref to an immutable commit and rejects corrupt or oversized archives,
-excessive package contents, excessive whole-archive parsing, absolute,
+tag with the highest stable semantic `vX.Y.Z` version; unrelated and prerelease
+tags are ignored. An explicit ref such as `--ref main` is an opt-in development
+or testing override. Before executing package code the bootstrap resolves the
+selected ref to an immutable commit, downloads one snapshot, and runs that
+snapshot's lifecycle against its own payload. It rejects corrupt or oversized
+archives, excessive package contents, excessive whole-archive parsing, absolute,
 traversing, or duplicate paths, links, special entries, unreviewed modes,
 filesystem-root targets, and packages missing the minimum lifecycle files. The
 archive is streamed, and unrelated repository entries do not consume the tighter
@@ -117,9 +119,13 @@ The deterministic suite proves that:
   rather than claiming rollback;
 - skill directories outside the current curated inventory are preserved without
   consulting a historical retirement list; and
-- bootstrap archive and root-safety boundaries remain enforced offline; and
-- the installed CLI's default ref matches its release version while an explicit
-  mutable ref remains an intentional override.
+- bootstrap archive and root-safety boundaries remain enforced offline;
+- default bootstrap discovery chooses the highest stable semantic release,
+  resolves it to a commit, and fails clearly when no stable release exists;
+- a bootstrap originating from an older package release can install a simulated
+  newer stable framework release without a CLI upgrade, with lifecycle and
+  payload taken from the same downloaded snapshot; and
+- explicit branch, tag, or commit refs bypass stable-release discovery.
 
 Wayfinder's state and behavioral tests remain separate from lifecycle tests.
 They cover map-first coordination, records, allocation, reconciliation,

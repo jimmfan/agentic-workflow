@@ -9,10 +9,11 @@ subprocess.
 
 Run `python3 skills/agent-workflow/tests/wheel_smoke.py -v` separately to build
 the wheel through an isolated PEP 517 build, install it into a disposable virtual
-environment, verify its release-bound default ref, and invoke its `agent-workflow`
-entry point against one plain non-Git directory. This single packaging smoke is
-intentionally outside the deterministic unittest discovery gate because
-resolving the declared build backend may require package-index access.
+environment, and invoke its `agent-workflow` entry point against one plain non-Git
+directory using a local archive. This packaging-isolation smoke does not exercise
+live or mocked latest-release discovery. It is intentionally outside the
+deterministic unittest discovery gate because resolving the declared build
+backend may require package-index access.
 
 ## Production-boundary unit and integration tests
 
@@ -23,9 +24,10 @@ resolving the declared build backend may require package-index access.
   obsolete framework-file convergence, partial-failure reporting, and removal.
 - `test_verify_package.py` owns package shape, exact payload inventory,
   attribution, focused semantic contracts, and distribution-map refresh validation.
-- `test_bootstrap.py` owns release-bound ref selection, optional Git root
-  discovery, archive parsing, extraction and root safety, offline bootstrap, and
-  CLI delegation.
+- `test_bootstrap.py` owns latest-stable semantic release selection, immutable
+  ref resolution, explicit-ref bypass, coherent downloaded lifecycle and payload,
+  optional Git root discovery, archive parsing, extraction and root safety,
+  offline bootstrap, and CLI delegation.
 - `test_routing.py` owns direct/progressive routing, explicit selection,
   specialist boundaries, Wayfinder loading, authority blocking, fail-closed
   state loading, and semantic progressive-loading boundaries.

@@ -57,10 +57,13 @@ ownership hazard is found.
 require Python 3.11 or newer.
 
 Use the packaged `agent-workflow` CLI for normal end-user installation. It uses
-the bootstrap transport, which defaults to the release tag matching the installed
-CLI version, resolves that ref to an immutable revision, and validates archive
-paths, types, counts, sizes, modes, and minimum runtime files before calling this
-lifecycle. Explicit refs such as `--ref main` remain development overrides.
+the bootstrap transport, which selects the highest stable `vX.Y.Z` release tag,
+resolves it to an immutable revision, and downloads one snapshot. The lifecycle
+implementation and payload both come from that snapshot. The bootstrap validates
+archive paths, types, counts, sizes, modes, and minimum runtime files before
+calling the downloaded lifecycle. A separate CLI upgrade is not required for an
+ordinary framework update. Explicit refs such as `--ref main` remain development
+and testing overrides.
 
 `install` and `update` use the same convergence operation: replace
 `.agent-workflow/`, replace every current curated skill directory, and update

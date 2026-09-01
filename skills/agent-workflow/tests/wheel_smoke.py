@@ -14,7 +14,7 @@ from _test_support import REPOSITORY_ROOT
 
 
 class BuiltWheelSmokeTests(unittest.TestCase):
-    def test_installed_cli_runs_against_a_plain_project(self) -> None:
+    def test_installed_cli_runs_local_archive_against_a_plain_project(self) -> None:
         def run(*command: object, cwd: Path | None = None) -> None:
             subprocess.run([str(item) for item in command], cwd=cwd, check=True)
 
@@ -52,18 +52,13 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             python = virtual_environment / "bin/python"
             cli = virtual_environment / "bin/agent-workflow"
             run(python, "-m", "pip", "install", "--no-index", "--no-deps", wheel)
-            release_ref = subprocess.run(
-                [
-                    str(python),
-                    "-c",
-                    "from agent_workflow.scripts.bootstrap import compatible_release_ref; print(compatible_release_ref())",
-                ],
+            help_text = subprocess.run(
+                [str(cli), "--help"],
                 capture_output=True,
                 text=True,
                 check=True,
-            ).stdout.strip()
-            version = (package / "VERSION").read_text(encoding="utf-8").strip()
-            self.assertEqual(release_ref, f"v{version}")
+            ).stdout
+            self.assertRegex(help_text, r"newest stable\s+release")
             extracted = root / "extracted"
             with zipfile.ZipFile(wheel) as built:
                 built.extractall(extracted)

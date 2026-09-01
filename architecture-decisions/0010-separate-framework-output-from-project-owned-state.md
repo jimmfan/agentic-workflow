@@ -58,8 +58,10 @@ Separate framework-owned reconstructable output from preservation boundaries:
 - The supported bootstrap and adoption path keeps distributable root policies
   under non-active template names and activates framework resources only by
   projecting explicit source-to-target mappings into host discovery locations.
-  A released CLI defaults to the release tag matching its own package version;
-  mutable refs remain explicit development overrides.
+  By default, the installed CLI acts as a thin transport: it selects the highest
+  stable `vX.Y.Z` release tag, resolves that tag to an immutable commit, downloads
+  one repository snapshot, and runs that snapshot's lifecycle against that same
+  snapshot's payload. Explicit refs remain development and testing overrides.
 
 The ordinary distribution manifest is only the current source-to-target map.
 Agent Workflow maintains no installation history or migration subsystem: no
@@ -83,6 +85,11 @@ through complete replacement; no preliminary deletion or cleanup commit is
 required. A skill name absent from the current curated inventory is outside
 current lifecycle ownership and remains untouched unless the project explicitly
 removes it.
+
+The framework release selected by an ordinary install or update is independent
+of the installed bootstrap package version. A normal update therefore does not
+require a preliminary CLI upgrade, while lifecycle code and payload remain
+coherent because both are executed from one immutable downloaded snapshot.
 
 ## Alternatives considered
 

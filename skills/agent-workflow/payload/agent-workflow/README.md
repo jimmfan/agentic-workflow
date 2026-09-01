@@ -116,8 +116,10 @@ can discover one and otherwise uses the current directory. Explicit targets are
 used directly. Repository state, `HEAD`, tracked changes, untracked files, and
 ignore rules do not gate lifecycle operations.
 
-The bootstrap downloads the release tag matching its installed CLI version by
-default. An explicit ref such as `--ref main` is an opt-in development override.
+The bootstrap selects the highest stable `vX.Y.Z` release tag, resolves it to an
+immutable commit, and uses the lifecycle and payload from that one downloaded
+snapshot. Ordinary framework updates do not require a separate CLI upgrade. An
+explicit ref such as `--ref main` is an opt-in development or testing override.
 
 Before mutation, the lifecycle checks composite ownership and managed roots and
 parents for malformed markers, symlink or unsupported entries, and escapes from

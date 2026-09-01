@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 import os
 import tarfile
 import tempfile
@@ -67,6 +68,47 @@ class BootstrapSafetyTests(unittest.TestCase):
                 member.size = len(data)
                 archive.addfile(member, io.BytesIO(data))
         return output.getvalue()
+
+    def release_probe_archive(self, version: str) -> bytes:
+        lifecycle = f"""\
+from pathlib import Path
+import sys
+
+LIFECYCLE_RELEASE = {version!r}
+package = Path(__file__).resolve().parent.parent
+package_version = (package / "VERSION").read_text(encoding="utf-8").strip()
+payload_version = (package / "payload/framework-version.txt").read_text(encoding="utf-8").strip()
+if package_version != LIFECYCLE_RELEASE or payload_version != LIFECYCLE_RELEASE:
+    raise SystemExit("downloaded lifecycle and payload releases differ")
+target = Path(sys.argv[2])
+(target / "selected-framework-version.txt").write_text(
+    f"{{LIFECYCLE_RELEASE}}\\n", encoding="utf-8"
+)
+""".encode()
+        return self.archive(
+            [
+                (
+                    "source/skills/agent-workflow/VERSION",
+                    f"{version}\n".encode(),
+                    "file",
+                ),
+                (
+                    "source/skills/agent-workflow/scripts/lifecycle.py",
+                    lifecycle,
+                    "file",
+                ),
+                (
+                    "source/skills/agent-workflow/payload/distribution/manifest.json",
+                    b"{}\n",
+                    "file",
+                ),
+                (
+                    "source/skills/agent-workflow/payload/framework-version.txt",
+                    f"{version}\n".encode(),
+                    "file",
+                ),
+            ]
+        )
 
     def test_corrupt_archive_is_rejected(self) -> None:
         with (
@@ -293,30 +335,151 @@ class BootstrapSafetyTests(unittest.TestCase):
         self.assertNotIn("scripts/adopt.py", required)
         self.assertNotIn("scripts/legacy_transition.py", required)
 
-    def test_default_download_uses_the_installed_package_release_tag(self) -> None:
-        version = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
-        release_ref = f"v{version}"
-
-        default_args = self.bootstrap.parse_args([])
-        self.assertEqual(default_args.ref, release_ref)
-        explicit_args = self.bootstrap.parse_args(["--ref", "main"])
-        self.assertEqual(explicit_args.ref, "main")
+    def test_default_source_selects_the_latest_stable_semantic_release(self) -> None:
+        tags_url = f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags?per_page=100"
+        commit_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/v0.10.0"
+        )
+        revision = "a" * 40
+        responses = {
+            tags_url: json.dumps(
+                [
+                    {"name": "unrelated"},
+                    {"name": "v0.9.0"},
+                    {"name": "v0.10.0-rc.1"},
+                    {"name": "v0.10.0"},
+                    {"name": "v2"},
+                ]
+            ).encode(),
+            commit_url: json.dumps({"sha": revision}).encode(),
+        }
 
         with mock.patch.object(
             self.bootstrap,
-            "resolve_revision",
-            return_value="a" * 40,
-        ) as resolve_revision:
-            self.bootstrap.select_source(default_args.ref, None)
-            resolve_revision.assert_called_once_with(release_ref)
+            "request_bytes",
+            side_effect=lambda url: responses[url],
+        ) as request_bytes:
+            source = self.bootstrap.select_source(None, None)
 
-        with mock.patch.object(
-            self.bootstrap,
-            "resolve_revision",
-            return_value="b" * 40,
-        ) as resolve_revision:
-            self.bootstrap.select_source(explicit_args.ref, None)
-            resolve_revision.assert_called_once_with("main")
+        self.assertEqual(
+            source,
+            f"https://codeload.github.com/{self.bootstrap.REPOSITORY}/tar.gz/{revision}",
+        )
+        self.assertEqual(
+            [call.args[0] for call in request_bytes.call_args_list],
+            [tags_url, commit_url],
+        )
+
+        with (
+            mock.patch.object(
+                self.bootstrap,
+                "request_bytes",
+                return_value=json.dumps(
+                    [{"name": "main"}, {"name": "v0.10.0-rc.1"}]
+                ).encode(),
+            ),
+            self.assertRaisesRegex(
+                self.bootstrap.BootstrapError,
+                "no stable semantic release tag",
+            ),
+        ):
+            self.bootstrap.select_source(None, None)
+
+    def test_argument_parsing_leaves_default_release_discovery_to_the_transport(
+        self,
+    ) -> None:
+        self.assertIsNone(self.bootstrap.parse_args(["update", "."]).ref)
+        for ref in (
+            "main",
+            "fix/pre-v1-install-simplification",
+            "v0.26.0",
+            "a" * 40,
+        ):
+            with self.subTest(ref=ref):
+                self.assertEqual(
+                    self.bootstrap.parse_args(["update", ".", "--ref", ref]).ref,
+                    ref,
+                )
+
+    def test_explicit_refs_bypass_latest_release_discovery(self) -> None:
+        revision = "b" * 40
+        with (
+            mock.patch.object(
+                self.bootstrap,
+                "latest_stable_ref",
+                side_effect=AssertionError("release discovery must not run"),
+            ),
+            mock.patch.object(
+                self.bootstrap,
+                "resolve_revision",
+                return_value=revision,
+            ) as resolve_revision,
+        ):
+            for ref in (
+                "main",
+                "fix/pre-v1-install-simplification",
+                "v0.26.0",
+                "a" * 40,
+            ):
+                with self.subTest(ref=ref):
+                    self.assertEqual(
+                        self.bootstrap.select_source(ref, None),
+                        f"https://codeload.github.com/{self.bootstrap.REPOSITORY}/tar.gz/{revision}",
+                    )
+
+        self.assertEqual(
+            [call.args[0] for call in resolve_revision.call_args_list],
+            [
+                "main",
+                "fix/pre-v1-install-simplification",
+                "v0.26.0",
+                "a" * 40,
+            ],
+        )
+
+    def test_older_bootstrap_updates_from_one_newer_coherent_release_snapshot(
+        self,
+    ) -> None:
+        self.assertEqual(
+            (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip(),
+            "0.26.0",
+        )
+        tags_url = f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags?per_page=100"
+        commit_url = (
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/v0.27.0"
+        )
+        revision = "c" * 40
+        archive_url = (
+            f"https://codeload.github.com/{self.bootstrap.REPOSITORY}/tar.gz/{revision}"
+        )
+        responses = {
+            tags_url: json.dumps([{"name": "v0.26.0"}, {"name": "v0.27.0"}]).encode(),
+            commit_url: json.dumps({"sha": revision}).encode(),
+            archive_url: self.release_probe_archive("0.27.0"),
+        }
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(
+                self.bootstrap,
+                "request_bytes",
+                side_effect=lambda url: responses[url],
+            ) as request_bytes,
+        ):
+            target = Path(temporary) / "plain-project"
+            target.mkdir()
+
+            result = self.bootstrap.main(["update", str(target)])
+
+            self.assertEqual(result, 0)
+            self.assertEqual(
+                (target / "selected-framework-version.txt").read_text(encoding="utf-8"),
+                "0.27.0\n",
+            )
+            self.assertEqual(
+                [call.args[0] for call in request_bytes.call_args_list],
+                [tags_url, commit_url, archive_url],
+            )
 
     def test_minimum_runtime_files_are_required(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

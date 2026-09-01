@@ -18,9 +18,8 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 REPOSITORY = "jimmfan/agentic-workflow"
-PACKAGE_ROOT = Path(__file__).resolve().parent.parent
-VERSION_PATH = PACKAGE_ROOT / "VERSION"
 PACKAGE_MARKER = ("skills", "agent-workflow")
+STABLE_RELEASE_TAG = re.compile(r"v(\d+)\.(\d+)\.(\d+)")
 MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
 MAX_PACKAGE_MEMBERS = 500
@@ -42,14 +41,26 @@ class BootstrapError(RuntimeError):
     """A bounded bootstrap failure with an actionable message."""
 
 
-def compatible_release_ref() -> str:
+def latest_stable_ref() -> str:
+    url = f"https://api.github.com/repos/{REPOSITORY}/tags?per_page=100"
     try:
-        version = VERSION_PATH.read_text(encoding="utf-8").strip()
-    except (OSError, UnicodeError) as exc:
-        raise BootstrapError(f"cannot read installed package version: {exc}") from exc
-    if re.fullmatch(r"\d+\.\d+\.\d+", version) is None:
-        raise BootstrapError(f"installed package version is invalid: {version!r}")
-    return f"v{version}"
+        value = json.loads(request_bytes(url).decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise BootstrapError("GitHub returned an invalid release tag response") from exc
+    if not isinstance(value, list):
+        raise BootstrapError("GitHub returned an invalid release tag response")
+
+    releases = []
+    for tag in value:
+        name = tag.get("name") if isinstance(tag, dict) else None
+        match = STABLE_RELEASE_TAG.fullmatch(name) if isinstance(name, str) else None
+        if match is not None:
+            releases.append((tuple(int(part) for part in match.groups()), name))
+    if not releases:
+        raise BootstrapError(
+            f"no stable semantic release tag (vX.Y.Z) is available in {REPOSITORY}"
+        )
+    return max(releases)[1]
 
 
 def configure_console() -> None:
@@ -97,10 +108,10 @@ def resolve_revision(ref: str) -> str:
     return revision
 
 
-def select_source(ref: str, archive_url: str | None) -> str:
+def select_source(ref: str | None, archive_url: str | None) -> str:
     if archive_url:
         return archive_url
-    revision = resolve_revision(ref)
+    revision = resolve_revision(ref if ref is not None else latest_stable_ref())
     return f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"
 
 
@@ -286,13 +297,10 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "--ref",
-        help="Git tag, branch, or commit (default: this CLI's release tag)",
+        help="Git tag, branch, or commit (default: newest stable release)",
     )
     parser.add_argument("--archive-url", help=argparse.SUPPRESS)
-    args = parser.parse_args(argv)
-    if args.ref is None:
-        args.ref = compatible_release_ref()
-    return args
+    return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> int:

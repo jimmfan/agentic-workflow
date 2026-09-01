@@ -38,8 +38,9 @@ agent-workflow remove
 With no target path, lifecycle commands use the containing Git worktree root when
 Git can discover one, otherwise the current directory. An explicit target path is
 always used directly. Git repository state is not a lifecycle prerequisite.
-The CLI downloads the release tag matching its installed version by default;
-`--ref main` remains an explicit development override.
+Install and update select the newest stable Agent Workflow release, so ordinary
+framework updates do not require a separate CLI upgrade. `--ref` remains an
+explicit development and testing override for a branch, tag, or commit.
 
 ## What it does
 
