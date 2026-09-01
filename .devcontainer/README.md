@@ -32,6 +32,16 @@ installation. The first build downloads the base image, the pinned `uv` image,
 the GitHub CLI feature, `bubblewrap`, and the configured VS Code extensions. It
 also creates the project-specific Codex volume, but it does not authenticate it.
 
+For this repository's sibling-checkout layout, the container adds a secondary
+mount of the workspace's parent directory at the same absolute path used on the
+macOS host. This is required when the workspace is a linked Git worktree: its
+`.git` file points to metadata in the main checkout using an absolute host path.
+Preserving that path makes the metadata reachable while the workspace itself
+retains its conventional `/workspaces/<repository>` container path. The main
+checkout must remain beneath the workspace's parent directory. The secondary
+bind mount is writable, so container processes can also modify sibling files
+beneath that parent, although VS Code opens only this workspace.
+
 After the workspace opens, the post-create check runs automatically. Success
 ends with output resembling:
 
@@ -43,8 +53,9 @@ OK: development container is ready (Python 3.14.x; uv 0.11.32; git version ...; 
 
 Run the environment check from a **VS Code terminal inside this Dev
 Container**. It is read-only and confirms the exact interpreter, required
-command-line interfaces, Codex credential-store configuration, state
-permissions, extension pin, and Linux sandbox namespace support:
+command-line interfaces, repository metadata access, Codex credential-store
+configuration, state permissions, extension pin, and Linux sandbox namespace
+support:
 
 ```bash
 python3 .devcontainer/check_environment.py

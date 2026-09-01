@@ -97,6 +97,12 @@ def main() -> int:
 
     git = require_command("git")
     git_version = run([git, "--version"]).strip()
+    repository_root = Path(run([git, "rev-parse", "--show-toplevel"]).strip())
+    if repository_root.resolve() != Path.cwd().resolve():
+        raise RuntimeError(
+            "development container must open the repository root; "
+            f"Git resolved {repository_root} from {Path.cwd()}"
+        )
 
     gh = require_command("gh")
     gh_output = run([gh, "--version"])

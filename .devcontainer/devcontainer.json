@@ -14,6 +14,7 @@
     }
   },
   "mounts": [
+    "source=${localWorkspaceFolder}/..,target=${localWorkspaceFolder}/..,type=bind,consistency=cached",
     "source=agent-workflow-instructions-codex-home,target=/home/vscode/.codex,type=volume"
   ],
   "remoteEnv": {
