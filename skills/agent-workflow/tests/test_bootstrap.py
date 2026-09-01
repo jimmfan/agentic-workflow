@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import io
+import os
 import tarfile
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from _test_support import (
     BOOTSTRAP,
@@ -186,6 +188,61 @@ class BootstrapSafetyTests(unittest.TestCase):
                         self.assertEqual(target.read_bytes(), source.read_bytes())
             self.assertNotIn("GitHub CLI", result.stderr)
 
+    def test_default_target_discovers_git_root_and_explicit_target_is_literal(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            archive = root / "package.tar.gz"
+            archive.write_bytes(self.package_archive())
+            archive_url = archive.as_uri()
+
+            repository = root / "repository"
+            nested = repository / "terraform/prod"
+            nested.mkdir(parents=True)
+            initialize_repository(repository)
+            result = run_script(
+                CLI,
+                "install",
+                "--archive-url",
+                archive_url,
+                cwd=nested,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((repository / ".agent-workflow/routing.md").is_file())
+            self.assertFalse((nested / ".agent-workflow").exists())
+
+            explicit_repository = root / "explicit-repository"
+            explicit_nested = explicit_repository / "terraform/prod"
+            explicit_nested.mkdir(parents=True)
+            initialize_repository(explicit_repository)
+            result = run_script(
+                CLI,
+                "update",
+                explicit_nested,
+                "--archive-url",
+                archive_url,
+                cwd=explicit_repository,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((explicit_nested / ".agent-workflow/routing.md").is_file())
+            self.assertFalse((explicit_repository / ".agent-workflow").exists())
+
+            plain = root / "plain"
+            plain.mkdir()
+            environment = os.environ.copy()
+            environment["PATH"] = ""
+            result = run_script(
+                CLI,
+                "install",
+                "--archive-url",
+                archive_url,
+                cwd=plain,
+                env=environment,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((plain / ".agent-workflow/routing.md").is_file())
+
     def test_cli_exposes_help_and_delegates_every_lifecycle_command(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -235,6 +292,31 @@ class BootstrapSafetyTests(unittest.TestCase):
         self.assertIn("scripts/lifecycle.py", required)
         self.assertNotIn("scripts/adopt.py", required)
         self.assertNotIn("scripts/legacy_transition.py", required)
+
+    def test_default_download_uses_the_installed_package_release_tag(self) -> None:
+        version = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        release_ref = f"v{version}"
+
+        default_args = self.bootstrap.parse_args([])
+        self.assertEqual(default_args.ref, release_ref)
+        explicit_args = self.bootstrap.parse_args(["--ref", "main"])
+        self.assertEqual(explicit_args.ref, "main")
+
+        with mock.patch.object(
+            self.bootstrap,
+            "resolve_revision",
+            return_value="a" * 40,
+        ) as resolve_revision:
+            self.bootstrap.select_source(default_args.ref, None)
+            resolve_revision.assert_called_once_with(release_ref)
+
+        with mock.patch.object(
+            self.bootstrap,
+            "resolve_revision",
+            return_value="b" * 40,
+        ) as resolve_revision:
+            self.bootstrap.select_source(explicit_args.ref, None)
+            resolve_revision.assert_called_once_with("main")
 
     def test_minimum_runtime_files_are_required(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

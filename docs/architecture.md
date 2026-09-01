@@ -101,8 +101,7 @@ support regression.
 
 `.agent-wayfinder/` and every entry below it are project-owned. Wayfinder creates
 and uses that tree only when durable coordination is needed. Lifecycle operations
-do not directly traverse, interpret, or change it; the repository-wide Git
-cleanliness check may still report changes there as part of a dirty worktree.
+do not directly traverse, interpret, or change it.
 
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
 Their `map.md` is the brief coordination summary and the first effort file read
@@ -185,19 +184,22 @@ Install and update converge to current desired state by replacing the complete
 updating the managed regions in `AGENTS.md` and `CLAUDE.md`. Remove deletes those
 managed directories and regions while preserving unrelated skill directories
 and project-authored composite bytes. Lifecycle does not directly traverse,
-interpret, or change `.agent-wayfinder/`; repository-wide Git cleanliness may
-still observe changes under it.
+interpret, or change `.agent-wayfinder/`.
 
-Every mutating command requires the exact Git worktree root, a valid `HEAD`, and
-a completely clean tracked and untracked worktree. Preflight also rejects
-untracked or ignored managed destinations, malformed composite markers,
-symlinks, special entries, and path escapes. `status` is read-only and reports
-the same safety blockers without requiring cleanliness. Git supplies recovery;
-there is no installed manifest, provenance database, migration engine,
-retirement history, cross-surface transaction, backup, or rollback mechanism.
-Obsolete files inside `.agent-workflow/` disappear through complete desired-state
-replacement. Skill directories outside the current curated inventory remain
-untouched; historical skill names do not participate in runtime policy.
+Lifecycle is desired-state filesystem convergence over explicitly owned
+surfaces. An explicit existing non-root directory is used directly. When the CLI
+target is omitted, Git may discover the containing worktree root; Git absence,
+`HEAD`, tracked changes, untracked files, ignore rules, and repository-wide state
+are not lifecycle prerequisites or recovery contracts. Preflight is limited to
+composite ownership and managed roots and parents, rejecting malformed markers,
+symlink or unsupported root/parent entries, and path escapes. Nested entries in
+a replaceable managed directory are ordinary convergence input. `status` reports
+only managed drift or conflicts. There is no installed manifest, provenance
+database, migration engine, retirement history, cross-surface transaction,
+backup, or rollback mechanism. Obsolete files inside `.agent-workflow/`
+disappear through complete desired-state replacement. Skill directories outside
+the current curated inventory remain untouched; historical skill names do not
+participate in runtime policy.
 
 Current execution uses Python 3.11+ standard-library APIs on POSIX-style shells
 for macOS, Linux, WSL, and Linux-based devcontainers. Native PowerShell and CMD
@@ -222,7 +224,7 @@ Tests focus on observable boundaries:
 - rejection of unsafe managed destinations before mutation;
 - install, update, status, remove, and bootstrap behavior;
 - coherent Wayfinder state and the directly distributed skill files;
-- clean-Git recovery boundaries and truthful partial-failure reporting; and
+- managed-path safety boundaries and truthful partial-failure reporting; and
 - preservation of unrelated skills and project composite bytes without direct
   lifecycle traversal or mutation of Wayfinder state.
 

@@ -10,11 +10,11 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from _test_support import REPOSITORY_ROOT, initialize_repository, run_git
+from _test_support import REPOSITORY_ROOT
 
 
 class BuiltWheelSmokeTests(unittest.TestCase):
-    def test_installed_cli_runs_against_a_clean_git_project(self) -> None:
+    def test_installed_cli_runs_against_a_plain_project(self) -> None:
         def run(*command: object, cwd: Path | None = None) -> None:
             subprocess.run([str(item) for item in command], cwd=cwd, check=True)
 
@@ -36,8 +36,14 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             environment = os.environ.copy()
             environment["PIP_CACHE_DIR"] = str(root / "pip-cache")
             command = [
-                sys.executable, "-m", "pip", "wheel", "--no-deps",
-                "--wheel-dir", str(wheelhouse), str(source),
+                sys.executable,
+                "-m",
+                "pip",
+                "wheel",
+                "--no-deps",
+                "--wheel-dir",
+                str(wheelhouse),
+                str(source),
             ]
             subprocess.run(command, cwd=source, env=environment, check=True)
             wheel = next(wheelhouse.glob("agent_workflow-*.whl"))
@@ -46,17 +52,28 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             python = virtual_environment / "bin/python"
             cli = virtual_environment / "bin/agent-workflow"
             run(python, "-m", "pip", "install", "--no-index", "--no-deps", wheel)
+            release_ref = subprocess.run(
+                [
+                    str(python),
+                    "-c",
+                    "from agent_workflow.scripts.bootstrap import compatible_release_ref; print(compatible_release_ref())",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            version = (package / "VERSION").read_text(encoding="utf-8").strip()
+            self.assertEqual(release_ref, f"v{version}")
             extracted = root / "extracted"
             with zipfile.ZipFile(wheel) as built:
                 built.extractall(extracted)
             archive = root / "wheel-package.tar.gz"
             with tarfile.open(archive, "w:gz") as built:
-                built.add(extracted / "agent_workflow",
-                          arcname="source/skills/agent-workflow")
+                built.add(
+                    extracted / "agent_workflow", arcname="source/skills/agent-workflow"
+                )
             project = root / "project"
             project.mkdir()
-            initialize_repository(project)
-            self.assertEqual(run_git(project, "status", "--porcelain").stdout, "")
             run(cli, "install", project, "--archive-url", archive.as_uri())
             self.assertTrue((project / ".agent-workflow/routing.md").is_file())
             self.assertTrue((project / ".agents/skills/research/SKILL.md").is_file())

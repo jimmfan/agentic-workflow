@@ -9,22 +9,23 @@ subprocess.
 
 Run `python3 skills/agent-workflow/tests/wheel_smoke.py -v` separately to build
 the wheel through an isolated PEP 517 build, install it into a disposable virtual
-environment, and invoke its `agent-workflow` entry point against one clean,
-disposable Git repository. This single packaging smoke is intentionally outside
-the deterministic unittest discovery gate because resolving the declared build
-backend may require package-index access.
+environment, verify its release-bound default ref, and invoke its `agent-workflow`
+entry point against one plain non-Git directory. This single packaging smoke is
+intentionally outside the deterministic unittest discovery gate because
+resolving the declared build backend may require package-index access.
 
 ## Production-boundary unit and integration tests
 
 - `test_lifecycle.py` owns install, update, status, remove, composite-file and
-  clean-Git safety boundaries.
+  managed-path safety boundaries.
 - `test_direct_distribution.py` owns whole-directory direct skill replacement,
-  current mapping, reserved-name conflicts, unrelated-skill preservation,
+  current mapping, current-name convergence, unrelated-skill preservation,
   obsolete framework-file convergence, partial-failure reporting, and removal.
 - `test_verify_package.py` owns package shape, exact payload inventory,
   attribution, focused semantic contracts, and distribution-map refresh validation.
-- `test_bootstrap.py` owns archive parsing, extraction and root safety, offline
-  bootstrap, and CLI delegation.
+- `test_bootstrap.py` owns release-bound ref selection, optional Git root
+  discovery, archive parsing, extraction and root safety, offline bootstrap, and
+  CLI delegation.
 - `test_routing.py` owns direct/progressive routing, explicit selection,
   specialist boundaries, Wayfinder loading, authority blocking, fail-closed
   state loading, and semantic progressive-loading boundaries.
@@ -44,9 +45,9 @@ backend may require package-index access.
   reference as part of static package verification.
 
 The lifecycle suite proves framework operations do not directly traverse,
-interpret, or change `.agent-wayfinder/`; repository-wide Git cleanliness can
-still observe changes there. Wayfinder fixtures independently prove reset,
-evaluator, and scenario behavior; they do not participate in lifecycle tests.
+interpret, or change `.agent-wayfinder/`. Wayfinder fixtures independently prove
+reset, evaluator, and scenario behavior; they do not participate in lifecycle
+tests.
 
 ## Human behavioral contracts and live smoke tests
 

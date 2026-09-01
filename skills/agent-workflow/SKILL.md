@@ -13,19 +13,15 @@ fifteen-skill curated surface mapped by the package.
 
 ## Ownership contract
 
-- `.agent-workflow/` is framework-owned and reconstructable after adoption.
-  Install/update replace the complete directory from current package bytes;
-  remove deletes it. On first adoption, a pre-existing `.agent-workflow/` that
-  is not recognized as an existing Agent Workflow installation blocks adoption
-  instead of being replaced.
+- `.agent-workflow/` is framework-owned and reconstructable. Install/update
+  replace the complete directory from current package bytes; remove deletes it.
 - Each current curated `.agents/skills/<name>/` directory is framework-owned and
   reconstructable. Install/update replace the complete named directory, including
   deleting extra files inside it; remove deletes it. Unrelated skill directories
-  remain untouched. Current curated names are reserved after adoption, so move or
-  rename any project-owned skill with the same name before installing.
+  remain untouched. Current curated names are reserved framework surfaces and
+  existing content at those names is replaced during convergence.
 - `.agent-wayfinder/` and every entry under it are project-owned durable data.
   Lifecycle operations do not directly traverse, interpret, or change it.
-  Repository-wide Git cleanliness checks may still observe changes under it.
 - `AGENTS.md` is composite. Replace only one unambiguous managed region and
   preserve every byte outside it as opaque project content. Stop on unknown,
   partial, duplicate, interleaved, or reordered marker layouts. Both composite
@@ -35,7 +31,7 @@ fifteen-skill curated surface mapped by the package.
 The ordinary distribution manifest is only the current source-to-target map.
 There is no installed manifest, content-integrity state, origin or deletion
 provenance, historical inventory, automatic retirement, backup tree,
-cross-surface transaction, or rollback mechanism. Git is the recovery boundary.
+cross-surface transaction, or rollback mechanism.
 
 ## Lifecycle commands
 
@@ -49,18 +45,22 @@ python3 scripts/lifecycle.py status /path/to/project
 python3 scripts/lifecycle.py remove /path/to/project
 ```
 
-The target must be exactly a Git worktree root with a valid `HEAD`. Before
-`install`, `update`, or `remove`, the full tracked and untracked worktree must be
-clean, no managed destination may be ignored, and no managed root or parent may
-be a symlink, special entry, or escape from the worktree. These commands stop
-before mutation when a gate fails. `status` is read-only and does not require a
-clean worktree, but reports any condition that would block mutation. All
-entrypoints require Python 3.11 or newer.
+The explicit target must be an existing non-root directory and is used directly.
+The packaged CLI optionally discovers a containing Git worktree root only when
+the target is omitted; Git absence or repository state does not block lifecycle
+operation. Before mutation, managed roots and their parents may not themselves
+be symlinks, unsupported entry types, or escapes from the target. Nested entries
+inside a replaceable managed directory are removed through ordinary convergence.
+These commands stop before mutation when a concrete managed-path or composite
+ownership hazard is found.
+`status` is read-only and reports only managed drift or conflicts. All entrypoints
+require Python 3.11 or newer.
 
 Use the packaged `agent-workflow` CLI for normal end-user installation. It uses
-the bootstrap transport, which resolves an immutable revision and validates
-archive paths, types, counts, sizes, modes, and minimum runtime files before
-calling this lifecycle.
+the bootstrap transport, which defaults to the release tag matching the installed
+CLI version, resolves that ref to an immutable revision, and validates archive
+paths, types, counts, sizes, modes, and minimum runtime files before calling this
+lifecycle. Explicit refs such as `--ref main` remain development overrides.
 
 `install` and `update` use the same convergence operation: replace
 `.agent-workflow/`, replace every current curated skill directory, and update
@@ -71,15 +71,14 @@ regions, deleting a composite file only when no project bytes remain. `--dry-run
 reports the operation without changing the target.
 
 There is no migration subsystem. Complete replacement of `.agent-workflow/`
-removes obsolete framework files during ordinary convergence, so a clean
-existing installation needs no preliminary cleanup commit. Skill directories
-outside the current curated inventory remain untouched; do not add a historical
-retired-name list.
+removes obsolete framework files during ordinary convergence, so an existing
+installation needs no preliminary cleanup commit. Skill directories outside the
+current curated inventory remain untouched; do not add a historical retired-name
+list.
 
 Writes are intentionally not globally transactional. If an ordinary write fails
-mid-operation, the command reports that partial changes may exist and directs the
-operator to inspect `git status`, restore with Git, and retry from a clean
-worktree.
+mid-operation, the command reports that partial changes may exist; resolve the
+reported filesystem error and rerun the command to converge.
 
 ## Release verification
 

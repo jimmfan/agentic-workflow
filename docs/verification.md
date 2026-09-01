@@ -5,28 +5,31 @@ not preserve or prove former installations.
 
 ## Consumer safety
 
-`bootstrap.py` is the public download boundary. Before executing package code it
-resolves mutable refs to an immutable commit and rejects corrupt or oversized
-archives, excessive package contents, excessive whole-archive parsing,
-absolute, traversing, or duplicate paths, links, special entries, unreviewed
-modes, filesystem-root targets, and packages missing the minimum lifecycle
-files. The archive is streamed, and unrelated repository entries do not consume
-the tighter distributable-package member allowance.
+`bootstrap.py` is the public download boundary. Its default ref is the release
+tag matching the installed CLI version; an explicit ref such as `--ref main` is
+an opt-in development override. Before executing package code it resolves the
+selected ref to an immutable commit and rejects corrupt or oversized archives,
+excessive package contents, excessive whole-archive parsing, absolute,
+traversing, or duplicate paths, links, special entries, unreviewed modes,
+filesystem-root targets, and packages missing the minimum lifecycle files. The
+archive is streamed, and unrelated repository entries do not consume the tighter
+distributable-package member allowance.
 
 `lifecycle.py` is the only install, update, status, and remove implementation.
-Mutating commands require the exact Git worktree root, a valid `HEAD`, and a
-completely clean porcelain status including untracked files. Before mutation
-they also reject untracked files under managed surfaces, ignored managed
-destinations, malformed managed markers, symlinks, special entries, and path
-escapes. `status` is read-only, does not require a clean tree, and reports the
-blockers that would stop mutation.
+Explicit existing non-root target directories are used directly. With no target,
+the CLI may use Git only to discover the containing worktree root and falls back
+to the current directory when discovery is unavailable. Repository cleanliness,
+ignore rules, and `HEAD` are not lifecycle gates. Before mutation the lifecycle
+rejects malformed managed markers and symlink, unsupported-entry, or escape
+hazards at managed roots and parents. Nested entries inside a replaceable managed
+directory are removed through convergence. `status` is read-only and reports
+only managed drift or conflicts.
 
-Git is the recovery mechanism. The lifecycle writes no installed manifest,
-hashes, provenance, created-state bits, migration history, backups, or rollback
-journal. If a write fails after mutation begins, inspect `git status`, restore
-with Git as appropriate, and retry. Lifecycle code does not directly traverse,
-interpret, or change `.agent-wayfinder/`; repository-wide Git cleanliness checks
-may still observe changes under it.
+The lifecycle writes no installed manifest, hashes, provenance, created-state
+bits, migration history, backups, or rollback journal. If a write fails after
+mutation begins, resolve the reported filesystem error and rerun the command to
+converge. Lifecycle code does not directly traverse, interpret, or change
+`.agent-wayfinder/`.
 
 ## Maintainer and CI gate
 
@@ -88,7 +91,7 @@ The deterministic suite proves that:
 
 - install and update converge to the same current state by replacing the full
   `.agent-workflow/` directory and all current curated skill directories;
-- a tracked obsolete file inside `.agent-workflow/` is removed by ordinary
+- obsolete or extra content inside `.agent-workflow/` is removed by ordinary
   desired-state replacement without a preliminary cleanup commit;
 - extra files inside a current curated skill directory are removed, while
   unrelated skill directories remain unchanged;
@@ -100,20 +103,23 @@ The deterministic suite proves that:
 - remove deletes the managed directories and regions, deletes a composite file
   only when no project-authored bytes remain, and preserves unrelated skills;
 - lifecycle commands do not directly traverse, interpret, or change
-  `.agent-wayfinder/`, while repository-wide Git cleanliness still observes its
-  changes;
-- dirty tracked or untracked state, an invalid or missing `HEAD`, a non-root
-  invocation, ignored or untracked managed destinations, unsafe filesystem
-  entries, and malformed markers stop mutation before any write;
-- `status` remains read-only on a dirty tree and reports safety blockers;
+  `.agent-wayfinder/`;
+- plain non-Git targets, invalid or missing `HEAD`, explicit nested targets, and
+  dirty tracked, untracked, or ignored repository state do not block mutation;
+- an omitted target inside a Git worktree resolves to that worktree root when
+  discovery is available, while an explicit target is never rewritten;
+- unsafe managed root or parent entries and malformed markers stop mutation
+  before any write, while nested entries inside replaceable directories are
+  removed without following symlinks;
+- `status` remains read-only and has no repository-wide Git safety concept;
 - a deliberately injected later write failure reports possible partial changes
-  and directs the user to Git recovery rather than claiming rollback;
+  and directs the user to resolve the filesystem error and rerun convergence
+  rather than claiming rollback;
 - skill directories outside the current curated inventory are preserved without
   consulting a historical retirement list; and
-- bootstrap archive and root-safety boundaries remain enforced offline.
-
-Git cannot recover ignored or previously untracked files. Tests therefore prove
-those managed-path cases fail before mutation instead of relying on recovery.
+- bootstrap archive and root-safety boundaries remain enforced offline; and
+- the installed CLI's default ref matches its release version while an explicit
+  mutable ref remains an intentional override.
 
 Wayfinder's state and behavioral tests remain separate from lifecycle tests.
 They cover map-first coordination, records, allocation, reconciliation,
@@ -136,9 +142,9 @@ workflow owns tag creation.
 
 Use the first reported error or failed test as the primary diagnostic. For a
 mapping mismatch, inspect the source and target inventories before refreshing.
-For a lifecycle failure, inspect `git status`; never delete project files merely
-to make a test pass. Generated Python caches are ignored by Git and package
-verification and need no manual cleanup.
+For a lifecycle failure, inspect the exact reported managed path or filesystem
+error; never delete project files merely to make a test pass. Generated Python
+caches are ignored by Git and package verification and need no manual cleanup.
 
 The deterministic gate runs on Ubuntu. macOS, Linux, WSL, and Linux-based
 devcontainers with a POSIX-style shell are supported; native PowerShell and CMD

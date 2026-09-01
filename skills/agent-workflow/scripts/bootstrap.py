@@ -18,7 +18,8 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 REPOSITORY = "jimmfan/agentic-workflow"
-DEFAULT_REF = "main"
+PACKAGE_ROOT = Path(__file__).resolve().parent.parent
+VERSION_PATH = PACKAGE_ROOT / "VERSION"
 PACKAGE_MARKER = ("skills", "agent-workflow")
 MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
@@ -39,6 +40,16 @@ ARCHIVE_MODE_VARIANTS = {
 
 class BootstrapError(RuntimeError):
     """A bounded bootstrap failure with an actionable message."""
+
+
+def compatible_release_ref() -> str:
+    try:
+        version = VERSION_PATH.read_text(encoding="utf-8").strip()
+    except (OSError, UnicodeError) as exc:
+        raise BootstrapError(f"cannot read installed package version: {exc}") from exc
+    if re.fullmatch(r"\d+\.\d+\.\d+", version) is None:
+        raise BootstrapError(f"installed package version is invalid: {version!r}")
+    return f"v{version}"
 
 
 def configure_console() -> None:
@@ -243,6 +254,22 @@ def run_package(package: Path, action: str, target: Path, dry_run: bool) -> int:
     return subprocess.run(command, check=False).returncode
 
 
+def default_target() -> Path:
+    current = Path.cwd().absolute()
+    try:
+        discovered = subprocess.run(
+            ["git", "-C", str(current), "rev-parse", "--show-toplevel"],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return current
+    if discovered.returncode != 0 or not discovered.stdout.strip():
+        return current
+    return Path(discovered.stdout.strip()).absolute()
+
+
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -251,7 +278,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         default="install",
         choices=("install", "update", "status", "remove"),
     )
-    parser.add_argument("target", nargs="?", default=Path.cwd(), type=Path)
+    parser.add_argument("target", nargs="?", type=Path)
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -259,18 +286,21 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "--ref",
-        default=DEFAULT_REF,
-        help="Git tag, branch, or commit for install/update",
+        help="Git tag, branch, or commit (default: this CLI's release tag)",
     )
     parser.add_argument("--archive-url", help=argparse.SUPPRESS)
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.ref is None:
+        args.ref = compatible_release_ref()
+    return args
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     require_supported_python()
     configure_console()
     args = parse_args(argv or sys.argv[1:])
-    target = args.target.expanduser().absolute()
+    target = args.target if args.target is not None else default_target()
+    target = target.expanduser().absolute()
     if target.is_symlink() or not target.is_dir():
         raise BootstrapError(
             f"target must be an existing regular non-symlink directory: {target}"

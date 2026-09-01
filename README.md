@@ -35,7 +35,11 @@ agent-workflow status
 agent-workflow remove
 ```
 
-Lifecycle commands use the current directory by default and also accept an explicit project path.
+With no target path, lifecycle commands use the containing Git worktree root when
+Git can discover one, otherwise the current directory. An explicit target path is
+always used directly. Git repository state is not a lifecycle prerequisite.
+The CLI downloads the release tag matching its installed version by default;
+`--ref main` remains an explicit development override.
 
 ## What it does
 
@@ -204,22 +208,20 @@ Framework-owned and reconstructable.
 
 Install and update replace this directory with the current package version.
 There is no installed manifest, provenance record, migration history, or
-framework backup. Git is the recovery mechanism.
+framework backup.
 
 ### `.agents/skills/`
 
 Each of the fifteen current curated skill names is reserved for Agent Workflow.
 Install and update replace those complete skill directories, including extra
-files inside them, while preserving unrelated skill directories. Move or rename
-an existing conflicting directory before installing.
+files inside them, while preserving unrelated skill directories.
 
 ### `.agent-wayfinder/`
 
 Project-owned durable state.
 
 The lifecycle does not directly traverse, interpret, or change this directory.
-The repository-wide Git cleanliness check may still report changes there as
-part of a dirty worktree. Wayfinder alone owns its use.
+Wayfinder alone owns its use.
 
 ### `AGENTS.md` and `CLAUDE.md`
 
@@ -230,22 +232,25 @@ such region. The existing `CLAUDE.md` integration remains unchanged.
 
 ### Lifecycle safety
 
-Mutating lifecycle commands require the exact Git worktree root, a valid `HEAD`,
-and a completely clean tracked and untracked worktree before changing anything.
-They reject ignored managed destinations, untracked managed paths, malformed
-managed markers, symlinks, special entries, and paths that escape the worktree.
-`status` is read-only and reports these blockers without requiring a clean tree.
+Lifecycle commands operate on an existing non-root target directory. Install,
+update, and remove preflight composite ownership and the managed roots and
+parents they will traverse, rejecting malformed markers, symlink or unsupported
+root/parent entries, and paths that could escape the target. Nested entries
+inside a replaceable managed directory are removed through ordinary convergence.
+`status` diagnoses managed-state drift and conflicts; unrelated repository
+changes do not make Agent Workflow unhealthy.
 
 Install and update converge to the same current package state. Remove deletes
 `.agent-workflow/` and the current curated skill directories and strips the
 managed regions from `AGENTS.md` and `CLAUDE.md`; it deletes a composite file
 only when no project-authored bytes remain. A failure after mutation may leave a
-partial diff: inspect `git status`, restore with Git as appropriate, and retry.
+partial result; resolve the reported filesystem error and rerun the command to
+converge.
 
-There is no migration subsystem. A clean existing installation converges in one
-install or update: complete replacement of `.agent-workflow/` removes obsolete
-framework files as part of the resulting Git diff. Skill directories outside
-the current curated inventory are unrelated content and remain untouched.
+There is no migration subsystem. Existing installations converge in one install
+or update: complete replacement of `.agent-workflow/` removes obsolete framework
+files. Skill directories outside the current curated inventory are unrelated
+content and remain untouched.
 
 ### Where results live
 

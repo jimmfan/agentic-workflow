@@ -8,7 +8,6 @@ import json
 import os
 import shutil
 import stat
-import subprocess
 import sys
 import tempfile
 from collections.abc import Iterable, Mapping
@@ -62,19 +61,10 @@ class Distribution:
     framework: Mapping[PurePosixPath, bytes]
     skills: Mapping[str, Mapping[PurePosixPath, bytes]]
     composites: Mapping[PurePosixPath, bytes]
-    destinations: tuple[PurePosixPath, ...]
 
     @property
     def skill_names(self) -> tuple[str, ...]:
         return tuple(sorted(self.skills))
-
-    @property
-    def managed_surfaces(self) -> tuple[PurePosixPath, ...]:
-        return (
-            FRAMEWORK_ROOT,
-            *(SKILLS_ROOT / name for name in self.skill_names),
-            *COMPOSITE_PATHS,
-        )
 
 
 def configure_console() -> None:
@@ -128,7 +118,6 @@ def load_distribution() -> Distribution:
     framework: dict[PurePosixPath, bytes] = {}
     skills: dict[str, dict[PurePosixPath, bytes]] = {}
     composites: dict[PurePosixPath, bytes] = {}
-    destinations: list[PurePosixPath] = []
     sources_seen: set[PurePosixPath] = set()
     targets_seen: set[PurePosixPath] = set()
 
@@ -174,8 +163,6 @@ def load_distribution() -> Distribution:
             skills.setdefault(name, {})[relative] = data
         else:
             raise LifecycleError(f"unsupported managed destination: {target}")
-        destinations.append(target)
-
     if set(composites) != set(COMPOSITE_PATHS) or not framework or not skills:
         raise LifecycleError(
             "distribution manifest is missing a required managed surface"
@@ -183,7 +170,7 @@ def load_distribution() -> Distribution:
     for name, files in skills.items():
         if PurePosixPath("SKILL.md") not in files:
             raise LifecycleError(f"curated skill is missing SKILL.md: {name}")
-    return Distribution(framework, skills, composites, tuple(destinations))
+    return Distribution(framework, skills, composites)
 
 
 def validate_target(raw: Path) -> Path:
@@ -196,37 +183,6 @@ def validate_target(raw: Path) -> Path:
     if root.parent == root:
         raise LifecycleError("refusing to operate on a filesystem root")
     return root
-
-
-def run_git(root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
-    environment = os.environ.copy()
-    environment["GIT_OPTIONAL_LOCKS"] = "0"
-    try:
-        return subprocess.run(
-            ["git", "-C", str(root), *arguments],
-            text=True,
-            capture_output=True,
-            check=False,
-            env=environment,
-        )
-    except OSError as exc:
-        raise LifecycleError(f"cannot run Git: {exc}") from exc
-
-
-def git_boundary_issues(root: Path) -> list[str]:
-    top = run_git(root, "rev-parse", "--show-toplevel")
-    if top.returncode != 0:
-        return ["target must be exactly a Git worktree root"]
-    try:
-        git_root = Path(top.stdout.strip()).resolve(strict=True)
-    except (OSError, RuntimeError) as exc:
-        return [f"cannot resolve the Git worktree root: {exc}"]
-    if git_root != root:
-        return ["target must be the exact Git worktree root"]
-    head = run_git(root, "rev-parse", "--verify", "--quiet", "HEAD^{commit}")
-    if head.returncode != 0:
-        return ["Git worktree must have a valid HEAD commit"]
-    return []
 
 
 def path_exists(path: Path) -> bool:
@@ -270,70 +226,6 @@ def require_managed_roots_safe(root: Path, distribution: Distribution) -> None:
         require_path_kind(root, SKILLS_ROOT / name, "directory")
     for relative in COMPOSITE_PATHS:
         require_path_kind(root, relative, "file")
-
-
-def scan_regular_tree(root: Path, relative: PurePosixPath) -> None:
-    start = root.joinpath(*relative.parts)
-    if not path_exists(start):
-        return
-
-    def visit(path: Path, label: PurePosixPath) -> None:
-        try:
-            details = os.lstat(path)
-        except OSError as exc:
-            raise LifecycleError(f"cannot inspect managed path {label}: {exc}") from exc
-        if stat.S_ISLNK(details.st_mode):
-            raise LifecycleError(f"managed tree contains a symlink: {label}")
-        if stat.S_ISREG(details.st_mode):
-            return
-        if not stat.S_ISDIR(details.st_mode):
-            raise LifecycleError(f"managed tree contains a special entry: {label}")
-        try:
-            with os.scandir(path) as iterator:
-                entries = sorted(iterator, key=lambda item: item.name)
-        except OSError as exc:
-            raise LifecycleError(
-                f"cannot inspect managed directory {label}: {exc}"
-            ) from exc
-        for entry in entries:
-            visit(Path(entry.path), label / entry.name)
-
-    visit(start, relative)
-
-
-def reserved_skill_collision(
-    root: Path, distribution: Distribution
-) -> PurePosixPath | None:
-    if adoption_present(root, distribution):
-        return None
-    for name in distribution.skill_names:
-        relative = SKILLS_ROOT / name
-        if path_exists(root.joinpath(*relative.parts)):
-            return relative
-    return None
-
-
-def reserved_skill_message(relative: PurePosixPath) -> str:
-    return (
-        f"reserved curated skill directory blocks adoption: {relative}; "
-        "move or rename the project-owned skill before installation"
-    )
-
-
-def adoption_collision_message(root: Path, distribution: Distribution) -> str | None:
-    collision = reserved_skill_collision(root, distribution)
-    if collision is not None:
-        return reserved_skill_message(collision)
-
-    if not adoption_present(root, distribution) and path_exists(
-        root.joinpath(*FRAMEWORK_ROOT.parts)
-    ):
-        return (
-            "existing .agent-workflow directory blocks adoption; "
-            "move or rename the project-owned directory before installation"
-        )
-
-    return None
 
 
 def marker_lines(data: bytes) -> list[MarkerLine]:
@@ -494,16 +386,6 @@ def read_composite(root: Path, relative: PurePosixPath) -> bytes | None:
         raise LifecycleError(f"cannot read composite policy {relative}: {exc}") from exc
 
 
-def adoption_present(root: Path, distribution: Distribution) -> bool:
-    for relative in COMPOSITE_PATHS:
-        current = read_composite(root, relative)
-        if current is not None:
-            parts = parse_composite(current, relative)
-            if parts is not None:
-                return True
-    return directory_matches(root, FRAMEWORK_ROOT, distribution.framework)
-
-
 def compose_policy(
     relative: PurePosixPath, managed: bytes, before: bytes, after: bytes
 ) -> bytes:
@@ -554,107 +436,7 @@ def plan_composites(
 
 def inspect_managed_structure(root: Path, distribution: Distribution) -> None:
     require_managed_roots_safe(root, distribution)
-    scan_regular_tree(root, FRAMEWORK_ROOT)
-    for name in distribution.skill_names:
-        scan_regular_tree(root, SKILLS_ROOT / name)
     plan_composites(root, distribution, remove=False)
-
-
-def split_null_output(value: str) -> list[str]:
-    return [item for item in value.split("\0") if item]
-
-
-def managed_git_issues(root: Path, distribution: Distribution) -> list[str]:
-    surfaces = [path.as_posix() for path in distribution.managed_surfaces]
-    issues: list[str] = []
-
-    untracked = run_git(
-        root,
-        "ls-files",
-        "-z",
-        "--others",
-        "--exclude-standard",
-        "--",
-        *surfaces,
-    )
-    if untracked.returncode != 0:
-        issues.append("Git could not inspect untracked managed files")
-    else:
-        paths = split_null_output(untracked.stdout)
-        if paths:
-            issues.append(f"untracked file under a managed surface: {paths[0]}")
-
-    ignored = run_git(
-        root,
-        "ls-files",
-        "-z",
-        "--others",
-        "--ignored",
-        "--exclude-standard",
-        "--",
-        *surfaces,
-    )
-    if ignored.returncode != 0:
-        issues.append("Git could not inspect ignored managed files")
-    else:
-        paths = split_null_output(ignored.stdout)
-        if paths:
-            issues.append(f"managed destination is ignored: {paths[0]}")
-
-    candidates = {
-        *distribution.destinations,
-        FRAMEWORK_ROOT,
-        SKILLS_ROOT,
-        *(SKILLS_ROOT / name for name in distribution.skill_names),
-        *COMPOSITE_PATHS,
-    }
-    for relative in sorted(candidates, key=lambda item: item.as_posix()):
-        result = run_git(
-            root,
-            "check-ignore",
-            "--no-index",
-            "--quiet",
-            "--",
-            relative.as_posix(),
-        )
-        if result.returncode == 0:
-            issues.append(f"managed destination is ignored: {relative}")
-            break
-        if result.returncode not in {0, 1}:
-            issues.append(f"Git could not inspect ignore rules for {relative}")
-            break
-    return issues
-
-
-def worktree_issue(root: Path) -> str | None:
-    status_result = run_git(root, "status", "--porcelain=v1", "--untracked-files=all")
-    if status_result.returncode != 0:
-        return "Git could not inspect worktree cleanliness"
-    if not status_result.stdout:
-        return None
-    if any(line.startswith("??") for line in status_result.stdout.splitlines()):
-        return "worktree and index must be completely clean, including untracked files"
-    return "worktree and index must be completely clean"
-
-
-def require_mutation_safe(root: Path, distribution: Distribution) -> None:
-    issues = git_boundary_issues(root)
-    if issues:
-        raise LifecycleError("; ".join(issues))
-
-    inspect_managed_structure(root, distribution)
-    issues = managed_git_issues(root, distribution)
-
-    collision = adoption_collision_message(root, distribution)
-    if collision is not None:
-        issues.append(collision)
-
-    dirty = worktree_issue(root)
-    if dirty is not None:
-        issues.append(dirty)
-
-    if issues:
-        raise LifecycleError("; ".join(dict.fromkeys(issues)))
 
 
 def expected_directories(files: Mapping[PurePosixPath, bytes]) -> set[PurePosixPath]:
@@ -674,8 +456,10 @@ def directory_matches(
         return False
     actual_files: dict[PurePosixPath, bytes] = {}
     actual_directories: set[PurePosixPath] = set()
+    regular_tree = True
 
     def visit(path: Path, child: PurePosixPath) -> None:
+        nonlocal regular_tree
         with os.scandir(path) as iterator:
             entries = sorted(iterator, key=lambda item: item.name)
         for entry in entries:
@@ -689,12 +473,14 @@ def directory_matches(
             elif stat.S_ISREG(details.st_mode):
                 actual_files[descendant] = Path(entry.path).read_bytes()
             else:
-                return
+                regular_tree = False
 
     visit(start, PurePosixPath())
-    return actual_files == dict(
-        expected
-    ) and actual_directories == expected_directories(expected)
+    return (
+        regular_tree
+        and actual_files == dict(expected)
+        and actual_directories == expected_directories(expected)
+    )
 
 
 def drift_messages(root: Path, distribution: Distribution) -> list[str]:
@@ -720,44 +506,23 @@ def drift_messages(root: Path, distribution: Distribution) -> list[str]:
 
 def status(root: Path, distribution: Distribution) -> int:
     print(f"STATUS {root}")
-    boundary = git_boundary_issues(root)
     structural: list[str] = []
     drift: list[str] = []
 
     try:
-        require_managed_roots_safe(root, distribution)
-        scan_regular_tree(root, FRAMEWORK_ROOT)
-        for name in distribution.skill_names:
-            scan_regular_tree(root, SKILLS_ROOT / name)
-        plan_composites(root, distribution, remove=False)
-
-        collision = adoption_collision_message(root, distribution)
-        if collision is not None:
-            structural.append(collision)
-        else:
-            drift = drift_messages(root, distribution)
+        inspect_managed_structure(root, distribution)
+        drift = drift_messages(root, distribution)
     except (LifecycleError, OSError) as exc:
         structural.append(str(exc))
 
-    safety = list(boundary)
-    if not boundary:
-        safety.extend(managed_git_issues(root, distribution))
-        dirty = worktree_issue(root)
-        if dirty is not None:
-            safety.append(dirty)
-
-    for issue in dict.fromkeys(safety):
-        print(f"BLOCKED: Git safety boundary would block mutation: {issue}")
     for issue in structural:
         print(f"CONFLICT: {issue}")
     for message in drift:
         print(message)
 
-    if safety or structural or drift:
+    if structural or drift:
         if structural:
             print("Agent Workflow: unsafe/conflict")
-        elif safety:
-            print("Agent Workflow: blocked by Git safety boundary")
         else:
             print("Agent Workflow: repairable")
         return 1
@@ -839,7 +604,7 @@ def print_plan(command: str, root: Path, distribution: Distribution) -> None:
 def converge(
     root: Path, distribution: Distribution, command: str, dry_run: bool
 ) -> None:
-    require_mutation_safe(root, distribution)
+    inspect_managed_structure(root, distribution)
     composite_plan = plan_composites(root, distribution, remove=False)
     if dry_run:
         print_plan(command, root, distribution)
@@ -855,7 +620,7 @@ def converge(
 
 
 def remove(root: Path, distribution: Distribution, dry_run: bool) -> None:
-    require_mutation_safe(root, distribution)
+    inspect_managed_structure(root, distribution)
     composite_plan = plan_composites(root, distribution, remove=True)
     if dry_run:
         print_plan("remove", root, distribution)
@@ -900,8 +665,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         return 0
     except PartialMutationError as exc:
         print(
-            "ERROR: lifecycle operation failed; partial changes may exist. "
-            "Inspect git status, restore with Git, and retry from a clean worktree: "
+            "ERROR: lifecycle operation failed; partial changes may exist; "
+            "resolve the filesystem error and rerun the command to converge: "
             f"{exc}",
             file=sys.stderr,
         )

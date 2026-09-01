@@ -12,7 +12,6 @@ from _test_support import (
     run_git,
     run_script,
     tree_snapshot,
-    workspace_snapshot,
 )
 
 RETAINED_SKILLS = {
@@ -141,7 +140,6 @@ class DirectDistributionTests(ProjectTestCase):
         status = self.lifecycle("status")
         self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
         self.assertIn("Agent Workflow: repairable", status.stdout)
-        self.assertNotIn("reserved curated skill directory", status.stdout)
 
         self.assert_ok(self.lifecycle("update"))
         self.assert_current_payload_installed()
@@ -159,72 +157,55 @@ class DirectDistributionTests(ProjectTestCase):
         status = self.lifecycle("status")
         self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
         self.assertIn("Agent Workflow: repairable", status.stdout)
-        self.assertNotIn("reserved curated skill directory", status.stdout)
 
         self.assert_ok(self.lifecycle("update"))
         self.assert_current_payload_installed()
         self.assert_wayfinder_untouched()
 
-    def test_fresh_adoption_rejects_preexisting_framework_directory(
+    def test_install_replaces_existing_framework_and_curated_skill_surfaces(
         self,
     ) -> None:
-        project = Path(self.temporary.name) / "framework-collision"
+        project = Path(self.temporary.name) / "existing-surfaces"
         project.mkdir()
 
         framework_note = project / ".agent-workflow/project-note.txt"
         framework_note.parent.mkdir(parents=True)
-        framework_note.write_bytes(b"project-owned pre-existing content\n")
-
-        initialize_repository(project)
-        before = workspace_snapshot(project)
-
-        status = run_script(LIFECYCLE, "status", project)
-        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
-        self.assertIn(
-            "existing .agent-workflow directory blocks adoption",
-            status.stdout,
+        framework_note.write_bytes(b"stale pre-v1 framework content\n")
+        curated = project / ".agents/skills/research/SKILL.md"
+        curated.parent.mkdir(parents=True)
+        curated.write_bytes(b"stale curated skill content\n")
+        unrelated = project / ".agents/skills/legacy-local/SKILL.md"
+        unrelated.parent.mkdir(parents=True)
+        unrelated.write_bytes(b"project-owned unrelated skill\n")
+        durable = project / ".agent-wayfinder/effort/map.md"
+        durable.parent.mkdir(parents=True)
+        durable.write_bytes(b"project-owned durable state\n")
+        (project / ".gitignore").write_text(
+            ".agent-workflow/\n.agents/\n",
+            encoding="utf-8",
         )
-        self.assertIn("Agent Workflow: unsafe/conflict", status.stdout)
-        self.assertNotIn("REPAIR:", status.stdout)
-        self.assertEqual(workspace_snapshot(project), before)
-
-        for command in ("install", "update", "remove"):
-            with self.subTest(command=command):
-                result = run_script(LIFECYCLE, command, project)
-                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
-                self.assertIn(
-                    "existing .agent-workflow directory blocks adoption",
-                    result.stderr,
-                )
-                self.assertEqual(workspace_snapshot(project), before)
-
-    def test_fresh_adoption_rejects_a_reserved_skill_despite_framework_directory(
-        self,
-    ) -> None:
-        project = Path(self.temporary.name) / "reserved-name"
-        project.mkdir()
-        framework_note = project / ".agent-workflow/project-note.txt"
-        framework_note.parent.mkdir(parents=True)
-        framework_note.write_bytes(b"project-owned framework-shaped directory\n")
-        collision = project / ".agents/skills/research/SKILL.md"
-        collision.parent.mkdir(parents=True)
-        collision.write_bytes(b"project-owned research skill\n")
         initialize_repository(project)
-        before = workspace_snapshot(project)
 
         status = run_script(LIFECYCLE, "status", project)
         self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
-        self.assertIn("reserved curated skill directory blocks adoption", status.stdout)
+        self.assertIn("Agent Workflow: repairable", status.stdout)
 
-        for command in ("install", "update", "remove"):
-            with self.subTest(command=command):
-                result = run_script(LIFECYCLE, command, project)
-                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
-                self.assertIn(
-                    "move or rename the project-owned skill before installation",
-                    result.stderr,
-                )
-                self.assertEqual(workspace_snapshot(project), before)
+        self.assert_ok(run_script(LIFECYCLE, "install", project))
+        self.assertFalse(framework_note.exists())
+        self.assertEqual(
+            tree_snapshot(project / ".agents/skills/research"),
+            tree_snapshot(PACKAGE_ROOT / "payload/skills/research"),
+        )
+        self.assertEqual(unrelated.read_bytes(), b"project-owned unrelated skill\n")
+        self.assertEqual(durable.read_bytes(), b"project-owned durable state\n")
+
+        (project / ".agent-workflow/providers.json").write_bytes(b"obsolete\n")
+        (project / ".agents/skills/research/local.txt").write_bytes(b"obsolete\n")
+        self.assert_ok(run_script(LIFECYCLE, "update", project))
+        self.assertFalse((project / ".agent-workflow/providers.json").exists())
+        self.assertFalse((project / ".agents/skills/research/local.txt").exists())
+        self.assertEqual(unrelated.read_bytes(), b"project-owned unrelated skill\n")
+        self.assertEqual(durable.read_bytes(), b"project-owned durable state\n")
 
     def test_remove_and_reinstall_touch_only_current_managed_surfaces(self) -> None:
         project_policy = b"# Local agent policy\n"
