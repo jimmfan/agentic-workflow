@@ -19,6 +19,10 @@ from _test_support import (
     run_script,
 )
 
+PACKAGE_VERSION = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+PACKAGE_TAG = f"v{PACKAGE_VERSION}"
+SYNTHETIC_TAG_REF = "v7.8.9"
+
 
 class BootstrapSafetyTests(unittest.TestCase):
     @classmethod
@@ -401,7 +405,7 @@ target = Path(sys.argv[2])
         for ref in (
             "main",
             "fix/pre-v1-install-simplification",
-            "v0.27.0",
+            SYNTHETIC_TAG_REF,
             "a" * 40,
         ):
             with self.subTest(ref=ref):
@@ -427,7 +431,7 @@ target = Path(sys.argv[2])
             for ref in (
                 "main",
                 "fix/pre-v1-install-simplification",
-                "v0.27.0",
+                SYNTHETIC_TAG_REF,
                 "a" * 40,
             ):
                 with self.subTest(ref=ref):
@@ -441,7 +445,7 @@ target = Path(sys.argv[2])
             [
                 "main",
                 "fix/pre-v1-install-simplification",
-                "v0.27.0",
+                SYNTHETIC_TAG_REF,
                 "a" * 40,
             ],
         )
@@ -449,25 +453,23 @@ target = Path(sys.argv[2])
     def test_older_bootstrap_updates_from_one_newer_coherent_release_snapshot(
         self,
     ) -> None:
-        self.assertEqual(
-            (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip(),
-            "0.27.0",
-        )
         tags_url = (
             f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags"
             "?per_page=100&page=1"
         )
         commit_url = (
-            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/v0.27.0"
+            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/{PACKAGE_TAG}"
         )
         revision = "c" * 40
         archive_url = (
             f"https://codeload.github.com/{self.bootstrap.REPOSITORY}/tar.gz/{revision}"
         )
         responses = {
-            tags_url: json.dumps([{"name": "v0.27.0"}, {"name": "v0.27.0"}]).encode(),
+            tags_url: json.dumps(
+                [{"name": PACKAGE_TAG}, {"name": PACKAGE_TAG}]
+            ).encode(),
             commit_url: json.dumps({"sha": revision}).encode(),
-            archive_url: self.release_probe_archive("0.27.0"),
+            archive_url: self.release_probe_archive(PACKAGE_VERSION),
         }
 
         with (
@@ -486,7 +488,7 @@ target = Path(sys.argv[2])
             self.assertEqual(result, 0)
             self.assertEqual(
                 (target / "selected-framework-version.txt").read_text(encoding="utf-8"),
-                "0.27.0\n",
+                f"{PACKAGE_VERSION}\n",
             )
             self.assertEqual(
                 [call.args[0] for call in request_bytes.call_args_list],
