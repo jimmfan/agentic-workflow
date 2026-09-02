@@ -44,10 +44,10 @@ transition into execution and independent acceptance verification.
 
 Codex and GitHub Copilot discover project skills under `.agents/skills`. The
 portable [Agent Skills specification](https://agentskills.io/specification)
-defines the skill directory and basic frontmatter but does not standardize
-automatic model invocation. Agent Workflow preserves each complete skill
-directory, including `SKILL.md` frontmatter and `agents/openai.yaml` when present;
-hosts interpret those files and decide which skills are exposed in a session.
+defines each skill through `SKILL.md` frontmatter and instructions but does not
+standardize automatic model invocation. Agent Workflow maintains complete
+`SKILL.md`-based directories and their referenced support files; hosts interpret
+those files and decide which skills are exposed in a session.
 See the [Codex skill documentation](https://developers.openai.com/codex/skills),
 [VS Code Agent Skills documentation](https://code.visualstudio.com/docs/agent-customization/agent-skills),
 and [Claude Code skills documentation](https://code.claude.com/docs/en/skills).

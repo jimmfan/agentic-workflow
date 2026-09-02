@@ -17,10 +17,6 @@
       "target": ".agents/skills/code-review/SKILL.md"
     },
     {
-      "source": "skills/code-review/agents/openai.yaml",
-      "target": ".agents/skills/code-review/agents/openai.yaml"
-    },
-    {
       "source": "skills/codebase-design/DEEPENING.md",
       "target": ".agents/skills/codebase-design/DEEPENING.md"
     },
@@ -31,10 +27,6 @@
     {
       "source": "skills/codebase-design/SKILL.md",
       "target": ".agents/skills/codebase-design/SKILL.md"
-    },
-    {
-      "source": "skills/codebase-design/agents/openai.yaml",
-      "target": ".agents/skills/codebase-design/agents/openai.yaml"
     },
     {
       "source": "skills/domain-modeling/ADR-FORMAT.md",
@@ -49,24 +41,12 @@
       "target": ".agents/skills/domain-modeling/SKILL.md"
     },
     {
-      "source": "skills/domain-modeling/agents/openai.yaml",
-      "target": ".agents/skills/domain-modeling/agents/openai.yaml"
-    },
-    {
       "source": "skills/grilling/SKILL.md",
       "target": ".agents/skills/grilling/SKILL.md"
     },
     {
-      "source": "skills/grilling/agents/openai.yaml",
-      "target": ".agents/skills/grilling/agents/openai.yaml"
-    },
-    {
       "source": "skills/implement/SKILL.md",
       "target": ".agents/skills/implement/SKILL.md"
-    },
-    {
-      "source": "skills/implement/agents/openai.yaml",
-      "target": ".agents/skills/implement/agents/openai.yaml"
     },
     {
       "source": "skills/prototype/LOGIC.md",
@@ -81,24 +61,12 @@
       "target": ".agents/skills/prototype/UI.md"
     },
     {
-      "source": "skills/prototype/agents/openai.yaml",
-      "target": ".agents/skills/prototype/agents/openai.yaml"
-    },
-    {
       "source": "skills/research/SKILL.md",
       "target": ".agents/skills/research/SKILL.md"
     },
     {
-      "source": "skills/research/agents/openai.yaml",
-      "target": ".agents/skills/research/agents/openai.yaml"
-    },
-    {
       "source": "skills/tdd/SKILL.md",
       "target": ".agents/skills/tdd/SKILL.md"
-    },
-    {
-      "source": "skills/tdd/agents/openai.yaml",
-      "target": ".agents/skills/tdd/agents/openai.yaml"
     },
     {
       "source": "skills/tdd/mocking.md",
@@ -113,24 +81,12 @@
       "target": ".agents/skills/to-spec/SKILL.md"
     },
     {
-      "source": "skills/to-spec/agents/openai.yaml",
-      "target": ".agents/skills/to-spec/agents/openai.yaml"
-    },
-    {
       "source": "skills/to-tickets/SKILL.md",
       "target": ".agents/skills/to-tickets/SKILL.md"
     },
     {
-      "source": "skills/to-tickets/agents/openai.yaml",
-      "target": ".agents/skills/to-tickets/agents/openai.yaml"
-    },
-    {
       "source": "skills/wayfinder/SKILL.md",
       "target": ".agents/skills/wayfinder/SKILL.md"
-    },
-    {
-      "source": "skills/wayfinder/agents/openai.yaml",
-      "target": ".agents/skills/wayfinder/agents/openai.yaml"
     },
     {
       "source": "skills/workflow-debugging/SKILL.md",
