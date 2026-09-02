@@ -301,7 +301,8 @@ class RoutingContractTests(unittest.TestCase):
             "Protect project-owned and user-owned durable state",
             "Reconstructable framework output may be replaced when appropriate",
             "durable state must not be treated as reconstructable framework content",
-            "Do not rely on host or model defaults for data-preservation boundaries",
+            "Define Agent Workflow's own data-preservation boundaries",
+            "host or model defaults",
             "Do not duplicate generic host or model safety policy unless Agent "
             "Workflow introduces a specific risk",
         ):
@@ -319,20 +320,68 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(root_owned_restatement=root_owned_restatement):
                 self.assertNotIn(root_owned_restatement, source_tail)
 
-        self.assertEqual(
-            source_tail.count("Remove or simplify unjustified machinery"), 1
+    def test_source_working_practice_reuses_host_capabilities_and_skills(
+        self,
+    ) -> None:
+        source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        working_practice = " ".join(
+            source_policy.split("## Working practice", 1)[1]
+            .split("## Testing and verification", 1)[0]
+            .split()
         )
+
+        for existing_option in (
+            "existing host capability",
+            "skill exposed in the current session",
+            "provides the needed behavior",
+        ):
+            with self.subTest(existing_option=existing_option):
+                self.assertIn(existing_option, working_practice)
+
+    def test_pre_1_0_machinery_boundary_keeps_full_scope(self) -> None:
+        source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        source_tail = " ".join(
+            source_policy.split("<!-- agent-workflow:managed-end -->", 1)[1].split()
+        )
+        architecture_boundary = " ".join(
+            source_policy.split("## Architecture boundary", 1)[1]
+            .split("## Project data preservation", 1)[0]
+            .split()
+        )
+        machinery_list = architecture_boundary.split("Do not add", 1)[1].split(
+            "and do not expand", 1
+        )[0]
+
+        self.assertEqual(source_tail.count("package-manager-grade integrity"), 1)
         for retained_boundary in (
             "protecting project-owned and user-owned durable data",
             "preserving authorization and safe-delivery boundaries",
             "making core routing behavior reliable",
             "prefer simple, replaceable designs",
             "thin orchestration layer",
-            "package-manager-grade integrity",
-            "current external contract",
         ):
             with self.subTest(retained_boundary=retained_boundary):
                 self.assertIn(retained_boundary, source_tail)
+
+        for covered_machinery in (
+            "package-manager-grade integrity",
+            "compatibility",
+            "migration",
+            "deprecation",
+            "observability",
+            "ownership registries",
+            "lifecycle systems",
+        ):
+            with self.subTest(covered_machinery=covered_machinery):
+                self.assertIn(covered_machinery, machinery_list)
+
+        for allowed_exception in (
+            "concrete current need",
+            "durable-data or safety requirement",
+            "current external contract",
+        ):
+            with self.subTest(allowed_exception=allowed_exception):
+                self.assertIn(allowed_exception, architecture_boundary)
 
     def test_project_choice_and_action_boundaries_are_independent(
         self,
@@ -535,11 +584,12 @@ class RoutingContractTests(unittest.TestCase):
             "exposed in the current session",
             "Read the selected skill's instructions",
             "Selecting a skill is not execution",
-            "Route selection chooses Direct or one primary workflow",
-            "bounded method directly while the route remains Direct",
-            "add a selected method as a supporting capability",
-            "neither role makes that skill a primary workflow",
-            "material execution",
+            "The agent chooses Direct or one primary workflow",
+            "remain Direct while the agent uses a skill for focused work",
+            "A skill may also support the current route without becoming its "
+            "primary workflow",
+            "Loading a selected skill makes its instructions available",
+            "execution means actually using the skill's method",
             "completion and verification",
             "cannot run without explicit user invocation",
             "available capabilities can satisfy the request",
@@ -556,8 +606,8 @@ class RoutingContractTests(unittest.TestCase):
         ):
             self.assertNotIn(obsolete_abstraction, selected_skills)
         self.assertIn(
-            "A selected skill acting as a supporting capability creates no Agent "
-            "Workflow durable coordination state",
+            "Using a skill to support a route creates no separate Agent Workflow "
+            "durable coordination state",
             sections["## Preserve responsibilities and transitions"],
         )
         reporting = sections["## Report the executed route"]
@@ -567,7 +617,7 @@ class RoutingContractTests(unittest.TestCase):
     def test_specialist_selection_has_material_boundaries(self) -> None:
         self._assert_optional_specialist_boundaries()
 
-    def test_routing_role_terms_are_compositional_not_artifact_types(self) -> None:
+    def test_skills_can_be_used_directly_or_to_support_a_route(self) -> None:
         documented_routing = " ".join(
             (REPOSITORY_ROOT / "docs/routing.md")
             .read_text(encoding="utf-8")
@@ -580,28 +630,28 @@ class RoutingContractTests(unittest.TestCase):
         )
 
         for role_boundary in (
-            "Every discoverable instruction package under `.agents/skills/` is a "
-            "skill",
+            "Every discoverable package under `.agents/skills/` is a skill",
             "Direct is the default route",
-            "routing chooses Direct or one primary workflow",
-            "bounded method directly while the route remains Direct",
-            "`supporting capability` names that compositional role, not a separate "
-            "installed artifact type",
-            "`Specialist` names a bounded method or role",
-            "not every skill that is not a workflow",
-            "do not force each skill into one permanent workflow or specialist "
-            "class",
+            "the agent may choose one primary workflow",
+            "remain Direct while the agent uses a skill for focused work",
+            "Additional skills may support the current route when they materially "
+            "help",
+            "they do not become additional primary workflows",
+            "How the agent uses a skill for one request does not permanently "
+            "classify that skill",
+            "Using a skill for specialist work does not create separate Agent "
+            "Workflow durable coordination state",
         ):
             with self.subTest(role_boundary=role_boundary):
                 self.assertIn(role_boundary, documented_routing)
 
         self.assertIn(
-            "Every discoverable instruction package under `.agents/skills/` is a "
-            "skill",
+            "Each discoverable package under `.agents/skills/` is a skill",
             documented_skills,
         )
         self.assertIn(
-            "Routing-role labels do not define another installed artifact taxonomy",
+            "See [Workflow routing](routing.md) for how a skill participates in a "
+            "route",
             documented_skills,
         )
 
@@ -900,8 +950,8 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("omit the skill that could not run", normalized_routing)
         self.assertNotIn("one obvious specialist inside Wayfinder", normalized_routing)
         self.assertIn(
-            "A selected skill acting as a supporting capability creates no Agent "
-            "Workflow durable coordination state",
+            "Using a skill to support a route creates no separate Agent Workflow "
+            "durable coordination state",
             normalized_routing,
         )
 

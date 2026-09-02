@@ -5,19 +5,18 @@ the request without granting action authorization or project decision authority
 beyond the user's direction. It starts Direct, classifies from intent and skill
 descriptions exposed in the current session, and may perform the smallest
 read-only reconnaissance within delegated scope when evidence is insufficient.
-A clearly applicable skill may be selected directly for a bounded method without
-becoming the primary workflow; availability alone never selects it.
+A clearly applicable skill may help with focused work; availability alone never
+selects it.
 
 ## Routing roles
 
-Every discoverable instruction package under `.agents/skills/` is a skill.
-Direct is the default route, and routing chooses Direct or one primary workflow.
-An applicable skill may supply a bounded method directly while the route remains
-Direct. Additional selected methods may act as supporting capabilities when they
-materially help; `supporting capability` names that compositional role, not a
-separate installed artifact type. `Specialist` names a bounded method or role
-where that meaning is intended, not every skill that is not a workflow. These
-roles do not force each skill into one permanent workflow or specialist class.
+Every discoverable package under `.agents/skills/` is a skill. Direct is the
+default route. A request may remain Direct while the agent uses a skill for
+focused work. When more structure is needed, the agent may choose one primary
+workflow. Additional skills may support the current route when they materially
+help, but they do not become additional primary workflows. How the agent uses a
+skill for one request does not permanently classify that skill. Use `specialist`
+only for focused specialist work.
 
 Routing is dynamic. Assess durable coordination after any needed reconnaissance;
 item count alone never selects Wayfinder. Wayfinder must start or resume when
@@ -54,10 +53,9 @@ skill's instructions define its method.
 Keep these stages separate:
 
 1. choose Direct or one primary workflow;
-2. select an applicable skill directly when its bounded method fits Direct,
-   without turning that skill into the primary workflow;
-3. add selected methods as supporting capabilities only when they materially
-   help;
+2. while the route remains Direct, use an applicable skill for focused work when
+   it helps;
+3. use additional skills only when they materially support the current route;
 4. if a skill is selected, use the version exposed in the current session and
    follow its instructions;
 5. if a selected skill is unavailable or cannot run without explicit user
@@ -125,10 +123,10 @@ Within a selected effort, continue directly with ready work. Load Discovery,
 Debugging, Research, Prototype, Domain Modeling, Grilling, or human clarification
 only when that method materially improves how a current question, uncertainty,
 unexplained cause, consequential choice, or structural ambiguity is addressed.
-A skill used in that bounded specialist role creates no Agent Workflow durable
-coordination state. It may return findings or produce the normal result described
-by its instructions; Wayfinder records only consequential results or references
-needed for coordination.
+Using a skill for specialist work does not create separate Agent Workflow durable
+coordination state. While using the skill, the agent may return findings or
+produce the result described by its instructions; Wayfinder records only
+consequential results or references needed for coordination.
 Implementation is a workflow transition for ready work, followed by
 Verification, not a Wayfinder reasoning method or coordination record.
 

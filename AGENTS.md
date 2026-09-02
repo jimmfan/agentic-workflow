@@ -159,13 +159,12 @@ layers. Do not force one term across genuinely different bounded contexts.
 - Prefer existing host or curated skill capabilities and accepted artifacts that
   maintain lasting results over parallel Agent Workflow representations or
   lightly rewritten upstream functionality.
-- Remove or simplify unjustified machinery rather than preserving it merely
-  because it exists. Without a concrete current need, durable-data requirement,
-  safety boundary, or current external contract that requires it, do not add
-  package-manager-grade integrity, migration or deprecation systems,
-  observability platforms, ownership registries, or broad lifecycle machinery,
-  and do not expand the project into a general agent runtime, package manager,
-  plugin platform, or compatibility framework.
+- Remove or simplify machinery that lacks a current justification. Do not add
+  package-manager-grade integrity, compatibility, migration, deprecation,
+  observability, ownership registries, or lifecycle systems, and do not expand
+  Agent Workflow into a general agent runtime, package manager, plugin platform,
+  or compatibility framework, unless a concrete current need, durable-data or
+  safety requirement, or current external contract requires it.
 
 ## Project data preservation
 
@@ -173,10 +172,10 @@ layers. Do not force one term across genuinely different bounded contexts.
 - Protect project-owned and user-owned durable state. Reconstructable framework
   output may be replaced when appropriate; durable state must not be treated as
   reconstructable framework content.
-- Do not rely on host or model defaults for data-preservation boundaries for
-  which Agent Workflow itself is responsible. Do not duplicate generic host or
-  model safety policy unless Agent Workflow introduces a specific risk that
-  requires a project-owned rule.
+- Define Agent Workflow's own data-preservation boundaries instead of relying on
+  host or model defaults. Do not duplicate generic host or model safety policy
+  unless Agent Workflow introduces a specific risk that requires a project-owned
+  rule.
 
 ## Working practice
 
@@ -186,8 +185,8 @@ For substantial changes:
   branch, base, and relevant diff.
 - Read the applicable contracts and architectural decisions and determine which
   layer owns the behavior.
-- Check whether a skill exposed in the current session already supplies the
-  behavior.
+- Check whether an existing host capability or skill exposed in the current
+  session already provides the needed behavior.
 - Prefer the smallest coherent and reversible change that preserves accepted
   behavior.
 - Update tests and durable documentation when the resulting contract changes.
