@@ -62,21 +62,21 @@ EXPECTED_BASE_PAYLOAD_FILES = frozenset(
 )
 
 EXPECTED_SKILL_FILES = {
-    "code-review": frozenset({"SKILL.md", "agents/openai.yaml"}),
+    "code-review": frozenset({"SKILL.md"}),
     "codebase-design": frozenset(
-        {"DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md", "agents/openai.yaml"}
+        {"DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md"}
     ),
     "domain-modeling": frozenset(
-        {"ADR-FORMAT.md", "CONTEXT-FORMAT.md", "SKILL.md", "agents/openai.yaml"}
+        {"ADR-FORMAT.md", "CONTEXT-FORMAT.md", "SKILL.md"}
     ),
-    "grilling": frozenset({"SKILL.md", "agents/openai.yaml"}),
-    "implement": frozenset({"SKILL.md", "agents/openai.yaml"}),
-    "prototype": frozenset({"LOGIC.md", "SKILL.md", "UI.md", "agents/openai.yaml"}),
-    "research": frozenset({"SKILL.md", "agents/openai.yaml"}),
-    "tdd": frozenset({"SKILL.md", "agents/openai.yaml", "mocking.md", "tests.md"}),
-    "to-spec": frozenset({"SKILL.md", "agents/openai.yaml"}),
-    "to-tickets": frozenset({"SKILL.md", "agents/openai.yaml"}),
-    "wayfinder": frozenset({"SKILL.md", "agents/openai.yaml"}),
+    "grilling": frozenset({"SKILL.md"}),
+    "implement": frozenset({"SKILL.md"}),
+    "prototype": frozenset({"LOGIC.md", "SKILL.md", "UI.md"}),
+    "research": frozenset({"SKILL.md"}),
+    "tdd": frozenset({"SKILL.md", "mocking.md", "tests.md"}),
+    "to-spec": frozenset({"SKILL.md"}),
+    "to-tickets": frozenset({"SKILL.md"}),
+    "wayfinder": frozenset({"SKILL.md"}),
     "workflow-debugging": frozenset({"SKILL.md"}),
     "workflow-discovery": frozenset({"SKILL.md"}),
     "workflow-implementation": frozenset({"SKILL.md"}),

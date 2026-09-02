@@ -150,7 +150,7 @@ class VerifyPackageTests(ProjectTestCase):
             wrong_name, "curated skill name differs from its directory"
         )
 
-    def test_verifier_does_not_lock_descriptions_or_interface_copy(self) -> None:
+    def test_verifier_does_not_lock_skill_descriptions(self) -> None:
         package = self.copy_package("description-copy")
         self.replace_once(
             package,
@@ -158,21 +158,10 @@ class VerifyPackageTests(ProjectTestCase):
             "description: Investigate substantive questions against high-trust primary sources and return cited findings in chat. Create a repository artifact only when the user explicitly requests durable research output.",
             "description: Research substantive questions and return cited findings.",
         )
-        self.replace_once(
-            package,
-            "payload/skills/research/agents/openai.yaml",
-            'short_description: "Research from high-trust sources"',
-            'short_description: "Research substantive questions"',
-        )
         self.sync_projection(
             package,
             "skills/research/SKILL.md",
             ".agents/skills/research/SKILL.md",
-        )
-        self.sync_projection(
-            package,
-            "skills/research/agents/openai.yaml",
-            ".agents/skills/research/agents/openai.yaml",
         )
 
         result = self.verify(package)
