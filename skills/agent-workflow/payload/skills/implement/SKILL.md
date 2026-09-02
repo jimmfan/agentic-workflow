@@ -1,6 +1,5 @@
 ---
 description: Implement a defined piece of work.
-disable-model-invocation: false
 name: implement
 ---
 Implement the defined work supplied by the current user request or invoking

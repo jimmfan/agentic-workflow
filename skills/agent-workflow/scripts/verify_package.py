@@ -35,7 +35,6 @@ CLAUDE_PROJECT_BEGIN = b"\n" + FORMER_PROJECT_MARKER + b"\n"
 
 REQUIRED_PACKAGE_FILES = (
     "__init__.py",
-    "SKILL.md",
     "VERSION",
     "cli.py",
     "scripts/__init__.py",
@@ -379,7 +378,6 @@ def check_local_links() -> None:
     roots = (
         REPOSITORY_ROOT / "README.md",
         REPOSITORY_ROOT / "docs",
-        PACKAGE_ROOT / "SKILL.md",
         PAYLOAD_ROOT / "agent-workflow",
     )
     paths: list[Path] = []

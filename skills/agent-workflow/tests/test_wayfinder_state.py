@@ -1954,7 +1954,9 @@ class WayfinderStateContractTests(unittest.TestCase):
     def test_ownership_durability_and_reconstructability_remain_independent(
         self,
     ) -> None:
-        package_skill = (PACKAGE_ROOT / "SKILL.md").read_text(encoding="utf-8")
+        repository_readme = (REPOSITORY_ROOT / "README.md").read_text(
+            encoding="utf-8"
+        )
         state_model = markdown_section(
             self.contract, "## State model and boundaries"
         )
@@ -1962,7 +1964,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             REPOSITORY_ROOT
             / "architecture-decisions/0010-separate-framework-output-from-project-owned-state.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("framework-owned and reconstructable", package_skill)
+        self.assertIn("Framework-owned and reconstructable", repository_readme)
         self.assertIn("project-owned durable data", state_model)
         self.assertIn("not interpreted as Wayfinder state", state_model)
         normalized_ownership = " ".join(ownership_decision.split())

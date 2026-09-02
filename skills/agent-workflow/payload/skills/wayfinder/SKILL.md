@@ -1,6 +1,5 @@
 ---
 description: Keep a lightweight structured map when later work is expected to execute or depend on a plan, needs consequential context, or when important unresolved questions, choices, dependencies, blockers, or conflicting conclusions need reliable continuity.
-disable-model-invocation: false
 name: wayfinder
 ---
 # Wayfinder
