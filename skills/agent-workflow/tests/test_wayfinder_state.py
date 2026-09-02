@@ -15,7 +15,9 @@ CONTRACT = PACKAGE_ROOT / "payload/agent-workflow/contracts/wayfinder-state.md"
 INSTALLED_CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md"
 WAYFINDER_SKILL = PACKAGE_ROOT / "payload/skills/wayfinder/SKILL.md"
 INSTALLED_SKILL = REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md"
-MAP_FIRST_ADR = REPOSITORY_ROOT / "architecture-decisions/0011-use-map-first-wayfinder-state.md"
+MAP_FIRST_ADR = (
+    REPOSITORY_ROOT / "architecture-decisions/0011-use-map-first-wayfinder-state.md"
+)
 
 
 CURRENT_WAYFINDER_SCENARIOS = {
@@ -24,12 +26,9 @@ CURRENT_WAYFINDER_SCENARIOS = {
         / "tests/scenarios/wayfinder-answered-unknown-authority-choice.toml"
     ),
     "whole-effort ending": (
-        PACKAGE_ROOT
-        / "tests/scenarios/wayfinder-answered-unknown-settlement.toml"
+        PACKAGE_ROOT / "tests/scenarios/wayfinder-answered-unknown-settlement.toml"
     ),
-    "unsupported fact": (
-        PACKAGE_ROOT / "tests/scenarios/wayfinder-fact-conflict.toml"
-    ),
+    "unsupported fact": (PACKAGE_ROOT / "tests/scenarios/wayfinder-fact-conflict.toml"),
 }
 FIXTURES = PACKAGE_ROOT / "tests/fixtures"
 TYPE_DIRECTORIES = {"U": "unknowns", "E": "evidence", "F": "facts", "D": "decisions"}
@@ -205,10 +204,7 @@ def create_current_record(
     if current != observed:
         raise UnsafeWayfinderState("ledger changed before write")
     prefix = existing.rstrip() if existing else f"# {LEDGER_TITLES[kind]}"
-    content = (
-        f"{prefix}\n\n## {kind}{identifier} — {title}\n\n"
-        f"{body.rstrip()}\n"
-    )
+    content = f"{prefix}\n\n## {kind}{identifier} — {title}\n\n{body.rstrip()}\n"
     if observed is None:
         try:
             with path.open("x", encoding="utf-8") as handle:
@@ -375,9 +371,7 @@ def current_child_paths(
             continue
         if match is None or match.group(1) != kind:
             if strict and identity_like:
-                raise UnsafeWayfinderState(
-                    f"unrecognized child filename: {child.name}"
-                )
+                raise UnsafeWayfinderState(f"unrecognized child filename: {child.name}")
             continue
         result.append(child)
         identifiers.append(int(match.group(2)))
@@ -482,9 +476,7 @@ def ledger_anchor_references(
             raise UnsafeWayfinderState(f"unsafe reference path: {path}")
         paths[path] = path.read_bytes()
     return [
-        path
-        for path, content in paths.items()
-        if fragment in content.decode("utf-8")
+        path for path, content in paths.items() if fragment in content.decode("utf-8")
     ]
 
 
@@ -509,9 +501,7 @@ def rename_ledger_heading(
     if len(matches) != 1:
         raise UnsafeWayfinderState("ledger heading is not current and unique")
     _, old_title, section = matches[0]
-    if ledger_anchor_references(
-        effort, kind, identifier, old_title, known_references
-    ):
+    if ledger_anchor_references(effort, kind, identifier, old_title, known_references):
         raise UnsafeWayfinderState("current anchor references remain")
     old_heading = f"## {kind}{identifier} — {old_title}"
     new_heading = f"## {kind}{identifier} — {title}"
@@ -524,8 +514,7 @@ def rename_ledger_heading(
     if observed_current.get(path) != original_bytes:
         raise UnsafeWayfinderState("current state changed during reconciliation")
     observed_known = {
-        reference: reference.read_bytes()
-        for reference in known_references or []
+        reference: reference.read_bytes() for reference in known_references or []
     }
     if current_markdown(effort) != observed_current:
         raise UnsafeWayfinderState("current state changed during reconciliation")
@@ -534,9 +523,7 @@ def rename_ledger_heading(
         for reference, observed in observed_known.items()
     ):
         raise UnsafeWayfinderState("known reference changed during reconciliation")
-    if ledger_anchor_references(
-        effort, kind, identifier, old_title, known_references
-    ):
+    if ledger_anchor_references(effort, kind, identifier, old_title, known_references):
         raise UnsafeWayfinderState("current anchor references appeared")
     path.write_text(updated, encoding="utf-8")
     return heading_anchor(kind, identifier, title)
@@ -562,8 +549,7 @@ def rename_current_child(
     observed_target = target.read_bytes()
     observed_current = current_markdown(effort, excluding=target)
     observed_known = {
-        reference: reference.read_bytes()
-        for reference in known_references or []
+        reference: reference.read_bytes() for reference in known_references or []
     }
     renamed = target.with_name(f"{match.group(1)}{match.group(2)}-{slug}.md")
     if renamed.exists() or renamed.is_symlink():
@@ -605,8 +591,7 @@ def prune_current_child(
     observed_target = target.read_bytes()
     observed_current = current_markdown(effort, excluding=target)
     observed_known = {
-        reference: reference.read_bytes()
-        for reference in known_references or []
+        reference: reference.read_bytes() for reference in known_references or []
     }
     if before_final_check is not None:
         before_final_check()
@@ -620,9 +605,7 @@ def prune_current_child(
     ):
         raise UnsafeWayfinderState("known reference changed during reconciliation")
     if references_to(effort, target, known_references):
-        raise UnsafeWayfinderState(
-            "current references appeared during reconciliation"
-        )
+        raise UnsafeWayfinderState("current references appeared during reconciliation")
 
     target.unlink()
     parent = target.parent
@@ -648,8 +631,7 @@ def end_effort_state(
         if reference.is_symlink() or not reference.is_file():
             raise UnsafeWayfinderState(f"unsafe reference path: {reference}")
     if any(
-        artifact.is_relative_to(effort)
-        for artifact in continuation_artifacts or []
+        artifact.is_relative_to(effort) for artifact in continuation_artifacts or []
     ):
         raise UnsafeWayfinderState(
             "artifact maintaining continuation must outlive the effort"
@@ -682,9 +664,7 @@ def end_effort_state(
             "unresolved coordination lacks an observable continuation artifact"
         )
     root_index = max(
-        index
-        for index, part in enumerate(effort.parts)
-        if part == ".agent-wayfinder"
+        index for index, part in enumerate(effort.parts) if part == ".agent-wayfinder"
     )
     effort_relative = Path(*effort.parts[root_index:])
     target_links = {
@@ -797,7 +777,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeWayfinderState, "safe map"):
                 exact_effort(project, Path(".agent-wayfinder/map-link"))
 
-    def test_bounded_effort_selection_resumes_only_one_clear_current_match(self) -> None:
+    def test_bounded_effort_selection_resumes_only_one_clear_current_match(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / ".agent-wayfinder"
             current = root / "current"
@@ -941,7 +923,9 @@ class WayfinderStateContractTests(unittest.TestCase):
                     "current-question",
                     known_references=[external],
                 )
-            external.write_text("The current question remains open.\n", encoding="utf-8")
+            external.write_text(
+                "The current question remains open.\n", encoding="utf-8"
+            )
             renamed = rename_current_child(
                 effort,
                 target,
@@ -990,8 +974,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 encoding="utf-8",
             )
             remaining = (
-                "## F2 — Unrelated fact\n\n"
-                "[F1](facts.md#f1--old-title) is related.\n"
+                "## F2 — Unrelated fact\n\n[F1](facts.md#f1--old-title) is related.\n"
             )
             ledger.write_text(
                 "# Facts\n\n## F1 — Old title\n\nCurrent.\n\n" + remaining,
@@ -1002,7 +985,9 @@ class WayfinderStateContractTests(unittest.TestCase):
                 rename_ledger_heading(
                     effort, "F", 1, "Current title", known_references=[external]
                 )
-            map_path.write_text("# Rename\n\nThe fact remains current.\n", encoding="utf-8")
+            map_path.write_text(
+                "# Rename\n\nThe fact remains current.\n", encoding="utf-8"
+            )
             with self.assertRaisesRegex(UnsafeWayfinderState, "anchor references"):
                 rename_ledger_heading(
                     effort, "F", 1, "Current title", known_references=[external]
@@ -1041,8 +1026,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 effort,
                 "F",
                 "The map can stand alone",
-                "- Source: README.md\n\n"
-                "A map-only effort is valid.\n",
+                "- Source: README.md\n\nA map-only effort is valid.\n",
             )
 
             self.assertEqual(created, "F1")
@@ -1153,7 +1137,9 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "Use the revised boundary.\n",
             )
             self.assertEqual(read_current_ids(effort, "D"), [1])
-            self.assertIn("Use the revised boundary", decisions.read_text(encoding="utf-8"))
+            self.assertIn(
+                "Use the revised boundary", decisions.read_text(encoding="utf-8")
+            )
 
             self.assertEqual(
                 create_current_record(
@@ -1178,14 +1164,11 @@ class WayfinderStateContractTests(unittest.TestCase):
             effort = Path(temporary) / "effort"
             unknown = effort / "unrecognized-project-data/note.md"
             unknown.parent.mkdir(parents=True)
-            unknown.write_bytes(
-                b"Project-owned prose that happens to mention F1.\n"
-            )
+            unknown.write_bytes(b"Project-owned prose that happens to mention F1.\n")
             (effort / "map.md").write_text("# Independent pruning\n", encoding="utf-8")
             ledger = effort / "facts.md"
             ledger.write_text(
-                "# Facts\n\n## F1 — Current fact\n\n"
-                "- Source: source.md\n\nCurrent.\n",
+                "# Facts\n\n## F1 — Current fact\n\n- Source: source.md\n\nCurrent.\n",
                 encoding="utf-8",
             )
 
@@ -1208,8 +1191,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             external = docs / "current.md"
             map_path = effort / "map.md"
             map_path.write_text(
-                "# Pruning\n\n"
-                "Read [the first fact](facts.md#f1--first-fact).\n",
+                "# Pruning\n\nRead [the first fact](facts.md#f1--first-fact).\n",
                 encoding="utf-8",
             )
             external.write_text(
@@ -1218,8 +1200,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             )
             ledger = effort / "facts.md"
             remaining_section = (
-                "## F3 — Remaining fact\n\n"
-                "- Source: source.md\n\nRemaining.\n"
+                "## F3 — Remaining fact\n\n- Source: source.md\n\nRemaining.\n"
             )
             ledger.write_text(
                 "# Facts\n\n"
@@ -1241,18 +1222,18 @@ class WayfinderStateContractTests(unittest.TestCase):
             remaining = ledger.read_text(encoding="utf-8")
             self.assertEqual(remaining, "# Facts\n\n" + remaining_section)
 
-            map_path.write_text("# Pruning\n\nNo ledger facts remain.\n", encoding="utf-8")
+            map_path.write_text(
+                "# Pruning\n\nNo ledger facts remain.\n", encoding="utf-8"
+            )
             self.assertTrue(prune_ledger_section(effort, "F", 3))
             self.assertFalse(ledger.exists())
             self.assertFalse(prune_ledger_section(effort, "F", 3))
 
             preamble = (
-                "# Facts\n\n"
-                "Project note that is not part of the selected record.\n\n"
+                "# Facts\n\nProject note that is not part of the selected record.\n\n"
             )
             ledger.write_text(
-                preamble
-                + "## F5 — Pruning fact\n\n- Source: source.md\n\nPrune me.\n",
+                preamble + "## F5 — Pruning fact\n\n- Source: source.md\n\nPrune me.\n",
                 encoding="utf-8",
             )
             self.assertTrue(prune_ledger_section(effort, "F", 5))
@@ -1296,11 +1277,15 @@ class WayfinderStateContractTests(unittest.TestCase):
             effort.mkdir()
             (effort / "map.md").write_text("# Current records\n", encoding="utf-8")
             self.assertEqual(
-                create_current_record(effort, "U", "Independent question", "Question.\n"),
+                create_current_record(
+                    effort, "U", "Independent question", "Question.\n"
+                ),
                 "U1",
             )
             self.assertEqual(
-                create_current_record(effort, "E", "Substantial evidence", "Evidence.\n"),
+                create_current_record(
+                    effort, "E", "Substantial evidence", "Evidence.\n"
+                ),
                 "E1",
             )
             self.assertTrue((effort / "unknowns/U1-independent-question.md").is_file())
@@ -1570,7 +1555,9 @@ class WayfinderStateContractTests(unittest.TestCase):
 
             self.assertEqual(current_ids(effort, "U"), [])
             self.assertEqual(next_current_id(effort, "U"), 1)
-            self.assertEqual(current_markdown(effort), {map_path: map_path.read_bytes()})
+            self.assertEqual(
+                current_markdown(effort), {map_path: map_path.read_bytes()}
+            )
             self.assertTrue(unknowns.is_dir())
 
     def test_pruning_rechecks_current_state_before_removal(self) -> None:
@@ -1766,9 +1753,12 @@ class WayfinderStateContractTests(unittest.TestCase):
             unrecognized = directory / "notes.md"
             unrecognized.write_bytes(b"\x00not a recognized child\xff\n")
             self.assertEqual(next_current_id(effort, "U"), 1)
-            self.assertEqual(current_markdown(effort), {
-                effort / "map.md": b"# Scoped ambiguity\n",
-            })
+            self.assertEqual(
+                current_markdown(effort),
+                {
+                    effort / "map.md": b"# Scoped ambiguity\n",
+                },
+            )
 
             malformed = directory / "U1.md"
             malformed.write_bytes(b"malformed bytes\n")
@@ -1788,12 +1778,15 @@ class WayfinderStateContractTests(unittest.TestCase):
             self.assertEqual(first.read_bytes(), b"first bytes\n")
             self.assertEqual(duplicate.read_bytes(), b"duplicate bytes\n")
 
-            self.assertEqual(create_current_record(
-                effort,
-                "F",
-                "Independent fact",
-                "- Source: source.md\n\nCurrent.\n",
-            ), "F1")
+            self.assertEqual(
+                create_current_record(
+                    effort,
+                    "F",
+                    "Independent fact",
+                    "- Source: source.md\n\nCurrent.\n",
+                ),
+                "F1",
+            )
             self.assertTrue(prune_ledger_section(effort, "F", 1))
             self.assertEqual(
                 unrecognized.read_bytes(), b"\x00not a recognized child\xff\n"
@@ -1832,9 +1825,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "# Current outcome\n\nThis artifact maintains the continuing U1 constraint.\n",
                 encoding="utf-8",
             )
-            end_effort_state(
-                effort, continuation_artifacts=[continuation_artifact]
-            )
+            end_effort_state(effort, continuation_artifacts=[continuation_artifact])
             self.assertFalse((effort / "map.md").exists())
             self.assertFalse((effort / "unknowns/U1-current-question.md").exists())
             self.assertEqual(
@@ -1926,7 +1917,9 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             self.assertIn(authority_boundary, current_knowledge)
 
-    def test_evidence_relations_are_direct_without_banning_real_attribution(self) -> None:
+    def test_evidence_relations_are_direct_without_banning_real_attribution(
+        self,
+    ) -> None:
         current_knowledge = " ".join(
             markdown_section(self.contract, "## Current knowledge").split()
         )
@@ -1942,9 +1935,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertNotIn("Provenance is traceable", current_knowledge)
         self.assertIn(
             "copyright and mit license attribution",
-            (REPOSITORY_ROOT / "docs/skills.md")
-            .read_text(encoding="utf-8")
-            .casefold(),
+            (REPOSITORY_ROOT / "docs/skills.md").read_text(encoding="utf-8").casefold(),
         )
         self.assertIn(
             "canonical project language",
@@ -1954,12 +1945,8 @@ class WayfinderStateContractTests(unittest.TestCase):
     def test_ownership_durability_and_reconstructability_remain_independent(
         self,
     ) -> None:
-        repository_readme = (REPOSITORY_ROOT / "README.md").read_text(
-            encoding="utf-8"
-        )
-        state_model = markdown_section(
-            self.contract, "## State model and boundaries"
-        )
+        repository_readme = (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8")
+        state_model = markdown_section(self.contract, "## State model and boundaries")
         ownership_decision = (
             REPOSITORY_ROOT
             / "architecture-decisions/0010-separate-framework-output-from-project-owned-state.md"
@@ -2034,7 +2021,10 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         self.assertIn("prerequisites are already settled", inherited)
         self.assertTrue(
-            (PACKAGE_ROOT / "tests/scenarios/wayfinder-answered-unknown-settlement.toml").is_file()
+            (
+                PACKAGE_ROOT
+                / "tests/scenarios/wayfinder-answered-unknown-settlement.toml"
+            ).is_file()
         )
         self.assertTrue((PACKAGE_ROOT / "tests/fixtures/wayfinder-settlement").is_dir())
 
@@ -2056,9 +2046,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             ],
         )
         normalized = " ".join(effort_shape.split())
-        default_map_guidance = normalized.split(
-            "Use this brief default map shape", 1
-        )[1].split("The map summarizes", 1)[0]
+        default_map_guidance = normalized.split("Use this brief default map shape", 1)[
+            1
+        ].split("The map summarizes", 1)[0]
         for current_state_semantic in (
             "smallest truthful coordination summary needed for safe resumption",
             "Transient Git or session observations",
@@ -2126,9 +2116,11 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             with self.subTest(ready_work_condition=condition):
                 self.assertIn(condition, ready_work)
-        blocker = normalized.split("A blocker is", 1)[1].split(
-            "Ready work is", 1
-        )[0].casefold()
+        blocker = (
+            normalized.split("A blocker is", 1)[1]
+            .split("Ready work is", 1)[0]
+            .casefold()
+        )
         for condition in (
             "condition that currently prevents particular work",
             "unsatisfied dependency",
@@ -2309,9 +2301,9 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertIn(map_behavior.casefold(), effort_shape.casefold())
 
         implementation = " ".join(
-            (
-                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
-            ).read_text(encoding="utf-8").split()
+            (PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md")
+            .read_text(encoding="utf-8")
+            .split()
         )
         for remaining_work_boundary in (
             "artifact references, dependencies, and ready work in Wayfinder",
@@ -2362,7 +2354,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             markdown_section(
                 self.contract,
                 "## Reconciliation and pruning",
-            ).split("### Keep or end the effort", 1)[1].split()
+            )
+            .split("### Keep or end the effort", 1)[1]
+            .split()
         )
         for condition in (
             "objective was achieved",
@@ -2417,9 +2411,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertNotIn("blocked by u1", authority_answer)
 
         fact_conflict = scenarios["wayfinder-fact-conflict"]["request"].casefold()
-        self.assertIn(
-            "uncertainty it records blocks the current route", fact_conflict
-        )
+        self.assertIn("uncertainty it records blocks the current route", fact_conflict)
         self.assertNotIn("u1 only because it blocks", fact_conflict)
 
         existing_state = " ".join(
@@ -2448,7 +2440,9 @@ class WayfinderStateContractTests(unittest.TestCase):
             markdown_section(
                 self.contract,
                 "## Reconciliation and pruning",
-            ).lower().split()
+            )
+            .lower()
+            .split()
         )
         common_sequence = pruning.split(
             "use this common sequence for every affected reconciliation:", 1
@@ -2502,14 +2496,12 @@ class WayfinderStateContractTests(unittest.TestCase):
         self,
     ) -> None:
         accepted = (
-            FIXTURES
-            / "wayfinder-accepted-residual-uncertainty/.agent-wayfinder/"
+            FIXTURES / "wayfinder-accepted-residual-uncertainty/.agent-wayfinder/"
             "pilot-capacity"
         )
         unknown = accepted / "unknowns/U1-peak-concurrency.md"
         approval = (
-            FIXTURES
-            / "wayfinder-accepted-residual-uncertainty/project-approval.md"
+            FIXTURES / "wayfinder-accepted-residual-uncertainty/project-approval.md"
         ).read_text(encoding="utf-8")
         self.assertTrue(unknown.is_file())
         self.assertIn("non-production pilot only", approval)
@@ -2544,14 +2536,18 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.subTest(workflow=workflow):
                 self.assertEqual(
                     (PACKAGE_ROOT / f"payload/skills/{workflow}/SKILL.md").read_bytes(),
-                    (REPOSITORY_ROOT / f".agents/skills/{workflow}/SKILL.md").read_bytes(),
+                    (
+                        REPOSITORY_ROOT / f".agents/skills/{workflow}/SKILL.md"
+                    ).read_bytes(),
                 )
         source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
         managed = source_policy.split("<!-- agent-workflow:managed-begin -->", 1)[1]
         managed = managed.split("<!-- agent-workflow:managed-end -->", 1)[0].strip()
         packaged_policy = (
-            PACKAGE_ROOT / "payload/root/AGENTS.md.template"
-        ).read_text(encoding="utf-8").strip()
+            (PACKAGE_ROOT / "payload/root/AGENTS.md.template")
+            .read_text(encoding="utf-8")
+            .strip()
+        )
         self.assertEqual(packaged_policy, managed)
         packaged = WAYFINDER_SKILL.read_text(encoding="utf-8")
         installed = INSTALLED_SKILL.read_text(encoding="utf-8")
@@ -2598,9 +2594,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertNotIn("The map owns", operating_rules)
 
         transition = " ".join(
-            markdown_section(
-                runtime, "## Reconcile and transition ready work"
-            ).split()
+            markdown_section(runtime, "## Reconcile and transition ready work").split()
         )
         for responsibility in (
             "The map summarizes",

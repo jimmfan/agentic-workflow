@@ -23,6 +23,16 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v9
+        with:
+          version: "0.11.32"
+
+      - name: Run Ruff formatting and lint checks
+        run: |
+          uv run ruff format --check .
+          uv run ruff check .
+
       - name: Run deterministic behavior and release gate
         run: python skills/agent-workflow/scripts/verify_package.py --tests
 

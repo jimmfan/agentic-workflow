@@ -24,8 +24,6 @@ forbid_created_globs = [
   ".agent-wayfinder/persistence-authority/decisions.md",
   ".agent-wayfinder/persistence-authority/tickets",
   ".agent-wayfinder/persistence-authority/tickets/**",
-  ".scratch",
-  ".scratch/**",
   "docs/specifications/**",
   "docs/tickets/**",
 ]

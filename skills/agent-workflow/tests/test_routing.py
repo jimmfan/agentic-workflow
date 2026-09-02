@@ -71,9 +71,7 @@ class RoutingContractTests(unittest.TestCase):
             "lasting results.",
         )
         expected_fragments = {
-            "Objective": (
-                "result a Wayfinder effort is intended to achieve",
-            ),
+            "Objective": ("result a Wayfinder effort is intended to achieve",),
             "Consequential": (
                 "handling it differently",
                 "effort's objective",
@@ -92,9 +90,7 @@ class RoutingContractTests(unittest.TestCase):
                 "scoped to",
                 "not a separate Wayfinder record type",
             ),
-            "Ready work": (
-                "work to which no blocker currently applies",
-            ),
+            "Ready work": ("work to which no blocker currently applies",),
             "Dependency": (
                 "particular work requires",
                 "action",
@@ -159,9 +155,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertFalse(any(PACKAGE_ROOT.glob("payload/**/CONTEXT.md")))
         self.assertNotIn(
             "CONTEXT.md",
-            (
-                PACKAGE_ROOT / "payload/distribution/manifest.json"
-            ).read_text(encoding="utf-8"),
+            (PACKAGE_ROOT / "payload/distribution/manifest.json").read_text(
+                encoding="utf-8"
+            ),
         )
 
         project_instructions = source_policy.split(
@@ -211,9 +207,7 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertIn("Report only what executed", normalized_root)
         self.assertIn("use `direct` if no workflow or skill ran", normalized_root)
-        self.assertIn(
-            "selection did not become equivalent execution", normalized_root
-        )
+        self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn(
             "Never reroute or work merely to produce the marker", normalized_root
         )
@@ -477,9 +471,7 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(distinction=distinction):
                 self.assertIn(distinction, normalized_state_contract)
         documented_routing = " ".join(
-            (REPOSITORY_ROOT / "docs/routing.md")
-            .read_text(encoding="utf-8")
-            .split()
+            (REPOSITORY_ROOT / "docs/routing.md").read_text(encoding="utf-8").split()
         )
         self.assertIn(
             "actions authorized by the current user request or accepted project policy",
@@ -498,9 +490,9 @@ class RoutingContractTests(unittest.TestCase):
         for workflow in ("workflow-implementation", "workflow-verification"):
             with self.subTest(workflow=workflow):
                 workflow_text = " ".join(
-                    (
-                        PACKAGE_ROOT / f"payload/skills/{workflow}/SKILL.md"
-                    ).read_text(encoding="utf-8").split()
+                    (PACKAGE_ROOT / f"payload/skills/{workflow}/SKILL.md")
+                    .read_text(encoding="utf-8")
+                    .split()
                 )
                 self.assertIn(
                     "accepted project policy determines that a limitation is acceptable "
@@ -559,14 +551,12 @@ class RoutingContractTests(unittest.TestCase):
     def test_route_selection_loading_execution_and_completion_remain_distinct(
         self,
     ) -> None:
-        routing = (
-            PACKAGE_ROOT / "payload/agent-workflow/routing.md"
-        ).read_text(encoding="utf-8")
+        routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text(
+            encoding="utf-8"
+        )
 
         sections = {
-            heading: " ".join(
-                routing.split(heading, 1)[1].split("\n## ", 1)[0].split()
-            )
+            heading: " ".join(routing.split(heading, 1)[1].split("\n## ", 1)[0].split())
             for heading in (
                 "## Decide and compose",
                 "## Use selected skills",
@@ -631,9 +621,7 @@ class RoutingContractTests(unittest.TestCase):
         )
         documented_routing = " ".join(routing_source.split())
         documented_skills = " ".join(
-            (REPOSITORY_ROOT / "docs/skills.md")
-            .read_text(encoding="utf-8")
-            .split()
+            (REPOSITORY_ROOT / "docs/skills.md").read_text(encoding="utf-8").split()
         )
 
         for role_boundary in (
@@ -641,8 +629,7 @@ class RoutingContractTests(unittest.TestCase):
             "Direct is the default route",
             "the agent may choose one primary workflow",
             "remain Direct while the agent uses a skill for focused work",
-            "Additional skills may support the current route when they materially "
-            "help",
+            "Additional skills may support the current route when they materially help",
             "they do not become additional primary workflows",
             "How the agent uses a skill for one request does not permanently "
             "classify that skill",
@@ -700,19 +687,19 @@ class RoutingContractTests(unittest.TestCase):
         )
 
         detailed_routing = " ".join(
-            (
-                PACKAGE_ROOT / "payload/agent-workflow/routing.md"
-            ).read_text(encoding="utf-8").split()
+            (PACKAGE_ROOT / "payload/agent-workflow/routing.md")
+            .read_text(encoding="utf-8")
+            .split()
         )
         implementation = " ".join(
-            (
-                PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md"
-            ).read_text(encoding="utf-8").split()
+            (PACKAGE_ROOT / "payload/skills/workflow-implementation/SKILL.md")
+            .read_text(encoding="utf-8")
+            .split()
         )
         verification = " ".join(
-            (
-                PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md"
-            ).read_text(encoding="utf-8").split()
+            (PACKAGE_ROOT / "payload/skills/workflow-verification/SKILL.md")
+            .read_text(encoding="utf-8")
+            .split()
         )
 
         # Routing owns the detailed cross-workflow carrier contract.
@@ -818,9 +805,9 @@ class RoutingContractTests(unittest.TestCase):
     def test_wayfinder_post_selection_loading_is_owned_by_skill_and_contract(
         self,
     ) -> None:
-        root_policy = (
-            PACKAGE_ROOT / "payload/root/AGENTS.md.template"
-        ).read_text(encoding="utf-8")
+        root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text(
+            encoding="utf-8"
+        )
         wayfinder_skill = " ".join(
             (PACKAGE_ROOT / "payload/skills/wayfinder/SKILL.md")
             .read_text(encoding="utf-8")
@@ -895,9 +882,7 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(reconnaissance_requirement=requirement):
                 self.assertIn(fragment, normalized_root)
         self.assertIn("Choose Direct or one primary workflow", normalized_root)
-        self.assertIn(
-            "supporting capabilities that materially help", normalized_root
-        )
+        self.assertIn("supporting capabilities that materially help", normalized_root)
         self.assertIn("Re-evaluate the route when evidence changes", normalized_root)
         for removed_cue in (
             "unexplained causal failure",
@@ -1011,9 +996,7 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("one obvious specialist inside Wayfinder", normalized_routing)
 
         documented_routing = " ".join(
-            (REPOSITORY_ROOT / "docs/routing.md")
-            .read_text(encoding="utf-8")
-            .split()
+            (REPOSITORY_ROOT / "docs/routing.md").read_text(encoding="utf-8").split()
         )
         self.assertIn(
             "Assess durable coordination after any needed reconnaissance; item count "
@@ -1023,9 +1006,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("Three or more meaningful items", documented_routing)
 
     def test_detailed_router_defers_global_policy_to_the_root(self) -> None:
-        routing = (
-            PACKAGE_ROOT / "payload/agent-workflow/routing.md"
-        ).read_text(encoding="utf-8")
+        routing = (PACKAGE_ROOT / "payload/agent-workflow/routing.md").read_text(
+            encoding="utf-8"
+        )
         normalized = " ".join(routing.split())
 
         self.assertIn(

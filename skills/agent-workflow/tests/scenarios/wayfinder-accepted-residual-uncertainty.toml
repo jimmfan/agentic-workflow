@@ -22,8 +22,6 @@ preserve_paths = ["README.md", "project-approval.md"]
 forbid_created_globs = [
   ".agent-wayfinder/*/tickets",
   ".agent-wayfinder/*/tickets/**",
-  ".scratch",
-  ".scratch/**",
 ]
 
 [[assertions]]

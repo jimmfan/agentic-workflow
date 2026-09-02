@@ -640,8 +640,7 @@ class BehaviorHarnessTests(unittest.TestCase):
             self.assertEqual(install.returncode, 0, install.stderr)
             before = behavior.snapshot(workspace)
             target = (
-                workspace
-                / ".agent-wayfinder/response-serialization/unknowns/"
+                workspace / ".agent-wayfinder/response-serialization/unknowns/"
                 "U1-name-telemetry-metric.md"
             )
             target.write_text("destructive replacement\n", encoding="utf-8")

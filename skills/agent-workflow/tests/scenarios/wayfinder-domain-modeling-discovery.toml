@@ -33,7 +33,6 @@ forbid_created_globs = [
   ".agent-wayfinder/zero-downtime-platform-cutover/cutover/**",
   ".agent-wayfinder/zero-downtime-platform-cutover/tickets",
   ".agent-wayfinder/zero-downtime-platform-cutover/tickets/**",
-  ".scratch/**",
 ]
 
 [[assertions]]

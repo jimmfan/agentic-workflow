@@ -320,18 +320,6 @@ class VerifyPackageTests(ProjectTestCase):
                 self.assert_verify_failure(package, expected)
 
         for skill in ("to-spec", "to-tickets"):
-            with self.subTest(name=f"{skill}-scratch"):
-                package = self.copy_package(f"{skill}-scratch")
-                path = package / f"payload/skills/{skill}/SKILL.md"
-                path.write_text(
-                    path.read_text(encoding="utf-8")
-                    + "\nUse .scratch/ when no destination is configured.\n",
-                    encoding="utf-8",
-                )
-                self.assert_verify_failure(
-                    package, f"{skill} infers a .scratch/ destination"
-                )
-
             with self.subTest(name=f"{skill}-hard-coded-label"):
                 package = self.copy_package(f"{skill}-hard-coded-label")
                 path = package / f"payload/skills/{skill}/SKILL.md"

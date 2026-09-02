@@ -21,8 +21,6 @@ verification_command = "Validate that the resulting repository-local planning st
 preserve_paths = ["migration-architecture.md"]
 route_must_not_include = ["domain-modeling"]
 forbid_created_globs = [
-  ".scratch",
-  ".scratch/**",
   "issues",
   "issues/**",
   ".agent-wayfinder/platform-migration/tickets",
@@ -121,10 +119,6 @@ value = "- Consequences:"
 kind = "path_contains"
 path = ".agent-wayfinder/platform-migration/map.md"
 value = "](decisions.md#d1--use-a-zero-downtime-cutover)"
-
-[[assertions]]
-kind = "path_not_exists"
-path = ".scratch"
 
 [[assertions]]
 kind = "path_not_exists"

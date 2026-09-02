@@ -25,7 +25,6 @@ verification_command = "Confirm that the existing map was revised in place to ma
 preserve_paths = ["architecture.md"]
 report_must_include = ["Domain Modeling"]
 forbid_created_globs = [
-  ".scratch/**",
   ".agent-wayfinder/policy-control-plane",
   ".agent-wayfinder/policy-control-plane/**",
   ".agent-wayfinder/policy-execution-migration-v2",

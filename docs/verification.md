@@ -45,6 +45,8 @@ converge. Lifecycle code does not directly traverse, interpret, or change
 Run from the source repository root:
 
 ```bash
+uv run ruff format --check .
+uv run ruff check .
 uv run python skills/agent-workflow/scripts/verify_package.py --tests
 uv run python -m unittest discover -s evals/tests -p 'test_*.py' -v
 ```
@@ -61,8 +63,8 @@ The package verifier checks:
 - small behavior-bearing semantics: Research writes repository output only with
   explicit authorization;
   Wayfinder is the sole durable coordinator and does not own specialist results;
-  `to-spec` and `to-tickets` create no `.scratch` output, invent no local
-  destination, label, or status, and publish only to a user- or project-named
+  `to-spec` and `to-tickets` invent no local destination, label, or status, and
+  publish only to a user- or project-named
   destination with authorization; `implement` does not infer commit
   authorization; and route markers report executed work only;
 - deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder, and
