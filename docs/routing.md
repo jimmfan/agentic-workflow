@@ -5,19 +5,36 @@ the request without granting action authorization or project decision authority
 beyond the user's direction. It starts Direct, classifies from intent and skill
 descriptions exposed in the current session, and may perform the smallest
 read-only reconnaissance within delegated scope when evidence is insufficient.
-One obvious skill loads directly; availability alone never selects a capability.
+A clearly applicable skill may help with focused work; availability alone never
+selects it.
+
+## Routing roles
+
+Every discoverable package under `.agents/skills/` is a skill. Direct is the
+default route. A request may remain Direct while the agent uses a skill for
+focused work. When more structure is needed, the agent may choose one primary
+workflow. Additional skills may support the current route when they materially
+help, but they do not become additional primary workflows. How the agent uses a
+skill for one request does not permanently classify that skill. Use `specialist`
+only for focused specialist work.
 
 Routing is dynamic. Assess durable coordination after any needed reconnaissance;
 item count alone never selects Wayfinder. Wayfinder must start or resume when
-any hard signal or at least two soft signals show that durable coordination is
-materially safer than conversation alone. Hard signals cover session-continuation
-or agent-handoff continuity, conflicting sources that establish the same scoped
-claim, an uncommitted required project choice alongside independent work that can
-proceed, coordinated areas or responsible participants, and missing source
-traceability. Soft signals cover interacting unresolved questions, multiple
-durable state categories, evidence-driven plan change, dependency graphs, and
-fresh-agent reconstruction risk. This is an activation rubric, not a weighted
-complexity score. Explicit user selection and opt-out control the route.
+any hard signal or at least two soft signals apply. Hard signals cover work that
+continues a relevant Wayfinder effort, is intended to continue across sessions
+or agents, establishes or materially changes a plan that later work is expected
+to execute or depend on, or establishes consequential context later work needs
+before the effort's objective is achieved. They also cover conflicting sources that
+establish the same scoped claim, an uncommitted required project choice alongside
+independent work that can proceed, coordinated areas or responsible participants,
+and missing source traceability. Soft signals cover interacting unresolved
+questions, multiple durable state categories, evidence-driven plan change,
+dependency graphs, and fresh-agent reconstruction risk. An evidence-driven plan
+change remains soft when the plan is not an expected input to later work. This is
+an activation rubric, not a weighted complexity score. Existing Wayfinder state
+alone never selects Wayfinder. A bounded read-only check may establish that the
+current work clearly continues a relevant effort. Explicit user selection and
+opt-out control the route.
 
 The compact always-loaded rules live in `payload/root/AGENTS.md.template`.
 Detailed overlap resolution, composition, transitions, unavailable-skill
@@ -39,20 +56,16 @@ Runtime responsibility is deliberately split:
 Host-specific discovery stays outside the router. Once a skill is selected, that
 skill's instructions define its method.
 
-Keep these stages separate:
+For each request:
 
 1. choose Direct or one primary workflow;
 2. add only supporting capabilities that materially help;
-3. if a skill is selected, use the version exposed in the current session and
-   follow its instructions;
-4. if a selected skill is unavailable or cannot run without explicit user
-   invocation, continue directly only when it was optional and an authorized
-   equivalent can satisfy the request; otherwise report the limitation or give
-   the exact invocation instruction;
-5. never claim a skill ran unless its method ran;
-6. materially execute only actions authorized by the current user request or accepted
+3. when using a skill, use one exposed in the current session and follow its
+   instructions;
+4. never claim a skill ran unless its method ran;
+5. materially execute only actions authorized by the current user request or accepted
    project policy; and
-7. require completion and verification evidence beyond the route marker.
+6. require completion and verification evidence beyond the route marker.
 
 A project choice is committed only after required evidence is sufficient and
 accepted project policy determines the choice for that boundary or the person,
@@ -110,9 +123,10 @@ Within a selected effort, continue directly with ready work. Load Discovery,
 Debugging, Research, Prototype, Domain Modeling, Grilling, or human clarification
 only when that method materially improves how a current question, uncertainty,
 unexplained cause, consequential choice, or structural ambiguity is addressed.
-The specialist creates no Agent Workflow durable coordination state. It may
-return findings or produce the normal result described by its skill; Wayfinder
-records only consequential results or references needed for coordination.
+Using a skill for specialist work does not create separate Agent Workflow durable
+coordination state. While using the skill, the agent may return findings or
+produce the result described by its instructions; Wayfinder records only
+consequential results or references needed for coordination.
 Implementation is a workflow transition for ready work, followed by
 Verification, not a Wayfinder reasoning method or coordination record.
 

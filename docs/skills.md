@@ -4,6 +4,9 @@ Agent Workflow distributes fifteen curated skills directly through the ordinary
 package payload and current distribution map. Those skill directories are the
 single maintained runtime representation.
 
+Each discoverable package under `.agents/skills/` is a skill. See
+[Workflow routing](routing.md) for how a skill participates in a route.
+
 ## Inventory
 
 The installed surface under `.agents/skills/` is exactly:

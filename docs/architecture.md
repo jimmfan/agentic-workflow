@@ -18,13 +18,14 @@ The architecture optimizes for two pre-1.0 priorities:
 ```mermaid
 flowchart TD
     request["User intent"] --> router["Small root router"]
-    router --> direct["Direct work"]
-    router --> workflow["One primary workflow"]
-    workflow --> capability["Only useful supporting capabilities"]
-    capability --> skill{"Selected skill available in this session?"}
+    router -->|Direct| direct["Direct work"]
+    router -->|one primary workflow| workflow["Workflow-guided work"]
+    direct -. skill for focused work .-> skill{"Selected skill available in this session?"}
+    workflow -. additional skill when useful .-> skill
     skill -->|yes| native["Skill method"]
     skill -->|no| fallback["Continue directly or report missing required skill"]
     direct --> evidence["Truthful result and evidence"]
+    workflow --> evidence
     native --> evidence
     fallback --> evidence
     workflow -. consequential continuity .-> wayfinder["Wayfinder map"]
@@ -41,9 +42,10 @@ composition or artifact or record responsibility is unclear or selected-skill
 availability, an exact invocation instruction, agent handoff, or durable
 resumption materially matters. Routing may change as evidence emerges. Route
 selection, skill selection, material execution, and completion or verification
-evidence remain distinct. Host sandboxing and approvals determine host
-permission; that permission does not itself authorize an action or commit a
-project choice.
+evidence remain distinct. See [Workflow routing](routing.md) for how the agent
+uses skills during Direct work or with a primary workflow. Host sandboxing and
+approvals determine host permission; that permission does not itself authorize
+an action or commit a project choice.
 
 Project-choice commitment and action authorization are separate gates. Required
 evidence must be sufficient before accepted project policy determines a choice or
@@ -51,10 +53,10 @@ the person, role, or valid delegate with project decision authority commits it.
 Writes and external mutations proceed only when the current user request or
 accepted project policy authorizes that action and scope.
 
-Wayfinder is Agent Workflow's sole durable coordination model. It keeps only
-consequential continuity and references, while specialists retain their methods
-and artifacts. Specifications, tickets, research, reviews, and other specialist
-results remain in the artifacts or records designated to maintain them.
+Wayfinder is Agent Workflow's sole durable coordination model. It stores only
+consequential coordination state and references. Specifications, tickets,
+research, reviews, and other results remain in the artifacts or records
+designated to maintain them.
 
 ## Filesystem ownership
 

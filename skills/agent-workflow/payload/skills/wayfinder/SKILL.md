@@ -1,14 +1,16 @@
 ---
-description: Keep a lightweight structured map when important unresolved questions, choices, dependencies, blockers, or conflicting conclusions are becoming unreliable to hold in ordinary context.
+description: Keep a lightweight structured map when later work is expected to execute or depend on a plan, needs consequential context, or when important unresolved questions, choices, dependencies, blockers, or conflicting conclusions need reliable continuity.
 disable-model-invocation: false
 name: wayfinder
 ---
 # Wayfinder
 
 Wayfinder is Agent Workflow's sole durable coordination layer. Use it when
-consequential state needs reliable continuity across session continuations,
-agent handoffs, responsible participants, or interacting areas. Clear bounded work, one isolated
-unresolved question, and read-only work stay on their minimum useful route.
+consequential state needs reliable continuity between a plan and later work that
+is expected to execute or depend on it, across session continuations, agent handoffs,
+responsible participants, or interacting areas. Without that continuity need,
+clear bounded work, one isolated unresolved question, and read-only work stay on
+their minimum useful route.
 
 This maintained skill is derived from Matt Pocock's Wayfinder methodology. It
 helps orient the effort, choose the minimum resolution
@@ -17,7 +19,7 @@ method, and identify ready work;
 
 ## Operating rules
 
-- Route before inspecting state; an existing map never selects Wayfinder.
+- Existing Wayfinder state alone never selects Wayfinder.
 - Selection may conclude that no consequential continuity earns persistence;
   in that case create no effort, map, or supporting record.
 - Establish the objective and scope, then enough relevant areas and relationships

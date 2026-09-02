@@ -55,22 +55,32 @@
 
 ## When to use Wayfinder
 
-Assess durable coordination after any needed reconnaissance; item count alone
-never selects Wayfinder.
+Assess durable coordination after any needed reconnaissance.
 Unless the user opts out, MUST select or resume Wayfinder when any hard signal
 or at least two soft signals apply:
 
-- Hard: cross-session continuation or agent-handoff continuity; conflicting
-  sources that establish the same scoped claim; an uncommitted required project
-  choice while independent work proceeds; coordinated responsible participants
-  or areas; or source and scope needed to distinguish assumption from fact.
+- Hard: the current work continues a relevant Wayfinder effort, is intended to
+  continue across sessions or agents, establishes or materially changes a plan
+  that later work is expected to execute or depend on, or establishes
+  consequential context needed by later work before the effort's objective is
+  achieved; conflicting sources that establish the same scoped claim; an
+  uncommitted required project choice while independent work proceeds;
+  coordinated responsible participants or areas; or source and scope needed to
+  distinguish assumption from fact.
 - Soft: interacting consequential unresolved questions; durable distinctions
   across record or state categories; evidence-driven plan change; a meaningful
   dependency graph; or material fresh-agent reconstruction risk.
 
+A material update to an existing durable planning artifact for unfinished work
+may indicate continuation of an existing Wayfinder effort. Use detailed routing
+for the bounded read-only check needed to determine whether one relevant effort
+clearly matches.
+
 One isolated unresolved question and routine work use Direct or an applicable
 workflow. Honor explicit Wayfinder use and opt-out. Read-only work changes no
-state. Existing state, including an unrelated map, never selects Wayfinder.
+state. Existing Wayfinder state alone never selects Wayfinder. A bounded read-only
+check may establish that the current work clearly continues a relevant effort;
+unrelated efforts never change the route.
 
 ## Report the route
 
@@ -121,11 +131,6 @@ layers. Do not force one term across genuinely different bounded contexts.
   making core routing behavior reliable.
 - Outside those boundaries, prefer simple, replaceable designs over speculative
   robustness or machinery for hypothetical future needs.
-- Remove or simplify unjustified machinery rather than preserving it merely
-  because it exists. Do not add package-manager-grade integrity, migration,
-  compatibility, deprecation, observability, ownership registries, or lifecycle
-  systems unless a concrete current failure, durable-data or safety risk, or
-  current external contract requires them.
 
 ## Scope
 
@@ -164,25 +169,23 @@ layers. Do not force one term across genuinely different bounded contexts.
 - Prefer existing host or curated skill capabilities and accepted artifacts that
   maintain lasting results over parallel Agent Workflow representations or
   lightly rewritten upstream functionality.
-- Do not expand the project into a general agent runtime, package manager,
-  plugin platform, compatibility framework, observability platform, broad
-  lifecycle system, or other new machinery without a concrete current need.
+- Remove or simplify machinery that lacks a current justification. Do not add
+  package-manager-grade integrity, compatibility, migration, deprecation,
+  observability, ownership registries, or lifecycle systems, and do not expand
+  Agent Workflow into a general agent runtime, package manager, plugin platform,
+  or compatibility framework, unless a concrete current need, durable-data or
+  safety requirement, or current external contract requires it.
 
-## Authorization and preservation
+## Project data preservation
 
-- Do not treat a workflow, skill, test, specification, ticket,
-  Wayfinder record, or document as authorization for commits, pushes,
-  publication, destructive operations, external mutations, or changes outside
-  the authorized task, or as authority to commit a project choice.
 - Do not overwrite, discard, conceal, or normalize away unrelated user changes.
 - Protect project-owned and user-owned durable state. Reconstructable framework
   output may be replaced when appropriate; durable state must not be treated as
   reconstructable framework content.
-- Do not rely on host or model defaults as authorization to act, authority to
-  commit a project choice, or for data-preservation boundaries for which Agent
-  Workflow itself is responsible. Do not
-  duplicate generic host or model safety policy unless Agent Workflow
-  introduces a specific risk that requires a project-owned rule.
+- Define Agent Workflow's own data-preservation boundaries instead of relying on
+  host or model defaults. Do not duplicate generic host or model safety policy
+  unless Agent Workflow introduces a specific risk that requires a project-owned
+  rule.
 
 ## Working practice
 
@@ -192,8 +195,8 @@ For substantial changes:
   branch, base, and relevant diff.
 - Read the applicable contracts and architectural decisions and determine which
   layer owns the behavior.
-- Check whether a capability or skill exposed in the current session already
-  supplies the behavior.
+- Check whether an existing host capability or skill exposed in the current
+  session already provides the needed behavior.
 - Prefer the smallest coherent and reversible change that preserves accepted
   behavior.
 - Update tests and durable documentation when the resulting contract changes.
