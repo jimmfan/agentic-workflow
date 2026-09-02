@@ -16,10 +16,10 @@ every method that might help during an effort.
 ## Decision
 
 Agent Workflow defines Wayfinder as its sole durable coordination model. It persists
-only consequential cross-session coordination: objective, scope, areas and
-relationships, conditions blocking particular work, dependencies, ready work,
-optional current knowledge, and readable references to artifacts or records
-designated to maintain lasting results.
+only consequential coordination retained across sessions or workflow transitions:
+objective, scope, areas and relationships, conditions blocking particular work,
+dependencies, ready work, optional current knowledge, and readable references to
+artifacts or records designated to maintain lasting results.
 
 Specialists retain their methods and create no Agent Workflow durable
 coordination state. Direct reasoning remains valid; load only a specialist whose

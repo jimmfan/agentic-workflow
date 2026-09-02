@@ -849,7 +849,10 @@ class RoutingContractTests(unittest.TestCase):
             "When resuming a Wayfinder effort, read `map.md` first",
             state_contract,
         )
-        self.assertIn("Existing state is never a routing signal", state_contract)
+        self.assertIn(
+            "Existing Wayfinder state alone is never a routing signal",
+            state_contract,
+        )
         self.assertIn(
             "Selection may conclude that no consequential continuity earns persistence; "
             "in that case create no effort, map, or supporting record",
@@ -934,20 +937,28 @@ class RoutingContractTests(unittest.TestCase):
             normalized_readme,
         )
         self.assertIn(
-            "Assess durable coordination after any needed reconnaissance; item count alone "
-            "never selects Wayfinder",
+            "Assess durable coordination after any needed reconnaissance",
             normalized_root,
         )
         self.assertNotIn("Three or more meaningful items", normalized_root)
         self.assertIn("MUST select or resume Wayfinder", normalized_root)
         self.assertIn("any hard signal or at least two soft signals", normalized_root)
-        self.assertIn(
-            "Hard: cross-session continuation or agent-handoff continuity; conflicting "
-            "sources that establish the same scoped claim; an uncommitted required project "
-            "choice while independent work proceeds; coordinated responsible participants "
-            "or areas; or source and scope needed to distinguish assumption from fact",
-            normalized_root,
-        )
+        hard_signal = normalized_root.split("- Hard:", 1)[1].split("- Soft:", 1)[0]
+        for hard_boundary in (
+            "current work continues a relevant Wayfinder effort",
+            "intended to continue across sessions or agents",
+            "establishes or materially changes a plan that later work is expected "
+            "to execute or depend on",
+            "establishes consequential context needed by later work before the "
+            "effort's objective is achieved",
+            "conflicting sources that establish the same scoped claim",
+            "uncommitted required project choice while independent work proceeds",
+            "coordinated responsible participants or areas",
+            "source and scope needed to distinguish assumption from fact",
+        ):
+            with self.subTest(hard_boundary=hard_boundary):
+                self.assertIn(hard_boundary, hard_signal)
+        self.assertNotIn("evidence-driven plan change", hard_signal)
         self.assertIn(
             "Soft: interacting consequential unresolved questions; durable distinctions "
             "across record or state categories; evidence-driven plan change; a meaningful "
@@ -961,10 +972,22 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertIn("Honor explicit Wayfinder use and opt-out", normalized_root)
         self.assertIn("Read-only work changes no state", normalized_root)
-        self.assertIn(
-            "Existing state, including an unrelated map, never selects Wayfinder",
-            normalized_root,
-        )
+        for continuation_boundary in (
+            "Existing Wayfinder state alone never selects Wayfinder",
+            "A bounded read-only check may establish that the current work clearly "
+            "continues a relevant effort",
+            "unrelated efforts never change the route",
+        ):
+            with self.subTest(continuation_boundary=continuation_boundary):
+                self.assertIn(continuation_boundary, normalized_root)
+        for planning_resume_boundary in (
+            "material update to an existing durable planning artifact for unfinished work",
+            "may indicate continuation of an existing Wayfinder effort",
+            "Use detailed routing for the bounded read-only check",
+            "determine whether one relevant effort clearly matches",
+        ):
+            with self.subTest(planning_resume_boundary=planning_resume_boundary):
+                self.assertIn(planning_resume_boundary, normalized_root)
         self.assertNotIn("\n* ", root_policy)
         self.assertNotIn(
             "If it is unclear whether the work is clearly bounded", normalized_root
@@ -1025,6 +1048,9 @@ class RoutingContractTests(unittest.TestCase):
         for route_specific_behavior in (
             "This table resolves overlaps",
             "Resume only relevant work",
+            "smallest plausible effort set",
+            "one clear objective-and-scope match",
+            "An unrelated map never captures the route",
             "After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map",
             "Avoid routing loops",
             "If a selected skill is unavailable",

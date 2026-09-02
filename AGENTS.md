@@ -55,22 +55,32 @@
 
 ## When to use Wayfinder
 
-Assess durable coordination after any needed reconnaissance; item count alone
-never selects Wayfinder.
+Assess durable coordination after any needed reconnaissance.
 Unless the user opts out, MUST select or resume Wayfinder when any hard signal
 or at least two soft signals apply:
 
-- Hard: cross-session continuation or agent-handoff continuity; conflicting
-  sources that establish the same scoped claim; an uncommitted required project
-  choice while independent work proceeds; coordinated responsible participants
-  or areas; or source and scope needed to distinguish assumption from fact.
+- Hard: the current work continues a relevant Wayfinder effort, is intended to
+  continue across sessions or agents, establishes or materially changes a plan
+  that later work is expected to execute or depend on, or establishes
+  consequential context needed by later work before the effort's objective is
+  achieved; conflicting sources that establish the same scoped claim; an
+  uncommitted required project choice while independent work proceeds;
+  coordinated responsible participants or areas; or source and scope needed to
+  distinguish assumption from fact.
 - Soft: interacting consequential unresolved questions; durable distinctions
   across record or state categories; evidence-driven plan change; a meaningful
   dependency graph; or material fresh-agent reconstruction risk.
 
+A material update to an existing durable planning artifact for unfinished work
+may indicate continuation of an existing Wayfinder effort. Use detailed routing
+for the bounded read-only check needed to determine whether one relevant effort
+clearly matches.
+
 One isolated unresolved question and routine work use Direct or an applicable
 workflow. Honor explicit Wayfinder use and opt-out. Read-only work changes no
-state. Existing state, including an unrelated map, never selects Wayfinder.
+state. Existing Wayfinder state alone never selects Wayfinder. A bounded read-only
+check may establish that the current work clearly continues a relevant effort;
+unrelated efforts never change the route.
 
 ## Report the route
 

@@ -1,7 +1,7 @@
 # Local Wayfinder state contract
 
 Use this contract only after routing selects Wayfinder or a request explicitly continues a relevant
-effort. Existing state is never a routing signal.
+effort. Existing Wayfinder state alone is never a routing signal.
 
 This contract defines Wayfinder's durable representation, selection,
 reconciliation, pruning, and effort ending. The Wayfinder runtime defines
