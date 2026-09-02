@@ -82,12 +82,13 @@ skill's instructions and only the support files needed for the current request.
 Selecting a skill is not execution: include it in the route marker only when its
 method actually ran.
 
-Keep the stages distinct. The agent chooses Direct or one primary workflow. A
-request may remain Direct while the agent uses a skill for focused work. A skill
-may also support the current route without becoming its primary workflow.
-Loading a selected skill makes its instructions available; execution means
-actually using the skill's method; and completion and verification require
-evidence beyond the route marker.
+Choosing a route, selecting a skill, loading its instructions, using its method,
+completing the request, and verifying the result are distinct. The agent chooses
+Direct or one primary workflow. A request may remain Direct while the agent uses
+a skill for focused work. A skill may also support the current route without
+becoming its primary workflow. Loading a selected skill makes its instructions
+available; execution means actually using the skill's method; and completion and
+verification require evidence beyond the route marker.
 
 If a selected skill is unavailable or cannot run without explicit user
 invocation, continue Direct only when the user did not require that skill and
@@ -113,8 +114,9 @@ artifacts or records that maintain it, and acceptance criteria from the current
 authorized request, selected Wayfinder map, current decision record, accepted
 specification, or approved durable ticket or ticket set. Invoked `implement` is
 responsible for its build loop, TDD, and closing Code Review. Framework
-Verification runs afterward and adds only uncovered evidence. Using a skill to
-support a route creates no separate Agent Workflow durable coordination state.
+Verification runs afterward and adds only uncovered evidence. Using a skill for
+specialist work does not create separate Agent Workflow durable coordination
+state.
 
 ## Report the executed route
 

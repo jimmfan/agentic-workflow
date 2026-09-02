@@ -50,22 +50,16 @@ Runtime responsibility is deliberately split:
 Host-specific discovery stays outside the router. Once a skill is selected, that
 skill's instructions define its method.
 
-Keep these stages separate:
+For each request:
 
 1. choose Direct or one primary workflow;
-2. while the route remains Direct, use an applicable skill for focused work when
-   it helps;
-3. use additional skills only when they materially support the current route;
-4. if a skill is selected, use the version exposed in the current session and
-   follow its instructions;
-5. if a selected skill is unavailable or cannot run without explicit user
-   invocation, continue directly only when it was optional and an authorized
-   equivalent can satisfy the request; otherwise report the limitation or give
-   the exact invocation instruction;
-6. never claim a skill ran unless its method ran;
-7. materially execute only actions authorized by the current user request or accepted
+2. add only supporting capabilities that materially help;
+3. when using a skill, use one exposed in the current session and follow its
+   instructions;
+4. never claim a skill ran unless its method ran;
+5. materially execute only actions authorized by the current user request or accepted
    project policy; and
-8. require completion and verification evidence beyond the route marker.
+6. require completion and verification evidence beyond the route marker.
 
 A project choice is committed only after required evidence is sufficient and
 accepted project policy determines the choice for that boundary or the person,

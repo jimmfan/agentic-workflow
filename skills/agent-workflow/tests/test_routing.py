@@ -584,6 +584,13 @@ class RoutingContractTests(unittest.TestCase):
             "exposed in the current session",
             "Read the selected skill's instructions",
             "Selecting a skill is not execution",
+            "Choosing a route",
+            "selecting a skill",
+            "loading its instructions",
+            "using its method",
+            "completing the request",
+            "verifying the result",
+            "are distinct",
             "The agent chooses Direct or one primary workflow",
             "remain Direct while the agent uses a skill for focused work",
             "A skill may also support the current route without becoming its "
@@ -605,11 +612,12 @@ class RoutingContractTests(unittest.TestCase):
             "registry",
         ):
             self.assertNotIn(obsolete_abstraction, selected_skills)
-        self.assertIn(
-            "Using a skill to support a route creates no separate Agent Workflow "
-            "durable coordination state",
-            sections["## Preserve responsibilities and transitions"],
-        )
+        durable_state = sections["## Preserve responsibilities and transitions"]
+        for fragment in (
+            "Using a skill for specialist work",
+            "does not create separate Agent Workflow durable coordination state",
+        ):
+            self.assertIn(fragment, durable_state)
         reporting = sections["## Report the executed route"]
         self.assertIn("<skill>-handoff", reporting)
         self.assertIn("explicit user invocation remains required", reporting)
@@ -618,11 +626,10 @@ class RoutingContractTests(unittest.TestCase):
         self._assert_optional_specialist_boundaries()
 
     def test_skills_can_be_used_directly_or_to_support_a_route(self) -> None:
-        documented_routing = " ".join(
-            (REPOSITORY_ROOT / "docs/routing.md")
-            .read_text(encoding="utf-8")
-            .split()
+        routing_source = (REPOSITORY_ROOT / "docs/routing.md").read_text(
+            encoding="utf-8"
         )
+        documented_routing = " ".join(routing_source.split())
         documented_skills = " ".join(
             (REPOSITORY_ROOT / "docs/skills.md")
             .read_text(encoding="utf-8")
@@ -653,6 +660,36 @@ class RoutingContractTests(unittest.TestCase):
             "See [Workflow routing](routing.md) for how a skill participates in a "
             "route",
             documented_skills,
+        )
+
+        routing_overview_match = re.search(
+            r"(?ms)^1\.\s+.*?(?=\n\n)",
+            routing_source,
+        )
+        self.assertIsNotNone(routing_overview_match)
+        routing_overview = " ".join(routing_overview_match.group().split())
+        for overview_boundary in (
+            "choose Direct or one primary workflow",
+            "add only supporting capabilities that materially help",
+            "when using a skill",
+            "use one exposed in the current session",
+            "follow its instructions",
+            "never claim a skill ran unless its method ran",
+            "require completion and verification evidence beyond the route marker",
+        ):
+            with self.subTest(overview_boundary=overview_boundary):
+                self.assertIn(overview_boundary, routing_overview)
+        self.assertNotIn("version exposed", routing_overview)
+        self.assertNotIn("selected skill is unavailable", routing_overview)
+        for fallback_boundary in (
+            "cannot run without explicit user invocation",
+            "continue Direct only when it was optional",
+            "available capabilities can satisfy the authorized request",
+        ):
+            self.assertIn(fallback_boundary, documented_routing)
+        self.assertEqual(
+            documented_routing.count("cannot run without explicit user invocation"),
+            1,
         )
 
     def test_implementation_scope_carriers_are_precise_and_consistent(self) -> None:
@@ -949,11 +986,6 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertIn("omit the skill that could not run", normalized_routing)
         self.assertNotIn("one obvious specialist inside Wayfinder", normalized_routing)
-        self.assertIn(
-            "Using a skill to support a route creates no separate Agent Workflow "
-            "durable coordination state",
-            normalized_routing,
-        )
 
         documented_routing = " ".join(
             (REPOSITORY_ROOT / "docs/routing.md")
