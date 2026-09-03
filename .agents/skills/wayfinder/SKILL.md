@@ -91,6 +91,31 @@ Modeling may be loaded again to revise the same map.
 Reconcile the current structure rather than preserving unsupported or parallel
 representations.
 
+## Chart the visible route
+
+After establishing the objective, scope, and relevant areas and relationships,
+chart only as far as current evidence supports. Do not fully decompose uncertain
+future work.
+
+Distinguish precise questions that can be addressed now from consequential
+in-scope territory that is **Not yet specified** because the relevant question
+cannot yet be stated clearly. Do not turn that unclear territory into
+speculative questions, records, tickets, dependencies, implementation scopes,
+or assumed answers.
+
+For each useful precise question, choose the minimum resolution method below.
+Wayfinder coordinates the question; the selected specialist retains its method.
+
+After a consequential resolution or material new finding, revisit the affected
+route before continuing. Newly understood territory may become precise, earlier
+questions may no longer apply, and areas, relationships, dependencies, blockers,
+or ready work may change.
+
+Stop expanding the route when the work that may proceed is sufficiently clear.
+A question being precise enough to address does not by itself justify a U#;
+preserve one only when separate durable retention is independently useful under
+the state contract.
+
 ## Choose the minimum resolution method
 
 Continue directly when no additional method is needed. Otherwise load only the
