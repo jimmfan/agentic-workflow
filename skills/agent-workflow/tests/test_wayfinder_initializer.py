@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 import re
+import resource
+import signal
+import subprocess
+import sys
 import tempfile
 
 from _test_support import LIFECYCLE, ProjectTestCase, run_script, tree_snapshot
@@ -183,6 +187,60 @@ class WayfinderInitializerTests(ProjectTestCase):
                 self.assertIn("unsafe effort storage key", result.stderr)
                 self.assertFalse((self.project / ".agent-wayfinder").exists())
 
+    def test_unsafe_effort_names_fail_before_creating_wayfinder_state(self) -> None:
+        helper = self.install()
+
+        for name in ("", " surrounding whitespace ", "multiple\nlines", "delete\x7f"):
+            with self.subTest(name=name):
+                result = self.init_effort(helper, name=name)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("effort name must be", result.stderr)
+                self.assertFalse((self.project / ".agent-wayfinder").exists())
+
+    def test_unreadable_schema_fails_before_creating_wayfinder_state(self) -> None:
+        helper = self.install()
+        schema = self.project / ".agent-workflow/schemas/wayfinder/map.md"
+        schema.write_bytes(b"\xff")
+
+        result = self.init_effort(helper)
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("cannot read Wayfinder map schema", result.stderr)
+        self.assertFalse((self.project / ".agent-wayfinder").exists())
+
+    def test_failed_map_write_cleans_only_newly_created_state(self) -> None:
+        helper = self.install()
+        root = self.project / ".agent-wayfinder"
+        root.mkdir()
+        sentinel = root / "project-owned.txt"
+        sentinel.write_bytes(b"preserve exactly\n")
+        before = tree_snapshot(root)
+
+        def limit_file_size() -> None:
+            signal.signal(signal.SIGXFSZ, signal.SIG_IGN)
+            resource.setrlimit(resource.RLIMIT_FSIZE, (1, 1))
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(helper),
+                "init-effort",
+                "--effort",
+                "failed-write",
+                "--name",
+                "Failed write",
+            ],
+            text=True,
+            capture_output=True,
+            cwd=self.project,
+            check=False,
+            preexec_fn=limit_file_size,
+        )
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("cannot create Wayfinder map", result.stderr)
+        self.assertEqual(tree_snapshot(root), before)
+
     def test_wayfinder_symlink_boundaries_fail_without_mutating_targets(self) -> None:
         helper = self.install()
         with tempfile.TemporaryDirectory() as temporary:
@@ -211,27 +269,6 @@ class WayfinderInitializerTests(ProjectTestCase):
             self.assertIn("effort already exists", result.stderr)
             self.assertEqual(tree_snapshot(root), before)
             self.assertEqual(sentinel.read_bytes(), b"outside bytes\n")
-
-    def test_linked_project_root_is_rejected_without_creating_state(self) -> None:
-        self.install()
-        with tempfile.TemporaryDirectory() as temporary:
-            linked_project = Path(temporary) / "linked-project"
-            linked_project.symlink_to(self.project, target_is_directory=True)
-            linked_helper = linked_project / ".agent-workflow/tools/wayfinder.py"
-
-            result = run_script(
-                linked_helper,
-                "init-effort",
-                "--effort",
-                "linked-project",
-                "--name",
-                "Linked project",
-                cwd=linked_project,
-            )
-
-            self.assertEqual(result.returncode, 2)
-            self.assertIn("project root is a symlink", result.stderr)
-            self.assertFalse((self.project / ".agent-wayfinder").exists())
 
     def test_lifecycle_update_leaves_initialized_state_opaque(self) -> None:
         helper = self.install()

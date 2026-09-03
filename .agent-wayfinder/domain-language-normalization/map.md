@@ -53,9 +53,13 @@ None.
   `None.`.
 - The earlier recommendation to combine blockers and dependencies and omit other
   empty headings is rejected and no longer represents current project direction.
-- A framework-owned literal schema and installed Python initializer now own
-  deterministic new-map shell creation. Wayfinder retains semantic judgment and
-  existing maps remain resumable without migration or formatting-only rewrites.
+- A framework-owned literal schema and small installed Python initializer own
+  deterministic new-map shell creation. The initializer retains user-input
+  validation, no-overwrite behavior, Wayfinder-root symlink protection,
+  exclusive map creation, readable-schema failure, and cleanup of newly created
+  state after a failed write; package verification owns framework integrity.
+- Wayfinder retains semantic judgment, and existing maps remain resumable
+  without migration or formatting-only rewrites.
 - The Wayfinder skill now invokes that initializer with one short command, and
   the state contract retains only map semantics rather than initializer or schema
   implementation policy. Authored and installed projections remain synchronized.
