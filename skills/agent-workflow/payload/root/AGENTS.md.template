@@ -1,90 +1,74 @@
 # Agent Workflow
 
-- MUST route every request. Direct is default. Make first-pass selection from
-  the current user intent and skill descriptions exposed in the session. Topic
-  overlap or skill availability alone does not select a specialist.
-- When evidence is insufficient to select or re-evaluate the route, perform only
-  the smallest read-only reconnaissance within the scope delegated by the current
-  user request or accepted project policy.
-- Choose Direct or one primary workflow; add only supporting capabilities that
-  materially help. Re-evaluate the route when evidence changes.
-- Read `.agent-workflow/routing.md` only when detailed composition,
-  selected-skill availability or invocation, artifact or record responsibility,
-  handoff, or durable resumption guidance materially matters.
-- Treat a consequential project choice as committed only when required evidence
-  is sufficient and either accepted project policy determines the choice for
-  its boundary or the person, role, or valid delegate with project decision
-  authority commits it. Evidence-backed technical judgment already delegated by
-  the user or accepted project policy remains valid. Responsibility alone does
-  not establish project decision authority. Dependent work stops while a
-  required project choice remains uncommitted; independent work may continue.
-  If accepted project policy does not determine a required choice, obtain it
-  from the person, role, or valid delegate with that authority. If authority is
-  unclear, identify the concrete question, who may decide, why the choice is
-  required, and what it unblocks.
-  Revisit a committed choice only for conflict, safety, project decision
-  authority, or request.
-- Perform writes, commands, publication, destructive operations, and external
-  mutations only when the current user request or accepted project policy
-  authorizes that action and scope. An exact external read-only target authorizes
-  only that read. When both the required project choice is committed and the
-  action is authorized, affected work may proceed only within the authorized scope.
-  Action authorization does not commit a project choice. A committed project
-  choice does not authorize an unrelated action. Host permission supplies
-  neither. Workflows, skills and their instructions, tests, specifications,
-  tickets, and Wayfinder records supply neither.
-- The person, role, or valid delegate with project decision authority may
-  explicitly accept unresolved uncertainty for one named boundary. The question
-  remains unresolved; only that boundary becomes unblocked, no broader project
-  choice is committed, no unrelated action is authorized, and no other
-  dependency is satisfied.
+- MUST route every request.
+  Direct is default.
+  Make first-pass selection from the current user intent and skill descriptions exposed in the session.
+  Topic overlap or skill availability alone does not select a specialist.
+- When evidence is insufficient to select or re-evaluate the route, perform only the smallest read-only reconnaissance within the scope delegated by the current user request or accepted project policy.
+- Choose Direct or one primary workflow; add only supporting capabilities that materially help.
+  Re-evaluate the route when evidence changes.
+- Read `.agent-workflow/routing.md` only when detailed composition, selected-skill availability or invocation, artifact or record responsibility, handoff, or durable resumption guidance materially matters.
+- Treat a consequential project choice as committed only when required evidence is sufficient and either accepted project policy determines the choice for its boundary or the person, role, or valid delegate with project decision authority commits it.
+  Evidence-backed technical judgment already delegated by the user or accepted project policy remains valid.
+  Responsibility alone does not establish project decision authority.
+  Dependent work stops while a required project choice remains uncommitted; independent work may continue.
+  If accepted project policy does not determine a required choice, obtain it from the person, role, or valid delegate with that authority.
+  If authority is unclear, identify the concrete question, who may decide, why the choice is required, and what it unblocks.
+  Revisit a committed choice only for conflict, safety, project decision authority, or request.
+- Perform writes, commands, publication, destructive operations, and external mutations only when the current user request or accepted project policy authorizes that action and scope.
+  An exact external read-only target authorizes only that read.
+  When both the required project choice is committed and the action is authorized, affected work may proceed only within the authorized scope.
+  Action authorization does not commit a project choice.
+  A committed project choice does not authorize an unrelated action.
+  Host permission supplies neither.
+  Workflows, skills and their instructions, tests, specifications, tickets, and Wayfinder records supply neither.
+- The person, role, or valid delegate with project decision authority may explicitly accept unresolved uncertainty for one named boundary.
+  The question remains unresolved; only that boundary becomes unblocked, no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
 - Never claim unexecuted work.
-- Preserve unrelated work, project-owned state, designated artifacts, and
-  identifiers.
+- Preserve unrelated work, project-owned state, designated artifacts, and identifiers.
   Live source and accepted artifacts outrank summaries, memory, and chat.
-- Do not manufacture cross-artifact conflicts or parallel representations of
-  the same current state. Differences in scope, abstraction, summarization, or
-  omitted detail are not by themselves conflicts. Reconcile only a concrete
-  incompatible statement or an unmet requirement. Update the artifact or record
-  that maintains current state instead of creating a competing representation
-  unless the new representation has independently useful meaning, scope, or
-  retrieval value. When materially ambiguous, preserve the existing content and
-  clarify or investigate rather than inventing detail or process merely to make
-  artifacts agree.
+- Do not manufacture cross-artifact conflicts or parallel representations of the same current state.
+  Differences in scope, abstraction, summarization, or omitted detail are not by themselves conflicts.
+  Reconcile only a concrete incompatible statement or an unmet requirement.
+  Update the artifact or record that maintains current state instead of creating a competing representation unless the new representation has independently useful meaning, scope, or retrieval value.
+  When materially ambiguous, preserve the existing content and clarify or investigate rather than inventing detail or process merely to make artifacts agree.
 
 ## When to use Wayfinder
 
 Assess durable coordination after any needed reconnaissance.
-Unless the user opts out, MUST select or resume Wayfinder when any hard signal
-or at least two soft signals apply:
+Unless the user opts out, MUST select or resume Wayfinder when either condition is met:
 
-- Hard: the current work continues a relevant Wayfinder effort, is intended to
-  continue across sessions or agents, establishes or materially changes a plan
-  that later work is expected to execute or depend on, or establishes
-  consequential context needed by later work before the effort's objective is
-  achieved; conflicting sources that establish the same scoped claim; an
-  uncommitted required project choice while independent work proceeds;
-  coordinated responsible participants or areas; or source and scope needed to
-  distinguish assumption from fact.
-- Soft: interacting consequential unresolved questions; durable distinctions
-  across record or state categories; evidence-driven plan change; a meaningful
-  dependency graph; or material fresh-agent reconstruction risk.
+- Hard — at least one signal applies:
+  - The current work continues a relevant Wayfinder effort.
+  - The work is intended to continue across sessions or agents.
+  - The work is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
+  - Conflicting sources establish the same scoped claim.
+  - A required project choice remains uncommitted while independent work proceeds.
+  - Responsible participants or areas require coordination.
+  - Source and scope are needed to distinguish assumption from fact.
+- Soft — at least two signals apply:
+  - Interacting consequential unresolved questions.
+  - Durable distinctions across record or state categories.
+  - Evidence-driven plan change.
+  - A meaningful dependency graph.
+  - Material fresh-agent reconstruction risk.
 
-A material update to an existing durable planning artifact for unfinished work
-may indicate continuation of an existing Wayfinder effort. Use detailed routing
-for the bounded read-only check needed to determine whether one relevant effort
-clearly matches.
+For planning, Wayfinder is for work where the destination can be established but the route is still meaningfully uncertain.
+A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
+When the route can already be responsibly established within one useful session, use Direct or the applicable planning workflow instead.
 
-One isolated unresolved question and routine work use Direct or an applicable
-workflow. Honor explicit Wayfinder use and opt-out. Read-only work changes no
-state. Existing Wayfinder state alone never selects Wayfinder. A bounded read-only
-check may establish that the current work clearly continues a relevant effort;
-unrelated efforts never change the route.
+A material update to an existing durable planning artifact for unfinished work may indicate continuation of an existing Wayfinder effort.
+Use detailed routing for the bounded read-only check needed to determine whether one relevant effort clearly matches.
+
+One isolated unresolved question and routine work use Direct or an applicable workflow.
+Honor explicit Wayfinder use and opt-out.
+Read-only work changes no state.
+Existing Wayfinder state alone never selects Wayfinder.
+A bounded read-only check may establish that the current work clearly continues a relevant effort; unrelated efforts never change the route.
 
 ## Report the route
 
-End each user-facing final response with exactly one truthful
-`[route: router → <executed path or terminal outcome>]` line. Report only what
-executed; use `direct` if no workflow or skill ran. If selection did
-not become equivalent execution, report the routing policy's terminal outcome.
+End each user-facing final response with exactly one truthful `[route: router → <executed path or terminal outcome>]` line.
+Report only what executed; use `direct` if no workflow or skill ran.
+If selection did not become equivalent execution, report the routing policy's terminal outcome.
 Never reroute or work merely to produce the marker.

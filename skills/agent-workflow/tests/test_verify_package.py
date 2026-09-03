@@ -301,14 +301,14 @@ class VerifyPackageTests(ProjectTestCase):
             (
                 "root-route-marker",
                 "payload/root/AGENTS.md.template",
-                "Report only what\nexecuted",
+                "Report only what executed",
                 "Report what was selected",
                 "Root routing lacks load-bearing contract",
             ),
             (
                 "detailed-route-marker",
                 "payload/agent-workflow/routing.md",
-                "include it in the route marker only when its\nmethod actually ran",
+                "include it in the route marker only when its method actually ran",
                 "include it in the route marker when selected",
                 "Routing lacks load-bearing contract",
             ),
