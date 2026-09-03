@@ -1,7 +1,6 @@
 # Architecture decisions
 
-This directory contains only current, independently reconsiderable architecture
-decisions:
+This directory contains only current, independently reconsiderable architecture decisions:
 
 - [ADR-0010 — Separate framework output from project-owned state](0010-separate-framework-output-from-project-owned-state.md)
 - [ADR-0011 — Use map-first Wayfinder state](0011-use-map-first-wayfinder-state.md)
