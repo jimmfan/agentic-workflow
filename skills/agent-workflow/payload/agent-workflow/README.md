@@ -17,6 +17,10 @@ commands do not directly traverse, interpret, or change it.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for
   current maps, optional F#/D# ledgers, independently useful U#/E# files,
   identifiers, reconciliation, pruning, effort ending, and progressive loading.
+- `schemas/wayfinder/map.md`: the canonical literal schema for every newly
+  initialized Wayfinder map.
+- `tools/wayfinder.py`: the standard-library helper that exclusively creates a
+  new map shell from that schema.
 
 The root policy and `routing.md` are the runtime. No hook, daemon, lifecycle
 controller, or telemetry analyzer is installed.
@@ -89,10 +93,14 @@ dependencies, and ready work, indexing rather than duplicating supporting
 detail. When resuming, read the map before retrieving a relevant ledger section
 or U#/E# artifact.
 
-New default maps retain `Blockers and dependencies` and use `None` when no blocker
-or dependency applies. Other inapplicable empty headings may be omitted, while
-existing maps remain valid without that heading or marker. This is authoring
-guidance, not a recognition requirement or migration trigger.
+New map shells are created with
+`python3 .agent-workflow/tools/wayfinder.py init-effort --effort
+<stable-effort-slug> --name "<human-readable effort name>"`. The literal schema
+at `schemas/wayfinder/map.md` owns their exact headings, order, required
+placeholders, and empty representation. Required content placeholders must be
+replaced meaningfully before the map is treated as populated durable state.
+Existing maps remain recognizable and resumable without migration,
+exact-heading validation, or formatting-only rewrites.
 
 Fact records identify the source or records from which their scoped conclusion
 was derived. Decision records identify the accepted project policy that determines their

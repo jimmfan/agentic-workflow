@@ -36,6 +36,16 @@ LEDGER_PATHS = {"F": "facts.md", "D": "decisions.md"}
 LEDGER_TITLES = {"F": "Facts", "D": "Decisions"}
 CURRENT_ID = re.compile(r"^([UEFD])([1-9][0-9]*)-([^.]+)\.md$")
 LEDGER_HEADING = re.compile(r"^## ([FD])([1-9][0-9]*) — (\S.*)$")
+CANONICAL_MAP_HEADINGS = (
+    "Objective",
+    "Scope",
+    "Ready work",
+    "Current state",
+    "Dependencies",
+    "Blockers",
+    "Ownership",
+    "Key references",
+)
 
 
 class UnsafeWayfinderState(RuntimeError):
@@ -46,6 +56,22 @@ def markdown_section(text: str, heading: str) -> str:
     start = text.index(heading)
     end = text.find("\n## ", start + len(heading))
     return text[start:] if end < 0 else text[start:end]
+
+
+def contains_canonical_map_skeleton(text: str) -> bool:
+    represented_labels: list[str] = []
+    for line in text.splitlines():
+        candidate = re.sub(r"^(?:#{1,6}|[-*]|[0-9]+\.)\s+", "", line.strip())
+        candidate = candidate.removeprefix("**")
+        for heading in CANONICAL_MAP_HEADINGS:
+            if re.match(rf"^{re.escape(heading)}(?:\*\*)?(?:\s|$|[-—:])", candidate):
+                represented_labels.append(heading)
+                break
+    return any(
+        represented_labels[index : index + len(CANONICAL_MAP_HEADINGS)]
+        == list(CANONICAL_MAP_HEADINGS)
+        for index in range(len(represented_labels))
+    )
 
 
 def validate_effort_location(effort: Path, *, require_root: bool = False) -> None:
@@ -2028,27 +2054,45 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         self.assertTrue((PACKAGE_ROOT / "tests/fixtures/wayfinder-settlement").is_dir())
 
-    def test_default_map_orientation_and_ready_work_semantics_are_explicit(
+    def test_schema_owns_new_map_mechanics_and_semantics_remain_explicit(
         self,
     ) -> None:
         effort_shape = markdown_section(self.contract, "## Effort shape and selection")
-        orientation = re.findall(r"^- \*\*([^*]+)\*\*", effort_shape, re.MULTILINE)
-        self.assertEqual(
-            orientation[:7],
-            [
-                "Objective",
-                "Scope",
-                "Areas and relationships",
-                "Current state",
-                "Blockers and dependencies",
-                "Ready work",
-                "Key links",
-            ],
-        )
         normalized = " ".join(effort_shape.split())
-        default_map_guidance = normalized.split("Use this brief default map shape", 1)[
-            1
-        ].split("The map summarizes", 1)[0]
+        runtime_section = markdown_section(
+            WAYFINDER_SKILL.read_text(encoding="utf-8"), "## Operating rules"
+        )
+        runtime_operating = " ".join(runtime_section.split())
+        command = (
+            "python3 .agent-workflow/tools/wayfinder.py init-effort "
+            '--effort <stable-effort-slug> --name "<human-readable effort name>"'
+        )
+        for label, guidance in (
+            ("contract", normalized),
+            ("runtime", runtime_operating),
+        ):
+            with self.subTest(surface=label):
+                self.assertIn(command, guidance)
+                self.assertIn(".agent-workflow/schemas/wayfinder/map.md", guidance)
+                self.assertIn("populated durable state", guidance)
+                for obsolete_mechanic in (
+                    "Use this brief default map shape",
+                    "New default maps retain",
+                    "Other inapplicable empty headings",
+                    "default authoring guidance",
+                ):
+                    self.assertNotIn(obsolete_mechanic, guidance)
+
+        for label, guidance in (
+            ("contract", effort_shape),
+            ("runtime", runtime_section),
+        ):
+            with self.subTest(surface=label):
+                self.assertFalse(
+                    contains_canonical_map_skeleton(guidance),
+                    "agent-facing instructions duplicate the canonical map skeleton",
+                )
+
         for current_state_semantic in (
             "smallest truthful coordination summary needed for safe resumption",
             "Transient Git or session observations",
@@ -2058,29 +2102,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "continuing action authorization constraint, baseline, or dependency",
         ):
             with self.subTest(current_state_semantic=current_state_semantic):
-                self.assertIn(current_state_semantic, default_map_guidance)
-        self.assertIn(
-            "Except for **Blockers and dependencies**",
-            default_map_guidance,
-        )
-
-        runtime_operating = " ".join(
-            markdown_section(
-                WAYFINDER_SKILL.read_text(encoding="utf-8"), "## Operating rules"
-            ).split()
-        )
-        for shared_default in (
-            "New default maps retain **Blockers and dependencies**",
-            "write `None` when no blocker or dependency currently applies",
-            "Other inapplicable empty headings may be omitted",
-            "Existing maps remain valid without that heading or literal `None`",
-            "default authoring guidance",
-            "not an effort-recognition or parser requirement",
-            "does not require migration, compatibility parsing, or rewriting",
-        ):
-            with self.subTest(shared_default=shared_default):
-                self.assertIn(shared_default, default_map_guidance)
-                self.assertIn(shared_default, runtime_operating)
+                self.assertIn(current_state_semantic, normalized)
         self.assertIn(
             "Unfinished tests, verification, commits, pushes, and other workflow steps "
             "are not blockers merely because they remain",
@@ -2142,6 +2164,21 @@ class WayfinderStateContractTests(unittest.TestCase):
             "When resuming a Wayfinder effort, read `map.md` first",
             self.normalized,
         )
+
+    def test_agent_instruction_skeleton_detection_covers_markdown_forms(self) -> None:
+        bodies = (
+            "\n".join(f"## {heading}" for heading in CANONICAL_MAP_HEADINGS),
+            "\n".join(
+                f"- **{heading}** — meaning" for heading in CANONICAL_MAP_HEADINGS
+            ),
+            "\n".join(
+                f"{index}. {heading}: meaning"
+                for index, heading in enumerate(CANONICAL_MAP_HEADINGS, start=1)
+            ),
+        )
+        for body in bodies:
+            with self.subTest(body=body):
+                self.assertTrue(contains_canonical_map_skeleton(body))
 
         reconciliation = " ".join(
             markdown_section(

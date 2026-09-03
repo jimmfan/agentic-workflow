@@ -62,7 +62,7 @@ designated to maintain them.
 
 ```text
 FRAMEWORK-OWNED, RECONSTRUCTABLE
-├── .agent-workflow/
+├── .agent-workflow/           # routing, contracts, schemas, and tools
 ├── managed AGENTS.md and CLAUDE.md regions
 └── current curated .agents/skills/<name>/ directories
 
@@ -115,10 +115,13 @@ contents, dependencies, ordering, and readiness. The map links that durable
 ticket or ticket set and may include the current ready-work reference without
 mirroring ticket-level state. A ticket draft returned only in chat remains
 session-local and is not a durable reference target.
-New default maps retain `Blockers and dependencies` with `None` when no blocker
-or dependency applies; other inapplicable empty headings may be omitted. Existing
-maps remain valid without that heading or marker because this is authoring guidance,
-not an effort-recognition schema or migration rule.
+The literal framework schema under `.agent-workflow/schemas/wayfinder/` owns the
+exact structure of newly initialized maps, and the installed standard-library
+helper under `.agent-workflow/tools/` creates only that map shell. Required
+objective, scope, and current-state placeholders must be replaced meaningfully
+before the map is treated as populated durable state. Existing maps remain
+recognized by their safe path and regular `map.md`, without migration,
+exact-heading validation, or formatting-only rewrites.
 Optional `facts.md` and `decisions.md` ledgers hold current F# fact records and
 D# decision records. F# contains a current scoped descriptive conclusion judged
 sufficiently supported and remains revisable; D# contains a current choice

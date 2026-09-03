@@ -117,21 +117,26 @@ A Wayfinder effort is map-first:
     └── evidence/       # optional
 ```
 
-When resuming a Wayfinder effort, read `map.md` first. It records enough current coordination context for a later agent or developer to understand the effort, including:
-
-- objective;
-- scope;
-- important areas and relationships;
-- conditions currently blocking particular work and the relevant dependencies;
-- unresolved questions that matter to the work; and
-- ready work.
+When resuming a Wayfinder effort, read `map.md` first. It records the objective,
+scope, ready work, smallest truthful current-state summary, dependencies,
+conditions blocking particular work, relevant ownership boundaries, and the few
+references materially useful for continuation. Important areas, relationships,
+and unresolved questions remain visible where they affect that coordination.
 
 A simple effort may need only `map.md`.
 
-New default maps retain `Blockers and dependencies` and use `None` when no blocker
-or dependency currently applies; other inapplicable empty headings may be omitted.
-Existing maps remain valid without that heading or marker. This is authoring
-guidance, not a recognition requirement or migration trigger.
+Initialize a new map shell with the installed helper, then replace its required
+content placeholders before treating it as populated durable state:
+
+```bash
+python3 .agent-workflow/tools/wayfinder.py init-effort --effort <stable-effort-slug> --name "<human-readable effort name>"
+```
+
+The framework-owned literal schema at
+`.agent-workflow/schemas/wayfinder/map.md` is the single source for exact
+new-map headings, ordering, placeholders, and empty representation. Existing
+maps remain recognizable and resumable without migration or formatting-only
+rewrites.
 
 Additional records are created only when they are useful to preserve separately:
 
@@ -170,9 +175,10 @@ Use an available project/effort plan to understand the intended objective, scope
 dependencies, sequencing, and remaining work where applicable. Reference the plan
 from Wayfinder when useful rather than copying it.
 
-Create a lightweight `.agent-wayfinder/<stable-effort-name>/map.md` that will
-help developers and future agents resume the work without depending on this chat.
-Do not implement product changes during this first pass.
+Use the installed Wayfinder initializer to create a lightweight map shell, then
+replace its required placeholders with enough meaningful coordination content
+for developers and future agents to resume without depending on this chat. Do
+not implement product changes during this first pass.
 
 If the current effort cannot be inferred confidently, ask only the minimum
 concrete scope questions needed before creating the Wayfinder state. When
@@ -195,7 +201,9 @@ target-project/
 ├── .agent-workflow/          # framework-owned
 │   ├── routing.md
 │   ├── README.md             # includes third-party MIT notice
-│   └── contracts/
+│   ├── contracts/
+│   ├── schemas/wayfinder/map.md
+│   └── tools/wayfinder.py
 │
 └── .agent-wayfinder/         # project-owned
     └── <effort>/

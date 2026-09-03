@@ -22,16 +22,19 @@ method, and identify ready work;
 - Selection may conclude that no consequential continuity earns persistence;
   in that case create no effort, map, or supporting record.
 - Establish the objective and scope, then enough relevant areas and relationships
-  to orient the effort before substantial decomposition. Keep `map.md` brief,
-  preserve enough information to resume safely, and load detail only when
-  relevant. New default maps retain **Blockers and dependencies** and write
-  `None` when no blocker or dependency currently applies. Other inapplicable empty
-  headings may be omitted, and a clearer equivalent may be used. Existing maps
-  remain valid without that heading or literal `None`. This is default authoring
-  guidance, not an effort-recognition or parser requirement, and does not require
-  migration, compatibility parsing, or rewriting. Unfinished tests, verification,
-  commits, pushes, and other workflow steps are not blockers merely because they
-  remain.
+  to orient the effort before substantial decomposition. For a new effort, run
+  `python3 .agent-workflow/tools/wayfinder.py init-effort --effort
+  <stable-effort-slug> --name "<human-readable effort name>"`. Do not hand-author
+  or copy the shell. The framework-owned literal schema at
+  `.agent-workflow/schemas/wayfinder/map.md` owns its exact headings, order,
+  required placeholders, and empty representation. Replace the remaining
+  required placeholders with meaningful objective, scope, and current-state
+  content before treating the map as populated durable state. Keep `map.md`
+  brief, preserve enough information to resume safely, and load detail only when
+  relevant. Existing safe regular maps remain recognizable and resumable without
+  migration, exact-heading validation, placeholder validation, or formatting-only
+  rewrites. Unfinished tests, verification, commits, pushes, and other workflow
+  steps are not blockers merely because they remain.
 - The map summarizes the effort's current coordination state, conditions blocking particular work,
   dependencies, and ready work.
   Optional F/D ledger sections and U/E artifacts are records that preserve only

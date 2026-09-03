@@ -47,6 +47,8 @@ REQUIRED_PACKAGE_FILES = (
     "payload/agent-workflow/README.md",
     "payload/agent-workflow/routing.md",
     "payload/agent-workflow/contracts/wayfinder-state.md",
+    "payload/agent-workflow/schemas/wayfinder/map.md",
+    "payload/agent-workflow/tools/wayfinder.py",
 )
 
 EXPECTED_BASE_PAYLOAD_FILES = frozenset(
@@ -54,6 +56,8 @@ EXPECTED_BASE_PAYLOAD_FILES = frozenset(
         "agent-workflow/README.md",
         "agent-workflow/contracts/wayfinder-state.md",
         "agent-workflow/routing.md",
+        "agent-workflow/schemas/wayfinder/map.md",
+        "agent-workflow/tools/wayfinder.py",
         "distribution/manifest.json",
         "root/AGENTS.md.template",
         "root/CLAUDE.md.template",

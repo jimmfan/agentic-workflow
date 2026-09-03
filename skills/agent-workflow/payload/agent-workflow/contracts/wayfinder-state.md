@@ -98,27 +98,35 @@ work waiting on an external dependency. Represent each condition through map con
 identifies the affected work, relevant dependencies, and any ready work. Do not add a map status
 or historical label.
 
-Use this brief default map shape. New default maps retain **Blockers and dependencies**
-and write `None` when no blocker or dependency currently applies. Other inapplicable
-empty headings may be omitted, and a clearer equivalent may be used. Existing maps
-remain valid without that heading or literal `None`. This is default authoring guidance,
-not an effort-recognition or parser requirement, and does not require migration,
-compatibility parsing, or rewriting:
+Create a new effort shell only with the installed initializer:
 
-- **Objective** — the result the effort is intended to achieve.
-- **Scope** — what the effort includes and excludes, including relevant project or authority limits.
-- **Areas and relationships** — major areas, how they relate, and important ownership or operating constraints.
-- **Current state** — smallest truthful coordination summary needed for safe resumption.
-  Persist only coordination state whose meaning remains relevant to future work.
-  Transient Git or session observations, such as a clean working tree, current HEAD,
-  or branch position, remain execution context unless they are genuinely a continuing
-  action authorization constraint, baseline, or dependency.
-- **Blockers and dependencies** — actual blockers and required inputs or dependencies.
-- **Ready work** — work that may proceed now.
-- **Key links** — the few navigable links to artifacts needed for continuation.
+```bash
+python3 .agent-workflow/tools/wayfinder.py init-effort --effort <stable-effort-slug> --name "<human-readable effort name>"
+```
 
-These headings guide content; they are not a recognition schema. Except for **Blockers
-and dependencies** in a new default map, do not create empty headings.
+The framework-owned literal schema at
+`.agent-workflow/schemas/wayfinder/map.md` is the sole source for exact new-map
+headings, ordering, required placeholders, and empty-section representation.
+The initializer creates only `map.md` and substitutes the human-readable effort
+name. Replace every remaining required placeholder with meaningful objective,
+scope, and current-state content before treating the map as populated durable
+state. New-map creation follows the schema strictly. Existing safe regular maps
+remain recognizable and resumable without migration, exact-heading validation,
+placeholder validation, or formatting-only rewrites.
+
+The objective states the result the effort must achieve. Scope states what the
+effort includes and excludes, including relevant project or authority limits.
+Current state is the smallest truthful coordination summary needed for safe
+resumption. Persist only coordination state whose meaning remains relevant to
+future work. Transient Git or session observations, such as a clean working
+tree, current HEAD, or branch position, remain execution context unless they are
+genuinely a continuing action authorization constraint, baseline, or dependency.
+Represent major areas, their relationships, and important operating boundaries
+within the most relevant map content. Ownership identifies who or what owns
+consequential responsibilities, artifacts, decisions, or operating boundaries.
+Key references are only the few sources or artifacts materially useful for
+continuation, not a bibliography.
+
 The map summarizes the effort's current coordination state, conditions blocking particular work,
 dependencies, and ready work. When no durable ticket or ticket set exists, the map may state ready
 work directly. Once a durable ticket or ticket set exists, the map links it and
@@ -133,17 +141,18 @@ ledger section or U/E file. If a fresh session must read most supporting records
 to recover the current route, reconcile the map instead of adding more
 supporting detail.
 
-`Blockers and dependencies` records actual blockers and required inputs or dependencies,
-not ordinary remaining workflow steps. Planned tests, verification, commit or push steps,
-and other unfinished work do not belong there merely because they remain. A blocker is a
-condition that currently prevents particular work from proceeding. An unsatisfied dependency,
-unresolved consequential uncertainty, or missing required authority can be a blocker for
-affected work. The missing condition may be that a required project choice has not yet been
-committed, a required action has not yet been authorized, or a required dependency remains
-unsatisfied. Blocking is scoped to affected work: the same condition may block
-one scope without blocking another. An unresolved U# records a question and is not
-automatically a blocker. Delay, inconvenience, risk, or unfinished work alone does not make a
-condition a blocker.
+Dependency content records required inputs or dependencies. Blocker content
+records actual blockers, not ordinary remaining workflow steps. Planned tests,
+verification, commit or push steps, and other unfinished work do not belong
+there merely because they remain. A blocker is a condition that currently
+prevents particular work from proceeding. An unsatisfied dependency, unresolved
+consequential uncertainty, or missing required authority can be a blocker for
+affected work. The missing condition may be that a required project choice has
+not yet been committed, a required action has not yet been authorized, or a
+required dependency remains unsatisfied. Blocking is scoped to affected work:
+the same condition may block one scope without blocking another. An unresolved
+U# records a question and is not automatically a blocker. Delay, inconvenience,
+risk, or unfinished work alone does not make a condition a blocker.
 
 Ready work is work to which no blocker currently applies. Independent ready work may proceed while
 unrelated work remains blocked.

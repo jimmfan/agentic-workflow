@@ -13,6 +13,14 @@
       "target": ".agent-workflow/routing.md"
     },
     {
+      "source": "agent-workflow/schemas/wayfinder/map.md",
+      "target": ".agent-workflow/schemas/wayfinder/map.md"
+    },
+    {
+      "source": "agent-workflow/tools/wayfinder.py",
+      "target": ".agent-workflow/tools/wayfinder.py"
+    },
+    {
       "source": "skills/code-review/SKILL.md",
       "target": ".agents/skills/code-review/SKILL.md"
     },

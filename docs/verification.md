@@ -67,8 +67,8 @@ The package verifier checks:
   publish only to a user- or project-named
   destination with authorization; `implement` does not infer commit
   authorization; and route markers report executed work only;
-- deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder, and
-  verifier tests; and
+- deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder map
+  initialization, and verifier tests; and
 - local documentation links.
 
 Success ends with:
@@ -142,10 +142,10 @@ The deterministic suite proves that:
   payload taken from the same downloaded snapshot; and
 - explicit branch, tag, or commit refs bypass stable-release discovery.
 
-Wayfinder's state and behavioral tests remain separate from lifecycle tests.
-They cover map-first coordination, records, allocation, reconciliation,
-reference safety, progressive loading, and project-choice authority without
-making lifecycle code interpret durable state.
+Wayfinder's state, initializer, and behavioral tests remain separate from
+lifecycle tests. They cover canonical new-map creation, map-first coordination,
+records, allocation, reconciliation, reference safety, progressive loading, and
+project-choice authority without making lifecycle code interpret durable state.
 
 ## Release tags
 
