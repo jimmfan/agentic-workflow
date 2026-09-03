@@ -16,11 +16,13 @@ Use `specialist` only for focused specialist work.
 
 Routing is dynamic.
 Assess durable coordination after any needed reconnaissance; item count alone never selects Wayfinder.
-Wayfinder must start or resume when any hard signal or at least two soft signals apply.
-Hard signals cover work that continues a relevant Wayfinder effort, is intended to continue across sessions or agents, establishes or materially changes a plan that later work is expected to execute or depend on, or establishes consequential context later work needs before the effort's objective is achieved.
-They also cover conflicting sources that establish the same scoped claim, an uncommitted required project choice alongside independent work that can proceed, coordinated areas or responsible participants, and missing source traceability.
-Soft signals cover interacting unresolved questions, multiple durable state categories, evidence-driven plan change, dependency graphs, and fresh-agent reconstruction risk.
-An evidence-driven plan change remains soft when the plan is not an expected input to later work.
+Wayfinder must start or resume when at least one hard signal or at least two soft signals apply.
+Hard signals cover work that continues a relevant Wayfinder effort, is intended to continue across sessions or agents, or is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
+They also cover conflicting sources that establish the same scoped claim, an uncommitted required project choice while independent work proceeds, coordinated responsible participants or areas, and source and scope needed to distinguish assumption from fact.
+Soft signals cover interacting consequential unresolved questions, durable distinctions across record or state categories, evidence-driven plan change, a meaningful dependency graph, and material fresh-agent reconstruction risk.
+For planning, Wayfinder is for work where the destination can be established but the route is still meaningfully uncertain.
+A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
+When the route can already be responsibly established within one useful session, use Direct or the applicable planning workflow instead.
 This is an activation rubric, not a weighted complexity score.
 Existing Wayfinder state alone never selects Wayfinder.
 A bounded read-only check may establish that the current work clearly continues a relevant effort.

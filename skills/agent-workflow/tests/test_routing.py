@@ -168,13 +168,13 @@ class RoutingContractTests(unittest.TestCase):
             "## Project language",
             "Read `CONTEXT.md` before changing routing, Wayfinder, direct skill distribution, "
             "ownership, or framework-lifecycle concepts",
-            "determine the actual concept from current source, behavior, tests, and accepted decisions",
-            "identify the bounded technical or domain context that owns it",
+            "Determine the actual concept from current source, behavior, tests, and accepted decisions",
+            "Identify the bounded technical or domain context that owns it",
             "primary standards, official technical documentation, strong engineering evidence, "
             "and peer-reviewed evidence when available",
-            "compare alternatives by exact semantics and applicability",
-            "prefer established or literal language only when its semantic precision earns its cognitive cost",
-            "state evidence strength and uncertainty honestly",
+            "Compare alternatives by exact semantics and applicability",
+            "Prefer established or literal language only when its semantic precision earns its cognitive cost",
+            "State evidence strength and uncertainty honestly",
             "Update `CONTEXT.md` only after the terminology decision is accepted",
             "Keep behavior, architecture, authority, and terminology in their respective owning layers",
             "Do not force one term across genuinely different bounded contexts",
@@ -800,7 +800,7 @@ class RoutingContractTests(unittest.TestCase):
             (PACKAGE_ROOT / "payload/skills/wayfinder/SKILL.md").read_text().split()
         )
         self.assertIn("If the state contract is unavailable", runtime)
-        self.assertIn("do not invent substitute persistence", runtime)
+        self.assertIn("Do not invent substitute persistence", runtime)
 
     def test_wayfinder_post_selection_loading_is_owned_by_skill_and_contract(
         self,
@@ -867,6 +867,7 @@ class RoutingContractTests(unittest.TestCase):
             "Topic overlap or skill availability alone does not select a specialist",
             normalized_root,
         )
+
         reconnaissance_requirements = {
             "evidence-insufficient entry condition": (
                 "When evidence is insufficient to select or re-evaluate the route"
@@ -881,9 +882,11 @@ class RoutingContractTests(unittest.TestCase):
         for requirement, fragment in reconnaissance_requirements.items():
             with self.subTest(reconnaissance_requirement=requirement):
                 self.assertIn(fragment, normalized_root)
+
         self.assertIn("Choose Direct or one primary workflow", normalized_root)
         self.assertIn("supporting capabilities that materially help", normalized_root)
         self.assertIn("Re-evaluate the route when evidence changes", normalized_root)
+
         for removed_cue in (
             "unexplained causal failure",
             "consequential choice needing alternative analysis",
@@ -893,6 +896,7 @@ class RoutingContractTests(unittest.TestCase):
         ):
             with self.subTest(removed_cue=removed_cue):
                 self.assertNotIn(removed_cue, normalized_root)
+
         self.assertNotIn(
             "one obvious specialist inside an already selected Wayfinder effort",
             normalized_root,
@@ -921,34 +925,77 @@ class RoutingContractTests(unittest.TestCase):
             ),
             normalized_readme,
         )
+
         self.assertIn(
             "Assess durable coordination after any needed reconnaissance",
             normalized_root,
         )
         self.assertNotIn("Three or more meaningful items", normalized_root)
         self.assertIn("MUST select or resume Wayfinder", normalized_root)
-        self.assertIn("any hard signal or at least two soft signals", normalized_root)
-        hard_signal = normalized_root.split("- Hard:", 1)[1].split("- Soft:", 1)[0]
+        self.assertIn(
+            "MUST select or resume Wayfinder when either condition is met",
+            normalized_root,
+        )
+
+        hard_label = "- Hard — at least one signal applies:"
+        soft_label = "- Soft — at least two signals apply:"
+        self.assertIn(hard_label, normalized_root)
+        self.assertIn(soft_label, normalized_root)
+
+        hard_signal = normalized_root.split(hard_label, 1)[1].split(soft_label, 1)[0]
+        soft_signal = normalized_root.split(soft_label, 1)[1].split(
+            "For planning, Wayfinder", 1
+        )[0]
+
         for hard_boundary in (
-            "current work continues a relevant Wayfinder effort",
-            "intended to continue across sessions or agents",
-            "is a planning effort whose objective and scope can be established but "
-            "whose route remains materially unclear and cannot responsibly be "
+            "The current work continues a relevant Wayfinder effort",
+            "The work is intended to continue across sessions or agents",
+            "The work is a planning effort whose objective and scope can be established "
+            "but whose route remains materially unclear and cannot responsibly be "
             "resolved within one useful agent session",
-            "conflicting sources that establish the same scoped claim",
-            "uncommitted required project choice while independent work proceeds",
-            "coordinated responsible participants or areas",
-            "source and scope needed to distinguish assumption from fact",
+            "Conflicting sources establish the same scoped claim",
+            "A required project choice remains uncommitted while independent work proceeds",
+            "Responsible participants or areas require coordination",
+            "Source and scope are needed to distinguish assumption from fact",
         ):
             with self.subTest(hard_boundary=hard_boundary):
                 self.assertIn(hard_boundary, hard_signal)
-        self.assertNotIn("evidence-driven plan change", hard_signal)
-        self.assertIn(
-            "Soft: interacting consequential unresolved questions; durable distinctions "
-            "across record or state categories; evidence-driven plan change; a meaningful "
-            "dependency graph; or material fresh-agent reconstruction risk",
+
+        for soft_boundary in (
+            "Interacting consequential unresolved questions",
+            "Durable distinctions across record or state categories",
+            "Evidence-driven plan change",
+            "A meaningful dependency graph",
+            "Material fresh-agent reconstruction risk",
+        ):
+            with self.subTest(soft_boundary=soft_boundary):
+                self.assertIn(soft_boundary, soft_signal)
+
+        self.assertNotIn("Evidence-driven plan change", hard_signal)
+        self.assertIn("Evidence-driven plan change", soft_signal)
+
+        for planning_boundary in (
+            "For planning, Wayfinder is for work where the destination can be established "
+            "but the route is still meaningfully uncertain",
+            "A clear bounded plan does not select Wayfinder merely because later work "
+            "will execute or depend on it",
+            "When the route can already be responsibly established within one useful "
+            "session, use Direct or the applicable planning workflow instead",
+        ):
+            with self.subTest(planning_boundary=planning_boundary):
+                self.assertIn(planning_boundary, normalized_root)
+
+        self.assertNotIn(
+            "establishes or materially changes a plan that later work is expected "
+            "to execute or depend on",
             normalized_root,
         )
+        self.assertNotIn(
+            "establishes consequential context needed by later work before the "
+            "effort's objective is achieved",
+            normalized_root,
+        )
+
         self.assertIn(
             "One isolated unresolved question and routine work use Direct or an "
             "applicable workflow",
@@ -956,6 +1003,7 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertIn("Honor explicit Wayfinder use and opt-out", normalized_root)
         self.assertIn("Read-only work changes no state", normalized_root)
+
         for continuation_boundary in (
             "Existing Wayfinder state alone never selects Wayfinder",
             "A bounded read-only check may establish that the current work clearly "
@@ -964,6 +1012,7 @@ class RoutingContractTests(unittest.TestCase):
         ):
             with self.subTest(continuation_boundary=continuation_boundary):
                 self.assertIn(continuation_boundary, normalized_root)
+
         for planning_resume_boundary in (
             "material update to an existing durable planning artifact for unfinished work",
             "may indicate continuation of an existing Wayfinder effort",
@@ -972,15 +1021,18 @@ class RoutingContractTests(unittest.TestCase):
         ):
             with self.subTest(planning_resume_boundary=planning_resume_boundary):
                 self.assertIn(planning_resume_boundary, normalized_root)
+
         self.assertNotIn("\n* ", root_policy)
         self.assertNotIn(
-            "If it is unclear whether the work is clearly bounded", normalized_root
+            "If it is unclear whether the work is clearly bounded",
+            normalized_root,
         )
         self.assertNotIn("For a named skill, a resume", normalized_root)
         self.assertIn("avoid routing loops", normalized_routing.lower())
         self.assertIn("trivial low-risk edits stay direct", normalized_routing.lower())
         self.assertIn(
-            "available capabilities can satisfy the request", normalized_routing
+            "available capabilities can satisfy the request",
+            normalized_routing,
         )
         self.assertIn(
             "unavailable or cannot run without explicit user invocation",
@@ -989,7 +1041,8 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("After a successful Direct fallback", normalized_routing)
         self.assertIn("selection did not become equivalent execution", normalized_root)
         self.assertIn(
-            "selection did not become equivalent execution", normalized_routing
+            "selection did not become equivalent execution",
+            normalized_routing,
         )
         self.assertIn("omit the skill that could not run", normalized_routing)
         self.assertNotIn("one obvious specialist inside Wayfinder", normalized_routing)
@@ -1000,6 +1053,21 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn(
             "Assess durable coordination after any needed reconnaissance; item count "
             "alone never selects Wayfinder",
+            documented_routing,
+        )
+        self.assertIn(
+            "Wayfinder must start or resume when at least one hard signal or at least "
+            "two soft signals apply",
+            documented_routing,
+        )
+        self.assertIn(
+            "A clear bounded plan does not select Wayfinder merely because later work "
+            "will execute or depend on it",
+            documented_routing,
+        )
+        self.assertNotIn(
+            "establishes or materially changes a plan that later work is expected "
+            "to execute or depend on",
             documented_routing,
         )
         self.assertNotIn("Three or more meaningful items", documented_routing)

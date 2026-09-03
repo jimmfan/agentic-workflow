@@ -37,9 +37,9 @@
 ## When to use Wayfinder
 
 Assess durable coordination after any needed reconnaissance.
-Unless the user opts out, MUST select or resume Wayfinder when:
+Unless the user opts out, MUST select or resume Wayfinder when either condition is met:
 
-- Hard — any one applies:
+- Hard — at least one signal applies:
   - The current work continues a relevant Wayfinder effort.
   - The work is intended to continue across sessions or agents.
   - The work is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
@@ -47,7 +47,7 @@ Unless the user opts out, MUST select or resume Wayfinder when:
   - A required project choice remains uncommitted while independent work proceeds.
   - Responsible participants or areas require coordination.
   - Source and scope are needed to distinguish assumption from fact.
-- Soft — any two apply:
+- Soft — at least two signals apply:
   - Interacting consequential unresolved questions.
   - Durable distinctions across record or state categories.
   - Evidence-driven plan change.
@@ -82,7 +82,8 @@ When progress is blocked on an action the user must take outside the agent sessi
 - Name the exact app, window, and control.
 - Give the single exact action required and what it unblocks.
 - Ask the user to confirm when complete.
-- Explicitly say when the action has taken effect or is no longer needed.
+
+Explicitly say when the action has taken effect or is no longer needed.
 
 # Agent Workflow source repository
 

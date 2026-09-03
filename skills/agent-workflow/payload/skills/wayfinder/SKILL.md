@@ -48,6 +48,7 @@ If the state contract is unavailable, fail closed for the affected Wayfinder wor
 - Do not inspect or change a map.
 - Do not invent substitute persistence or create tracker, specialist-record, or scratch state.
 - Report the incomplete installation.
+
 ## Establish areas and relationships
 
 Reuse accepted project structure when it supplies a useful objective, scope, areas, and important operating boundaries.
