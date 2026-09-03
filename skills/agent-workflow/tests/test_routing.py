@@ -949,7 +949,9 @@ class RoutingContractTests(unittest.TestCase):
 
         for hard_boundary in (
             "The current work continues a relevant Wayfinder effort",
-            "The work is intended to continue across sessions or agents",
+            "The work is intended to continue across sessions or agents, including when "
+            "the current request creates or updates an external dependency whose result "
+            "later in-scope work is expected to await or consume",
             "The work is a planning effort whose objective and scope can be established "
             "but whose route remains materially unclear and cannot responsibly be "
             "resolved within one useful agent session",
@@ -1058,6 +1060,12 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn(
             "Wayfinder must start or resume when at least one hard signal or at least "
             "two soft signals apply",
+            documented_routing,
+        )
+        self.assertIn(
+            "Cross-session continuation includes a current request that creates or "
+            "updates an external dependency whose result later in-scope work is "
+            "expected to await or consume",
             documented_routing,
         )
         self.assertIn(

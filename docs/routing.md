@@ -18,6 +18,7 @@ Routing is dynamic.
 Assess durable coordination after any needed reconnaissance; item count alone never selects Wayfinder.
 Wayfinder must start or resume when at least one hard signal or at least two soft signals apply.
 Hard signals cover work that continues a relevant Wayfinder effort, is intended to continue across sessions or agents, or is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
+Cross-session continuation includes a current request that creates or updates an external dependency whose result later in-scope work is expected to await or consume.
 They also cover conflicting sources that establish the same scoped claim, an uncommitted required project choice while independent work proceeds, coordinated responsible participants or areas, and source and scope needed to distinguish assumption from fact.
 Soft signals cover interacting consequential unresolved questions, durable distinctions across record or state categories, evidence-driven plan change, a meaningful dependency graph, and material fresh-agent reconstruction risk.
 For planning, Wayfinder is for work where the destination can be established but the route is still meaningfully uncertain.

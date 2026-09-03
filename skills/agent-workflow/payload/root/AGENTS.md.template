@@ -40,7 +40,7 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
 
 - Hard — at least one signal applies:
   - The current work continues a relevant Wayfinder effort.
-  - The work is intended to continue across sessions or agents.
+  - The work is intended to continue across sessions or agents, including when the current request creates or updates an external dependency whose result later in-scope work is expected to await or consume.
   - The work is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
   - Conflicting sources establish the same scoped claim.
   - A required project choice remains uncommitted while independent work proceeds.
