@@ -136,6 +136,16 @@ Use current primary sources when an evolving external integration materially aff
 
 Keep experiments reversible and isolated until adoption is intentional.
 
+## Markdown prose line breaks
+
+- Do not hard-wrap Markdown prose to a fixed column width.
+- Put each sentence on its own physical line by default.
+- Break unusually long sentences or list items at stable clause boundaries when that improves reviewability.
+- Do not collapse multi-sentence paragraphs onto one physical line.
+- Do not reflow unchanged prose solely to satisfy a visual width.
+- Use editor soft wrapping to control displayed line length.
+- Preserve intentional hard breaks, indentation, and syntax in tables, code blocks, URLs, embedded formats, and generated content.
+
 ## Testing and verification
 
 - Test Agent Workflow's contracts and boundaries rather than reproducing distributed-skill internals.
