@@ -37,10 +37,22 @@
 ## When to use Wayfinder
 
 Assess durable coordination after any needed reconnaissance.
-Unless the user opts out, MUST select or resume Wayfinder when any hard signal or at least two soft signals apply:
+Unless the user opts out, MUST select or resume Wayfinder when:
 
-- Hard: the current work continues a relevant Wayfinder effort, is intended to continue across sessions or agents, or is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session; conflicting sources that establish the same scoped claim; an uncommitted required project choice while independent work proceeds; coordinated responsible participants or areas; or source and scope needed to distinguish assumption from fact.
-- Soft: interacting consequential unresolved questions; durable distinctions across record or state categories; evidence-driven plan change; a meaningful dependency graph; or material fresh-agent reconstruction risk.
+- Hard — any one applies:
+  - The current work continues a relevant Wayfinder effort.
+  - The work is intended to continue across sessions or agents.
+  - The work is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
+  - Conflicting sources establish the same scoped claim.
+  - A required project choice remains uncommitted while independent work proceeds.
+  - Responsible participants or areas require coordination.
+  - Source and scope are needed to distinguish assumption from fact.
+- Soft — any two apply:
+  - Interacting consequential unresolved questions.
+  - Durable distinctions across record or state categories.
+  - Evidence-driven plan change.
+  - A meaningful dependency graph.
+  - Material fresh-agent reconstruction risk.
 
 For planning, Wayfinder is for work where the destination can be established but the route is still meaningfully uncertain.
 A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
@@ -65,8 +77,12 @@ Never reroute or work merely to produce the marker.
 ## External action notifications
 
 When progress is blocked on an action the user must take outside the agent session—such as trusting a workspace, approving a permission, authenticating, or clicking a UI control—say so immediately.
-State that the blocked step cannot continue, name the exact app, window, and control, give the single exact action required and what it unblocks, and ask the user to confirm when complete.
-Explicitly say when the action has taken effect or is no longer needed.
+
+- State that the blocked step cannot continue.
+- Name the exact app, window, and control.
+- Give the single exact action required and what it unblocks.
+- Ask the user to confirm when complete.
+- Explicitly say when the action has taken effect or is no longer needed.
 
 # Agent Workflow source repository
 
@@ -76,7 +92,14 @@ These source-repository instructions apply specifically to agents modifying the 
 
 Read `CONTEXT.md` before changing routing, Wayfinder, direct skill distribution, ownership, or framework-lifecycle concepts in a way that uses or changes canonical project language.
 
-Before introducing, renaming, or materially redefining a canonical term, determine the actual concept from current source, behavior, tests, and accepted decisions; identify the bounded technical or domain context that owns it; research established terminology using applicable primary standards, official technical documentation, strong engineering evidence, and peer-reviewed evidence when available; compare alternatives by exact semantics and applicability; prefer established or literal language only when its semantic precision earns its cognitive cost; and state evidence strength and uncertainty honestly.
+Before introducing, renaming, or materially redefining a canonical term:
+
+- Determine the actual concept from current source, behavior, tests, and accepted decisions.
+- Identify the bounded technical or domain context that owns it.
+- Research established terminology using applicable primary standards, official technical documentation, strong engineering evidence, and peer-reviewed evidence when available.
+- Compare alternatives by exact semantics and applicability.
+- Prefer established or literal language only when its semantic precision earns its cognitive cost.
+- State evidence strength and uncertainty honestly.
 
 Update `CONTEXT.md` only after the terminology decision is accepted.
 Keep behavior, architecture, authority, and terminology in their respective owning layers.

@@ -43,9 +43,11 @@ It helps orient the effort, choose the minimum resolution method, and identify r
 When selecting or resuming Wayfinder, read the state contract before effort state.
 When resuming a Wayfinder effort, read `map.md` first among its effort files.
 The state contract defines effort recognition and selection, paths and identifiers, reconciliation, pruning, and effort ending.
-If the state contract is unavailable, fail closed for the affected Wayfinder work: do not inspect or change a map; do not invent substitute persistence or create tracker, specialist-record, or scratch state.
-Report the incomplete installation.
+If the state contract is unavailable, fail closed for the affected Wayfinder work:
 
+- Do not inspect or change a map.
+- Do not invent substitute persistence or create tracker, specialist-record, or scratch state.
+- Report the incomplete installation.
 ## Establish areas and relationships
 
 Reuse accepted project structure when it supplies a useful objective, scope, areas, and important operating boundaries.
@@ -94,7 +96,12 @@ Research resolves external uncertainty, Prototype answers a design question, and
 They do not replace structural modeling when those areas or relationships need improvement or revision.
 
 The resolution method determines how a question, uncertainty, unexplained cause, consequential choice, or structural ambiguity should be addressed and what evidence or authority that method requires.
-It is not merely an artifact label: human clarification requires the person with the relevant intent or preference, or the person, role, or valid delegate with project decision authority; research requires appropriate source evidence; and prototype or debugging requires relevant observed or experimental evidence.
+It is not merely an artifact label:
+
+- Human clarification requires the person with the relevant intent or preference, or the person, role, or valid delegate with project decision authority.
+- Research requires appropriate source evidence.
+- Prototype or Debugging requires relevant observed or experimental evidence.
+
 Existing evidence from a source that establishes the scoped claim may satisfy the method without a ceremonial specialist invocation, but one method cannot substitute for another's required authority or evidence.
 
 Do not load specialists speculatively.
