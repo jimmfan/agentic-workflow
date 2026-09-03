@@ -56,8 +56,9 @@ None.
 - A framework-owned literal schema and installed Python initializer now own
   deterministic new-map shell creation. Wayfinder retains semantic judgment and
   existing maps remain resumable without migration or formatting-only rewrites.
-- Authored payload, installed projections, documentation, and deterministic
-  coverage are reconciled to this direction.
+- The Wayfinder skill now invokes that initializer with one short command, and
+  the state contract retains only map semantics rather than initializer or schema
+  implementation policy. Authored and installed projections remain synchronized.
 
 ## Dependencies
 

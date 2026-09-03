@@ -2054,7 +2054,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         self.assertTrue((PACKAGE_ROOT / "tests/fixtures/wayfinder-settlement").is_dir())
 
-    def test_schema_owns_new_map_mechanics_and_semantics_remain_explicit(
+    def test_initializer_invocation_is_brief_and_map_semantics_remain_explicit(
         self,
     ) -> None:
         effort_shape = markdown_section(self.contract, "## Effort shape and selection")
@@ -2067,21 +2067,25 @@ class WayfinderStateContractTests(unittest.TestCase):
             "python3 .agent-workflow/tools/wayfinder.py init-effort "
             '--effort <stable-effort-slug> --name "<human-readable effort name>"'
         )
+        self.assertEqual(runtime_operating.count(command), 1)
+        self.assertNotIn(command, normalized)
+
         for label, guidance in (
-            ("contract", normalized),
-            ("runtime", runtime_operating),
+            ("contract", effort_shape),
+            ("runtime", runtime_section),
         ):
             with self.subTest(surface=label):
-                self.assertIn(command, guidance)
-                self.assertIn(".agent-workflow/schemas/wayfinder/map.md", guidance)
-                self.assertIn("populated durable state", guidance)
-                for obsolete_mechanic in (
-                    "Use this brief default map shape",
-                    "New default maps retain",
-                    "Other inapplicable empty headings",
-                    "default authoring guidance",
+                for implementation_detail in (
+                    ".agent-workflow/schemas/wayfinder/map.md",
+                    "Do not hand-author",
+                    "owns its exact headings",
+                    "required placeholders",
+                    "initializer creates only",
+                    "substitutes the human-readable",
+                    "New-map creation follows",
+                    "placeholder validation",
                 ):
-                    self.assertNotIn(obsolete_mechanic, guidance)
+                    self.assertNotIn(implementation_detail, guidance)
 
         for label, guidance in (
             ("contract", effort_shape),
@@ -2092,6 +2096,19 @@ class WayfinderStateContractTests(unittest.TestCase):
                     contains_canonical_map_skeleton(guidance),
                     "agent-facing instructions duplicate the canonical map skeleton",
                 )
+
+        self.assertIn(
+            "A new map is populated durable state only when its objective, scope, "
+            "and current state contain meaningful content",
+            normalized,
+        )
+        self.assertIn(
+            "Existing safe regular maps remain recognizable and resumable without "
+            "exact-heading validation or formatting-only rewrites",
+            normalized,
+        )
+        self.assertIn("Ownership identifies who or what owns", normalized)
+        self.assertIn("Key references are only the few sources", normalized)
 
         for current_state_semantic in (
             "smallest truthful coordination summary needed for safe resumption",
