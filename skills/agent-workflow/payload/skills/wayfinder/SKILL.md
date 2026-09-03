@@ -5,7 +5,7 @@ name: wayfinder
 # Wayfinder
 
 Wayfinder is Agent Workflow's sole durable coordination layer.
-Use it when consequential state needs reliable continuity between a plan and later work that is expected to execute or depend on it, across session continuations, agent handoffs, responsible participants, or interacting areas.
+Use it when the destination can be established but the route remains materially unclear, and consequential state needs reliable continuity while that route is discovered, especially when later work is expected to execute or depend on the resulting plan.
 Without that continuity need, clear bounded work, one isolated unresolved question, and read-only work stay on their minimum useful route.
 
 This maintained skill is derived from Matt Pocock's Wayfinder methodology.
