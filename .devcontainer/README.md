@@ -47,9 +47,9 @@ ends with output resembling:
 OK: development container is ready (Python 3.14.x; uv 0.11.32; git version ...; GitHub CLI 2.98.0; Codex 26.715.31925).
 ```
 
-The repository also selects `python3` as the default interpreter and Pylance as
-the language server in both local and container VS Code windows. This prevents
-VS Code from falling back to Jedi with a stale, deleted `.venv` interpreter.
+The Dev Container selects `python3` as the default interpreter and Pylance as
+the language server. This prevents its VS Code window from falling back to Jedi
+with a stale, deleted `.venv` interpreter.
 
 ## Verify and develop
 

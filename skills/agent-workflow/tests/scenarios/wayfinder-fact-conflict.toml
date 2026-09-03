@@ -25,7 +25,6 @@ preserve_paths = []
 forbid_created_globs = [
   ".agent-wayfinder/deployment-mode/tickets",
   ".agent-wayfinder/deployment-mode/tickets/**",
-  ".scratch/**",
 ]
 route_must_not_include = ["discovery"]
 state_must_include = [

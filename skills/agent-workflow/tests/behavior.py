@@ -568,9 +568,7 @@ def wayfinder_record_changed(
             and parts[2] == directory
             and record_name.fullmatch(parts[3]) is not None
         ):
-            map_entry = evidence.after.get(
-                f".agent-wayfinder/{parts[1]}/map.md"
-            )
+            map_entry = evidence.after.get(f".agent-wayfinder/{parts[1]}/map.md")
             if map_entry is not None and map_entry.kind == "file":
                 return True
     return False
@@ -647,8 +645,7 @@ def recognized_wayfinder_changes(evidence: RunEvidence) -> tuple[bool, str]:
     for effort in sorted(changed_efforts):
         prefix = f".agent-wayfinder/{effort}"
         remains = any(
-            path == prefix or path.startswith(prefix + "/")
-            for path in evidence.after
+            path == prefix or path.startswith(prefix + "/") for path in evidence.after
         )
         map_entry = evidence.after.get(f"{prefix}/map.md")
         if remains and (map_entry is None or map_entry.kind != "file"):

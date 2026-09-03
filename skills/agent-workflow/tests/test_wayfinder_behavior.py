@@ -78,9 +78,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             assertions(both_gates),
         )
 
-        host_only = scenarios[
-            "host-permission-without-authority-or-authorization"
-        ]
+        host_only = scenarios["host-permission-without-authority-or-authorization"]
         self.assertEqual(
             host_only.name,
             "Host permission neither commits a project choice nor authorizes a mutation",
@@ -153,7 +151,9 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 verification=(),
                 route_components=behavior.route_components(stdout),
             )
-            failed = {item.name for item in behavior.evaluate(changed) if not item.passed}
+            failed = {
+                item.name for item in behavior.evaluate(changed) if not item.passed
+            }
             self.assertIn("expect:repository_unchanged", failed)
             self.assertIn("must-not:unnecessary_planning_artifacts", failed)
 
@@ -189,8 +189,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
         self.assertTrue(
             any(
                 item.kind == "glob_any_matches"
-                and item.path.as_posix()
-                == ".agent-wayfinder/*/unknowns/U1-*.md"
+                and item.path.as_posix() == ".agent-wayfinder/*/unknowns/U1-*.md"
                 for item in accepted.assertions
             )
         )
@@ -365,8 +364,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             workspace = behavior.copy_fixture(answered, Path(temporary))
             decisions = workspace / ".agent-wayfinder/rollout-choice/decisions.md"
             decisions.write_text(
-                decisions.read_text(encoding="utf-8")
-                + "\n## D8 — Rollout strategy\n\n"
+                decisions.read_text(encoding="utf-8") + "\n## D8 — Rollout strategy\n\n"
                 "- Authority: responsible project owner\n\nUse Option B.\n",
                 encoding="utf-8",
             )
@@ -390,7 +388,9 @@ class WayfinderBehaviorTests(unittest.TestCase):
             self.assertIn("## D8", failed_values)
             self.assertIn("Option A", failed_values)
 
-    def test_blocked_settlement_keeps_current_coordination_and_mapless_data(self) -> None:
+    def test_blocked_settlement_keeps_current_coordination_and_mapless_data(
+        self,
+    ) -> None:
         scenario = next(
             item
             for item in behavior.load_scenarios()
@@ -404,9 +404,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 "status": "blocked",
                 "summary": "The effort remains current and resumable.",
                 "blockers": ["provider checksum is not published"],
-                "state_used": [
-                    item.as_posix() for item in scenario.state_must_include
-                ],
+                "state_used": [item.as_posix() for item in scenario.state_must_include],
             }
             evidence = behavior.RunEvidence(
                 scenario=scenario,
@@ -423,8 +421,10 @@ class WayfinderBehaviorTests(unittest.TestCase):
             self.assertTrue(all(item.passed for item in behavior.evaluate(evidence)))
 
             (workspace / ".agent-wayfinder/blocked-provider-direction/map.md").unlink()
-            (workspace / ".agent-wayfinder/blocked-provider-direction/unknowns/"
-             "U1-provider-checksum.md").unlink()
+            (
+                workspace / ".agent-wayfinder/blocked-provider-direction/unknowns/"
+                "U1-provider-checksum.md"
+            ).unlink()
             ended = behavior.RunEvidence(
                 scenario=scenario,
                 workspace=workspace,
@@ -470,7 +470,9 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 if keep_unknown:
                     unknown_path = effort / "unknowns/U1-current-question.md"
                     unknown_path.parent.mkdir()
-                    unknown_path.write_text("# U1: Current question?\n", encoding="utf-8")
+                    unknown_path.write_text(
+                        "# U1: Current question?\n", encoding="utf-8"
+                    )
                 run = behavior.RunEvidence(
                     scenario=scenario,
                     workspace=workspace,
@@ -511,9 +513,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
         self.assertIn(
             ("glob_count", ".agent-wayfinder/*/unknowns/U*.md", None, 1), required
         )
-        self.assertIn(
-            ("glob_count", ".agent-wayfinder/*/facts.md", None, 0), required
-        )
+        self.assertIn(("glob_count", ".agent-wayfinder/*/facts.md", None, 0), required)
         self.assertIn(
             ("glob_count", ".agent-wayfinder/*/decisions.md", None, 0), required
         )
@@ -554,8 +554,6 @@ class WayfinderBehaviorTests(unittest.TestCase):
         )
         self.assertFalse(progressive.passed)
         self.assertIn("U1-name-telemetry-metric.md", progressive.detail)
-
-
 
     def test_presence_defines_current_records_and_conflicts_prune_unsupported_facts(
         self,

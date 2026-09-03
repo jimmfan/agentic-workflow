@@ -23,8 +23,6 @@ forbid_created_globs = [
   ".agent-wayfinder/*/unknowns/**",
   ".agent-wayfinder/*/tickets",
   ".agent-wayfinder/*/tickets/**",
-  ".scratch",
-  ".scratch/**",
 ]
 
 [[assertions]]

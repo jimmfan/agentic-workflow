@@ -23,7 +23,6 @@ version = { file = ["skills/agent-workflow/VERSION"] }
 
 [tool.setuptools.package-data]
 agent_workflow = [
-  "SKILL.md",
   "VERSION",
   "payload/**/*",
 ]
@@ -32,3 +31,7 @@ agent_workflow = [
 dev = [
     "ruff>=0.16.4",
 ]
+
+[tool.ruff.lint]
+# Keep the stable PEP 8 error and Pyflakes baseline; expand only for a concrete need.
+select = ["E4", "E7", "E9", "F"]

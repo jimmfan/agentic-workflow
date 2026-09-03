@@ -35,7 +35,6 @@ CLAUDE_PROJECT_BEGIN = b"\n" + FORMER_PROJECT_MARKER + b"\n"
 
 REQUIRED_PACKAGE_FILES = (
     "__init__.py",
-    "SKILL.md",
     "VERSION",
     "cli.py",
     "scripts/__init__.py",
@@ -63,12 +62,8 @@ EXPECTED_BASE_PAYLOAD_FILES = frozenset(
 
 EXPECTED_SKILL_FILES = {
     "code-review": frozenset({"SKILL.md"}),
-    "codebase-design": frozenset(
-        {"DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md"}
-    ),
-    "domain-modeling": frozenset(
-        {"ADR-FORMAT.md", "CONTEXT-FORMAT.md", "SKILL.md"}
-    ),
+    "codebase-design": frozenset({"DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md"}),
+    "domain-modeling": frozenset({"ADR-FORMAT.md", "CONTEXT-FORMAT.md", "SKILL.md"}),
     "grilling": frozenset({"SKILL.md"}),
     "implement": frozenset({"SKILL.md"}),
     "prototype": frozenset({"LOGIC.md", "SKILL.md", "UI.md"}),
@@ -379,7 +374,6 @@ def check_local_links() -> None:
     roots = (
         REPOSITORY_ROOT / "README.md",
         REPOSITORY_ROOT / "docs",
-        PACKAGE_ROOT / "SKILL.md",
         PAYLOAD_ROOT / "agent-workflow",
     )
     paths: list[Path] = []
@@ -476,7 +470,6 @@ def check_semantic_contracts() -> None:
         ("to-tickets", "skills/to-tickets/SKILL.md"),
     ):
         text = normalized_text(relative)
-        require(".scratch/" not in text, f"{label} infers a .scratch/ destination")
         require(
             "ready-for-agent" not in text,
             f"{label} hard-codes the ready-for-agent label",

@@ -1,6 +1,5 @@
 ---
 description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges.
-disable-model-invocation: false
 name: to-tickets
 ---
 # To Tickets

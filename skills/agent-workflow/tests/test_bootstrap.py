@@ -457,9 +457,7 @@ target = Path(sys.argv[2])
             f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/tags"
             "?per_page=100&page=1"
         )
-        commit_url = (
-            f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/{PACKAGE_TAG}"
-        )
+        commit_url = f"https://api.github.com/repos/{self.bootstrap.REPOSITORY}/commits/{PACKAGE_TAG}"
         revision = "c" * 40
         archive_url = (
             f"https://codeload.github.com/{self.bootstrap.REPOSITORY}/tar.gz/{revision}"

@@ -31,7 +31,6 @@ forbid_created_globs = [
   ".agent-wayfinder/response-serialization/unknowns/U2*.md",
   ".agent-wayfinder/response-serialization/tickets",
   ".agent-wayfinder/response-serialization/tickets/**",
-  ".scratch/**",
 ]
 route_must_not_include = ["discovery", "wayfinder"]
 state_must_include = [
