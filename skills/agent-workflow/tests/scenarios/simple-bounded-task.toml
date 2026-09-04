@@ -2,7 +2,7 @@ schema_version = 1
 id = "simple-bounded-task"
 name = "Simple bounded task stays lightweight"
 fixture = "wayfinder-unrelated"
-request = "Change greeting() to return exactly 'hello, world!' and validate the change."
+request = "I want greeting() to return exactly 'hello, world!' and validate the change."
 starting_state = [
   "The repository contains one small Python function.",
   "The requested output is explicit, local, reversible, and low risk.",
