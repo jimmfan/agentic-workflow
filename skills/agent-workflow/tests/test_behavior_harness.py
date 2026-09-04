@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import json
 from pathlib import Path
 import subprocess
@@ -216,6 +217,53 @@ class BehaviorHarnessTests(unittest.TestCase):
                         if item.name == "route-marker:exactly-one-valid-final"
                     )
                     self.assertFalse(result.passed)
+
+    def test_route_contract_can_require_and_exclude_components(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "architectural-choice-uses-discovery"
+        )
+        self.assertEqual(scenario.route_must_include, ("discovery",))
+        self.assertEqual(
+            scenario.route_must_not_include,
+            ("domain-modeling", "wayfinder"),
+        )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            snapshot = behavior.snapshot(workspace)
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=snapshot,
+                after=snapshot,
+                stdout="[route: router → direct]",
+                stderr="",
+                returncode=0,
+                report={"status": "success", "summary": "read-only comparison"},
+                verification=(),
+                route_components=("direct",),
+            )
+            required_result = next(
+                item
+                for item in behavior.evaluate(evidence)
+                if item.name == "route-marker:required-components"
+            )
+            prohibited_evidence = replace(
+                evidence,
+                stdout="[route: router → discovery → domain-modeling]",
+                route_components=("discovery", "domain-modeling"),
+            )
+            prohibited_result = next(
+                item
+                for item in behavior.evaluate(prohibited_evidence)
+                if item.name == "route-marker:prohibited-components"
+            )
+        self.assertFalse(required_result.passed)
+        self.assertIn("discovery", required_result.detail)
+        self.assertFalse(prohibited_result.passed)
+        self.assertIn("domain-modeling", prohibited_result.detail)
 
     def test_success_report_without_failure_recovery_fails_the_contract(self) -> None:
         scenario = next(

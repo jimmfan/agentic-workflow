@@ -2368,6 +2368,37 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertNotIn("it was intentionally ended", ending)
         self.assertNotIn("different objective and scope", ending)
 
+    def test_effort_creation_requires_established_objective_and_scope_identity(
+        self,
+    ) -> None:
+        effort_shape = " ".join(
+            markdown_section(
+                self.contract,
+                "## Effort shape and selection",
+            ).split()
+        )
+        for creation_boundary in (
+            "Do not create a new effort until its objective and scope are sufficiently "
+            "established to identify it",
+            "Sufficiently established does not mean every detail or route is known",
+            "Do not materially invent objective or scope from ambiguous user intent",
+            "Objective and scope together determine effort identity",
+            "same objective and scope in substance",
+            "A different objective or substantive scope requires a new effort",
+        ):
+            with self.subTest(creation_boundary=creation_boundary):
+                self.assertIn(creation_boundary, effort_shape)
+
+        self.assertIn(
+            "An effort is one resumable body of coordination with one stable objective "
+            "and scope",
+            self.normalized,
+        )
+        self.assertIn(
+            "These headings guide content; they are not a recognition schema",
+            effort_shape,
+        )
+
     def test_current_wayfinder_scenario_descriptions_use_pruning_and_ending(
         self,
     ) -> None:
@@ -2434,6 +2465,48 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertIn(
             "ticket 01 as the ready ticket", ticket_transition["request"].casefold()
         )
+
+    def test_objective_centered_behavior_scenarios_cover_routing_boundaries(
+        self,
+    ) -> None:
+        scenarios = {
+            path.stem: tomllib.loads(path.read_text(encoding="utf-8"))
+            for path in (PACKAGE_ROOT / "tests/scenarios").glob("*.toml")
+        }
+
+        simple = scenarios["goal-directed-clear-request"]
+        self.assertIn("wayfinder", simple["route_must_not_include"])
+        self.assertNotIn("wayfinder", simple["request"].casefold())
+        self.assertIn(
+            "complete desired outcome", simple["starting_state"][0].casefold()
+        )
+
+        consequential = scenarios["wayfinder-new-effort"]
+        self.assertNotIn("wayfinder", consequential["request"].casefold())
+        self.assertIn("wayfinder", consequential["route_must_include"])
+        self.assertIn(".agent-wayfinder", consequential["assertions"][0]["path"])
+
+        ambiguous = scenarios["wayfinder-ambiguous-new-objective"]
+        self.assertIn("blocked_cleanly", ambiguous["expect"])
+        self.assertIn("repository_unchanged", ambiguous["expect"])
+        self.assertIn(".agent-wayfinder/**", ambiguous["forbid_created_globs"])
+
+        architectural = scenarios["architectural-choice-uses-discovery"]
+        self.assertIn("discovery", architectural["route_must_include"])
+        self.assertIn("domain-modeling", architectural["route_must_not_include"])
+        self.assertIn("wayfinder", architectural["route_must_not_include"])
+
+        sourced_choice = scenarios["discovery-composes-research"]
+        self.assertIn("discovery", sourced_choice["route_must_include"])
+        self.assertIn("research", sourced_choice["route_must_include"])
+        self.assertIn("domain-modeling", sourced_choice["route_must_not_include"])
+
+        structural = scenarios["wayfinder-domain-modeling-discovery"]
+        self.assertIn("Domain Modeling", structural["report_must_include"])
+        self.assertIn("wayfinder", structural["route_must_include"])
+        self.assertIn("domain-modeling", structural["route_must_include"])
+        self.assertIn("areas", structural["verification_command"])
+        self.assertIn("relationships", structural["verification_command"])
 
     def test_contract_keeps_pruning_boundaries(self) -> None:
         pruning = " ".join(

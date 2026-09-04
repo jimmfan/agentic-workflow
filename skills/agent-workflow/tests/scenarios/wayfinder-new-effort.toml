@@ -19,6 +19,7 @@ must_not = [
 live = false
 verification_command = "Validate that the resulting repository-local planning state preserves the objective, scope, current coordination state, conditions blocking particular work, dependencies, committed choices, unresolved questions, and ready work without creating Wayfinder tickets or a parallel tracker ticket copy."
 preserve_paths = ["migration-architecture.md"]
+route_must_include = ["wayfinder"]
 route_must_not_include = ["domain-modeling"]
 forbid_created_globs = [
   "issues",

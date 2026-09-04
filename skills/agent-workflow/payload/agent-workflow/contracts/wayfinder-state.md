@@ -56,6 +56,12 @@ Preserve a lasting outcome in the artifact or record designated to maintain it; 
 
 ## Effort shape and selection
 
+Objective and scope together determine effort identity.
+Do not create a new effort until its objective and scope are sufficiently established to identify it.
+Sufficiently established does not mean every detail or route is known; unresolved route, choices, dependencies, or involved areas may be the reason durable coordination is warranted.
+Do not materially invent objective or scope from ambiguous user intent.
+When materially different interpretations would identify different efforts, obtain the minimum sufficient clarification or resolution before creation.
+
 The map H1 is the durable human-readable effort name.
 Its directory slug is a concise, lowercase, filesystem-safe, hyphen-separated storage key derived from the objective and scope, not a branch, ticket, phase, timestamp, random suffix, or chat title.
 Use only the shortest meaningful disambiguator for a genuine collision.
@@ -71,7 +77,7 @@ A mapless directory is not a candidate.
 Selection does not require persistence.
 If assessment leaves no consequential coordination worth preserving across session continuations, create no effort, map, or supporting record.
 
-Create a new effort only when the current user request or accepted project policy authorizes the durable writes, persistence is justified, and no recognized effort represents the same objective and scope in substance.
+Create a new effort only when the creation gate above is satisfied, the current user request or accepted project policy authorizes the durable writes, persistence is justified, and no recognized effort represents the same objective and scope in substance.
 Immediately before creation, reread the parent and any newly plausible map.
 A storage-key collision resumes only the same effort; otherwise use the shortest meaningful disambiguator.
 

@@ -90,6 +90,9 @@ Wayfinder creates and uses that tree only when durable coordination is needed.
 Lifecycle operations do not directly traverse, interpret, or change it.
 
 Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
+One effort has one stable objective and scope, which together determine its identity and semantic resumption match.
+A new effort is created only after objective and scope are sufficiently established to identify it and durable coordination is justified; its route and other detail may remain unclear.
+Ambiguous user intent is clarified or resolved rather than materially invented into durable state.
 Their `map.md` is the brief coordination summary and the first effort file read when resuming.
 It summarizes the effort's current coordination state, conditions blocking particular work, dependencies, and ready work.
 When no durable ticket or ticket set exists, the map may state ready work directly.

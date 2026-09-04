@@ -1,12 +1,12 @@
 ---
-description: Keep a lightweight structured map when later work is expected to execute or depend on a plan whose route remains materially unclear, or when important unresolved questions, choices, dependencies, blockers, or conflicting conclusions need reliable continuity.
+description: Keep a lightweight structured map for a consequential objective that needs reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear. Clear bounded work stays on its minimum useful route.
 name: wayfinder
 ---
 # Wayfinder
 
 Wayfinder is Agent Workflow's sole durable coordination layer.
-Routing selects Wayfinder for consequential coordination that needs reliable continuity.
-For planning, that includes work where the destination can be established but the route remains materially unclear enough to need that continuity, especially when later work is expected to execute or depend on the resulting plan.
+Routing selects Wayfinder for a consequential objective that needs reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear.
+An objective alone does not select Wayfinder.
 Without that continuity need, clear bounded work, one isolated unresolved question, and read-only work stay on their minimum useful route.
 
 This maintained skill is derived from Matt Pocock's Wayfinder methodology.
@@ -16,6 +16,12 @@ It helps orient the effort, choose the minimum resolution method, and identify r
 
 - Existing Wayfinder state alone never selects Wayfinder.
 - Selection may conclude that no consequential continuity earns persistence; in that case create no effort, map, or supporting record.
+- One Wayfinder effort has one stable objective and scope.
+  Use user intent and accepted project evidence to establish them.
+  Do not create a new effort until they are sufficiently established to identify the effort; this does not require every detail or the route to be known.
+  If materially different interpretations of the user's intent would produce different effort objectives or scope, use the minimum sufficient clarification or resolution method first.
+  Do not materially invent objective or scope merely to create an effort.
+  Objective and scope together determine effort identity and whether current state should resume; a different substantive objective or scope is a different effort.
 - Establish the objective and scope, then enough relevant areas and relationships to orient the effort before substantial decomposition.
   Keep `map.md` brief, preserve enough information to resume safely, and load detail only when relevant.
   New default maps retain **Blockers and dependencies** and write `None` when no blocker or dependency currently applies.

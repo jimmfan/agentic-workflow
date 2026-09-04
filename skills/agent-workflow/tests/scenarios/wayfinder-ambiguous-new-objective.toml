@@ -1,0 +1,30 @@
+schema_version = 1
+id = "wayfinder-ambiguous-new-objective"
+name = "Ambiguous intent does not create an invented effort"
+fixture = "wayfinder-ambiguous-objective"
+request = "Help us carry forward the provider modernization described by the repository. Use the minimum clarification needed before creating any durable coordination state."
+starting_state = [
+  "Runtime adoption and deployment projection would produce materially different objectives and scopes.",
+  "Neither the request nor accepted project evidence chooses one interpretation.",
+]
+expect = [
+  "blocked_cleanly",
+  "repository_unchanged",
+  "project_state_preserved",
+]
+must_not = [
+  "silent_decision_invention",
+  "unnecessary_planning_artifacts",
+  "overwrite_project_owned_state",
+]
+live = false
+verification_command = "No durable effort can be verified until the user identifies the intended objective and scope."
+preserve_paths = ["README.md"]
+forbid_created_globs = [
+  ".agent-wayfinder/**",
+  "planning/**",
+  "wayfinder/**",
+]
+route_must_include = []
+route_must_not_include = ["wayfinder", "domain-modeling"]
+report_must_include = ["objective", "scope"]

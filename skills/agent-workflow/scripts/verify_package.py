@@ -63,7 +63,7 @@ EXPECTED_BASE_PAYLOAD_FILES = frozenset(
 EXPECTED_SKILL_FILES = {
     "code-review": frozenset({"SKILL.md"}),
     "codebase-design": frozenset({"DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md"}),
-    "domain-modeling": frozenset({"ADR-FORMAT.md", "CONTEXT-FORMAT.md", "SKILL.md"}),
+    "domain-modeling": frozenset({"CONTEXT-FORMAT.md", "SKILL.md"}),
     "grilling": frozenset({"SKILL.md"}),
     "implement": frozenset({"SKILL.md"}),
     "prototype": frozenset({"LOGIC.md", "SKILL.md", "UI.md"}),
@@ -450,9 +450,50 @@ def check_semantic_contracts() -> None:
         "Research",
         research,
         (
+            "Research establishes externally sourced facts and evidence.",
+            "does not select the project's preferred alternative",
             "Do not create a standalone research file unless the user explicitly requests a durable research artifact.",
             "repository writes have action authorization",
         ),
+    )
+
+    discovery = normalized_text("skills/workflow-discovery/SKILL.md")
+    require_clauses(
+        "Discovery",
+        discovery,
+        (
+            "An architectural decision is one possible kind of consequential project choice",
+            "Compose Research when external evidence materially affects the decision.",
+            "Compose Domain Modeling when structural ambiguity materially affects the decision.",
+            "Discovery does not maintain architecture decision records or durable coordination state.",
+        ),
+    )
+
+    domain_modeling = normalized_text("skills/domain-modeling/SKILL.md")
+    require_clauses(
+        "Domain Modeling",
+        domain_modeling,
+        (
+            "domain concepts",
+            "terminology",
+            "boundaries",
+            "responsibilities",
+            "areas",
+            "relationships",
+            "`CONTEXT.md`",
+        ),
+    )
+    require(
+        all(
+            obsolete not in domain_modeling
+            for obsolete in (
+                "record an architectural decision",
+                "adr-format.md",
+                "docs/adr/",
+                "offer adrs",
+            )
+        ),
+        "Domain Modeling retains generic ADR responsibility",
     )
 
     wayfinder = normalized_text("skills/wayfinder/SKILL.md")
@@ -461,6 +502,8 @@ def check_semantic_contracts() -> None:
         wayfinder,
         (
             "Wayfinder is Agent Workflow's sole durable coordination layer.",
+            "An objective alone does not select Wayfinder.",
+            "One Wayfinder effort has one stable objective and scope.",
             "Reference the artifacts that maintain lasting results instead of copying them.",
         ),
     )

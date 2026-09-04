@@ -87,6 +87,7 @@ SCENARIO_FIELDS = {
     "verification_command",
     "preserve_paths",
     "forbid_created_globs",
+    "route_must_include",
     "route_must_not_include",
     "state_must_include",
     "state_must_not_include",
@@ -129,6 +130,7 @@ class Scenario:
     verification_command: str
     preserve_paths: tuple[PurePosixPath, ...]
     forbid_created_globs: tuple[str, ...]
+    route_must_include: tuple[str, ...]
     route_must_not_include: tuple[str, ...]
     state_must_include: tuple[PurePosixPath, ...]
     state_must_not_include: tuple[PurePosixPath, ...]
@@ -327,11 +329,24 @@ def load_scenario(path: Path) -> Scenario:
     for pattern in forbid_created_globs:
         if pattern.startswith(("/", "\\")) or ".." in PurePosixPath(pattern).parts:
             raise BehaviorError(f"scenario {path.name} has an unsafe glob: {pattern}")
+    route_requirements = string_list(
+        raw.get("route_must_include", []),
+        f"{path.name}.route_must_include",
+        allow_empty=True,
+    )
     route_exclusions = string_list(
         raw.get("route_must_not_include", []),
         f"{path.name}.route_must_not_include",
         allow_empty=True,
     )
+    route_overlap = set(item.lower() for item in route_requirements) & set(
+        item.lower() for item in route_exclusions
+    )
+    if route_overlap:
+        raise BehaviorError(
+            f"scenario {path.name} both requires and prohibits route components: "
+            + ", ".join(sorted(route_overlap))
+        )
     state_must_include = tuple(
         safe_relative(item, f"{path.name}.state_must_include")
         for item in string_list(
@@ -390,6 +405,7 @@ def load_scenario(path: Path) -> Scenario:
         verification_command=verification_command.strip(),
         preserve_paths=preserve_paths,
         forbid_created_globs=forbid_created_globs,
+        route_must_include=tuple(item.lower() for item in route_requirements),
         route_must_not_include=tuple(item.lower() for item in route_exclusions),
         state_must_include=state_must_include,
         state_must_not_include=state_must_not_include,
@@ -538,6 +554,15 @@ def route_excluded(evidence: RunEvidence) -> tuple[bool, str]:
             matches
         )
     return True, "reported route does not contain prohibited components"
+
+
+def route_included(evidence: RunEvidence) -> tuple[bool, str]:
+    required = set(evidence.scenario.route_must_include)
+    actual = {component.lower() for component in evidence.route_components}
+    missing = sorted(required - actual)
+    if missing:
+        return False, "reported route omits required components: " + ", ".join(missing)
+    return True, "reported route contains all required components"
 
 
 def route_visible(evidence: RunEvidence) -> tuple[bool, str]:
@@ -787,8 +812,23 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     )
     preserved_ok, preserved_detail = preserved(evidence)
     forbidden_ok, forbidden_detail = forbidden_created(evidence)
-    route_ok, route_detail = route_excluded(evidence)
+    route_exclusions_ok, route_exclusions_detail = route_excluded(evidence)
+    route_required_ok, route_required_detail = route_included(evidence)
     visible, visibility_detail = route_visible(evidence)
+    results.append(
+        CheckResult(
+            "route-marker:prohibited-components",
+            route_exclusions_ok,
+            route_exclusions_detail,
+        )
+    )
+    results.append(
+        CheckResult(
+            "route-marker:required-components",
+            route_required_ok,
+            route_required_detail,
+        )
+    )
     results.append(
         CheckResult("route-marker:exactly-one-valid-final", visible, visibility_detail)
     )
@@ -901,14 +941,17 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
             status != "success" or bool(sources),
             f"research sources={len(sources)}",
         ),
-        "full_discovery_for_lookup": (route_ok and forbidden_ok, route_detail),
+        "full_discovery_for_lookup": (
+            route_exclusions_ok and forbidden_ok,
+            route_exclusions_detail,
+        ),
         "silent_decision_invention": (
             not decision_artifact_changed(evidence),
             "no D# or project artifact recording a decision was created or updated",
         ),
         "repeat_resolved_discovery": (
-            route_ok and forbidden_ok and preserved_ok,
-            route_detail,
+            route_exclusions_ok and forbidden_ok and preserved_ok,
+            route_exclusions_detail,
         ),
         "overwrite_project_owned_state": (preserved_ok, preserved_detail),
         "success_after_failed_check": (

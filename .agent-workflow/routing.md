@@ -34,6 +34,10 @@ This table resolves overlaps:
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
 | Clear bounded low-risk request | Direct | Skip workflow ceremony |
 
+A bounded architectural choice remains Direct or uses Discovery when alternative and tradeoff analysis materially helps.
+It does not select Domain Modeling merely because the choice is architectural.
+Discovery may compose Research when external evidence materially affects the decision and Domain Modeling when structural ambiguity materially affects it.
+
 Use the table to guide the current routing choice.
 How a skill is used for one request does not determine how it must be used later.
 

@@ -23,6 +23,7 @@ blind_grading = true
 verification_command = "Confirm the map briefly orients a fresh agent to the objective, scope, areas, and relationships before one consequential U# is retained, without creating decisions, implementation tickets, or nested area storage."
 preserve_paths = []
 report_must_include = ["Domain Modeling"]
+route_must_include = ["wayfinder", "domain-modeling"]
 forbid_created_globs = [
   ".agent-wayfinder/migration-domain-boundary",
   ".agent-wayfinder/migration-domain-boundary/**",

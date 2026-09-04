@@ -52,6 +52,7 @@ blind_grading = false
 verification_command = "Run python verify.py after the change."
 preserve_paths = ["project-state/unknowns.md"]
 forbid_created_globs = ["/**"]
+route_must_include = ["implement"]
 route_must_not_include = ["discovery"]
 state_must_include = [".agent-wayfinder/example/map.md"]
 state_must_not_include = [".agent-wayfinder/example/unknowns/U9-unrelated.md"]
@@ -98,10 +99,13 @@ The optional `state_must_include` and `state_must_not_include` arrays constrain 
 They make progressive-loading behavior observable without asking for private reasoning: a relevant map/child must be reported as consulted, while a known unrelated child must not be.
 Every named path must be a regular file in the starting fixture.
 
+The optional `route_must_include` and `route_must_not_include` arrays constrain the final route marker by required and prohibited executed components.
+They test specialist boundaries without treating request phrases as routing triggers.
+
 A new scenario should need one TOML file and one small fixture directory.
 The validator rejects unrecognized behavior names, unsafe paths, missing preserved files, unrecognized fields, and unsupported assertion kinds.
 
-The deterministic catalog includes pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
+The deterministic catalog includes semantic objective/scope routing boundaries, specialist composition and exclusions, pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
 These are human-authored behavior contracts, not evidence that an unrun model obeyed them.
 
 ## Fixtures and reset

@@ -16,12 +16,15 @@ Use `specialist` only for focused specialist work.
 
 Routing is dynamic.
 Assess durable coordination after any needed reconnaissance; item count alone never selects Wayfinder.
+User intent is the primary source for establishing an effort's objective and scope.
+Goal-directed language or an apparent desired future state cues semantic assessment of whether stable objective and scope can be established and whether achieving them crosses the existing durable-coordination threshold; an objective alone never selects Wayfinder.
+When materially different interpretations would identify different efforts, use the minimum sufficient clarification or resolution before creating state.
 Wayfinder must start or resume when at least one hard signal or at least two soft signals apply.
-Hard signals cover work that continues a relevant Wayfinder effort, is intended to continue across sessions or agents, or is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
+Hard signals cover work that continues a relevant Wayfinder effort, is intended to continue across sessions or agents, or has an establishable consequential objective and scope whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
 Cross-session continuation includes a current request that creates or updates an external dependency whose result later in-scope work is expected to await or consume.
 They also cover conflicting sources that establish the same scoped claim, an uncommitted required project choice while independent work proceeds, coordinated responsible participants or areas, and source and scope needed to distinguish assumption from fact.
 Soft signals cover interacting consequential unresolved questions, durable distinctions across record or state categories, evidence-driven plan change, a meaningful dependency graph, and material fresh-agent reconstruction risk.
-For planning, Wayfinder is for work where the destination can be established but the route is still meaningfully uncertain.
+For goal-directed work, Wayfinder is for a consequential objective needing reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear.
 A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
 When the route can already be responsibly established within one useful session, use Direct or the applicable planning workflow instead.
 This is an activation rubric, not a weighted complexity score.
@@ -60,7 +63,9 @@ That gate is independent from authorization to act: either may exist without the
 
 Default route sequences are transitions with entry conditions, not mandatory pipelines.
 Current-session actions remain in the session; Wayfinder holds durable coordination; specifications hold accepted scope and acceptance criteria; tickets hold approved independently deliverable work and blocking edges.
-Domain Modeling joins Discovery or Wayfinder only when conceptual or vocabulary ambiguity is material.
+Discovery resolves bounded consequential alternatives and tradeoffs, including architectural choices when that analysis materially helps.
+Research establishes externally sourced facts without selecting the project's preferred alternative.
+Domain Modeling joins Discovery or Wayfinder only when ambiguity in concepts, terminology, boundaries, responsibilities, areas, or relationships is material; a choice being architectural does not select it.
 
 Two boundaries are intentionally explicit.
 Trivial local, low-risk edits remain Direct even though they mutate files; Implementation is for ready work where its orchestration and integration verification add material value.
