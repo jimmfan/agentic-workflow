@@ -73,13 +73,13 @@ class RoutingContractTests(unittest.TestCase):
         expected_fragments = {
             "Wayfinder effort": (
                 "resumable body of coordination",
-                "objective and coordination boundary",
-                "bounded current scope",
+                "objective and scope",
             ),
             "Objective": ("result a Wayfinder effort is intended to achieve",),
             "Scope": (
-                "currently includes and excludes",
+                "includes and excludes",
                 "clarified, narrowed, or elaborated",
+                "objective and substantive scope remain the same",
             ),
             "Consequential": (
                 "handling it differently",
@@ -935,7 +935,10 @@ class RoutingContractTests(unittest.TestCase):
             normalized_readme,
         )
 
-        self.assertIn("apparent desired future state", normalized_root)
+        self.assertIn(
+            "An objective cues assessment, not selection, of Wayfinder",
+            normalized_root,
+        )
         self.assertNotIn("Three or more meaningful items", normalized_root)
         self.assertIn("MUST select or resume Wayfinder", normalized_root)
         self.assertIn(
@@ -958,7 +961,7 @@ class RoutingContractTests(unittest.TestCase):
             "The work is intended to continue across sessions or agents, including when "
             "the current request creates or updates an external dependency whose result "
             "later in-scope work is expected to await or consume",
-            "A consequential objective and current scope can be established, but the route "
+            "A consequential objective and scope can be established, but the route "
             "remains materially unclear and cannot responsibly be "
             "resolved within one useful agent session",
             "Conflicting sources establish the same scoped claim",
@@ -1075,7 +1078,7 @@ class RoutingContractTests(unittest.TestCase):
         )
         self.assertNotIn("Three or more meaningful items", documented_routing)
 
-    def test_goal_directed_wayfinder_assessment_is_semantic_and_thresholded(
+    def test_objective_based_wayfinder_assessment_is_semantic_and_thresholded(
         self,
     ) -> None:
         root_policy = (PACKAGE_ROOT / "payload/root/AGENTS.md.template").read_text()
@@ -1086,9 +1089,8 @@ class RoutingContractTests(unittest.TestCase):
         normalized_wayfinder = " ".join(wayfinder_skill.split())
 
         for boundary in (
-            "apparent desired future state",
-            "cue to assess, not select, Wayfinder",
-            "objective and current scope",
+            "An objective cues assessment, not selection, of Wayfinder",
+            "objective and scope",
             "sufficiently identify the effort",
             "durable-coordination threshold is met",
             "phrase matching",
@@ -1117,6 +1119,18 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(literal_trigger=literal_trigger):
                 self.assertNotIn(literal_trigger, root_policy)
                 self.assertNotIn(literal_trigger, wayfinder_skill)
+
+        for obsolete_identity_term in (
+            "apparent desired future state",
+            "goal-directed work",
+            "coordination boundary",
+            "bounded current scope",
+        ):
+            with self.subTest(obsolete_identity_term=obsolete_identity_term):
+                self.assertNotIn(obsolete_identity_term, normalized_root.casefold())
+                self.assertNotIn(
+                    obsolete_identity_term, normalized_wayfinder.casefold()
+                )
 
     def test_specialist_boundaries_separate_choices_evidence_and_structure(
         self,
@@ -1249,9 +1263,9 @@ class RoutingContractTests(unittest.TestCase):
             "This table resolves overlaps",
             "Resume only relevant work",
             "smallest plausible effort set",
-            "one clear semantic match on objective and current scope",
+            "one clear semantic match on objective and scope",
             "Scope refinement need not preserve the original wording",
-            "objective and coordination boundary remain the same in substance",
+            "objective and substantive scope remain the same",
             "An unrelated map never captures the route",
             "After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map",
             "Avoid routing loops",

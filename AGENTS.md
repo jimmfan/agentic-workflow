@@ -36,13 +36,13 @@
 
 ## When to use Wayfinder
 
-Treat an apparent desired future state as a cue to assess, not select, Wayfinder; select or resume it only when the objective and current scope sufficiently identify the effort and the existing durable-coordination threshold is met; use semantic judgment, not phrase matching, and do not materially invent ambiguous intent.
+An objective cues assessment, not selection, of Wayfinder; select or resume it only when the objective and scope sufficiently identify the effort and the existing durable-coordination threshold is met; use semantic judgment, not phrase matching, and do not materially invent ambiguous intent.
 Unless the user opts out, MUST select or resume Wayfinder when either condition is met:
 
 - Hard — at least one signal applies:
   - The current work continues a relevant Wayfinder effort.
   - The work is intended to continue across sessions or agents, including when the current request creates or updates an external dependency whose result later in-scope work is expected to await or consume.
-  - A consequential objective and current scope can be established, but the route remains materially unclear and cannot responsibly be resolved within one useful agent session.
+  - A consequential objective and scope can be established, but the route remains materially unclear and cannot responsibly be resolved within one useful agent session.
   - Conflicting sources establish the same scoped claim.
   - A required project choice remains uncommitted while independent work proceeds.
   - Responsible participants or areas require coordination.

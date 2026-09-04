@@ -508,13 +508,21 @@ def check_semantic_contracts() -> None:
         (
             "Wayfinder is Agent Workflow's sole durable coordination layer.",
             "An objective alone does not select Wayfinder.",
-            "one objective and coordination boundary",
-            "bounded current scope",
+            "one objective and scope",
             "Scope may be clarified, narrowed, or elaborated",
+            "objective and substantive scope remain the same",
             "Wayfinder establishes its own effort-specific areas and relationships.",
             "Reference the artifacts that maintain lasting results instead of copying them.",
         ),
     )
+    for obsolete_identity_term in (
+        "coordination boundary",
+        "bounded current scope",
+    ):
+        require(
+            obsolete_identity_term not in wayfinder,
+            f"Wayfinder retains obsolete identity term: {obsolete_identity_term}",
+        )
 
     for label, relative in (
         ("to-spec", "skills/to-spec/SKILL.md"),

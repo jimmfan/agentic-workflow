@@ -105,7 +105,7 @@ They test specialist boundaries without treating request phrases as routing trig
 A new scenario should need one TOML file and one small fixture directory.
 The validator rejects unrecognized behavior names, unsafe paths, missing preserved files, unrecognized fields, and unsupported assertion kinds.
 
-The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement within the same objective and coordination boundary, specialist composition and exclusions, pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
+The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement while the objective and substantive scope remain the same, specialist composition and exclusions, pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
 These are human-authored behavior contracts, not evidence that an unrun model obeyed them.
 
 ## Fixtures and reset

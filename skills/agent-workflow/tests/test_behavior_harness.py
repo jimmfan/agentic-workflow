@@ -269,7 +269,7 @@ class BehaviorHarnessTests(unittest.TestCase):
         self,
     ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
-        simple = scenarios["goal-directed-clear-request"]
+        simple = scenarios["objective-clear-request"]
         new_effort = scenarios["wayfinder-new-effort"]
         refinement = scenarios["wayfinder-scope-refinement"]
 

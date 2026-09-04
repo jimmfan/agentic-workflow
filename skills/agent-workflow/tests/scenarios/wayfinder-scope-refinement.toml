@@ -5,7 +5,7 @@ fixture = "wayfinder-territory-invalidation"
 request = "The accepted architecture.md now clarifies the policy execution migration boundary. Update the coordination for this migration to reflect the current areas and handoffs, identify what can proceed now, and leave implementation untouched."
 starting_state = [
   "A recognized current effort covers the policy execution migration, but its map predates architecture.md.",
-  "The accepted evidence narrows and elaborates the migration boundary without changing its objective or coordination boundary.",
+  "The accepted evidence narrows and elaborates the stated scope without changing the objective or substantive scope.",
   "Repository-local coordination changes are authorized; implementation and unrelated effort changes are not.",
 ]
 expect = [

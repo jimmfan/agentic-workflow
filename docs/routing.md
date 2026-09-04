@@ -16,14 +16,14 @@ Use `specialist` only for focused specialist work.
 
 Routing is dynamic.
 Assess durable coordination after any needed reconnaissance; item count alone never selects Wayfinder.
-An apparent desired future state cues semantic assessment rather than automatic selection: objective and bounded current scope must sufficiently identify the effort, and the existing durable-coordination threshold must still be met.
+An objective cues semantic assessment rather than automatic selection: objective and scope must sufficiently identify the effort, and the existing durable-coordination threshold must still be met.
 Materially ambiguous intent is clarified or resolved rather than invented into an effort.
 Wayfinder must start or resume when at least one hard signal or at least two soft signals apply.
 Hard signals cover work that continues a relevant Wayfinder effort, is intended to continue across sessions or agents, or has an establishable consequential objective and scope whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
 Cross-session continuation includes a current request that creates or updates an external dependency whose result later in-scope work is expected to await or consume.
 They also cover conflicting sources that establish the same scoped claim, an uncommitted required project choice while independent work proceeds, coordinated responsible participants or areas, and source and scope needed to distinguish assumption from fact.
 Soft signals cover interacting consequential unresolved questions, durable distinctions across record or state categories, evidence-driven plan change, a meaningful dependency graph, and material fresh-agent reconstruction risk.
-For goal-directed work, Wayfinder is for a consequential objective needing reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear.
+Wayfinder is for a consequential objective needing reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear.
 A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
 When the route can already be responsibly established within one useful session, use Direct or the applicable planning workflow instead.
 This is an activation rubric, not a weighted complexity score.
@@ -78,8 +78,9 @@ Chat output is session-local.
 Wayfinder links project or external records only when they are durable.
 If a chat-only result later needs continuity, Wayfinder preserves only the minimum needed coordination or evidence.
 When resuming a Wayfinder effort, read its map first.
-Objective and bounded current scope identify the effort semantically.
-Scope clarification, narrowing, or elaboration stays in the same effort while the objective and coordination boundary remain the same in substance; a materially different objective or coordination boundary requires a different effort.
+Objective and scope identify the effort semantically.
+Scope clarification, narrowing, or elaboration stays in the same effort while the objective and substantive scope remain the same; scope wording need not remain textually identical.
+A materially different objective or substantive scope requires a different effort.
 The map summarizes current coordination state, conditions blocking particular work, dependencies, and ready work; sparse F#/D# ledger sections and U#/E# records stay lazy.
 F# contains a sufficiently supported, scoped, revisable conclusion; D# contains a current consequential choice determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority; U# contains an unresolved question and is not itself a blocker; E# contains evidence with source, scope, observation, and limitations.
 Before detailed decomposition, the map may state ready work directly.

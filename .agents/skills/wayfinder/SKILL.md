@@ -16,14 +16,15 @@ It helps orient the effort, choose the minimum resolution method, and identify r
 
 - Existing Wayfinder state alone never selects Wayfinder.
 - Selection may conclude that no consequential continuity earns persistence; in that case create no effort, map, or supporting record.
-- One Wayfinder effort has one objective and coordination boundary, expressed through bounded current scope.
+- One Wayfinder effort has one objective and scope.
   Use user intent and accepted project evidence to establish them.
-  Do not create a new effort until its objective and current scope are sufficiently established to identify it.
+  Do not create a new effort until its objective and scope are sufficiently established to identify it.
   Unresolved route, choices, dependencies, or involved areas may justify Wayfinder and do not prevent creation when effort identity is otherwise sufficiently established.
   If materially different interpretations of the user's intent would produce different effort objectives or scope, use the minimum sufficient clarification or resolution method first.
   Do not materially invent objective or scope merely to create an effort.
   Scope may be clarified, narrowed, or elaborated as understanding and evidence develop.
-  Reuse the same effort while its objective and coordination boundary remain the same in substance; a materially different objective or coordination boundary is a different effort.
+  Reuse the same effort while its objective and substantive scope remain the same; a materially different objective or substantive scope is a different effort.
+  Resume efforts by their semantic objective-and-scope match; scope wording need not remain textually identical.
   Never repurpose an effort for unrelated work.
 - Establish the objective and scope, then enough relevant areas and relationships to orient the effort before substantial decomposition.
   Keep `map.md` brief, preserve enough information to resume safely, and load detail only when relevant.
@@ -71,7 +72,7 @@ Exploration may broaden understanding, but must not silently broaden the user's 
 Domain Modeling applies only when clarifying or reorganizing domain concepts, terminology and ubiquitous language, domain or context boundaries, or domain responsibilities and relationships would materially improve the work; progress need not already be blocked.
 It does not own generic implementation or module architecture, all project structure, or Wayfinder's effort-specific view merely because the map contains areas and relationships.
 When Domain Modeling would help, resolve enough domain-model ambiguity before substantial U/E/F/D accumulates.
-In every case, establish enough effort-specific areas and relationships before substantial decomposition, then derive the effort name and stable path from the objective and bounded current scope.
+In every case, establish enough effort-specific areas and relationships before substantial decomposition, then derive the effort name and stable path from the objective and scope.
 
 On resumption, do not reload Domain Modeling merely because Wayfinder resumed.
 If later evidence shows that the effort's areas and relationships no longer fit current truth, revise the same map directly or load the specialist appropriate to the actual uncertainty.

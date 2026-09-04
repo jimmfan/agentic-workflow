@@ -2345,7 +2345,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "## Effort shape and selection",
             ).split()
         )
-        self.assertIn("different objective or coordination boundary", effort_shape)
+        self.assertIn("different objective or substantive scope", effort_shape)
 
         ending = " ".join(
             markdown_section(
@@ -2358,14 +2358,14 @@ class WayfinderStateContractTests(unittest.TestCase):
         for condition in (
             "objective was achieved",
             "a committed project choice ended it",
-            "continuing coordination belongs to a different objective or coordination boundary",
+            "continuing coordination belongs to a different objective or substantive scope",
         ):
             with self.subTest(ending_condition=condition):
                 self.assertIn(condition, ending)
         self.assertNotIn("it was intentionally ended", ending)
         self.assertNotIn("different objective and scope", ending)
 
-    def test_effort_identity_allows_bounded_scope_refinement(
+    def test_effort_identity_allows_scope_refinement(
         self,
     ) -> None:
         effort_shape = " ".join(
@@ -2375,10 +2375,10 @@ class WayfinderStateContractTests(unittest.TestCase):
             ).split()
         )
         for identity_boundary in (
-            "Objective and bounded current scope identify an effort",
+            "Objective and scope identify an effort",
             "clarified, narrowed, or elaborated",
-            "objective and coordination boundary remain the same in substance",
-            "materially different objective or coordination boundary requires a new effort",
+            "objective and substantive scope remain the same",
+            "materially different objective or substantive scope requires a new effort",
             "Never repurpose earlier state to represent unrelated work",
             "unresolved route, choices, dependencies, or involved areas",
             "do not prevent initial effort creation",
@@ -2391,11 +2391,17 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
         for identity_fragment in (
             "resumable body of coordination",
-            "objective and coordination boundary",
-            "bounded current scope",
+            "objective and scope",
         ):
             with self.subTest(identity_fragment=identity_fragment):
                 self.assertIn(identity_fragment, state_model)
+        for obsolete_identity_term in (
+            "coordination boundary",
+            "bounded current scope",
+        ):
+            with self.subTest(obsolete_identity_term=obsolete_identity_term):
+                self.assertNotIn(obsolete_identity_term, effort_shape.casefold())
+                self.assertNotIn(obsolete_identity_term, state_model.casefold())
         self.assertIn(
             "These headings guide content; they are not a recognition schema",
             effort_shape,

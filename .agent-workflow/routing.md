@@ -48,8 +48,8 @@ Apply the root Wayfinder threshold.
 
 Resume only relevant work.
 Continue from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set.
-For an unnamed likely Wayfinder resume, inspect the smallest plausible effort set and resume only one clear semantic match on objective and current scope.
-Scope refinement need not preserve the original wording when the objective and coordination boundary remain the same in substance.
+For an unnamed likely Wayfinder resume, inspect the smallest plausible effort set and resume only one clear semantic match on objective and scope.
+Scope refinement need not preserve the original wording when the objective and substantive scope remain the same.
 A safe regular map identifies current resumable coordination; a mapless directory is not a candidate.
 An unrelated map never captures the route.
 
