@@ -71,7 +71,16 @@ class RoutingContractTests(unittest.TestCase):
             "lasting results.",
         )
         expected_fragments = {
+            "Wayfinder effort": (
+                "resumable body of coordination",
+                "objective and coordination boundary",
+                "bounded current scope",
+            ),
             "Objective": ("result a Wayfinder effort is intended to achieve",),
+            "Scope": (
+                "currently includes and excludes",
+                "clarified, narrowed, or elaborated",
+            ),
             "Consequential": (
                 "handling it differently",
                 "effort's objective",
@@ -768,7 +777,7 @@ class RoutingContractTests(unittest.TestCase):
         )
         required_boundaries = (
             "Discovery is the method for bounded consequential choice",
-            "reorganizing the domain would materially improve",
+            "ambiguity in domain concepts, terminology, ubiquitous language, domain or context boundaries",
             (
                 "Interdependent choices requiring human input or project decision authority "
                 "materially shape downstream work "
@@ -926,10 +935,7 @@ class RoutingContractTests(unittest.TestCase):
             normalized_readme,
         )
 
-        self.assertIn(
-            "Assess durable coordination after any needed reconnaissance",
-            normalized_root,
-        )
+        self.assertIn("apparent desired future state", normalized_root)
         self.assertNotIn("Three or more meaningful items", normalized_root)
         self.assertIn("MUST select or resume Wayfinder", normalized_root)
         self.assertIn(
@@ -944,7 +950,7 @@ class RoutingContractTests(unittest.TestCase):
 
         hard_signal = normalized_root.split(hard_label, 1)[1].split(soft_label, 1)[0]
         soft_signal = normalized_root.split(soft_label, 1)[1].split(
-            "For goal-directed work, Wayfinder", 1
+            "A material update to an existing durable planning artifact", 1
         )[0]
 
         for hard_boundary in (
@@ -952,7 +958,7 @@ class RoutingContractTests(unittest.TestCase):
             "The work is intended to continue across sessions or agents, including when "
             "the current request creates or updates an external dependency whose result "
             "later in-scope work is expected to await or consume",
-            "A consequential objective and scope can be established, but the route "
+            "A consequential objective and current scope can be established, but the route "
             "remains materially unclear and cannot responsibly be "
             "resolved within one useful agent session",
             "Conflicting sources establish the same scoped claim",
@@ -975,18 +981,6 @@ class RoutingContractTests(unittest.TestCase):
 
         self.assertNotIn("Evidence-driven plan change", hard_signal)
         self.assertIn("Evidence-driven plan change", soft_signal)
-
-        for planning_boundary in (
-            "For goal-directed work, Wayfinder is for a consequential objective needing "
-            "reliable continuity because its route, dependencies, choices, or involved "
-            "areas remain materially unclear",
-            "A clear bounded plan does not select Wayfinder merely because later work "
-            "will execute or depend on it",
-            "When the route can already be responsibly established within one useful "
-            "session, use Direct or the applicable planning workflow instead",
-        ):
-            with self.subTest(planning_boundary=planning_boundary):
-                self.assertIn(planning_boundary, normalized_root)
 
         self.assertNotIn(
             "establishes or materially changes a plan that later work is expected "
@@ -1092,19 +1086,22 @@ class RoutingContractTests(unittest.TestCase):
         normalized_wayfinder = " ".join(wayfinder_skill.split())
 
         for boundary in (
-            "User intent is the primary source from which an objective and scope may "
-            "be established",
-            "Goal-directed language or an otherwise apparent desired future state cues "
-            "the router to determine whether a stable objective and scope can be "
-            "established",
-            "An objective by itself does not select Wayfinder",
-            "semantic assessment, not phrase or keyword matching",
-            "materially different interpretations of the user's intent would produce "
-            "different effort objectives or scope",
-            "minimum sufficient clarification or resolution method",
+            "apparent desired future state",
+            "cue to assess, not select, Wayfinder",
+            "objective and current scope",
+            "sufficiently identify the effort",
+            "durable-coordination threshold is met",
+            "phrase matching",
+            "materially invent ambiguous intent",
         ):
             with self.subTest(root_boundary=boundary):
                 self.assertIn(boundary, normalized_root)
+
+        wayfinder_section = root_policy.split("## When to use Wayfinder", 1)[1]
+        assessment_rule = wayfinder_section.split("Unless the user opts out", 1)[
+            0
+        ].strip()
+        self.assertEqual(len(assessment_rule.splitlines()), 1)
 
         for boundary in (
             "consequential objective",
@@ -1160,8 +1157,8 @@ class RoutingContractTests(unittest.TestCase):
             normalized_discovery,
         )
         self.assertIn(
-            "Compose Domain Modeling when structural ambiguity materially affects the "
-            "decision",
+            "Compose Domain Modeling when ambiguity in domain concepts, terminology, or "
+            "context boundaries materially affects the decision",
             normalized_discovery,
         )
         self.assertIn(
@@ -1179,18 +1176,29 @@ class RoutingContractTests(unittest.TestCase):
             normalized_research,
         )
 
-        for structural_boundary in (
+        for domain_boundary in (
             "domain concepts",
             "terminology",
             "ubiquitous language",
-            "boundaries",
-            "responsibilities",
-            "areas",
-            "relationships",
+            "domain or context boundaries",
+            "domain responsibilities and relationships",
             "CONTEXT.md",
+            "CONTEXT-MAP.md",
         ):
-            with self.subTest(structural_boundary=structural_boundary):
-                self.assertIn(structural_boundary, normalized_domain)
+            with self.subTest(domain_boundary=domain_boundary):
+                self.assertIn(domain_boundary, normalized_domain)
+        for excluded_ownership in (
+            "generic implementation or module architecture",
+            "all project structure",
+            "Wayfinder's effort-specific areas and relationships",
+            "generic architecture-decision store",
+            "structural model",
+        ):
+            with self.subTest(excluded_ownership=excluded_ownership):
+                if excluded_ownership == "structural model":
+                    self.assertNotIn(excluded_ownership, normalized_domain)
+                else:
+                    self.assertIn(excluded_ownership, normalized_domain)
         for obsolete_adr_boundary in (
             "record an architectural decision",
             "ADR-FORMAT.md",
@@ -1210,7 +1218,7 @@ class RoutingContractTests(unittest.TestCase):
             normalized_routing,
         )
         self.assertIn(
-            "Domain Modeling is the preferred structural fallback",
+            "Wayfinder establishes its own effort-specific areas and relationships",
             normalized_wayfinder,
         )
 
@@ -1241,7 +1249,9 @@ class RoutingContractTests(unittest.TestCase):
             "This table resolves overlaps",
             "Resume only relevant work",
             "smallest plausible effort set",
-            "one clear objective-and-scope match",
+            "one clear semantic match on objective and current scope",
+            "Scope refinement need not preserve the original wording",
+            "objective and coordination boundary remain the same in substance",
             "An unrelated map never captures the route",
             "After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map",
             "Avoid routing loops",

@@ -35,18 +35,13 @@
 
 ## When to use Wayfinder
 
-Assess durable coordination after any needed reconnaissance.
-User intent is the primary source from which an objective and scope may be established.
-Goal-directed language or an otherwise apparent desired future state cues the router to determine whether a stable objective and scope can be established and whether achieving that objective crosses the durable-coordination threshold.
-This is semantic assessment, not phrase or keyword matching.
-An objective by itself does not select Wayfinder.
-If materially different interpretations of the user's intent would produce different effort objectives or scope, use the minimum sufficient clarification or resolution method first; do not invent objective or scope merely to create an effort.
+Treat an apparent desired future state as a cue to assess, not select, Wayfinder; select or resume it only when the objective and current scope sufficiently identify the effort and the existing durable-coordination threshold is met; use semantic judgment, not phrase matching, and do not materially invent ambiguous intent.
 Unless the user opts out, MUST select or resume Wayfinder when either condition is met:
 
 - Hard — at least one signal applies:
   - The current work continues a relevant Wayfinder effort.
   - The work is intended to continue across sessions or agents, including when the current request creates or updates an external dependency whose result later in-scope work is expected to await or consume.
-  - A consequential objective and scope can be established, but the route remains materially unclear and cannot responsibly be resolved within one useful agent session.
+  - A consequential objective and current scope can be established, but the route remains materially unclear and cannot responsibly be resolved within one useful agent session.
   - Conflicting sources establish the same scoped claim.
   - A required project choice remains uncommitted while independent work proceeds.
   - Responsible participants or areas require coordination.
@@ -57,10 +52,6 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
   - Evidence-driven plan change.
   - A meaningful dependency graph.
   - Material fresh-agent reconstruction risk.
-
-For goal-directed work, Wayfinder is for a consequential objective needing reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear.
-A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
-When the route can already be responsibly established within one useful session, use Direct or the applicable planning workflow instead.
 
 A material update to an existing durable planning artifact for unfinished work may indicate continuation of an existing Wayfinder effort.
 Use detailed routing for the bounded read-only check needed to determine whether one relevant effort clearly matches.

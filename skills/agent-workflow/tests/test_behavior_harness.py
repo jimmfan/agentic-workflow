@@ -265,6 +265,24 @@ class BehaviorHarnessTests(unittest.TestCase):
         self.assertFalse(prohibited_result.passed)
         self.assertIn("domain-modeling", prohibited_result.detail)
 
+    def test_implicit_effort_cases_are_not_route_coached(self) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        new_effort = scenarios["wayfinder-new-effort"]
+        refinement = scenarios["wayfinder-scope-refinement"]
+
+        self.assertNotRegex(
+            new_effort.request.casefold(),
+            r"\b(?:wayfinder|plans?|planning|durable|state|sessions?|agents?|preserv\w*)\b",
+        )
+        self.assertNotIn("resume wayfinder", refinement.request.casefold())
+        self.assertEqual(new_effort.route_must_include, ("wayfinder",))
+        self.assertEqual(refinement.route_must_include, ("wayfinder",))
+        self.assertIn("domain-modeling", refinement.route_must_not_include)
+        self.assertEqual(
+            refinement.state_must_include,
+            (Path(".agent-wayfinder/policy-execution-migration/map.md"),),
+        )
+
     def test_success_report_without_failure_recovery_fails_the_contract(self) -> None:
         scenario = next(
             item

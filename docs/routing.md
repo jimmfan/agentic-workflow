@@ -16,9 +16,8 @@ Use `specialist` only for focused specialist work.
 
 Routing is dynamic.
 Assess durable coordination after any needed reconnaissance; item count alone never selects Wayfinder.
-User intent is the primary source for establishing an effort's objective and scope.
-Goal-directed language or an apparent desired future state cues semantic assessment of whether stable objective and scope can be established and whether achieving them crosses the existing durable-coordination threshold; an objective alone never selects Wayfinder.
-When materially different interpretations would identify different efforts, use the minimum sufficient clarification or resolution before creating state.
+An apparent desired future state cues semantic assessment rather than automatic selection: objective and bounded current scope must sufficiently identify the effort, and the existing durable-coordination threshold must still be met.
+Materially ambiguous intent is clarified or resolved rather than invented into an effort.
 Wayfinder must start or resume when at least one hard signal or at least two soft signals apply.
 Hard signals cover work that continues a relevant Wayfinder effort, is intended to continue across sessions or agents, or has an establishable consequential objective and scope whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
 Cross-session continuation includes a current request that creates or updates an external dependency whose result later in-scope work is expected to await or consume.
@@ -65,7 +64,7 @@ Default route sequences are transitions with entry conditions, not mandatory pip
 Current-session actions remain in the session; Wayfinder holds durable coordination; specifications hold accepted scope and acceptance criteria; tickets hold approved independently deliverable work and blocking edges.
 Discovery resolves bounded consequential alternatives and tradeoffs, including architectural choices when that analysis materially helps.
 Research establishes externally sourced facts without selecting the project's preferred alternative.
-Domain Modeling joins Discovery or Wayfinder only when ambiguity in concepts, terminology, boundaries, responsibilities, areas, or relationships is material; a choice being architectural does not select it.
+Domain Modeling joins Discovery or Wayfinder only when ambiguity in domain concepts, terminology or ubiquitous language, domain or context boundaries, or domain responsibilities and relationships is material; a choice being architectural does not select it.
 
 Two boundaries are intentionally explicit.
 Trivial local, low-risk edits remain Direct even though they mutate files; Implementation is for ready work where its orchestration and integration verification add material value.
@@ -79,6 +78,8 @@ Chat output is session-local.
 Wayfinder links project or external records only when they are durable.
 If a chat-only result later needs continuity, Wayfinder preserves only the minimum needed coordination or evidence.
 When resuming a Wayfinder effort, read its map first.
+Objective and bounded current scope identify the effort semantically.
+Scope clarification, narrowing, or elaboration stays in the same effort while the objective and coordination boundary remain the same in substance; a materially different objective or coordination boundary requires a different effort.
 The map summarizes current coordination state, conditions blocking particular work, dependencies, and ready work; sparse F#/D# ledger sections and U#/E# records stay lazy.
 F# contains a sufficiently supported, scoped, revisable conclusion; D# contains a current consequential choice determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority; U# contains an unresolved question and is not itself a blocker; E# contains evidence with source, scope, observation, and limitations.
 Before detailed decomposition, the map may state ready work directly.
@@ -90,7 +91,7 @@ An unrelated existing map never changes a request's route.
 When the current request or accepted project policy authorizes repository-local Wayfinder writes, routing may create a lightweight map without asking again after Wayfinder is selected.
 
 Within a selected effort, continue directly with ready work.
-Load Discovery, Debugging, Research, Prototype, Domain Modeling, Grilling, or human clarification only when that method materially improves how a current question, uncertainty, unexplained cause, consequential choice, or structural ambiguity is addressed.
+Load Discovery, Debugging, Research, Prototype, Domain Modeling, Grilling, or human clarification only when that method materially improves how a current question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity is addressed.
 Using a skill for specialist work does not create separate Agent Workflow durable coordination state.
 While using the skill, the agent may return findings or produce the result described by its instructions; Wayfinder records only consequential results or references needed for coordination.
 Implementation is a workflow transition for ready work, followed by Verification, not a Wayfinder reasoning method or coordination record.

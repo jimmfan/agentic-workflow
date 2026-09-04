@@ -3,7 +3,7 @@
 ## Wayfinder coordination
 
 **Wayfinder effort**:
-One resumable body of coordination with one stable objective and scope.
+One resumable body of coordination with one objective and coordination boundary, expressed through bounded current scope.
 
 **Map**:
 The brief coordination summary for a Wayfinder effort and the first effort file read when resuming it.
@@ -12,7 +12,8 @@ The brief coordination summary for a Wayfinder effort and the first effort file 
 The result a Wayfinder effort is intended to achieve.
 
 **Scope**:
-What a Wayfinder effort includes and excludes, including relevant project or authority limits.
+What a Wayfinder effort currently includes and excludes, including relevant project or authority limits.
+It may be clarified, narrowed, or elaborated while the objective and coordination boundary remain the same in substance.
 
 **Consequential**:
 A matter is consequential when handling it differently could change the effort's objective, scope, required authority, lasting result, dependencies, or which work may proceed.

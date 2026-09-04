@@ -323,6 +323,13 @@ class VerifyPackageTests(ProjectTestCase):
                 "Wayfinder lacks load-bearing contract",
             ),
             (
+                "wayfinder-scope-refinement-keeps-effort",
+                "payload/skills/wayfinder/SKILL.md",
+                "clarified, narrowed, or elaborated",
+                "frozen after creation",
+                "Wayfinder lacks load-bearing contract",
+            ),
+            (
                 "wayfinder-references-lasting-results",
                 "payload/skills/wayfinder/SKILL.md",
                 "Reference the artifacts that maintain",

@@ -1,0 +1,93 @@
+schema_version = 1
+id = "wayfinder-scope-refinement"
+name = "New evidence refines scope within the same effort"
+fixture = "wayfinder-territory-invalidation"
+request = "The accepted architecture.md now clarifies the policy execution migration boundary. Update the coordination for this migration to reflect the current areas and handoffs, identify what can proceed now, and leave implementation untouched."
+starting_state = [
+  "A recognized current effort covers the policy execution migration, but its map predates architecture.md.",
+  "The accepted evidence narrows and elaborates the migration boundary without changing its objective or coordination boundary.",
+  "Repository-local coordination changes are authorized; implementation and unrelated effort changes are not.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "unnecessary_planning_artifacts",
+  "overwrite_project_owned_state",
+  "silent_decision_invention",
+]
+live = false
+verification_command = "Confirm that the existing policy execution migration map was refined in place from architecture.md, the unrelated audit-retention effort is untouched, and no synonymous or sibling effort was created."
+preserve_paths = [
+  "architecture.md",
+  ".agent-wayfinder/audit-retention/map.md",
+]
+route_must_include = ["wayfinder"]
+route_must_not_include = ["domain-modeling"]
+state_must_include = [
+  ".agent-wayfinder/policy-execution-migration/map.md",
+]
+state_must_not_include = [
+  ".agent-wayfinder/audit-retention/map.md",
+]
+forbid_created_globs = [
+  ".agent-wayfinder/policy-control-plane",
+  ".agent-wayfinder/policy-control-plane/**",
+  ".agent-wayfinder/policy-execution-modernization",
+  ".agent-wayfinder/policy-execution-modernization/**",
+  ".agent-wayfinder/policy-execution-migration-v2",
+  ".agent-wayfinder/policy-execution-migration-v2/**",
+  ".agent-wayfinder/policy-execution-migration/decisions.md",
+]
+
+[[assertions]]
+kind = "path_exists"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "# Policy execution migration"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "policy definition, evaluation, approved-intent execution, and result auditing"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "Policy control plane"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "Execution data plane"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "Audit boundary"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "approved intent"
+
+[[assertions]]
+kind = "path_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "Inventorying call sites"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "Control service owns policy evaluation and execution"
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-wayfinder/*/map.md"
+count = 2

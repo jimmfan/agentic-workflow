@@ -25,7 +25,7 @@ The specialist creates no Agent Workflow durable coordination state.
 2. Separate evidence and constraints from assumptions, preferences, unresolved questions, and out-of-scope matters.
    Inspect repository evidence before asking the user for information the workspace can provide.
 3. Compose Research when external evidence materially affects the decision.
-   Compose Domain Modeling when structural ambiguity materially affects the decision.
+   Compose Domain Modeling when ambiguity in domain concepts, terminology, or context boundaries materially affects the decision.
 4. Compare viable alternatives by benefits, costs, risks, reversibility, consequences, and evidence that would change the choice.
 5. Treat a consequential project choice as committed only when required evidence is sufficient and either accepted project policy determines the choice for that boundary or the person, role, or valid delegate with project decision authority commits it.
    Responsibility alone does not establish that authority.

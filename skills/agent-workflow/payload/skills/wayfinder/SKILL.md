@@ -16,12 +16,15 @@ It helps orient the effort, choose the minimum resolution method, and identify r
 
 - Existing Wayfinder state alone never selects Wayfinder.
 - Selection may conclude that no consequential continuity earns persistence; in that case create no effort, map, or supporting record.
-- One Wayfinder effort has one stable objective and scope.
+- One Wayfinder effort has one objective and coordination boundary, expressed through bounded current scope.
   Use user intent and accepted project evidence to establish them.
-  Do not create a new effort until they are sufficiently established to identify the effort; this does not require every detail or the route to be known.
+  Do not create a new effort until its objective and current scope are sufficiently established to identify it.
+  Unresolved route, choices, dependencies, or involved areas may justify Wayfinder and do not prevent creation when effort identity is otherwise sufficiently established.
   If materially different interpretations of the user's intent would produce different effort objectives or scope, use the minimum sufficient clarification or resolution method first.
   Do not materially invent objective or scope merely to create an effort.
-  Objective and scope together determine effort identity and whether current state should resume; a different substantive objective or scope is a different effort.
+  Scope may be clarified, narrowed, or elaborated as understanding and evidence develop.
+  Reuse the same effort while its objective and coordination boundary remain the same in substance; a materially different objective or coordination boundary is a different effort.
+  Never repurpose an effort for unrelated work.
 - Establish the objective and scope, then enough relevant areas and relationships to orient the effort before substantial decomposition.
   Keep `map.md` brief, preserve enough information to resume safely, and load detail only when relevant.
   New default maps retain **Blockers and dependencies** and write `None` when no blocker or dependency currently applies.
@@ -58,18 +61,22 @@ If the state contract is unavailable, fail closed for the affected Wayfinder wor
 
 ## Establish areas and relationships
 
+Wayfinder establishes its own effort-specific areas and relationships.
 Reuse accepted project structure when it supplies a useful objective, scope, areas, and important operating boundaries.
 Otherwise establish the smallest useful structure directly.
 The effort's view of its areas, relationships, and ownership or operating constraints is provisional, adaptive, and judgment-based.
 It helps Wayfinder challenge incomplete framing and revise its understanding as evidence develops.
 Exploration may broaden understanding, but must not silently broaden the user's goal, delegated authority, or implementation scope.
 
-Domain Modeling is the preferred structural fallback when clarifying or reorganizing concepts, vocabulary, boundaries, responsibilities, or relationships would make the map clearer or more reliable; progress need not already be blocked.
-When it would help, establish enough areas and relationships before substantial U/E/F/D accumulates, then derive the effort name and stable path from the objective and scope.
+Domain Modeling applies only when clarifying or reorganizing domain concepts, terminology and ubiquitous language, domain or context boundaries, or domain responsibilities and relationships would materially improve the work; progress need not already be blocked.
+It does not own generic implementation or module architecture, all project structure, or Wayfinder's effort-specific view merely because the map contains areas and relationships.
+When Domain Modeling would help, resolve enough domain-model ambiguity before substantial U/E/F/D accumulates.
+In every case, establish enough effort-specific areas and relationships before substantial decomposition, then derive the effort name and stable path from the objective and bounded current scope.
 
 On resumption, do not reload Domain Modeling merely because Wayfinder resumed.
-If later evidence from a source that establishes the relevant scoped claim shows that the current areas and relationships no longer fit current truth, Domain Modeling may be loaded again to revise the same map.
-Reconcile the current structure rather than preserving unsupported or parallel representations.
+If later evidence shows that the effort's areas and relationships no longer fit current truth, revise the same map directly or load the specialist appropriate to the actual uncertainty.
+Load Domain Modeling again only for domain-model ambiguity.
+Reconcile the current effort view rather than preserving unsupported or parallel representations.
 
 ## Chart the visible route
 
@@ -91,19 +98,19 @@ A question being precise enough to address does not by itself justify a U#; pres
 ## Choose the minimum resolution method
 
 Continue directly when no additional method is needed.
-Otherwise load only the smallest specialist needed to resolve or accurately frame the current question, uncertainty, unexplained cause, consequential choice, or structural ambiguity:
+Otherwise load only the smallest specialist needed to resolve or accurately frame the current question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity:
 
 - **Discovery** for consequential alternatives and tradeoffs.
 - **Debugging** for an observed behavior with an unknown cause.
 - **Research** for external uncertainty needing primary-source evidence.
 - **Prototype** when a disposable experiment is the cheapest honest test.
-- **Domain Modeling** to establish, improve, or revise areas and relationships under the rule above.
+- **Domain Modeling** for domain concepts and terminology, ubiquitous language, domain or context boundaries, and domain responsibilities or relationships under the rule above.
 - **Human clarification or Grilling** for authority, intent, preference, or prioritization.
 
 Research resolves external uncertainty, Prototype answers a design question, and Debugging investigates an unexplained cause within established areas and relationships.
-They do not replace structural modeling when those areas or relationships need improvement or revision.
+They do not replace Domain Modeling when the actual uncertainty concerns the domain model.
 
-The resolution method determines how a question, uncertainty, unexplained cause, consequential choice, or structural ambiguity should be addressed and what evidence or authority that method requires.
+The resolution method determines how a question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity should be addressed and what evidence or authority that method requires.
 It is not merely an artifact label:
 
 - Human clarification requires the person with the relevant intent or preference, or the person, role, or valid delegate with project decision authority.
@@ -115,7 +122,7 @@ Existing evidence from a source that establishes the scoped claim may satisfy th
 Do not load specialists speculatively.
 Specialists retain their methods.
 A specialist creates no Agent Workflow durable coordination state.
-If work is interrupted, reconcile only consequential questions, uncertainties, unexplained causes, choices, structural ambiguity, conditions blocking particular work, evidence or conclusions, artifact references, the resolution method when useful, and ready work into Wayfinder.
+If work is interrupted, reconcile only consequential questions, uncertainties, unexplained causes, choices, domain-model ambiguity, conditions blocking particular work, evidence or conclusions, artifact references, the resolution method when useful, and ready work into Wayfinder.
 When resuming, read the map first rather than a specialist notebook or coordination record.
 
 ## Reconcile and transition ready work

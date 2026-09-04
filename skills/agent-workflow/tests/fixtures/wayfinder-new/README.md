@@ -1,15 +1,10 @@
-# Platform migration planning fixture
+# Platform migration
 
-The migration spans several sessions. The authoritative migration architecture
-already establishes the objective, scope, major areas, and relationships.
-The project owner accepted zero downtime, the safe migration order is
-unresolved, and inventorying current consumers is concrete work that can
-proceed without answering the ordering question.
+This is current project work that will continue while consumer inventory, rollback validation, and cutover ordering are resolved.
+The accepted migration architecture establishes the objective, current boundary, major areas, and relationships.
 
-Record that current authorized choice as `D1 — Use a zero-downtime cutover` in the
-effort's root `decisions.md` ledger and link the map directly to its heading.
-Keep the independently useful ordering question as U1 rather than folding its
-coordination detail into the ledger.
+The Project owner accepted a zero-downtime cutover.
+The safe migration order remains unresolved, and inventorying current consumers can proceed without deciding that order.
 
-Repository-local durable planning is authorized. No external tracker is
-configured, and no external-system mutation is authorized.
+Repository-local coordination artifacts may be updated.
+No external tracker is configured, and no external-system mutation is authorized.

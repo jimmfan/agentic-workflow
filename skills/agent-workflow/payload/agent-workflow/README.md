@@ -69,7 +69,7 @@ The map links that durable ticket or ticket set and may include the current read
 See `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
 Discovery, Debugging, Research, Prototype, and Domain Modeling are specialists.
 Specialists retain their methods and create no Agent Workflow durable coordination state.
-Discovery analyzes consequential alternatives and tradeoffs, Research establishes externally sourced facts, and Domain Modeling clarifies structural concepts and relationships.
+Discovery analyzes consequential alternatives and tradeoffs, Research establishes externally sourced facts, and Domain Modeling clarifies domain concepts, language, context boundaries, responsibilities, and relationships.
 Lasting architecture decisions remain in the project artifact or record designated to maintain them.
 Implementation is a workflow transition into execution.
 

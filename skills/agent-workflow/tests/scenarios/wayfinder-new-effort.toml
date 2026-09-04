@@ -1,12 +1,12 @@
 schema_version = 1
 id = "wayfinder-new-effort"
-name = "Complicated migration planning starts lightweight durable state"
+name = "Consequential migration goal starts one lightweight effort"
 fixture = "wayfinder-new"
-request = "Plan our zero-downtime platform migration. Reuse the objective, scope, major areas, and relationships established by migration-architecture.md; that structure is already clear, so do not rerun Domain Modeling. Preserve unresolved ordering separately and identify concrete work that can begin while part of the plan is blocked."
+request = "We need to complete the zero-downtime platform cutover described in migration-architecture.md. Migration ordering is unresolved, final transition approval belongs to the project owner, and consumer inventory work can proceed while rollback and cutover sequencing are worked out. Determine what can proceed now and what remains unresolved."
 starting_state = [
-  "Several important pieces of migration state are becoming unreliable to hold only in conversational context.",
-  "migration-architecture.md establishes consumer inventory, cutover orchestration, rollback, ownership, and their seams; project decision authority in the Project owner role accepted zero downtime, while migration ordering remains unresolved.",
-  "The user grants action authorization for repository-local durable planning, but not for external tracker mutation.",
+  "migration-architecture.md is accepted project architecture for this migration.",
+  "The Project owner role accepted zero downtime, while safe migration ordering has not been chosen.",
+  "Repository-local coordination changes are authorized, but external tracker mutation is not.",
 ]
 expect = [
   "task_completed",
@@ -14,112 +14,155 @@ expect = [
   "meaningful_repository_change",
 ]
 must_not = [
+  "unnecessary_planning_artifacts",
   "overwrite_project_owned_state",
 ]
 live = false
-verification_command = "Validate that the resulting repository-local planning state preserves the objective, scope, current coordination state, conditions blocking particular work, dependencies, committed choices, unresolved questions, and ready work without creating Wayfinder tickets or a parallel tracker ticket copy."
+verification_command = "Validate that exactly one map-first effort records the objective, bounded scope, relevant areas and relationships, dependencies, unresolved coordination, and ready work without creating tickets or a parallel tracker."
 preserve_paths = ["migration-architecture.md"]
 route_must_include = ["wayfinder"]
 route_must_not_include = ["domain-modeling"]
 forbid_created_globs = [
   "issues",
   "issues/**",
-  ".agent-wayfinder/platform-migration/tickets",
-  ".agent-wayfinder/platform-migration/tickets/**",
+  ".agent-wayfinder/*/tickets",
+  ".agent-wayfinder/*/tickets/**",
 ]
 
 [[assertions]]
-kind = "path_exists"
-path = ".agent-wayfinder/platform-migration/map.md"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "Consumer inventory"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "Cutover orchestration"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "Rollback"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "depends on"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "D1"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "U1"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "consumer"
-
-[[assertions]]
-kind = "path_not_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Question"
-
-[[assertions]]
-kind = "path_not_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "## Acceptance"
-
-[[assertions]]
 kind = "glob_count"
-path = ".agent-wayfinder/platform-migration/unknowns/U*.md"
+path = ".agent-wayfinder/*/map.md"
 count = 1
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-wayfinder/platform-migration/unknowns/U1-*.md"
+path = ".agent-wayfinder/*/map.md"
+value = "## Objective"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "zero-downtime"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "## Scope"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "unrelated product behavior"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "## Areas and relationships"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "## Current state"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "## Blockers and dependencies"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "Consumer inventory"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "Cutover orchestration"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "Rollback"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "depends on"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "D1"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "U1"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "## Ready work"
+
+[[assertions]]
+kind = "glob_none_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "## Question"
+
+[[assertions]]
+kind = "glob_none_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "## Acceptance"
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-wayfinder/*/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/unknowns/U1-*.md"
 value = "migration order"
 
 [[assertions]]
-kind = "path_exists"
-path = ".agent-wayfinder/platform-migration/decisions.md"
+kind = "glob_count"
+path = ".agent-wayfinder/*/decisions.md"
+count = 1
 
 [[assertions]]
 kind = "glob_any_matches"
-path = ".agent-wayfinder/platform-migration/decisions.md"
+path = ".agent-wayfinder/*/decisions.md"
 value = '''\A# Decisions\n'''
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/decisions.md"
-value = "## D1 — Use a zero-downtime cutover"
+kind = "glob_contains"
+path = ".agent-wayfinder/*/decisions.md"
+value = "## D1"
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/decisions.md"
+kind = "glob_contains"
+path = ".agent-wayfinder/*/decisions.md"
+value = "zero-downtime"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/decisions.md"
 value = "- Authority: Project owner"
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/decisions.md"
+kind = "glob_contains"
+path = ".agent-wayfinder/*/decisions.md"
 value = "- Based on:"
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/decisions.md"
+kind = "glob_contains"
+path = ".agent-wayfinder/*/decisions.md"
 value = "- Consequences:"
 
 [[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/platform-migration/map.md"
-value = "](decisions.md#d1--use-a-zero-downtime-cutover)"
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = '''\]\(decisions\.md#d1--[a-z0-9-]+\)'''
 
 [[assertions]]
 kind = "path_not_exists"

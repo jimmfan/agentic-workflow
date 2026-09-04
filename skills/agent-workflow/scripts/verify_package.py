@@ -464,7 +464,7 @@ def check_semantic_contracts() -> None:
         (
             "An architectural decision is one possible kind of consequential project choice",
             "Compose Research when external evidence materially affects the decision.",
-            "Compose Domain Modeling when structural ambiguity materially affects the decision.",
+            "Compose Domain Modeling when ambiguity in domain concepts, terminology, or context boundaries materially affects the decision.",
             "Discovery does not maintain architecture decision records or durable coordination state.",
         ),
     )
@@ -476,11 +476,15 @@ def check_semantic_contracts() -> None:
         (
             "domain concepts",
             "terminology",
-            "boundaries",
-            "responsibilities",
-            "areas",
-            "relationships",
+            "ubiquitous language",
+            "domain or context boundaries",
+            "domain responsibilities and relationships",
             "`CONTEXT.md`",
+            "`CONTEXT-MAP.md`",
+            "does not own generic implementation or module architecture",
+            "all project structure",
+            "Wayfinder's effort-specific areas and relationships",
+            "generic architecture-decision store",
         ),
     )
     require(
@@ -491,6 +495,7 @@ def check_semantic_contracts() -> None:
                 "adr-format.md",
                 "docs/adr/",
                 "offer adrs",
+                "structural model",
             )
         ),
         "Domain Modeling retains generic ADR responsibility",
@@ -503,7 +508,10 @@ def check_semantic_contracts() -> None:
         (
             "Wayfinder is Agent Workflow's sole durable coordination layer.",
             "An objective alone does not select Wayfinder.",
-            "One Wayfinder effort has one stable objective and scope.",
+            "one objective and coordination boundary",
+            "bounded current scope",
+            "Scope may be clarified, narrowed, or elaborated",
+            "Wayfinder establishes its own effort-specific areas and relationships.",
             "Reference the artifacts that maintain lasting results instead of copying them.",
         ),
     )

@@ -1,13 +1,15 @@
 ---
-description: Build and sharpen a project's domain concepts, terminology and ubiquitous language, boundaries, responsibilities, areas, and relationships, and maintain the applicable domain or context model.
+description: Build and sharpen a project's domain concepts, terminology and ubiquitous language, domain or context boundaries, and domain responsibilities and relationships, and maintain the applicable domain or context model.
 name: domain-modeling
 ---
 # Domain Modeling
 
-Actively build and sharpen the project's structural model as you design.
-This is the *active* discipline—challenging domain concepts and terminology, testing boundaries and responsibilities, clarifying areas and relationships, and maintaining the applicable domain or context model such as `CONTEXT.md`.
+Actively build and sharpen the project's domain model as you design.
+This is the *active* discipline—challenging domain concepts and terminology, making ubiquitous language precise, testing domain or context boundaries, clarifying domain responsibilities and relationships, and maintaining the applicable domain or context model through `CONTEXT.md` and, for multiple contexts, `CONTEXT-MAP.md`.
 (Merely *reading* `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill can do.
 This skill is for when you're changing the model, not just consuming it.)
+
+Domain Modeling does not own generic implementation or module architecture, all project structure, Wayfinder's effort-specific areas and relationships, or a generic architecture-decision store.
 
 ## File structure
 

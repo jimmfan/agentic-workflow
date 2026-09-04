@@ -2345,10 +2345,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "## Effort shape and selection",
             ).split()
         )
-        self.assertIn(
-            "A different objective or substantive scope requires a new effort",
-            effort_shape,
-        )
+        self.assertIn("different objective or coordination boundary", effort_shape)
 
         ending = " ".join(
             markdown_section(
@@ -2361,14 +2358,14 @@ class WayfinderStateContractTests(unittest.TestCase):
         for condition in (
             "objective was achieved",
             "a committed project choice ended it",
-            "continuing coordination belongs to a different objective or substantive scope",
+            "continuing coordination belongs to a different objective or coordination boundary",
         ):
             with self.subTest(ending_condition=condition):
                 self.assertIn(condition, ending)
         self.assertNotIn("it was intentionally ended", ending)
         self.assertNotIn("different objective and scope", ending)
 
-    def test_effort_creation_requires_established_objective_and_scope_identity(
+    def test_effort_identity_allows_bounded_scope_refinement(
         self,
     ) -> None:
         effort_shape = " ".join(
@@ -2377,23 +2374,28 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "## Effort shape and selection",
             ).split()
         )
-        for creation_boundary in (
-            "Do not create a new effort until its objective and scope are sufficiently "
-            "established to identify it",
-            "Sufficiently established does not mean every detail or route is known",
-            "Do not materially invent objective or scope from ambiguous user intent",
-            "Objective and scope together determine effort identity",
-            "same objective and scope in substance",
-            "A different objective or substantive scope requires a new effort",
+        for identity_boundary in (
+            "Objective and bounded current scope identify an effort",
+            "clarified, narrowed, or elaborated",
+            "objective and coordination boundary remain the same in substance",
+            "materially different objective or coordination boundary requires a new effort",
+            "Never repurpose earlier state to represent unrelated work",
+            "unresolved route, choices, dependencies, or involved areas",
+            "do not prevent initial effort creation",
         ):
-            with self.subTest(creation_boundary=creation_boundary):
-                self.assertIn(creation_boundary, effort_shape)
+            with self.subTest(identity_boundary=identity_boundary):
+                self.assertIn(identity_boundary.casefold(), effort_shape.casefold())
 
-        self.assertIn(
-            "An effort is one resumable body of coordination with one stable objective "
-            "and scope",
-            self.normalized,
+        state_model = " ".join(
+            markdown_section(self.contract, "## State model and boundaries").split()
         )
+        for identity_fragment in (
+            "resumable body of coordination",
+            "objective and coordination boundary",
+            "bounded current scope",
+        ):
+            with self.subTest(identity_fragment=identity_fragment):
+                self.assertIn(identity_fragment, state_model)
         self.assertIn(
             "These headings guide content; they are not a recognition schema",
             effort_shape,
@@ -2424,14 +2426,20 @@ class WayfinderStateContractTests(unittest.TestCase):
             path.stem: tomllib.loads(path.read_text(encoding="utf-8"))
             for path in (PACKAGE_ROOT / "tests/scenarios").glob("*.toml")
         }
-        revised_areas = scenarios["wayfinder-domain-modeling-revises-territory"]
-        self.assertEqual(
-            revised_areas["id"], "wayfinder-domain-modeling-revises-territory"
+        refined_scope = scenarios["wayfinder-scope-refinement"]
+        self.assertIn("scope", refined_scope["name"].casefold())
+        self.assertIn("wayfinder", refined_scope["route_must_include"])
+        self.assertIn("domain-modeling", refined_scope["route_must_not_include"])
+        self.assertIn(
+            ".agent-wayfinder/policy-execution-migration/map.md",
+            refined_scope["state_must_include"],
         )
-        self.assertIn("areas and relationships", revised_areas["name"].casefold())
+        self.assertIn(
+            ".agent-wayfinder/audit-retention/map.md",
+            refined_scope["state_must_not_include"],
+        )
 
         new_effort = scenarios["wayfinder-new-effort"]
-        self.assertIn("objective, scope", new_effort["request"].casefold())
         self.assertIn("ready work", new_effort["verification_command"].casefold())
 
         authority_answer = " ".join(
@@ -2482,9 +2490,30 @@ class WayfinderStateContractTests(unittest.TestCase):
         )
 
         consequential = scenarios["wayfinder-new-effort"]
-        self.assertNotIn("wayfinder", consequential["request"].casefold())
+        self.assertNotRegex(
+            consequential["request"].casefold(),
+            r"\b(?:wayfinder|plans?|planning|durable|state|sessions?|agents?|preserv\w*)\b",
+        )
         self.assertIn("wayfinder", consequential["route_must_include"])
-        self.assertIn(".agent-wayfinder", consequential["assertions"][0]["path"])
+        self.assertTrue(
+            any(
+                ".agent-wayfinder" in assertion["path"]
+                for assertion in consequential["assertions"]
+            )
+        )
+        self.assertTrue(
+            any(
+                assertion.get("kind") == "glob_count"
+                and assertion.get("path") == ".agent-wayfinder/*/map.md"
+                and assertion.get("count") == 1
+                for assertion in consequential["assertions"]
+            )
+        )
+
+        refined = scenarios["wayfinder-scope-refinement"]
+        self.assertNotIn("resume wayfinder", refined["request"].casefold())
+        self.assertIn("wayfinder", refined["route_must_include"])
+        self.assertIn("domain-modeling", refined["route_must_not_include"])
 
         ambiguous = scenarios["wayfinder-ambiguous-new-objective"]
         self.assertIn("blocked_cleanly", ambiguous["expect"])
@@ -2505,7 +2534,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         self.assertIn("Domain Modeling", structural["report_must_include"])
         self.assertIn("wayfinder", structural["route_must_include"])
         self.assertIn("domain-modeling", structural["route_must_include"])
-        self.assertIn("areas", structural["verification_command"])
+        self.assertIn("domain concepts", structural["verification_command"])
+        self.assertIn("context boundaries", structural["verification_command"])
         self.assertIn("relationships", structural["verification_command"])
 
     def test_contract_keeps_pruning_boundaries(self) -> None:
@@ -2647,7 +2677,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "uncertainty",
             "unexplained cause",
             "consequential choice",
-            "structural ambiguity",
+            "domain-model ambiguity",
         ):
             with self.subTest(issue=issue):
                 self.assertIn(issue, method_selection)
