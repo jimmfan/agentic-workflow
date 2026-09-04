@@ -265,98 +265,44 @@ class BehaviorHarnessTests(unittest.TestCase):
         self.assertFalse(prohibited_result.passed)
         self.assertIn("domain-modeling", prohibited_result.detail)
 
-    def test_objective_centered_scenario_catalog_covers_routing_boundaries(
-        self,
-    ) -> None:
+    def test_implicit_routing_prompts_hide_classification(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
-        simple = scenarios["objective-clear-request"]
-        new_effort = scenarios["wayfinder-new-effort"]
-        refinement = scenarios["wayfinder-scope-refinement"]
-
-        self.assertIn("wayfinder", simple.route_must_not_include)
-        self.assertTrue(
-            {
-                "code-review",
-                "codebase-design",
-                "debugging",
-                "discovery",
-                "domain-modeling",
-                "grilling",
-                "prototype",
-                "research",
-                "tdd",
-                "to-spec",
-                "to-tickets",
-                "wayfinder",
-            }
-            <= set(simple.route_must_not_include)
-        )
-        self.assertNotIn("wayfinder", simple.request.casefold())
-        self.assertIn("complete desired outcome", simple.starting_state[0].casefold())
-
-        self.assertNotRegex(
-            new_effort.request.casefold(),
-            r"\b(?:wayfinder|plans?|planning|durable|state|sessions?|agents?|preserv\w*)\b",
-        )
-        self.assertNotIn("resume wayfinder", refinement.request.casefold())
-        self.assertEqual(new_effort.route_must_include, ("wayfinder",))
-        self.assertTrue(
-            {
-                "issues/**",
-                "planning/**",
-                "tickets/**",
-                "wayfinder/**",
-            }
-            <= set(new_effort.forbid_created_globs)
-        )
-        self.assertEqual(refinement.route_must_include, ("wayfinder",))
-        self.assertIn("domain-modeling", refinement.route_must_not_include)
-        self.assertTrue(
-            any(
-                ".agent-wayfinder" in assertion.path.as_posix()
-                for assertion in new_effort.assertions
-            )
-        )
-        self.assertTrue(
-            any(
-                assertion.kind == "glob_count"
-                and assertion.path == Path(".agent-wayfinder/*/map.md")
-                and assertion.count == 1
-                for assertion in new_effort.assertions
-            )
-        )
-        self.assertEqual(
-            refinement.state_must_include,
-            (Path(".agent-wayfinder/policy-execution-migration/map.md"),),
-        )
-        self.assertIn("*", refinement.forbid_created_globs)
-
-        ambiguous = scenarios["wayfinder-ambiguous-new-objective"]
-        self.assertIn("blocked_cleanly", ambiguous.expect)
-        self.assertIn("repository_unchanged", ambiguous.expect)
-        self.assertIn(".agent-wayfinder/**", ambiguous.forbid_created_globs)
-
-        architectural = scenarios["architectural-choice-uses-discovery"]
-        self.assertIn("discovery", architectural.route_must_include)
-        self.assertIn("domain-modeling", architectural.route_must_not_include)
-        self.assertIn("wayfinder", architectural.route_must_not_include)
-
-        sourced_choice = scenarios["discovery-composes-research"]
-        self.assertIn("discovery", sourced_choice.route_must_include)
-        self.assertIn("research", sourced_choice.route_must_include)
-        self.assertIn("domain-modeling", sourced_choice.route_must_not_include)
-
-        domain_modeling = scenarios["wayfinder-domain-modeling-discovery"]
-        self.assertIn("Domain Modeling", domain_modeling.report_must_include)
-        self.assertIn("wayfinder", domain_modeling.route_must_include)
-        self.assertIn("domain-modeling", domain_modeling.route_must_include)
-        for domain_boundary in (
-            "domain concepts",
-            "context boundaries",
-            "relationships",
+        for name in (
+            "objective-clear-request",
+            "simple-bounded-task",
+            "wayfinder-new-effort",
+            "wayfinder-ambiguous-new-objective",
+            "wayfinder-scope-refinement",
+            "architectural-choice-uses-discovery",
+            "discovery-composes-research",
         ):
-            with self.subTest(domain_boundary=domain_boundary):
-                self.assertIn(domain_boundary, domain_modeling.verification_command)
+            with self.subTest(scenario=name):
+                scenario = scenarios[name]
+                prompt = behavior.build_prompt(scenario)
+                self.assertTrue(scenario.blind_grading)
+                for hidden in (
+                    scenario.name,
+                    scenario.verification_command,
+                    *scenario.expect,
+                    *scenario.must_not,
+                    *(str(path) for path in scenario.state_must_include),
+                    *(str(path) for path in scenario.state_must_not_include),
+                ):
+                    if hidden:
+                        self.assertNotIn(hidden, prompt)
+                for leaked_judgment in (
+                    "No consequential uncertainty",
+                    "without changing the objective or substantive scope",
+                    "no durable coordination is needed",
+                    "without durable coordination",
+                    "must not select or burden this route",
+                    "Use the minimum clarification needed",
+                ):
+                    self.assertNotIn(leaked_judgment, prompt)
+                with tempfile.TemporaryDirectory() as temporary:
+                    workspace = behavior.copy_fixture(scenario, Path(temporary))
+                    self.assertNotIn(scenario.id, workspace.name)
+                    self.assertNotIn(scenario.fixture, workspace.name)
 
     def test_scope_refinement_forbids_unrelated_product_artifacts(self) -> None:
         scenario = next(
@@ -644,7 +590,7 @@ class BehaviorHarnessTests(unittest.TestCase):
         scenario = next(
             item
             for item in behavior.load_scenarios()
-            if item.id == "wayfinder-new-effort"
+            if item.id == "wayfinder-cross-system-fact-boundary"
         )
         count_assertion = next(
             item
@@ -659,11 +605,11 @@ class BehaviorHarnessTests(unittest.TestCase):
         self.assertTrue(content_assertion.path.name.startswith("U1-"))
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
-            unknowns = workspace / ".agent-wayfinder/platform-migration/unknowns"
+            unknowns = workspace / ".agent-wayfinder/request-ordering/unknowns"
             unknowns.mkdir(parents=True)
             stable_unknown = unknowns / "U1-any-clear-slug-is-valid.md"
             stable_unknown.write_text(
-                "# U1: Determine the safe migration order\n",
+                "# U1: Does the current project guarantee ordering?\n",
                 encoding="utf-8",
             )
             after_one = behavior.snapshot(workspace)

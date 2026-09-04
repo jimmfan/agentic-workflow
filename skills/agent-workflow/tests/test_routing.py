@@ -984,6 +984,11 @@ class RoutingContractTests(unittest.TestCase):
 
         self.assertNotIn("Evidence-driven plan change", hard_signal)
         self.assertIn("Evidence-driven plan change", soft_signal)
+        self.assertIn(
+            "A clear bounded plan does not select Wayfinder merely because later work "
+            "will execute or depend on it",
+            normalized_root,
+        )
 
         self.assertNotIn(
             "establishes or materially changes a plan that later work is expected "
@@ -1099,17 +1104,10 @@ class RoutingContractTests(unittest.TestCase):
             with self.subTest(root_boundary=boundary):
                 self.assertIn(boundary, normalized_root)
 
-        wayfinder_section = root_policy.split("## When to use Wayfinder", 1)[1]
-        assessment_rule = wayfinder_section.split("Unless the user opts out", 1)[
-            0
-        ].strip()
-        self.assertEqual(len(assessment_rule.splitlines()), 1)
-
         for boundary in (
             "consequential objective",
-            "reliable continuity",
-            "route, dependencies, choices, or involved areas remain materially unclear",
-            "Clear bounded work stays on its minimum useful route",
+            "root durable-coordination threshold",
+            "material uncertainty is not required",
             "An objective alone does not select Wayfinder",
         ):
             with self.subTest(skill_boundary=boundary):
@@ -1167,8 +1165,11 @@ class RoutingContractTests(unittest.TestCase):
             normalized_discovery,
         )
         self.assertIn(
-            "Compose Research when external evidence materially affects the decision",
+            "Compose Research only when its additional method materially helps",
             normalized_discovery,
+        )
+        self.assertIn(
+            "Already-sufficient evidence does not require", normalized_discovery
         )
         self.assertIn(
             "Compose Domain Modeling when ambiguity in domain concepts, terminology, or "
@@ -1188,6 +1189,10 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn(
             "does not select the project's preferred alternative",
             normalized_research,
+        )
+        self.assertIn("Return evidence to the caller", normalized_research)
+        self.assertIn(
+            "does not automatically require a Discovery transition", normalized_research
         )
 
         for domain_boundary in (

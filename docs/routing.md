@@ -23,9 +23,10 @@ Hard signals cover work that continues a relevant Wayfinder effort, is intended 
 Cross-session continuation includes a current request that creates or updates an external dependency whose result later in-scope work is expected to await or consume.
 They also cover conflicting sources that establish the same scoped claim, an uncommitted required project choice while independent work proceeds, coordinated responsible participants or areas, and source and scope needed to distinguish assumption from fact.
 Soft signals cover interacting consequential unresolved questions, durable distinctions across record or state categories, evidence-driven plan change, a meaningful dependency graph, and material fresh-agent reconstruction risk.
-Wayfinder is for a consequential objective needing reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear.
+Wayfinder is for a consequential objective needing durable coordination under this threshold, including known work spanning sessions, agents, external dependencies, or participants.
+Material uncertainty can justify continuity but is not required.
 A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
-When the route can already be responsibly established within one useful session, use Direct or the applicable planning workflow instead.
+For that bounded planning request, use Direct or the applicable planning workflow unless another durable-coordination signal applies.
 This is an activation rubric, not a weighted complexity score.
 Existing Wayfinder state alone never selects Wayfinder.
 A bounded read-only check may establish that the current work clearly continues a relevant effort.
@@ -64,6 +65,8 @@ Default route sequences are transitions with entry conditions, not mandatory pip
 Current-session actions remain in the session; Wayfinder holds durable coordination; specifications hold accepted scope and acceptance criteria; tickets hold approved independently deliverable work and blocking edges.
 Discovery resolves bounded consequential alternatives and tradeoffs, including architectural choices when that analysis materially helps.
 Research establishes externally sourced facts without selecting the project's preferred alternative.
+Research returns evidence to its caller; consequential evidence alone does not require Discovery, and already-sufficient evidence does not require a Research invocation.
+Compose either method only when it materially helps the current work.
 Domain Modeling joins Discovery or Wayfinder only when ambiguity in domain concepts, terminology or ubiquitous language, domain or context boundaries, or domain responsibilities and relationships is material; a choice being architectural does not select it.
 
 Two boundaries are intentionally explicit.

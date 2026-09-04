@@ -452,6 +452,8 @@ def check_semantic_contracts() -> None:
         (
             "Research establishes externally sourced facts and evidence.",
             "does not select the project's preferred alternative",
+            "Return evidence to the caller",
+            "does not automatically require a Discovery transition",
             "Do not create a standalone research file unless the user explicitly requests a durable research artifact.",
             "repository writes have action authorization",
         ),
@@ -463,7 +465,8 @@ def check_semantic_contracts() -> None:
         discovery,
         (
             "An architectural decision is one possible kind of consequential project choice",
-            "Compose Research when external evidence materially affects the decision.",
+            "Compose Research only when its additional method materially helps",
+            "Already-sufficient evidence does not require another Research invocation.",
             "Compose Domain Modeling when ambiguity in domain concepts, terminology, or context boundaries materially affects the decision.",
             "Discovery does not maintain architecture decision records or durable coordination state.",
         ),
@@ -508,6 +511,7 @@ def check_semantic_contracts() -> None:
         (
             "Wayfinder is Agent Workflow's sole durable coordination layer.",
             "An objective alone does not select Wayfinder.",
+            "material uncertainty is not required",
             "one objective and scope",
             "Scope may be clarified, narrowed, or elaborated",
             "objective and substantive scope remain the same",

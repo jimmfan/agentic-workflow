@@ -54,6 +54,8 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
   - A meaningful dependency graph.
   - Material fresh-agent reconstruction risk.
 
+A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
+
 A material update to an existing durable planning artifact for unfinished work may indicate continuation of an existing Wayfinder effort.
 Use detailed routing for the bounded read-only check needed to determine whether one relevant effort clearly matches.
 

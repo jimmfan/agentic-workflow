@@ -24,7 +24,9 @@ The specialist creates no Agent Workflow durable coordination state.
    An architectural decision is one possible kind of consequential project choice; architecture does not change the analysis or storage boundary.
 2. Separate evidence and constraints from assumptions, preferences, unresolved questions, and out-of-scope matters.
    Inspect repository evidence before asking the user for information the workspace can provide.
-3. Compose Research when external evidence materially affects the decision.
+3. Use primary sources for consequential or time-sensitive external facts.
+   Compose Research only when its additional method materially helps establish the needed evidence.
+   Already-sufficient evidence does not require another Research invocation.
    Compose Domain Modeling when ambiguity in domain concepts, terminology, or context boundaries materially affects the decision.
 4. Compare viable alternatives by benefits, costs, risks, reversibility, consequences, and evidence that would change the choice.
 5. Treat a consequential project choice as committed only when required evidence is sufficient and either accepted project policy determines the choice for that boundary or the person, role, or valid delegate with project decision authority commits it.

@@ -1,11 +1,12 @@
 ---
-description: Keep a lightweight structured map for a consequential objective that needs reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear. Clear bounded work stays on its minimum useful route.
+description: Keep a lightweight structured map for a consequential objective when durable coordination materially improves continuity across sessions, agents, external dependencies, or participants, including when the route remains unclear. Clear bounded work stays on its minimum useful route.
 name: wayfinder
 ---
 # Wayfinder
 
 Wayfinder is Agent Workflow's sole durable coordination layer.
-Routing selects Wayfinder for a consequential objective that needs reliable continuity because its route, dependencies, choices, or involved areas remain materially unclear.
+Routing selects Wayfinder for a consequential objective when the root durable-coordination threshold is met.
+Known work may still need continuity across sessions, agents, external dependencies, or participants; material uncertainty is not required.
 An objective alone does not select Wayfinder.
 Without that continuity need, clear bounded work, one isolated unresolved question, and read-only work stay on their minimum useful route.
 

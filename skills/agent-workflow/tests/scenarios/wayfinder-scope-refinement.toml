@@ -4,8 +4,7 @@ name = "New evidence refines scope within the same effort"
 fixture = "wayfinder-territory-invalidation"
 request = "The accepted architecture.md now clarifies the policy execution migration boundary. Update the coordination for this migration to reflect the current areas and handoffs, identify what can proceed now, and leave implementation untouched."
 starting_state = [
-  "A recognized current effort covers the policy execution migration, but its map predates architecture.md.",
-  "The accepted evidence narrows and elaborates the stated scope without changing the objective or substantive scope.",
+  "architecture.md records the accepted policy execution architecture.",
   "Repository-local coordination changes are authorized; implementation and unrelated effort changes are not.",
 ]
 expect = [
@@ -20,6 +19,7 @@ must_not = [
   "silent_decision_invention",
 ]
 live = false
+blind_grading = true
 verification_command = "Confirm that the existing policy execution migration map was refined in place from architecture.md, the unrelated audit-retention effort is untouched, and no synonymous or sibling effort was created."
 preserve_paths = [
   "architecture.md",
@@ -44,16 +44,6 @@ path = ".agent-wayfinder/policy-execution-migration/map.md"
 [[assertions]]
 kind = "path_contains"
 path = ".agent-wayfinder/policy-execution-migration/map.md"
-value = "# Policy execution migration"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/policy-execution-migration/map.md"
-value = "policy definition, evaluation, approved-intent execution, and result auditing"
-
-[[assertions]]
-kind = "path_contains"
-path = ".agent-wayfinder/policy-execution-migration/map.md"
 value = "Policy control plane"
 
 [[assertions]]
@@ -72,9 +62,40 @@ path = ".agent-wayfinder/policy-execution-migration/map.md"
 value = "approved intent"
 
 [[assertions]]
-kind = "path_contains"
+kind = "glob_any_matches"
 path = ".agent-wayfinder/policy-execution-migration/map.md"
-value = "Inventorying call sites"
+value = '''(?x)
+\b(?:
+  inventor(?:y|ying)\s+call\s+sites\b[^.!?]*\b(?:can|may)\s+(?:proceed|start|begin)
+  | inventor(?:y|ying)\s+call\s+sites\s+(?:is|remains)\s+ready
+  | (?:ready|independent)\s+work\s*:?\s*[-*]?\s*inventor(?:y|ying)\s+call\s+sites
+)\b
+'''
+
+[[assertions]]
+kind = "glob_none_matches"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = '''\binventor(?:y|ying)\s+call\s+sites\b[^.!?]*\b(?:is\s+(?:not\s+ready|blocked)|must\s+wait|cannot\s+proceed)\b'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = '''(?x)
+\b(?:
+  (?:approved[- ]intent\s+)?handoff\s+schema\s+(?:(?:is|remains)\s+)?(?:unresolved|pending|undecided|not\s+yet\s+(?:settled|chosen))
+  | (?:unresolved|pending|undecided)\s+(?:approved[- ]intent\s+)?handoff\s+schema
+)\b
+'''
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = "The combined service model is treated as authoritative"
+
+[[assertions]]
+kind = "glob_none_matches"
+path = ".agent-wayfinder/policy-execution-migration/map.md"
+value = '''#{1,6}\s+(?:Blockers(?: and dependencies)?|Dependencies)\s*\n+None\.?\s*(?:\n|\Z)'''
 
 [[assertions]]
 kind = "path_not_contains"

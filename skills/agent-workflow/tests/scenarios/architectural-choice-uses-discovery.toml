@@ -4,9 +4,7 @@ name = "Bounded architectural choice uses Discovery"
 fixture = "decision-only"
 request = "Analyze only the bounded architectural choice between SQLite and PostgreSQL for the durable backend. Compare the alternatives and tradeoffs, recommend one, identify who may commit the choice, and do not change repository files or resolve the separate encryption and retention choices."
 starting_state = [
-  "The backend choice is consequential but bounded to one decision question.",
-  "Its alternatives and tradeoffs can be analyzed in this session without durable coordination.",
-  "The domain concepts, terminology and ubiquitous language, domain or context boundaries, and domain responsibilities and relationships are not ambiguous.",
+  "docs/requirements.md lists the unresolved persistence choices; storage.py contains the current implementation.",
 ]
 expect = [
   "task_completed",
@@ -19,6 +17,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = false
+blind_grading = true
 verification_command = "This is a read-only decision analysis; report alternatives, tradeoffs, authority, and remaining uncertainty without changing files."
 preserve_paths = ["README.md", "docs/requirements.md", "storage.py"]
 forbid_created_globs = [

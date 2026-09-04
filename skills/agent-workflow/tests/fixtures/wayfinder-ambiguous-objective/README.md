@@ -1,6 +1,5 @@
 # Ambiguous provider modernization
 
-The current request for provider modernization has two materially different interpretations.
-Runtime adoption would replace the application's provider-facing runtime API.
-Deployment projection would change how provider configuration is generated and delivered.
-No project source chooses between those objectives or establishes a shared scope.
+The team has discussed replacing the application's provider-facing runtime API and changing how provider configuration is generated and delivered.
+These proposals affect separate components and can ship independently.
+Neither proposal has been selected, and no combined delivery scope has been agreed.

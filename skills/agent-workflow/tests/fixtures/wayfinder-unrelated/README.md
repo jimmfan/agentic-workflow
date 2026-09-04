@@ -1,4 +1,4 @@
-# Unrelated Wayfinder fixture
+# Product greeting
 
-The existing database-migration map is unrelated to the requested greeting
-change. Complete only the small code edit and validate with `python verify.py`.
+`app.py` supplies the product greeting.
+Validate changes with `python verify.py`.

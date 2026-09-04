@@ -107,6 +107,10 @@ The validator rejects unrecognized behavior names, unsafe paths, missing preserv
 
 The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement while the objective and substantive scope remain the same, specialist composition and exclusions, pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
 These are human-authored behavior contracts, not evidence that an unrun model obeyed them.
+The clear-objective, implicit new-effort, ambiguous-objective, scope-refinement, and specialist-selection scenarios use blind grading with factual starting evidence.
+Guided cases remain useful for contract smoke tests but do not establish implicit selection.
+New-effort coordination may remain entirely in the map; selective-question and authority-choice scenarios separately exercise supporting records where their value is established.
+Evaluator regression tests accept sufficient map-only coordination and reject appended evidence that leaves stale claims, loses the unresolved handoff condition, or blocks independent inventory work.
 
 ## Fixtures and reset
 

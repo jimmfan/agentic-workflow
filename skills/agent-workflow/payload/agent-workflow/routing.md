@@ -36,7 +36,7 @@ This table resolves overlaps:
 
 A bounded architectural choice remains Direct or uses Discovery when alternative and tradeoff analysis materially helps.
 It does not select Domain Modeling merely because the choice is architectural.
-Discovery may compose Research when external evidence materially affects the decision and Domain Modeling when domain-model ambiguity materially affects it.
+Discovery may compose Research when its additional method materially helps establish external evidence and Domain Modeling when domain-model ambiguity materially affects the decision.
 
 Use the table to guide the current routing choice.
 How a skill is used for one request does not determine how it must be used later.

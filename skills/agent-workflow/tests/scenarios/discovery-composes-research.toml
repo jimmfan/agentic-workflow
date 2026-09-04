@@ -4,8 +4,7 @@ name = "Discovery composes Research for consequential external facts"
 fixture = "decision-only"
 request = "Analyze only the SQLite versus PostgreSQL backend choice. Research current official support for encryption and key-management constraints that materially affect the choice, cite the primary sources, then compare alternatives and tradeoffs without committing the project decision or changing repository files."
 starting_state = [
-  "A bounded consequential backend choice needs current externally sourced facts before its alternatives can be compared honestly.",
-  "The domain concepts, terminology, context boundaries, and domain responsibilities are already clear, and no durable coordination is needed.",
+  "docs/requirements.md lists the backend, encryption, and key-ownership choices.",
 ]
 expect = [
   "task_completed",
@@ -20,6 +19,7 @@ must_not = [
   "overwrite_project_owned_state",
 ]
 live = false
+blind_grading = true
 verification_command = "This is read-only research-backed decision analysis; cite official sources and keep the project choice uncommitted."
 preserve_paths = ["README.md", "docs/requirements.md", "storage.py"]
 forbid_created_globs = [
