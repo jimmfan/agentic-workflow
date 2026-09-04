@@ -265,10 +265,34 @@ class BehaviorHarnessTests(unittest.TestCase):
         self.assertFalse(prohibited_result.passed)
         self.assertIn("domain-modeling", prohibited_result.detail)
 
-    def test_implicit_effort_cases_are_not_route_coached(self) -> None:
+    def test_objective_centered_scenario_catalog_covers_routing_boundaries(
+        self,
+    ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
+        simple = scenarios["goal-directed-clear-request"]
         new_effort = scenarios["wayfinder-new-effort"]
         refinement = scenarios["wayfinder-scope-refinement"]
+
+        self.assertIn("wayfinder", simple.route_must_not_include)
+        self.assertTrue(
+            {
+                "code-review",
+                "codebase-design",
+                "debugging",
+                "discovery",
+                "domain-modeling",
+                "grilling",
+                "prototype",
+                "research",
+                "tdd",
+                "to-spec",
+                "to-tickets",
+                "wayfinder",
+            }
+            <= set(simple.route_must_not_include)
+        )
+        self.assertNotIn("wayfinder", simple.request.casefold())
+        self.assertIn("complete desired outcome", simple.starting_state[0].casefold())
 
         self.assertNotRegex(
             new_effort.request.casefold(),
@@ -276,12 +300,118 @@ class BehaviorHarnessTests(unittest.TestCase):
         )
         self.assertNotIn("resume wayfinder", refinement.request.casefold())
         self.assertEqual(new_effort.route_must_include, ("wayfinder",))
+        self.assertTrue(
+            {
+                "issues/**",
+                "planning/**",
+                "tickets/**",
+                "wayfinder/**",
+            }
+            <= set(new_effort.forbid_created_globs)
+        )
         self.assertEqual(refinement.route_must_include, ("wayfinder",))
         self.assertIn("domain-modeling", refinement.route_must_not_include)
+        self.assertTrue(
+            any(
+                ".agent-wayfinder" in assertion.path.as_posix()
+                for assertion in new_effort.assertions
+            )
+        )
+        self.assertTrue(
+            any(
+                assertion.kind == "glob_count"
+                and assertion.path == Path(".agent-wayfinder/*/map.md")
+                and assertion.count == 1
+                for assertion in new_effort.assertions
+            )
+        )
         self.assertEqual(
             refinement.state_must_include,
             (Path(".agent-wayfinder/policy-execution-migration/map.md"),),
         )
+        self.assertIn("*", refinement.forbid_created_globs)
+
+        ambiguous = scenarios["wayfinder-ambiguous-new-objective"]
+        self.assertIn("blocked_cleanly", ambiguous.expect)
+        self.assertIn("repository_unchanged", ambiguous.expect)
+        self.assertIn(".agent-wayfinder/**", ambiguous.forbid_created_globs)
+
+        architectural = scenarios["architectural-choice-uses-discovery"]
+        self.assertIn("discovery", architectural.route_must_include)
+        self.assertIn("domain-modeling", architectural.route_must_not_include)
+        self.assertIn("wayfinder", architectural.route_must_not_include)
+
+        sourced_choice = scenarios["discovery-composes-research"]
+        self.assertIn("discovery", sourced_choice.route_must_include)
+        self.assertIn("research", sourced_choice.route_must_include)
+        self.assertIn("domain-modeling", sourced_choice.route_must_not_include)
+
+        domain_modeling = scenarios["wayfinder-domain-modeling-discovery"]
+        self.assertIn("Domain Modeling", domain_modeling.report_must_include)
+        self.assertIn("wayfinder", domain_modeling.route_must_include)
+        self.assertIn("domain-modeling", domain_modeling.route_must_include)
+        for domain_boundary in (
+            "domain concepts",
+            "context boundaries",
+            "relationships",
+        ):
+            with self.subTest(domain_boundary=domain_boundary):
+                self.assertIn(domain_boundary, domain_modeling.verification_command)
+
+    def test_scope_refinement_forbids_unrelated_product_artifacts(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-scope-refinement"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            map_path = workspace / ".agent-wayfinder/policy-execution-migration/map.md"
+            map_path.write_text(
+                map_path.read_text(encoding="utf-8") + "\nRefined boundary.\n",
+                encoding="utf-8",
+            )
+            evidence_root = workspace / ".behavior-evidence"
+            evidence_root.mkdir()
+            (evidence_root / "report.json").write_text("{}\n", encoding="utf-8")
+
+            evidence_args = {
+                "scenario": scenario,
+                "workspace": workspace,
+                "before": before,
+                "stdout": "[route: router → wayfinder]",
+                "stderr": "",
+                "returncode": 0,
+                "report": {"status": "success"},
+                "verification": (),
+                "route_components": ("wayfinder",),
+            }
+            allowed = behavior.RunEvidence(
+                after=behavior.snapshot(workspace),
+                **evidence_args,
+            )
+            allowed_result = next(
+                item
+                for item in behavior.evaluate(allowed)
+                if item.name == "must-not:unnecessary_planning_artifacts"
+            )
+            self.assertTrue(allowed_result.passed, allowed_result.detail)
+
+            (workspace / "unrelated-notes.md").write_text(
+                "unrelated\n", encoding="utf-8"
+            )
+            unrelated = behavior.RunEvidence(
+                after=behavior.snapshot(workspace),
+                **evidence_args,
+            )
+            unrelated_result = next(
+                item
+                for item in behavior.evaluate(unrelated)
+                if item.name == "must-not:unnecessary_planning_artifacts"
+            )
+            self.assertFalse(unrelated_result.passed)
+            self.assertIn("unrelated-notes.md", unrelated_result.detail)
 
     def test_success_report_without_failure_recovery_fails_the_contract(self) -> None:
         scenario = next(

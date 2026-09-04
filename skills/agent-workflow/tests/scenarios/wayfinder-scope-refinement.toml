@@ -34,13 +34,7 @@ state_must_not_include = [
   ".agent-wayfinder/audit-retention/map.md",
 ]
 forbid_created_globs = [
-  ".agent-wayfinder/policy-control-plane",
-  ".agent-wayfinder/policy-control-plane/**",
-  ".agent-wayfinder/policy-execution-modernization",
-  ".agent-wayfinder/policy-execution-modernization/**",
-  ".agent-wayfinder/policy-execution-migration-v2",
-  ".agent-wayfinder/policy-execution-migration-v2/**",
-  ".agent-wayfinder/policy-execution-migration/decisions.md",
+  "*",
 ]
 
 [[assertions]]

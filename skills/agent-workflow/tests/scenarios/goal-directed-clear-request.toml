@@ -27,7 +27,20 @@ forbid_created_globs = [
   "wayfinder/**",
 ]
 route_must_include = []
-route_must_not_include = ["wayfinder"]
+route_must_not_include = [
+  "code-review",
+  "codebase-design",
+  "debugging",
+  "discovery",
+  "domain-modeling",
+  "grilling",
+  "prototype",
+  "research",
+  "tdd",
+  "to-spec",
+  "to-tickets",
+  "wayfinder",
+]
 
 [[assertions]]
 kind = "path_contains"

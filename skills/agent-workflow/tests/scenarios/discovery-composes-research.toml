@@ -5,7 +5,7 @@ fixture = "decision-only"
 request = "Analyze only the SQLite versus PostgreSQL backend choice. Research current official support for encryption and key-management constraints that materially affect the choice, cite the primary sources, then compare alternatives and tradeoffs without committing the project decision or changing repository files."
 starting_state = [
   "A bounded consequential backend choice needs current externally sourced facts before its alternatives can be compared honestly.",
-  "The structural domain model is already clear, and no durable coordination is needed.",
+  "The domain concepts, terminology, context boundaries, and domain responsibilities are already clear, and no durable coordination is needed.",
 ]
 expect = [
   "task_completed",

@@ -25,6 +25,12 @@ route_must_not_include = ["domain-modeling"]
 forbid_created_globs = [
   "issues",
   "issues/**",
+  "planning",
+  "planning/**",
+  "tickets",
+  "tickets/**",
+  "wayfinder",
+  "wayfinder/**",
   ".agent-wayfinder/*/tickets",
   ".agent-wayfinder/*/tickets/**",
 ]

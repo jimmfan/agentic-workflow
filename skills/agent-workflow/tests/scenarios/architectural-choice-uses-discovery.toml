@@ -6,7 +6,7 @@ request = "Analyze only the bounded architectural choice between SQLite and Post
 starting_state = [
   "The backend choice is consequential but bounded to one decision question.",
   "Its alternatives and tradeoffs can be analyzed in this session without durable coordination.",
-  "The domain concepts, terminology, boundaries, responsibilities, areas, and relationships are not ambiguous.",
+  "The domain concepts, terminology and ubiquitous language, domain or context boundaries, and domain responsibilities and relationships are not ambiguous.",
 ]
 expect = [
   "task_completed",

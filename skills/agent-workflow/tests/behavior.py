@@ -460,15 +460,14 @@ def changed_paths(
 def meaningful_changes(evidence: RunEvidence) -> set[str]:
     created, modified, deleted = changed_paths(evidence.before, evidence.after)
     result = created | modified | deleted
-    return {
-        path
-        for path in result
-        if path not in FRAMEWORK_CHANGE_PATHS
-        and not any(
-            path == prefix.rstrip("/") or path.startswith(prefix)
-            for prefix in FRAMEWORK_CHANGE_PREFIXES
-        )
-    }
+    return {path for path in result if not framework_change(path)}
+
+
+def framework_change(path: str) -> bool:
+    return path in FRAMEWORK_CHANGE_PATHS or any(
+        path == prefix.rstrip("/") or path.startswith(prefix)
+        for prefix in FRAMEWORK_CHANGE_PREFIXES
+    )
 
 
 def repository_changes(evidence: RunEvidence) -> set[str]:
@@ -535,6 +534,7 @@ def forbidden_created(evidence: RunEvidence) -> tuple[bool, str]:
     matches = sorted(
         path
         for path in created
+        if not framework_change(path)
         if path_matches_any(path, evidence.scenario.forbid_created_globs)
     )
     if matches:
