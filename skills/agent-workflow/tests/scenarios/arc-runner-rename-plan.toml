@@ -21,9 +21,9 @@ forbid_created_globs = [".agent-wayfinder/**"]
 route_must_not_include = ["wayfinder"]
 response_must_match = [
   'arc-runner-set-local',
-  '(?:rename|change|set|update|edit)[^\n]*values\.yaml|values\.yaml[^\n]*(?:rename|change|set|update|edit)',
-  '(?:update|replace|change|edit)[^\n]*README\.md|README\.md[^\n]*(?:update|replace|change|edit)',
-  '(?:run|execute|check|verify)[^\n]*verify\.py|verify\.py[^\n]*(?:run|execute|check|verify)',
+  '(?:rename|change|set|update|edit).*values\.yaml|values\.yaml.*(?:rename|change|set|update|edit)',
+  '(?:update|replace|change|edit).*README\.md|README\.md.*(?:update|replace|change|edit)',
+  '(?:run|execute|check|verify).*verify\.py|verify\.py.*(?:run|execute|check|verify)',
 ]
 
 [[assertions]]

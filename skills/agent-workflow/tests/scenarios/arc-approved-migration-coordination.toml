@@ -71,4 +71,4 @@ value = "(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|order|appr
 [[assertions]]
 kind = "glob_none_matches"
 path = ".agent-wayfinder/*/unknowns/U*.md"
-value = "(?m)^#+[^\\n]*(?:which|what|choose|decide|select|determine)[^\\n]*(?:identity|rollout|rollback)|^#+[^\\n]*(?:identity|rollout|rollback)[^\\n]*(?:choose|decide|select|unresolved|undecided)"
+value = "(?m)^#+[^\\n]*(?:(?:which|what|choose|decide|select|determine)\\s+(?:the\\s+)?(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|order|approach)|rollback\\s+(?:approach|boundary|boundaries))|(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|approach)|rollback\\s+(?:approach|boundaries))[^\\n]*(?:unresolved|undecided))"

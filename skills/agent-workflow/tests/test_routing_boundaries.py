@@ -180,6 +180,19 @@ class RoutingBoundaryTests(unittest.TestCase):
             unknown.parent.mkdir()
             for question, expected in (
                 (
+                    "# U1: What identity permissions must Security approve?\n"
+                    "The identity mechanism, rollout, and rollback remain settled.\n",
+                    True,
+                ),
+                (
+                    "# U1: What permissions must Security approve for workload identity?\n",
+                    True,
+                ),
+                (
+                    "# U1: What Security approval is needed before rollout?\n",
+                    True,
+                ),
+                (
                     "# U1: When will Security approve workload permissions?\nThe approved identity mechanism and rollout are in docs/migration.md.\n",
                     True,
                 ),
@@ -288,6 +301,16 @@ class RoutingBoundaryTests(unittest.TestCase):
                             )
                         )
                     )
+            multiline = (
+                "1. In part-03-arc-runners/values.yaml:\n"
+                "   Change runnerScaleSetName from arc-runner-set to arc-runner-set-local.\n\n"
+                "2. In README.md:\n"
+                "   Update the documented runs-on reference.\n\n"
+                "3. For verification:\n"
+                "   Run python part-03-arc-runners/verify.py.\n"
+                "[route: router → direct]"
+            )
+            self.assertEqual(self.failures(replace(evidence, stdout=multiline)), [])
             self.assertEqual(
                 self.failures(
                     replace(
