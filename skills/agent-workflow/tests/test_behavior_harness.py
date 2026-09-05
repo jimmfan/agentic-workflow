@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import json
 from pathlib import Path
 import subprocess
@@ -216,6 +217,150 @@ class BehaviorHarnessTests(unittest.TestCase):
                         if item.name == "route-marker:exactly-one-valid-final"
                     )
                     self.assertFalse(result.passed)
+
+    def test_route_contract_can_require_and_exclude_components(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "architectural-choice-uses-discovery"
+        )
+        self.assertEqual(scenario.route_must_include, ("discovery",))
+        self.assertEqual(
+            scenario.route_must_not_include,
+            ("domain-modeling", "wayfinder"),
+        )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            snapshot = behavior.snapshot(workspace)
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=snapshot,
+                after=snapshot,
+                stdout="[route: router → direct]",
+                stderr="",
+                returncode=0,
+                report={"status": "success", "summary": "read-only comparison"},
+                verification=(),
+                route_components=("direct",),
+            )
+            required_result = next(
+                item
+                for item in behavior.evaluate(evidence)
+                if item.name == "route-marker:required-components"
+            )
+            prohibited_evidence = replace(
+                evidence,
+                stdout="[route: router → discovery → domain-modeling]",
+                route_components=("discovery", "domain-modeling"),
+            )
+            prohibited_result = next(
+                item
+                for item in behavior.evaluate(prohibited_evidence)
+                if item.name == "route-marker:prohibited-components"
+            )
+        self.assertFalse(required_result.passed)
+        self.assertIn("discovery", required_result.detail)
+        self.assertFalse(prohibited_result.passed)
+        self.assertIn("domain-modeling", prohibited_result.detail)
+
+    def test_implicit_routing_prompts_hide_classification(self) -> None:
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        for name in (
+            "objective-clear-request",
+            "arc-runner-rename-plan",
+            "arc-managed-identity-coordination",
+            "arc-approved-migration-coordination",
+            "simple-bounded-task",
+            "wayfinder-new-effort",
+            "wayfinder-ambiguous-new-objective",
+            "wayfinder-scope-refinement",
+            "architectural-choice-uses-discovery",
+            "discovery-composes-research",
+        ):
+            with self.subTest(scenario=name):
+                scenario = scenarios[name]
+                prompt = behavior.build_prompt(scenario)
+                self.assertTrue(scenario.blind_grading)
+                for hidden in (
+                    scenario.name,
+                    scenario.verification_command,
+                    *scenario.expect,
+                    *scenario.must_not,
+                    *(str(path) for path in scenario.state_must_include),
+                    *(str(path) for path in scenario.state_must_not_include),
+                ):
+                    if hidden:
+                        self.assertNotIn(hidden, prompt)
+                for leaked_judgment in (
+                    "No consequential uncertainty",
+                    "without changing the objective or substantive scope",
+                    "no durable coordination is needed",
+                    "without durable coordination",
+                    "must not select or burden this route",
+                    "Use the minimum clarification needed",
+                ):
+                    self.assertNotIn(leaked_judgment, prompt)
+                with tempfile.TemporaryDirectory() as temporary:
+                    workspace = behavior.copy_fixture(scenario, Path(temporary))
+                    self.assertNotIn(scenario.id, workspace.name)
+                    self.assertNotIn(scenario.fixture, workspace.name)
+
+    def test_scope_refinement_forbids_unrelated_product_artifacts(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-scope-refinement"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            map_path = workspace / ".agent-wayfinder/policy-execution-migration/map.md"
+            map_path.write_text(
+                map_path.read_text(encoding="utf-8") + "\nRefined boundary.\n",
+                encoding="utf-8",
+            )
+            evidence_root = workspace / ".behavior-evidence"
+            evidence_root.mkdir()
+            (evidence_root / "report.json").write_text("{}\n", encoding="utf-8")
+
+            evidence_args = {
+                "scenario": scenario,
+                "workspace": workspace,
+                "before": before,
+                "stdout": "[route: router → wayfinder]",
+                "stderr": "",
+                "returncode": 0,
+                "report": {"status": "success"},
+                "verification": (),
+                "route_components": ("wayfinder",),
+            }
+            allowed = behavior.RunEvidence(
+                after=behavior.snapshot(workspace),
+                **evidence_args,
+            )
+            allowed_result = next(
+                item
+                for item in behavior.evaluate(allowed)
+                if item.name == "must-not:unnecessary_planning_artifacts"
+            )
+            self.assertTrue(allowed_result.passed, allowed_result.detail)
+
+            (workspace / "unrelated-notes.md").write_text(
+                "unrelated\n", encoding="utf-8"
+            )
+            unrelated = behavior.RunEvidence(
+                after=behavior.snapshot(workspace),
+                **evidence_args,
+            )
+            unrelated_result = next(
+                item
+                for item in behavior.evaluate(unrelated)
+                if item.name == "must-not:unnecessary_planning_artifacts"
+            )
+            self.assertFalse(unrelated_result.passed)
+            self.assertIn("unrelated-notes.md", unrelated_result.detail)
 
     def test_success_report_without_failure_recovery_fails_the_contract(self) -> None:
         scenario = next(
@@ -448,7 +593,7 @@ class BehaviorHarnessTests(unittest.TestCase):
         scenario = next(
             item
             for item in behavior.load_scenarios()
-            if item.id == "wayfinder-new-effort"
+            if item.id == "wayfinder-cross-system-fact-boundary"
         )
         count_assertion = next(
             item
@@ -463,11 +608,11 @@ class BehaviorHarnessTests(unittest.TestCase):
         self.assertTrue(content_assertion.path.name.startswith("U1-"))
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
-            unknowns = workspace / ".agent-wayfinder/platform-migration/unknowns"
+            unknowns = workspace / ".agent-wayfinder/request-ordering/unknowns"
             unknowns.mkdir(parents=True)
             stable_unknown = unknowns / "U1-any-clear-slug-is-valid.md"
             stable_unknown.write_text(
-                "# U1: Determine the safe migration order\n",
+                "# U1: Does the current project guarantee ordering?\n",
                 encoding="utf-8",
             )
             after_one = behavior.snapshot(workspace)

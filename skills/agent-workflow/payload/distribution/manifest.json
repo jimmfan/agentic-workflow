@@ -29,10 +29,6 @@
       "target": ".agents/skills/codebase-design/SKILL.md"
     },
     {
-      "source": "skills/domain-modeling/ADR-FORMAT.md",
-      "target": ".agents/skills/domain-modeling/ADR-FORMAT.md"
-    },
-    {
       "source": "skills/domain-modeling/CONTEXT-FORMAT.md",
       "target": ".agents/skills/domain-modeling/CONTEXT-FORMAT.md"
     },

@@ -52,6 +52,7 @@ blind_grading = false
 verification_command = "Run python verify.py after the change."
 preserve_paths = ["project-state/unknowns.md"]
 forbid_created_globs = ["/**"]
+route_must_include = ["implement"]
 route_must_not_include = ["discovery"]
 state_must_include = [".agent-wayfinder/example/map.md"]
 state_must_not_include = [".agent-wayfinder/example/unknowns/U9-unrelated.md"]
@@ -91,6 +92,9 @@ Prefer ordinary guided smoke tests when prompt contamination is not the behavior
 Case-specific assertions support path existence, UTF-8 substring presence/absence, and case-insensitive substring checks or exact regular-file counts for a safe relative glob.
 `glob_any_matches` and `glob_none_matches` apply a case-insensitive expression that may span newlines to require a match in at least one or no matching files; use them sparingly when related semantic outcomes must be associated without requiring a particular document layout.
 `glob_contains` requires every match to contain the value, while `glob_any_contains` and `glob_none_contains` test whether at least one or no matching file contains it without fixing the artifact count.
+Optional `response_must_match` expressions check the final stdout response, case-insensitively and across newlines.
+Use them sparingly for chat deliverables such as a plan whose useful contents cannot be established from repository state or a success report alone.
+These evaluator expressions are never included in the agent prompt.
 A broad exact count can reject extra children while a stable-ID content glob such as `U1-*.md` requires the intended identity and meaning without fixing the descriptive filename slug.
 This keeps contracts focused on outcomes and prevents the harness from becoming a second router.
 
@@ -98,11 +102,18 @@ The optional `state_must_include` and `state_must_not_include` arrays constrain 
 They make progressive-loading behavior observable without asking for private reasoning: a relevant map/child must be reported as consulted, while a known unrelated child must not be.
 Every named path must be a regular file in the starting fixture.
 
+The optional `route_must_include` and `route_must_not_include` arrays constrain the final route marker by required and prohibited executed components.
+They test specialist boundaries without treating request phrases as routing triggers.
+
 A new scenario should need one TOML file and one small fixture directory.
 The validator rejects unrecognized behavior names, unsafe paths, missing preserved files, unrecognized fields, and unsupported assertion kinds.
 
-The deterministic catalog includes pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
+The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement while the objective and substantive scope remain the same, specialist composition and exclusions, pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
 These are human-authored behavior contracts, not evidence that an unrun model obeyed them.
+The clear-objective, implicit new-effort, ambiguous-objective, scope-refinement, and specialist-selection scenarios use blind grading with factual starting evidence.
+Guided cases remain useful for contract smoke tests but do not establish implicit selection.
+New-effort coordination may remain entirely in the map; selective-question and authority-choice scenarios separately exercise supporting records where their value is established.
+Evaluator regression tests accept sufficient map-only coordination and reject appended evidence that leaves stale claims, loses the unresolved handoff condition, or blocks independent inventory work.
 
 ## Fixtures and reset
 
@@ -179,6 +190,41 @@ python3 skills/agent-workflow/tests/behavior.py live \
 Without it, every scenario marked `live = true` runs.
 Kept workspaces and reports are persistent caller artifacts; remove those explicitly after review.
 The normal temporary mode cleans workspaces automatically.
+
+### Canonical Wayfinder activation boundary set
+
+This set reuses the blind `objective-clear-request` implementation case and adds three ARC cases:
+
+| Scenario | Boundary |
+|---|---|
+| `objective-clear-request` | Complete and verify the greeting change without Wayfinder; other appropriate routes remain allowed. |
+| `arc-managed-identity-coordination` | Preserve one migration effort with unresolved rollout/rollback, pending Security input, and independent preparation. |
+| `arc-approved-migration-coordination` | Preserve one effort across a pending Security approval even though identity, rollout, and rollback are already settled. |
+| `arc-runner-rename-plan` | Return configuration, reference-update, and verification steps without Wayfinder; a project plan artifact alone does not fail this routing case. |
+
+All four use `blind_grading = true` with factual starting state.
+The ARC cases use two small synthetic fixtures, `arc-local` and `arc-approved`; only the latter contains accepted migration evidence.
+Runs copy these local fixtures and create a fresh Git baseline using the existing harness.
+They never clone `learn-kubernetes` or require cluster credentials.
+The ARC verification script checks local configuration references only; it cannot establish cluster health or prove a real migration has zero downtime.
+
+Set `AGENT_WORKFLOW_AGENT_COMMAND_JSON` to a JSON command array satisfying the live-runner contract above, then run this exact command from the source repository root:
+
+```bash
+uv run python skills/agent-workflow/tests/behavior.py live \
+  --agent-command-json "$AGENT_WORKFLOW_AGENT_COMMAND_JSON" \
+  --scenario objective-clear-request \
+  --scenario arc-managed-identity-coordination \
+  --scenario arc-approved-migration-coordination \
+  --scenario arc-runner-rename-plan \
+  --output /tmp/agent-workflow-routing-regression.json
+```
+
+The positive cases accept map-only coordination and do not require fixed U/E/F/D counts.
+The known-route case permits a useful Security question while rejecting questions that reopen settled choices.
+Deterministic evaluator tests in `test_routing_boundaries.py` challenge missing or duplicate maps, contradictory current state, manufactured choice questions, configuration mutation, missing plan steps, and unwanted Wayfinder state.
+The existing scope-refinement falsification test also rejects appending new terminology while leaving incompatible current claims intact.
+These checks test the evaluator; only an actual live run supplies evidence of agent routing behavior.
 
 ## Current limitations
 

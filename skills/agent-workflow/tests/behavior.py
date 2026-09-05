@@ -87,10 +87,12 @@ SCENARIO_FIELDS = {
     "verification_command",
     "preserve_paths",
     "forbid_created_globs",
+    "route_must_include",
     "route_must_not_include",
     "state_must_include",
     "state_must_not_include",
     "report_must_include",
+    "response_must_match",
     "assertions",
 }
 
@@ -129,11 +131,13 @@ class Scenario:
     verification_command: str
     preserve_paths: tuple[PurePosixPath, ...]
     forbid_created_globs: tuple[str, ...]
+    route_must_include: tuple[str, ...]
     route_must_not_include: tuple[str, ...]
     state_must_include: tuple[PurePosixPath, ...]
     state_must_not_include: tuple[PurePosixPath, ...]
     report_must_include: tuple[str, ...]
     assertions: tuple[Assertion, ...]
+    response_must_match: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -327,11 +331,24 @@ def load_scenario(path: Path) -> Scenario:
     for pattern in forbid_created_globs:
         if pattern.startswith(("/", "\\")) or ".." in PurePosixPath(pattern).parts:
             raise BehaviorError(f"scenario {path.name} has an unsafe glob: {pattern}")
+    route_requirements = string_list(
+        raw.get("route_must_include", []),
+        f"{path.name}.route_must_include",
+        allow_empty=True,
+    )
     route_exclusions = string_list(
         raw.get("route_must_not_include", []),
         f"{path.name}.route_must_not_include",
         allow_empty=True,
     )
+    route_overlap = set(item.lower() for item in route_requirements) & set(
+        item.lower() for item in route_exclusions
+    )
+    if route_overlap:
+        raise BehaviorError(
+            f"scenario {path.name} both requires and prohibits route components: "
+            + ", ".join(sorted(route_overlap))
+        )
     state_must_include = tuple(
         safe_relative(item, f"{path.name}.state_must_include")
         for item in string_list(
@@ -369,6 +386,16 @@ def load_scenario(path: Path) -> Scenario:
         f"{path.name}.report_must_include",
         allow_empty=True,
     )
+    response_must_match = string_list(
+        raw.get("response_must_match", []),
+        f"{path.name}.response_must_match",
+        allow_empty=True,
+    )
+    for pattern in response_must_match:
+        try:
+            re.compile(pattern)
+        except re.error as exc:
+            raise BehaviorError(f"{path.name}.response_must_match: {exc}") from exc
     verification_command = raw.get("verification_command", "")
     if not isinstance(verification_command, str):
         raise BehaviorError(
@@ -390,11 +417,13 @@ def load_scenario(path: Path) -> Scenario:
         verification_command=verification_command.strip(),
         preserve_paths=preserve_paths,
         forbid_created_globs=forbid_created_globs,
+        route_must_include=tuple(item.lower() for item in route_requirements),
         route_must_not_include=tuple(item.lower() for item in route_exclusions),
         state_must_include=state_must_include,
         state_must_not_include=state_must_not_include,
         report_must_include=report_must_include,
         assertions=assertions,
+        response_must_match=response_must_match,
     )
 
 
@@ -444,15 +473,14 @@ def changed_paths(
 def meaningful_changes(evidence: RunEvidence) -> set[str]:
     created, modified, deleted = changed_paths(evidence.before, evidence.after)
     result = created | modified | deleted
-    return {
-        path
-        for path in result
-        if path not in FRAMEWORK_CHANGE_PATHS
-        and not any(
-            path == prefix.rstrip("/") or path.startswith(prefix)
-            for prefix in FRAMEWORK_CHANGE_PREFIXES
-        )
-    }
+    return {path for path in result if not framework_change(path)}
+
+
+def framework_change(path: str) -> bool:
+    return path in FRAMEWORK_CHANGE_PATHS or any(
+        path == prefix.rstrip("/") or path.startswith(prefix)
+        for prefix in FRAMEWORK_CHANGE_PREFIXES
+    )
 
 
 def repository_changes(evidence: RunEvidence) -> set[str]:
@@ -519,6 +547,7 @@ def forbidden_created(evidence: RunEvidence) -> tuple[bool, str]:
     matches = sorted(
         path
         for path in created
+        if not framework_change(path)
         if path_matches_any(path, evidence.scenario.forbid_created_globs)
     )
     if matches:
@@ -538,6 +567,15 @@ def route_excluded(evidence: RunEvidence) -> tuple[bool, str]:
             matches
         )
     return True, "reported route does not contain prohibited components"
+
+
+def route_included(evidence: RunEvidence) -> tuple[bool, str]:
+    required = set(evidence.scenario.route_must_include)
+    actual = {component.lower() for component in evidence.route_components}
+    missing = sorted(required - actual)
+    if missing:
+        return False, "reported route omits required components: " + ", ".join(missing)
+    return True, "reported route contains all required components"
 
 
 def route_visible(evidence: RunEvidence) -> tuple[bool, str]:
@@ -777,6 +815,15 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     results: list[CheckResult] = [
         evaluate_assertion(evidence, item) for item in evidence.scenario.assertions
     ]
+    for index, pattern in enumerate(evidence.scenario.response_must_match):
+        results.append(
+            CheckResult(
+                f"response:matches:{index + 1}",
+                re.search(pattern, evidence.stdout, re.IGNORECASE | re.DOTALL)
+                is not None,
+                f"required response pattern: {pattern}",
+            )
+        )
     current_shape_ok, current_shape_detail = recognized_wayfinder_changes(evidence)
     results.append(
         CheckResult(
@@ -787,8 +834,23 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     )
     preserved_ok, preserved_detail = preserved(evidence)
     forbidden_ok, forbidden_detail = forbidden_created(evidence)
-    route_ok, route_detail = route_excluded(evidence)
+    route_exclusions_ok, route_exclusions_detail = route_excluded(evidence)
+    route_required_ok, route_required_detail = route_included(evidence)
     visible, visibility_detail = route_visible(evidence)
+    results.append(
+        CheckResult(
+            "route-marker:prohibited-components",
+            route_exclusions_ok,
+            route_exclusions_detail,
+        )
+    )
+    results.append(
+        CheckResult(
+            "route-marker:required-components",
+            route_required_ok,
+            route_required_detail,
+        )
+    )
     results.append(
         CheckResult("route-marker:exactly-one-valid-final", visible, visibility_detail)
     )
@@ -901,14 +963,17 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
             status != "success" or bool(sources),
             f"research sources={len(sources)}",
         ),
-        "full_discovery_for_lookup": (route_ok and forbidden_ok, route_detail),
+        "full_discovery_for_lookup": (
+            route_exclusions_ok and forbidden_ok,
+            route_exclusions_detail,
+        ),
         "silent_decision_invention": (
             not decision_artifact_changed(evidence),
             "no D# or project artifact recording a decision was created or updated",
         ),
         "repeat_resolved_discovery": (
-            route_ok and forbidden_ok and preserved_ok,
-            route_detail,
+            route_exclusions_ok and forbidden_ok and preserved_ok,
+            route_exclusions_detail,
         ),
         "overwrite_project_owned_state": (preserved_ok, preserved_detail),
         "success_after_failed_check": (

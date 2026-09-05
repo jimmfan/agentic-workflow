@@ -63,7 +63,7 @@ EXPECTED_BASE_PAYLOAD_FILES = frozenset(
 EXPECTED_SKILL_FILES = {
     "code-review": frozenset({"SKILL.md"}),
     "codebase-design": frozenset({"DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md"}),
-    "domain-modeling": frozenset({"ADR-FORMAT.md", "CONTEXT-FORMAT.md", "SKILL.md"}),
+    "domain-modeling": frozenset({"CONTEXT-FORMAT.md", "SKILL.md"}),
     "grilling": frozenset({"SKILL.md"}),
     "implement": frozenset({"SKILL.md"}),
     "prototype": frozenset({"LOGIC.md", "SKILL.md", "UI.md"}),
@@ -450,9 +450,58 @@ def check_semantic_contracts() -> None:
         "Research",
         research,
         (
+            "Research establishes externally sourced facts and evidence.",
+            "does not select the project's preferred alternative",
+            "Return evidence to the caller",
+            "does not automatically require a Discovery transition",
             "Do not create a standalone research file unless the user explicitly requests a durable research artifact.",
             "repository writes have action authorization",
         ),
+    )
+
+    discovery = normalized_text("skills/workflow-discovery/SKILL.md")
+    require_clauses(
+        "Discovery",
+        discovery,
+        (
+            "An architectural decision is one possible kind of consequential project choice",
+            "Compose Research only when its additional method materially helps",
+            "Already-sufficient evidence does not require another Research invocation.",
+            "Compose Domain Modeling when ambiguity in domain concepts, terminology, or context boundaries materially affects the decision.",
+            "Discovery does not maintain architecture decision records or durable coordination state.",
+        ),
+    )
+
+    domain_modeling = normalized_text("skills/domain-modeling/SKILL.md")
+    require_clauses(
+        "Domain Modeling",
+        domain_modeling,
+        (
+            "domain concepts",
+            "terminology",
+            "ubiquitous language",
+            "domain or context boundaries",
+            "domain responsibilities and relationships",
+            "`CONTEXT.md`",
+            "`CONTEXT-MAP.md`",
+            "does not own generic implementation or module architecture",
+            "all project structure",
+            "Wayfinder's effort-specific areas and relationships",
+            "generic architecture-decision store",
+        ),
+    )
+    require(
+        all(
+            obsolete not in domain_modeling
+            for obsolete in (
+                "record an architectural decision",
+                "adr-format.md",
+                "docs/adr/",
+                "offer adrs",
+                "structural model",
+            )
+        ),
+        "Domain Modeling retains generic ADR responsibility",
     )
 
     wayfinder = normalized_text("skills/wayfinder/SKILL.md")
@@ -461,9 +510,23 @@ def check_semantic_contracts() -> None:
         wayfinder,
         (
             "Wayfinder is Agent Workflow's sole durable coordination layer.",
+            "An objective alone does not select Wayfinder.",
+            "material uncertainty is not required",
+            "one objective and scope",
+            "Scope may be clarified, narrowed, or elaborated",
+            "objective and substantive scope remain the same",
+            "Wayfinder establishes its own effort-specific areas and relationships.",
             "Reference the artifacts that maintain lasting results instead of copying them.",
         ),
     )
+    for obsolete_identity_term in (
+        "coordination boundary",
+        "bounded current scope",
+    ):
+        require(
+            obsolete_identity_term not in wayfinder,
+            f"Wayfinder retains obsolete identity term: {obsolete_identity_term}",
+        )
 
     for label, relative in (
         ("to-spec", "skills/to-spec/SKILL.md"),

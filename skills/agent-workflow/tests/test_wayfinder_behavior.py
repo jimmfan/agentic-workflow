@@ -8,6 +8,198 @@ from _behavior_test_support import behavior
 
 
 class WayfinderBehaviorTests(unittest.TestCase):
+    def test_new_effort_accepts_map_only_coordination(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-new-effort"
+        )
+        content = (
+            "# Platform cutover\n\n"
+            "Complete the zero-downtime cutover of the existing platform.\n"
+            "Changes to unrelated product behavior are excluded.\n"
+            "The Project owner accepted zero downtime and must approve the final transition.\n\n"
+            "## Areas\n"
+            "Consumer inventory establishes which integrations must move.\n"
+            "Cutover orchestration depends on a complete Consumer inventory.\n"
+            "Rollback constrains every cutover step; Ownership establishes approval and operations.\n\n"
+            "## Unresolved coordination\n"
+            "The migration order remains unresolved pending rollback validation.\n"
+            "Cutover sequencing cannot proceed until that ordering is resolved.\n\n"
+            "## Work that can proceed\n"
+            "Consumer inventory can proceed independently of migration ordering.\n\n"
+            "[Accepted architecture](../../migration-architecture.md)\n"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            map_path = workspace / ".agent-wayfinder/platform-cutover/map.md"
+            map_path.parent.mkdir(parents=True)
+            for label, candidate, expected in (
+                ("map-only", content, True),
+                (
+                    "headings-and-reversed-phrasing",
+                    content.replace(
+                        "Consumer inventory can proceed independently of migration ordering.",
+                        "Ready work:\n- Consumer inventory.",
+                    )
+                    .replace(
+                        "The migration order remains unresolved pending rollback validation.",
+                        "Unresolved migration ordering constrains cutover.",
+                    )
+                    .replace(
+                        "The Project owner accepted zero downtime and must approve the final transition.",
+                        "Final transition approval belongs to the Project owner; zero downtime is accepted.",
+                    ),
+                    True,
+                ),
+                (
+                    "inventory-not-ready",
+                    content.replace(
+                        "Consumer inventory can proceed independently of migration ordering.",
+                        "Consumer inventory is not ready until migration ordering is chosen.",
+                    ),
+                    False,
+                ),
+                (
+                    "lost-ordering",
+                    content.replace(
+                        "The migration order remains unresolved pending rollback validation.\n",
+                        "",
+                    ),
+                    False,
+                ),
+                (
+                    "no-ready-work",
+                    content.replace(
+                        "Consumer inventory can proceed independently of migration ordering.\n",
+                        "",
+                    ),
+                    False,
+                ),
+            ):
+                with self.subTest(case=label):
+                    map_path.write_text(candidate)
+                    evidence = behavior.RunEvidence(
+                        scenario=scenario,
+                        workspace=workspace,
+                        before=before,
+                        after=behavior.snapshot(workspace),
+                        stdout="[route: router → wayfinder]",
+                        stderr="",
+                        returncode=0,
+                        report={"status": "success"},
+                        verification=(),
+                        route_components=("wayfinder",),
+                    )
+                    failures = [
+                        item.name
+                        for item in behavior.evaluate(evidence)
+                        if not item.passed
+                    ]
+                    self.assertEqual(not failures, expected, failures)
+
+    def test_scope_refinement_requires_reconciliation_not_appended_evidence(
+        self,
+    ) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-scope-refinement"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            relative = ".agent-wayfinder/policy-execution-migration/map.md"
+            map_path = workspace / relative
+            stale = map_path.read_text().replace(
+                "- Control service owns policy evaluation and execution.\n", ""
+            )
+            architecture = (workspace / "architecture.md").read_text()
+            reconciled = (
+                "# Policy execution migration\n\n"
+                "Separate policy concerns for the platform migration.\n"
+                "Scope: policy definition, evaluation, approved-intent execution, and result auditing.\n"
+                "Product policy semantics, audit-retention policy, and implementation are excluded.\n\n"
+                "## Areas\n"
+                "Policy control plane owns definition and evaluation.\n"
+                "Execution data plane executes approved intents.\n"
+                "Audit boundary receives results from both planes.\n"
+                "Execution depends on an approved intent from the Policy control plane.\n\n"
+                "## Dependencies\n"
+                "The approved-intent handoff schema is unresolved.\n\n"
+                "## Ready work\n"
+                "Inventorying call sites that combine evaluation and execution can proceed independently.\n"
+            )
+            cases = {
+                "reconciled": (reconciled, True),
+                "headings-and-reversed-phrasing": (
+                    reconciled.replace(
+                        "The approved-intent handoff schema is unresolved.",
+                        "The unresolved approved-intent handoff schema constrains integration.",
+                    ).replace(
+                        "Inventorying call sites that combine evaluation and execution can proceed independently.",
+                        "Inventory call sites that combine evaluation and execution.",
+                    ),
+                    True,
+                ),
+                "append-only": (stale + "\n" + architecture, False),
+                "inventory-not-ready": (
+                    reconciled.replace(
+                        "Inventorying call sites that combine evaluation and execution can proceed independently.",
+                        "Inventorying call sites is not ready until the schema is chosen.",
+                    ),
+                    False,
+                ),
+                "inventory-blocked-by-independent-choice": (
+                    reconciled.replace(
+                        "Inventorying call sites that combine evaluation and execution can proceed independently.",
+                        "Inventorying call sites is blocked until an independently chosen schema exists.",
+                    ),
+                    False,
+                ),
+                "handoff-not-unresolved": (
+                    reconciled.replace(
+                        "The approved-intent handoff schema is unresolved.",
+                        "The approved-intent handoff schema is not unresolved.",
+                    ),
+                    False,
+                ),
+                "lost-handoff": (
+                    reconciled.replace(
+                        "The approved-intent handoff schema is unresolved.\n", ""
+                    ),
+                    False,
+                ),
+                "inventory-blocked": (
+                    reconciled.replace(
+                        "can proceed independently", "must wait for the schema"
+                    ),
+                    False,
+                ),
+            }
+            for label, (content, expected) in cases.items():
+                with self.subTest(case=label):
+                    map_path.write_text(content)
+                    evidence = behavior.RunEvidence(
+                        scenario=scenario,
+                        workspace=workspace,
+                        before=before,
+                        after=behavior.snapshot(workspace),
+                        stdout="[route: router → wayfinder]",
+                        stderr="",
+                        returncode=0,
+                        report={"status": "success", "state_used": [relative]},
+                        verification=(),
+                        route_components=("wayfinder",),
+                    )
+                    failures = [
+                        item.name
+                        for item in behavior.evaluate(evidence)
+                        if not item.passed
+                    ]
+                    self.assertEqual(not failures, expected, failures)
+
     def test_project_choice_and_action_scenarios_have_distinct_oracles(
         self,
     ) -> None:

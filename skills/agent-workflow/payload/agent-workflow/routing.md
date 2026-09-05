@@ -21,7 +21,7 @@ This table resolves overlaps:
 | Durable coordination threshold crossed | `wayfinder` | Structured project state must materially improve continuity |
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
 | Interdependent choices requiring human input or project decision authority materially shape downstream work | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual questions and one straightforward clarification use the minimum sufficient method |
-| Domain concepts, vocabulary, boundaries, responsibilities, or relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the model materially helps; ordinary vocabulary lookup stays Direct |
+| Domain concepts, terminology or ubiquitous language, domain or context boundaries, or domain responsibilities and relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the domain model materially helps; ordinary vocabulary lookup stays Direct |
 | Throwaway implementation would answer a design or behavior question | Direct or `prototype` | Ordinary production implementation stays Direct or with its primary workflow |
 | Module interface, seam, depth, locality, or testability needs explicit design | Direct or `codebase-design` | Load Codebase Design only when its vocabulary materially improves the design; ordinary edits and refactors stay Direct or with their primary workflow |
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis grants no action authorization for a fix |
@@ -34,6 +34,10 @@ This table resolves overlaps:
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
 | Clear bounded low-risk request | Direct | Skip workflow ceremony |
 
+A bounded architectural choice remains Direct or uses Discovery when alternative and tradeoff analysis materially helps.
+It does not select Domain Modeling merely because the choice is architectural.
+Discovery may compose Research when its additional method materially helps establish external evidence and Domain Modeling when domain-model ambiguity materially affects the decision.
+
 Use the table to guide the current routing choice.
 How a skill is used for one request does not determine how it must be used later.
 
@@ -44,7 +48,8 @@ Apply the root Wayfinder threshold.
 
 Resume only relevant work.
 Continue from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set.
-For an unnamed likely Wayfinder resume, inspect the smallest plausible effort set and resume only one clear objective-and-scope match.
+For an unnamed likely Wayfinder resume, inspect the smallest plausible effort set and resume only one clear semantic match on objective and scope.
+Scope refinement need not preserve the original wording when the objective and substantive scope remain the same.
 A safe regular map identifies current resumable coordination; a mapless directory is not a candidate.
 An unrelated map never captures the route.
 
@@ -52,12 +57,12 @@ After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and
 Implementation may consume ready work from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses the Wayfinder threshold.
-Inside selected Wayfinder, use each needed specialist once for the relevant question, uncertainty, unexplained cause, consequential choice, or structural ambiguity without creating another Agent Workflow durable coordination model.
+Inside selected Wayfinder, use each needed specialist once for the relevant question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity without creating another Agent Workflow durable coordination model.
 Meaningful Implementation runs Verification once.
 New causal uncertainty returns to Debugging; a material unresolved choice returns to Discovery or Wayfinder according to the coordination threshold.
 
 Discovery is the method for bounded consequential choice and tradeoff analysis.
-Compose Domain Modeling when structural ambiguity materially affects that analysis or reorganizing the domain would materially improve it; otherwise Discovery runs alone.
+Compose Domain Modeling when ambiguity in domain concepts, terminology, ubiquitous language, domain or context boundaries, or domain responsibilities and relationships materially affects that analysis; otherwise Discovery runs alone.
 
 ## Use selected skills
 

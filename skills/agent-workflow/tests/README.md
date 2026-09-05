@@ -23,6 +23,7 @@ It is intentionally outside the deterministic unittest discovery gate because re
 
 - `test_behavior_harness.py` validates scenario schema and vocabulary, blind grading, evaluator assertions, route markers, verification evidence, fixture isolation, destructive-change detection, and intentionally-red fixtures.
 - `test_wayfinder_behavior.py` validates Wayfinder scenario semantics, current record presence, authority, progressive loading, conflict promotion, reconciliation, blocked pruning, safe whole-effort ending, and no-state outcomes.
+- `test_routing_boundaries.py` challenges the canonical activation set's evaluators with valid minimum routes, map-only coordination, settled choices, missing plan steps, and contradictory or prohibited state.
 - `behavior.py validate` checks every human-authored scenario and fixture reference as part of static package verification.
 
 The lifecycle suite proves framework operations do not directly traverse, interpret, or change `.agent-wayfinder/`.
@@ -37,7 +38,8 @@ Wayfinder fixtures independently prove reset, evaluator, and scenario behavior; 
 The default live set is a representative smoke sample covering direct work, external research, blocked authority, read-only and writable reconciliation, evidence/fact contradiction, map-only continuation with a `to-tickets` ticket or ticket set workflow transition, selective uncertainty, verification recovery, blocked work, and the valid outcome that Wayfinder assessment creates no state.
 Live cases are opt-in and not part of ordinary pull requests.
 
-The broader deterministic catalog also covers Domain Modeling surfacing consequential uncertainty, choices requiring project decision authority asking a concrete human question without creating downstream work, Wayfinder assessment concluding that no durable state is needed, and creating recognized map-first state without implementation work-item children.
+The broader deterministic catalog also covers clear requests with an objective staying on the minimum route, ambiguous intent stopping before invented Wayfinder creation, consequential objectives selecting durable coordination without naming Wayfinder, and scope refinement resuming the semantically matching effort without exact wording or a sibling effort.
+It covers bounded architectural choices using Discovery rather than Domain Modeling, Discovery composing Research for external facts, Domain Modeling surfacing consequential domain-language or context-boundary uncertainty, choices requiring project decision authority asking a concrete human question without creating downstream work, Wayfinder assessment concluding that no durable state is needed, and creating recognized map-first state without implementation work-item children.
 Current facts and decisions use optional `facts.md` and `decisions.md` ledgers; independently useful unresolved questions and substantial evidence retain U#/E# files.
 Presence means a U# remains unresolved and a D# remains the current choice committed by project decision authority; neither uses a lifecycle status field.
 Tests cover direct fact-source relations, project decision authority, relevant-section retrieval without unrelated detail, answered questions and redundant evidence leaving current coordination state, reference-safe targeted pruning without requiring a prior commit, changed-state rejection, and no-overwrite U#/E# creation.

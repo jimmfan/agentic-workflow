@@ -5,6 +5,10 @@ name: research
 # Research
 
 Spin up a **background agent** to do substantive research while you continue independent work.
+Research establishes externally sourced facts and evidence.
+It does not select the project's preferred alternative.
+Return evidence to the caller; evidence concerning a consequential choice does not automatically require a Discovery transition.
+The caller uses Direct or Discovery according to whether alternative and tradeoff analysis materially helps.
 
 Its job:
 

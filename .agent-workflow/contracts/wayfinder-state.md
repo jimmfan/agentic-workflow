@@ -9,7 +9,7 @@ Durable state is intentionally preserved across session continuations and workfl
 
 ## State model and boundaries
 
-An effort is one resumable body of coordination with one stable objective and scope.
+An effort is one resumable body of coordination with one objective and scope.
 Wayfinder is Agent Workflow's sole durable coordination model.
 The selected effort's `map.md` is its brief coordination summary.
 Load this state contract before effort state.
@@ -56,28 +56,37 @@ Preserve a lasting outcome in the artifact or record designated to maintain it; 
 
 ## Effort shape and selection
 
+Objective and scope identify an effort.
+Do not create a new effort until its objective and scope are sufficiently established to identify it.
+Unresolved route, choices, dependencies, or involved areas may be the reason durable coordination is warranted; they do not prevent initial effort creation when that identity is otherwise sufficiently established.
+Do not materially invent objective or scope from ambiguous user intent.
+When materially different interpretations would identify different efforts, obtain the minimum sufficient clarification or resolution before creation.
+Scope may be clarified, narrowed, or elaborated as understanding and evidence develop.
+That refinement remains within the same effort while its objective and substantive scope remain the same.
+
 The map H1 is the durable human-readable effort name.
-Its directory slug is a concise, lowercase, filesystem-safe, hyphen-separated storage key derived from the objective and scope, not a branch, ticket, phase, timestamp, random suffix, or chat title.
+Its directory slug is a concise, lowercase, filesystem-safe, hyphen-separated storage key derived from the objective and scope at creation, not a branch, ticket, phase, timestamp, random suffix, or chat title.
 Use only the shortest meaningful disambiguator for a genuine collision.
 
 An exact effort path must be repository-relative, remain strictly below `.agent-wayfinder/`, cross no symlink in the root, ancestors, effort, or `map.md`, and identify a regular `map.md`.
 Reject an unsafe or invalid exact path; do not invent a replacement.
 
 Without an exact path, inspect only the smallest plausible candidate set.
-Compare safe maps by objective, scope, and name, and resume only one clear match.
+Compare safe maps semantically by objective, scope, and name, and resume only one clear match.
+Scope wording need not be textually identical.
 If selection remains ambiguous, do not guess, merge efforts, create a synonymous duplicate, or change affected state.
 A mapless directory is not a candidate.
 
 Selection does not require persistence.
 If assessment leaves no consequential coordination worth preserving across session continuations, create no effort, map, or supporting record.
 
-Create a new effort only when the current user request or accepted project policy authorizes the durable writes, persistence is justified, and no recognized effort represents the same objective and scope in substance.
+Create a new effort only when the creation gate above is satisfied, the current user request or accepted project policy authorizes the durable writes, persistence is justified, and no recognized effort represents the same objective and substantive scope.
 Immediately before creation, reread the parent and any newly plausible map.
 A storage-key collision resumes only the same effort; otherwise use the shortest meaningful disambiguator.
 
-Preserve the established effort path while its objective and scope remain the same in substance, including through wording, phase, branch, ticket, or evidence changes.
-A different objective or substantive scope requires a new effort.
-Never repurpose earlier state to represent different work.
+Preserve the established effort path while its objective and substantive scope remain the same, including through scope clarification, narrowing, elaboration, wording, phase, branch, ticket, or evidence changes.
+A materially different objective or substantive scope requires a new effort.
+Never repurpose earlier state to represent unrelated work.
 
 A recognized effort may contain ready or paused work, work waiting on evidence or authority, and work waiting on an external dependency.
 Represent each condition through map content that identifies the affected work, relevant dependencies, and any ready work.

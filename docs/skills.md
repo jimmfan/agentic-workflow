@@ -33,6 +33,9 @@ Historical skill inventories are not part of the current runtime.
 `wayfinder` and `research` preserve Agent Workflow's maintained contracts.
 `research` returns cited findings in chat by default and writes a repository file only after an explicit authorized request.
 `wayfinder` remains the sole durable coordinator under `.agent-wayfinder/`.
+`workflow-discovery` analyzes one bounded consequential choice and its alternatives, evidence, tradeoffs, reversibility, consequences, authority, and uncertainty; a lasting architecture decision remains in the project record designated to maintain it.
+`domain-modeling` maintains domain concepts, terminology and ubiquitous language, domain or context boundaries, domain responsibilities and relationships, and the applicable `CONTEXT.md` or `CONTEXT-MAP.md` model.
+It does not own generic implementation or module architecture, all project structure, Wayfinder's effort-specific areas and relationships, or a generic architecture-decision store.
 `implement` owns its inner build, TDD, and `code-review` loop; `workflow-implementation` remains the outer transition into execution and independent acceptance verification.
 
 ## Discovery and invocation

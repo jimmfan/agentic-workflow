@@ -36,13 +36,13 @@
 
 ## When to use Wayfinder
 
-Assess durable coordination after any needed reconnaissance.
+An objective cues assessment, not selection, of Wayfinder; select or resume it only when the objective and scope sufficiently identify the effort and the existing durable-coordination threshold is met; use semantic judgment, not phrase matching, and do not materially invent ambiguous intent.
 Unless the user opts out, MUST select or resume Wayfinder when either condition is met:
 
 - Hard — at least one signal applies:
   - The current work continues a relevant Wayfinder effort.
   - The work is intended to continue across sessions or agents, including when the current request creates or updates an external dependency whose result later in-scope work is expected to await or consume.
-  - The work is a planning effort whose objective and scope can be established but whose route remains materially unclear and cannot responsibly be resolved within one useful agent session.
+  - A consequential objective and scope can be established, but the route remains materially unclear and cannot responsibly be resolved within one useful agent session.
   - Conflicting sources establish the same scoped claim.
   - A required project choice remains uncommitted while independent work proceeds.
   - Responsible participants or areas require coordination.
@@ -54,9 +54,7 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
   - A meaningful dependency graph.
   - Material fresh-agent reconstruction risk.
 
-For planning, Wayfinder is for work where the destination can be established but the route is still meaningfully uncertain.
 A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
-When the route can already be responsibly established within one useful session, use Direct or the applicable planning workflow instead.
 
 A material update to an existing durable planning artifact for unfinished work may indicate continuation of an existing Wayfinder effort.
 Use detailed routing for the bounded read-only check needed to determine whether one relevant effort clearly matches.

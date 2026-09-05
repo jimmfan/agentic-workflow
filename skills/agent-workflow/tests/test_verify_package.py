@@ -150,6 +150,30 @@ class VerifyPackageTests(ProjectTestCase):
             wrong_name, "curated skill name differs from its directory"
         )
 
+    def test_domain_modeling_has_no_generic_adr_support_surface(self) -> None:
+        package = self.copy_package("domain-modeling-without-adr-support")
+        domain_root = package / "payload/skills/domain-modeling"
+        manifest = json.loads(
+            (package / "payload/distribution/manifest.json").read_text(encoding="utf-8")
+        )
+
+        self.assertEqual(
+            {path.name for path in domain_root.iterdir() if path.is_file()},
+            {"CONTEXT-FORMAT.md", "SKILL.md"},
+        )
+        self.assertFalse(
+            (
+                package.parents[1] / ".agents/skills/domain-modeling/ADR-FORMAT.md"
+            ).exists()
+        )
+        self.assertNotIn(
+            "skills/domain-modeling/ADR-FORMAT.md",
+            {item["source"] for item in manifest["framework_owned"]},
+        )
+
+        result = self.verify(package)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_verifier_does_not_lock_skill_descriptions(self) -> None:
         package = self.copy_package("description-copy")
         self.replace_once(
@@ -264,10 +288,45 @@ class VerifyPackageTests(ProjectTestCase):
                 "Research lacks load-bearing contract",
             ),
             (
+                "research-does-not-choose",
+                "payload/skills/research/SKILL.md",
+                "does not select the project's preferred alternative",
+                "selects the project's preferred alternative",
+                "Research lacks load-bearing contract",
+            ),
+            (
+                "discovery-owns-bounded-architecture-choice",
+                "payload/skills/workflow-discovery/SKILL.md",
+                "An architectural decision is one possible kind of consequential project choice",
+                "An architectural decision belongs to Domain Modeling",
+                "Discovery lacks load-bearing contract",
+            ),
+            (
+                "discovery-does-not-store-architecture-decisions",
+                "payload/skills/workflow-discovery/SKILL.md",
+                "Discovery does not maintain architecture decision records or durable coordination state.",
+                "Discovery maintains architecture decision records.",
+                "Discovery lacks load-bearing contract",
+            ),
+            (
                 "wayfinder-sole-coordinator",
                 "payload/skills/wayfinder/SKILL.md",
                 "sole durable coordination layer",
                 "a durable coordination layer",
+                "Wayfinder lacks load-bearing contract",
+            ),
+            (
+                "wayfinder-objective-alone-is-insufficient",
+                "payload/skills/wayfinder/SKILL.md",
+                "An objective alone does not select Wayfinder.",
+                "An objective selects Wayfinder.",
+                "Wayfinder lacks load-bearing contract",
+            ),
+            (
+                "wayfinder-scope-refinement-keeps-effort",
+                "payload/skills/wayfinder/SKILL.md",
+                "clarified, narrowed, or elaborated",
+                "frozen after creation",
                 "Wayfinder lacks load-bearing contract",
             ),
             (
@@ -331,6 +390,17 @@ class VerifyPackageTests(ProjectTestCase):
                 self.assert_verify_failure(
                     package, f"{skill} hard-codes the ready-for-agent label"
                 )
+
+        domain_adr = self.copy_package("domain-modeling-generic-adr")
+        domain_path = domain_adr / "payload/skills/domain-modeling/SKILL.md"
+        domain_path.write_text(
+            domain_path.read_text(encoding="utf-8")
+            + "\nRecord an architectural decision in docs/adr/.\n",
+            encoding="utf-8",
+        )
+        self.assert_verify_failure(
+            domain_adr, "Domain Modeling retains generic ADR responsibility"
+        )
 
     def test_verifier_rejects_checked_in_projection_drift_and_history(self) -> None:
         drift = self.copy_package("checked-projection-drift")

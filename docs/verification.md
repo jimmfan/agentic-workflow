@@ -46,7 +46,7 @@ The package verifier checks:
 - the ordinary current source-to-target distribution mapping;
 - the exact current fifteen-skill payload inventory and activation-sensitive path exclusions;
 - skill frontmatter, packaged support-file closure, local links, the checked-in installed projection, and complete attribution for retained derived skills;
-- small behavior-bearing semantics: Research writes repository output only with explicit authorization; Wayfinder is the sole durable coordinator and does not own specialist results; `to-spec` and `to-tickets` invent no local destination, label, or status, and publish only to a user- or project-named destination with authorization; `implement` does not infer commit authorization; and route markers report executed work only;
+- small behavior-bearing semantics: Research establishes external evidence without choosing the project's preferred alternative and writes repository output only with explicit authorization; Discovery owns bounded consequential choice analysis; Domain Modeling is limited to domain concepts, language, boundaries, responsibilities, relationships, and context artifacts rather than generic architecture or ADR storage; Wayfinder is the sole durable coordinator and owns its effort-specific areas and relationships; `to-spec` and `to-tickets` invent no local destination, label, or status, and publish only to a user- or project-named destination with authorization; `implement` does not infer commit authorization; and route markers report executed work only;
 - deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder, and verifier tests; and
 - local documentation links.
 

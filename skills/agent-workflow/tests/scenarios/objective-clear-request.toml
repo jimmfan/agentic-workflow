@@ -1,0 +1,36 @@
+schema_version = 1
+id = "objective-clear-request"
+name = "Clear desired outcome stays on the minimum route"
+fixture = "simple-project"
+request = "I want greeting() to return the product greeting `hello, world!` under its existing signature, then run python verify.py."
+starting_state = [
+  "app.py defines greeting(); verify.py checks the product greeting.",
+]
+expect = [
+  "task_completed",
+  "meaningful_repository_change",
+  "verification_performed",
+  "project_state_preserved",
+]
+must_not = [
+  "unnecessary_planning_artifacts",
+  "manufacture_uncertainty",
+  "overwrite_project_owned_state",
+]
+live = false
+blind_grading = true
+verification_command = "Run python verify.py after updating app.py."
+preserve_paths = ["README.md", "verify.py"]
+forbid_created_globs = [
+  ".agent-wayfinder/**",
+]
+route_must_not_include = ["wayfinder"]
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder"
+
+[[assertions]]
+kind = "path_contains"
+path = "app.py"
+value = "hello, world!"

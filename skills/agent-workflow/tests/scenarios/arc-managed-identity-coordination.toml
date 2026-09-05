@@ -1,0 +1,64 @@
+schema_version = 1
+id = "arc-managed-identity-coordination"
+name = "ARC workload identity migration"
+fixture = "arc-local"
+request = "I want to migrate `part-03-arc-runners` to managed identity without downtime. We still need to determine rollout ordering and rollback boundaries, and Security owns the workload-permission approval dependency. Figure out what can proceed now. You may make repository-local coordination updates needed to preserve this work."
+starting_state = ["part-03-arc-runners contains local runner-set values and job-target references; no cluster credentials are present."]
+expect = ["task_completed", "meaningful_repository_change", "project_state_preserved"]
+must_not = ["unnecessary_planning_artifacts", "overwrite_project_owned_state"]
+live = false
+blind_grading = true
+verification_command = "Check one effort, truthful dependencies, and independent preparation without implementing the migration."
+route_must_include = ["wayfinder"]
+forbid_created_globs = ["part-03-arc-runners/**", ".github/**", "scripts/**", "docs/**"]
+preserve_paths = ["README.md", "part-03-arc-runners/README.md", "part-03-arc-runners/values.yaml", "part-03-arc-runners/verify.py"]
+
+[[assertions]]
+kind = "glob_count"
+path = ".agent-wayfinder/*/map.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".agent-wayfinder/*/map.md"
+value = "part-03-arc-runners"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = "managed[- ]identity"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = "zero[- ]downtime|without\\s+downtime|no\\s+downtime"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = "(?:runner|job|rollout|identity|Security)[^.!?\\n]*\\b(?:depends?\\s+on|requires?|gates?|before)\\b[^.!?\\n]*(?:runner|job|rollout|identity|Security|permission)"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = "Security[^.!?\\n]*(?:pending|await|wait|expected|not\\s+(?:yet\\s+)?(?:approved|received))|(?:pending|awaiting|waiting\\s+(?:on|for))[^.!?\\n]*Security"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = "(?:ready|independent|can\\s+proceed|may\\s+proceed)[^.!?]*\\b(?:inventory|checklist)|(?:inventory|checklist)[^.!?\\n]*(?:ready|independent|can\\s+proceed|may\\s+proceed)"
+
+[[assertions]]
+kind = "glob_none_matches"
+path = ".agent-wayfinder/*/map.md"
+value = "(?:inventory|checklist)[^.!?\\n]*(?:is\\s+blocked|not\\s+ready|must\\s+wait|cannot\\s+proceed)"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = "rollout[^.!?\\n]*(?:unresolved|undecided|not\\s+(?:yet\\s+)?(?:settled|chosen|determined))|(?:unresolved|undecided)[^.!?\\n]*rollout"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".agent-wayfinder/*/map.md"
+value = "rollback[^.!?\\n]*(?:unresolved|undecided|not\\s+(?:yet\\s+)?(?:settled|chosen|determined))|(?:unresolved|undecided)[^.!?\\n]*rollback"

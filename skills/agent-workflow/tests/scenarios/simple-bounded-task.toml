@@ -2,11 +2,9 @@ schema_version = 1
 id = "simple-bounded-task"
 name = "Simple bounded task stays lightweight"
 fixture = "wayfinder-unrelated"
-request = "Change greeting() to return exactly 'hello, world!' and validate the change."
+request = "I want greeting() to return exactly 'hello, world!' and validate the change."
 starting_state = [
   "The repository contains one small Python function.",
-  "The requested output is explicit, local, reversible, and low risk.",
-  "An unrelated database-migration Wayfinder effort must not select or burden this route.",
 ]
 expect = [
   "task_completed",
@@ -19,6 +17,7 @@ must_not = [
   "manufacture_uncertainty",
 ]
 live = true
+blind_grading = true
 verification_command = "Run python verify.py after the change."
 preserve_paths = [
   ".agent-wayfinder/database-migration/map.md",

@@ -2345,10 +2345,7 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "## Effort shape and selection",
             ).split()
         )
-        self.assertIn(
-            "A different objective or substantive scope requires a new effort",
-            effort_shape,
-        )
+        self.assertIn("different objective or substantive scope", effort_shape)
 
         ending = " ".join(
             markdown_section(
@@ -2367,6 +2364,48 @@ class WayfinderStateContractTests(unittest.TestCase):
                 self.assertIn(condition, ending)
         self.assertNotIn("it was intentionally ended", ending)
         self.assertNotIn("different objective and scope", ending)
+
+    def test_effort_identity_allows_scope_refinement(
+        self,
+    ) -> None:
+        effort_shape = " ".join(
+            markdown_section(
+                self.contract,
+                "## Effort shape and selection",
+            ).split()
+        )
+        for identity_boundary in (
+            "Objective and scope identify an effort",
+            "clarified, narrowed, or elaborated",
+            "objective and substantive scope remain the same",
+            "materially different objective or substantive scope requires a new effort",
+            "Never repurpose earlier state to represent unrelated work",
+            "unresolved route, choices, dependencies, or involved areas",
+            "do not prevent initial effort creation",
+        ):
+            with self.subTest(identity_boundary=identity_boundary):
+                self.assertIn(identity_boundary.casefold(), effort_shape.casefold())
+
+        state_model = " ".join(
+            markdown_section(self.contract, "## State model and boundaries").split()
+        )
+        for identity_fragment in (
+            "resumable body of coordination",
+            "objective and scope",
+        ):
+            with self.subTest(identity_fragment=identity_fragment):
+                self.assertIn(identity_fragment, state_model)
+        for obsolete_identity_term in (
+            "coordination boundary",
+            "bounded current scope",
+        ):
+            with self.subTest(obsolete_identity_term=obsolete_identity_term):
+                self.assertNotIn(obsolete_identity_term, effort_shape.casefold())
+                self.assertNotIn(obsolete_identity_term, state_model.casefold())
+        self.assertIn(
+            "These headings guide content; they are not a recognition schema",
+            effort_shape,
+        )
 
     def test_current_wayfinder_scenario_descriptions_use_pruning_and_ending(
         self,
@@ -2393,14 +2432,20 @@ class WayfinderStateContractTests(unittest.TestCase):
             path.stem: tomllib.loads(path.read_text(encoding="utf-8"))
             for path in (PACKAGE_ROOT / "tests/scenarios").glob("*.toml")
         }
-        revised_areas = scenarios["wayfinder-domain-modeling-revises-territory"]
-        self.assertEqual(
-            revised_areas["id"], "wayfinder-domain-modeling-revises-territory"
+        refined_scope = scenarios["wayfinder-scope-refinement"]
+        self.assertIn("scope", refined_scope["name"].casefold())
+        self.assertIn("wayfinder", refined_scope["route_must_include"])
+        self.assertIn("domain-modeling", refined_scope["route_must_not_include"])
+        self.assertIn(
+            ".agent-wayfinder/policy-execution-migration/map.md",
+            refined_scope["state_must_include"],
         )
-        self.assertIn("areas and relationships", revised_areas["name"].casefold())
+        self.assertIn(
+            ".agent-wayfinder/audit-retention/map.md",
+            refined_scope["state_must_not_include"],
+        )
 
         new_effort = scenarios["wayfinder-new-effort"]
-        self.assertIn("objective, scope", new_effort["request"].casefold())
         self.assertIn("ready work", new_effort["verification_command"].casefold())
 
         authority_answer = " ".join(
@@ -2574,7 +2619,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "uncertainty",
             "unexplained cause",
             "consequential choice",
-            "structural ambiguity",
+            "domain-model ambiguity",
         ):
             with self.subTest(issue=issue):
                 self.assertIn(issue, method_selection)
