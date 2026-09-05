@@ -92,6 +92,7 @@ SCENARIO_FIELDS = {
     "state_must_include",
     "state_must_not_include",
     "report_must_include",
+    "response_must_match",
     "assertions",
 }
 
@@ -136,6 +137,7 @@ class Scenario:
     state_must_not_include: tuple[PurePosixPath, ...]
     report_must_include: tuple[str, ...]
     assertions: tuple[Assertion, ...]
+    response_must_match: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -384,6 +386,16 @@ def load_scenario(path: Path) -> Scenario:
         f"{path.name}.report_must_include",
         allow_empty=True,
     )
+    response_must_match = string_list(
+        raw.get("response_must_match", []),
+        f"{path.name}.response_must_match",
+        allow_empty=True,
+    )
+    for pattern in response_must_match:
+        try:
+            re.compile(pattern)
+        except re.error as exc:
+            raise BehaviorError(f"{path.name}.response_must_match: {exc}") from exc
     verification_command = raw.get("verification_command", "")
     if not isinstance(verification_command, str):
         raise BehaviorError(
@@ -411,6 +423,7 @@ def load_scenario(path: Path) -> Scenario:
         state_must_not_include=state_must_not_include,
         report_must_include=report_must_include,
         assertions=assertions,
+        response_must_match=response_must_match,
     )
 
 
@@ -802,6 +815,15 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     results: list[CheckResult] = [
         evaluate_assertion(evidence, item) for item in evidence.scenario.assertions
     ]
+    for index, pattern in enumerate(evidence.scenario.response_must_match):
+        results.append(
+            CheckResult(
+                f"response:matches:{index + 1}",
+                re.search(pattern, evidence.stdout, re.IGNORECASE | re.DOTALL)
+                is not None,
+                f"required response pattern: {pattern}",
+            )
+        )
     current_shape_ok, current_shape_detail = recognized_wayfinder_changes(evidence)
     results.append(
         CheckResult(

@@ -23,6 +23,7 @@ It is intentionally outside the deterministic unittest discovery gate because re
 
 - `test_behavior_harness.py` validates scenario schema and vocabulary, blind grading, evaluator assertions, route markers, verification evidence, fixture isolation, destructive-change detection, and intentionally-red fixtures.
 - `test_wayfinder_behavior.py` validates Wayfinder scenario semantics, current record presence, authority, progressive loading, conflict promotion, reconciliation, blocked pruning, safe whole-effort ending, and no-state outcomes.
+- `test_routing_boundaries.py` challenges the canonical activation set's evaluators with valid minimum routes, map-only coordination, settled choices, missing plan steps, and contradictory or prohibited state.
 - `behavior.py validate` checks every human-authored scenario and fixture reference as part of static package verification.
 
 The lifecycle suite proves framework operations do not directly traverse, interpret, or change `.agent-wayfinder/`.

@@ -1,0 +1,3 @@
+runnerScaleSetName: arc-runner-set
+minRunners: 1
+maxRunners: 2

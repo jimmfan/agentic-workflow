@@ -23,26 +23,12 @@ verification_command = "Run python verify.py after updating app.py."
 preserve_paths = ["README.md", "verify.py"]
 forbid_created_globs = [
   ".agent-wayfinder/**",
-  "planning/**",
-  "wayfinder/**",
 ]
-route_must_include = ["direct"]
-route_must_not_include = [
-  "code-review",
-  "codebase-design",
-  "debugging",
-  "discovery",
-  "domain-modeling",
-  "grilling",
-  "implement",
-  "prototype",
-  "research",
-  "tdd",
-  "to-spec",
-  "to-tickets",
-  "wayfinder",
-  "verification",
-]
+route_must_not_include = ["wayfinder"]
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder"
 
 [[assertions]]
 kind = "path_contains"

@@ -269,6 +269,9 @@ class BehaviorHarnessTests(unittest.TestCase):
         scenarios = {item.id: item for item in behavior.load_scenarios()}
         for name in (
             "objective-clear-request",
+            "arc-runner-rename-plan",
+            "arc-managed-identity-coordination",
+            "arc-approved-migration-coordination",
             "simple-bounded-task",
             "wayfinder-new-effort",
             "wayfinder-ambiguous-new-objective",

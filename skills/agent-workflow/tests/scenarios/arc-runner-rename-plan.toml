@@ -1,0 +1,31 @@
+schema_version = 1
+id = "arc-runner-rename-plan"
+name = "ARC runner scale set rename plan"
+fixture = "arc-local"
+request = "Give me a plan to rename the local ARC runner scale set from `arc-runner-set` to `arc-runner-set-local`, update the corresponding configuration and references in `part-03-arc-runners`, and verify the local ARC setup still works."
+starting_state = [
+  "part-03-arc-runners contains values.yaml, README.md, and an offline verify.py check.",
+]
+expect = ["task_completed", "project_state_preserved"]
+must_not = ["unnecessary_planning_artifacts", "overwrite_project_owned_state"]
+live = false
+blind_grading = true
+verification_command = "Evaluate the returned rename, reference-update, and local verification plan."
+preserve_paths = [
+  "README.md",
+  "part-03-arc-runners/README.md",
+  "part-03-arc-runners/values.yaml",
+  "part-03-arc-runners/verify.py",
+]
+forbid_created_globs = [".agent-wayfinder/**"]
+route_must_not_include = ["wayfinder"]
+response_must_match = [
+  'arc-runner-set-local',
+  '(?:rename|change|set|update|edit)[^\n]*values\.yaml|values\.yaml[^\n]*(?:rename|change|set|update|edit)',
+  '(?:update|replace|change|edit)[^\n]*README\.md|README\.md[^\n]*(?:update|replace|change|edit)',
+  '(?:run|execute|check|verify)[^\n]*verify\.py|verify\.py[^\n]*(?:run|execute|check|verify)',
+]
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".agent-wayfinder"
