@@ -140,10 +140,10 @@ def source_relative(name: str) -> PurePosixPath | None:
     return None
 
 
-def ensure_directory(path: Path, package: Path) -> None:
+def ensure_directory(path: Path, snapshot: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
     current = path
-    while current != package.parent:
+    while current != snapshot.parent:
         current.chmod(0o755)
         current = current.parent
 
@@ -165,8 +165,8 @@ def reviewed_archive_mode(member: tarfile.TarInfo, relative: PurePosixPath) -> i
 
 
 def extract_snapshot(archive: bytes, destination: Path) -> Path:
-    package = destination / "source"
-    ensure_directory(package, package)
+    snapshot = destination / "source"
+    ensure_directory(snapshot, snapshot)
     seen = set()
     snapshot_root = None
     total = 0
@@ -215,14 +215,14 @@ def extract_snapshot(archive: bytes, destination: Path) -> Path:
                         f"archive contains an unsupported package entry: {member.name}"
                     )
                 mode = reviewed_archive_mode(member, relative)
-                target = package.joinpath(*relative.parts)
+                target = snapshot.joinpath(*relative.parts)
                 if target in seen:
                     raise BootstrapError(
                         f"archive contains duplicate package path: {relative}"
                     )
                 seen.add(target)
                 if member.isdir():
-                    ensure_directory(target, package)
+                    ensure_directory(target, snapshot)
                     continue
                 if (
                     member.size > MAX_MEMBER_BYTES
@@ -240,7 +240,7 @@ def extract_snapshot(archive: bytes, destination: Path) -> Path:
                         f"archive member size changed while reading: {relative}"
                     )
                 total += len(data)
-                ensure_directory(target.parent, package)
+                ensure_directory(target.parent, snapshot)
                 target.write_bytes(data)
                 target.chmod(mode)
     except (tarfile.TarError, EOFError, OSError) as exc:
@@ -249,13 +249,13 @@ def extract_snapshot(archive: bytes, destination: Path) -> Path:
         ) from exc
     if not seen:
         raise BootstrapError("archive does not contain Agent Workflow runtime sources")
-    return package
+    return snapshot
 
 
-def validate_runtime_package(package: Path) -> None:
+def validate_runtime_package(snapshot: Path) -> None:
     """Check only the package files required to start lifecycle reconciliation."""
     for relative, label in RUNTIME_PACKAGE_REQUIREMENTS:
-        path = package.joinpath(*relative.parts)
+        path = snapshot.joinpath(*relative.parts)
         if not path.exists() and not path.is_symlink():
             raise BootstrapError(
                 f"required {label} missing from downloaded package: {relative}"
@@ -273,9 +273,9 @@ def validate_runtime_package(package: Path) -> None:
             ) from exc
 
 
-def run_package(package: Path, action: str, target: Path, dry_run: bool) -> int:
-    validate_runtime_package(package)
-    lifecycle = package / "agent_workflow" / "lifecycle.py"
+def run_package(snapshot: Path, action: str, target: Path, dry_run: bool) -> int:
+    validate_runtime_package(snapshot)
+    lifecycle = snapshot / "agent_workflow" / "lifecycle.py"
     command = [
         sys.executable,
         str(lifecycle),
@@ -340,8 +340,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     archive_url = select_source(args.ref, args.archive_url)
     archive = request_bytes(archive_url)
     with tempfile.TemporaryDirectory(prefix="agent-workflow-") as temporary:
-        package = extract_snapshot(archive, Path(temporary))
-        return run_package(package, args.action, target, args.dry_run)
+        snapshot = extract_snapshot(archive, Path(temporary))
+        return run_package(snapshot, args.action, target, args.dry_run)
 
 
 if __name__ == "__main__":
