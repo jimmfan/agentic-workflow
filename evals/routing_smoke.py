@@ -390,6 +390,11 @@ def provenance(args: argparse.Namespace, inputs: Mapping[str, Any]) -> dict[str,
                 "max_prompt_bytes",
                 "timeout_seconds",
                 "max_estimated_cost_usd",
+            )
+        },
+        "token_prices": {
+            key: getattr(args, key)
+            for key in (
                 "input_price_per_million",
                 "cached_input_price_per_million",
                 "output_price_per_million",

@@ -80,14 +80,20 @@ python3 -m evals.routing_smoke run \
 
 ## Compare reports
 
+Compare the two completed Codex reports above with the model difference declared explicitly:
+
 ```bash
 python3 -m evals.routing_smoke compare \
   /tmp/routing-smoke-codex.json \
-  /tmp/routing-smoke-claude.json \
-  /tmp/routing-smoke-small.json
+  /tmp/routing-smoke-small.json \
+  --vary model
 ```
 
+Both reports must record known `effort: "low"` and the same observed Codex adapter version, along with matching harness, policy, cases, and execution constraints.
+Different token prices do not block this comparison; an undeclared model difference does.
 Comparison reports whether the models completed the same case matrix, passed the case checks, and agreed on the initial and final routes.
+The Claude adapter currently leaves effort unavailable, so including its report prevents a fully comparable result even with model and adapter differences declared.
+Declaring `--vary effort` does not supply that missing observation.
 
 ## Cost and safety limits
 
@@ -105,7 +111,7 @@ Deterministic tests use fake adapters and make no network requests.
 
 ## Provenance, interruption, and comparison
 
-Schema version 2 records product and harness revisions, the actual harness fingerprint, policy and case/fixture fingerprints, model and effort settings, adapter identity/version when observable, and execution limits.
+Schema version 2 records product and harness revisions, the actual harness fingerprint, policy and case/fixture fingerprints, model and effort settings, adapter identity/version when observable, execution `limits`, and separate `token_prices`.
 The policy and cases are frozen before execution, so working-tree edits are represented by their actual input fingerprints.
 Routing-resource fingerprints retain case identity so different contents at the same resource name cannot mask an input change.
 Source-only maintainer policy never enters the prompt or policy fingerprint.
@@ -120,6 +126,9 @@ Reports are written after each case using the existing outside-repository storag
 Infrastructure failure does not become a product failure merely because a final decision was not received.
 
 Comparison requires matching harness, policy, cases, model, effort, adapter, and limits.
+Execution `limits` include rounds, prompt size, timeout, and the dollar budget; those conditions must still match.
+The input, cached-input, and output token prices remain recorded under `token_prices` for cost calculation and review, but price equality is not required for routing-result comparison.
+Cost calculation and budget enforcement still use each run's supplied prices; an interrupted or incomplete run cannot establish successful complete-run agreement.
 Use repeated `--vary model`, `--vary effort`, `--vary adapter`, or `--vary policy_sha256` only to name deliberate experimental variables.
 Other mismatches and missing legacy provenance make the reports incomparable and leave interpretation agreement unavailable.
 Unavailable adapter versions or effort observations cannot be promoted to known settings.
