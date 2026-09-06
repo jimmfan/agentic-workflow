@@ -37,7 +37,6 @@ CLAUDE_PROJECT_BEGIN = b"\n" + FORMER_PROJECT_MARKER + b"\n"
 
 REQUIRED_PACKAGE_FILES = (
     "__init__.py",
-    "VERSION",
     "cli.py",
     "bootstrap.py",
     "lifecycle.py",
@@ -165,7 +164,14 @@ def load_json(path: Path, label: str) -> Mapping[str, object]:
 
 
 def version() -> str:
-    value = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    path = REPOSITORY_ROOT / "VERSION"
+    require(path.is_file() and not path.is_symlink(), "missing or unsafe root VERSION")
+    duplicate = PACKAGE_ROOT / "VERSION"
+    require(
+        not duplicate.exists() and not duplicate.is_symlink(),
+        "agent_workflow/VERSION must remain absent; root VERSION is the single authored version",
+    )
+    value = path.read_text(encoding="utf-8").strip()
     require(SEMVER.fullmatch(value) is not None, "VERSION must use x.y.z")
     return value
 

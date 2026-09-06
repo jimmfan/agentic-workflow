@@ -21,7 +21,7 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             root = Path(temporary)
             source = root / "source"
             source.mkdir()
-            for name in ("LICENSE", "README.md", "pyproject.toml"):
+            for name in ("LICENSE", "README.md", "pyproject.toml", "VERSION"):
                 shutil.copy2(REPOSITORY_ROOT / name, source / name)
             package = source / "agent_workflow"
             shutil.copytree(
@@ -31,7 +31,17 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             )
 
             wheelhouse = root / "wheelhouse"
-            run("uv", "build", "--wheel", "--out-dir", wheelhouse, source)
+            run("uv", "build", "--sdist", "--out-dir", wheelhouse, source)
+            sdist = next(wheelhouse.glob("agent_workflow-*.tar.gz"))
+            with tarfile.open(sdist, "r:gz") as built:
+                versions = [
+                    member for member in built if Path(member.name).name == "VERSION"
+                ]
+                self.assertEqual(len(versions), 1)
+                self.assertEqual(len(Path(versions[0].name).parts), 2)
+                with built.extractfile(versions[0]) as version:
+                    self.assertEqual(version.read(), (source / "VERSION").read_bytes())
+            run("uv", "build", "--wheel", "--out-dir", wheelhouse, sdist)
             wheel = next(wheelhouse.glob("agent_workflow-*.whl"))
             virtual_environment = root / "venv"
             run("uv", "venv", "--python", sys.executable, virtual_environment)
@@ -68,7 +78,6 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                         "agent_workflow/bootstrap.py",
                         "agent_workflow/lifecycle.py",
                         "agent_workflow/verify_package.py",
-                        "agent_workflow/VERSION",
                         "agent_workflow/install/AGENTS.md.template",
                         "agent_workflow/install/CLAUDE.md.template",
                         "agent_workflow/install/manifest.json",
@@ -88,10 +97,11 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                     )
                 ).decode()
                 self.assertIn(
-                    "Version: " + (package / "VERSION").read_text().strip(), metadata
+                    "Version: " + (source / "VERSION").read_text().strip(), metadata
                 )
             archive = root / "repository-snapshot.tar.gz"
             with tarfile.open(archive, "w:gz") as built:
+                built.add(REPOSITORY_ROOT / "VERSION", arcname="source/VERSION")
                 for name in ("agent_workflow", ".agent-workflow", ".agents/skills"):
                     for path in sorted((REPOSITORY_ROOT / name).rglob("*")):
                         if path.is_file() and "__pycache__" not in path.parts:
@@ -102,6 +112,7 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                             )
             project = root / "project"
             project.mkdir()
+            (project / "VERSION").write_bytes(b"project-owned version\n")
             project_bytes = b"# Project instructions\r\nKeep these bytes.\r\n"
             for name in ("AGENTS.md", "CLAUDE.md"):
                 (project / name).write_bytes(project_bytes)
@@ -111,6 +122,9 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             for action in ("install", "update", "status"):
                 run(cli, action, project, "--archive-url", archive.as_uri())
                 self.assertFalse((project / ".project-efforts").exists())
+                self.assertEqual(
+                    (project / "VERSION").read_bytes(), b"project-owned version\n"
+                )
                 self.assertEqual(unrelated.read_bytes(), b"local skill\n")
                 for name in ("README.md", "routing.md", "contracts/wayfinder-state.md"):
                     self.assertEqual(
@@ -129,6 +143,9 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             run(cli, "remove", project, "--archive-url", archive.as_uri())
             self.assertFalse((project / ".agent-workflow").exists())
             self.assertFalse((project / ".project-efforts").exists())
+            self.assertEqual(
+                (project / "VERSION").read_bytes(), b"project-owned version\n"
+            )
             self.assertEqual(
                 list((project / ".agents/skills").iterdir()), [unrelated.parent]
             )

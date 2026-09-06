@@ -72,7 +72,8 @@ OPTIONAL, INDEPENDENT
 
 The source repository authors runtime framework content directly in `.agent-workflow/` and the fifteen curated skill directories directly in `.agents/skills/`.
 These authored trees are distributed to the same relative paths in consuming repositories; they are not generated projections in this source repository.
-The Python implementation lives directly in `agent_workflow/`, with `VERSION` as the sole authored version.
+The Python implementation lives directly in `agent_workflow/`.
+The repository-root `VERSION` is the sole authored framework/release version; Python package metadata derives from it.
 Only `AGENTS.md.template`, `CLAUDE.md.template`, and `manifest.json` live in `agent_workflow/install/` because composite policies cannot be authored as whole consuming-project files.
 Manifest sources are relative to the immutable repository snapshot root, and the manifest itself is never installed.
 Tests live in `tests/`; evaluation and token-forensics tooling remain separate repository concerns.
@@ -151,7 +152,7 @@ If a selected skill is unavailable or cannot run without explicit user invocatio
 ## Lifecycle and bootstrap boundary
 
 The installed CLI selects the highest stable `vX.Y.Z` release tag, resolves an immutable source revision, and downloads one repository snapshot.
-Bootstrap validates archive paths and bounds, then extracts only `agent_workflow/`, `.agent-workflow/`, and `.agents/skills/` beneath one snapshot root.
+Bootstrap validates archive paths and bounds, then extracts only the root `VERSION` file plus `agent_workflow/`, `.agent-workflow/`, and `.agents/skills/` beneath one snapshot root.
 It runs that snapshot's `agent_workflow/lifecycle.py`, which resolves manifest sources from the same root.
 Python implementation and install metadata may be packaged in the wheel; canonical framework and skill content comes from the selected snapshot.
 Older CLIs hard-coded the former nested source layout, so this structural release requires the one-time CLI reinstall documented in the [README](../README.md#one-time-reinstall-for-the-repository-layout-release).

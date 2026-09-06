@@ -27,7 +27,7 @@ MAX_ARCHIVE_MEMBERS = 10_000
 EXECUTABLE_PACKAGE_PATHS = frozenset()
 MINIMUM_PYTHON = (3, 11)
 RUNTIME_PACKAGE_REQUIREMENTS = (
-    (PurePosixPath("agent_workflow/VERSION"), "package version"),
+    (PurePosixPath("VERSION"), "framework version"),
     (PurePosixPath("agent_workflow/lifecycle.py"), "lifecycle entrypoint"),
     (
         PurePosixPath("agent_workflow/install/manifest.json"),
@@ -132,7 +132,8 @@ def source_relative(name: str) -> PurePosixPath | None:
     relative = PurePosixPath(*PurePosixPath(name).parts[1:])
     parts = relative.parts
     if parts and (
-        parts[0] in SOURCE_ROOTS
+        parts == ("VERSION",)
+        or parts[0] in SOURCE_ROOTS
         or parts == (".agents",)
         or parts[:2] == (".agents", "skills")
     ):

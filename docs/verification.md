@@ -11,7 +11,7 @@ An explicit ref such as `--ref main` is an opt-in development or testing overrid
 Before executing package code the bootstrap resolves the selected ref to an immutable commit, downloads one snapshot, and runs that snapshot's `agent_workflow/lifecycle.py` against canonical resources from the same repository root.
 It rejects corrupt or oversized archives, excessive package contents, excessive whole-archive parsing, absolute, traversing, or duplicate paths, links, special entries, unreviewed modes, filesystem-root targets, and packages missing the minimum lifecycle files.
 The archive is streamed, and unrelated repository entries do not consume the tighter distributable-source member allowance.
-Extraction selects only `agent_workflow/`, `.agent-workflow/`, and `.agents/skills/` beneath one snapshot root; an incidental nested lookalike is not a runtime source.
+Extraction selects only the root `VERSION` file plus `agent_workflow/`, `.agent-workflow/`, and `.agents/skills/` beneath one snapshot root; an incidental nested lookalike is not a runtime source.
 
 `lifecycle.py` is the only install, update, status, and remove implementation.
 Explicit existing non-root target directories are used directly.
@@ -60,7 +60,7 @@ OK: Agent Workflow package verification passed.
 ```
 
 The `evals/` unit tests are a separate deterministic, network-free step because evaluation tooling is not part of the distributed package.
-The wheel smoke test builds the conventional Python package with `uv`, checks its exact implementation and install-resource contents, installs it in an isolated environment, and exercises all four commands against a local repository snapshot.
+The wheel smoke test builds a source distribution with `uv`, verifies its single root `VERSION`, builds a wheel from that archive, checks the wheel's exact implementation and install-resource contents, installs it in an isolated environment, and exercises all four commands against a local repository snapshot.
 It proves that canonical framework and skill resources need not be bundled in the wheel and that installation creates no `.project-efforts/` state.
 The local snapshot exercise is deterministic; building may need network access for build dependencies that are not already cached.
 
@@ -106,7 +106,9 @@ They cover map-first coordination, records, allocation, reconciliation, referenc
 
 ## Release tags
 
-`agent_workflow/VERSION` is the sole authored framework version and the human-controlled release switch.
+The repository-root `VERSION` is the sole authored framework version and the human-controlled `x.y.z` release switch.
+Python distribution metadata derives from this file; the wheel contains no authored version-file copy.
+The selected repository snapshot supplies its own root `VERSION` to bootstrap, and lifecycle does not install it into consuming projects.
 After the deterministic verifier succeeds on a push to `main`, a version change requests one annotated release tag on that exact verified commit.
 The release job accepts only `x.y.z`, requires a version greater than existing semantic release tags, and never reuses, moves, or force-pushes a tag.
 

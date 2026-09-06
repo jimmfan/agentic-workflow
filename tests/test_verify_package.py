@@ -87,9 +87,9 @@ class VerifyPackageTests(ProjectTestCase):
             "canonical source inventory differs",
         )
 
-    def test_package_version_is_the_only_version_source(self) -> None:
+    def test_root_version_is_the_only_version_source(self) -> None:
         source = self.copy_source("version-source")
-        (source / "agent_workflow/VERSION").write_text("9.8.7\n", encoding="utf-8")
+        (source / "VERSION").write_text("9.8.7\n", encoding="utf-8")
 
         result = self.verify(source)
 
@@ -97,6 +97,32 @@ class VerifyPackageTests(ProjectTestCase):
 
         (source / ".agent-workflow/VERSION").write_text("9.8.7\n", encoding="utf-8")
         self.assert_verify_failure(source, "canonical source inventory differs")
+
+    def test_verifier_rejects_a_second_version_inside_the_python_package(self) -> None:
+        source = self.copy_source("duplicate-version")
+        (source / "agent_workflow/VERSION").write_text("9.8.7\n", encoding="utf-8")
+        self.assert_verify_failure(
+            source, "root VERSION is the single authored version"
+        )
+
+    def test_root_version_must_be_a_regular_semantic_version_file(self) -> None:
+        for kind in ("missing", "symlink", "directory", "malformed"):
+            with self.subTest(kind=kind):
+                source = self.copy_source(f"version-{kind}")
+                version = source / "VERSION"
+                version.unlink()
+                if kind == "symlink":
+                    version.symlink_to(source / "README.md")
+                elif kind == "directory":
+                    version.mkdir()
+                elif kind == "malformed":
+                    version.write_text("0.30.0-rc.1\n", encoding="utf-8")
+                expected = (
+                    "VERSION must use x.y.z"
+                    if kind == "malformed"
+                    else "missing or unsafe root VERSION"
+                )
+                self.assert_verify_failure(source, expected)
 
     def test_verifier_requires_non_active_root_policy_templates(self) -> None:
         cases = (

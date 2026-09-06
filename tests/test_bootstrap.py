@@ -20,8 +20,8 @@ from _test_support import (
     run_script,
 )
 
-PACKAGE_VERSION = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
-PACKAGE_TAG = f"v{PACKAGE_VERSION}"
+FRAMEWORK_VERSION = (REPOSITORY_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+FRAMEWORK_TAG = f"v{FRAMEWORK_VERSION}"
 SYNTHETIC_TAG_REF = "v7.8.9"
 
 
@@ -65,6 +65,8 @@ class BootstrapSafetyTests(unittest.TestCase):
                 member.mode = 0o644
                 member.size = len(data)
                 archive.addfile(member, io.BytesIO(data))
+            version = REPOSITORY_ROOT / "VERSION"
+            archive.add(version, arcname="source/VERSION")
             for source_root in ("agent_workflow", ".agent-workflow", ".agents/skills"):
                 for path in sorted((REPOSITORY_ROOT / source_root).rglob("*")):
                     if (
@@ -87,10 +89,10 @@ from pathlib import Path
 import sys
 
 LIFECYCLE_RELEASE = {version!r}
-package = Path(__file__).resolve().parent
-package_version = (package / "VERSION").read_text(encoding="utf-8").strip()
-content_version = (package.parent / ".agent-workflow/framework-version.txt").read_text(encoding="utf-8").strip()
-if package_version != LIFECYCLE_RELEASE or content_version != LIFECYCLE_RELEASE:
+snapshot = Path(__file__).resolve().parent.parent
+framework_version = (snapshot / "VERSION").read_text(encoding="utf-8").strip()
+content_version = (snapshot / ".agent-workflow/framework-version.txt").read_text(encoding="utf-8").strip()
+if framework_version != LIFECYCLE_RELEASE or content_version != LIFECYCLE_RELEASE:
     raise SystemExit("downloaded lifecycle and content releases differ")
 target = Path(sys.argv[2])
 (target / "selected-framework-version.txt").write_text(
@@ -100,7 +102,7 @@ target = Path(sys.argv[2])
         return self.archive(
             [
                 (
-                    "source/agent_workflow/VERSION",
+                    "source/VERSION",
                     f"{version}\n".encode(),
                     "file",
                 ),
@@ -143,6 +145,7 @@ target = Path(sys.argv[2])
             for relative in ("README.md", "routing.md", "contracts/wayfinder-state.md"):
                 self.assertTrue((target / ".agent-workflow" / relative).is_file())
             self.assertFalse((target / ".project-efforts").exists())
+            self.assertFalse((target / "VERSION").exists())
             self.assertEqual(
                 len(list((target / ".agents/skills").glob("*/SKILL.md"))), 15
             )
@@ -173,6 +176,7 @@ target = Path(sys.argv[2])
         self,
     ) -> None:
         for source in (
+            "VERSION",
             "agent_workflow/lifecycle.py",
             ".agent-workflow/routing.md",
             ".agents/skills/research/SKILL.md",
@@ -203,7 +207,7 @@ target = Path(sys.argv[2])
         self,
     ) -> None:
         entries = [
-            ("root/agent_workflow/VERSION", b"1.2.3\n", "group-writable"),
+            ("root/VERSION", b"1.2.3\n", "group-writable"),
             ("root/.project-efforts/example/map.md", b"project state\n", "file"),
             (
                 "root/examples/agent_workflow/lifecycle.py",
@@ -222,11 +226,9 @@ target = Path(sys.argv[2])
                     for p in snapshot.rglob("*")
                     if p.is_file()
                 },
-                {"agent_workflow/VERSION"},
+                {"VERSION"},
             )
-            self.assertEqual(
-                (snapshot / "agent_workflow/VERSION").stat().st_mode & 0o777, 0o644
-            )
+            self.assertEqual((snapshot / "VERSION").stat().st_mode & 0o777, 0o644)
             with self.assertRaisesRegex(
                 self.bootstrap.BootstrapError, "lifecycle entrypoint missing"
             ):
@@ -588,7 +590,7 @@ target = Path(sys.argv[2])
         )
         responses = {
             tags_url: json.dumps(
-                [{"name": PACKAGE_TAG}, {"name": SYNTHETIC_TAG_REF}]
+                [{"name": FRAMEWORK_TAG}, {"name": SYNTHETIC_TAG_REF}]
             ).encode(),
             commit_url: json.dumps({"sha": revision}).encode(),
             archive_url: self.release_probe_archive("7.8.9"),

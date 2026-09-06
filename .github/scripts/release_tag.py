@@ -10,7 +10,7 @@ import subprocess
 from typing import Iterable
 
 
-VERSION_PATH = Path("agent_workflow/VERSION")
+VERSION_PATH = Path("VERSION")
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
 FULL_SHA = re.compile(r"[0-9a-fA-F]{40}")
 BOT_NAME = "github-actions[bot]"

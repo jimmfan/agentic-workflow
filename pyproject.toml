@@ -18,11 +18,10 @@ packages = ["agent_workflow"]
 include-package-data = false
 
 [tool.setuptools.dynamic]
-version = { file = ["agent_workflow/VERSION"] }
+version = { file = ["VERSION"] }
 
 [tool.setuptools.package-data]
 agent_workflow = [
-  "VERSION",
   "install/*",
 ]
 

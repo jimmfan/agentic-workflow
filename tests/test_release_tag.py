@@ -41,7 +41,7 @@ class ReleaseRepository:
         )
 
     def write_version(self, version: str) -> None:
-        path = self.work / "agent_workflow" / "VERSION"
+        path = self.work / "VERSION"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(version + "\n", encoding="utf-8")
 

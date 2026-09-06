@@ -121,6 +121,7 @@ class ProjectTestCase(unittest.TestCase):
             "CONTEXT.md",
             "LICENSE",
             "README.md",
+            "VERSION",
         ):
             source = REPOSITORY_ROOT / source_name
             target = repository_copy / source_name
