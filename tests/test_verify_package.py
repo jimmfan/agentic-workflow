@@ -116,27 +116,6 @@ class VerifyPackageTests(ProjectTestCase):
         path.write_text(json.dumps(manifest), encoding="utf-8")
         self.assert_verify_failure(unmapped, "distribution manifest is stale")
 
-    def test_verifier_rejects_the_old_root_terminology_source(self) -> None:
-        source = self.copy_source("duplicate-terminology")
-        (source / "CONTEXT.md").write_bytes(
-            (source / ".agent-workflow/terminology.md").read_bytes()
-        )
-        self.assert_verify_failure(
-            source, "obsolete source layout must remain absent: CONTEXT.md"
-        )
-
-    def test_verifier_requires_the_domain_modeling_terminology_boundary(self) -> None:
-        source = self.copy_source("domain-modeling-terminology-ownership")
-        self.replace_once(
-            source,
-            ".agents/skills/domain-modeling/SKILL.md",
-            "In consuming projects, Domain Modeling does not own or modify the framework-owned `.agent-workflow/terminology.md`.",
-            "Domain Modeling may modify framework terminology in consuming projects.",
-        )
-        self.assert_verify_failure(
-            source, "Domain Modeling lacks load-bearing contract"
-        )
-
     def test_verifier_rejects_a_second_version_inside_the_python_package(self) -> None:
         source = self.copy_source("duplicate-version")
         (source / "agent_workflow/VERSION").write_text("9.8.7\n", encoding="utf-8")
@@ -204,8 +183,8 @@ class VerifyPackageTests(ProjectTestCase):
             wrong_name, "curated skill name differs from its directory"
         )
 
-    def test_domain_modeling_has_no_generic_adr_support_surface(self) -> None:
-        source = self.copy_source("domain-modeling-without-adr-support")
+    def test_domain_modeling_distributes_context_support(self) -> None:
+        source = self.copy_source("domain-modeling-context-support")
         domain_root = source / ".agents/skills/domain-modeling"
         manifest = json.loads(
             (source / "agent_workflow/install/manifest.json").read_text(
@@ -217,11 +196,8 @@ class VerifyPackageTests(ProjectTestCase):
             {path.name for path in domain_root.iterdir() if path.is_file()},
             {"CONTEXT-FORMAT.md", "SKILL.md"},
         )
-        self.assertFalse(
-            (source / ".agents/skills/domain-modeling/ADR-FORMAT.md").exists()
-        )
-        self.assertNotIn(
-            ".agents/skills/domain-modeling/ADR-FORMAT.md",
+        self.assertIn(
+            ".agents/skills/domain-modeling/CONTEXT-FORMAT.md",
             {item["source"] for item in manifest["framework_owned"]},
         )
 
@@ -242,17 +218,40 @@ class VerifyPackageTests(ProjectTestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_verifier_does_not_apply_a_broad_prose_blacklist(self) -> None:
-        source = self.copy_source("historical-prose")
-        readme = source / "README.md"
-        readme.write_text(
-            readme.read_text(encoding="utf-8")
-            + "\nHistorical note: the former provider-native design was replaced.\n",
-            encoding="utf-8",
+        cases = (
+            (
+                "README.md",
+                "Historical note: the former provider-native design was replaced.",
+            ),
+            (
+                ".agents/skills/domain-modeling/SKILL.md",
+                "Do not record an architectural decision.",
+            ),
+            (
+                ".agents/skills/wayfinder/SKILL.md",
+                "Earlier terminology used 'coordination boundary' and 'bounded current scope'.",
+            ),
+            (
+                ".agents/skills/to-spec/SKILL.md",
+                "Use a label such as ready-for-agent only when the user names it.",
+            ),
+            (
+                ".agents/skills/to-tickets/SKILL.md",
+                "Use a label such as ready-for-agent only when the user names it.",
+            ),
         )
+        for index, (relative, addition) in enumerate(cases):
+            with self.subTest(relative=relative):
+                source = self.copy_source(f"permitted-prose-{index}")
+                path = source / relative
+                path.write_text(
+                    path.read_text(encoding="utf-8") + f"\n{addition}\n",
+                    encoding="utf-8",
+                )
 
-        result = self.verify(source)
+                result = self.verify(source)
 
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_verifier_rejects_missing_and_escaping_skill_links(self) -> None:
         cases = (
@@ -426,30 +425,6 @@ class VerifyPackageTests(ProjectTestCase):
                 source = self.copy_source(name)
                 self.replace_once(source, relative, original, replacement)
                 self.assert_verify_failure(source, expected)
-
-        for skill in ("to-spec", "to-tickets"):
-            with self.subTest(name=f"{skill}-hard-coded-label"):
-                source = self.copy_source(f"{skill}-hard-coded-label")
-                path = source / f".agents/skills/{skill}/SKILL.md"
-                path.write_text(
-                    path.read_text(encoding="utf-8")
-                    + "\nApply the ready-for-agent label.\n",
-                    encoding="utf-8",
-                )
-                self.assert_verify_failure(
-                    source, f"{skill} hard-codes the ready-for-agent label"
-                )
-
-        domain_adr = self.copy_source("domain-modeling-generic-adr")
-        domain_path = domain_adr / ".agents/skills/domain-modeling/SKILL.md"
-        domain_path.write_text(
-            domain_path.read_text(encoding="utf-8")
-            + "\nRecord an architectural decision in docs/adr/.\n",
-            encoding="utf-8",
-        )
-        self.assert_verify_failure(
-            domain_adr, "Domain Modeling retains generic ADR responsibility"
-        )
 
     def test_verifier_rejects_install_history_and_invalid_composite_markers(
         self,

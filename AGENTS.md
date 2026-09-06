@@ -102,7 +102,6 @@ Before introducing, renaming, or materially redefining a canonical term:
 - State evidence strength and uncertainty honestly.
 
 Update `.agent-workflow/terminology.md` only after the terminology decision is accepted.
-This framework source is separate from Domain Modeling's project-owned `CONTEXT.md` and `CONTEXT-MAP.md` artifacts.
 Keep behavior, architecture, authority, and terminology in their respective owning layers.
 Do not force one term across genuinely different bounded contexts.
 

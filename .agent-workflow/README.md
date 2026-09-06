@@ -15,7 +15,6 @@ Lifecycle commands do not directly traverse, interpret, or change it.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for current maps, optional F#/D# ledgers, independently useful U#/E# files, identifiers, reconciliation, pruning, effort ending, and progressive loading.
 
 The root policy loads routing, terminology, and specialized contracts progressively.
-Terminology is framework-owned and reconstructable; Domain Modeling's project-owned `CONTEXT.md` and `CONTEXT-MAP.md` artifacts remain separate.
 No hook, daemon, lifecycle controller, or telemetry analyzer is installed.
 
 ## Third-party license

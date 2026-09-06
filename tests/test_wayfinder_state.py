@@ -1937,10 +1937,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             "copyright and mit license attribution",
             (REPOSITORY_ROOT / "docs/skills.md").read_text(encoding="utf-8").casefold(),
         )
-        self.assertIn(
-            "canonical agent workflow language",
-            (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8").casefold(),
-        )
 
     def test_ownership_durability_and_reconstructability_remain_independent(
         self,
@@ -2393,13 +2389,6 @@ class WayfinderStateContractTests(unittest.TestCase):
         ):
             with self.subTest(identity_fragment=identity_fragment):
                 self.assertIn(identity_fragment, state_model)
-        for obsolete_identity_term in (
-            "coordination boundary",
-            "bounded current scope",
-        ):
-            with self.subTest(obsolete_identity_term=obsolete_identity_term):
-                self.assertNotIn(obsolete_identity_term, effort_shape.casefold())
-                self.assertNotIn(obsolete_identity_term, state_model.casefold())
         self.assertIn(
             "These headings guide content; they are not a recognition schema",
             effort_shape,

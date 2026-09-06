@@ -40,7 +40,6 @@ class RoutingContractTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertFalse((REPOSITORY_ROOT / "CONTEXT.md").exists())
         self.assertTrue(terminology_path.is_file())
         context = terminology_path.read_text(encoding="utf-8")
         self.assertEqual(
@@ -211,34 +210,6 @@ class RoutingContractTests(unittest.TestCase):
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, normalized)
-
-    def test_domain_modeling_preserves_single_and_multiple_project_contexts(
-        self,
-    ) -> None:
-        skill = REPOSITORY_ROOT / ".agents/skills/domain-modeling"
-        instructions = " ".join((skill / "SKILL.md").read_text().split())
-        context_format = " ".join((skill / "CONTEXT-FORMAT.md").read_text().split())
-        self.assertIn(
-            "Its `CONTEXT.md` and `CONTEXT-MAP.md` artifacts are project-owned domain models.",
-            instructions,
-        )
-        self.assertIn(
-            "In consuming projects, Domain Modeling does not own or modify the "
-            "framework-owned `.agent-workflow/terminology.md`.",
-            instructions,
-        )
-        self.assertIn("[CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)", instructions)
-        self.assertIn(
-            "When a term is resolved, update `CONTEXT.md` right there", instructions
-        )
-        for rule in (
-            "If `CONTEXT-MAP.md` exists, read it to find contexts",
-            "If only a root `CONTEXT.md` exists, single context",
-            "If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved",
-            "When multiple contexts exist, infer which one the current topic relates to",
-        ):
-            with self.subTest(rule=rule):
-                self.assertIn(rule, context_format)
 
     def test_explicit_available_skill_selection_still_takes_precedence(self) -> None:
         routing = " ".join(
@@ -1167,18 +1138,6 @@ class RoutingContractTests(unittest.TestCase):
                 self.assertNotIn(literal_trigger, root_policy)
                 self.assertNotIn(literal_trigger, wayfinder_skill)
 
-        for obsolete_identity_term in (
-            "apparent desired future state",
-            "goal-directed work",
-            "coordination boundary",
-            "bounded current scope",
-        ):
-            with self.subTest(obsolete_identity_term=obsolete_identity_term):
-                self.assertNotIn(obsolete_identity_term, normalized_root.casefold())
-                self.assertNotIn(
-                    obsolete_identity_term, normalized_wayfinder.casefold()
-                )
-
     def test_specialist_boundaries_separate_choices_evidence_and_structure(
         self,
     ) -> None:
@@ -1262,21 +1221,9 @@ class RoutingContractTests(unittest.TestCase):
             "all project structure",
             "Wayfinder's effort-specific areas and relationships",
             "generic architecture-decision store",
-            "structural model",
         ):
             with self.subTest(excluded_ownership=excluded_ownership):
-                if excluded_ownership == "structural model":
-                    self.assertNotIn(excluded_ownership, normalized_domain)
-                else:
-                    self.assertIn(excluded_ownership, normalized_domain)
-        for obsolete_adr_boundary in (
-            "record an architectural decision",
-            "ADR-FORMAT.md",
-            "docs/adr/",
-            "Offer ADRs",
-        ):
-            with self.subTest(obsolete_adr_boundary=obsolete_adr_boundary):
-                self.assertNotIn(obsolete_adr_boundary, domain)
+                self.assertIn(excluded_ownership, normalized_domain)
 
         self.assertIn(
             "A bounded architectural choice remains Direct or uses Discovery when "

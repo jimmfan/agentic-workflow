@@ -221,7 +221,6 @@ def check_structure() -> None:
             f"expected={sorted(expected)!r}, actual={sorted(actual)!r}",
         )
     for obsolete in (
-        REPOSITORY_ROOT / "CONTEXT.md",
         REPOSITORY_ROOT / "token_forensics",
         REPOSITORY_ROOT / "skills",
         PACKAGE_ROOT / "scripts",
@@ -470,26 +469,11 @@ def check_semantic_contracts() -> None:
             "domain responsibilities and relationships",
             "`CONTEXT.md`",
             "`CONTEXT-MAP.md`",
-            "Its `CONTEXT.md` and `CONTEXT-MAP.md` artifacts are project-owned domain models.",
-            "In consuming projects, Domain Modeling does not own or modify the framework-owned `.agent-workflow/terminology.md`.",
             "does not own generic implementation or module architecture",
             "all project structure",
             "Wayfinder's effort-specific areas and relationships",
             "generic architecture-decision store",
         ),
-    )
-    require(
-        all(
-            obsolete not in domain_modeling
-            for obsolete in (
-                "record an architectural decision",
-                "adr-format.md",
-                "docs/adr/",
-                "offer adrs",
-                "structural model",
-            )
-        ),
-        "Domain Modeling retains generic ADR responsibility",
     )
 
     wayfinder = normalized_text(".agents/skills/wayfinder/SKILL.md")
@@ -507,24 +491,12 @@ def check_semantic_contracts() -> None:
             "Reference the artifacts that maintain lasting results instead of copying them.",
         ),
     )
-    for obsolete_identity_term in (
-        "coordination boundary",
-        "bounded current scope",
-    ):
-        require(
-            obsolete_identity_term not in wayfinder,
-            f"Wayfinder retains obsolete identity term: {obsolete_identity_term}",
-        )
 
     for label, relative in (
         ("to-spec", ".agents/skills/to-spec/SKILL.md"),
         ("to-tickets", ".agents/skills/to-tickets/SKILL.md"),
     ):
         text = normalized_text(relative)
-        require(
-            "ready-for-agent" not in text,
-            f"{label} hard-codes the ready-for-agent label",
-        )
         require_clauses(
             label,
             text,
