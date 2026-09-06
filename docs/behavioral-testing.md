@@ -11,7 +11,8 @@ Normal pull requests do not need a model, network credential, live skill discove
 
 ## Testing layers
 
-1. **Production-boundary tests** exercise lifecycle convergence and managed-path safety, direct skill distribution, package verification, bootstrap safety, routing, and Wayfinder state through their public boundaries.
+1. **Shipped-code tests** exercise lifecycle convergence and managed-path safety, direct skill distribution, package verification, bootstrap safety, and release publication through their public boundaries.
+   Literal routing and Wayfinder contract/fixture checks validate interfaces and examples, not agent semantic behavior.
 2. **Behavior-harness tests** validate TOML schema and vocabulary, blind-rubric isolation, evaluator failure modes, route-marker syntax, fixture reset, and command-runner evidence.
 3. **Wayfinder behavioral scenarios** provide fixture-backed observable contracts for authority, effort selection, reconciliation, and record pruning or effort ending without duplicating product implementation.
 4. **Live behavioral smoke tests** are opt-in.
@@ -99,11 +100,12 @@ A broad exact count can reject extra children while a stable-ID content glob suc
 This keeps contracts focused on outcomes and prevents the harness from becoming a second router.
 
 The optional `state_must_include` and `state_must_not_include` arrays constrain the public `state_used` report.
-They make progressive-loading behavior observable without asking for private reasoning: a relevant map/child must be reported as consulted, while a known unrelated child must not be.
+They check only the agent's public claim: a relevant map/child must be reported as consulted, while a known unrelated child must not be.
+Missing or contradictory claims fail that report requirement; matching claims leave actual progressive reads INCONCLUSIVE.
 Every named path must be a regular file in the starting fixture.
 
 The optional `route_must_include` and `route_must_not_include` arrays constrain the final route marker by required and prohibited executed components.
-They test specialist boundaries without treating request phrases as routing triggers.
+They test the reported route, not execution of the named specialists, without treating request phrases as routing triggers.
 
 A new scenario should need one TOML file and one small fixture directory.
 The validator rejects unrecognized behavior names, unsafe paths, missing preserved files, unrecognized fields, and unsupported assertion kinds.
@@ -133,7 +135,7 @@ The evaluator uses public artifacts only:
 - exact preservation of paths declared project-owned by the scenario;
 - prohibited created-path globs;
 - fixture verification events in `.behavior-evidence/verification.jsonl`, including exit codes and ordering;
-- a concise agent-written `.behavior-evidence/report.json` containing status, commands/exit codes, cited research URLs, state paths actually consumed, selected/executed skill claims, and blockers;
+- a concise agent-written `.behavior-evidence/report.json` containing status, commands/exit codes, cited research URLs, claimed state paths, selected/executed skill claims, and blockers;
 - exactly one syntactically valid route marker ending the agent's stdout final response; and
 - case-specific path assertions.
 
@@ -142,9 +144,13 @@ General scenarios do not require one exact workflow sequence: route-specific exc
 No evaluator asks for chain-of-thought, private model reasoning, exact prose, or a fixed stage count.
 
 The report is a claim, so important outcomes are cross-checked against repository diffs, fixture verification logs, state preservation, and scenario assertions.
-Only fixture-recorded verification events satisfy a verification expectation; an agent's report cannot turn an unobserved command into a passing check.
-A reported state input counts only when that path existed in the starting repository snapshot.
-Research grounding currently proves that the agent supplied a public source; it does not independently adjudicate every changing external fact.
+Fixture-recorded verification events are cooperative public evidence, distinct from the agent's report.
+For scenarios requiring verification with a root `verify.py`, the harness also executes that unchanged fixture verifier after capturing the agent's events; a changed verifier fails, and a forged success event cannot hide an incorrect final result.
+That independent check establishes the final fixture outcome, not the agent's internal process or the authenticity of earlier self-written log entries.
+A reported path proves neither a read nor reuse, even when the file exists.
+A URL proves neither research execution nor the correctness of a changing fact.
+The external-Python fixture checks version/support/source structure only; current factual accuracy still requires source adjudication.
+Likewise, no change at known decision paths does not prove that unsupported choices are absent from other files or the final response.
 
 ## Commands
 
@@ -228,10 +234,24 @@ These checks test the evaluator; only an actual live run supplies evidence of ag
 
 ## Current limitations
 
-- Existing-state reuse is supported by both a public `state_used` report and scenario-specific output assertions; filesystem snapshots cannot observe a read by themselves.
+- Existing-state reuse remains INCONCLUSIVE from a public `state_used` report; scenario-specific output assertions separately test the expected result.
 - Progressive-loading checks likewise rely on the public `state_used` report; they detect overloading reported by a cooperative agent but are not operating system file-access tracing.
-- External research checks cited public URLs and observable output, but changing facts may still require human or domain-specific adjudication.
+- External research and absence of invented facts remain INCONCLUSIVE when only source claims and structural checks are available; changing facts require source adjudication.
 - Required route markers remain agent claims rather than proof of execution; scenario evidence and route-specific checks establish truthfulness where observable.
 - Live tracker interactions and editor-host skill behavior need a separately credentialed environment and are not represented as deterministic success.
 - The live runner is command-based rather than tied to one vendor CLI.
   A host command wrapper must satisfy the documented stdin/current-directory contract.
+
+## Verdicts and negative controls
+
+Live output reports schema version 2 with a separate execution status and behavioral verdict.
+Each check has `passed: true`, `false`, or `null`; `null` means required behavior was not observed.
+Any observed failed check makes the verdict FAIL; otherwise an unobserved requirement makes it INCONCLUSIVE; only all observed passing checks produce PASS.
+Exit codes are 0 for PASS, 1 for an observed failure, and 2 for INCONCLUSIVE or a runner error.
+Agent status, route markers, URLs, and reported paths are labeled claims and cannot alone establish task completion, research, reads, reuse, or lack of unsupported decisions.
+
+Deterministic negative controls include an agent that prints success, URLs, paths, and a route marker while forging a successful verification event without changing the broken implementation.
+The unchanged fixture verifier still fails that run.
+Other controls check unobserved reads/research, unsupported choices outside conventional decision paths, invalid identifiers, dangling references, and stale-state outcomes.
+No exact tool sequence is required by these changes.
+See the [Wayfinder coverage ledger](../tests/README.md#wayfinder-coverage-and-evidence-limits) for instruction requirements that remain unverified.

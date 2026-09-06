@@ -95,7 +95,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                     failures = [
                         item.name
                         for item in behavior.evaluate(evidence)
-                        if not item.passed
+                        if item.passed is False
                     ]
                     self.assertEqual(not failures, expected, failures)
 
@@ -196,7 +196,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                     failures = [
                         item.name
                         for item in behavior.evaluate(evidence)
-                        if not item.passed
+                        if item.passed is False
                     ]
                     self.assertEqual(not failures, expected, failures)
 
@@ -234,7 +234,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                         failures = [
                             item.name
                             for item in behavior.evaluate(evidence)
-                            if not item.passed
+                            if item.passed is False
                         ]
                         if mutate:
                             self.assertIn("expect:repository_unchanged", failures)
@@ -276,7 +276,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             failures = [
                 result.detail
                 for result in behavior.evaluate(evidence)
-                if not result.passed
+                if result.passed is False
             ]
             self.assertEqual(failures, [])
             self.assertFalse((workspace / ".project-efforts").exists())
@@ -300,7 +300,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 route_components=behavior.route_components(stdout),
             )
             failed = {
-                item.name for item in behavior.evaluate(changed) if not item.passed
+                item.name for item in behavior.evaluate(changed) if item.passed is False
             }
             self.assertIn("expect:repository_unchanged", failed)
             self.assertIn("must-not:unnecessary_planning_artifacts", failed)
@@ -566,7 +566,9 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 verification=(),
                 route_components=behavior.route_components(stdout),
             )
-            self.assertTrue(all(item.passed for item in behavior.evaluate(evidence)))
+            self.assertTrue(
+                all(item.passed is not False for item in behavior.evaluate(evidence))
+            )
 
             (workspace / ".project-efforts/blocked-provider-direction/map.md").unlink()
             (
@@ -585,7 +587,9 @@ class WayfinderBehaviorTests(unittest.TestCase):
                 verification=(),
                 route_components=behavior.route_components(stdout),
             )
-            failed = {item.name for item in behavior.evaluate(ended) if not item.passed}
+            failed = {
+                item.name for item in behavior.evaluate(ended) if item.passed is False
+            }
             self.assertIn("expect:blocked_cleanly", failed)
             self.assertIn(
                 "assert:.project-efforts/blocked-provider-direction/map.md:exists",

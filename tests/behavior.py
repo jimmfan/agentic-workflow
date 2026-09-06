@@ -150,7 +150,7 @@ class Entry:
 @dataclass(frozen=True)
 class CheckResult:
     name: str
-    passed: bool
+    passed: bool | None
     detail: str
 
 
@@ -166,6 +166,15 @@ class RunEvidence:
     report: Mapping[str, object]
     verification: tuple[Mapping[str, object], ...]
     route_components: tuple[str, ...]
+    outcome_verification: Mapping[str, object] | None = None
+
+
+def verdict(results: Sequence[CheckResult]) -> str:
+    if any(result.passed is False for result in results):
+        return "FAIL"
+    if any(result.passed is None for result in results):
+        return "INCONCLUSIVE"
+    return "PASS"
 
 
 def configure_console() -> None:
@@ -872,8 +881,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         results.append(
             CheckResult(
                 "state-loading:progressive",
-                not missing_state and not excessive_state,
-                f"missing required state={missing_state}; loaded excluded state={excessive_state}",
+                False if missing_state or excessive_state else None,
+                f"self-reported missing state={missing_state}; excluded state={excessive_state}; actual reads unobserved",
             )
         )
     if evidence.scenario.report_must_include:
@@ -911,24 +920,48 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     changes = meaningful_changes(evidence)
     all_repository_changes = repository_changes(evidence)
 
-    expected_checks: dict[str, tuple[bool, str]] = {
+    outcome_checks = [
+        result for result in results if result.name.startswith(("assert:", "response:"))
+    ]
+    outcome = evidence.outcome_verification
+    if outcome is not None:
+        results.append(
+            CheckResult(
+                "verification:independent-outcome",
+                outcome.get("exit_code") == 0,
+                f"harness-run fixture verification: {dict(outcome)}",
+            )
+        )
+    completion = (
+        False
+        if status != "success" or evidence.returncode != 0
+        else all(result.passed for result in outcome_checks)
+        if outcome_checks
+        else outcome.get("exit_code") == 0
+        if outcome is not None
+        else None
+    )
+    expected_checks: dict[str, tuple[bool | None, str]] = {
         "task_completed": (
-            status == "success" and evidence.returncode == 0,
-            f"agent status={status!r}, exit={evidence.returncode}",
+            completion,
+            f"self-reported status={status!r}, exit={evidence.returncode}; fixture outcome checks={len(outcome_checks)}; absent outcome evidence is inconclusive",
         ),
         "repository_unchanged": (
             not all_repository_changes,
             f"repository changed paths={sorted(all_repository_changes)}",
         ),
-        "external_fact_researched": (bool(sources), f"research sources={len(sources)}"),
+        "external_fact_researched": (
+            None if sources else False,
+            f"self-reported source URLs={len(sources)}; research execution and current factual correctness are unobserved",
+        ),
         "uncertainty_recorded_or_blocked": (
             (status == "blocked" and bool(blockers))
             or wayfinder_record_changed(evidence, "unknowns", "U"),
             "specific blockers reported or a current U# was created or updated",
         ),
         "existing_state_reused": (
-            bool(state_used),
-            f"reported state inputs={list(state_used)}",
+            None if state_used else False,
+            f"self-reported state inputs={list(state_used)}; reading and reuse are unobserved",
         ),
         "meaningful_repository_change": (
             bool(changes),
@@ -954,23 +987,23 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         passed, detail = expected_checks[expectation]
         results.append(CheckResult(f"expect:{expectation}", passed, detail))
 
-    prohibition_checks: dict[str, tuple[bool, str]] = {
+    prohibition_checks: dict[str, tuple[bool | None, str]] = {
         "unnecessary_planning_artifacts": (forbidden_ok, forbidden_detail),
         "manufacture_uncertainty": (
             not wayfinder_child_changed(evidence, "unknowns"),
             "no unknown child was created or updated",
         ),
         "invent_external_fact": (
-            status != "success" or bool(sources),
-            f"research sources={len(sources)}",
+            None,
+            "URL presence does not establish factual correctness; current claims need source adjudication",
         ),
         "full_discovery_for_lookup": (
             route_exclusions_ok and forbidden_ok,
             route_exclusions_detail,
         ),
         "silent_decision_invention": (
-            not decision_artifact_changed(evidence),
-            "no D# or project artifact recording a decision was created or updated",
+            False if decision_artifact_changed(evidence) else None,
+            "known decision-path changes checked; absence does not exclude unsupported choices in other files or the response",
         ),
         "repeat_resolved_discovery": (
             route_exclusions_ok and forbidden_ok and preserved_ok,
@@ -1229,6 +1262,27 @@ def run_live_scenario(
     after = snapshot(workspace)
     report = load_report(report_file)
     verification = load_verification(workspace.joinpath(*VERIFICATION_LOG.parts))
+    outcome_verification = None
+    if "verification_performed" in scenario.expect and "verify.py" in before:
+        if before.get("verify.py") != after.get("verify.py"):
+            outcome_verification = {
+                "exit_code": 1,
+                "detail": "fixture verifier was changed",
+            }
+        else:
+            checked = subprocess.run(
+                [sys.executable, "verify.py"],
+                cwd=workspace,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+                env=environment,
+            )
+            outcome_verification = {
+                "exit_code": checked.returncode,
+                "stdout": checked.stdout,
+                "stderr": checked.stderr,
+            }
     evidence = RunEvidence(
         scenario=scenario,
         workspace=workspace,
@@ -1240,6 +1294,7 @@ def run_live_scenario(
         report=report,
         verification=verification,
         route_components=route_components(result.stdout),
+        outcome_verification=outcome_verification,
     )
     return evidence, evaluate(evidence)
 
@@ -1276,6 +1331,7 @@ def live_command(args: argparse.Namespace) -> int:
 
     output_runs: list[dict[str, object]] = []
     failures = 0
+    inconclusive = 0
     if args.keep_workspaces:
         args.keep_workspaces.mkdir(parents=True, exist_ok=True)
         workspace_context = None
@@ -1290,18 +1346,24 @@ def live_command(args: argparse.Namespace) -> int:
             evidence, results = run_live_scenario(
                 scenario, command, workspace_parent, args.timeout_seconds
             )
-            failed = [result for result in results if not result.passed]
-            failures += bool(failed)
-            print(f"{'PASS' if not failed else 'FAIL'}: {scenario.id}")
+            outcome = verdict(results)
+            failures += outcome == "FAIL"
+            inconclusive += outcome == "INCONCLUSIVE"
+            print(f"{outcome}: {scenario.id}")
             for result in results:
-                print(
-                    f"  {'OK' if result.passed else 'ERROR'}: {result.name}: {result.detail}"
-                )
+                print(f"  {verdict([result])}: {result.name}: {result.detail}")
             created, modified, deleted = changed_paths(evidence.before, evidence.after)
             output_runs.append(
                 {
                     "scenario": scenario.id,
-                    "passed": not failed,
+                    "verdict": outcome,
+                    "passed": {"PASS": True, "FAIL": False, "INCONCLUSIVE": None}[
+                        outcome
+                    ],
+                    "execution_status": "completed"
+                    if evidence.returncode == 0
+                    else "agent_error",
+                    "outcome_verification": evidence.outcome_verification,
                     "workspace": str(evidence.workspace),
                     "agent_exit_code": evidence.returncode,
                     "created": sorted(created),
@@ -1318,10 +1380,10 @@ def live_command(args: argparse.Namespace) -> int:
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(
-            json.dumps({"schema_version": 1, "runs": output_runs}, indent=2) + "\n",
+            json.dumps({"schema_version": 2, "runs": output_runs}, indent=2) + "\n",
             encoding="utf-8",
         )
-    return 1 if failures else 0
+    return 1 if failures else 2 if inconclusive else 0
 
 
 def build_parser() -> argparse.ArgumentParser:

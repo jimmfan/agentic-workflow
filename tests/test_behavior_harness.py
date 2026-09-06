@@ -144,7 +144,8 @@ class BehaviorHarnessTests(unittest.TestCase):
                 30,
             )
         self.assertEqual(evidence.route_components, ("direct",))
-        self.assertTrue(all(result.passed for result in results), results)
+        self.assertTrue(all(result.passed is not False for result in results), results)
+        self.assertEqual(behavior.verdict(results), "INCONCLUSIVE")
 
     def test_route_visibility_rejects_missing_duplicate_malformed_and_nonfinal_markers(
         self,
@@ -360,6 +361,90 @@ class BehaviorHarnessTests(unittest.TestCase):
         self.assertIn("expect:verification_failure_recovered", failed_names)
         self.assertIn("expect:meaningful_repository_change", failed_names)
 
+    def test_success_source_path_and_route_claims_cannot_replace_a_verified_change(
+        self,
+    ):
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "simple-bounded-task"
+        )
+        agent_source = """
+import json
+from pathlib import Path
+Path('.behavior-evidence/report.json').write_text(json.dumps({'schema_version': 1, 'status': 'success', 'research_sources': ['https://www.python.org/'], 'state_used': ['README.md'], 'verification': [{'exit_code': 0}]}))
+Path('.behavior-evidence/verification.jsonl').write_text(json.dumps({'exit_code': 0}) + '\\n')
+print('Success. I read the source, researched it and verified the change. [route: router → direct]')
+"""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            agent = root / "claims.py"
+            agent.write_text(agent_source)
+            evidence, results = behavior.run_live_scenario(
+                scenario, [behavior.sys.executable, str(agent)], root, 30
+            )
+            self.assertEqual(behavior.verdict(results), "FAIL")
+            self.assertNotEqual(evidence.outcome_verification["exit_code"], 0)
+            failures = {result.name for result in results if result.passed is False}
+            self.assertIn("expect:meaningful_repository_change", failures)
+            self.assertIn("verification:independent-outcome", failures)
+
+    def test_unobserved_research_reads_and_decision_absence_are_inconclusive(self):
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "discovery-composes-research"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            scenario = replace(
+                scenario,
+                expect=("external_fact_researched", "existing_state_reused"),
+                must_not=("silent_decision_invention",),
+                assertions=(),
+                response_must_match=(),
+                state_must_include=(Path("docs/requirements.md"),),
+            )
+            evidence = behavior.RunEvidence(
+                scenario,
+                workspace,
+                before,
+                before,
+                "[route: router → discovery → research]",
+                "",
+                0,
+                {
+                    "status": "success",
+                    "research_sources": ["https://www.sqlite.org/"],
+                    "state_used": ["docs/requirements.md"],
+                },
+                (),
+                ("discovery", "research"),
+            )
+            results = behavior.evaluate(evidence)
+            self.assertEqual(behavior.verdict(results), "INCONCLUSIVE")
+            for name in (
+                "expect:external_fact_researched",
+                "expect:existing_state_reused",
+                "state-loading:progressive",
+                "must-not:silent_decision_invention",
+            ):
+                self.assertIsNone(
+                    next(result.passed for result in results if result.name == name)
+                )
+            (workspace / "notes.md").write_text(
+                "The project has decided to use SQLite without approval."
+            )
+            changed = replace(evidence, after=behavior.snapshot(workspace))
+            self.assertIsNone(
+                next(
+                    result.passed
+                    for result in behavior.evaluate(changed)
+                    if result.name == "must-not:silent_decision_invention"
+                )
+            )
+
     def test_self_report_does_not_replace_observed_verification(self) -> None:
         scenario = next(
             item
@@ -491,7 +576,7 @@ class BehaviorHarnessTests(unittest.TestCase):
                 "wayfinder-human-authority-clarification",
                 None,
                 "must-not:silent_decision_invention",
-                True,
+                None,
             ),
             (
                 "created-wayfinder-decision-ledger-is-invention",
