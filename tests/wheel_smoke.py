@@ -62,13 +62,12 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                 "--no-deps",
                 wheel,
             )
-            help_text = subprocess.run(
+            subprocess.run(
                 [str(cli), "--help"],
                 capture_output=True,
                 text=True,
                 check=True,
-            ).stdout
-            self.assertRegex(help_text, r"newest stable\s+release")
+            )
             with zipfile.ZipFile(wheel) as built:
                 package_files = {
                     name

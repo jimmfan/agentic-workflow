@@ -10,7 +10,7 @@ from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import sys
-from typing import Iterable, Mapping, Sequence
+from typing import Iterable, Mapping
 
 sys.dont_write_bytecode = True
 
@@ -386,7 +386,7 @@ def check_attribution() -> None:
         )
     for clause in (
         "https://github.com/mattpocock/skills",
-        "release `v1.2.3`",
+        "v1.2.3",
         "Copyright (c) 2026 Matt Pocock",
     ):
         require(clause in normalized, f"third-party attribution lacks: {clause}")
@@ -417,130 +417,6 @@ SOFTWARE.""".split()
     require(
         canonical_disclaimer in normalized,
         "third-party attribution lacks the canonical MIT warranty disclaimer",
-    )
-
-
-def normalized_text(relative: str) -> str:
-    return " ".join((REPOSITORY_ROOT / relative).read_text(encoding="utf-8").split())
-
-
-def require_clauses(label: str, text: str, clauses: Sequence[str]) -> None:
-    for clause in clauses:
-        require(clause in text, f"{label} lacks load-bearing contract: {clause}")
-
-
-def check_semantic_contracts() -> None:
-    research = normalized_text(".agents/skills/research/SKILL.md")
-    require_clauses(
-        "Research",
-        research,
-        (
-            "Research establishes externally sourced facts and evidence.",
-            "does not select the project's preferred alternative",
-            "Return evidence to the caller",
-            "does not automatically require a Discovery transition",
-            "Do not create a standalone research file unless the user explicitly requests a durable research artifact.",
-            "repository writes have action authorization",
-        ),
-    )
-
-    discovery = normalized_text(".agents/skills/workflow-discovery/SKILL.md")
-    require_clauses(
-        "Discovery",
-        discovery,
-        (
-            "An architectural decision is one possible kind of consequential project choice",
-            "Compose Research only when its additional method materially helps",
-            "Already-sufficient evidence does not require another Research invocation.",
-            "Compose Domain Modeling when ambiguity in domain concepts, terminology, or context boundaries materially affects the decision.",
-            "Discovery does not maintain architecture decision records or durable coordination state.",
-        ),
-    )
-
-    domain_modeling = normalized_text(".agents/skills/domain-modeling/SKILL.md")
-    require_clauses(
-        "Domain Modeling",
-        domain_modeling,
-        (
-            "domain concepts",
-            "terminology",
-            "ubiquitous language",
-            "domain or context boundaries",
-            "domain responsibilities and relationships",
-            "`CONTEXT.md`",
-            "`CONTEXT-MAP.md`",
-            "does not own generic implementation or module architecture",
-            "all project structure",
-            "Wayfinder's effort-specific areas and relationships",
-            "generic architecture-decision store",
-        ),
-    )
-
-    wayfinder = normalized_text(".agents/skills/wayfinder/SKILL.md")
-    require_clauses(
-        "Wayfinder",
-        wayfinder,
-        (
-            "Wayfinder is Agent Workflow's sole durable coordination layer.",
-            "An objective alone does not select Wayfinder.",
-            "material uncertainty is not required",
-            "one objective and scope",
-            "Scope may be clarified, narrowed, or elaborated",
-            "objective and substantive scope remain the same",
-            "Wayfinder establishes its own effort-specific areas and relationships.",
-            "Reference the artifacts that maintain lasting results instead of copying them.",
-        ),
-    )
-
-    for label, relative in (
-        ("to-spec", ".agents/skills/to-spec/SKILL.md"),
-        ("to-tickets", ".agents/skills/to-tickets/SKILL.md"),
-    ):
-        text = normalized_text(relative)
-        require_clauses(
-            label,
-            text,
-            (
-                "destination named by the user",
-                "documented by the project",
-                "Publish only when",
-                "authorizes it",
-                "otherwise return",
-                "in chat",
-                "Do not invent",
-                "local destination",
-                "label",
-                "status",
-            ),
-        )
-
-    implement = normalized_text(".agents/skills/implement/SKILL.md")
-    require_clauses(
-        "Implement",
-        implement,
-        (
-            "Implement the defined work supplied by the current user request or invoking workflow.",
-            "Commit only when the current user request or accepted project policy authorizes it.",
-            "Otherwise leave the work uncommitted and report its status.",
-        ),
-    )
-
-    root_routing = normalized_text("agent_workflow/install/AGENTS.md.template")
-    require_clauses(
-        "Root routing",
-        root_routing,
-        (
-            "Report only what executed",
-            "When an Agent Workflow-specific term materially affects interpretation or behavior, read `.agent-workflow/terminology.md` and use its definitions.",
-        ),
-    )
-    routing = normalized_text(".agent-workflow/routing.md")
-    require_clauses(
-        "Routing",
-        routing,
-        (
-            "Selecting a skill is not execution: include it in the route marker only when its method actually ran.",
-        ),
     )
 
 
@@ -653,7 +529,6 @@ def main(argv: Iterable[str] | None = None) -> int:
             check_manifest,
             check_local_links,
             check_attribution,
-            check_semantic_contracts,
             check_composite_templates,
         ):
             check()

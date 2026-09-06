@@ -48,11 +48,14 @@ The package verifier checks:
 - required package structure, the current `VERSION` format and single-source boundary, and required files being regular non-symlink files;
 - the ordinary current source-to-target distribution mapping;
 - the exact canonical framework and fifteen-skill inventories and non-active composite template locations;
-- canonical `.agent-workflow/terminology.md` distribution and progressive loading;
-- skill frontmatter, canonical support-file closure, local links, checked-in composite managed regions, and complete attribution for retained derived skills;
-- selected responsibility, action-authorization, and routing clauses in distributed instructions;
-- deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder, and verifier tests; and
+- canonical `.agent-workflow/terminology.md` distribution;
+- skill frontmatter, canonical support-file closure, local links, checked-in composite managed regions, and complete attribution for retained derived skills; and
 - local documentation links.
+
+Package validity depends on structure, distribution integrity, safety, attribution, and machine-readable contracts.
+Ordinary instruction wording and terminology definitions are not package interfaces.
+Routing and Wayfinder behavioral tests challenge observable outcomes in the existing scenario harness; deterministic evaluator tests do not establish live-agent compliance with those instructions.
+The `--tests` option also runs the deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder, and verifier suites.
 
 Success ends with:
 

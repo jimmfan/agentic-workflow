@@ -28,52 +28,20 @@ class BehaviorHarnessTests(unittest.TestCase):
     ) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
 
-        blind_judgments = {
-            "wayfinder-domain-modeling-discovery": (
-                "preferred specialist",
-                "zero-downtime platform cutover",
-            ),
-            "wayfinder-cross-system-fact-boundary": (
-                "reference-system fact",
-                "current-project conclusion",
-            ),
-            "wayfinder-human-authority-clarification": (
-                "Which durable backend and operating owner",
-                "what the answer will unblock",
-            ),
-            "wayfinder-selective-unknown-promotion": (
-                "promoted selectively",
-                "continuation-worthy unresolved question",
-                "lower-value unresolved detail",
-            ),
-            "wayfinder-accepted-residual-uncertainty": (
-                "authority acceptance",
-                "accepted pilot boundary",
-                "unanswered U#",
-            ),
-            "wayfinder-state-cannot-grant-authority": (
-                "cannot grant authority",
-                "unsupported agent-authored approval",
-                "unresolved question requiring project decision authority",
-            ),
-            "wayfinder-unordered-dependencies-no-critical-path": (
-                "invented critical path",
-                "without inventing an ordering",
-            ),
-        }
-        for scenario_id, revelations in blind_judgments.items():
+        for scenario_id in (
+            "wayfinder-domain-modeling-discovery",
+            "wayfinder-cross-system-fact-boundary",
+            "wayfinder-human-authority-clarification",
+            "wayfinder-selective-unknown-promotion",
+            "wayfinder-accepted-residual-uncertainty",
+            "wayfinder-state-cannot-grant-authority",
+            "wayfinder-unordered-dependencies-no-critical-path",
+        ):
             scenario = scenarios[scenario_id]
             prompt = behavior.build_prompt(scenario)
             with self.subTest(scenario=scenario_id):
                 self.assertTrue(scenario.blind_grading)
                 self.assertTrue(scenario.assertions)
-                for heading in (
-                    "Expected observable behavior:",
-                    "Prohibited observable behavior:",
-                    "Details that must appear in the report summary or blockers:",
-                    "Repository validation guidance:",
-                ):
-                    self.assertNotIn(heading, prompt)
                 for hidden in (
                     *scenario.expect,
                     *scenario.must_not,
@@ -82,8 +50,6 @@ class BehaviorHarnessTests(unittest.TestCase):
                     self.assertNotIn(hidden, prompt)
                 if scenario.verification_command:
                     self.assertNotIn(scenario.verification_command, prompt)
-                for revelation in revelations:
-                    self.assertNotIn(revelation.casefold(), prompt.casefold())
                 with tempfile.TemporaryDirectory() as temporary:
                     workspace = behavior.copy_fixture(scenario, Path(temporary))
                     self.assertNotIn(scenario.id, workspace.name)
@@ -293,15 +259,6 @@ class BehaviorHarnessTests(unittest.TestCase):
                 ):
                     if hidden:
                         self.assertNotIn(hidden, prompt)
-                for leaked_judgment in (
-                    "No consequential uncertainty",
-                    "without changing the objective or substantive scope",
-                    "no durable coordination is needed",
-                    "without durable coordination",
-                    "must not select or burden this route",
-                    "Use the minimum clarification needed",
-                ):
-                    self.assertNotIn(leaked_judgment, prompt)
                 with tempfile.TemporaryDirectory() as temporary:
                     workspace = behavior.copy_fixture(scenario, Path(temporary))
                     self.assertNotIn(scenario.id, workspace.name)

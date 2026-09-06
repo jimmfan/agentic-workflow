@@ -14,20 +14,25 @@ It is intentionally outside the deterministic unittest discovery gate because re
 
 - `test_lifecycle.py` owns install, update, status, remove, composite-file and managed-path safety boundaries.
 - `test_direct_distribution.py` owns whole-directory direct skill replacement, current mapping, current-name convergence, unrelated-skill preservation, noninteractive reserved-name convergence, conservative unrecognized removal, obsolete framework-file convergence, partial-failure reporting, and removal.
-- `test_verify_package.py` owns package shape, exact payload inventory, attribution, focused semantic contracts, and distribution-map refresh validation.
-- `test_bootstrap.py` owns latest-stable semantic release selection, immutable ref resolution, explicit-ref bypass, coherent downloaded lifecycle and payload, optional Git root discovery, archive parsing, extraction and root safety, offline bootstrap, and CLI delegation.
-- `test_routing.py` owns direct/progressive routing, explicit selection, specialist boundaries, Wayfinder loading, authority blocking, fail-closed state loading, and semantic progressive-loading boundaries.
+- `test_verify_package.py` owns package shape, exact source inventories, distribution integrity, safety, attribution, machine-readable contracts, and distribution-map refresh validation.
+- `test_bootstrap.py` owns latest-stable semantic release selection, immutable ref resolution, explicit-ref bypass, coherent downloaded lifecycle and resources, optional Git root discovery, archive parsing, extraction and root safety, offline bootstrap, and CLI delegation.
+- `test_routing.py` owns canonical term names, routing interface syntax, and framework reference paths; ordinary instruction wording and terminology definitions are not literal test contracts.
 - `test_wayfinder_state.py` owns deterministic state representation, allocation, changed-state detection, no-overwrite creation, reconciliation, reference safety, and project-data preservation.
 
 ## Behavior harness and Wayfinder behavior
 
 - `test_behavior_harness.py` validates scenario schema and vocabulary, blind grading, evaluator assertions, route markers, verification evidence, fixture isolation, destructive-change detection, and intentionally-red fixtures.
 - `test_wayfinder_behavior.py` validates Wayfinder scenario semantics, current record presence, authority, progressive loading, conflict promotion, reconciliation, blocked pruning, safe whole-effort ending, and no-state outcomes.
-- `test_routing_boundaries.py` challenges the canonical activation set's evaluators with valid minimum routes, map-only coordination, settled choices, missing plan steps, and contradictory or prohibited state.
+- `test_routing_boundaries.py` challenges evaluators with valid minimum routes, Research/Discovery composition, unauthorized local publication and commits, map-only coordination, settled choices, missing plan steps, and contradictory or prohibited state.
 - `behavior.py validate` checks every human-authored scenario and fixture reference as part of static package verification.
 
 The lifecycle suite proves framework operations do not directly traverse, interpret, or change `.project-efforts/`.
 Wayfinder fixtures independently prove reset, evaluator, and scenario behavior; they do not participate in lifecycle tests.
+Routing and behavioral tests challenge observable workflow outcomes using the existing scenario harness.
+Their deterministic runs test the evaluators against accepted and rejected outcomes; live-agent compliance remains a separate opt-in evaluation.
+The `simple-project` fixture verifier checks the greeting and that its Git history still contains only the baseline commit.
+This catches additional commits present during verification; it does not detect rewritten history or later commits.
+The draft-publication scenario observes local files; external publication remains outside its evidence.
 
 ## Human behavioral contracts and live smoke tests
 
@@ -51,4 +56,4 @@ The live Wayfinder contracts preserve an unrelated effort during reconciliation,
 
 Repository evaluation-tooling tests under `evals/tests/` remain a separate network-free CI step and are not part of the distributed package gate.
 
-See [Behavioral testing](../../../docs/behavioral-testing.md) for the schema, evidence model, commands, side effects, cleanup, and limitations.
+See [Behavioral testing](../docs/behavioral-testing.md) for the schema, evidence model, commands, side effects, cleanup, and limitations.

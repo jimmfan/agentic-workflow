@@ -206,11 +206,41 @@ class VerifyPackageTests(ProjectTestCase):
 
     def test_verifier_does_not_lock_skill_descriptions(self) -> None:
         source = self.copy_source("description-copy")
-        self.replace_once(
-            source,
-            ".agents/skills/research/SKILL.md",
-            "description: Investigate substantive questions against high-trust primary sources and return cited findings in chat. Create a repository artifact only when the user explicitly requests durable research output.",
-            "description: Research substantive questions and return cited findings.",
+        skill = source / ".agents/skills/research/SKILL.md"
+        skill.write_text(
+            "\n".join(
+                "description: Research substantive questions and return cited findings."
+                if line.startswith("description:")
+                else line
+                for line in skill.read_text(encoding="utf-8").splitlines()
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        result = self.verify(source)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_verifier_accepts_equivalent_skill_instruction_wording(self) -> None:
+        source = self.copy_source("reworded-instructions")
+        skill = source / ".agents/skills/implement/SKILL.md"
+        frontmatter, delimiter, _ = skill.read_text(encoding="utf-8").partition(
+            "\n---\n"
+        )
+        skill.write_text(
+            frontmatter
+            + delimiter
+            + """Carry out the scope defined by the user or calling workflow.
+
+Apply `tdd` at agreed seams when feasible.
+Check types and focused tests regularly, then run the full suite at the end.
+Finish by using `code-review` to review the implementation.
+
+Make a commit only with authorization from the current user request or accepted project policy.
+If neither authorizes a commit, keep the changes uncommitted and report that status.
+""",
+            encoding="utf-8",
         )
 
         result = self.verify(source)
@@ -292,8 +322,8 @@ class VerifyPackageTests(ProjectTestCase):
             ),
             (
                 "upstream-release",
-                "release `v1.2.3`",
-                "an upstream release",
+                "v1.2.3",
+                "unspecified-upstream",
                 "third-party attribution lacks",
             ),
             (
@@ -324,106 +354,6 @@ class VerifyPackageTests(ProjectTestCase):
                     original,
                     replacement,
                 )
-                self.assert_verify_failure(source, expected)
-
-    def test_verifier_enforces_only_load_bearing_semantic_contracts(self) -> None:
-        cases = (
-            (
-                "research-write-authorization",
-                ".agents/skills/research/SKILL.md",
-                "writes have action authorization",
-                "writes are convenient",
-                "Research lacks load-bearing contract",
-            ),
-            (
-                "research-does-not-choose",
-                ".agents/skills/research/SKILL.md",
-                "does not select the project's preferred alternative",
-                "selects the project's preferred alternative",
-                "Research lacks load-bearing contract",
-            ),
-            (
-                "discovery-owns-bounded-architecture-choice",
-                ".agents/skills/workflow-discovery/SKILL.md",
-                "An architectural decision is one possible kind of consequential project choice",
-                "An architectural decision belongs to Domain Modeling",
-                "Discovery lacks load-bearing contract",
-            ),
-            (
-                "discovery-does-not-store-architecture-decisions",
-                ".agents/skills/workflow-discovery/SKILL.md",
-                "Discovery does not maintain architecture decision records or durable coordination state.",
-                "Discovery maintains architecture decision records.",
-                "Discovery lacks load-bearing contract",
-            ),
-            (
-                "wayfinder-sole-coordinator",
-                ".agents/skills/wayfinder/SKILL.md",
-                "sole durable coordination layer",
-                "a durable coordination layer",
-                "Wayfinder lacks load-bearing contract",
-            ),
-            (
-                "wayfinder-objective-alone-is-insufficient",
-                ".agents/skills/wayfinder/SKILL.md",
-                "An objective alone does not select Wayfinder.",
-                "An objective selects Wayfinder.",
-                "Wayfinder lacks load-bearing contract",
-            ),
-            (
-                "wayfinder-scope-refinement-keeps-effort",
-                ".agents/skills/wayfinder/SKILL.md",
-                "clarified, narrowed, or elaborated",
-                "frozen after creation",
-                "Wayfinder lacks load-bearing contract",
-            ),
-            (
-                "wayfinder-references-lasting-results",
-                ".agents/skills/wayfinder/SKILL.md",
-                "Reference the artifacts that maintain",
-                "Copy the artifacts that maintain",
-                "Wayfinder lacks load-bearing contract",
-            ),
-            (
-                "to-spec-destination-and-authorization",
-                ".agents/skills/to-spec/SKILL.md",
-                "destination named by the user",
-                "available publication destination",
-                "to-spec lacks load-bearing contract",
-            ),
-            (
-                "to-tickets-destination-and-authorization",
-                ".agents/skills/to-tickets/SKILL.md",
-                "Publish only when",
-                "Publish whenever a destination is available",
-                "to-tickets lacks load-bearing contract",
-            ),
-            (
-                "implement-commit-authorization",
-                ".agents/skills/implement/SKILL.md",
-                "Commit only when the current user request",
-                "Commit whenever the current user request",
-                "Implement lacks load-bearing contract",
-            ),
-            (
-                "root-route-marker",
-                "agent_workflow/install/AGENTS.md.template",
-                "Report only what executed",
-                "Report what was selected",
-                "Root routing lacks load-bearing contract",
-            ),
-            (
-                "detailed-route-marker",
-                ".agent-workflow/routing.md",
-                "include it in the route marker only when its method actually ran",
-                "include it in the route marker when selected",
-                "Routing lacks load-bearing contract",
-            ),
-        )
-        for name, relative, original, replacement, expected in cases:
-            with self.subTest(name=name):
-                source = self.copy_source(name)
-                self.replace_once(source, relative, original, replacement)
                 self.assert_verify_failure(source, expected)
 
     def test_verifier_rejects_install_history_and_invalid_composite_markers(

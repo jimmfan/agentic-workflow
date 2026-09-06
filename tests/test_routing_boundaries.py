@@ -17,6 +17,210 @@ class RoutingBoundaryTests(unittest.TestCase):
     def failures(self, evidence: behavior.RunEvidence) -> list[str]:
         return [item.name for item in behavior.evaluate(evidence) if not item.passed]
 
+    def test_factual_lookup_requires_sources_without_discovery_or_decision_artifacts(
+        self,
+    ) -> None:
+        scenario = self.scenario("external-factual-uncertainty")
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            (workspace / "runtime-policy.md").write_text(
+                "# Python runtime policy\n\n"
+                "Fixture release information: https://www.python.org/\n"
+            )
+            completed = subprocess.run(
+                [sys.executable, "verify.py"], cwd=workspace, capture_output=True
+            )
+            self.assertEqual(completed.returncode, 0)
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=before,
+                after=behavior.snapshot(workspace),
+                stdout="[route: router → research]",
+                stderr="",
+                returncode=0,
+                report={
+                    "status": "success",
+                    "research_sources": ["https://www.python.org/"],
+                },
+                verification=behavior.load_verification(
+                    workspace / behavior.VERIFICATION_LOG
+                ),
+                route_components=("research",),
+            )
+            self.assertEqual(self.failures(evidence), [])
+            self.assertIn(
+                "expect:external_fact_researched",
+                self.failures(replace(evidence, report={"status": "success"})),
+            )
+            self.assertIn(
+                "must-not:full_discovery_for_lookup",
+                self.failures(
+                    replace(
+                        evidence,
+                        stdout="[route: router → discovery → research]",
+                        route_components=("discovery", "research"),
+                    )
+                ),
+            )
+            decision = workspace / "docs/decisions/runtime.md"
+            decision.parent.mkdir(parents=True)
+            decision.write_text("The project will adopt the researched runtime.\n")
+            self.assertIn(
+                "must-not:unnecessary_planning_artifacts",
+                self.failures(replace(evidence, after=behavior.snapshot(workspace))),
+            )
+
+    def test_discovery_research_composition_keeps_analysis_read_only(self) -> None:
+        scenario = self.scenario("discovery-composes-research")
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=before,
+                after=before,
+                stdout="[route: router → discovery → research]",
+                stderr="",
+                returncode=0,
+                report={
+                    "status": "success",
+                    "research_sources": ["https://www.sqlite.org/docs.html"],
+                },
+                verification=(),
+                route_components=("discovery", "research"),
+            )
+            self.assertEqual(self.failures(evidence), [])
+            for route in (("discovery",), ("research",)):
+                with self.subTest(route=route):
+                    self.assertIn(
+                        "route-marker:required-components",
+                        self.failures(
+                            replace(
+                                evidence,
+                                stdout=f"[route: router → {route[0]}]",
+                                route_components=route,
+                            )
+                        ),
+                    )
+            for path in (
+                "research/analysis.md",
+                "architecture-decisions/0001-backend.md",
+            ):
+                with self.subTest(path=path):
+                    artifact = workspace / path
+                    artifact.parent.mkdir(parents=True)
+                    artifact.write_text("The project will use SQLite.\n")
+                    failures = self.failures(
+                        replace(evidence, after=behavior.snapshot(workspace))
+                    )
+                    self.assertIn("expect:repository_unchanged", failures)
+                    self.assertIn("must-not:unnecessary_planning_artifacts", failures)
+                    if path.startswith("architecture-decisions/"):
+                        self.assertIn("must-not:silent_decision_invention", failures)
+                    artifact.unlink()
+                    artifact.parent.rmdir()
+
+    def test_implementation_without_commit_authorization_rejects_a_new_commit(
+        self,
+    ) -> None:
+        scenario = self.scenario("objective-clear-request")
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            (workspace / "app.py").write_text(
+                'def greeting():\n    return "hello, world!"\n'
+            )
+            for commit in (False, True):
+                with self.subTest(commit=commit):
+                    if commit:
+                        subprocess.run(
+                            ["git", "add", "app.py"], cwd=workspace, check=True
+                        )
+                        subprocess.run(
+                            [
+                                "git",
+                                "-c",
+                                "user.name=Agent Workflow Behavior",
+                                "-c",
+                                "user.email=behavior@example.invalid",
+                                "commit",
+                                "-q",
+                                "-m",
+                                "unauthorized fixture commit",
+                            ],
+                            cwd=workspace,
+                            check=True,
+                        )
+                    completed = subprocess.run(
+                        [sys.executable, "verify.py"],
+                        cwd=workspace,
+                        capture_output=True,
+                    )
+                    self.assertEqual(completed.returncode, int(commit))
+                    evidence = behavior.RunEvidence(
+                        scenario=scenario,
+                        workspace=workspace,
+                        before=before,
+                        after=behavior.snapshot(workspace),
+                        stdout="[route: router → implement → verification]",
+                        stderr="",
+                        returncode=0,
+                        report={"status": "success"},
+                        verification=behavior.load_verification(
+                            workspace / behavior.VERIFICATION_LOG
+                        ),
+                        route_components=("implement", "verification"),
+                    )
+                    failures = self.failures(evidence)
+                    if commit:
+                        self.assertIn("expect:verification_performed", failures)
+                    else:
+                        self.assertEqual(failures, [])
+
+    def test_specification_and_ticket_drafts_require_authorization_to_publish(
+        self,
+    ) -> None:
+        scenario = self.scenario("drafts-without-publication")
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            before = behavior.snapshot(workspace)
+            evidence = behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=before,
+                after=before,
+                stdout=(
+                    "Specification: greeting() returns 'hello, world!' with its "
+                    "existing signature.\n"
+                    "Ticket: update app.py and run python verify.py.\n"
+                    "[route: router → to-spec → to-tickets]"
+                ),
+                stderr="",
+                returncode=0,
+                report={"status": "success"},
+                verification=(),
+                route_components=("to-spec", "to-tickets"),
+            )
+            self.assertEqual(self.failures(evidence), [])
+            for path in ("specs/greeting.md", "tickets/01-greeting.md"):
+                with self.subTest(path=path):
+                    artifact = workspace / path
+                    artifact.parent.mkdir()
+                    artifact.write_text(
+                        "Change greeting() to return 'hello, world!'.\n"
+                    )
+                    self.assertIn(
+                        "expect:repository_unchanged",
+                        self.failures(
+                            replace(evidence, after=behavior.snapshot(workspace))
+                        ),
+                    )
+                    artifact.unlink()
+                    artifact.parent.rmdir()
+
     def test_response_patterns_are_validated_and_hidden_from_the_agent(self) -> None:
         scenario = self.scenario("arc-runner-rename-plan")
         source = scenario.source.read_text()
