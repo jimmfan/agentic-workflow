@@ -411,6 +411,74 @@ class RoutingReportEvidenceTests(unittest.TestCase):
         self.assertEqual(report["verdict"], "FAIL")
         self.assertFalse(report["complete"])
 
+    def test_premature_wayfinder_selection_survives_a_later_timeout(self):
+        responses = iter(
+            [
+                (self.decision("task.md", route="wayfinder"), {}),
+                subprocess.TimeoutExpired("fake", 1),
+            ]
+        )
+
+        def invoke(prompt):
+            result = next(responses)
+            if isinstance(result, Exception):
+                raise result
+            return result
+
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["evolving"],
+            host="fake",
+            model="fake",
+            invoke=invoke,
+        )
+        self.assertEqual(report["verdict"], "FAIL")
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["execution_status"], "interrupted")
+
+    def test_codex_timeout_preserves_received_response_and_usage(self):
+        decision = self.decision("task.md", route="wayfinder")
+        usage = {"input_tokens": 20, "output_tokens": 5}
+
+        def timeout(command, **kwargs):
+            output = Path(command[command.index("--output-last-message") + 1])
+            output.write_text(json.dumps(decision))
+            raise subprocess.TimeoutExpired(
+                command,
+                1,
+                output=json.dumps({"type": "turn.completed", "usage": usage}).encode(),
+                stderr=b"partial diagnostics",
+            )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            Path(temporary, "auth.json").write_text("{}")
+            with (
+                patch.dict("os.environ", {"CODEX_HOME": temporary}),
+                patch.object(routing_smoke, "executable_path", return_value="fake"),
+                patch.object(routing_smoke.subprocess, "run", side_effect=timeout),
+            ):
+                invoke = routing_smoke.codex_invoke(
+                    model="fake",
+                    executable="fake",
+                    timeout_seconds=1,
+                )
+                report = routing_smoke.run_case(
+                    routing_smoke.load_cases()["evolving"],
+                    host="codex",
+                    model="fake",
+                    invoke=invoke,
+                    cost_budget=routing_smoke.CostBudget(1, 1, 1, 1),
+                )
+        self.assertEqual(report["rounds"][0]["decision"], decision)
+        self.assertEqual(report["rounds"][0]["usage"], usage)
+        self.assertEqual(
+            report["rounds"][0]["adapter_evidence"]["stderr"], "partial diagnostics"
+        )
+        self.assertEqual(report["transmission"]["model_usage"], usage)
+        self.assertEqual(report["transmission"]["estimated_cost_usd"], 0.000025)
+        self.assertEqual(report["execution_status"], "interrupted")
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["verdict"], "FAIL")
+
     def test_invalid_received_response_and_adapter_output_are_retained(self):
         report = routing_smoke.run_case(
             routing_smoke.load_cases()["direct"],
@@ -433,6 +501,23 @@ class RoutingReportEvidenceTests(unittest.TestCase):
         self.assertEqual(
             report["rounds"][0]["adapter_evidence"]["stdout"], "received response"
         )
+
+        def invalid_response(prompt):
+            raise routing_smoke.SmokeError(
+                "timeout with invalid structured response",
+                evidence={"response": '{"invalid": true}', "usage": {}},
+            )
+
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["direct"],
+            host="fake",
+            model="fake",
+            invoke=invalid_response,
+        )
+        self.assertEqual(report["rounds"][0]["decision"], {"invalid": True})
+        self.assertIn("evidence_error", report["rounds"][0])
+        self.assertEqual(report["execution_status"], "interrupted")
+        self.assertEqual(report["verdict"], "INCONCLUSIVE")
 
     def test_comparison_requires_provenance_and_declared_variables(self):
         provenance = {key: "fixed" for key in routing_smoke.COMPARISON_FIELDS} | {
@@ -484,6 +569,12 @@ class RoutingReportEvidenceTests(unittest.TestCase):
         original = routing_smoke.provenance(args, inputs)
         modified = deepcopy(inputs)
         modified["policy"] += "Pending change"
+        self.assertNotEqual(
+            original["policy_sha256"],
+            routing_smoke.provenance(args, modified)["policy_sha256"],
+        )
+        modified = deepcopy(inputs)
+        modified["resources"]["direct"][".agent-workflow/routing.md"] += " pending"
         self.assertNotEqual(
             original["policy_sha256"],
             routing_smoke.provenance(args, modified)["policy_sha256"],

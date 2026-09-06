@@ -283,18 +283,14 @@ def evaluate_case(
     if case["id"] == "evolving":
         checks.append(
             {
-                "name": "direct-to-wayfinder-transition",
+                "name": "direct-before-reconnaissance",
                 "passed": (
                     first.get("current_route") == "direct"
                     and first.get("wayfinder_selected") is False
-                    and final.get("current_route") == "wayfinder"
-                    and final.get("wayfinder_selected") is True
                 ),
                 "detail": (
                     f"first route={first.get('current_route')!r}, "
-                    f"first Wayfinder={first.get('wayfinder_selected')!r}, "
-                    f"final route={final.get('current_route')!r}, "
-                    f"final Wayfinder={final.get('wayfinder_selected')!r}"
+                    f"first Wayfinder={first.get('wayfinder_selected')!r}"
                 ),
             }
         )
@@ -361,10 +357,12 @@ def provenance(args: argparse.Namespace, inputs: Mapping[str, Any]) -> dict[str,
             {
                 "root": inputs["policy"],
                 "routing": {
-                    name: content
-                    for resources in inputs["resources"].values()
-                    for name, content in resources.items()
-                    if name in RESOURCE_PATHS
+                    key: {
+                        name: content
+                        for name, content in resources.items()
+                        if name in RESOURCE_PATHS
+                    }
+                    for key, resources in inputs["resources"].items()
                 },
             }
         ),
@@ -421,6 +419,20 @@ def run_case(
     estimated_cost_usd = 0.0
     execution_status = "completed"
     error = None
+
+    def record_received(decision, usage):
+        nonlocal estimated_cost_usd
+        # Preserve a received response before validation or accounting can fail.
+        rounds[-1].update(decision=decision, usage=usage)
+        for key, value in usage.items():
+            if isinstance(value, int) and not isinstance(value, bool):
+                usage_totals[key] = usage_totals.get(key, 0) + value
+        if cost_budget is not None:
+            estimated_cost_usd += cost_budget.add(usage)
+        if decision is not None:
+            validate_decision(decision)
+            decisions.append(dict(decision))
+
     try:
         for number in range(1, max_rounds + 1):
             if cost_budget is not None:
@@ -445,15 +457,7 @@ def run_case(
             total_prompt_bytes += prompt_bytes
             total_prompt_words += len(prompt.split())
             decision, usage = invoke(prompt)
-            # Preserve a received response even if validation or accounting subsequently fails.
-            current_round.update(decision=decision, usage=usage)
-            for key, value in usage.items():
-                if isinstance(value, int) and not isinstance(value, bool):
-                    usage_totals[key] = usage_totals.get(key, 0) + value
-            if cost_budget is not None:
-                estimated_cost_usd += cost_budget.add(usage)
-            validate_decision(decision)
-            decisions.append(dict(decision))
+            record_received(decision, usage)
             if cost_budget is not None:
                 cost_budget.check()
             if decision["status"] == "complete":
@@ -471,13 +475,24 @@ def run_case(
     except Exception as exc:
         execution_status = "interrupted"
         error = f"{type(exc).__name__}: {exc}"
-        if cost_budget is not None and rounds and rounds[-1]["usage"] is None:
-            cost_budget.usage_unavailable = True
         if rounds and isinstance(exc, SmokeError) and exc.evidence is not None:
             rounds[-1]["adapter_evidence"] = dict(exc.evidence)
+            response = exc.evidence.get("response")
+            decision = None
+            if response is not None:
+                try:
+                    decision = parse_json_object(response, label="interrupted adapter")
+                except SmokeError:
+                    pass  # The original response remains in adapter_evidence.
+            try:
+                record_received(decision, exc.evidence.get("usage", {}))
+            except (SmokeError, TypeError, ValueError) as evidence_error:
+                rounds[-1]["evidence_error"] = str(evidence_error)
+        if cost_budget is not None and rounds and rounds[-1]["usage"] is None:
+            cost_budget.usage_unavailable = True
         if rounds and isinstance(exc, subprocess.TimeoutExpired):
-            rounds[-1]["partial_stdout"] = str(exc.stdout or "")
-            rounds[-1]["partial_stderr"] = str(exc.stderr or "")
+            rounds[-1]["partial_stdout"] = output_text(exc.stdout)
+            rounds[-1]["partial_stderr"] = output_text(exc.stderr)
     complete = bool(decisions) and decisions[-1]["status"] == "complete"
     checks = evaluate_case(case, list(loaded), decisions) if complete else []
     # Early observed violations survive an incomplete execution; absence of a final answer
@@ -487,7 +502,12 @@ def run_case(
             check
             for check in evaluate_case(case, list(loaded), decisions)
             if check["name"]
-            in {"initial-route", "first-resources", "forbidden-resources"}
+            in {
+                "initial-route",
+                "first-resources",
+                "forbidden-resources",
+                "direct-before-reconnaissance",
+            }
         ]
     verdict = (
         "FAIL"
@@ -529,6 +549,14 @@ def parse_json_object(raw: str, *, label: str) -> Mapping[str, Any]:
     if not isinstance(value, dict):
         raise SmokeError(f"{label} must return one JSON object")
     return value
+
+
+def output_text(value: str | bytes | None) -> str:
+    return (
+        value.decode("utf-8", errors="backslashreplace")
+        if isinstance(value, bytes)
+        else value or ""
+    )
 
 
 def codex_usage(jsonl: str) -> dict[str, int]:
@@ -629,8 +657,19 @@ def codex_invoke(*, model: str, executable: str | None, timeout_seconds: int) ->
                     timeout=timeout_seconds,
                     env=environment,
                 )
-            except subprocess.TimeoutExpired:
-                raise
+            except subprocess.TimeoutExpired as exc:
+                stdout = output_text(exc.stdout)
+                raise SmokeError(
+                    f"Codex adapter timed out after {timeout_seconds} seconds",
+                    evidence={
+                        "stdout": stdout,
+                        "stderr": output_text(exc.stderr),
+                        "response": output.read_text(encoding="utf-8")
+                        if output.is_file()
+                        else None,
+                        "usage": codex_usage(stdout),
+                    },
+                ) from exc
             public_evidence = {
                 "stdout": result.stdout,
                 "stderr": result.stderr,

@@ -107,11 +107,14 @@ Deterministic tests use fake adapters and make no network requests.
 
 Schema version 2 records product and harness revisions, the actual harness fingerprint, policy and case/fixture fingerprints, model and effort settings, adapter identity/version when observable, and execution limits.
 The policy and cases are frozen before execution, so working-tree edits are represented by their actual input fingerprints.
+Routing-resource fingerprints retain case identity so different contents at the same resource name cannot mask an input change.
 Source-only maintainer policy never enters the prompt or policy fingerprint.
 Missing observations remain unavailable; no version, usage, or read is inferred from a label.
 
 Each case records execution status separately from PASS, FAIL, or INCONCLUSIVE.
 Reports retain completed cases, observed early failures, incomplete-case counts, received responses, usage, and available current-round prompts when a later adapter exception, timeout, or budget limit stops the run.
+Premature Wayfinder selection remains an observed failure even if the final transition is unobserved.
+The Codex adapter captures any available structured response file and usage before timeout cleanup; valid received decisions can be graded while execution remains interrupted.
 A received response is recorded before enforcing its resulting cost limit.
 Reports are written after each case using the existing outside-repository storage rule; there is no checkpoint store or database.
 Infrastructure failure does not become a product failure merely because a final decision was not received.

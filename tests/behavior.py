@@ -1263,7 +1263,9 @@ def run_live_scenario(
     report = load_report(report_file)
     verification = load_verification(workspace.joinpath(*VERIFICATION_LOG.parts))
     outcome_verification = None
-    if "verification_performed" in scenario.expect and "verify.py" in before:
+    if {"verification_performed", "verification_failure_recovered"} & set(
+        scenario.expect
+    ) and "verify.py" in before:
         if before.get("verify.py") != after.get("verify.py"):
             outcome_verification = {
                 "exit_code": 1,

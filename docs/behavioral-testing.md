@@ -145,7 +145,7 @@ No evaluator asks for chain-of-thought, private model reasoning, exact prose, or
 
 The report is a claim, so important outcomes are cross-checked against repository diffs, fixture verification logs, state preservation, and scenario assertions.
 Fixture-recorded verification events are cooperative public evidence, distinct from the agent's report.
-For scenarios requiring verification with a root `verify.py`, the harness also executes that unchanged fixture verifier after capturing the agent's events; a changed verifier fails, and a forged success event cannot hide an incorrect final result.
+For scenarios requiring verification or recovery from failed verification with a root `verify.py`, the harness also executes that unchanged fixture verifier after capturing the agent's events; a changed verifier fails, and forged success or recovery events cannot hide an incorrect final result.
 That independent check establishes the final fixture outcome, not the agent's internal process or the authenticity of earlier self-written log entries.
 A reported path proves neither a read nor reuse, even when the file exists.
 A URL proves neither research execution nor the correctness of a changing fact.
