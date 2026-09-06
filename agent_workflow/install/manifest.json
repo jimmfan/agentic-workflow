@@ -1,0 +1,117 @@
+{
+  "framework_owned": [
+    {
+      "source": ".agent-workflow/README.md",
+      "target": ".agent-workflow/README.md"
+    },
+    {
+      "source": ".agent-workflow/contracts/wayfinder-state.md",
+      "target": ".agent-workflow/contracts/wayfinder-state.md"
+    },
+    {
+      "source": ".agent-workflow/routing.md",
+      "target": ".agent-workflow/routing.md"
+    },
+    {
+      "source": ".agent-workflow/terminology.md",
+      "target": ".agent-workflow/terminology.md"
+    },
+    {
+      "source": ".agents/skills/code-review/SKILL.md",
+      "target": ".agents/skills/code-review/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/codebase-design/DEEPENING.md",
+      "target": ".agents/skills/codebase-design/DEEPENING.md"
+    },
+    {
+      "source": ".agents/skills/codebase-design/DESIGN-IT-TWICE.md",
+      "target": ".agents/skills/codebase-design/DESIGN-IT-TWICE.md"
+    },
+    {
+      "source": ".agents/skills/codebase-design/SKILL.md",
+      "target": ".agents/skills/codebase-design/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/domain-modeling/CONTEXT-FORMAT.md",
+      "target": ".agents/skills/domain-modeling/CONTEXT-FORMAT.md"
+    },
+    {
+      "source": ".agents/skills/domain-modeling/SKILL.md",
+      "target": ".agents/skills/domain-modeling/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/grilling/SKILL.md",
+      "target": ".agents/skills/grilling/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/implement/SKILL.md",
+      "target": ".agents/skills/implement/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/prototype/LOGIC.md",
+      "target": ".agents/skills/prototype/LOGIC.md"
+    },
+    {
+      "source": ".agents/skills/prototype/SKILL.md",
+      "target": ".agents/skills/prototype/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/prototype/UI.md",
+      "target": ".agents/skills/prototype/UI.md"
+    },
+    {
+      "source": ".agents/skills/research/SKILL.md",
+      "target": ".agents/skills/research/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/tdd/SKILL.md",
+      "target": ".agents/skills/tdd/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/tdd/mocking.md",
+      "target": ".agents/skills/tdd/mocking.md"
+    },
+    {
+      "source": ".agents/skills/tdd/tests.md",
+      "target": ".agents/skills/tdd/tests.md"
+    },
+    {
+      "source": ".agents/skills/to-spec/SKILL.md",
+      "target": ".agents/skills/to-spec/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/to-tickets/SKILL.md",
+      "target": ".agents/skills/to-tickets/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/wayfinder/SKILL.md",
+      "target": ".agents/skills/wayfinder/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/workflow-debugging/SKILL.md",
+      "target": ".agents/skills/workflow-debugging/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/workflow-discovery/SKILL.md",
+      "target": ".agents/skills/workflow-discovery/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/workflow-implementation/SKILL.md",
+      "target": ".agents/skills/workflow-implementation/SKILL.md"
+    },
+    {
+      "source": ".agents/skills/workflow-verification/SKILL.md",
+      "target": ".agents/skills/workflow-verification/SKILL.md"
+    },
+    {
+      "source": "agent_workflow/install/AGENTS.md.template",
+      "target": "AGENTS.md"
+    },
+    {
+      "source": "agent_workflow/install/CLAUDE.md.template",
+      "target": "CLAUDE.md"
+    }
+  ],
+  "schema_version": 8
+}

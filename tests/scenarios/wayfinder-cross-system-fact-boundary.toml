@@ -1,0 +1,67 @@
+schema_version = 1
+id = "wayfinder-cross-system-fact-boundary"
+name = "A reference-system fact does not become a current-project conclusion"
+fixture = "wayfinder-cross-system-boundary"
+request = "Use Wayfinder to coordinate whether the current project may rely on strict request ordering. Inspect the two project documents, preserve only independently useful current coordination, and do not decide the retry design."
+starting_state = [
+  "reference-system.md establishes one conditional behavior of another system for the document's stated scope.",
+  "current-project.md makes applicability to this project consequential but leaves it unresolved.",
+  "The user grants action authorization for repository-local Wayfinder writes, but no project choice has been committed by project decision authority.",
+]
+expect = [
+  "uncertainty_recorded_or_blocked",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "silent_decision_invention",
+  "overwrite_project_owned_state",
+]
+live = false
+blind_grading = true
+preserve_paths = ["reference-system.md", "current-project.md"]
+forbid_created_globs = [
+  ".project-efforts/*/facts.md",
+  ".project-efforts/*/decisions.md",
+  ".project-efforts/*/tickets/**",
+]
+
+[[assertions]]
+kind = "glob_count"
+path = ".project-efforts/*/evidence/E*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/*/evidence/E1-*.md"
+value = "Source: reference-system.md"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/*/evidence/E1-*.md"
+value = "another system"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/*/evidence/E1-*.md"
+value = "Limitations"
+
+[[assertions]]
+kind = "glob_count"
+path = ".project-efforts/*/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/*/unknowns/U1-*.md"
+value = "current project"
+
+[[assertions]]
+kind = "glob_count"
+path = ".project-efforts/*/facts.md"
+count = 0
+
+[[assertions]]
+kind = "glob_count"
+path = ".project-efforts/*/decisions.md"
+count = 0

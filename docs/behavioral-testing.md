@@ -24,7 +24,7 @@ Live smoke tests are manual or suitable for a separately credentialed scheduled/
 
 ## Human-authored scenario format
 
-Scenarios are TOML files under `skills/agent-workflow/tests/scenarios/`.
+Scenarios are TOML files under `tests/scenarios/`.
 TOML is readable and available in Python 3.11 without another dependency.
 A maintainer normally supplies:
 
@@ -54,8 +54,8 @@ preserve_paths = ["project-state/unknowns.md"]
 forbid_created_globs = ["/**"]
 route_must_include = ["implement"]
 route_must_not_include = ["discovery"]
-state_must_include = [".agent-wayfinder/example/map.md"]
-state_must_not_include = [".agent-wayfinder/example/unknowns/U9-unrelated.md"]
+state_must_include = [".project-efforts/example/map.md"]
+state_must_not_include = [".project-efforts/example/unknowns/U9-unrelated.md"]
 
 [[assertions]]
 kind = "path_contains"
@@ -64,22 +64,22 @@ value = "observable result"
 
 [[assertions]]
 kind = "glob_count"
-path = ".agent-wayfinder/example/unknowns/U*.md"
+path = ".project-efforts/example/unknowns/U*.md"
 count = 1
 
 [[assertions]]
 kind = "glob_contains"
-path = ".agent-wayfinder/example/unknowns/U1-*.md"
+path = ".project-efforts/example/unknowns/U1-*.md"
 value = "known unresolved question"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".agent-wayfinder/example/unknowns/U*.md"
+path = ".project-efforts/example/unknowns/U*.md"
 value = "external approval"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".agent-wayfinder/example/unknowns/U*.md"
+path = ".project-efforts/example/unknowns/U*.md"
 value = "incidental detail"
 ```
 
@@ -117,7 +117,7 @@ Evaluator regression tests accept sufficient map-only coordination and reject ap
 
 ## Fixtures and reset
 
-Fixtures live under `skills/agent-workflow/tests/fixtures/`.
+Fixtures live under `tests/fixtures/`.
 They contain only the minimum repository evidence and validation command needed to make the starting state understandable.
 They do not copy framework payload files.
 
@@ -153,14 +153,14 @@ Run all commands from the **source repository root** in the macOS/Linux host Ter
 The behavior-harness and Wayfinder behavior suites are deterministic and read-only outside temporary directories:
 
 ```bash
-python3 -B -m unittest discover -s skills/agent-workflow/tests -p 'test_behavior_harness.py' -v
-python3 -B -m unittest discover -s skills/agent-workflow/tests -p 'test_wayfinder_behavior.py' -v
+python3 -B -m unittest discover -s tests -p 'test_behavior_harness.py' -v
+python3 -B -m unittest discover -s tests -p 'test_wayfinder_behavior.py' -v
 ```
 
 The full required pre-merge gate runs package/static checks plus every deterministic unit, lifecycle, routing, and fixture test:
 
 ```bash
-python3 skills/agent-workflow/scripts/verify_package.py --tests
+python3 agent_workflow/verify_package.py --tests
 ```
 
 For a live run, use an environment with the chosen agent executable, model credentials, and any host permission for research/network access required by the selected scenarios.
@@ -171,7 +171,7 @@ This output boundary lets the evaluator verify that the final response ends with
 Run:
 
 ```bash
-python3 skills/agent-workflow/tests/behavior.py live \
+python3 tests/behavior.py live \
   --agent-command-json '["/absolute/path/to/your-agent-command-wrapper"]' \
   --output /tmp/agent-workflow-live-report.json
 ```
@@ -180,7 +180,7 @@ If the agent CLI needs explicit paths, the JSON command may use the placeholders
 For example:
 
 ```bash
-python3 skills/agent-workflow/tests/behavior.py live \
+python3 tests/behavior.py live \
   --agent-command-json '["/absolute/path/to/your-agent-command-wrapper", "--workspace", "{workspace}", "--prompt", "{prompt_file}"]' \
   --keep-workspaces /tmp/agent-workflow-live \
   --output /tmp/agent-workflow-live-report.json
@@ -211,7 +211,7 @@ The ARC verification script checks local configuration references only; it canno
 Set `AGENT_WORKFLOW_AGENT_COMMAND_JSON` to a JSON command array satisfying the live-runner contract above, then run this exact command from the source repository root:
 
 ```bash
-uv run python skills/agent-workflow/tests/behavior.py live \
+uv run python tests/behavior.py live \
   --agent-command-json "$AGENT_WORKFLOW_AGENT_COMMAND_JSON" \
   --scenario objective-clear-request \
   --scenario arc-managed-identity-coordination \

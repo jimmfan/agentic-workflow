@@ -1,0 +1,17 @@
+schema_version = 1
+id = "drafts-without-publication"
+name = "Specification and ticket drafts stay in chat without publication authorization"
+fixture = "simple-project"
+request = "Use to-spec to draft a specification for greeting() to return exactly 'hello, world!', then use to-tickets to draft its implementation tickets. Return both drafts in chat."
+starting_state = [
+  "app.py contains greeting(); verify.py checks the requested product greeting.",
+]
+expect = ["task_completed", "repository_unchanged", "project_state_preserved"]
+must_not = ["unnecessary_planning_artifacts", "overwrite_project_owned_state"]
+live = false
+blind_grading = true
+verification_command = "Draft in chat; preserve repository files."
+preserve_paths = ["README.md", "app.py", "verify.py"]
+forbid_created_globs = ["specs/**", "tickets/**", "planning/**", ".project-efforts/**"]
+route_must_include = ["to-spec", "to-tickets"]
+route_must_not_include = ["wayfinder"]

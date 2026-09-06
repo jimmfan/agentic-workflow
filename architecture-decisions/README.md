@@ -7,3 +7,4 @@ This directory contains only current, independently reconsiderable architecture 
 - [ADR-0025 — Preserve project decision authority at consequential boundaries](0025-preserve-authority-at-consequential-boundaries.md)
 - [ADR-0027 — Use Direct-first progressive routing](0027-use-direct-first-progressive-routing.md)
 - [ADR-0028 — Use Wayfinder as the sole durable coordinator](0028-use-wayfinder-as-sole-durable-coordinator.md)
+- [ADR-0029 — Distribute canonical framework terminology](0029-distribute-canonical-framework-terminology.md)

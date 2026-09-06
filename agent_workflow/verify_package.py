@@ -1,0 +1,545 @@
+#!/usr/bin/env python3
+"""Verify the current Agent Workflow package and canonical repository sources."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path, PurePosixPath
+import re
+import subprocess
+import sys
+from typing import Iterable, Mapping
+
+sys.dont_write_bytecode = True
+
+
+PACKAGE_ROOT = Path(__file__).resolve().parent
+REPOSITORY_ROOT = PACKAGE_ROOT.parent
+FRAMEWORK_ROOT = REPOSITORY_ROOT / ".agent-workflow"
+SKILLS_ROOT = REPOSITORY_ROOT / ".agents/skills"
+INSTALL_ROOT = PACKAGE_ROOT / "install"
+MANIFEST = INSTALL_ROOT / "manifest.json"
+MINIMUM_PYTHON = (3, 11)
+MANIFEST_SCHEMA = 8
+SEMVER = re.compile(r"\d+\.\d+\.\d+")
+MARKDOWN_LINK = re.compile(r"\[[^]]*\]\(([^)]+)\)")
+FENCED_CODE = re.compile(r"(?ms)^```[^\n]*\n.*?^```[ \t]*$")
+INLINE_CODE = re.compile(r"`[^`\n]*`")
+MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
+MANAGED_END = b"<!-- agent-workflow:managed-end -->"
+FORMER_PROJECT_MARKER = b"<!-- agent-workflow:project-instructions -->"
+MARKER_PREFIX = b"<!-- agent-workflow:"
+CLAUDE_MANAGED_BEGIN = MANAGED_BEGIN + b"\n"
+CLAUDE_MANAGED_END = MANAGED_END + b"\n"
+CLAUDE_PROJECT_BEGIN = b"\n" + FORMER_PROJECT_MARKER + b"\n"
+
+REQUIRED_PACKAGE_FILES = (
+    "__init__.py",
+    "cli.py",
+    "bootstrap.py",
+    "lifecycle.py",
+    "verify_package.py",
+    "install/manifest.json",
+    "install/AGENTS.md.template",
+    "install/CLAUDE.md.template",
+)
+EXPECTED_FRAMEWORK_FILES = frozenset(
+    {
+        "README.md",
+        "routing.md",
+        "terminology.md",
+        "contracts/wayfinder-state.md",
+    }
+)
+EXPECTED_INSTALL_FILES = frozenset(
+    {
+        "manifest.json",
+        "AGENTS.md.template",
+        "CLAUDE.md.template",
+    }
+)
+
+
+EXPECTED_SKILL_FILES = {
+    "code-review": frozenset({"SKILL.md"}),
+    "codebase-design": frozenset({"DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md"}),
+    "domain-modeling": frozenset({"CONTEXT-FORMAT.md", "SKILL.md"}),
+    "grilling": frozenset({"SKILL.md"}),
+    "implement": frozenset({"SKILL.md"}),
+    "prototype": frozenset({"LOGIC.md", "SKILL.md", "UI.md"}),
+    "research": frozenset({"SKILL.md"}),
+    "tdd": frozenset({"SKILL.md", "mocking.md", "tests.md"}),
+    "to-spec": frozenset({"SKILL.md"}),
+    "to-tickets": frozenset({"SKILL.md"}),
+    "wayfinder": frozenset({"SKILL.md"}),
+    "workflow-debugging": frozenset({"SKILL.md"}),
+    "workflow-discovery": frozenset({"SKILL.md"}),
+    "workflow-implementation": frozenset({"SKILL.md"}),
+    "workflow-verification": frozenset({"SKILL.md"}),
+}
+
+ATTRIBUTED_SKILLS = frozenset(
+    {
+        "code-review",
+        "codebase-design",
+        "domain-modeling",
+        "grilling",
+        "implement",
+        "prototype",
+        "research",
+        "tdd",
+        "to-spec",
+        "to-tickets",
+        "wayfinder",
+    }
+)
+
+
+class VerificationError(RuntimeError):
+    pass
+
+
+class DuplicateKeyError(ValueError):
+    pass
+
+
+def configure_console() -> None:
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(errors="backslashreplace")
+            except (AttributeError, OSError, ValueError):
+                pass
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise VerificationError(message)
+
+
+def safe_relative(value: object, label: str = "path") -> PurePosixPath:
+    require(
+        isinstance(value, str)
+        and bool(value)
+        and "\\" not in value
+        and "\x00" not in value,
+        f"unsafe {label}: {value!r}",
+    )
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise VerificationError(f"unsafe {label}: {value!r}") from exc
+    path = PurePosixPath(value)
+    require(
+        not path.is_absolute()
+        and bool(path.parts)
+        and path.as_posix() == value
+        and all(part not in {"", ".", ".."} for part in path.parts),
+        f"unsafe {label}: {value!r}",
+    )
+    return path
+
+
+def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise DuplicateKeyError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def load_json(path: Path, label: str) -> Mapping[str, object]:
+    require(path.is_file() and not path.is_symlink(), f"missing or unsafe {label}")
+    try:
+        value = json.loads(
+            path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys
+        )
+    except (UnicodeError, json.JSONDecodeError, DuplicateKeyError) as exc:
+        raise VerificationError(f"cannot read {label}: {exc}") from exc
+    require(isinstance(value, dict), f"{label} must contain an object")
+    return value
+
+
+def version() -> str:
+    path = REPOSITORY_ROOT / "VERSION"
+    require(path.is_file() and not path.is_symlink(), "missing or unsafe root VERSION")
+    duplicate = PACKAGE_ROOT / "VERSION"
+    require(
+        not duplicate.exists() and not duplicate.is_symlink(),
+        "agent_workflow/VERSION must remain absent; root VERSION is the single authored version",
+    )
+    value = path.read_text(encoding="utf-8").strip()
+    require(SEMVER.fullmatch(value) is not None, "VERSION must use x.y.z")
+    return value
+
+
+def expected_mappings() -> list[dict[str, str]]:
+    mappings = [
+        {"source": f"agent_workflow/install/{name}.template", "target": name}
+        for name in ("AGENTS.md", "CLAUDE.md")
+    ]
+    for root in (FRAMEWORK_ROOT, SKILLS_ROOT):
+        for path in sorted(root.rglob("*")):
+            if path.is_file() and not path.is_symlink():
+                relative = path.relative_to(REPOSITORY_ROOT).as_posix()
+                mappings.append({"source": relative, "target": relative})
+    return sorted(mappings, key=lambda item: item["target"])
+
+
+def generated_manifest() -> Mapping[str, object]:
+    return {"schema_version": MANIFEST_SCHEMA, "framework_owned": expected_mappings()}
+
+
+def refresh_manifest() -> None:
+    MANIFEST.write_text(
+        json.dumps(generated_manifest(), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Refreshed {MANIFEST.relative_to(PACKAGE_ROOT)}")
+
+
+def check_structure() -> None:
+    for relative in REQUIRED_PACKAGE_FILES:
+        path = PACKAGE_ROOT / relative
+        require(
+            path.is_file() and not path.is_symlink(),
+            f"missing or unsafe package file: {relative}",
+        )
+    version()
+    for root, expected in (
+        (FRAMEWORK_ROOT, EXPECTED_FRAMEWORK_FILES),
+        (INSTALL_ROOT, EXPECTED_INSTALL_FILES),
+    ):
+        actual = tree_files(root)
+        require(
+            actual == expected,
+            f"canonical source inventory differs at {root.relative_to(REPOSITORY_ROOT)}: "
+            f"expected={sorted(expected)!r}, actual={sorted(actual)!r}",
+        )
+    for obsolete in (
+        REPOSITORY_ROOT / "token_forensics",
+        REPOSITORY_ROOT / "skills",
+        PACKAGE_ROOT / "scripts",
+        PACKAGE_ROOT / "payload",
+    ):
+        require(
+            not obsolete.exists() and not obsolete.is_symlink(),
+            f"obsolete source layout must remain absent: {obsolete.relative_to(REPOSITORY_ROOT)}",
+        )
+
+
+def check_template_locations() -> None:
+    for root in (FRAMEWORK_ROOT, SKILLS_ROOT, INSTALL_ROOT):
+        for path in root.rglob("*"):
+            require(
+                path.name not in {"AGENTS.md", "CLAUDE.md"},
+                f"distributed root policy must use an install template: {path.relative_to(REPOSITORY_ROOT)}",
+            )
+
+
+def check_manifest() -> None:
+    actual = load_json(MANIFEST, "distribution manifest")
+    require(
+        set(actual) == {"schema_version", "framework_owned"},
+        "distribution manifest contains installation history or unexpected fields",
+    )
+    require(
+        actual == generated_manifest(),
+        "distribution manifest is stale; run verify_package.py --refresh-manifest",
+    )
+    mappings = actual["framework_owned"]
+    require(isinstance(mappings, list), "manifest mappings must be an array")
+    sources: list[str] = []
+    targets: list[str] = []
+    for item in mappings:
+        require(
+            isinstance(item, dict) and set(item) == {"source", "target"},
+            "manifest entries must contain only source and target",
+        )
+        source = safe_relative(item["source"], "manifest source")
+        target = safe_relative(item["target"], "manifest target")
+        target_value = target.as_posix()
+        allowed_target = (
+            target_value in {"AGENTS.md", "CLAUDE.md"}
+            or target_value.startswith(".agent-workflow/")
+            or (
+                len(target.parts) >= 4
+                and target.parts[:2] == (".agents", "skills")
+                and target.parts[2] in EXPECTED_SKILL_FILES
+            )
+        )
+        require(
+            allowed_target, f"manifest target is outside managed surfaces: {target}"
+        )
+        sources.append(source.as_posix())
+        targets.append(target_value)
+    require(len(sources) == len(set(sources)), "manifest source paths are duplicated")
+    require(len(targets) == len(set(targets)), "manifest target paths are duplicated")
+
+
+def parse_frontmatter(path: Path) -> list[str]:
+    text = path.read_text(encoding="utf-8")
+    require(text.startswith("---\n"), f"curated skill lacks frontmatter: {path}")
+    end = text.find("\n---\n", 4)
+    require(end >= 0, f"curated skill lacks closing frontmatter: {path}")
+    return text[4:end].splitlines()
+
+
+def markdown_destinations(path: Path) -> Iterable[str]:
+    text = INLINE_CODE.sub("", FENCED_CODE.sub("", path.read_text(encoding="utf-8")))
+    for destination in MARKDOWN_LINK.findall(text):
+        destination = destination.split("#", 1)[0]
+        if (
+            destination
+            and "://" not in destination
+            and not destination.startswith("mailto:")
+        ):
+            yield destination
+
+
+def validate_skill_links(root: Path) -> None:
+    resolved_root = root.resolve()
+    for path in root.rglob("*.md"):
+        for destination in markdown_destinations(path):
+            candidate = (path.parent / destination).resolve()
+            require(
+                candidate == resolved_root or resolved_root in candidate.parents,
+                f"curated skill link escapes its skill root: {path}: {destination}",
+            )
+            require(
+                candidate.exists(),
+                f"curated skill link target is missing: {path}: {destination}",
+            )
+
+
+def check_curated_skills() -> None:
+    skills_root = SKILLS_ROOT
+    require(
+        skills_root.is_dir() and not skills_root.is_symlink(),
+        "canonical curated skills is missing or unsafe",
+    )
+    actual_names = {path.name for path in skills_root.iterdir()}
+    require(
+        actual_names == set(EXPECTED_SKILL_FILES),
+        "curated skill inventory differs from the accepted fifteen-skill inventory",
+    )
+    for name, expected_files in EXPECTED_SKILL_FILES.items():
+        root = skills_root / name
+        actual_files = tree_files(root)
+        require(
+            actual_files == expected_files,
+            f"curated skill {name} is incomplete or contains unexpected files",
+        )
+        for relative in expected_files:
+            path = root / relative
+            require(
+                path.is_file() and not path.is_symlink() and bool(path.read_bytes()),
+                f"curated skill {name} contains a missing, empty, or unsafe file: {relative}",
+            )
+        frontmatter = parse_frontmatter(root / "SKILL.md")
+        require(
+            f"name: {name}" in frontmatter,
+            f"curated skill name differs from its directory: {name}",
+        )
+        require(
+            any(
+                line.startswith("description: ") and line != "description: "
+                for line in frontmatter
+            ),
+            f"curated skill lacks a description: {name}",
+        )
+        validate_skill_links(root)
+
+
+def check_local_links() -> None:
+    roots = (
+        REPOSITORY_ROOT / "README.md",
+        REPOSITORY_ROOT / "docs",
+        FRAMEWORK_ROOT,
+    )
+    paths: list[Path] = []
+    for root in roots:
+        if root.is_file():
+            paths.append(root)
+        elif root.is_dir():
+            paths.extend(root.rglob("*.md"))
+    for path in paths:
+        for destination in markdown_destinations(path):
+            candidate = (path.parent / destination).resolve()
+            require(
+                candidate.exists(),
+                f"broken local Markdown link in {path.relative_to(REPOSITORY_ROOT)}: {destination}",
+            )
+
+
+def check_attribution() -> None:
+    notice = (FRAMEWORK_ROOT / "README.md").read_text(encoding="utf-8")
+    normalized = " ".join(notice.split())
+    for name in sorted(ATTRIBUTED_SKILLS):
+        require(
+            f"`{name}`" in notice,
+            f"third-party notice omits attributed skill: {name}",
+        )
+    for clause in (
+        "https://github.com/mattpocock/skills",
+        "v1.2.3",
+        "Copyright (c) 2026 Matt Pocock",
+    ):
+        require(clause in normalized, f"third-party attribution lacks: {clause}")
+    canonical_permission = " ".join(
+        """Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.""".split()
+    )
+    canonical_disclaimer = " ".join(
+        """THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.""".split()
+    )
+    require(
+        canonical_permission in normalized,
+        "third-party attribution lacks the canonical MIT permission terms",
+    )
+    require(
+        canonical_disclaimer in normalized,
+        "third-party attribution lacks the canonical MIT warranty disclaimer",
+    )
+
+
+def tree_files(root: Path) -> frozenset[str]:
+    require(
+        root.is_dir() and not root.is_symlink(),
+        f"missing or unsafe directory: {root}",
+    )
+    files: set[str] = set()
+    for path in root.rglob("*"):
+        relative = path.relative_to(root).as_posix()
+        require(not path.is_symlink(), f"canonical source contains a symlink: {path}")
+        if path.is_file():
+            files.add(relative)
+        elif not path.is_dir():
+            raise VerificationError(
+                f"canonical source contains a special entry: {path}"
+            )
+    return frozenset(files)
+
+
+def managed_region(path: Path) -> bytes:
+    data = path.read_bytes()
+    if path.name == "CLAUDE.md":
+        managed_end = data.find(CLAUDE_MANAGED_END, len(CLAUDE_MANAGED_BEGIN))
+        project_begin = data.find(
+            CLAUDE_PROJECT_BEGIN, managed_end + len(CLAUDE_MANAGED_END)
+        )
+        require(
+            data.count(MARKER_PREFIX) == 3
+            and data.count(CLAUDE_MANAGED_BEGIN) == 1
+            and data.count(CLAUDE_MANAGED_END) == 1
+            and data.count(CLAUDE_PROJECT_BEGIN) == 1
+            and data.startswith(CLAUDE_MANAGED_BEGIN)
+            and managed_end >= 0
+            and project_begin == managed_end + len(CLAUDE_MANAGED_END),
+            f"checked-in composite has invalid managed markers: {path.name}",
+        )
+        return data[len(CLAUDE_MANAGED_BEGIN) : managed_end]
+
+    managed_begin = MANAGED_BEGIN + b"\n"
+    managed_end_marker = MANAGED_END + b"\n"
+    managed_end = data.find(managed_end_marker, len(managed_begin))
+    require(
+        data.count(MARKER_PREFIX) == 2
+        and data.count(MANAGED_BEGIN) == 1
+        and data.count(MANAGED_END) == 1
+        and data.startswith(managed_begin)
+        and managed_end >= 0,
+        f"checked-in composite has invalid managed markers: {path.name}",
+    )
+    return data[len(managed_begin) : managed_end]
+
+
+def check_composite_templates() -> None:
+    for source_relative, target_name in (
+        ("AGENTS.md.template", "AGENTS.md"),
+        ("CLAUDE.md.template", "CLAUDE.md"),
+    ):
+        source = (INSTALL_ROOT / source_relative).read_bytes().rstrip(b"\n") + b"\n"
+        target = REPOSITORY_ROOT / target_name
+        require(
+            target.is_file()
+            and not target.is_symlink()
+            and managed_region(target) == source,
+            f"checked-in managed composite region is stale: {target_name}",
+        )
+
+
+def run_tests() -> None:
+    environment = os.environ.copy()
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            str(REPOSITORY_ROOT / "tests"),
+            "-p",
+            "test_*.py",
+        ],
+        cwd=REPOSITORY_ROOT,
+        env=environment,
+    )
+    require(result.returncode == 0, "test suite failed")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--refresh-manifest", action="store_true")
+    parser.add_argument("--tests", action="store_true")
+    return parser
+
+
+def main(argv: Iterable[str] | None = None) -> int:
+    configure_console()
+    if sys.version_info < MINIMUM_PYTHON:
+        print("ERROR: Agent Workflow requires Python 3.11 or newer", file=sys.stderr)
+        return 2
+    args = build_parser().parse_args(argv)
+    try:
+        if args.refresh_manifest:
+            refresh_manifest()
+        for check in (
+            check_template_locations,
+            check_curated_skills,
+            check_structure,
+            check_manifest,
+            check_local_links,
+            check_attribution,
+            check_composite_templates,
+        ):
+            check()
+        if args.tests:
+            run_tests()
+        print("OK: Agent Workflow package verification passed.")
+        return 0
+    except (VerificationError, OSError, UnicodeError, json.JSONDecodeError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

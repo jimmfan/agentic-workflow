@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-14
+- Amended: 2026-09-05
 
 ## Context
 
@@ -16,7 +17,7 @@ Presenting both operational models at once would force each agent to reconcile c
 ## Decision
 
 When durable coordination is warranted, use project-owned, map-first Wayfinder state.
-The current local representation lives under `.agent-wayfinder/<effort>/`.
+The current local representation lives under `.project-efforts/<effort>/`.
 When resuming an effort, read `map.md` first.
 
 The map is a brief coordination summary, not a type ledger.
@@ -39,8 +40,15 @@ The effective Wayfinder instructions present one coherent operational model rath
 Matt Pocock's `v1.2.3` skill remains the attributed methodological source.
 The maintained derived skill preserves applicable map, readable-name, progressive-resolution, and reasoning sensitive to project decision authority through the project's objective, scope, literal uncertainty, blocker, and ready-work language.
 
-Lifecycle operations treat the complete `.agent-wayfinder/` tree as project data uninterpreted by lifecycle.
+Lifecycle operations treat the complete `.project-efforts/` tree as project data uninterpreted by lifecycle.
 Exact state mechanics remain progressively loaded from the Wayfinder contract.
+
+## Path amendment
+
+The original local path was `.agent-wayfinder/<effort>/`.
+The September 2026 repository-layout change uses `.project-efforts/<effort>/` to make project ownership visible in the filesystem name.
+The domain concept remains an effort or Wayfinder effort; objective, scope, map-first resumption, lazy supporting state, and lifecycle exclusion remain unchanged.
+This is a pre-1.0 clean break with no alternate discovery path or lifecycle migration.
 
 ## Consequences
 

@@ -1,7 +1,13 @@
+# Local Python environments and build output.
+.venv/
+venv/
+/build/
+/dist/
+
 __pycache__/
 *.py[cod]
 *.egg-info/
-.ruff_cache
+.ruff_cache/
 
 # Evaluation execution exhaust. Durable inputs, compact results, and reports
 # remain outside this generated boundary and are intentionally tracked.

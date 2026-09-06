@@ -2,12 +2,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 
-from token_forensics import Thresholds, analyze_trace, parse_codex_trace
-from token_forensics.models import NormalizedTrace, ToolInvocation, UsageObservation
-from token_forensics.report import human_text, json_text
+from evals.token_forensics import Thresholds, analyze_trace, parse_codex_trace
+from evals.token_forensics.models import (
+    NormalizedTrace,
+    ToolInvocation,
+    UsageObservation,
+)
+from evals.token_forensics.report import human_text, json_text
 
 
 FIXTURES = Path(__file__).parent / "fixtures" / "token_forensics"
@@ -66,20 +72,20 @@ class GenericAnalysisTests(unittest.TestCase):
         self,
     ) -> None:
         current_paths = (
-            ".agent-wayfinder/current-effort/map.md",
-            ".agent-wayfinder/current-effort/facts.md",
-            ".agent-wayfinder/current-effort/decisions.md",
-            ".agent-wayfinder/current-effort/unknowns/U3-open-question.md",
-            ".agent-wayfinder/current-effort/evidence/E2-test-output.md",
+            ".project-efforts/current-effort/map.md",
+            ".project-efforts/current-effort/facts.md",
+            ".project-efforts/current-effort/decisions.md",
+            ".project-efforts/current-effort/unknowns/U3-open-question.md",
+            ".project-efforts/current-effort/evidence/E2-test-output.md",
         )
         unrecognized_paths = (
-            ".agent-wayfinder/unrecognized-project-data/note.txt",
-            ".agent-wayfinder/current-effort/notes/free-form.md",
-            ".agent-wayfinder/current-effort/unknowns/question.md",
-            ".agent-wayfinder/current-effort/evidence/output.txt",
-            ".agent-wayfinder/current-effort/unknowns/U0-invalid.md",
-            ".agent-wayfinder/current-effort/evidence/E-invalid.md",
-            ".agent-wayfinder/current-effort/private-memory.md",
+            ".project-efforts/unrecognized-project-data/note.txt",
+            ".project-efforts/current-effort/notes/free-form.md",
+            ".project-efforts/current-effort/unknowns/question.md",
+            ".project-efforts/current-effort/evidence/output.txt",
+            ".project-efforts/current-effort/unknowns/U0-invalid.md",
+            ".project-efforts/current-effort/evidence/E-invalid.md",
+            ".project-efforts/current-effort/private-memory.md",
         )
         paths = current_paths + unrecognized_paths
         trace = NormalizedTrace(
@@ -200,23 +206,28 @@ class GenericAnalysisTests(unittest.TestCase):
         self.assertIn("FRAMEWORK ACTIVITY (HEURISTIC)", report)
 
     def test_cli_output_can_be_written_from_small_fixture(self) -> None:
-        from token_forensics.cli import main
-
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             json_path = root / "summary.json"
             text_path = root / "summary.md"
-            exit_code = main(
+            result = subprocess.run(
                 [
+                    sys.executable,
+                    "-m",
+                    "evals.token_forensics",
                     str(FIXTURES / "codex-exec.jsonl"),
                     "--json-out",
                     str(json_path),
                     "--text-out",
                     str(text_path),
-                ]
+                ],
+                cwd=Path(__file__).resolve().parents[2],
+                capture_output=True,
+                text=True,
+                check=False,
             )
 
-            self.assertEqual(exit_code, 0)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertEqual(
                 json.loads(json_path.read_text())["schema_version"],
                 "token-forensics/v2",

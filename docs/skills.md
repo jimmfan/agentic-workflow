@@ -1,6 +1,6 @@
 # Curated skills
 
-Agent Workflow distributes fifteen curated skills directly through the ordinary package payload and current distribution map.
+Agent Workflow distributes fifteen curated skills from the authored `.agents/skills/` tree through the current distribution map.
 Those skill directories are the single maintained runtime representation.
 
 Each discoverable package under `.agents/skills/` is a skill.
@@ -8,7 +8,7 @@ See [Workflow routing](routing.md) for how a skill participates in a route.
 
 ## Inventory
 
-The installed surface under `.agents/skills/` is exactly:
+The canonical inventory under `.agents/skills/` is exactly:
 
 - `wayfinder`
 - `research`
@@ -32,7 +32,7 @@ Historical skill inventories are not part of the current runtime.
 
 `wayfinder` and `research` preserve Agent Workflow's maintained contracts.
 `research` returns cited findings in chat by default and writes a repository file only after an explicit authorized request.
-`wayfinder` remains the sole durable coordinator under `.agent-wayfinder/`.
+`wayfinder` remains the sole durable coordinator under `.project-efforts/`.
 `workflow-discovery` analyzes one bounded consequential choice and its alternatives, evidence, tradeoffs, reversibility, consequences, authority, and uncertainty; a lasting architecture decision remains in the project record designated to maintain it.
 `domain-modeling` maintains domain concepts, terminology and ubiquitous language, domain or context boundaries, domain responsibilities and relationships, and the applicable `CONTEXT.md` or `CONTEXT-MAP.md` model.
 It does not own generic implementation or module architecture, all project structure, Wayfinder's effort-specific areas and relationships, or a generic architecture-decision store.
@@ -72,7 +72,7 @@ With no target, the CLI may use Git only to discover the containing worktree roo
 Preflight rejects symlinks, unsupported entry types, and path escapes at managed roots or parents, plus malformed composite markers.
 Nested entries inside a replaceable directory are removed through ordinary convergence.
 Complete replacement of `.agent-workflow/` removes obsolete files, while skill directories outside the current curated inventory remain untouched.
-Lifecycle code does not directly traverse, interpret, or change `.agent-wayfinder/`.
+Lifecycle code does not directly traverse, interpret, or change `.project-efforts/`.
 
-When maintaining a derived skill, edit the effective payload directly, preserve its complete declared directory and local references, classify every prose change, keep attribution complete, and run the package verifier.
+When maintaining a derived skill, edit its canonical `.agents/skills/<name>/` directory directly, preserve its complete declared directory and local references, classify every prose change, keep attribution complete, and run the package verifier.
 Upstream network research is optional maintainer evidence, never a runtime requirement.

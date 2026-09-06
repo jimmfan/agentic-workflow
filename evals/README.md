@@ -12,12 +12,12 @@ Every adapter receives the same routing-only cases; the harness does not simulat
 Token forensics analyzes an existing Codex trace without running a model:
 
 ```bash
-python3 -m token_forensics evals/artifacts/<campaign>/<run>/raw/codex.jsonl \
+python3 -m evals.token_forensics evals/artifacts/<campaign>/<run>/raw/codex.jsonl \
   --json-out /tmp/token-forensics.json \
   --text-out /tmp/token-forensics.md
 ```
 
-Its evidence limits are documented in [`token_forensics/README.md`](../token_forensics/README.md).
+Its evidence limits are documented in [`evals/token_forensics/README.md`](token_forensics/README.md).
 
 Run all deterministic evaluation-tooling tests from the repository root:
 

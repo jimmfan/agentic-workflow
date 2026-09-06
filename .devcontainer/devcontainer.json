@@ -45,7 +45,7 @@
         "python.testing.unittestArgs": [
           "-v",
           "-s",
-          "skills/agent-workflow/tests",
+          "tests",
           "-p",
           "test_*.py"
         ]
