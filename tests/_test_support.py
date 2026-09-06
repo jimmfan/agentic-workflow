@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import importlib.util
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -107,25 +106,8 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def copy_source(self, name: str) -> Path:
+        from wheel_smoke import copy_source_snapshot
+
         repository_copy = Path(self.temporary.name) / name
-        package_copy = repository_copy / "agent_workflow"
-        package_copy.parent.mkdir(parents=True)
-        shutil.copytree(PACKAGE_ROOT, package_copy)
-        for source_name in (
-            ".agent-workflow",
-            ".agents",
-            "architecture-decisions",
-            "docs",
-            "AGENTS.md",
-            "CLAUDE.md",
-            "LICENSE",
-            "README.md",
-            "VERSION",
-        ):
-            source = REPOSITORY_ROOT / source_name
-            target = repository_copy / source_name
-            if source.is_dir():
-                shutil.copytree(source, target)
-            else:
-                shutil.copy2(source, target)
+        copy_source_snapshot(REPOSITORY_ROOT, repository_copy)
         return repository_copy

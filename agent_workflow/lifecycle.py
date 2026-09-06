@@ -544,7 +544,7 @@ def drift_messages(root: Path, distribution: Distribution) -> list[str]:
 
 
 def status(root: Path, distribution: Distribution) -> int:
-    print(f"STATUS {root}")
+    print(f"STATUS {root} (comparison against the selected framework snapshot)")
     structural: list[str] = []
     drift: list[str] = []
 

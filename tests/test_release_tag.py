@@ -61,17 +61,20 @@ class ReleaseRepository:
     def create_tag(self, tag: str, commit: str | None = None) -> None:
         self.git("tag", "--annotate", "--message", tag, tag, commit or self.before)
 
-    def run_release(self, commit: str) -> subprocess.CompletedProcess[str]:
+    def run_release(
+        self, commit: str, *, publish: bool = True
+    ) -> subprocess.CompletedProcess[str]:
         environment = os.environ.copy()
         environment["PYTHONDONTWRITEBYTECODE"] = "1"
         return subprocess.run(
             [
                 sys.executable,
                 str(RELEASE_SCRIPT),
-                "--before",
+                "--base",
                 self.before,
-                "--commit",
+                "--head",
                 commit,
+                *(["--publish"] if publish else []),
             ],
             cwd=self.work,
             env=environment,
@@ -87,6 +90,80 @@ class ReleaseTagPolicyTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
+
+    def test_validation_never_writes_local_or_remote_tags(self):
+        commit = self.repository.commit_version("0.20.0")
+        before = self.repository.git("show-ref", check=False).stdout
+        result = self.repository.run_release(commit, publish=False)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(before, self.repository.git("show-ref", check=False).stdout)
+        self.assertEqual(
+            self.repository.git("ls-remote", "--tags", "origin").stdout, ""
+        )
+
+    def test_published_annotated_tag_is_a_successful_retry(self):
+        commit = self.repository.commit_version("0.20.0")
+        self.assertEqual(self.repository.run_release(commit).returncode, 0)
+        remote = self.repository.git("ls-remote", "--tags", "origin").stdout
+        self.repository.git("tag", "--delete", "v0.20.0")
+        result = self.repository.run_release(commit)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("already published", result.stdout)
+        self.assertEqual(
+            remote, self.repository.git("ls-remote", "--tags", "origin").stdout
+        )
+
+    def test_failed_push_leaves_local_tag_pending_and_retry_publishes_it(self):
+        commit = self.repository.commit_version("0.20.0")
+        hook = self.repository.remote / "hooks/pre-receive"
+        hook.write_text("#!/bin/sh\nexit 1\n")
+        hook.chmod(0o755)
+        failed = self.repository.run_release(commit)
+        self.assertNotEqual(failed.returncode, 0)
+        self.assertTrue(self.repository.git("tag", "--list").stdout)
+        validation = self.repository.run_release(commit, publish=False)
+        self.assertEqual(validation.returncode, 0, validation.stdout)
+        self.assertNotIn("already published", validation.stdout)
+        self.assertEqual(
+            self.repository.git("ls-remote", "--tags", "origin").stdout, ""
+        )
+        hook.unlink()
+        self.assertEqual(self.repository.run_release(commit).returncode, 0)
+        self.assertIn(
+            "refs/tags/v0.20.0^{}",
+            self.repository.git("ls-remote", "--tags", "origin").stdout,
+        )
+
+    def test_remote_lightweight_or_wrong_commit_tag_conflicts(self):
+        commit = self.repository.commit_version("0.20.0")
+        self.repository.git("tag", "v0.20.0", commit)
+        self.repository.git("push", "origin", "refs/tags/v0.20.0")
+        self.repository.git("tag", "--delete", "v0.20.0")
+        result = self.repository.run_release(commit, publish=False)
+        self.assertNotEqual(result.returncode, 0)
+
+    def test_remote_annotated_tag_at_another_commit_is_not_moved(self):
+        self.repository.create_tag("v0.20.0")
+        self.repository.git("push", "origin", "refs/tags/v0.20.0")
+        self.repository.git("tag", "--delete", "v0.20.0")
+        remote = self.repository.git("ls-remote", "--tags", "origin").stdout
+        commit = self.repository.commit_version("0.20.0")
+        for publish in (False, True):
+            result = self.repository.run_release(commit, publish=publish)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("conflicting", result.stdout)
+        self.assertEqual(
+            remote, self.repository.git("ls-remote", "--tags", "origin").stdout
+        )
+
+    def test_base_version_must_increase_even_without_tags(self):
+        for version in ("0.19.0", "00.20.0", "0.020.0", "0.20.0-rc1"):
+            commit = self.repository.commit_version(version)
+            self.assertNotEqual(
+                self.repository.run_release(commit, publish=False).returncode,
+                0,
+                version,
+            )
 
     def test_unchanged_version_does_not_request_a_release(self) -> None:
         commit = self.repository.commit_without_version_change()
@@ -128,6 +205,7 @@ class ReleaseTagPolicyTests(unittest.TestCase):
 
     def test_annotated_tag_targets_the_exact_triggering_commit(self) -> None:
         commit = self.repository.commit_version("0.20.0")
+        self.repository.commit_without_version_change()
 
         result = self.repository.run_release(commit)
 
@@ -157,7 +235,10 @@ class ReleaseWorkflowTests(unittest.TestCase):
         )
 
     def test_tagging_job_requires_successful_verification(self) -> None:
-        self.assertIn("needs: deterministic-pre-merge-gate", self.release_job)
+        self.assertIn(
+            "needs: [deterministic-pre-merge-gate, stable-python, macos-lifecycle]",
+            self.release_job,
+        )
         self.assertIn("github.event_name == 'push'", self.release_job)
         self.assertIn("github.ref == 'refs/heads/main'", self.release_job)
 
@@ -166,6 +247,25 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertNotIn("contents: write", self.verify_job)
         self.assertIn("permissions:\n      contents: write", self.release_job)
         self.assertEqual(self.workflow.count("contents: write"), 1)
+
+    def test_pr_validation_uses_explicit_revisions_and_has_no_publish_flag(self):
+        self.assertIn("github.event.pull_request.base.sha", self.verify_job)
+        self.assertIn("github.event.pull_request.head.sha", self.verify_job)
+        self.assertNotIn("--publish", self.verify_job)
+        self.assertIn("fetch-depth: 0", self.verify_job)
+        self.assertNotIn("pull_request_target", self.workflow)
+
+    def test_ci_pins_actions_and_enforces_the_runtime_and_build_constraints(self):
+        import re
+
+        uses = re.findall(r"uses: (.+)", self.workflow)
+        self.assertTrue(uses)
+        for action in uses:
+            self.assertRegex(action, r"@[0-9a-f]{40} # v[0-9]+\.[0-9]+\.[0-9]+$")
+        self.assertNotRegex(self.workflow, r"uv run (?!\-\-locked)")
+        self.assertIn("UV_BUILD_CONSTRAINT:", self.workflow)
+        self.assertIn('python-version: "3.14"', self.workflow)
+        self.assertIn("runs-on: macos-latest", self.workflow)
 
     def test_tagging_job_serializes_releases_and_fetches_all_tags(self) -> None:
         self.assertIn("concurrency:", self.release_job)

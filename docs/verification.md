@@ -19,7 +19,10 @@ With no target, the CLI may use Git only to discover the containing worktree roo
 Repository cleanliness, ignore rules, and `HEAD` are not lifecycle gates.
 Before mutation the lifecycle rejects malformed managed markers and symlink, unsupported-entry, or escape hazards at managed roots and parents.
 Nested entries inside a replaceable managed directory are removed through convergence.
-`status` is read-only and reports only managed drift or conflicts.
+`status` is read-only and compares managed surfaces against the selected snapshot, not a stored installed release.
+Diagnostics distinguish the installed CLI version, selected framework ref/release and resolved SHA, and target directory.
+A local archive override has no observed ref or SHA and reports them unavailable.
+Exit codes remain 0 for healthy/success, 1 for status drift/conflict, and 2 for command/runtime errors.
 
 Install and update replace every current curated skill directory after the concrete managed-path and composite preflight.
 They do not recognize an existing installation, inventory collisions, inspect terminal state, or prompt.
@@ -33,13 +36,15 @@ Lifecycle code does not directly traverse, interpret, or change `.project-effort
 ## Maintainer and CI gate
 
 Run from the source repository root:
+Lifecycle tests use disposable consumers under the [source-checkout ownership rule](../AGENTS.md#source-checkout-ownership).
 
 ```bash
-uv run ruff format --check .
-uv run ruff check .
-uv run python agent_workflow/verify_package.py --tests
-uv run python -m unittest discover -s evals/tests -p 'test_*.py' -v
-uv run python tests/wheel_smoke.py
+export UV_BUILD_CONSTRAINT="$PWD/.github/build-constraints.txt"
+uv run --locked ruff format --check .
+uv run --locked ruff check .
+uv run --locked python agent_workflow/verify_package.py --tests
+uv run --locked python -m unittest discover -s evals/tests -p 'test_*.py' -v
+uv run --locked python tests/wheel_smoke.py
 git diff --check
 ```
 
@@ -64,7 +69,10 @@ OK: Agent Workflow package verification passed.
 ```
 
 The `evals/` unit tests are a separate deterministic, network-free step because evaluation tooling is not part of the distributed package.
-The wheel smoke test builds a source distribution with `uv`, verifies its single root `VERSION`, builds a wheel from that archive, checks the wheel's exact implementation and install-resource contents, installs it in an isolated environment, and exercises all four commands against a local repository snapshot.
+The wheel smoke test copies current tracked and unignored source, including pending edits and canonical dot-directories, while excluding temporary environments and build outputs.
+It builds an sdist and then a wheel from that archive, checks the single root `VERSION` and bootstrap-only distribution contents, installs into an isolated environment, and exercises all four commands outside checkout imports against local snapshot resources.
+`MANIFEST.in` excludes runtime resources, project efforts, tests, and evaluations from the sdist; the wheel contains only the explicit Python package and install metadata.
+Both build steps receive the checked-in build constraints explicitly, with negative controls proving incompatible setuptools constraints reject each build.
 It proves that canonical framework and skill resources need not be bundled in the wheel, `evals/token_forensics/` remains outside the runtime package, and installation creates no `.project-efforts/` state.
 The local snapshot exercise is deterministic; building may need network access for build dependencies that are not already cached.
 
@@ -73,8 +81,8 @@ The local snapshot exercise is deterministic; building may need network access f
 After intentionally adding, removing, or remapping a packaged file, inspect the diff and run:
 
 ```bash
-uv run python agent_workflow/verify_package.py --refresh-manifest
-uv run python agent_workflow/verify_package.py --tests
+uv run --locked python agent_workflow/verify_package.py --refresh-manifest
+uv run --locked python agent_workflow/verify_package.py --tests
 ```
 
 Refresh rewrites only `agent_workflow/install/manifest.json`.
@@ -107,15 +115,21 @@ The deterministic suite proves that:
 - explicit branch, tag, or commit refs bypass stable-release discovery.
 
 Wayfinder's state and behavioral tests remain separate from lifecycle tests.
-They cover map-first coordination, records, allocation, reconciliation, reference safety, progressive loading, and project-choice authority without making lifecycle code interpret durable state.
+Literal fixture checks cover IDs, references, and preservation in explicit before/after examples.
+Scenario evaluator tests challenge map-first outcomes, reconciliation, and authority, but do not establish agent selection, reads, concurrent mutation checks, or no-overwrite execution.
+The [coverage ledger](../tests/README.md#wayfinder-coverage-and-evidence-limits) distinguishes retained checks from unverified instruction requirements.
 
 ## Release tags
 
 The repository-root `VERSION` is the sole authored framework version and the human-controlled `x.y.z` release switch.
 Python distribution metadata derives from this file; the wheel contains no authored version-file copy.
 The selected repository snapshot supplies its own root `VERSION` to bootstrap, and lifecycle does not install it into consuming projects.
-After the deterministic verifier succeeds on a push to `main`, a version change requests one annotated release tag on that exact verified commit.
-The release job accepts only `x.y.z`, requires a version greater than existing semantic release tags, and never reuses, moves, or force-pushes a tag.
+PR verification checks the explicit PR base/head revisions with fetched tags and read-only remote tag observation.
+The shared release policy accepts canonical `x.y.z`, requires an increase over both base VERSION and existing semantic release tags, and treats unchanged VERSION as no release.
+After all three deterministic jobs succeed on a push to `main`, publication revalidates that policy and creates one annotated release tag on that exact verified commit.
+An already published annotated remote tag resolving to that commit is a successful retry; conflicting types or commits fail.
+A local-only matching tag remains pending and can be pushed again after a failed push; it never counts as successful publication.
+Tags are never forced, moved, or rewritten.
 
 Do not create a release tag while preparing a branch; the verified `main` workflow owns tag creation.
 The repository-layout release requires one CLI reinstall because earlier bootstraps hard-coded the former archive path.
@@ -128,9 +142,25 @@ For a mapping mismatch, inspect the source and target inventories before refresh
 For a lifecycle failure, inspect the exact reported managed path or filesystem error; never delete project files merely to make a test pass.
 Generated Python caches are ignored by Git and package verification and need no manual cleanup.
 
-The deterministic gate runs on Ubuntu.
+The minimum Python 3.11 gate runs on Ubuntu; Python 3.14 adds the current stable interpreter gate.
+A focused macOS Python 3.11 job exercises bootstrap, lifecycle, direct distribution, and the built CLI.
+Release publication waits for all three jobs.
+These are configured coverage targets, not evidence of an unexecuted hosted run.
 macOS, Linux, WSL, and Linux-based devcontainers with a POSIX-style shell are supported; native PowerShell and CMD are not.
 Live model runs remain opt-in and must be reported separately.
 Static verification does not prove live host or editor skill discovery, external tracker behavior, or authenticated publication.
 
 See [Behavioral testing](behavioral-testing.md) for behavioral scenario evidence, commands, side effects, and limitations.
+
+## Dependency and action updates
+
+`uv run --locked` rejects unexpected lockfile drift.
+The separate [build constraints](../.github/build-constraints.txt) constrain isolated PEP 517 dependencies through `UV_BUILD_CONSTRAINT` in CI and explicit `--build-constraint` arguments in wheel smoke.
+Runtime locking alone does not constrain those builds; see [uv build constraints](https://docs.astral.sh/uv/concepts/projects/build/#build-constraints).
+The setuptools backend and Python 3.11 minimum remain unchanged.
+
+For a dependency update, change the constraint or declared development requirement intentionally, refresh `uv.lock` only when its inputs changed, inspect the diff, and run the commands above.
+For an action update, inspect the official release notes, resolve the chosen release with `git ls-remote <official-repository> refs/tags/<version>` (and its peeled ref for an annotated tag), and update every occurrence of the full SHA and release comment together.
+Do not follow a moving major tag or make an unrelated major upgrade.
+GitHub recommends [full commit SHA pins](https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions).
+Python 3.14 is the stable line on the [official release list](https://www.python.org/downloads/); revisit that one job when a new stable minor is released.

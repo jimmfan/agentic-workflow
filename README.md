@@ -59,6 +59,7 @@ Projects with state at the former `.agent-wayfinder/` path must explicitly move 
 This repository authors `.agent-workflow/` and the fifteen `.agents/skills/<name>/` directories directly at their consuming-project paths.
 There is one canonical copy of each runtime resource.
 `.agent-workflow/terminology.md` defines Agent Workflow's terminology for both this repository and consuming projects; agents read it when those meanings materially affect their work.
+Maintainers follow the [source-checkout ownership rule](AGENTS.md#source-checkout-ownership) for source edits and disposable lifecycle exercises.
 The root `VERSION` is the sole authored framework/release version, and `agent_workflow/` contains the Python implementation; `agent_workflow/install/` contains only the two composite templates and the repository-relative source-to-target manifest.
 `tests/` holds lifecycle, bootstrap, routing, Wayfinder, verifier, and wheel checks; `evals/` contains evaluation tooling, including trace analysis in `evals/token_forensics/`.
 
@@ -242,7 +243,10 @@ The existing `CLAUDE.md` integration remains unchanged.
 Lifecycle commands operate on an existing non-root target directory.
 Install, update, and remove preflight composite ownership and the managed roots and parents they will traverse, rejecting malformed markers, symlink or unsupported root/parent entries, and paths that could escape the target.
 Nested entries inside a replaceable managed directory are removed through ordinary convergence.
-`status` diagnoses managed-state drift and conflicts; unrelated repository changes do not make Agent Workflow unhealthy.
+`status` compares managed surfaces with the selected framework snapshot and diagnoses drift or conflicts; unrelated repository changes do not make Agent Workflow unhealthy.
+CLI diagnostics label the installed CLI version separately from the selected framework release/ref, resolved commit, and target directory.
+`agent-workflow --version` prints only the CLI version.
+Status does not recover an installed-release history.
 
 Install and update converge to the same current package state.
 Remove deletes `.agent-workflow/` and the current curated skill directories and strips the managed regions from `AGENTS.md` and `CLAUDE.md`; it deletes a composite file only when no project-authored bytes remain.

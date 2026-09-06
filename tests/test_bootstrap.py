@@ -533,6 +533,39 @@ target = Path(sys.argv[2])
         ):
             self.bootstrap.select_source(None, None)
 
+    def test_cli_diagnostics_distinguish_installed_cli_selected_release_sha_and_target(
+        self,
+    ):
+        from contextlib import redirect_stdout
+        import io
+
+        revision = "a" * 40
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            redirect_stdout(io.StringIO()) as output,
+            mock.patch.object(self.bootstrap, "cli_version", return_value="1.2.3"),
+            mock.patch.object(
+                self.bootstrap, "latest_stable_ref", return_value="v7.8.9"
+            ),
+            mock.patch.object(
+                self.bootstrap, "resolve_revision", return_value=revision
+            ),
+            mock.patch.object(
+                self.bootstrap,
+                "request_bytes",
+                return_value=self.release_probe_archive("7.8.9"),
+            ),
+        ):
+            target = Path(temporary) / "consumer"
+            target.mkdir()
+            self.assertEqual(self.bootstrap.main(["status", str(target)]), 0)
+            text = output.getvalue()
+            self.assertIn("CLI version: 1.2.3", text)
+            self.assertIn("Framework release: 7.8.9", text)
+            self.assertIn("Framework ref: v7.8.9", text)
+            self.assertIn("resolved SHA: " + revision, text)
+            self.assertIn("Target directory: " + str(target), text)
+
     def test_argument_parsing_leaves_default_release_discovery_to_the_transport(
         self,
     ) -> None:

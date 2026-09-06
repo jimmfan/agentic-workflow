@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+import os
 import subprocess
 import sys
 import tarfile
@@ -12,7 +13,87 @@ from pathlib import Path
 from _test_support import REPOSITORY_ROOT
 
 
+BUILD_CONSTRAINTS = REPOSITORY_ROOT / ".github/build-constraints.txt"
+
+
+def copy_source_snapshot(repository: Path, destination: Path) -> None:
+    """Copy current tracked and unignored source bytes, including pending dot-files."""
+    paths = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        cwd=repository,
+        capture_output=True,
+        check=True,
+    ).stdout.split(b"\0")
+    destination.mkdir()
+    for raw in sorted(set(paths)):
+        if not raw:
+            continue
+        relative = Path(os.fsdecode(raw))
+        if any(
+            part in {".git", ".venv", "__pycache__", "build", "dist", ".ruff_cache"}
+            or part.endswith((".egg-info", ".pyc"))
+            for part in relative.parts
+        ):
+            continue
+        source = repository / relative
+        if not source.exists() and not source.is_symlink():
+            continue  # A pending deletion is part of the source under test.
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if source.is_symlink():
+            target.symlink_to(os.readlink(source))
+        else:
+            shutil.copy2(source, target)
+
+
+def build_command(
+    source: Path, output: Path, kind: str, constraints: Path
+) -> list[str]:
+    return [
+        "uv",
+        "build",
+        "--" + kind,
+        "--python",
+        sys.executable,
+        "--build-constraint",
+        str(constraints),
+        "--out-dir",
+        str(output),
+        str(source),
+    ]
+
+
 class BuiltWheelSmokeTests(unittest.TestCase):
+    def test_locked_run_rejects_pending_dependency_drift_without_rewriting_lock(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "source"
+            copy_source_snapshot(REPOSITORY_ROOT, source)
+            project = source / "pyproject.toml"
+            project.write_text(
+                project.read_text().replace('"ruff>=0.16.4"', '"ruff>=0.16.0"')
+            )
+            lock = source / "uv.lock"
+            before = lock.read_bytes()
+            result = subprocess.run(
+                [
+                    "uv",
+                    "run",
+                    "--locked",
+                    "--offline",
+                    "--python",
+                    sys.executable,
+                    "python",
+                    "-c",
+                    "pass",
+                ],
+                cwd=source,
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("lockfile", result.stderr.lower())
+            self.assertEqual(lock.read_bytes(), before)
+
     def test_installed_cli_runs_local_archive_against_a_plain_project(self) -> None:
         def run(*command: object, cwd: Path | None = None) -> None:
             subprocess.run([str(item) for item in command], cwd=cwd, check=True)
@@ -20,25 +101,47 @@ class BuiltWheelSmokeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             source = root / "source"
-            source.mkdir()
-            for name in ("LICENSE", "README.md", "pyproject.toml", "VERSION"):
-                shutil.copy2(REPOSITORY_ROOT / name, source / name)
-            package = source / "agent_workflow"
-            shutil.copytree(
-                REPOSITORY_ROOT / "agent_workflow",
-                package,
-                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
-            )
-            shutil.copytree(
-                REPOSITORY_ROOT / "evals/token_forensics",
-                source / "evals/token_forensics",
-                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
-            )
-
+            copy_source_snapshot(REPOSITORY_ROOT, source)
+            for relative in (
+                ".agent-workflow/routing.md",
+                ".agents/skills/wayfinder/SKILL.md",
+                "tests/test_bootstrap.py",
+                "evals/routing_smoke.py",
+            ):
+                self.assertEqual(
+                    (source / relative).read_bytes(),
+                    (REPOSITORY_ROOT / relative).read_bytes(),
+                )
             wheelhouse = root / "wheelhouse"
-            run("uv", "build", "--sdist", "--out-dir", wheelhouse, source)
+            constraints = source / ".github/build-constraints.txt"
+            invalid = root / "invalid-constraints.txt"
+            invalid.write_text("setuptools==0\n")
+            rejected = subprocess.run(
+                build_command(source, wheelhouse, "sdist", invalid),
+                cwd=root,
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertIn("setuptools", rejected.stderr)
+            run(*build_command(source, wheelhouse, "sdist", constraints), cwd=root)
             sdist = next(wheelhouse.glob("agent_workflow-*.tar.gz"))
             with tarfile.open(sdist, "r:gz") as built:
+                forbidden = {
+                    ".agent-workflow",
+                    ".agents",
+                    ".project-efforts",
+                    "tests",
+                    "evals",
+                }
+                self.assertFalse(
+                    [
+                        member.name
+                        for member in built.getmembers()
+                        if len(Path(member.name).parts) > 1
+                        and Path(member.name).parts[1] in forbidden
+                    ]
+                )
                 versions = [
                     member for member in built if Path(member.name).name == "VERSION"
                 ]
@@ -46,7 +149,15 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                 self.assertEqual(len(Path(versions[0].name).parts), 2)
                 with built.extractfile(versions[0]) as version:
                     self.assertEqual(version.read(), (source / "VERSION").read_bytes())
-            run("uv", "build", "--wheel", "--out-dir", wheelhouse, sdist)
+            rejected = subprocess.run(
+                build_command(sdist, wheelhouse, "wheel", invalid),
+                cwd=root,
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertIn("setuptools", rejected.stderr)
+            run(*build_command(sdist, wheelhouse, "wheel", constraints), cwd=root)
             wheel = next(wheelhouse.glob("agent_workflow-*.whl"))
             virtual_environment = root / "venv"
             run("uv", "venv", "--python", sys.executable, virtual_environment)
@@ -62,8 +173,18 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                 "--no-deps",
                 wheel,
             )
+            run(
+                python,
+                "-I",
+                "-c",
+                "import agent_workflow; from pathlib import Path; assert Path(agent_workflow.__file__).resolve().is_relative_to(Path("
+                + repr(str(virtual_environment))
+                + ").resolve())",
+                cwd=root,
+            )
             subprocess.run(
                 [str(cli), "--help"],
+                cwd=root,
                 capture_output=True,
                 text=True,
                 check=True,
@@ -92,7 +213,7 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                         ".agents/" in name
                         or ".agent-workflow/" in name
                         or "token_forensics/" in name
-                        or name.startswith("evals/")
+                        or name.startswith(("evals/", "tests/", ".project-efforts/"))
                         for name in built.namelist()
                     )
                 )
@@ -108,14 +229,13 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                 )
             archive = root / "repository-snapshot.tar.gz"
             with tarfile.open(archive, "w:gz") as built:
-                built.add(REPOSITORY_ROOT / "VERSION", arcname="source/VERSION")
+                built.add(source / "VERSION", arcname="source/VERSION")
                 for name in ("agent_workflow", ".agent-workflow", ".agents/skills"):
-                    for path in sorted((REPOSITORY_ROOT / name).rglob("*")):
+                    for path in sorted((source / name).rglob("*")):
                         if path.is_file() and "__pycache__" not in path.parts:
                             built.add(
                                 path,
-                                arcname="source/"
-                                + path.relative_to(REPOSITORY_ROOT).as_posix(),
+                                arcname="source/" + path.relative_to(source).as_posix(),
                             )
             project = root / "project"
             project.mkdir()
@@ -128,9 +248,18 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             unrelated = project / ".agents/skills/project-local/SKILL.md"
             unrelated.parent.mkdir(parents=True)
             unrelated.write_bytes(b"local skill\n")
+            durable = project / ".project-efforts/user/map.md"
             for action in ("install", "update", "status"):
-                run(cli, action, project, "--archive-url", archive.as_uri())
-                self.assertFalse((project / ".project-efforts").exists())
+                if action == "update":
+                    durable.parent.mkdir(parents=True)
+                    durable.write_bytes(b"# Consumer-owned effort\r\n")
+                run(cli, action, project, "--archive-url", archive.as_uri(), cwd=root)
+                if action == "install":
+                    self.assertFalse((project / ".project-efforts").exists())
+                else:
+                    self.assertEqual(
+                        durable.read_bytes(), b"# Consumer-owned effort\r\n"
+                    )
                 self.assertEqual(
                     (project / "VERSION").read_bytes(), b"project-owned version\n"
                 )
@@ -155,9 +284,9 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                         content.count(b"<!-- agent-workflow:managed-begin -->"), 1
                     )
                     self.assertTrue(content.endswith(project_bytes))
-            run(cli, "remove", project, "--archive-url", archive.as_uri())
+            run(cli, "remove", project, "--archive-url", archive.as_uri(), cwd=root)
             self.assertFalse((project / ".agent-workflow").exists())
-            self.assertFalse((project / ".project-efforts").exists())
+            self.assertEqual(durable.read_bytes(), b"# Consumer-owned effort\r\n")
             self.assertEqual((project / "CONTEXT.md").read_bytes(), context_bytes)
             self.assertEqual(
                 (project / "VERSION").read_bytes(), b"project-owned version\n"

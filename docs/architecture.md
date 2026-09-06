@@ -72,6 +72,7 @@ OPTIONAL, INDEPENDENT
 
 The source repository authors runtime framework content directly in `.agent-workflow/` and the fifteen curated skill directories directly in `.agents/skills/`.
 These authored trees are distributed to the same relative paths in consuming repositories; they are not generated projections in this source repository.
+Maintainers follow the [source-checkout ownership rule](../AGENTS.md#source-checkout-ownership) when editing or exercising delivery.
 The Python implementation lives directly in `agent_workflow/`.
 The repository-root `VERSION` is the sole authored framework/release version; Python package metadata derives from it.
 Only `AGENTS.md.template`, `CLAUDE.md.template`, and `manifest.json` live in `agent_workflow/install/` because composite policies cannot be authored as whole consuming-project files.
@@ -197,7 +198,7 @@ Tests focus on observable boundaries:
 - route selection, truthful reporting of skill execution, material execution evidence, project-choice commitment, and action authorization;
 - rejection of unsafe managed destinations before mutation;
 - install, update, status, remove, and bootstrap behavior;
-- coherent Wayfinder state and the directly distributed skill files;
+- literal Wayfinder fixture structure and the directly distributed skill files;
 - managed-path safety boundaries and truthful partial-failure reporting; and
 - preservation of unrelated skills and project composite bytes without direct lifecycle traversal or mutation of Wayfinder state.
 
