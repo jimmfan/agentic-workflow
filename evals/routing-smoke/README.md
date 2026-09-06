@@ -5,7 +5,7 @@ This opt-in evaluation asks two deliberately small questions of multiple models:
 1. Does a bounded read remain Direct without loading the detailed router?
 2. Does a request that begins bounded select Wayfinder after reconnaissance reveals consequential coordination signals?
 
-The runner sends the installed root `AGENTS.md` and only the named synthetic case evidence or detailed routing policy that the model explicitly requests from a names-and-size catalog.
+The runner sends root `AGENTS.md` rendered from the canonical consumer template (tested against a disposable installation) and only the named synthetic case evidence or detailed routing policy that the model explicitly requests from a names-and-size catalog.
 It does not send project source, project documentation, durable state, Git history, credentials, or arbitrary repository files.
 
 ## What it measures
@@ -102,3 +102,25 @@ The schema-constrained output and hard round/prompt limits bound that residual r
 
 Live execution contacts the selected model service and consumes API quota or subscription credits.
 Deterministic tests use fake adapters and make no network requests.
+
+## Provenance, interruption, and comparison
+
+Schema version 2 records product and harness revisions, the actual harness fingerprint, policy and case/fixture fingerprints, model and effort settings, adapter identity/version when observable, and execution limits.
+The policy and cases are frozen before execution, so working-tree edits are represented by their actual input fingerprints.
+Source-only maintainer policy never enters the prompt or policy fingerprint.
+Missing observations remain unavailable; no version, usage, or read is inferred from a label.
+
+Each case records execution status separately from PASS, FAIL, or INCONCLUSIVE.
+Reports retain completed cases, observed early failures, incomplete-case counts, received responses, usage, and available current-round prompts when a later adapter exception, timeout, or budget limit stops the run.
+A received response is recorded before enforcing its resulting cost limit.
+Reports are written after each case using the existing outside-repository storage rule; there is no checkpoint store or database.
+Infrastructure failure does not become a product failure merely because a final decision was not received.
+
+Comparison requires matching harness, policy, cases, model, effort, adapter, and limits.
+Use repeated `--vary model`, `--vary effort`, `--vary adapter`, or `--vary policy_sha256` only to name deliberate experimental variables.
+Other mismatches and missing legacy provenance make the reports incomparable and leave interpretation agreement unavailable.
+Unavailable adapter versions or effort observations cannot be promoted to known settings.
+Model agreement under an explicit variable is an observation about those runs, not evidence of host discovery or skill execution.
+
+Fake-adapter tests exercise policy isolation, working-tree input fingerprints, mismatched reports, a successful first case followed by timeout, retained early failures, and a response crossing the budget.
+They validate harness behavior without running a model.

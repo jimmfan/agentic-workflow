@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 import json
+import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -61,6 +62,10 @@ Invoke = Callable[[str], tuple[Mapping[str, Any], Mapping[str, Any]]]
 class SmokeError(RuntimeError):
     """Raised for an invalid smoke-test contract or adapter result."""
 
+    def __init__(self, message: str, *, evidence: Mapping[str, Any] | None = None):
+        super().__init__(message)
+        self.evidence = evidence
+
 
 @dataclass
 class CostBudget:
@@ -69,8 +74,13 @@ class CostBudget:
     cached_input_per_million: float
     output_per_million: float
     spent_usd: float = 0.0
+    usage_unavailable: bool = False
 
     def add(self, usage: Mapping[str, Any]) -> float:
+        if not all(
+            isinstance(usage.get(key), int) for key in ("input_tokens", "output_tokens")
+        ):
+            self.usage_unavailable = True
         input_tokens = int(usage.get("input_tokens", 0) or 0)
         if "cached_input_tokens" in usage:
             cached_tokens = int(usage.get("cached_input_tokens", 0) or 0)
@@ -87,11 +97,13 @@ class CostBudget:
             + output_tokens * self.output_per_million
         ) / 1_000_000
         self.spent_usd += cost
+        return cost
+
+    def check(self) -> None:
         if self.spent_usd >= self.max_usd:
             raise SmokeError(
                 f"estimated model cost ${self.spent_usd:.4f} reached the ${self.max_usd:.2f} limit"
             )
-        return cost
 
 
 def load_cases(path: Path = CASES_PATH) -> dict[str, dict[str, Any]]:
@@ -132,9 +144,18 @@ def build_prompt(
     *,
     loaded: Mapping[str, str],
     decisions: Sequence[Mapping[str, Any]],
+    inputs: Mapping[str, Any] | None = None,
 ) -> str:
-    root_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
-    available = json.dumps(resource_catalog(case), indent=2)
+    inputs = inputs or capture_inputs({str(case["id"]): case})
+    root_policy = inputs["policy"]
+    resources = inputs["resources"][case["id"]]
+    available = json.dumps(
+        [
+            {"name": name, "bytes": len(content.encode("utf-8"))}
+            for name, content in resources.items()
+        ],
+        indent=2,
+    )
     loaded_text = (
         "\n\n".join(
             f"<resource name={json.dumps(name)}>\n{content}\n</resource>"
@@ -223,7 +244,11 @@ def evaluate_case(
         },
         {
             "name": "initial-route",
-            "passed": final.get("initial_route") == case["expected_initial_route"],
+            "passed": bool(decisions)
+            and all(
+                decision.get("initial_route") == case["expected_initial_route"]
+                for decision in decisions
+            ),
             "detail": f"expected={case['expected_initial_route']!r}, actual={final.get('initial_route')!r}",
         },
         {
@@ -276,6 +301,105 @@ def evaluate_case(
     return checks
 
 
+def capture_inputs(cases: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    # Freeze exactly the policy, requests, rubric and available evidence used by this run.
+    return {
+        "policy": consumer_policy(),
+        "cases": dict(cases),
+        "resources": {
+            key: {
+                name: resource_path(case, name).read_text(encoding="utf-8")
+                for name in case["available_resources"]
+            }
+            for key, case in cases.items()
+        },
+    }
+
+
+def fingerprint(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+
+def revision(*args: str) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(REPOSITORY_ROOT), *args],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip() or None
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def provenance(args: argparse.Namespace, inputs: Mapping[str, Any]) -> dict[str, Any]:
+    binary = version = None
+    try:
+        binary = executable_path(args.executable, args.adapter)
+        version = (
+            subprocess.run(
+                [binary, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=True,
+            ).stdout.strip()
+            or None
+        )
+    except (OSError, subprocess.SubprocessError, SmokeError):
+        pass
+    return {
+        "product_revision": revision("rev-parse", "HEAD"),
+        "harness_revision": revision(
+            "log", "-1", "--format=%H", "--", "evals/routing_smoke.py"
+        ),
+        "harness_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "policy_sha256": fingerprint(
+            {
+                "root": inputs["policy"],
+                "routing": {
+                    name: content
+                    for resources in inputs["resources"].values()
+                    for name, content in resources.items()
+                    if name in RESOURCE_PATHS
+                },
+            }
+        ),
+        "cases_sha256": fingerprint(
+            {
+                "cases": inputs["cases"],
+                "fixtures": {
+                    key: {
+                        name: content
+                        for name, content in resources.items()
+                        if name not in RESOURCE_PATHS
+                    }
+                    for key, resources in inputs["resources"].items()
+                },
+            }
+        ),
+        "model": args.model,
+        "effort": "low" if args.adapter == "codex" else None,
+        "adapter": {"identity": args.adapter, "version": version},
+        "executable": binary,
+        "limits": {
+            key: getattr(args, key)
+            for key in (
+                "max_rounds",
+                "max_prompt_bytes",
+                "timeout_seconds",
+                "max_estimated_cost_usd",
+                "input_price_per_million",
+                "cached_input_price_per_million",
+                "output_price_per_million",
+            )
+        },
+    }
+
+
 def run_case(
     case: Mapping[str, Any],
     *,
@@ -285,7 +409,9 @@ def run_case(
     max_rounds: int = DEFAULT_MAX_ROUNDS,
     max_prompt_bytes: int = DEFAULT_MAX_PROMPT_BYTES,
     cost_budget: CostBudget | None = None,
+    inputs: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
+    inputs = inputs or capture_inputs({str(case["id"]): case})
     loaded: dict[str, str] = {}
     decisions: list[Mapping[str, Any]] = []
     rounds: list[dict[str, Any]] = []
@@ -293,52 +419,93 @@ def run_case(
     total_prompt_words = 0
     usage_totals: dict[str, int] = {}
     estimated_cost_usd = 0.0
-    for number in range(1, max_rounds + 1):
-        prompt = build_prompt(
-            case,
-            loaded=loaded,
-            decisions=decisions,
-        )
-        prompt_bytes = len(prompt.encode("utf-8"))
-        if total_prompt_bytes + prompt_bytes > max_prompt_bytes:
-            raise SmokeError(
-                f"case {case['id']} would exceed the {max_prompt_bytes}-byte prompt budget"
+    execution_status = "completed"
+    error = None
+    try:
+        for number in range(1, max_rounds + 1):
+            if cost_budget is not None:
+                cost_budget.check()
+            prompt = build_prompt(
+                case, loaded=loaded, decisions=decisions, inputs=inputs
             )
-        decision, usage = invoke(prompt)
-        validate_decision(decision)
-        total_prompt_bytes += prompt_bytes
-        total_prompt_words += len(prompt.split())
-        for key, value in usage.items():
-            if isinstance(value, int) and not isinstance(value, bool):
-                usage_totals[key] = usage_totals.get(key, 0) + value
-        if cost_budget is not None:
-            estimated_cost_usd += cost_budget.add(usage)
-        rounds.append(
-            {
+            prompt_bytes = len(prompt.encode("utf-8"))
+            if total_prompt_bytes + prompt_bytes > max_prompt_bytes:
+                raise SmokeError(
+                    f"case {case['id']} would exceed the {max_prompt_bytes}-byte prompt budget"
+                )
+            current_round = {
                 "round": number,
+                "prompt": prompt,
                 "prompt_bytes": prompt_bytes,
                 "prompt_words": len(prompt.split()),
-                "decision": dict(decision),
-                "usage": dict(usage),
+                "decision": None,
+                "usage": None,
             }
-        )
-        decisions.append(dict(decision))
-        if decision["status"] == "complete":
-            break
-        for name in decision["requested_resources"]:
-            if name not in case["available_resources"]:
-                raise SmokeError(f"adapter requested unavailable resource {name!r}")
-            if name in loaded:
-                raise SmokeError(f"adapter requested already loaded resource {name!r}")
-            loaded[name] = resource_path(case, name).read_text(encoding="utf-8")
-
-    checks = evaluate_case(case, list(loaded), decisions)
+            rounds.append(current_round)
+            total_prompt_bytes += prompt_bytes
+            total_prompt_words += len(prompt.split())
+            decision, usage = invoke(prompt)
+            # Preserve a received response even if validation or accounting subsequently fails.
+            current_round.update(decision=decision, usage=usage)
+            for key, value in usage.items():
+                if isinstance(value, int) and not isinstance(value, bool):
+                    usage_totals[key] = usage_totals.get(key, 0) + value
+            if cost_budget is not None:
+                estimated_cost_usd += cost_budget.add(usage)
+            validate_decision(decision)
+            decisions.append(dict(decision))
+            if cost_budget is not None:
+                cost_budget.check()
+            if decision["status"] == "complete":
+                break
+            for name in decision["requested_resources"]:
+                if name not in case["available_resources"]:
+                    raise SmokeError(f"adapter requested unavailable resource {name!r}")
+                if name in loaded:
+                    raise SmokeError(
+                        f"adapter requested already loaded resource {name!r}"
+                    )
+                loaded[name] = inputs["resources"][case["id"]][name]
+        else:
+            execution_status = "round_limit"
+    except Exception as exc:
+        execution_status = "interrupted"
+        error = f"{type(exc).__name__}: {exc}"
+        if cost_budget is not None and rounds and rounds[-1]["usage"] is None:
+            cost_budget.usage_unavailable = True
+        if rounds and isinstance(exc, SmokeError) and exc.evidence is not None:
+            rounds[-1]["adapter_evidence"] = dict(exc.evidence)
+        if rounds and isinstance(exc, subprocess.TimeoutExpired):
+            rounds[-1]["partial_stdout"] = str(exc.stdout or "")
+            rounds[-1]["partial_stderr"] = str(exc.stderr or "")
+    complete = bool(decisions) and decisions[-1]["status"] == "complete"
+    checks = evaluate_case(case, list(loaded), decisions) if complete else []
+    # Early observed violations survive an incomplete execution; absence of a final answer
+    # does not itself establish a product failure.
+    if not complete and decisions:
+        checks = [
+            check
+            for check in evaluate_case(case, list(loaded), decisions)
+            if check["name"]
+            in {"initial-route", "first-resources", "forbidden-resources"}
+        ]
+    verdict = (
+        "FAIL"
+        if any(not check["passed"] for check in checks)
+        else "PASS"
+        if complete
+        else "INCONCLUSIVE"
+    )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "case": case["id"],
         "host": host,
         "model": model,
-        "passed": all(check["passed"] for check in checks),
+        "execution_status": execution_status,
+        "error": error,
+        "complete": complete,
+        "verdict": verdict,
+        "passed": {"PASS": True, "FAIL": False, "INCONCLUSIVE": None}[verdict],
         "checks": checks,
         "resources_loaded": list(loaded),
         "rounds": rounds,
@@ -346,8 +513,10 @@ def run_case(
         "transmission": {
             "prompt_bytes": total_prompt_bytes,
             "prompt_words": total_prompt_words,
-            "model_usage": usage_totals,
-            "estimated_cost_usd": round(estimated_cost_usd, 6) if cost_budget else None,
+            "model_usage": usage_totals or None,
+            "estimated_cost_usd": round(estimated_cost_usd, 6)
+            if cost_budget and not cost_budget.usage_unavailable
+            else None,
         },
     }
 
@@ -460,10 +629,16 @@ def codex_invoke(*, model: str, executable: str | None, timeout_seconds: int) ->
                     timeout=timeout_seconds,
                     env=environment,
                 )
-            except subprocess.TimeoutExpired as exc:
-                raise SmokeError(
-                    f"Codex adapter exceeded {timeout_seconds} seconds"
-                ) from exc
+            except subprocess.TimeoutExpired:
+                raise
+            public_evidence = {
+                "stdout": result.stdout,
+                "stderr": result.stderr,
+                "response": output.read_text(encoding="utf-8")
+                if output.is_file()
+                else None,
+                "usage": codex_usage(result.stdout),
+            }
             if result.returncode != 0:
                 detail = "\n".join(
                     part
@@ -471,13 +646,20 @@ def codex_invoke(*, model: str, executable: str | None, timeout_seconds: int) ->
                     if part
                 )
                 raise SmokeError(
-                    f"Codex adapter failed with exit {result.returncode}: {detail[-2000:]}"
+                    f"Codex adapter failed with exit {result.returncode}: {detail[-2000:]}",
+                    evidence=public_evidence,
                 )
             if not output.is_file():
-                raise SmokeError("Codex adapter did not create its structured output")
-            decision = parse_json_object(
-                output.read_text(encoding="utf-8"), label="Codex adapter"
-            )
+                raise SmokeError(
+                    "Codex adapter did not create its structured output",
+                    evidence=public_evidence,
+                )
+            try:
+                decision = parse_json_object(
+                    public_evidence["response"], label="Codex adapter"
+                )
+            except SmokeError as exc:
+                raise SmokeError(str(exc), evidence=public_evidence) from exc
             return decision, codex_usage(result.stdout)
 
     return invoke
@@ -525,19 +707,25 @@ def claude_invoke(
                     timeout=timeout_seconds,
                     env=environment,
                 )
-            except subprocess.TimeoutExpired as exc:
-                raise SmokeError(
-                    f"Claude adapter exceeded {timeout_seconds} seconds"
-                ) from exc
+            except subprocess.TimeoutExpired:
+                raise
+            public_evidence = {"stdout": result.stdout, "stderr": result.stderr}
             if result.returncode != 0:
                 detail = result.stderr.strip() or result.stdout.strip()
                 raise SmokeError(
-                    f"Claude adapter failed with exit {result.returncode}: {detail[-2000:]}"
+                    f"Claude adapter failed with exit {result.returncode}: {detail[-2000:]}",
+                    evidence=public_evidence,
                 )
-            envelope = parse_json_object(result.stdout, label="Claude adapter")
+            try:
+                envelope = parse_json_object(result.stdout, label="Claude adapter")
+            except SmokeError as exc:
+                raise SmokeError(str(exc), evidence=public_evidence) from exc
             decision = envelope.get("structured_output")
             if not isinstance(decision, dict):
-                raise SmokeError("Claude adapter response lacks structured_output")
+                raise SmokeError(
+                    "Claude adapter response lacks structured_output",
+                    evidence=public_evidence,
+                )
             usage = (
                 envelope.get("usage") if isinstance(envelope.get("usage"), dict) else {}
             )
@@ -546,11 +734,52 @@ def claude_invoke(
     return invoke
 
 
-def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+COMPARISON_FIELDS = {
+    "harness_sha256",
+    "policy_sha256",
+    "cases_sha256",
+    "model",
+    "effort",
+    "adapter",
+    "limits",
+}
+VARIABLE_FIELDS = {"policy_sha256", "model", "effort", "adapter"}
+
+
+def compare_reports(
+    reports: Sequence[Mapping[str, Any]], *, variables: Sequence[str] = ()
+) -> dict[str, Any]:
     if len(reports) < 2:
         raise SmokeError("comparison requires at least two reports")
+    if set(variables) - VARIABLE_FIELDS:
+        raise SmokeError("unsupported comparison variable")
+    mismatches = []
+    unavailable = []
+    conditions = [report.get("provenance", {}) for report in reports]
+    if any(not isinstance(condition, dict) for condition in conditions):
+        raise SmokeError("report provenance must be an object")
+    for field in sorted(COMPARISON_FIELDS):
+        values = [condition.get(field) for condition in conditions]
+        if any(
+            value is None
+            or (
+                field == "adapter"
+                and (not isinstance(value, dict) or not value.get("version"))
+            )
+            for value in values
+        ):
+            unavailable.append(field)
+        elif any(value != values[0] for value in values[1:]) and field not in variables:
+            mismatches.append(field)
+    comparable = not mismatches and not unavailable
     by_case: dict[str, list[dict[str, Any]]] = {}
-    expected_cases = set(load_cases())
+    selected = reports[0].get("selected_cases")
+    expected_cases = set(selected) if isinstance(selected, list) else set()
+    if not expected_cases or any(
+        report.get("selected_cases") != selected for report in reports
+    ):
+        comparable = False
+        unavailable.append("matching selected_cases")
     report_case_sets: list[set[str]] = []
     for report in reports:
         raw_cases = report.get("cases")
@@ -577,7 +806,11 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     complete_case_matrix = all(
         case_set == expected_cases for case_set in report_case_sets
     )
-    interpretation_agreement = complete_case_matrix
+    interpretation_agreement = complete_case_matrix and all(
+        report.get("execution_status") == "completed"
+        and report.get("incomplete_cases") == 0
+        for report in reports
+    )
     for entries in by_case.values():
         interpretation_signatures = {
             (entry["passed"], entry["initial_route"], entry["current_route"])
@@ -589,11 +822,15 @@ def compare_reports(reports: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             and len(interpretation_signatures) == 1
         )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
+        "comparable": comparable,
+        "deliberate_variables": list(variables),
+        "mismatches": mismatches,
+        "unavailable": unavailable,
         "report_count": len(reports),
         "expected_cases": sorted(expected_cases),
         "complete_case_matrix": complete_case_matrix,
-        "interpretation_agreement": interpretation_agreement,
+        "interpretation_agreement": interpretation_agreement if comparable else None,
         "cases": by_case,
     }
 
@@ -658,37 +895,61 @@ def run_command(args: argparse.Namespace) -> int:
         cached_input_per_million=args.cached_input_price_per_million,
         output_per_million=args.output_price_per_million,
     )
-    results = [
-        run_case(
-            cases[case_id],
+    inputs = capture_inputs({key: cases[key] for key in selected})
+    report = {
+        "schema_version": 2,
+        "adapter": args.adapter,
+        "host": host,
+        "model": args.model,
+        "provenance": provenance(args, inputs),
+        "selected_cases": selected,
+        "cases": [],
+    }
+    for case_id in selected:
+        result = run_case(
+            inputs["cases"][case_id],
             host=host,
             model=args.model,
             invoke=invoke,
             max_rounds=args.max_rounds,
             max_prompt_bytes=args.max_prompt_bytes,
             cost_budget=cost_budget,
+            inputs=inputs,
         )
-        for case_id in selected
-    ]
-    report = {
-        "schema_version": 1,
-        "adapter": args.adapter,
-        "host": host,
-        "model": args.model,
-        "passed": all(case["passed"] for case in results),
-        "estimated_cost_usd": round(cost_budget.spent_usd, 6),
-        "cases": results,
-    }
-    if args.output:
-        write_json(args.output, report)
-    else:
-        print(json.dumps(report, indent=2))
-    for case in results:
+        report["cases"].append(result)
+        report.update(
+            execution_status=result["execution_status"],
+            observed_failures=sum(
+                case["verdict"] == "FAIL" for case in report["cases"]
+            ),
+            incomplete_cases=len(selected)
+            - sum(case["complete"] for case in report["cases"]),
+            estimated_cost_usd=None
+            if cost_budget.usage_unavailable
+            else round(cost_budget.spent_usd, 6),
+        )
+        report["verdict"] = (
+            "FAIL"
+            if report["observed_failures"]
+            else "INCONCLUSIVE"
+            if report["incomplete_cases"]
+            else "PASS"
+        )
+        report["passed"] = {"PASS": True, "FAIL": False, "INCONCLUSIVE": None}[
+            report["verdict"]
+        ]
+        if args.output:
+            write_json(args.output, report)
         print(
-            f"{'PASS' if case['passed'] else 'FAIL'}: {case['case']} "
-            f"({case['transmission']['prompt_bytes']} prompt bytes)",
+            f"{result['verdict']}: {case_id} ({result['execution_status']})",
             file=sys.stderr,
         )
+        if result["execution_status"] != "completed":
+            break
+    if not args.output:
+        print(json.dumps(report, indent=2))
+    if report["execution_status"] != "completed":
+        return 2
     return 0 if report["passed"] else 1
 
 
@@ -697,7 +958,7 @@ def compare_command(args: argparse.Namespace) -> int:
         parse_json_object(path.read_text(encoding="utf-8"), label=str(path))
         for path in args.reports
     ]
-    comparison = compare_reports(reports)
+    comparison = compare_reports(reports, variables=args.vary)
     if args.output:
         write_json(args.output, comparison)
     else:
@@ -705,8 +966,17 @@ def compare_command(args: argparse.Namespace) -> int:
     return 0 if comparison["interpretation_agreement"] else 1
 
 
+def consumer_policy() -> str:
+    template = (
+        (REPOSITORY_ROOT / "agent_workflow/install/AGENTS.md.template")
+        .read_text(encoding="utf-8")
+        .strip()
+    )
+    return f"<!-- agent-workflow:managed-begin -->\n{template}\n<!-- agent-workflow:managed-end -->\n"
+
+
 def payload_command(_args: argparse.Namespace) -> int:
-    root = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    root = consumer_policy()
     payload = {
         "always_loaded": {
             "name": "AGENTS.md",
@@ -748,6 +1018,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     compare.add_argument("reports", nargs="+", type=Path)
     compare.add_argument("--output", type=Path)
+    compare.add_argument(
+        "--vary", action="append", choices=sorted(VARIABLE_FIELDS), default=[]
+    )
     subparsers.add_parser(
         "payload", help="show the exact local payload sizes without contacting a model"
     )
