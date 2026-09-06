@@ -1938,7 +1938,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             (REPOSITORY_ROOT / "docs/skills.md").read_text(encoding="utf-8").casefold(),
         )
         self.assertIn(
-            "canonical project language",
+            "canonical agent workflow language",
             (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8").casefold(),
         )
 

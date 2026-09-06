@@ -24,7 +24,7 @@ Excluded:
 
 ## Areas and relationships
 
-- **Canonical language:** [CONTEXT.md](../../CONTEXT.md) defines the 18 project terms and their bounded meanings.
+- **Canonical language:** [Agent Workflow terminology](../../.agent-workflow/terminology.md) defines the 18 framework terms and their bounded meanings.
 - **Authority and policy:** [AGENTS.md](../../AGENTS.md), its [distributed template](../../agent_workflow/install/AGENTS.md.template), and [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) maintain the operational separation among project choices, action authorization, host permission, and delegated technical judgment.
 - **Wayfinder coordination:** the [state contract](../../.agent-workflow/contracts/wayfinder-state.md) and [Wayfinder skill](../../.agents/skills/wayfinder/SKILL.md) maintain map authoring, blocker, uncertainty, authority, and resumption semantics.
   Installed surfaces are reconstructable projections of these sources.
@@ -50,7 +50,7 @@ None.
 
 ## Key links
 
-- [Project language](../../CONTEXT.md)
+- [Agent Workflow terminology](../../.agent-workflow/terminology.md)
 - [Architecture](../../docs/architecture.md)
 - [Routing](../../docs/routing.md)
 - [Verification](../../docs/verification.md)

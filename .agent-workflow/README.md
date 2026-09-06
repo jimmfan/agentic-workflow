@@ -2,7 +2,7 @@
 
 In the Agent Workflow source repository, this directory is authored canonical framework content.
 In consuming repositories, the same paths hold reconstructable framework output.
-It supplies the progressively loaded routing policy, state contract, and attribution used by the compact root policy.
+It supplies the progressively loaded routing policy, terminology, state contract, and attribution used by the compact root policy.
 Install and update replace the complete consuming-project directory with current snapshot bytes.
 
 Durable project-owned Wayfinder state may live under sibling `.project-efforts/`, but that tree is outside the lifecycle boundary.
@@ -11,9 +11,11 @@ Lifecycle commands do not directly traverse, interpret, or change it.
 ## Contents
 
 - `routing.md`: detailed minimum-workflow selection, composition, handling of unavailable selected skills, action authorization, evidence, and required route-marker rules.
+- `terminology.md`: the single canonical source for Agent Workflow term meanings, consulted when a framework-specific term materially affects interpretation or behavior.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for current maps, optional F#/D# ledgers, independently useful U#/E# files, identifiers, reconciliation, pruning, effort ending, and progressive loading.
 
-The root policy and `routing.md` are the runtime.
+The root policy loads routing, terminology, and specialized contracts progressively.
+Terminology is framework-owned and reconstructable; Domain Modeling's project-owned `CONTEXT.md` and `CONTEXT-MAP.md` artifacts remain separate.
 No hook, daemon, lifecycle controller, or telemetry analyzer is installed.
 
 ## Third-party license

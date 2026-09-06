@@ -14,7 +14,7 @@ from .report import human_text, json_text
 
 def parser() -> argparse.ArgumentParser:
     value = argparse.ArgumentParser(
-        prog="python3 -m token_forensics",
+        prog="python3 -m evals.token_forensics",
         description="Analyze a Codex JSONL trace without running Codex.",
     )
     value.add_argument("trace", type=Path, help="Codex exec or rollout JSONL file")

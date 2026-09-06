@@ -29,6 +29,11 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                 package,
                 ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
             )
+            shutil.copytree(
+                REPOSITORY_ROOT / "evals/token_forensics",
+                source / "evals/token_forensics",
+                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+            )
 
             wheelhouse = root / "wheelhouse"
             run("uv", "build", "--sdist", "--out-dir", wheelhouse, source)
@@ -85,7 +90,10 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                 )
                 self.assertFalse(
                     any(
-                        ".agents/" in name or ".agent-workflow/" in name
+                        ".agents/" in name
+                        or ".agent-workflow/" in name
+                        or "token_forensics/" in name
+                        or name.startswith("evals/")
                         for name in built.namelist()
                     )
                 )
@@ -113,6 +121,8 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             project = root / "project"
             project.mkdir()
             (project / "VERSION").write_bytes(b"project-owned version\n")
+            context_bytes = b"# Project domain\r\n**Order**: A purchase.\r\n"
+            (project / "CONTEXT.md").write_bytes(context_bytes)
             project_bytes = b"# Project instructions\r\nKeep these bytes.\r\n"
             for name in ("AGENTS.md", "CLAUDE.md"):
                 (project / name).write_bytes(project_bytes)
@@ -126,7 +136,13 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                     (project / "VERSION").read_bytes(), b"project-owned version\n"
                 )
                 self.assertEqual(unrelated.read_bytes(), b"local skill\n")
-                for name in ("README.md", "routing.md", "contracts/wayfinder-state.md"):
+                self.assertEqual((project / "CONTEXT.md").read_bytes(), context_bytes)
+                for name in (
+                    "README.md",
+                    "routing.md",
+                    "terminology.md",
+                    "contracts/wayfinder-state.md",
+                ):
                     self.assertEqual(
                         (project / ".agent-workflow" / name).read_bytes(),
                         (REPOSITORY_ROOT / ".agent-workflow" / name).read_bytes(),
@@ -143,6 +159,7 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             run(cli, "remove", project, "--archive-url", archive.as_uri())
             self.assertFalse((project / ".agent-workflow").exists())
             self.assertFalse((project / ".project-efforts").exists())
+            self.assertEqual((project / "CONTEXT.md").read_bytes(), context_bytes)
             self.assertEqual(
                 (project / "VERSION").read_bytes(), b"project-owned version\n"
             )

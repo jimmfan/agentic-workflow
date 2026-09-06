@@ -9,6 +9,7 @@
 - Choose Direct or one primary workflow; add only supporting capabilities that materially help.
   Re-evaluate the route when evidence changes.
 - Read `.agent-workflow/routing.md` only when detailed composition, selected-skill availability or invocation, artifact or record responsibility, handoff, or durable resumption guidance materially matters.
+- When an Agent Workflow-specific term materially affects interpretation or behavior, read `.agent-workflow/terminology.md` and use its definitions.
 - Treat a consequential project choice as committed only when required evidence is sufficient and either accepted project policy determines the choice for its boundary or the person, role, or valid delegate with project decision authority commits it.
   Evidence-backed technical judgment already delegated by the user or accepted project policy remains valid.
   Responsibility alone does not establish project decision authority.
@@ -89,7 +90,7 @@ These source-repository instructions apply specifically to agents modifying the 
 
 ## Project language
 
-Read `CONTEXT.md` before changing routing, Wayfinder, direct skill distribution, ownership, or framework-lifecycle concepts in a way that uses or changes canonical project language.
+Read `.agent-workflow/terminology.md` before changing routing, Wayfinder, direct skill distribution, ownership, or framework-lifecycle concepts in a way that uses or changes canonical Agent Workflow language.
 
 Before introducing, renaming, or materially redefining a canonical term:
 
@@ -100,7 +101,8 @@ Before introducing, renaming, or materially redefining a canonical term:
 - Prefer established or literal language only when its semantic precision earns its cognitive cost.
 - State evidence strength and uncertainty honestly.
 
-Update `CONTEXT.md` only after the terminology decision is accepted.
+Update `.agent-workflow/terminology.md` only after the terminology decision is accepted.
+This framework source is separate from Domain Modeling's project-owned `CONTEXT.md` and `CONTEXT-MAP.md` artifacts.
 Keep behavior, architecture, authority, and terminology in their respective owning layers.
 Do not force one term across genuinely different bounded contexts.
 

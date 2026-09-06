@@ -98,6 +98,45 @@ class VerifyPackageTests(ProjectTestCase):
         (source / ".agent-workflow/VERSION").write_text("9.8.7\n", encoding="utf-8")
         self.assert_verify_failure(source, "canonical source inventory differs")
 
+    def test_framework_terminology_is_required_and_mapped_to_its_canonical_path(
+        self,
+    ) -> None:
+        missing = self.copy_source("missing-terminology")
+        (missing / ".agent-workflow/terminology.md").unlink()
+        self.assert_verify_failure(missing, "canonical source inventory differs")
+
+        unmapped = self.copy_source("unmapped-terminology")
+        path = unmapped / "agent_workflow/install/manifest.json"
+        manifest = json.loads(path.read_text())
+        manifest["framework_owned"] = [
+            mapping
+            for mapping in manifest["framework_owned"]
+            if mapping["source"] != ".agent-workflow/terminology.md"
+        ]
+        path.write_text(json.dumps(manifest), encoding="utf-8")
+        self.assert_verify_failure(unmapped, "distribution manifest is stale")
+
+    def test_verifier_rejects_the_old_root_terminology_source(self) -> None:
+        source = self.copy_source("duplicate-terminology")
+        (source / "CONTEXT.md").write_bytes(
+            (source / ".agent-workflow/terminology.md").read_bytes()
+        )
+        self.assert_verify_failure(
+            source, "obsolete source layout must remain absent: CONTEXT.md"
+        )
+
+    def test_verifier_requires_the_domain_modeling_terminology_boundary(self) -> None:
+        source = self.copy_source("domain-modeling-terminology-ownership")
+        self.replace_once(
+            source,
+            ".agents/skills/domain-modeling/SKILL.md",
+            "In consuming projects, Domain Modeling does not own or modify the framework-owned `.agent-workflow/terminology.md`.",
+            "Domain Modeling may modify framework terminology in consuming projects.",
+        )
+        self.assert_verify_failure(
+            source, "Domain Modeling lacks load-bearing contract"
+        )
+
     def test_verifier_rejects_a_second_version_inside_the_python_package(self) -> None:
         source = self.copy_source("duplicate-version")
         (source / "agent_workflow/VERSION").write_text("9.8.7\n", encoding="utf-8")

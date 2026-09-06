@@ -142,9 +142,18 @@ target = Path(sys.argv[2])
                 CLI, "install", target, "--archive-url", archive.as_uri()
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            for relative in ("README.md", "routing.md", "contracts/wayfinder-state.md"):
-                self.assertTrue((target / ".agent-workflow" / relative).is_file())
+            for relative in (
+                "README.md",
+                "routing.md",
+                "terminology.md",
+                "contracts/wayfinder-state.md",
+            ):
+                self.assertEqual(
+                    (target / ".agent-workflow" / relative).read_bytes(),
+                    (REPOSITORY_ROOT / ".agent-workflow" / relative).read_bytes(),
+                )
             self.assertFalse((target / ".project-efforts").exists())
+            self.assertFalse((target / "CONTEXT.md").exists())
             self.assertFalse((target / "VERSION").exists())
             self.assertEqual(
                 len(list((target / ".agents/skills").glob("*/SKILL.md"))), 15

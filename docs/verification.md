@@ -48,6 +48,7 @@ The package verifier checks:
 - required package structure, the current `VERSION` format and single-source boundary, and required files being regular non-symlink files;
 - the ordinary current source-to-target distribution mapping;
 - the exact canonical framework and fifteen-skill inventories and non-active composite template locations;
+- canonical `.agent-workflow/terminology.md` distribution and progressive loading, with Domain Modeling's single-context and multi-context project artifacts kept separate;
 - skill frontmatter, canonical support-file closure, local links, checked-in composite managed regions, and complete attribution for retained derived skills;
 - small behavior-bearing semantics: Research establishes external evidence without choosing the project's preferred alternative and writes repository output only with explicit authorization; Discovery owns bounded consequential choice analysis; Domain Modeling is limited to domain concepts, language, boundaries, responsibilities, relationships, and context artifacts rather than generic architecture or ADR storage; Wayfinder is the sole durable coordinator and owns its effort-specific areas and relationships; `to-spec` and `to-tickets` invent no local destination, label, or status, and publish only to a user- or project-named destination with authorization; `implement` does not infer commit authorization; and route markers report executed work only;
 - deterministic lifecycle, bootstrap, routing, behavior-harness, Wayfinder, and verifier tests; and
@@ -61,7 +62,7 @@ OK: Agent Workflow package verification passed.
 
 The `evals/` unit tests are a separate deterministic, network-free step because evaluation tooling is not part of the distributed package.
 The wheel smoke test builds a source distribution with `uv`, verifies its single root `VERSION`, builds a wheel from that archive, checks the wheel's exact implementation and install-resource contents, installs it in an isolated environment, and exercises all four commands against a local repository snapshot.
-It proves that canonical framework and skill resources need not be bundled in the wheel and that installation creates no `.project-efforts/` state.
+It proves that canonical framework and skill resources need not be bundled in the wheel, `evals/token_forensics/` remains outside the runtime package, and installation creates no `.project-efforts/` state.
 The local snapshot exercise is deterministic; building may need network access for build dependencies that are not already cached.
 
 ## Distribution-map refresh
@@ -83,6 +84,7 @@ The manifest is a current source-to-target map, not installed state and not a co
 The deterministic suite proves that:
 
 - install and update converge to the same current state by replacing the full `.agent-workflow/` directory and all current curated skill directories;
+- terminology follows framework install, status, repair, and removal behavior while project-owned `CONTEXT.md`, `CONTEXT-MAP.md`, and per-context files retain their bytes;
 - obsolete or extra content inside `.agent-workflow/` is removed by ordinary desired-state replacement without a preliminary cleanup commit;
 - extra files inside a current curated skill directory are removed, while unrelated skill directories remain unchanged;
 - first installation replaces one or multiple existing current curated-name directories without prompting, including during noninteractive execution;

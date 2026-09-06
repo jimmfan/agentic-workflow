@@ -29,7 +29,7 @@ flowchart TD
     workflow -. consequential continuity .-> wayfinder["Wayfinder map"]
 ```
 
-The root `AGENTS.md`, selected skills, and progressively loaded `.agent-workflow/routing.md` form the instruction runtime.
+The root `AGENTS.md`, selected skills, and progressively loaded `.agent-workflow/` resources form the instruction runtime.
 There is no lifecycle controller, background daemon, telemetry service, or host hook enforcing the route.
 
 Routing begins Direct and classifies from user intent plus skill descriptions exposed in the current session.
@@ -76,7 +76,15 @@ The Python implementation lives directly in `agent_workflow/`.
 The repository-root `VERSION` is the sole authored framework/release version; Python package metadata derives from it.
 Only `AGENTS.md.template`, `CLAUDE.md.template`, and `manifest.json` live in `agent_workflow/install/` because composite policies cannot be authored as whole consuming-project files.
 Manifest sources are relative to the immutable repository snapshot root, and the manifest itself is never installed.
-Tests live in `tests/`; evaluation and token-forensics tooling remain separate repository concerns.
+Tests live in `tests/`; evaluation tooling, including `evals/token_forensics/`, remains outside the runtime package.
+
+### Framework terminology
+
+[`.agent-workflow/terminology.md`](../.agent-workflow/terminology.md) is the single canonical source for Agent Workflow's cross-cutting term meanings, authored and distributed at the same framework-owned path.
+Root policy loads it only when a framework-specific term materially affects interpretation or behavior; specialized contracts continue to own exact behavior.
+It lives directly under `.agent-workflow/` because its language spans framework areas rather than one narrow contract.
+Domain Modeling maintains separate project-owned `CONTEXT.md` and `CONTEXT-MAP.md` artifacts and does not modify framework terminology in consuming projects.
+See [ADR-0029](../architecture-decisions/0029-distribute-canonical-framework-terminology.md) for the ownership and loading decision.
 
 ### Reconstructable framework output
 

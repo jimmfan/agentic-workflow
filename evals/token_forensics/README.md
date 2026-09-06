@@ -1,6 +1,6 @@
 # Token forensics
 
-`token_forensics` is a local, standard-library-only analyzer for explaining token and context pressure in saved agent traces.
+`evals.token_forensics` is a local, standard-library-only analyzer for explaining token and context pressure in saved agent traces.
 It is intentionally separate from ITBench and Agent Workflow runtime behavior:
 
 ```text
@@ -12,11 +12,11 @@ The saved `codex exec --json` format reports usage on `turn.completed`; Codex de
 Persisted Codex rollouts instead emit repeated `token_count.info.total_token_usage` cumulative snapshots; the parser deduplicates identical snapshots and takes the final monotonic value rather than summing them.
 This distinction prevents the most important double-counting failure.
 
-Run it against an existing trace without invoking Codex:
+Run it from the repository root against an existing trace without invoking Codex:
 
 ```bash
-python3 -m token_forensics path/to/codex.jsonl
-python3 -m token_forensics path/to/codex.jsonl \
+python3 -m evals.token_forensics path/to/codex.jsonl
+python3 -m evals.token_forensics path/to/codex.jsonl \
   --json-out token-forensics.json \
   --text-out token-forensics.md \
   --label "Scenario 17"

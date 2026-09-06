@@ -143,6 +143,49 @@ class DirectDistributionTests(ProjectTestCase):
         self.assertEqual(result, 0, stdout + stderr)
         self.assertNotIn("Continue and replace", stdout)
 
+    def test_terminology_converges_without_managing_project_contexts(self) -> None:
+        contexts = {
+            "CONTEXT-MAP.md": b"# Contexts\n[Ordering](src/ordering/CONTEXT.md)\n"
+            b"[Billing](src/billing/CONTEXT.md)\n",
+            "src/ordering/CONTEXT.md": b"# Ordering\r\n**Order**: A purchase.\r\n",
+            "src/billing/CONTEXT.md": b"# Billing\n**Invoice**: A payment request.\n",
+        }
+        for relative, content in contexts.items():
+            path = self.project / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(content)
+
+        self.assert_ok(self.lifecycle("install"))
+        terminology = self.project / ".agent-workflow/terminology.md"
+        expected = (REPOSITORY_ROOT / ".agent-workflow/terminology.md").read_bytes()
+        self.assertEqual(terminology.read_bytes(), expected)
+        self.assertFalse((self.project / "CONTEXT.md").exists())
+        self.assertFalse((self.project / ".agent-workflow/CONTEXT.md").exists())
+
+        terminology.write_bytes(b"stale framework terminology\n")
+        before = workspace_snapshot(self.project)
+        status = self.lifecycle("status")
+        self.assertEqual(status.returncode, 1, status.stdout + status.stderr)
+        self.assertIn("managed directory differs: .agent-workflow", status.stdout)
+        self.assertEqual(workspace_snapshot(self.project), before)
+
+        self.assert_ok(self.lifecycle("update"))
+        self.assert_current_sources_installed()
+        self.assertEqual(terminology.read_bytes(), expected)
+        self.assert_ok(self.lifecycle("status"))
+        for relative, content in contexts.items():
+            self.assertEqual((self.project / relative).read_bytes(), content)
+
+        self.assert_ok(self.lifecycle("remove"))
+        self.assertFalse(terminology.exists())
+        for relative, content in contexts.items():
+            self.assertEqual((self.project / relative).read_bytes(), content)
+        self.assertEqual(
+            (self.project / ".agents/skills/project-local/SKILL.md").read_bytes(),
+            b"project-owned skill\n",
+        )
+        self.assert_wayfinder_untouched()
+
     def test_fresh_install_replaces_reserved_collision_without_prompt(self) -> None:
         self.add_project_skill("research")
 

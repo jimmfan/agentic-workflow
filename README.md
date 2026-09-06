@@ -58,8 +58,10 @@ Projects with state at the former `.agent-wayfinder/` path must explicitly move 
 
 This repository authors `.agent-workflow/` and the fifteen `.agents/skills/<name>/` directories directly at their consuming-project paths.
 There is one canonical copy of each runtime resource.
+`.agent-workflow/terminology.md` defines Agent Workflow's terminology for both this repository and consuming projects; agents read it when those meanings materially affect their work.
+Domain Modeling's project-owned `CONTEXT.md` and `CONTEXT-MAP.md` artifacts describe the consuming project's domain and remain separate.
 The root `VERSION` is the sole authored framework/release version, and `agent_workflow/` contains the Python implementation; `agent_workflow/install/` contains only the two composite templates and the repository-relative source-to-target manifest.
-`tests/` holds lifecycle, bootstrap, routing, Wayfinder, verifier, and wheel checks; `evals/` and `token_forensics/` remain separate tooling.
+`tests/` holds lifecycle, bootstrap, routing, Wayfinder, verifier, and wheel checks; `evals/` contains evaluation tooling, including trace analysis in `evals/token_forensics/`.
 
 The installed CLI is bootstrap transport.
 It selects the highest stable `vX.Y.Z` release tag, resolves it to an immutable commit, downloads one repository snapshot, and executes `agent_workflow/lifecycle.py` from that snapshot using its canonical content and install metadata.

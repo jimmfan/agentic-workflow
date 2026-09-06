@@ -49,6 +49,7 @@ EXPECTED_FRAMEWORK_FILES = frozenset(
     {
         "README.md",
         "routing.md",
+        "terminology.md",
         "contracts/wayfinder-state.md",
     }
 )
@@ -220,6 +221,8 @@ def check_structure() -> None:
             f"expected={sorted(expected)!r}, actual={sorted(actual)!r}",
         )
     for obsolete in (
+        REPOSITORY_ROOT / "CONTEXT.md",
+        REPOSITORY_ROOT / "token_forensics",
         REPOSITORY_ROOT / "skills",
         PACKAGE_ROOT / "scripts",
         PACKAGE_ROOT / "payload",
@@ -467,6 +470,8 @@ def check_semantic_contracts() -> None:
             "domain responsibilities and relationships",
             "`CONTEXT.md`",
             "`CONTEXT-MAP.md`",
+            "Its `CONTEXT.md` and `CONTEXT-MAP.md` artifacts are project-owned domain models.",
+            "In consuming projects, Domain Modeling does not own or modify the framework-owned `.agent-workflow/terminology.md`.",
             "does not own generic implementation or module architecture",
             "all project structure",
             "Wayfinder's effort-specific areas and relationships",
@@ -549,7 +554,14 @@ def check_semantic_contracts() -> None:
     )
 
     root_routing = normalized_text("agent_workflow/install/AGENTS.md.template")
-    require_clauses("Root routing", root_routing, ("Report only what executed",))
+    require_clauses(
+        "Root routing",
+        root_routing,
+        (
+            "Report only what executed",
+            "When an Agent Workflow-specific term materially affects interpretation or behavior, read `.agent-workflow/terminology.md` and use its definitions.",
+        ),
+    )
     routing = normalized_text(".agent-workflow/routing.md")
     require_clauses(
         "Routing",

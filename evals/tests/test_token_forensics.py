@@ -2,12 +2,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 
-from token_forensics import Thresholds, analyze_trace, parse_codex_trace
-from token_forensics.models import NormalizedTrace, ToolInvocation, UsageObservation
-from token_forensics.report import human_text, json_text
+from evals.token_forensics import Thresholds, analyze_trace, parse_codex_trace
+from evals.token_forensics.models import (
+    NormalizedTrace,
+    ToolInvocation,
+    UsageObservation,
+)
+from evals.token_forensics.report import human_text, json_text
 
 
 FIXTURES = Path(__file__).parent / "fixtures" / "token_forensics"
@@ -200,23 +206,28 @@ class GenericAnalysisTests(unittest.TestCase):
         self.assertIn("FRAMEWORK ACTIVITY (HEURISTIC)", report)
 
     def test_cli_output_can_be_written_from_small_fixture(self) -> None:
-        from token_forensics.cli import main
-
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             json_path = root / "summary.json"
             text_path = root / "summary.md"
-            exit_code = main(
+            result = subprocess.run(
                 [
+                    sys.executable,
+                    "-m",
+                    "evals.token_forensics",
                     str(FIXTURES / "codex-exec.jsonl"),
                     "--json-out",
                     str(json_path),
                     "--text-out",
                     str(text_path),
-                ]
+                ],
+                cwd=Path(__file__).resolve().parents[2],
+                capture_output=True,
+                text=True,
+                check=False,
             )
 
-            self.assertEqual(exit_code, 0)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertEqual(
                 json.loads(json_path.read_text())["schema_version"],
                 "token-forensics/v2",

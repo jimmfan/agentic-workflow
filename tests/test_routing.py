@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import re
 import unittest
@@ -7,7 +8,7 @@ import unittest
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = REPOSITORY_ROOT / "agent_workflow"
 
-EXPECTED_PROJECT_LANGUAGE = {
+EXPECTED_FRAMEWORK_LANGUAGE = {
     "Wayfinder effort",
     "Map",
     "Objective",
@@ -30,20 +31,21 @@ EXPECTED_PROJECT_LANGUAGE = {
 
 
 class RoutingContractTests(unittest.TestCase):
-    def test_source_project_language_policy_uses_an_undistributed_glossary(
+    def test_framework_terminology_is_distributed_and_loaded_progressively(
         self,
     ) -> None:
-        context_path = REPOSITORY_ROOT / "CONTEXT.md"
+        terminology_path = REPOSITORY_ROOT / ".agent-workflow/terminology.md"
         source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
         distributed_policy = (PACKAGE_ROOT / "install/AGENTS.md.template").read_text(
             encoding="utf-8"
         )
 
-        self.assertTrue(context_path.is_file())
-        context = context_path.read_text(encoding="utf-8")
+        self.assertFalse((REPOSITORY_ROOT / "CONTEXT.md").exists())
+        self.assertTrue(terminology_path.is_file())
+        context = terminology_path.read_text(encoding="utf-8")
         self.assertEqual(
             set(re.findall(r"^\*\*([^*]+)\*\*:", context, re.MULTILINE)),
-            EXPECTED_PROJECT_LANGUAGE,
+            EXPECTED_FRAMEWORK_LANGUAGE,
         )
         entries = {
             name: " ".join(definition.split())
@@ -161,12 +163,31 @@ class RoutingContractTests(unittest.TestCase):
         self.assertNotIn("ready work", consequential)
         self.assertNotIn("CONTEXT.md", distributed_policy)
         self.assertNotIn("## Project language", distributed_policy)
+        self.assertIn(
+            "When an Agent Workflow-specific term materially affects interpretation or "
+            "behavior, read `.agent-workflow/terminology.md` and use its definitions.",
+            " ".join(distributed_policy.split()),
+        )
+        self.assertEqual(distributed_policy.count(".agent-workflow/terminology.md"), 1)
+        self.assertNotRegex(
+            distributed_policy, r"\*\*(?:Objective|Scope|Dependency)\*\*:"
+        )
         self.assertFalse(
             any((REPOSITORY_ROOT / ".agents/skills").glob("**/CONTEXT.md"))
         )
         self.assertNotIn(
             "CONTEXT.md",
             (PACKAGE_ROOT / "install/manifest.json").read_text(encoding="utf-8"),
+        )
+        mappings = json.loads(
+            (PACKAGE_ROOT / "install/manifest.json").read_text(encoding="utf-8")
+        )["framework_owned"]
+        self.assertIn(
+            {
+                "source": ".agent-workflow/terminology.md",
+                "target": ".agent-workflow/terminology.md",
+            },
+            mappings,
         )
 
         project_instructions = source_policy.split(
@@ -175,7 +196,7 @@ class RoutingContractTests(unittest.TestCase):
         normalized = " ".join(project_instructions.split())
         for requirement in (
             "## Project language",
-            "Read `CONTEXT.md` before changing routing, Wayfinder, direct skill distribution, "
+            "Read `.agent-workflow/terminology.md` before changing routing, Wayfinder, direct skill distribution, "
             "ownership, or framework-lifecycle concepts",
             "Determine the actual concept from current source, behavior, tests, and accepted decisions",
             "Identify the bounded technical or domain context that owns it",
@@ -184,12 +205,40 @@ class RoutingContractTests(unittest.TestCase):
             "Compare alternatives by exact semantics and applicability",
             "Prefer established or literal language only when its semantic precision earns its cognitive cost",
             "State evidence strength and uncertainty honestly",
-            "Update `CONTEXT.md` only after the terminology decision is accepted",
+            "Update `.agent-workflow/terminology.md` only after the terminology decision is accepted",
             "Keep behavior, architecture, authority, and terminology in their respective owning layers",
             "Do not force one term across genuinely different bounded contexts",
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, normalized)
+
+    def test_domain_modeling_preserves_single_and_multiple_project_contexts(
+        self,
+    ) -> None:
+        skill = REPOSITORY_ROOT / ".agents/skills/domain-modeling"
+        instructions = " ".join((skill / "SKILL.md").read_text().split())
+        context_format = " ".join((skill / "CONTEXT-FORMAT.md").read_text().split())
+        self.assertIn(
+            "Its `CONTEXT.md` and `CONTEXT-MAP.md` artifacts are project-owned domain models.",
+            instructions,
+        )
+        self.assertIn(
+            "In consuming projects, Domain Modeling does not own or modify the "
+            "framework-owned `.agent-workflow/terminology.md`.",
+            instructions,
+        )
+        self.assertIn("[CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)", instructions)
+        self.assertIn(
+            "When a term is resolved, update `CONTEXT.md` right there", instructions
+        )
+        for rule in (
+            "If `CONTEXT-MAP.md` exists, read it to find contexts",
+            "If only a root `CONTEXT.md` exists, single context",
+            "If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved",
+            "When multiple contexts exist, infer which one the current topic relates to",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, context_format)
 
     def test_explicit_available_skill_selection_still_takes_precedence(self) -> None:
         routing = " ".join(

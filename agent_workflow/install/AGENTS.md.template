@@ -8,6 +8,7 @@
 - Choose Direct or one primary workflow; add only supporting capabilities that materially help.
   Re-evaluate the route when evidence changes.
 - Read `.agent-workflow/routing.md` only when detailed composition, selected-skill availability or invocation, artifact or record responsibility, handoff, or durable resumption guidance materially matters.
+- When an Agent Workflow-specific term materially affects interpretation or behavior, read `.agent-workflow/terminology.md` and use its definitions.
 - Treat a consequential project choice as committed only when required evidence is sufficient and either accepted project policy determines the choice for its boundary or the person, role, or valid delegate with project decision authority commits it.
   Evidence-backed technical judgment already delegated by the user or accepted project policy remains valid.
   Responsibility alone does not establish project decision authority.

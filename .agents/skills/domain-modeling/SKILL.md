@@ -10,6 +10,8 @@ This is the *active* discipline—challenging domain concepts and terminology, m
 This skill is for when you're changing the model, not just consuming it.)
 
 Domain Modeling does not own generic implementation or module architecture, all project structure, Wayfinder's effort-specific areas and relationships, or a generic architecture-decision store.
+Its `CONTEXT.md` and `CONTEXT-MAP.md` artifacts are project-owned domain models.
+In consuming projects, Domain Modeling does not own or modify the framework-owned `.agent-workflow/terminology.md`.
 
 ## File structure
 

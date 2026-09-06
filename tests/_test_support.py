@@ -118,7 +118,6 @@ class ProjectTestCase(unittest.TestCase):
             "docs",
             "AGENTS.md",
             "CLAUDE.md",
-            "CONTEXT.md",
             "LICENSE",
             "README.md",
             "VERSION",
