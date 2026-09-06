@@ -32,8 +32,8 @@ Existing Wayfinder state alone never selects Wayfinder.
 A bounded read-only check may establish that the current work clearly continues a relevant effort.
 Explicit user selection and opt-out control the route.
 
-The compact always-loaded rules live in `payload/root/AGENTS.md.template`.
-Detailed overlap resolution, composition, transitions, unavailable-skill handling, exact user-invocation instructions, unclear responsibility for resumption records, and route-marker edge cases live in `payload/agent-workflow/routing.md`.
+The compact always-loaded rules live in `agent_workflow/install/AGENTS.md.template`.
+Detailed overlap resolution, composition, transitions, unavailable-skill handling, exact user-invocation instructions, unclear responsibility for resumption records, and route-marker edge cases live in `.agent-workflow/routing.md`.
 They load only after the thin gate identifies one of those needs, not for Direct work or one obvious selected skill.
 
 Runtime responsibility is deliberately split:
@@ -76,7 +76,7 @@ If a selected skill is unavailable or cannot run without explicit user invocatio
 Otherwise report the limitation or give the exact invocation instruction.
 Never imitate the skill, and report only what actually ran.
 
-Wayfinder is Agent Workflow's sole durable coordination model; its project-owned state lives under `.agent-wayfinder/`.
+Wayfinder is Agent Workflow's sole durable coordination model; its project-owned state lives under `.project-efforts/`.
 Chat output is session-local.
 Wayfinder links project or external records only when they are durable.
 If a chat-only result later needs continuity, Wayfinder preserves only the minimum needed coordination or evidence.

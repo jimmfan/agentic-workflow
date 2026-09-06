@@ -39,6 +39,33 @@ Git repository state is not a lifecycle prerequisite.
 Install and update select the newest stable Agent Workflow release, so ordinary framework updates do not require a separate CLI upgrade.
 `--ref` remains an explicit development and testing override for a branch, tag, or commit.
 
+### One-time reinstall for the repository-layout release
+
+The structural release is a pre-1.0 clean break.
+Older CLIs hard-code the former `skills/agent-workflow/` snapshot location and cannot update themselves across this layout change.
+When this release ships, reinstall the CLI once, then update the framework:
+
+```bash
+uv tool install --force git+https://github.com/jimmfan/agentic-workflow.git
+agent-workflow update
+```
+
+After that reinstall, `agent-workflow update` remains the single ordinary framework-update command.
+The local Wayfinder path is now `.project-efforts/<effort>/`.
+Projects with state at the former `.agent-wayfinder/` path must explicitly move that state and update their references; lifecycle commands never migrate or manage project-owned durable Wayfinder state.
+
+## Source layout
+
+This repository authors `.agent-workflow/` and the fifteen `.agents/skills/<name>/` directories directly at their consuming-project paths.
+There is one canonical copy of each runtime resource.
+`agent_workflow/` contains the Python implementation and `VERSION`; `agent_workflow/install/` contains only the two composite templates and the repository-relative source-to-target manifest.
+`tests/` holds lifecycle, bootstrap, routing, Wayfinder, verifier, and wheel checks; `evals/` and `token_forensics/` remain separate tooling.
+
+The installed CLI is bootstrap transport.
+It selects the highest stable `vX.Y.Z` release tag, resolves it to an immutable commit, downloads one repository snapshot, and executes `agent_workflow/lifecycle.py` from that snapshot using its canonical content and install metadata.
+The wheel contains Python and install resources; runtime framework content and skills come from the selected snapshot.
+The manifest is not installed into consuming projects.
+
 ## What it does
 
 Agent Workflow has three main responsibilities:
@@ -97,7 +124,7 @@ Wayfinder is not required for every task, and the existence of an existing Wayfi
 A Wayfinder effort is map-first:
 
 ```text
-.agent-wayfinder/
+.project-efforts/
 └── <effort>/
     ├── map.md
     ├── facts.md        # optional
@@ -152,7 +179,7 @@ Use an available project/effort plan to understand the intended objective, scope
 dependencies, sequencing, and remaining work where applicable. Reference the plan
 from Wayfinder when useful rather than copying it.
 
-Create a lightweight `.agent-wayfinder/<stable-effort-name>/map.md` that will
+Create a lightweight `.project-efforts/<stable-effort-name>/map.md` that will
 help developers and future agents resume the work without depending on this chat.
 Do not implement product changes during this first pass.
 
@@ -179,7 +206,7 @@ target-project/
 │   ├── README.md             # includes third-party MIT notice
 │   └── contracts/
 │
-└── .agent-wayfinder/         # project-owned
+└── .project-efforts/        # project-owned
     └── <effort>/
         └── ...
 ```
@@ -196,7 +223,7 @@ There is no installed manifest, provenance record, migration history, or framewo
 Each of the fifteen current curated skill names is reserved for Agent Workflow.
 Install and update replace those complete skill directories, including extra files inside them, while preserving unrelated skill directories.
 
-### `.agent-wayfinder/`
+### `.project-efforts/`
 
 Project-owned durable state.
 

@@ -4,6 +4,7 @@
 
 **Wayfinder effort**:
 One resumable body of coordination with one objective and scope.
+Its local project-owned durable Wayfinder state lives under `.project-efforts/<effort>/`; the filesystem name describes ownership without introducing another domain concept.
 
 **Map**:
 The brief coordination summary for a Wayfinder effort and the first effort file read when resuming it.

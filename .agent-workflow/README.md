@@ -1,10 +1,11 @@
-# Installed Agent Workflow
+# Agent Workflow runtime resources
 
-This directory is reconstructable Agent Workflow output.
+In the Agent Workflow source repository, this directory is authored canonical framework content.
+In consuming repositories, the same paths hold reconstructable framework output.
 It supplies the progressively loaded routing policy, state contract, and attribution used by the compact root policy.
-Install and update replace the complete directory with current package bytes.
+Install and update replace the complete consuming-project directory with current snapshot bytes.
 
-Durable project-owned Wayfinder state may live under sibling `.agent-wayfinder/`, but that tree is outside the lifecycle boundary.
+Durable project-owned Wayfinder state may live under sibling `.project-efforts/`, but that tree is outside the lifecycle boundary.
 Lifecycle commands do not directly traverse, interpret, or change it.
 
 ## Contents
@@ -33,7 +34,7 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMA
 
 ## Ownership
 
-`.agent-workflow/` is framework-owned, reconstructable, and replaceable from current package content.
+In consuming repositories, `.agent-workflow/` is framework-owned, reconstructable, and replaceable from current snapshot content.
 The ordinary distribution manifest is the current source-to-target map; no installed manifest, content hashes, provenance record, created-state bits, or history is written to a consuming repository.
 
 `AGENTS.md` and `CLAUDE.md` live outside this directory because hosts require root policy files.
@@ -49,7 +50,7 @@ Remove deletes those current curated directories.
 Existing content at those reserved names is ordinary install/update convergence input.
 Wayfinder and Research are directly distributed maintained versions.
 
-Local Wayfinder data is a configured project-owned durable representation under `.agent-wayfinder/`, never a distributed template or framework-owned lifecycle tree.
+Local Wayfinder data is a configured project-owned durable representation under `.project-efforts/`, never a distributed template or framework-owned lifecycle tree.
 A map may stand alone.
 The current default places F# fact records containing supported, scoped, revisable conclusions in optional `facts.md` and D# decision records containing choices determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority in optional `decisions.md`.
 U# unresolved question records and E# evidence records with source, scope, observation, and limitations earn separate files only when they are independently useful coordination or retrieval units.

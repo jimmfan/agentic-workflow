@@ -49,13 +49,13 @@ Run the full repository gate from the **same Dev Container terminal at the repos
 It is read-only for tracked repository files and removes its temporary test directories automatically:
 
 ```bash
-python3 skills/agent-workflow/scripts/verify_package.py --tests
+python3 agent_workflow/verify_package.py --tests
 ```
 
 To run that same gate through `uv` without inventing a package or virtual environment, use this equivalent command in the **same Dev Container terminal**:
 
 ```bash
-uv run --no-project python skills/agent-workflow/scripts/verify_package.py --tests
+uv run --no-project python agent_workflow/verify_package.py --tests
 ```
 
 Normal lifecycle install and update use direct packaged skill bytes and need no GitHub CLI authentication or network access.

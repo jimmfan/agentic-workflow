@@ -110,7 +110,7 @@ def _route_markers(messages: list[str]) -> list[str]:
 
 def _framework_kind(path: str) -> str | None:
     normalized = path.replace("\\", "/")
-    wayfinder_marker = ".agent-wayfinder/"
+    wayfinder_marker = ".project-efforts/"
     if wayfinder_marker in normalized:
         relative = normalized.partition(wayfinder_marker)[2]
         if _CURRENT_WAYFINDER_PATH.fullmatch(relative):

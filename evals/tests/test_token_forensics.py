@@ -66,20 +66,20 @@ class GenericAnalysisTests(unittest.TestCase):
         self,
     ) -> None:
         current_paths = (
-            ".agent-wayfinder/current-effort/map.md",
-            ".agent-wayfinder/current-effort/facts.md",
-            ".agent-wayfinder/current-effort/decisions.md",
-            ".agent-wayfinder/current-effort/unknowns/U3-open-question.md",
-            ".agent-wayfinder/current-effort/evidence/E2-test-output.md",
+            ".project-efforts/current-effort/map.md",
+            ".project-efforts/current-effort/facts.md",
+            ".project-efforts/current-effort/decisions.md",
+            ".project-efforts/current-effort/unknowns/U3-open-question.md",
+            ".project-efforts/current-effort/evidence/E2-test-output.md",
         )
         unrecognized_paths = (
-            ".agent-wayfinder/unrecognized-project-data/note.txt",
-            ".agent-wayfinder/current-effort/notes/free-form.md",
-            ".agent-wayfinder/current-effort/unknowns/question.md",
-            ".agent-wayfinder/current-effort/evidence/output.txt",
-            ".agent-wayfinder/current-effort/unknowns/U0-invalid.md",
-            ".agent-wayfinder/current-effort/evidence/E-invalid.md",
-            ".agent-wayfinder/current-effort/private-memory.md",
+            ".project-efforts/unrecognized-project-data/note.txt",
+            ".project-efforts/current-effort/notes/free-form.md",
+            ".project-efforts/current-effort/unknowns/question.md",
+            ".project-efforts/current-effort/evidence/output.txt",
+            ".project-efforts/current-effort/unknowns/U0-invalid.md",
+            ".project-efforts/current-effort/evidence/E-invalid.md",
+            ".project-efforts/current-effort/private-memory.md",
         )
         paths = current_paths + unrecognized_paths
         trace = NormalizedTrace(

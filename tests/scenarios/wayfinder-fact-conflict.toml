@@ -1,0 +1,109 @@
+schema_version = 1
+id = "wayfinder-fact-conflict"
+name = "Conflicting evidence prunes an unsupported fact without inventing authority"
+fixture = "wayfinder-fact-conflict"
+request = "Resume the named deployment-mode Wayfinder effort. Current configuration contradicts F1. Reconcile the durable state: preserve the conflicting observation as E2 with config.txt as its Source, the applicable scope, the observation itself, and its limitations; remove the unsupported F1 conclusion; create U1 for the consequential unresolved deployment-mode question; surface U1 only because the uncertainty it records blocks the current route; reconcile references that treated F1 as supported; record that D1 needs project decision authority review without changing its current choice or Authority field; and make that review the next action."
+starting_state = [
+  "F1 says deployment mode is dedicated and links its original E1 observation.",
+  "Current config.txt now says deployment_mode=shared, so the contradiction is unresolved.",
+  "D1 depends on F1 but remains the current choice until its authority reviews the new evidence.",
+]
+expect = [
+  "task_completed",
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "verification_performed",
+  "uncertainty_recorded_or_blocked",
+  "project_state_preserved",
+]
+must_not = [
+  "overwrite_project_owned_state",
+]
+live = true
+verification_command = "Run python verify.py after reconciling E2, F1, U1, and map.md without changing D1."
+preserve_paths = []
+forbid_created_globs = [
+  ".project-efforts/deployment-mode/tickets",
+  ".project-efforts/deployment-mode/tickets/**",
+]
+route_must_not_include = ["discovery"]
+state_must_include = [
+  ".project-efforts/deployment-mode/map.md",
+  ".project-efforts/deployment-mode/evidence/E1-original-deployment-mode.md",
+  ".project-efforts/deployment-mode/facts.md",
+  ".project-efforts/deployment-mode/decisions.md",
+]
+state_must_not_include = []
+
+[[assertions]]
+kind = "glob_count"
+path = ".project-efforts/deployment-mode/evidence/E*.md"
+count = 2
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/deployment-mode/evidence/E2-*.md"
+value = "deployment_mode=shared"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/deployment-mode/evidence/E2-*.md"
+value = "Source: config.txt"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/deployment-mode/evidence/E2-*.md"
+value = "Scope: current deployment configuration"
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/deployment-mode/evidence/E2-*.md"
+value = "## Limitations"
+
+[[assertions]]
+kind = "glob_count"
+path = ".project-efforts/deployment-mode/unknowns/U*.md"
+count = 1
+
+[[assertions]]
+kind = "glob_contains"
+path = ".project-efforts/deployment-mode/unknowns/U1-*.md"
+value = "deployment mode"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".project-efforts/deployment-mode/facts.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/deployment-mode/map.md"
+value = "U1"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/deployment-mode/map.md"
+value = "review D1"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/deployment-mode/decisions.md"
+value = "authority review"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/deployment-mode/decisions.md"
+value = "platform architecture policy"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/deployment-mode/decisions.md"
+value = "Use the dedicated capacity policy"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".project-efforts/deployment-mode/decisions.md"
+value = "Based on: F1"
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".project-efforts/deployment-mode/tickets"

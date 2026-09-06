@@ -56,7 +56,7 @@ FRAMEWORK-OWNED, RECONSTRUCTABLE
 └── current curated .agents/skills/<name>/ directories
 
 PROJECT-OWNED, DURABLE
-└── .agent-wayfinder/
+└── .project-efforts/
     └── <effort>/               # map-first Wayfinder coordination
         ├── map.md
         ├── facts.md            # optional current F# ledger
@@ -68,15 +68,24 @@ OPTIONAL, INDEPENDENT
 └── unrelated local skill directories under .agents/skills/
 ```
 
+### Canonical repository sources
+
+The source repository authors runtime framework content directly in `.agent-workflow/` and the fifteen curated skill directories directly in `.agents/skills/`.
+These authored trees are distributed to the same relative paths in consuming repositories; they are not generated projections in this source repository.
+The Python implementation lives directly in `agent_workflow/`, with `VERSION` as the sole authored version.
+Only `AGENTS.md.template`, `CLAUDE.md.template`, and `manifest.json` live in `agent_workflow/install/` because composite policies cannot be authored as whole consuming-project files.
+Manifest sources are relative to the immutable repository snapshot root, and the manifest itself is never installed.
+Tests live in `tests/`; evaluation and token-forensics tooling remain separate repository concerns.
+
 ### Reconstructable framework output
 
-`.agent-workflow/` is derived from the current package and may be replaced as a unit.
+In consuming repositories, `.agent-workflow/` is derived from the selected snapshot and may be replaced as a unit.
 Missing, modified, obsolete, or extra files inside it do not require historical checksum investigation.
 The current distribution manifest provides an explicit source-to-target map rather than a historical ownership database.
 
 The supported bootstrap and adoption path stores distributable root policies under non-active template names.
-A maintainer check rejects literal root-policy files and top-level host-customization trees inside the payload.
-Adoption activates framework resources by projecting their explicit mappings into the repository locations recognized by supported hosts.
+A maintainer check rejects literal root-policy files inside distributed resource trees.
+Lifecycle copies canonical framework and skill sources into the repository locations recognized by supported hosts and applies templates only to composite managed regions.
 
 `AGENTS.md` is a composite file.
 Lifecycle operations replace only one unambiguous managed region and preserve every project-owned byte before and after it.
@@ -85,11 +94,11 @@ The existing `CLAUDE.md` integration remains unchanged pending a host-compatible
 
 ### Project-owned durable state
 
-`.agent-wayfinder/` and every entry below it are project-owned.
+`.project-efforts/` and every entry below it are project-owned.
 Wayfinder creates and uses that tree only when durable coordination is needed.
 Lifecycle operations do not directly traverse, interpret, or change it.
 
-Wayfinder efforts currently live directly at `.agent-wayfinder/<effort>/`.
+Wayfinder efforts currently live directly at `.project-efforts/<effort>/`.
 One effort has one objective and scope.
 A new effort is created only after objective and scope sufficiently identify it and durable coordination is justified; unresolved route, choices, dependencies, areas, and other detail may remain unclear.
 Scope may be clarified, narrowed, or elaborated in place while the objective and substantive scope remain the same, and semantic resumption does not require textually identical wording.
@@ -122,7 +131,7 @@ Wayfinder decision records may link an ADR but do not become a second ADR or oth
 
 ## Curated skill boundary
 
-The ordinary distribution manifest maps the complete fifteen-skill curated payload directly into `.agents/skills/`.
+The ordinary distribution manifest maps the complete fifteen-skill canonical source directly into `.agents/skills/`.
 Each current curated skill name is a reserved, reconstructable directory that install and update replace completely; unrelated local skill directories are preserved.
 Supported hosts discover project skills from that location and expose them to the agent.
 
@@ -131,7 +140,7 @@ The conservative recognition check applies only to remove on an otherwise unreco
 Ambiguous composite markers remain a hard preflight failure for every mutating lifecycle operation.
 
 Eleven curated skills are maintained derived works of Matt Pocock's `v1.2.3` release.
-Their effective installed versions are the maintained runtime source; complete repository, copyright, and MIT license attribution lives in `.agent-workflow/README.md`.
+Their authored `.agents/skills/<name>/` directories are the maintained runtime source; complete repository, copyright, and MIT license attribution lives in `.agent-workflow/README.md`.
 
 Wayfinder's effective installed body uses one coherent map-first operational model rather than layering local state rules over conflicting upstream tracker mechanics.
 It uses objective, scope, areas and relationships, unresolved-question or blocker language, ready work, readable names, and progressive resolution.
@@ -141,13 +150,18 @@ If a selected skill is unavailable or cannot run without explicit user invocatio
 
 ## Lifecycle and bootstrap boundary
 
-The public bootstrap resolves an immutable source revision and validates archive shape and resource bounds before executing package code.
+The installed CLI selects the highest stable `vX.Y.Z` release tag, resolves an immutable source revision, and downloads one repository snapshot.
+Bootstrap validates archive paths and bounds, then extracts only `agent_workflow/`, `.agent-workflow/`, and `.agents/skills/` beneath one snapshot root.
+It runs that snapshot's `agent_workflow/lifecycle.py`, which resolves manifest sources from the same root.
+Python implementation and install metadata may be packaged in the wheel; canonical framework and skill content comes from the selected snapshot.
+Older CLIs hard-coded the former nested source layout, so this structural release requires the one-time CLI reinstall documented in the [README](../README.md#one-time-reinstall-for-the-repository-layout-release).
+Subsequent ordinary framework updates use `agent-workflow update`.
 `lifecycle.py` owns the single install, update, status, and remove implementation.
 The ordinary distribution manifest is only its current source-to-target map.
 
 Install and update converge to current desired state by replacing the complete `.agent-workflow/` directory and every current curated skill directory, and by updating the managed regions in `AGENTS.md` and `CLAUDE.md`.
 Remove deletes those managed directories and regions while preserving unrelated skill directories and project-authored composite bytes.
-Lifecycle does not directly traverse, interpret, or change `.agent-wayfinder/`.
+Lifecycle does not directly traverse, interpret, or change `.project-efforts/`.
 On an unrecognized target, remove refuses current curated-name directory collisions before mutation because their ownership is not established.
 
 Lifecycle is desired-state filesystem convergence over explicitly owned surfaces.
@@ -169,7 +183,7 @@ The package is distributed through the repository-owned Python bootstrap rather 
 ## Verification boundary
 
 `verify_package.py` is a maintainer, CI, and release gate; bootstrap does not run it for consumers.
-It checks current package structure and activation-sensitive payload paths, explicit mappings, routing and skill contracts, attribution, deterministic scenarios, local documentation links, and the test suite.
+It checks current package structure and canonical framework, skill, and install-template paths, explicit mappings, routing and skill contracts, attribution, deterministic scenarios, local documentation links, and the test suite.
 
 Tests focus on observable boundaries:
 
@@ -187,7 +201,7 @@ Live-model evaluations remain opt-in evidence rather than deterministic release 
 Live source and observed behavior establish current system facts for their stated scope.
 Accepted ADRs and project documentation record project choices.
 Designated artifacts and records maintain their results.
-`.agent-wayfinder/` is the project-owned durable representation of local workflow continuity.
+`.project-efforts/` is the project-owned durable representation of local workflow continuity.
 These sources, artifacts, and records outrank summaries, private agent memory, and chat recollection.
 
 Current architectural rationale is intentionally limited to:

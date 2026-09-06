@@ -37,7 +37,7 @@ Unavailable measurements remain `null` in JSON and `unknown / unavailable` in te
 
 The current JSON shape is `token-forensics/v2`.
 Only current `<effort>/map.md`, `facts.md` and `decisions.md` ledgers, and canonical U#/E# artifact paths are classified as current Wayfinder state.
-All other `.agent-wayfinder/` paths remain visible in generic repository observations but are not classified as current state.
+All other `.project-efforts/` paths remain visible in generic repository observations but are not classified as current state.
 
 Primary schema references:
 

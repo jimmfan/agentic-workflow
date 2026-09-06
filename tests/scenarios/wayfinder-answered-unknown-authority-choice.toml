@@ -1,0 +1,123 @@
+schema_version = 1
+id = "wayfinder-answered-unknown-authority-choice"
+name = "Project decision authority answer prunes the dependent unresolved question"
+fixture = "wayfinder-authority-answer"
+request = "Resume the rollout-choice Wayfinder effort. As the responsible project owner, I change the existing rollout-strategy decision to Option B: a staged rollout. Update that same D1 boundary in place, reconcile the map's release-checklist dependency and ready work, then prune the answered U1. Preserve D7 and unrelated state. Do not create D2, the allocator-next D8, or retain the superseded choice as history; do not implement the rollout, create an ADR or ticket, or treat the empty unknowns directory as state."
+starting_state = [
+  "U1 is a current unresolved consequential question requiring project decision authority.",
+  "The unresolved rollout-strategy uncertainty recorded in U1 currently blocks the release checklist.",
+  "The effort contains unrelated project-owned state that must remain unchanged.",
+  "D1 is the existing current choice for this same boundary; D7 is unrelated.",
+]
+expect = [
+  "existing_state_reused",
+  "meaningful_repository_change",
+  "project_state_preserved",
+]
+must_not = [
+  "overwrite_project_owned_state",
+  "unnecessary_planning_artifacts",
+]
+live = true
+blind_grading = false
+preserve_paths = [
+  "README.md",
+  ".project-efforts/rollout-choice/unrelated-notes.md",
+]
+forbid_created_globs = [
+  "architecture-decisions",
+  "architecture-decisions/**",
+  "issues",
+  "issues/**",
+  ".project-efforts/*/tickets",
+  ".project-efforts/*/tickets/**",
+]
+state_must_include = [
+  ".project-efforts/rollout-choice/map.md",
+  ".project-efforts/rollout-choice/unknowns/U1-rollout-strategy.md",
+  ".project-efforts/rollout-choice/decisions.md",
+]
+state_must_not_include = [
+  ".project-efforts/rollout-choice/unrelated-notes.md",
+]
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".project-efforts/rollout-choice/unknowns/U1-rollout-strategy.md"
+
+[[assertions]]
+kind = "path_exists"
+path = ".project-efforts/rollout-choice/decisions.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/decisions.md"
+value = "Option B"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/decisions.md"
+value = "## D1 — Rollout strategy"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".project-efforts/rollout-choice/decisions.md"
+value = "## D2"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".project-efforts/rollout-choice/decisions.md"
+value = "## D8"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".project-efforts/rollout-choice/decisions.md"
+value = "Option A"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/decisions.md"
+value = "## D7 — Preserve audit evidence"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/decisions.md"
+value = "Preserve the audit evidence for every rollout."
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/decisions.md"
+value = "responsible project owner"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".project-efforts/rollout-choice/map.md"
+value = "U1"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/map.md"
+value = "Option B"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/map.md"
+value = "D1"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/map.md"
+value = "release checklist"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/rollout-choice/map.md"
+value = "ready"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "architecture-decisions"
+
+[[assertions]]
+kind = "path_not_exists"
+path = "issues"

@@ -25,7 +25,7 @@ U/E/F/D are Wayfinder's durable record types.
 Blocking is a scoped relationship between a condition and particular work, not a separate Wayfinder record type.
 Do not create blocker identifiers, files, ledgers, directories, stores, or statuses.
 
-All content below `.agent-wayfinder/` is project-owned durable data.
+All content below `.project-efforts/` is project-owned durable data.
 Wayfinder interprets or changes only the recognized current paths described below.
 All other entries are unrecognized project-owned content: their bytes remain unchanged, and they are not interpreted as Wayfinder state.
 
@@ -33,7 +33,7 @@ Wayfinder recognizes only the contract-defined paths and record forms in the lay
 Only `map.md` is required:
 
 ```text
-.agent-wayfinder/
+.project-efforts/
 └── <effort>/
     ├── map.md                    # required coordination summary
     ├── facts.md                  # optional current F# ledger
@@ -44,7 +44,7 @@ Only `map.md` is required:
         └── E<ID>-<slug>.md
 ```
 
-A safe regular `.agent-wayfinder/<effort>/map.md` is recognized as a whole and makes an effort current and resumable.
+A safe regular `.project-efforts/<effort>/map.md` is recognized as a whole and makes an effort current and resumable.
 A map-only effort is valid; optional `facts.md`, optional `decisions.md`, `unknowns/U<ID>-<slug>.md`, and `evidence/E<ID>-<slug>.md` records are created lazily when independently useful.
 Separate preservation is independently useful only when it has coordination, evaluation, retrieval, reference, or update value beyond the map.
 Without `map.md`, a directory is not a recognized resumable effort.
@@ -68,7 +68,7 @@ The map H1 is the durable human-readable effort name.
 Its directory slug is a concise, lowercase, filesystem-safe, hyphen-separated storage key derived from the objective and scope at creation, not a branch, ticket, phase, timestamp, random suffix, or chat title.
 Use only the shortest meaningful disambiguator for a genuine collision.
 
-An exact effort path must be repository-relative, remain strictly below `.agent-wayfinder/`, cross no symlink in the root, ancestors, effort, or `map.md`, and identify a regular `map.md`.
+An exact effort path must be repository-relative, remain strictly below `.project-efforts/`, cross no symlink in the root, ancestors, effort, or `map.md`, and identify a regular `map.md`.
 Reject an unsafe or invalid exact path; do not invent a replacement.
 
 Without an exact path, inspect only the smallest plausible candidate set.
