@@ -77,6 +77,8 @@ See [setuptools file selection](https://setuptools.pypa.io/en/latest/userguide/m
 The temporary repository-snapshot archive used for lifecycle commands is separate from the Python sdist and retains the canonical framework and skill resources.
 It proves that canonical framework and skill resources need not be bundled in the wheel, `evals/token_forensics/` remains outside the runtime package, and installation creates no `.project-efforts/` state.
 The local snapshot exercise is deterministic; building may need network access for build dependencies that are not already cached.
+The lockfile-drift smoke prepares a fresh cache with a successful locked run of the source snapshot, then removes a development dependency only in that disposable copy.
+An offline locked run must reject the changed inputs without executing its command or rewriting `uv.lock`; the test does not rely on registry metadata left in the maintainer's or CI runner's cache.
 
 ## Distribution-map refresh
 

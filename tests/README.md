@@ -19,6 +19,7 @@ It is intentionally outside the deterministic unittest discovery gate because re
 - `test_routing.py` owns canonical term names, routing interface syntax, and framework reference paths; ordinary instruction wording and terminology definitions are not literal test contracts.
 - `test_release_tag.py` exercises read-only validation and immutable publication/retry against disposable local repositories and remotes.
 - `test_wheel_inputs.py` checks faithful pending-source snapshot capture without building.
+- `test_snapshots.py` checks that preservation snapshots exclude root Git metadata before traversal or reads while retaining project bytes, directories, symlinks, and errors reading project files.
 
 ## Behavior harness and Wayfinder behavior
 

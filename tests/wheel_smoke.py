@@ -49,29 +49,39 @@ class BuiltWheelSmokeTests(unittest.TestCase):
             source = Path(temporary) / "source"
             copy_source_snapshot(REPOSITORY_ROOT, source)
             project = source / "pyproject.toml"
-            project.write_text(
-                project.read_text().replace('"ruff>=0.16.4"', '"ruff>=0.16.0"')
-            )
             lock = source / "uv.lock"
             before = lock.read_bytes()
+            command = [
+                "uv",
+                "run",
+                "--locked",
+                "--cache-dir",
+                str(Path(temporary) / "cache"),
+                "--python",
+                sys.executable,
+            ]
+            probe = ["python", "-c", "print('locked command ran')"]
+            # Prepare our own cache, including build metadata, rather than relying
+            # on the host cache. The unchanged lock must permit real execution.
+            baseline = subprocess.run(
+                [*command, *probe], cwd=source, capture_output=True, text=True
+            )
+            self.assertEqual(baseline.returncode, 0, baseline.stdout + baseline.stderr)
+            self.assertEqual(baseline.stdout.strip(), "locked command ran")
+            self.assertEqual(lock.read_bytes(), before)
+            # Removing a dependency changes the lock without requiring uncached
+            # registry metadata for a new requirement during the offline check.
+            project.write_text(project.read_text().replace('    "ruff>=0.16.4",\n', ""))
             result = subprocess.run(
-                [
-                    "uv",
-                    "run",
-                    "--locked",
-                    "--offline",
-                    "--python",
-                    sys.executable,
-                    "python",
-                    "-c",
-                    "pass",
-                ],
+                [*command, "--offline", *probe],
                 cwd=source,
                 capture_output=True,
                 text=True,
             )
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("lockfile", result.stderr.lower())
+            self.assertIn("--locked", result.stderr)
+            self.assertNotIn("locked command ran", result.stdout)
             self.assertEqual(lock.read_bytes(), before)
 
     def test_installed_cli_runs_local_archive_against_a_plain_project(self) -> None:
