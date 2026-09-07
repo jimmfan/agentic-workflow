@@ -9,9 +9,6 @@ on:
 permissions:
   contents: read
 
-env:
-  UV_BUILD_CONSTRAINT: ${{ github.workspace }}/.github/build-constraints.txt
-
 jobs:
   deterministic-pre-merge-gate:
     name: Deterministic / Python 3.11 / Ubuntu

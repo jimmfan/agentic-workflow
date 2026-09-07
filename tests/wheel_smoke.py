@@ -13,9 +13,6 @@ from pathlib import Path
 from _test_support import REPOSITORY_ROOT
 
 
-BUILD_CONSTRAINTS = REPOSITORY_ROOT / ".github/build-constraints.txt"
-
-
 def copy_source_snapshot(repository: Path, destination: Path) -> None:
     """Copy current tracked and unignored source bytes, including pending dot-files."""
     paths = subprocess.run(
@@ -44,23 +41,6 @@ def copy_source_snapshot(repository: Path, destination: Path) -> None:
             target.symlink_to(os.readlink(source))
         else:
             shutil.copy2(source, target)
-
-
-def build_command(
-    source: Path, output: Path, kind: str, constraints: Path
-) -> list[str]:
-    return [
-        "uv",
-        "build",
-        "--" + kind,
-        "--python",
-        sys.executable,
-        "--build-constraint",
-        str(constraints),
-        "--out-dir",
-        str(output),
-        str(source),
-    ]
 
 
 class BuiltWheelSmokeTests(unittest.TestCase):
@@ -113,35 +93,19 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                     (REPOSITORY_ROOT / relative).read_bytes(),
                 )
             wheelhouse = root / "wheelhouse"
-            constraints = source / ".github/build-constraints.txt"
-            invalid = root / "invalid-constraints.txt"
-            invalid.write_text("setuptools==0\n")
-            rejected = subprocess.run(
-                build_command(source, wheelhouse, "sdist", invalid),
+            run(
+                "uv",
+                "build",
+                "--sdist",
+                "--python",
+                sys.executable,
+                "--out-dir",
+                wheelhouse,
+                source,
                 cwd=root,
-                capture_output=True,
-                text=True,
             )
-            self.assertNotEqual(rejected.returncode, 0)
-            self.assertIn("setuptools", rejected.stderr)
-            run(*build_command(source, wheelhouse, "sdist", constraints), cwd=root)
             sdist = next(wheelhouse.glob("agent_workflow-*.tar.gz"))
             with tarfile.open(sdist, "r:gz") as built:
-                forbidden = {
-                    ".agent-workflow",
-                    ".agents",
-                    ".project-efforts",
-                    "tests",
-                    "evals",
-                }
-                self.assertFalse(
-                    [
-                        member.name
-                        for member in built.getmembers()
-                        if len(Path(member.name).parts) > 1
-                        and Path(member.name).parts[1] in forbidden
-                    ]
-                )
                 versions = [
                     member for member in built if Path(member.name).name == "VERSION"
                 ]
@@ -149,15 +113,25 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                 self.assertEqual(len(Path(versions[0].name).parts), 2)
                 with built.extractfile(versions[0]) as version:
                     self.assertEqual(version.read(), (source / "VERSION").read_bytes())
-            rejected = subprocess.run(
-                build_command(sdist, wheelhouse, "wheel", invalid),
+                archive_root = Path(versions[0].name).parent
+                for relative in ("pyproject.toml", "README.md", "LICENSE"):
+                    with built.extractfile(
+                        (archive_root / relative).as_posix()
+                    ) as member:
+                        self.assertEqual(
+                            member.read(), (source / relative).read_bytes()
+                        )
+            run(
+                "uv",
+                "build",
+                "--wheel",
+                "--python",
+                sys.executable,
+                "--out-dir",
+                wheelhouse,
+                sdist,
                 cwd=root,
-                capture_output=True,
-                text=True,
             )
-            self.assertNotEqual(rejected.returncode, 0)
-            self.assertIn("setuptools", rejected.stderr)
-            run(*build_command(sdist, wheelhouse, "wheel", constraints), cwd=root)
             wheel = next(wheelhouse.glob("agent_workflow-*.whl"))
             virtual_environment = root / "venv"
             run("uv", "venv", "--python", sys.executable, virtual_environment)
@@ -226,6 +200,15 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                 ).decode()
                 self.assertIn(
                     "Version: " + (source / "VERSION").read_text().strip(), metadata
+                )
+                license_files = [
+                    name
+                    for name in built.namelist()
+                    if ".dist-info/" in name and Path(name).name == "LICENSE"
+                ]
+                self.assertEqual(len(license_files), 1)
+                self.assertEqual(
+                    built.read(license_files[0]), (source / "LICENSE").read_bytes()
                 )
             archive = root / "repository-snapshot.tar.gz"
             with tarfile.open(archive, "w:gz") as built:

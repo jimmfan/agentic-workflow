@@ -255,7 +255,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("fetch-depth: 0", self.verify_job)
         self.assertNotIn("pull_request_target", self.workflow)
 
-    def test_ci_pins_actions_and_enforces_the_runtime_and_build_constraints(self):
+    def test_ci_pins_actions_and_enforces_the_project_lockfile(self):
         import re
 
         uses = re.findall(r"uses: (.+)", self.workflow)
@@ -263,7 +263,6 @@ class ReleaseWorkflowTests(unittest.TestCase):
         for action in uses:
             self.assertRegex(action, r"@[0-9a-f]{40} # v[0-9]+\.[0-9]+\.[0-9]+$")
         self.assertNotRegex(self.workflow, r"uv run (?!\-\-locked)")
-        self.assertIn("UV_BUILD_CONSTRAINT:", self.workflow)
         self.assertIn('python-version: "3.14"', self.workflow)
         self.assertIn("runs-on: macos-latest", self.workflow)
 

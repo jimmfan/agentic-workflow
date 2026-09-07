@@ -1,6 +1,0 @@
-# Bootstrap-only distribution; runtime resources come from the selected snapshot.
-prune .agent-workflow
-prune .agents
-prune .project-efforts
-prune tests
-prune evals

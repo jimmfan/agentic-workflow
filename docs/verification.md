@@ -39,7 +39,6 @@ Run from the source repository root:
 Lifecycle tests use disposable consumers under the [source-checkout ownership rule](../AGENTS.md#source-checkout-ownership).
 
 ```bash
-export UV_BUILD_CONSTRAINT="$PWD/.github/build-constraints.txt"
 uv run --locked ruff format --check .
 uv run --locked ruff check .
 uv run --locked python agent_workflow/verify_package.py --tests
@@ -70,9 +69,12 @@ OK: Agent Workflow package verification passed.
 
 The `evals/` unit tests are a separate deterministic, network-free step because evaluation tooling is not part of the distributed package.
 The wheel smoke test copies current tracked and unignored source, including pending edits and canonical dot-directories, while excluding temporary environments and build outputs.
-It builds an sdist and then a wheel from that archive, checks the single root `VERSION` and bootstrap-only distribution contents, installs into an isolated environment, and exercises all four commands outside checkout imports against local snapshot resources.
-`MANIFEST.in` excludes runtime resources, project efforts, tests, and evaluations from the sdist; the wheel contains only the explicit Python package and install metadata.
-Both build steps receive the checked-in build constraints explicitly, with negative controls proving incompatible setuptools constraints reject each build.
+It builds an sdist and then a wheel from that archive, checks the root `VERSION`, required build inputs, licensing material, and intended wheel contents, installs into an isolated environment, and exercises all four commands outside checkout imports against local snapshot resources.
+The explicit `packages = ["agent_workflow"]` selects the Python package without automatic discovery; `include-package-data = false` and the explicit `install/*` package-data pattern select its install resources.
+Setuptools may include ordinary tests or documentation in the sdist without installing them in the wheel; source-archive minimality is not a requirement.
+The wheel contains only the intended Python package and install resources plus distribution metadata and licensing material.
+See [setuptools file selection](https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html) and [package data](https://setuptools.pypa.io/en/latest/userguide/datafiles.html) for these distinct boundaries.
+The temporary repository-snapshot archive used for lifecycle commands is separate from the Python sdist and retains the canonical framework and skill resources.
 It proves that canonical framework and skill resources need not be bundled in the wheel, `evals/token_forensics/` remains outside the runtime package, and installation creates no `.project-efforts/` state.
 The local snapshot exercise is deterministic; building may need network access for build dependencies that are not already cached.
 
@@ -155,11 +157,13 @@ See [Behavioral testing](behavioral-testing.md) for behavioral scenario evidence
 ## Dependency and action updates
 
 `uv run --locked` rejects unexpected lockfile drift.
-The separate [build constraints](../.github/build-constraints.txt) constrain isolated PEP 517 dependencies through `UV_BUILD_CONSTRAINT` in CI and explicit `--build-constraint` arguments in wheel smoke.
-Runtime locking alone does not constrain those builds; see [uv build constraints](https://docs.astral.sh/uv/concepts/projects/build/#build-constraints).
-The setuptools backend and Python 3.11 minimum remain unchanged.
+The isolated builds use `setuptools.build_meta` with the existing `setuptools>=68` build requirement; the backend is not pinned separately.
+The committed project lockfile and isolated build-dependency selection solve different problems: build-tool selection can change over time, so these are not fully locked or bit-for-bit reproducible builds.
+Verify clean builds without inherited constraint overrides when checking this boundary.
+See [uv builds](https://docs.astral.sh/uv/concepts/projects/build/) and [setuptools build requirements](https://setuptools.pypa.io/en/latest/userguide/dependency_management.html#build-system-requirement).
+The Python 3.11 minimum remains unchanged.
 
-For a dependency update, change the constraint or declared development requirement intentionally, refresh `uv.lock` only when its inputs changed, inspect the diff, and run the commands above.
+For a dependency update, change the declared requirement intentionally, refresh `uv.lock` only when its inputs changed, inspect the diff, and run the commands above.
 For an action update, inspect the official release notes, resolve the chosen release with `git ls-remote <official-repository> refs/tags/<version>` (and its peeled ref for an annotated tag), and update every occurrence of the full SHA and release comment together.
 Do not follow a moving major tag or make an unrelated major upgrade.
 GitHub recommends [full commit SHA pins](https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions).

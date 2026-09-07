@@ -1,2 +1,0 @@
-# Isolated PEP 517 builds; see docs/verification.md for the update procedure.
-setuptools==82.0.1
