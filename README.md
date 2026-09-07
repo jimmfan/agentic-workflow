@@ -168,27 +168,14 @@ Exact Wayfinder representation and reconciliation behavior is defined in the ins
 
 Example text to use Wayfinder:
 ```text
-Project/effort plan path (if available):
+Effort or plan (optional: describe the work, paste a plan, or attach/reference a file):
 
-Use the installed Agent Workflow and explicitly start Wayfinder for this
-repository's current development effort.
+Use the installed Agent Workflow and explicitly use Wayfinder to orient this repository's development effort for continued work across sessions.
 
-First inspect any project/effort plan identified above, the project instructions,
-relevant accepted architecture decisions and documentation, repository structure,
-and the source and tests relevant to the effort.
+Establish or update the effort's Wayfinder state.
+Do not implement product changes during this pass.
 
-Use an available project/effort plan to understand the intended objective, scope,
-dependencies, sequencing, and remaining work where applicable. Reference the plan
-from Wayfinder when useful rather than copying it.
-
-Create a lightweight `.project-efforts/<stable-effort-name>/map.md` that will
-help developers and future agents resume the work without depending on this chat.
-Do not implement product changes during this first pass.
-
-If the current effort cannot be inferred confidently, ask only the minimum
-concrete scope questions needed before creating the Wayfinder state. When
-finished, summarize what you created, what remains uncertain, and the best next
-prompt for continuing the work.
+When finished, summarize what you created or updated, what remains uncertain, and the recommended next prompt for continuing the work.
 ```
 
 ## Project ownership
