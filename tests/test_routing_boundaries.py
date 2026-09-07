@@ -15,7 +15,9 @@ class RoutingBoundaryTests(unittest.TestCase):
         return next(item for item in behavior.load_scenarios() if item.id == identifier)
 
     def failures(self, evidence: behavior.RunEvidence) -> list[str]:
-        return [item.name for item in behavior.evaluate(evidence) if not item.passed]
+        return [
+            item.name for item in behavior.evaluate(evidence) if item.passed is False
+        ]
 
     def test_factual_lookup_requires_sources_without_discovery_or_decision_artifacts(
         self,
@@ -26,7 +28,7 @@ class RoutingBoundaryTests(unittest.TestCase):
             before = behavior.snapshot(workspace)
             (workspace / "runtime-policy.md").write_text(
                 "# Python runtime policy\n\n"
-                "Fixture release information: https://www.python.org/\n"
+                "Fixture release information: Python 3.14, bugfix support; https://www.python.org/\n"
             )
             completed = subprocess.run(
                 [sys.executable, "verify.py"], cwd=workspace, capture_output=True

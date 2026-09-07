@@ -88,6 +88,14 @@ Explicitly say when the action has taken effect or is no longer needed.
 
 These source-repository instructions apply specifically to agents modifying the Agent Workflow source repository.
 
+## Source-checkout ownership
+
+`.agent-workflow/` and the curated `.agents/skills/` directories are authored source in this repository.
+In consumers, those same paths are replaceable installed copies.
+Develop the authored files through source edits and Git.
+Exercise install, update, and remove only against explicitly disposable consumer directories, never this authoring checkout.
+This maintainer rule is documentation policy, not an installer guard, and must stay outside distributed consumer instructions.
+
 ## Project language
 
 Read `.agent-workflow/terminology.md` before changing routing, Wayfinder, direct skill distribution, ownership, or framework-lifecycle concepts in a way that uses or changes canonical Agent Workflow language.

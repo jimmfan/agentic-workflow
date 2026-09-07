@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+from importlib.metadata import PackageNotFoundError, version
 import re
 import stat
 import subprocess
@@ -122,8 +123,14 @@ def resolve_revision(ref: str) -> str:
 
 def select_source(ref: str | None, archive_url: str | None) -> str:
     if archive_url:
+        print(
+            "Framework ref: unavailable (archive override); resolved SHA: unavailable",
+            flush=True,
+        )
         return archive_url
-    revision = resolve_revision(ref if ref is not None else latest_stable_ref())
+    selected_ref = ref if ref is not None else latest_stable_ref()
+    revision = resolve_revision(selected_ref)
+    print(f"Framework ref: {selected_ref}; resolved SHA: {revision}", flush=True)
     return f"https://codeload.github.com/{REPOSITORY}/tar.gz/{revision}"
 
 
@@ -276,6 +283,9 @@ def validate_runtime_package(snapshot: Path) -> None:
 
 def run_package(snapshot: Path, action: str, target: Path, dry_run: bool) -> int:
     validate_runtime_package(snapshot)
+    print(
+        f"Framework release: {(snapshot / 'VERSION').read_text().strip()}", flush=True
+    )
     lifecycle = snapshot / "agent_workflow" / "lifecycle.py"
     command = [
         sys.executable,
@@ -304,8 +314,18 @@ def default_target() -> Path:
     return Path(discovered.stdout.strip()).absolute()
 
 
+def cli_version() -> str:
+    try:
+        return version("agent-workflow")
+    except PackageNotFoundError:
+        return "unavailable (uninstalled source execution)"
+
+
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--version", action="version", version=f"agent-workflow CLI {cli_version()}"
+    )
     parser.add_argument(
         "action",
         nargs="?",
@@ -338,6 +358,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
     if target == Path(target.anchor):
         raise BootstrapError("refusing to operate on a filesystem root")
+    print(f"CLI version: {cli_version()}", flush=True)
+    print(f"Target directory: {target}", flush=True)
     archive_url = select_source(args.ref, args.archive_url)
     archive = request_bytes(archive_url)
     with tempfile.TemporaryDirectory(prefix="agent-workflow-") as temporary:

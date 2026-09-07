@@ -1,14 +1,54 @@
 from __future__ import annotations
 
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 import io
+from copy import deepcopy
 import json
+from pathlib import Path
+import shutil
+import tempfile
 import unittest
+from unittest.mock import patch
+import subprocess
+import sys
 
 from evals import routing_smoke
 
 
 class RoutingSmokeTests(unittest.TestCase):
+    def test_policy_is_the_disposable_consumer_policy_not_maintainer_instructions(self):
+        case = routing_smoke.load_cases()["direct"]
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            consumer = root / "consumer"
+            consumer.mkdir()
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(routing_smoke.REPOSITORY_ROOT / "agent_workflow/lifecycle.py"),
+                    "install",
+                    str(consumer),
+                ],
+                check=True,
+                capture_output=True,
+            )
+            prompt = routing_smoke.build_prompt(case, loaded={}, decisions=[])
+            self.assertEqual(
+                routing_smoke.consumer_policy(), (consumer / "AGENTS.md").read_text()
+            )
+            self.assertIn((consumer / "AGENTS.md").read_text().strip(), prompt)
+            self.assertNotIn("# Agent Workflow source repository", prompt)
+            source = root / "source"
+            shutil.copytree(
+                routing_smoke.REPOSITORY_ROOT / "agent_workflow/install",
+                source / "agent_workflow/install",
+            )
+            (source / "AGENTS.md").write_text("MAINTAINER ONLY EDIT")
+            with patch.object(routing_smoke, "REPOSITORY_ROOT", source):
+                self.assertEqual(
+                    prompt, routing_smoke.build_prompt(case, loaded={}, decisions=[])
+                )
+
     def test_model_visible_catalog_exposes_only_names_and_byte_sizes(self) -> None:
         case = routing_smoke.load_cases()["direct"]
         catalog = routing_smoke.resource_catalog(case)
@@ -157,36 +197,6 @@ class RoutingSmokeTests(unittest.TestCase):
         failed = {check["name"] for check in report["checks"] if not check["passed"]}
         self.assertEqual(failed, {"first-resources", "forbidden-resources"})
 
-    def test_comparison_reports_routing_interpretation_agreement(self) -> None:
-        def report(model: str) -> dict[str, object]:
-            return {
-                "model": model,
-                "host": "claude" if model == "claude" else "codex",
-                "cases": [
-                    {
-                        "case": "direct",
-                        "passed": True,
-                        "final_decision": {
-                            "initial_route": "direct",
-                            "current_route": "direct",
-                        },
-                    },
-                    {
-                        "case": "evolving",
-                        "passed": True,
-                        "final_decision": {
-                            "initial_route": "direct",
-                            "current_route": "wayfinder",
-                        },
-                    },
-                ],
-            }
-
-        comparison = routing_smoke.compare_reports([report("codex"), report("claude")])
-
-        self.assertTrue(comparison["interpretation_agreement"])
-        self.assertNotIn("skill_outcome_agreement", comparison)
-
     def test_route_labels_and_transition_are_unchanged(self) -> None:
         self.assertEqual(
             routing_smoke.ROUTES,
@@ -205,14 +215,15 @@ class RoutingSmokeTests(unittest.TestCase):
             contacted = True
             raise AssertionError("adapter must not be called after budget failure")
 
-        with self.assertRaisesRegex(routing_smoke.SmokeError, "prompt budget"):
-            routing_smoke.run_case(
-                routing_smoke.load_cases()["direct"],
-                host="codex",
-                model="fake-codex",
-                invoke=invoke,
-                max_prompt_bytes=1,
-            )
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["direct"],
+            host="codex",
+            model="fake-codex",
+            invoke=invoke,
+            max_prompt_bytes=1,
+        )
+        self.assertEqual(report["verdict"], "INCONCLUSIVE")
+        self.assertIn("prompt budget", report["error"])
         self.assertFalse(contacted)
 
     def test_reports_must_be_written_outside_the_repository(self) -> None:
@@ -241,24 +252,516 @@ class RoutingSmokeTests(unittest.TestCase):
             routing_smoke.SmokeError, "reached the \\$2.00 limit"
         ):
             budget.add({"input_tokens": 400_000, "output_tokens": 0})
+            budget.check()
 
-    def test_comparison_fails_when_matching_models_both_miss_contract(self) -> None:
-        failed = {
-            "model": "failed",
-            "host": "codex",
-            "cases": [
-                {
-                    "case": "direct",
-                    "passed": False,
-                    "final_decision": {
-                        "initial_route": "direct",
-                        "current_route": "direct",
-                    },
-                }
-            ],
+
+class RoutingReportEvidenceTests(unittest.TestCase):
+    @staticmethod
+    def decision(resource=None, route="direct"):
+        return {
+            "status": "request_resources" if resource else "complete",
+            "requested_resources": [resource] if resource else [],
+            "initial_route": "direct",
+            "current_route": route,
+            "wayfinder_assessment": route == "wayfinder",
+            "wayfinder_selected": route == "wayfinder",
+            "summary": "Fixture decision.",
         }
-        comparison = routing_smoke.compare_reports([failed, failed])
+
+    def run_report(self, *arguments, decisions=None, usage=None, expected_exit=0):
+        responses = iter(
+            decisions
+            if decisions is not None
+            else [
+                self.decision("note.txt"),
+                self.decision(),
+                self.decision("task.md"),
+                self.decision(route="wayfinder"),
+            ]
+        )
+        usage = (
+            usage
+            if usage is not None
+            else {
+                "input_tokens": 1000,
+                "cached_input_tokens": 200,
+                "output_tokens": 100,
+            }
+        )
+
+        def external_command(command, **kwargs):
+            if command[0] == "git":
+                stdout = "038f7249b7d437317323ab8f0c96d568f1b7af40\n"
+            elif command == [str(executable.resolve()), "--version"]:
+                stdout = "fixture-cli 1.0\n"
+            else:
+                decision = next(responses)
+                if isinstance(decision, Exception):
+                    raise decision
+                if "--output-last-message" in command:
+                    output = Path(command[command.index("--output-last-message") + 1])
+                    output.write_text(json.dumps(decision))
+                    stdout = json.dumps({"type": "turn.completed", "usage": usage})
+                else:
+                    stdout = json.dumps({"structured_output": decision, "usage": usage})
+            return subprocess.CompletedProcess(command, 0, stdout, "")
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            executable = root / "fixture-cli"
+            executable.touch()
+            (root / "auth.json").write_text("{}")
+            output = root / "report.json"
+            with (
+                patch.dict("os.environ", {"CODEX_HOME": temporary}),
+                patch.object(
+                    routing_smoke.subprocess, "run", side_effect=external_command
+                ),
+                redirect_stderr(io.StringIO()),
+            ):
+                code = routing_smoke.main(
+                    [
+                        "run",
+                        "--adapter",
+                        "codex",
+                        "--model",
+                        "fixture-large",
+                        "--executable",
+                        str(executable),
+                        "--max-estimated-cost-usd",
+                        "2",
+                        "--input-price-per-million",
+                        "5",
+                        "--cached-input-price-per-million",
+                        "0.5",
+                        "--output-price-per-million",
+                        "30",
+                        "--output",
+                        str(output),
+                        *arguments,
+                    ]
+                )
+            self.assertEqual(code, expected_exit)
+            return json.loads(output.read_text())
+
+    def test_comparison_reports_agreement_with_declared_models_and_different_prices(
+        self,
+    ):
+        large = self.run_report()
+        small = self.run_report(
+            "--model",
+            "fixture-small",
+            "--input-price-per-million",
+            "1",
+            "--cached-input-price-per-million",
+            "0.1",
+            "--output-price-per-million",
+            "2",
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            paths = [Path(temporary) / name for name in ("large.json", "small.json")]
+            for path, report in zip(paths, [large, small]):
+                path.write_text(json.dumps(report))
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = routing_smoke.main(
+                    ["compare", *map(str, paths), "--vary", "model"]
+                )
+            comparison = json.loads(output.getvalue())
+        self.assertEqual(code, 0, comparison)
+        self.assertTrue(comparison["comparable"])
+        self.assertTrue(comparison["interpretation_agreement"])
+        self.assertNotIn("skill_outcome_agreement", comparison)
+        self.assertEqual(large["provenance"]["limits"], small["provenance"]["limits"])
+        self.assertEqual(
+            small["provenance"]["token_prices"],
+            {
+                "input_price_per_million": 1.0,
+                "cached_input_price_per_million": 0.1,
+                "output_price_per_million": 2.0,
+            },
+        )
+        self.assertEqual(large["estimated_cost_usd"], 0.0284)
+        self.assertEqual(small["estimated_cost_usd"], 0.00408)
+
+    def test_undeclared_model_or_changed_execution_limit_blocks_comparison(self):
+        original = self.run_report()
+        changed_model = self.run_report("--model", "fixture-small")
+        comparison = routing_smoke.compare_reports([original, changed_model])
+        self.assertFalse(comparison["comparable"])
+        self.assertEqual(comparison["mismatches"], ["model"])
+        self.assertIsNone(comparison["interpretation_agreement"])
+        for flag, value in (
+            ("--max-rounds", "3"),
+            ("--max-prompt-bytes", "100000"),
+            ("--timeout-seconds", "120"),
+            ("--max-estimated-cost-usd", "1"),
+        ):
+            with self.subTest(limit=flag):
+                changed_limit = self.run_report("--model", "fixture-small", flag, value)
+                comparison = routing_smoke.compare_reports(
+                    [original, changed_limit],
+                    variables=["model"],
+                )
+                self.assertFalse(comparison["comparable"])
+                self.assertEqual(comparison["mismatches"], ["limits"])
+                self.assertIsNone(comparison["interpretation_agreement"])
+
+    def test_interrupted_or_incomplete_reports_cannot_produce_complete_run_agreement(
+        self,
+    ):
+        completed = self.run_report()
+        for price, input_tokens, incomplete_cases in ((1000, 2000, 2), (500, 1000, 0)):
+            with self.subTest(
+                budget_reached_after="first round"
+                if incomplete_cases
+                else "final response"
+            ):
+                interrupted = self.run_report(
+                    "--input-price-per-million",
+                    str(price),
+                    usage={
+                        "input_tokens": input_tokens,
+                        "cached_input_tokens": 0,
+                        "output_tokens": 0,
+                    },
+                    expected_exit=2,
+                )
+                comparison = routing_smoke.compare_reports([completed, interrupted])
+                self.assertTrue(comparison["comparable"])
+                self.assertFalse(comparison["interpretation_agreement"])
+                self.assertEqual(interrupted["execution_status"], "interrupted")
+                self.assertEqual(interrupted["incomplete_cases"], incomplete_cases)
+                self.assertEqual(interrupted["estimated_cost_usd"], 2.0)
+                self.assertIsNotNone(interrupted["cases"][-1]["rounds"][-1]["decision"])
+
+        incomplete = self.run_report(
+            decisions=[
+                self.decision("note.txt"),
+                self.decision(),
+                subprocess.TimeoutExpired("fixture-cli", 180),
+            ],
+            expected_exit=2,
+        )
+        comparison = routing_smoke.compare_reports([completed, incomplete])
+        self.assertTrue(comparison["comparable"])
         self.assertFalse(comparison["interpretation_agreement"])
+        self.assertEqual(incomplete["incomplete_cases"], 1)
+        self.assertEqual(incomplete["cases"][0]["verdict"], "PASS")
+        self.assertEqual(incomplete["cases"][1]["verdict"], "INCONCLUSIVE")
+
+    def test_comparison_fails_when_matching_models_both_miss_contract(self):
+        failed = self.run_report(
+            decisions=[
+                self.decision(".agent-workflow/routing.md"),
+                self.decision(),
+                self.decision("task.md"),
+                self.decision(route="wayfinder"),
+            ],
+            expected_exit=1,
+        )
+        comparison = routing_smoke.compare_reports([failed, failed])
+        self.assertTrue(comparison["comparable"])
+        self.assertIs(comparison["interpretation_agreement"], False)
+
+    def test_success_then_timeout_persists_both_cases_and_current_prompt(self):
+        responses = iter(
+            [
+                (self.decision("note.txt"), {}),
+                (self.decision(), {}),
+                subprocess.TimeoutExpired("fake", 1, output="partial"),
+            ]
+        )
+
+        def invoke(prompt):
+            result = next(responses)
+            if isinstance(result, Exception):
+                raise result
+            return result
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            patch.object(routing_smoke, "codex_invoke", return_value=invoke),
+        ):
+            output = Path(temporary) / "report.json"
+            code = routing_smoke.main(
+                [
+                    "run",
+                    "--adapter",
+                    "codex",
+                    "--model",
+                    "fake",
+                    "--executable",
+                    "unavailable-fake",
+                    "--max-estimated-cost-usd",
+                    "1",
+                    "--input-price-per-million",
+                    "1",
+                    "--cached-input-price-per-million",
+                    "1",
+                    "--output-price-per-million",
+                    "1",
+                    "--output",
+                    str(output),
+                ]
+            )
+            report = json.loads(output.read_text())
+        self.assertEqual(code, 2)
+        self.assertEqual(report["cases"][0]["verdict"], "PASS")
+        self.assertEqual(report["cases"][1]["verdict"], "INCONCLUSIVE")
+        self.assertEqual(report["incomplete_cases"], 1)
+        self.assertEqual(report["observed_failures"], 0)
+        self.assertEqual(report["cases"][1]["rounds"][0]["partial_stdout"], "partial")
+        self.assertIn("prompt", report["cases"][1]["rounds"][0])
+
+    def test_received_response_crossing_cost_limit_is_retained(self):
+        budget = routing_smoke.CostBudget(0.01, 1, 1, 1)
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["direct"],
+            host="fake",
+            model="fake",
+            invoke=lambda prompt: (
+                self.decision("note.txt"),
+                {"input_tokens": 20_000, "output_tokens": 0},
+            ),
+            cost_budget=budget,
+        )
+        self.assertEqual(len(report["rounds"]), 1)
+        self.assertEqual(report["rounds"][0]["decision"], self.decision("note.txt"))
+        self.assertEqual(report["transmission"]["estimated_cost_usd"], 0.02)
+        self.assertEqual(report["execution_status"], "interrupted")
+        self.assertEqual(report["verdict"], "INCONCLUSIVE")
+
+    def test_observed_failure_survives_a_later_adapter_exception(self):
+        responses = iter(
+            [(self.decision(".agent-workflow/routing.md"), {}), OSError("offline")]
+        )
+
+        def invoke(prompt):
+            result = next(responses)
+            if isinstance(result, Exception):
+                raise result
+            return result
+
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["direct"],
+            host="fake",
+            model="fake",
+            invoke=invoke,
+        )
+        self.assertEqual(report["verdict"], "FAIL")
+        self.assertFalse(report["complete"])
+
+    def test_premature_wayfinder_selection_survives_a_later_timeout(self):
+        responses = iter(
+            [
+                (self.decision("task.md", route="wayfinder"), {}),
+                subprocess.TimeoutExpired("fake", 1),
+            ]
+        )
+
+        def invoke(prompt):
+            result = next(responses)
+            if isinstance(result, Exception):
+                raise result
+            return result
+
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["evolving"],
+            host="fake",
+            model="fake",
+            invoke=invoke,
+        )
+        self.assertEqual(report["verdict"], "FAIL")
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["execution_status"], "interrupted")
+
+    def test_codex_timeout_preserves_received_response_and_usage(self):
+        decision = self.decision("task.md", route="wayfinder")
+        usage = {"input_tokens": 20, "output_tokens": 5}
+
+        def timeout(command, **kwargs):
+            output = Path(command[command.index("--output-last-message") + 1])
+            output.write_text(json.dumps(decision))
+            raise subprocess.TimeoutExpired(
+                command,
+                1,
+                output=json.dumps({"type": "turn.completed", "usage": usage}).encode(),
+                stderr=b"partial diagnostics",
+            )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            Path(temporary, "auth.json").write_text("{}")
+            with (
+                patch.dict("os.environ", {"CODEX_HOME": temporary}),
+                patch.object(routing_smoke, "executable_path", return_value="fake"),
+                patch.object(routing_smoke.subprocess, "run", side_effect=timeout),
+            ):
+                invoke = routing_smoke.codex_invoke(
+                    model="fake",
+                    executable="fake",
+                    timeout_seconds=1,
+                )
+                report = routing_smoke.run_case(
+                    routing_smoke.load_cases()["evolving"],
+                    host="codex",
+                    model="fake",
+                    invoke=invoke,
+                    cost_budget=routing_smoke.CostBudget(1, 1, 1, 1),
+                )
+        self.assertEqual(report["rounds"][0]["decision"], decision)
+        self.assertEqual(report["rounds"][0]["usage"], usage)
+        self.assertEqual(
+            report["rounds"][0]["adapter_evidence"]["stderr"], "partial diagnostics"
+        )
+        self.assertEqual(report["transmission"]["model_usage"], usage)
+        self.assertEqual(report["transmission"]["estimated_cost_usd"], 0.000025)
+        self.assertEqual(report["execution_status"], "interrupted")
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["verdict"], "FAIL")
+
+    def test_invalid_received_response_and_adapter_output_are_retained(self):
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["direct"],
+            host="fake",
+            model="fake",
+            invoke=lambda prompt: ({"invalid": True}, {}),
+        )
+        self.assertEqual(report["rounds"][0]["decision"], {"invalid": True})
+        self.assertEqual(report["verdict"], "INCONCLUSIVE")
+
+        def fail(prompt):
+            raise routing_smoke.SmokeError(
+                "bad envelope",
+                evidence={"stdout": "received response", "usage": {"input_tokens": 5}},
+            )
+
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["direct"], host="fake", model="fake", invoke=fail
+        )
+        self.assertEqual(
+            report["rounds"][0]["adapter_evidence"]["stdout"], "received response"
+        )
+
+        def invalid_response(prompt):
+            raise routing_smoke.SmokeError(
+                "timeout with invalid structured response",
+                evidence={"response": '{"invalid": true}', "usage": {}},
+            )
+
+        report = routing_smoke.run_case(
+            routing_smoke.load_cases()["direct"],
+            host="fake",
+            model="fake",
+            invoke=invalid_response,
+        )
+        self.assertEqual(report["rounds"][0]["decision"], {"invalid": True})
+        self.assertIn("evidence_error", report["rounds"][0])
+        self.assertEqual(report["execution_status"], "interrupted")
+        self.assertEqual(report["verdict"], "INCONCLUSIVE")
+
+    def test_comparison_requires_provenance_and_declared_variables(self):
+        report = self.run_report()
+        changed_values = {
+            "model": "fixture-small",
+            "effort": "medium",
+            "adapter": {"identity": "codex", "version": "fixture-cli 2.0"},
+            "limits": report["provenance"]["limits"] | {"max_rounds": 3},
+            "harness_sha256": "0" * 64,
+            "policy_sha256": "0" * 64,
+            "cases_sha256": "0" * 64,
+        }
+        for field in routing_smoke.COMPARISON_FIELDS:
+            changed = deepcopy(report)
+            changed["provenance"][field] = changed_values[field]
+            comparison = routing_smoke.compare_reports([report, changed])
+            self.assertFalse(comparison["comparable"], field)
+            self.assertIsNone(comparison["interpretation_agreement"])
+            self.assertIn(field, comparison["mismatches"])
+            if field in routing_smoke.VARIABLE_FIELDS:
+                self.assertTrue(
+                    routing_smoke.compare_reports([report, changed], variables=[field])[
+                        "comparable"
+                    ]
+                )
+        legacy = routing_smoke.compare_reports([{"cases": []}, {"cases": []}])
+        self.assertTrue(legacy["unavailable"])
+        self.assertIsNone(legacy["interpretation_agreement"])
+
+    def test_missing_required_provenance_remains_unavailable(self):
+        report = self.run_report()
+        for field in routing_smoke.COMPARISON_FIELDS:
+            with self.subTest(missing=field):
+                missing = deepcopy(report)
+                del missing["provenance"][field]
+                comparison = routing_smoke.compare_reports([report, missing])
+                self.assertFalse(comparison["comparable"])
+                self.assertIn(field, comparison["unavailable"])
+                self.assertIsNone(comparison["interpretation_agreement"])
+        missing_version = deepcopy(report)
+        missing_version["provenance"]["adapter"]["version"] = None
+        comparison = routing_smoke.compare_reports(
+            [report, missing_version], variables=["adapter"]
+        )
+        self.assertFalse(comparison["comparable"])
+        self.assertEqual(comparison["unavailable"], ["adapter"])
+        self.assertIsNone(comparison["interpretation_agreement"])
+
+        claude = self.run_report("--adapter", "claude", "--model", "fixture-claude")
+        self.assertIsNone(claude["provenance"]["effort"])
+        self.assertEqual(
+            claude["provenance"]["adapter"],
+            {"identity": "claude", "version": "fixture-cli 1.0"},
+        )
+        comparison = routing_smoke.compare_reports(
+            [report, claude],
+            variables=["model", "adapter", "effort"],
+        )
+        self.assertFalse(comparison["comparable"])
+        self.assertEqual(comparison["unavailable"], ["effort"])
+        self.assertIsNone(comparison["interpretation_agreement"])
+
+    def test_fingerprints_cover_pending_policy_case_and_harness_inputs(self):
+        args = routing_smoke.build_parser().parse_args(
+            [
+                "run",
+                "--adapter",
+                "codex",
+                "--model",
+                "fake",
+                "--executable",
+                "unavailable-fake",
+                "--max-estimated-cost-usd",
+                "1",
+                "--input-price-per-million",
+                "1",
+                "--cached-input-price-per-million",
+                "1",
+                "--output-price-per-million",
+                "1",
+            ]
+        )
+        inputs = routing_smoke.capture_inputs(routing_smoke.load_cases())
+        original = routing_smoke.provenance(args, inputs)
+        modified = deepcopy(inputs)
+        modified["policy"] += "Pending change"
+        self.assertNotEqual(
+            original["policy_sha256"],
+            routing_smoke.provenance(args, modified)["policy_sha256"],
+        )
+        modified = deepcopy(inputs)
+        modified["resources"]["direct"][".agent-workflow/routing.md"] += " pending"
+        self.assertNotEqual(
+            original["policy_sha256"],
+            routing_smoke.provenance(args, modified)["policy_sha256"],
+        )
+        modified = deepcopy(inputs)
+        modified["resources"]["direct"]["note.txt"] += " pending"
+        self.assertNotEqual(
+            original["cases_sha256"],
+            routing_smoke.provenance(args, modified)["cases_sha256"],
+        )
+        self.assertIsNone(original["adapter"]["version"])
 
 
 if __name__ == "__main__":

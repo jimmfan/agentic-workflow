@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import importlib.util
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -71,27 +70,31 @@ def load_module(name: str, path: Path):
     return module
 
 
-def tree_snapshot(root: Path) -> dict[str, tuple[str, bytes | str]]:
+def tree_snapshot(
+    root: Path, *, exclude_git: bool = False
+) -> dict[str, tuple[str, bytes | str]]:
     result: dict[str, tuple[str, bytes | str]] = {}
     if not root.exists():
         return result
-    for path in sorted(root.rglob("*")):
+    pending = list(root.iterdir())
+    while pending:
+        path = pending.pop()
         relative = path.relative_to(root).as_posix()
+        if exclude_git and relative == ".git":
+            continue
         if path.is_symlink():
             result[relative] = ("symlink", os.readlink(path))
         elif path.is_dir():
             result[relative] = ("directory", b"")
+            pending.extend(path.iterdir())
         else:
             result[relative] = ("file", path.read_bytes())
     return result
 
 
 def workspace_snapshot(root: Path) -> dict[str, tuple[str, bytes | str]]:
-    return {
-        path: value
-        for path, value in tree_snapshot(root).items()
-        if path != ".git" and not path.startswith(".git/")
-    }
+    # Git may create/remove maintenance files independently of lifecycle commands.
+    return tree_snapshot(root, exclude_git=True)
 
 
 class ProjectTestCase(unittest.TestCase):
@@ -107,25 +110,8 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def copy_source(self, name: str) -> Path:
+        from wheel_smoke import copy_source_snapshot
+
         repository_copy = Path(self.temporary.name) / name
-        package_copy = repository_copy / "agent_workflow"
-        package_copy.parent.mkdir(parents=True)
-        shutil.copytree(PACKAGE_ROOT, package_copy)
-        for source_name in (
-            ".agent-workflow",
-            ".agents",
-            "architecture-decisions",
-            "docs",
-            "AGENTS.md",
-            "CLAUDE.md",
-            "LICENSE",
-            "README.md",
-            "VERSION",
-        ):
-            source = REPOSITORY_ROOT / source_name
-            target = repository_copy / source_name
-            if source.is_dir():
-                shutil.copytree(source, target)
-            else:
-                shutil.copy2(source, target)
+        copy_source_snapshot(REPOSITORY_ROOT, repository_copy)
         return repository_copy
