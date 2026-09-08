@@ -53,16 +53,13 @@ Scope refinement need not preserve the original wording when the objective and s
 A safe regular map identifies current resumable coordination; a mapless directory is not a candidate.
 An unrelated map never captures the route.
 
-After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and only relevant F#/D# ledger sections or U#/E# artifacts.
+After selecting Wayfinder, read the [state contract](contracts/wayfinder-state.md) before effort state; it owns full recognition, creation, map-first resumption, and preservation mechanics.
 Implementation may consume ready work from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses the Wayfinder threshold.
 Inside selected Wayfinder, use each needed specialist once for the relevant question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity without creating another Agent Workflow durable coordination model.
 Meaningful Implementation runs Verification once.
 New causal uncertainty returns to Debugging; a material unresolved choice returns to Discovery or Wayfinder according to the coordination threshold.
-
-Discovery is the method for bounded consequential choice and tradeoff analysis.
-Compose Domain Modeling when ambiguity in domain concepts, terminology, ubiquitous language, domain or context boundaries, or domain responsibilities and relationships materially affects that analysis; otherwise Discovery runs alone.
 
 ## Use selected skills
 
@@ -71,9 +68,7 @@ Read the selected skill's instructions and only the support files needed for the
 Selecting a skill is not execution: include it in the route marker only when its method actually ran.
 
 Choosing a route, selecting a skill, loading its instructions, using its method, completing the request, and verifying the result are distinct.
-The agent chooses Direct or one primary workflow.
-A request may remain Direct while the agent uses a skill for focused work.
-A skill may also support the current route without becoming its primary workflow.
+Using a skill for focused work need not change the primary route, including Direct.
 Loading a selected skill makes its instructions available; execution means actually using the skill's method; and completion and verification require evidence beyond the route marker.
 
 If a selected skill is unavailable or cannot run without explicit user invocation, continue Direct only when the user did not require that skill and available capabilities can satisfy the request.
@@ -88,7 +83,7 @@ Selected skills supply their methods, terminology, and evidence.
 Wayfinder is Agent Workflow's sole durable coordinator and stores only consequential state and references.
 Specifications, tickets, research, maps, and reviews remain in the artifacts or records designated to maintain their results; external identifiers remain unchanged.
 
-The Implementation integration supplies accepted scope, references to the artifacts or records that maintain it, and acceptance criteria from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set.
+The Implementation integration supplies the accepted scope, its maintaining references, and acceptance criteria from the resumption inputs above.
 Invoked `implement` is responsible for its build loop, TDD, and closing Code Review.
 Framework Verification runs afterward and adds only uncovered evidence.
 Using a skill for specialist work does not create separate Agent Workflow durable coordination state.
