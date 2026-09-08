@@ -37,6 +37,8 @@ Historical skill inventories are not part of the current runtime.
 `domain-modeling` maintains domain concepts, terminology and ubiquitous language, domain or context boundaries, domain responsibilities and relationships, and the applicable `CONTEXT.md` or `CONTEXT-MAP.md` model.
 It does not own generic implementation or module architecture, all project structure, Wayfinder's effort-specific areas and relationships, or a generic architecture-decision store.
 `implement` owns its inner build, TDD, and `code-review` loop; `workflow-implementation` remains the outer transition into execution and independent acceptance verification.
+Its closing review covers the attributed implementation changes through the current working tree, using the supplied request, acceptance criteria, baseline, and pre-edit context.
+Standalone Code Review preserves the requested range semantics; an explicitly committed-only review excludes pending work.
 
 ## Discovery and invocation
 
@@ -55,7 +57,8 @@ Deterministic fixtures validate the packaged files and mappings; live host disco
 Neither invents a local destination, label, or status.
 
 `code-review` treats tracker access as optional source lookup.
-It continues when the fixed point and specification are otherwise available and never blocks the Standards axis solely because tracker access is absent.
+It uses the supplied request or specification before artifact discovery and never blocks the Standards axis solely because tracker access is absent.
+Missing required inputs or independent reviewers remain explicit coverage gaps; subsequent verification reuses covered evidence.
 
 ## Lifecycle and maintenance
 
