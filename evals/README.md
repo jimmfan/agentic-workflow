@@ -9,6 +9,9 @@ The [routing interpretation smoke test](routing-smoke/README.md) checks whether 
 It is opt-in, contacts the selected model service, and must write reports outside the repository.
 Every adapter receives the same routing-only cases; the harness does not simulate host discovery, skill availability, or invocation behavior.
 
+The [bounded Wayfinder preservation pilot](wayfinder-persistence/README.md) tests authorized reconciliation and four-stage fresh-session continuation with synthetic cases.
+It retains the narrow evidence-precedence gate below and compares frozen/candidate instructions with a strong ordinary handoff baseline; it does not replace the larger protocol or evaluate default routing.
+
 Token forensics analyzes an existing Codex trace without running a model:
 
 ```bash

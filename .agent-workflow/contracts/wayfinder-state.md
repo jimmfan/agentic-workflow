@@ -257,14 +257,22 @@ Do not scan unrelated efforts, the entire repository, or Git history.
 
 Use this common sequence for every affected reconciliation:
 
-1. Preserve any still-useful result in the artifact designated to maintain it.
+1. Preserve newly supplied, corrected, and still-valid information whose loss would materially affect the accepted result, its use, authority, dependencies, or established next work.
+   Keep operational details in the artifact designated to maintain the result or a usable durable reference, not solely in chat or a high-level summary.
+   Keep the map brief and link that detail; do not duplicate the detailed result or retain everything.
 2. Update affected map content, records, conditions blocking affected work, dependencies, ready work, and known references.
+   Preserve the relationships among identities, statuses, sources, and scopes under the authority and evidence rules in `## Current knowledge`: reported is not verified, proposed is not committed, committed is not action-authorized, and recorded external evidence is not freshly checked.
+   When a choice or contingency changes, reconcile its consequences for established dependencies and ready work without inventing requirements or making every unknown a blocker.
 3. Prune only recognized records that no longer have independent current value.
+4. Before claiming a material authorized update complete, reread the affected saved results and references against the relevant input and current state.
+   Check that consequential details and relationships remain retrievable and usable without the original conversation, including whether a retained reference actually supplies the needed detail.
+   Bound this check to affected work; it is not required for every message or across the whole repository.
 
 Update only affected records and references to artifacts that maintain relevant results.
 Do not copy those artifact bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
 Do not manufacture inconsistency merely because one artifact summarizes, abstracts, or omits detail held elsewhere.
 Reconcile only a concrete incompatible statement or a requirement the designated artifact no longer satisfies.
+Linking a project artifact does not make it a Wayfinder record or grant authorization to write it.
 When evidence is insufficient for a truthful update, preserve state and report what prevents the affected work from proceeding.
 
 ### Apply record-specific changes
