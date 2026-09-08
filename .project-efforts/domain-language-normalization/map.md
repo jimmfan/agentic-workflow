@@ -38,7 +38,7 @@ Excluded:
 - The current map-authoring request supersedes the earlier direction to omit all empty headings.
   New default maps keep Objective, Scope, Ready work, and an honest Blockers assessment visible, separate dependencies from blocking effects, and preserve existing-layout resumption.
   The state contract maintains presentation and responsibility rules; the Wayfinder skill maintains navigation and specialist method.
-  Authored changes and deterministic controls are implemented; [map-authoring verification](../../evals/map-authoring/REPORT.md) maintains the evidence and live-host limitation.
+  Authored changes, deterministic controls, and closing Standards and Spec review are complete for the bounded map-authoring change; [map-authoring verification](../../evals/map-authoring/REPORT.md) maintains the evidence and live-host limitation.
 
 ## Blockers and dependencies
 
@@ -47,7 +47,6 @@ This limits the live-verification boundary only; independent review of the autho
 
 ## Ready work
 
-- Review the bounded map-authoring change with its deterministic evidence and explicit live-verification limitation.
 - Review the already-made coherence changes only against the accepted correction scope and address concrete remaining mismatches without broadening the work.
 - Run the documented deterministic verification and closing Standards and Spec review before treating the effort as complete.
 

@@ -49,6 +49,33 @@ Complete disposable state and original rollout remain locally at `/private/tmp/w
 The event stream reports 59,408 input tokens, 46,592 cached input tokens and 794 output tokens, including 327 reasoning output tokens.
 These are observed usage counters, not a comparative cost claim.
 
+## Closing review
+
+### Standards
+
+PASS — 0 findings.
+The independent reviewer found no documented-standard violations or actionable baseline code smells.
+Presentation stays in the state contract, navigation stays in the skill, authority distinctions remain intact, and repeated synthetic fixture documents are appropriate isolated inputs.
+
+### Spec
+
+PASS — 0 material findings.
+The independent reviewer found the authoring requirements implemented within scope, with PR #30 preservation intact and the unavailable live stages disclosed as required.
+This review does not convert unavailable live observations into compliance evidence.
+
+## Integration acceptance
+
+| Boundary | Result | Evidence |
+|---|---|---|
+| Default authoring, visible assessment and ownership contract | PASS | Authored diff, focused evaluator controls and closing Spec review |
+| Existing-map recognition, identifiers, reconciliation and scoped acceptance | PASS | Recognition preamble and entire Current knowledge/reconciliation tail match the base byte-for-byte; package gate passes |
+| Distribution, lifecycle and project-data protection | PASS | Package and wheel gates; VERSION, inventory, routing, terminology, other efforts and persistence campaign unchanged |
+| Fresh-session Create / Correct / Read / Resume behavior | INCONCLUSIVE | Create infrastructure-blocked; remaining stages unexecuted |
+| Closing Standards and Spec review | PASS | Independent parallel reviews, 0 findings on each axis |
+
+The final package/link verification passed after evidence and documentation were added.
+The focused evaluator suite passed after its last adjustment; the full gate evidence above is reused rather than repeating covered checks.
+
 ## Readiness
 
 The change is suitable for code review with deterministic checks passing.
