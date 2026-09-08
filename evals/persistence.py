@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import selectors
+import shlex
 import shutil
 import signal
 import subprocess
@@ -251,15 +252,30 @@ def transfer(source: Path, destination: Path, *, remove_transient: bool) -> None
         (destination / "source-once.txt").unlink(missing_ok=True)
 
 
+def codex_binary() -> str:
+    executable = shutil.which("codex")
+    if executable is None:
+        raise ValueError("Codex executable is unavailable")
+    return str(Path(executable).resolve())
+
+
 def config_args(workspace: Path, stage: int) -> list[str]:
     access = "read" if stage == 4 else "write"
+    executable = Path(codex_binary())
+    filesystem = {
+        ":minimal": "read",
+        str(workspace): access,
+        str(executable): "read",
+    }
+    filesystem_toml = ", ".join(
+        f"{json.dumps(path)}={json.dumps(mode)}" for path, mode in filesystem.items()
+    )
     settings = [
         f'model="{MODEL}"',
         'model_reasoning_effort="medium"',
         'approval_policy="never"',
         'default_permissions="pilot"',
-        'permissions.pilot.filesystem={":minimal"="read", '
-        f'{json.dumps(str(workspace))}="{access}"' + "}",
+        "permissions.pilot.filesystem={" + filesystem_toml + "}",
         "permissions.pilot.network.enabled=false",
         'web_search="disabled"',
         "features.apps=false",
@@ -268,6 +284,7 @@ def config_args(workspace: Path, stage: int) -> list[str]:
         "features.multi_agent=false",
         "features.shell_snapshot=false",
         'shell_environment_policy.inherit="none"',
+        'shell_environment_policy.set={PATH="/usr/bin:/bin:/usr/sbin:/sbin"}',
         "allow_login_shell=false",
         'model_provider="openai"',
         "project_doc_max_bytes=65536",
@@ -336,9 +353,7 @@ def freeze(destination: Path, candidate: str) -> None:
             "configuration_template": config_args(Path("/WORKSPACE"), 1),
             "transfer": "All project files; remove source-once.txt before stage 2; no chats, homes, traces or grader files; no repairs",
             "cli": subprocess.check_output(["codex", "--version"], text=True).strip(),
-            "cli_sha256": hashlib.sha256(
-                Path(shutil.which("codex")).read_bytes()
-            ).hexdigest(),
+            "cli_sha256": hashlib.sha256(Path(codex_binary()).read_bytes()).hexdigest(),
         },
     )
 
@@ -496,7 +511,7 @@ def audit_context(binary, workspace, home, stage, env, prompt, raw):
 def run_stage(manifest_path: Path, run_root: Path) -> None:
     manifest = json.loads(manifest_path.read_text())
     if (
-        hashlib.sha256(Path(shutil.which("codex")).read_bytes()).hexdigest()
+        hashlib.sha256(Path(codex_binary()).read_bytes()).hexdigest()
         != manifest["cli_sha256"]
     ):
         raise ValueError("Frozen executable changed")
@@ -565,7 +580,7 @@ def run_stage(manifest_path: Path, run_root: Path) -> None:
         "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
         "LANG": "en_US.UTF-8",
     }
-    binary = shutil.which("codex")
+    binary = codex_binary()
     command = [
         binary,
         "exec",
@@ -644,6 +659,9 @@ def run_stage(manifest_path: Path, run_root: Path) -> None:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
+    sub.add_parser(
+        "isolation", help="Non-model sandbox/helper probe in a disposable project"
+    )
     frozen = sub.add_parser("freeze")
     frozen.add_argument("--candidate", default="HEAD")
     frozen.add_argument("--output", type=Path, required=True)
@@ -651,10 +669,62 @@ def main():
     run.add_argument("--manifest", type=Path, required=True)
     run.add_argument("--run-root", type=Path, required=True)
     args = parser.parse_args()
-    if args.action == "freeze":
+    if args.action == "isolation":
+        print(json.dumps(isolation_probe(), indent=2))
+    elif args.action == "freeze":
         freeze(args.output, args.candidate)
     else:
         run_stage(args.manifest, args.run_root.resolve())
+
+
+def isolation_probe():
+    binary = codex_binary()
+    with tempfile.TemporaryDirectory(prefix="persistence-isolation-") as temporary:
+        root = Path(temporary).resolve()
+        project, home = root / "project", root / "home"
+        project.mkdir()
+        home.mkdir()
+        (root / "hidden.txt").write_text("synthetic evaluator canary")
+        (home / "auth.json").write_text(
+            "synthetic credential canary; not authentication"
+        )
+        (project / "visible.txt").write_text("public\n")
+        env = {"CODEX_HOME": str(home), "PATH": "/usr/bin:/bin:/usr/sbin:/sbin"}
+        result = {}
+        for stage in (1, 4):
+            script = "test -r visible.txt && test ! -r ../hidden.txt && test ! -r ../home/auth.json && /usr/bin/sed -n 1p visible.txt && "
+            script += shlex.quote(binary) + " --version && "
+            script += (
+                "echo allowed > write.txt"
+                if stage == 1
+                else "! (echo forbidden > readonly.txt)"
+            )
+            command = [
+                binary,
+                *config_args(project, stage),
+                "-C",
+                str(project),
+                "sandbox",
+                "/bin/sh",
+                "-c",
+                script,
+            ]
+            completed = subprocess.run(
+                command,
+                cwd=project,
+                env=env,
+                text=True,
+                capture_output=True,
+                timeout=30,
+            )
+            result[str(stage)] = {
+                "returncode": completed.returncode,
+                "stdout": completed.stdout,
+                "stderr": completed.stderr,
+            }
+        result["write_succeeded"] = (project / "write.txt").exists()
+        result["reader_write_denied"] = not (project / "readonly.txt").exists()
+        return result
 
 
 if __name__ == "__main__":

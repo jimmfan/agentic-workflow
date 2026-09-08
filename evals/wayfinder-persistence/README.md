@@ -89,6 +89,8 @@ The runner creates a fresh project and Codex home for every stage and copies onl
 It does not overwrite HOME or change global configuration.
 It disables apps, plugins, memories, multi-agent tools, shell snapshots, login shells and web search, ignores user config/rules, uses the exact `gpt-5.6-sol` model with medium reasoning, and allows only the current project plus minimal operating-system reads through a named filesystem permission profile.
 Command network access is disabled; model-service traffic uses existing authentication.
+The current adapter resolves the Codex launcher to its canonical executable, permits read/execute access only to that executable in addition to minimal system reads, and sets a minimal shell PATH.
+These are offline corrections after the stopped first cohort; they do not alter or repair that cohort, and have not been exercised in a new evaluated stage.
 Audit the actual prompt input and sandbox before the first invocation and per-stage inherited instructions, tools, effective model/configuration and fresh session identity from retained evidence.
 Any unaccounted instruction, connector, memory, earlier conversation, unsupported model/configuration or missing visibility stops the affected run.
 Built-in Codex system skills may appear equally in all arms; record their fingerprints and do not mistake them for inherited personal skills.
@@ -99,11 +101,15 @@ Commit the implementation/protocol/fixtures before freezing:
 
 ```bash
 uv run --locked python -m unittest discover -s evals/tests -p 'test_persistence.py' -v
+uv run --locked python -m evals.persistence isolation
 uv run --locked python -m evals.persistence freeze --candidate HEAD --output /tmp/persistence-freeze.json
 uv run --locked python -m evals.persistence stage --manifest /tmp/persistence-freeze.json --run-root /tmp/persistence-pilot
 ```
 
+The non-model isolation probe must succeed, including canonical-helper execution and read-only write denial, before evaluated invocations.
+It does not prove the complete model-driven file-edit path.
 The stage command executes exactly the next stage, never retries or automatically expands past the narrow gate.
+The controller must account for attempts across separately named cohorts; the journal guard enforces the limit within one cohort and does not implement a global registry.
 Run trajectories sequentially; inspect each checkpoint for safety, contamination, missing telemetry and execution status before invoking the next stage.
 Retain the frozen manifest and compact report/results under this suite; raw execution stays under `evals/artifacts/` or a caller-owned ignored/temporary directory.
 To reproduce a prior cohort, check out its recorded runner revision and use its unchanged manifest; new revisions or rubric fixes require a distinct cohort and consume the remaining overall budget.
