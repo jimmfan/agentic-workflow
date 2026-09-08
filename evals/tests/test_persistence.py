@@ -300,3 +300,19 @@ class RunnerBoundaryTests(unittest.TestCase):
                 root, persistence.snapshot(root), "", 4, "C", {}
             )
             self.assertEqual(packet["safety_faults"], [])
+
+    def test_local_choice_can_live_in_notes_without_inventing_a_configuration_schema(
+        self,
+    ):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "local-config.json").write_text(
+                '{"service":"beacon-api","environment":"staging-eu2","retry_seconds":7,"replicas":2,"comment":"keep this additional project field"}'
+            )
+            (root / "notes.md").write_text(
+                "Imani committed the existing pool for staging preparation.\n"
+            )
+            packet = persistence.checkpoint(
+                root, persistence.snapshot(root), "", 2, "C", {}
+            )
+            self.assertEqual(packet["dimensions"]["update_correctness"], "INCONCLUSIVE")

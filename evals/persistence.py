@@ -132,13 +132,15 @@ def checkpoint(root, before, response, stage, arm, prior_text):
             config = json.loads((root / "local-config.json").read_text())
         except (OSError, ValueError):
             config = None
-        if config != {
+        required = {
             "service": "beacon-api",
             "environment": "staging-eu2",
             "retry_seconds": 7,
             "replicas": 2,
-            "pool": "existing",
-        }:
+        }
+        if not isinstance(config, dict) or any(
+            config.get(key) != value for key, value in required.items()
+        ):
             dimensions["update_correctness"] = "FAIL"
     if stage == 3:
         note = contents.get("team-note.txt", "").lower()
