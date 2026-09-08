@@ -118,8 +118,8 @@ When no durable ticket or ticket set exists, the map may state ready work direct
 Once `to-tickets` creates a durable ticket or ticket set, that ticket or ticket set maintains its contents, dependencies, ordering, and readiness.
 The map links that durable ticket or ticket set and may include the current ready-work reference without mirroring ticket-level state.
 A ticket draft returned only in chat remains session-local and is not a durable reference target.
-New default maps retain `Blockers and dependencies` with `None` when no blocker or dependency applies; other inapplicable empty headings may be omitted.
-Existing maps remain valid without that heading or marker because this is authoring guidance, not an effort-recognition schema or migration rule.
+The [state contract](../.agent-workflow/contracts/wayfinder-state.md) maintains default-map presentation and responsibility authoring conventions, including separate dependencies and scoped blocker assessments.
+Existing layouts remain resumable; authoring conventions are not recognition requirements or migration triggers.
 Optional `facts.md` and `decisions.md` ledgers hold current F# fact records and D# decision records.
 F# contains a current scoped descriptive conclusion judged sufficiently supported and remains revisable; D# contains a current choice determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority.
 Independently useful U# unresolved question records and E# evidence records with source, scope, observation, and limitations remain separate files.

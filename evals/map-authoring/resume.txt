@@ -1,0 +1,1 @@
+Continue the existing consumer-handoff effort for a bounded documentation task: add the supplied inventory result to inventory.md: the only consumer call site is src/adapter.py. The result is sufficient for the inventory scope; reconcile that fact in the map. Preserve other coordination and sources. Only these documentation changes are authorized.

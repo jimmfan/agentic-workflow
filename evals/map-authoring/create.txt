@@ -1,0 +1,1 @@
+Create a Wayfinder map for the consumer handoff described in context.md and responsibilities.md, using the default presentation. Establish enough durable coordination for another session to continue. Authoring the map is authorized; preserve the supplied source files. Do not implement the consumer, contact infrastructure, or create tickets.

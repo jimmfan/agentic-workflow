@@ -92,24 +92,53 @@ A recognized effort may contain ready or paused work, work waiting on evidence o
 Represent each condition through map content that identifies the affected work, relevant dependencies, and any ready work.
 Do not add a map status or historical label.
 
-Use this brief default map shape.
-New default maps retain **Blockers and dependencies** and write `None` when no blocker or dependency currently applies.
-Other inapplicable empty headings may be omitted, and a clearer equivalent may be used.
-Existing maps remain valid without that heading or literal `None`.
-This is default authoring guidance, not an effort-recognition or parser requirement, and does not require migration, compatibility parsing, or rewriting:
+Use this default H2 order beneath the human-readable effort-name H1:
 
-- **Objective** — the result the effort is intended to achieve.
-- **Scope** — what the effort includes and excludes, including relevant project or authority limits.
-- **Areas and relationships** — major areas, how they relate, and important ownership or operating constraints.
-- **Current state** — smallest truthful coordination summary needed for safe resumption.
-  Persist only coordination state whose meaning remains relevant to future work.
-  Transient Git or session observations, such as a clean working tree, current HEAD, or branch position, remain execution context unless they are genuinely a continuing action authorization constraint, baseline, or dependency.
-- **Blockers and dependencies** — actual blockers and required inputs or dependencies.
-- **Ready work** — work that may proceed now.
-- **Key links** — the few navigable links to artifacts needed for continuation.
+1. **Objective** — the result the effort is intended to achieve.
+2. **Scope** — what the effort includes and excludes, including relevant project or authority limits.
+3. **Ready work** — concrete authorized scopes that may proceed now.
+   Placement never bypasses authority or dependencies.
+   When no work is ready, explain why truthfully rather than inventing work.
+4. **Current state** — the smallest truthful durable coordination summary needed for safe resumption.
+   Persist only coordination state whose meaning remains relevant to future work.
+   Transient Git or session observations, such as a clean working tree, current HEAD, or branch position, remain execution context unless they are genuinely a continuing action authorization constraint, baseline, or dependency.
+5. **Areas and relationships** — major areas, their interactions, and consequential participant responsibilities and operating boundaries, not just component names.
+6. **Dependencies** — required inputs for particular work.
+7. **Blockers** — conditions currently preventing particular work, an assessed absence of blockers, or a material limitation in the blocker assessment.
+   Never automatically write `None.` or represent unknown or unassessed conditions as absent.
+8. **Key references** — a few readable, navigable sources needed for continuation.
 
-These headings guide content; they are not a recognition schema.
-Except for **Blockers and dependencies** in a new default map, do not create empty headings.
+For newly authored default maps, keep Objective, Scope, Ready work, and Blockers visible.
+Omit other sections only when genuinely inapplicable, preserving their relative order when present; avoid filler.
+A missing answer is not an inapplicable topic.
+Preserve uncertainty and **Not yet specified** content without requiring a complete model before independent work proceeds.
+These are authoring conventions, never effort-recognition or parser requirements.
+Existing maps with alternate layouts remain valid and resumable; do not rewrite them merely to match this default.
+
+### Responsibilities in the map
+
+Make consequential participant responsibilities explicit within Areas and relationships, optionally using an `### Ownership` subsection rather than a mandatory top-level section or responsibility matrix.
+Use precise verbs such as provides, maintains, implements, or decides.
+For example, when these assignments are established:
+
+```markdown
+### Ownership
+- Platform team: provides and maintains the test environment.
+- Application team: implements the consumer.
+- Project lead: decides whether production rollout may proceed.
+```
+
+Do not infer an assignment or decision authority from a title, implementation responsibility, access, or agent-authored text.
+Naming the decision-maker does not establish approval or authorize execution.
+When no designated artifact maintains established effort-specific responsibilities, the map may maintain them directly.
+Otherwise link the relevant maintaining content; a brief source-linked orientation summary is useful when it helps navigation without creating a competing matrix or mirroring ticket assignments.
+The goal is one authoritative assignment, not zero repeated words.
+Responsibilities, required inputs, and their blocking effects are different relationships and may each deserve mention.
+Avoid independently maintained copies of status, dates, and assignments across sections.
+Use the existing reconciliation rules to update affected summaries and references after authorized changes.
+Keep consequential unknown responsibility or authority explicit and clarify it when required.
+Unknown ownership blocks only work that actually requires it; do not invent assignments or prerequisites, or create U/E/F/D records merely to categorize ownership.
+
 The map summarizes the effort's current coordination state, conditions blocking particular work, dependencies, and ready work.
 When no durable ticket or ticket set exists, the map may state ready work directly.
 Once a durable ticket or ticket set exists, the map links it and may include a current ready-work reference without mirroring ticket-level state.
@@ -119,8 +148,8 @@ Keep the map brief, preserve enough information to resume safely, and link detai
 Load only records linked for the work at hand; do not read every ledger section or U/E file.
 If a fresh session must read most supporting records to recover the current route, reconcile the map instead of adding more supporting detail.
 
-`Blockers and dependencies` records actual blockers and required inputs or dependencies, not ordinary remaining workflow steps.
-Planned tests, verification, commit or push steps, and other unfinished work do not belong there merely because they remain.
+Dependencies identifies required inputs; Blockers identifies their or other conditions’ current effect on particular work.
+Planned tests, verification, commit or push steps, and other unfinished work are not automatically blockers or dependencies merely because they remain.
 A blocker is a condition that currently prevents particular work from proceeding.
 An unsatisfied dependency, unresolved consequential uncertainty, or missing required authority can be a blocker for affected work.
 The missing condition may be that a required project choice has not yet been committed, a required action has not yet been authorized, or a required dependency remains unsatisfied.

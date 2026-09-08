@@ -1,0 +1,53 @@
+schema_version = 1
+id = "wayfinder-map-authoring"
+name = "Consumer handoff coordination"
+fixture = "wayfinder-map-authoring"
+request = "Create a Wayfinder map for the consumer handoff described in context.md and responsibilities.md, using the default presentation. Establish enough durable coordination for another session to continue. Authoring the map is authorized; preserve the supplied source files. Do not implement the consumer, contact infrastructure, or create tickets."
+starting_state = ["The supplied documents describe a synthetic consumer handoff; no real infrastructure access is authorized."]
+expect = ["task_completed", "meaningful_repository_change"]
+must_not = ["overwrite_project_owned_state"]
+live = false
+blind_grading = true
+verification_command = "Inspect actual artifacts and references against the stage rubric in evals/map-authoring/README.md; automated assertions are limited evaluator controls."
+preserve_paths = ["context.md", "responsibilities.md"]
+forbid_created_globs = ["tickets/**", "issues/**"]
+
+[[assertions]]
+kind = "glob_count"
+path = ".project-efforts/*/map.md"
+count = 1
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?m)\A# [^\n]+\n(?:(?!^## ).)*^## Objective\n(?:(?!^## ).)*^## Scope\n(?:(?!^## ).)*^## Ready work\n(?:(?!^## ).)*(?:^## Current state\n(?:(?!^## ).)*)?(?:^## Areas and relationships\n(?:(?!^## ).)*)?(?:^## Dependencies\n(?:(?!^## ).)*)?^## Blockers\n(?:(?!^## ).)*(?:^## Key references\n(?:(?!^## ).)*)?\Z'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''Platform(?: team)?[^.\n]*provides?[^.\n]*environment'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''Project lead[^.\n]*(?:decides?|approv)[^.\n]*production'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''\[[^\]]+\]\([^)]*responsibilities\.md(?:#assignments)?\)'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''incident.response[^.\n]*(?:unknown|unassigned|unresolved)'''
+
+[[assertions]]
+kind = "glob_none_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?m)^## Blockers\s+(?:None\.?|No blockers\.?)\s*(?:\Z|##)'''
+
+[[assertions]]
+kind = "glob_none_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?:Application(?: team)?|deployment agent)[^.\n]*(?:decides?[^.\n]*production|approves?[^.\n]*rollout)'''

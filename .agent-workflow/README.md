@@ -58,9 +58,8 @@ U# unresolved question records and E# evidence records with source, scope, obser
 The map summarizes current coordination state, conditions blocking particular work, dependencies, and ready work, indexing rather than duplicating supporting detail.
 When resuming, read the map before retrieving a relevant ledger section or U#/E# artifact.
 
-New default maps retain `Blockers and dependencies` and use `None` when no blocker or dependency applies.
-Other inapplicable empty headings may be omitted, while existing maps remain valid without that heading or marker.
-This is authoring guidance, not a recognition requirement or migration trigger.
+The [state contract](contracts/wayfinder-state.md) maintains default-map presentation and responsibility authoring conventions, including separate dependencies and scoped blocker assessments.
+Existing layouts remain resumable; authoring conventions are not recognition requirements or migration triggers.
 
 Fact records identify the source or records from which their scoped conclusion was derived.
 Decision records identify the accepted project policy that determines their choice or the person, role, or valid delegate with project decision authority who commits it; evidence alone cannot commit that choice.

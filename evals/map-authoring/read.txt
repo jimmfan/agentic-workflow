@@ -1,0 +1,1 @@
+Read the saved consumer-handoff effort and relevant sources without changing files. Explain who provides and maintains the environment, implements the consumer, and decides whether production rollout may proceed; what remains unknown; and which scopes may proceed or remain blocked. State whether production approval or execution authorization exists. Do not contact infrastructure.

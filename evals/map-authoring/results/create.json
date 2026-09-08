@@ -1,0 +1,491 @@
+{
+  "stage": "create",
+  "model": "gpt-5.6-sol",
+  "effort": "medium",
+  "command": [
+    "/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex",
+    "exec",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "-c",
+    "model=\"gpt-5.6-sol\"",
+    "-c",
+    "model_reasoning_effort=\"medium\"",
+    "-c",
+    "approval_policy=\"never\"",
+    "-c",
+    "default_permissions=\"pilot\"",
+    "-c",
+    "permissions.pilot.filesystem={\":minimal\"=\"read\", \"/private/tmp/wayfinder-map-authoring-smoke/create/project\"=\"write\", \"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\"}",
+    "-c",
+    "permissions.pilot.network.enabled=false",
+    "-c",
+    "web_search=\"disabled\"",
+    "-c",
+    "features.apps=false",
+    "-c",
+    "features.plugins=false",
+    "-c",
+    "features.memories=false",
+    "-c",
+    "features.multi_agent=false",
+    "-c",
+    "features.shell_snapshot=false",
+    "-c",
+    "shell_environment_policy.inherit=\"none\"",
+    "-c",
+    "shell_environment_policy.set={PATH=\"/usr/bin:/bin:/usr/sbin:/sbin\"}",
+    "-c",
+    "allow_login_shell=false",
+    "-c",
+    "model_provider=\"openai\"",
+    "-c",
+    "project_doc_max_bytes=65536",
+    "-C",
+    "/private/tmp/wayfinder-map-authoring-smoke/create/project",
+    "--skip-git-repo-check",
+    "--json",
+    "-o",
+    "/private/tmp/wayfinder-map-authoring-smoke/create/raw/response.txt",
+    "-"
+  ],
+  "before": {
+    ".agent-workflow": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agent-workflow/README.md": {
+      "kind": "file",
+      "identity": "d27fe102c78c16e8bd895f5f522a702b9369ecf76f3d6f300d08bb3abeec4fe8"
+    },
+    ".agent-workflow/contracts": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agent-workflow/contracts/wayfinder-state.md": {
+      "kind": "file",
+      "identity": "9e5ebfe8318d58f1b526575b99411bd5fa64395bd02d4281a214fe8b6b748075"
+    },
+    ".agent-workflow/routing.md": {
+      "kind": "file",
+      "identity": "48ba112e3cf3c6a95ccc2b36897453b2c51d3bc601c3dd35d6a08ef6e03dbe50"
+    },
+    ".agent-workflow/terminology.md": {
+      "kind": "file",
+      "identity": "b62a8980cf0ba451dd9a94a5a03eda948d053d33838301043bef00ef8f8f4ab8"
+    },
+    ".agents": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/code-review": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/code-review/SKILL.md": {
+      "kind": "file",
+      "identity": "ffa6f53bf087d9624c6bf916f05e0b128ed84c80a8ffddd0012a1f9d8500cfde"
+    },
+    ".agents/skills/codebase-design": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/codebase-design/DEEPENING.md": {
+      "kind": "file",
+      "identity": "a569b5bb6e1c0913e7abb9e6d11e63a8326dd1bf2d74bc1b7e03e6b526f47c6d"
+    },
+    ".agents/skills/codebase-design/DESIGN-IT-TWICE.md": {
+      "kind": "file",
+      "identity": "4d873639dd89b4301b94f9b01f984fa2f7562f886520b2736b828c3ad1fc6d49"
+    },
+    ".agents/skills/codebase-design/SKILL.md": {
+      "kind": "file",
+      "identity": "e93d60757f737fb2022181c11162d35e7d9018f255996561ebc91392a8743d56"
+    },
+    ".agents/skills/domain-modeling": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/domain-modeling/CONTEXT-FORMAT.md": {
+      "kind": "file",
+      "identity": "c10934093bea426dd8ac59665bcc5869ced806b017f0a7e39b54d4f369ec008a"
+    },
+    ".agents/skills/domain-modeling/SKILL.md": {
+      "kind": "file",
+      "identity": "c572ed295c338c99129f1adcc02f9674aa02bda2c5a1517be66810e185503e15"
+    },
+    ".agents/skills/grilling": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/grilling/SKILL.md": {
+      "kind": "file",
+      "identity": "fae9c161c4a3208176c7c71cea0b04c9344a4506d01da3bb073eeea462f93451"
+    },
+    ".agents/skills/implement": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/implement/SKILL.md": {
+      "kind": "file",
+      "identity": "2531a816d1c98573a058b1ee4f9b824bc753d1c6a9c02c36a46781c608fa1455"
+    },
+    ".agents/skills/prototype": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/prototype/LOGIC.md": {
+      "kind": "file",
+      "identity": "65d4aaabd6a23f48b6800e87e1dcca2d50050f77138f438a02e53a9df8306ad0"
+    },
+    ".agents/skills/prototype/SKILL.md": {
+      "kind": "file",
+      "identity": "53db38690acded1cec91ef2b759f21bc4e1eb7ed484d03d3b77505e963caa15e"
+    },
+    ".agents/skills/prototype/UI.md": {
+      "kind": "file",
+      "identity": "53c58d68ded996556a93f3ee4ea5544de860166998347d03979c68d27c826a4f"
+    },
+    ".agents/skills/research": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/research/SKILL.md": {
+      "kind": "file",
+      "identity": "dbd4377c7252753150fcb6a47792b9722aef64e1823529b89e755cf2045173f0"
+    },
+    ".agents/skills/tdd": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/tdd/SKILL.md": {
+      "kind": "file",
+      "identity": "7ec25a6ddbcddaa1aeacbb81da9cdc00a33d64bf0a872fa7b648dcce5f2d7d5e"
+    },
+    ".agents/skills/tdd/mocking.md": {
+      "kind": "file",
+      "identity": "74dbedc7708526588a6fd5d3009c23c413d69d1b493a630428cdbd87ffcbe9fa"
+    },
+    ".agents/skills/tdd/tests.md": {
+      "kind": "file",
+      "identity": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a"
+    },
+    ".agents/skills/to-spec": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/to-spec/SKILL.md": {
+      "kind": "file",
+      "identity": "bc12994e7a175aa638cc4f02ffd5b03018cc0fa46b4c169168cc4e295afe9cb9"
+    },
+    ".agents/skills/to-tickets": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/to-tickets/SKILL.md": {
+      "kind": "file",
+      "identity": "4c140dc969fb610724a55134240a9ca718cf558a89db152bf7a96b8ba4e4b7e6"
+    },
+    ".agents/skills/wayfinder": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/wayfinder/SKILL.md": {
+      "kind": "file",
+      "identity": "3088b6912fb207467064e95c884a49a9aa0731b747df62e126348bb3a5e58d49"
+    },
+    ".agents/skills/workflow-debugging": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/workflow-debugging/SKILL.md": {
+      "kind": "file",
+      "identity": "5324543fe81b1b445ad080be7bc8a75a1d4123dfd49d90857de971519fe8dfca"
+    },
+    ".agents/skills/workflow-discovery": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/workflow-discovery/SKILL.md": {
+      "kind": "file",
+      "identity": "862d51c20282b1d51b413119bd649175b3c87a884997c670e598ddf681d304a2"
+    },
+    ".agents/skills/workflow-implementation": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/workflow-implementation/SKILL.md": {
+      "kind": "file",
+      "identity": "1fb4036df17c4a379c363321fde6a3b3c5f197205debe07e1929f066244caafd"
+    },
+    ".agents/skills/workflow-verification": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/workflow-verification/SKILL.md": {
+      "kind": "file",
+      "identity": "6f4627520f5ced6f9b2377236ccc2cc0d156be6587fa24b33b1ab12938f1d1f3"
+    },
+    "AGENTS.md": {
+      "kind": "file",
+      "identity": "02ebf8820b7ccdea38e7e3cb18f0f572db7b4b400bc38194c01272699d6c5d41"
+    },
+    "CLAUDE.md": {
+      "kind": "file",
+      "identity": "858e2dbf95635a376844ea39bbd95efca0c9a7f05733402b91f8b7f1f052c4d5"
+    },
+    "context.md": {
+      "kind": "file",
+      "identity": "1f62a6f294346a2ba956fa26aa750156651fee5f3bdec4f8c0c8269245503413"
+    },
+    "responsibilities.md": {
+      "kind": "file",
+      "identity": "f53efbf99752b378855dfa602c013a136110832c0ca80b0334b7d707854b4c6a"
+    }
+  },
+  "execution": "infrastructure-blocked",
+  "context_audit": {
+    "prompt_input_sha256": "7faa470af46925affd34f65b34b923e0ca06e323ce8c3c562f79bfaa051d6328",
+    "system_skills": {
+      "skills/.system/skill-creator/SKILL.md": "da44c88f6b3845a8fa8c60792ec9a722110a55a9793c279757b48fefb11f819c",
+      "skills/.system/plugin-creator/SKILL.md": "8fd56316b2c49cbdc657a5d197967a233018e1fada65b00a5dd030dce6499a6e",
+      "skills/.system/skill-installer/SKILL.md": "d68b77e5bbb34dedab89d134da52855f140fc4b4299b80104f534e3b9e98f8ee",
+      "skills/.system/openai-docs/SKILL.md": "669a42ccf3323fe0ceda6e466730bcb05dddf1e0c220d6523ea504909fc49165",
+      "skills/.system/imagegen/SKILL.md": "59981d23519222bcecf1be48bb37730bbc50539ceb0e35ad09fcef98a3df19d3"
+    },
+    "inherited_personal_skills_or_memory_detected": false,
+    "tools_and_remote_model_identity": "Requires runtime trace adjudication"
+  },
+  "returncode": 0,
+  "elapsed_seconds": 40.2743028330151,
+  "after": {
+    ".agent-workflow": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agent-workflow/README.md": {
+      "kind": "file",
+      "identity": "d27fe102c78c16e8bd895f5f522a702b9369ecf76f3d6f300d08bb3abeec4fe8"
+    },
+    ".agent-workflow/contracts": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agent-workflow/contracts/wayfinder-state.md": {
+      "kind": "file",
+      "identity": "9e5ebfe8318d58f1b526575b99411bd5fa64395bd02d4281a214fe8b6b748075"
+    },
+    ".agent-workflow/routing.md": {
+      "kind": "file",
+      "identity": "48ba112e3cf3c6a95ccc2b36897453b2c51d3bc601c3dd35d6a08ef6e03dbe50"
+    },
+    ".agent-workflow/terminology.md": {
+      "kind": "file",
+      "identity": "b62a8980cf0ba451dd9a94a5a03eda948d053d33838301043bef00ef8f8f4ab8"
+    },
+    ".agents": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/code-review": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/code-review/SKILL.md": {
+      "kind": "file",
+      "identity": "ffa6f53bf087d9624c6bf916f05e0b128ed84c80a8ffddd0012a1f9d8500cfde"
+    },
+    ".agents/skills/codebase-design": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/codebase-design/DEEPENING.md": {
+      "kind": "file",
+      "identity": "a569b5bb6e1c0913e7abb9e6d11e63a8326dd1bf2d74bc1b7e03e6b526f47c6d"
+    },
+    ".agents/skills/codebase-design/DESIGN-IT-TWICE.md": {
+      "kind": "file",
+      "identity": "4d873639dd89b4301b94f9b01f984fa2f7562f886520b2736b828c3ad1fc6d49"
+    },
+    ".agents/skills/codebase-design/SKILL.md": {
+      "kind": "file",
+      "identity": "e93d60757f737fb2022181c11162d35e7d9018f255996561ebc91392a8743d56"
+    },
+    ".agents/skills/domain-modeling": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/domain-modeling/CONTEXT-FORMAT.md": {
+      "kind": "file",
+      "identity": "c10934093bea426dd8ac59665bcc5869ced806b017f0a7e39b54d4f369ec008a"
+    },
+    ".agents/skills/domain-modeling/SKILL.md": {
+      "kind": "file",
+      "identity": "c572ed295c338c99129f1adcc02f9674aa02bda2c5a1517be66810e185503e15"
+    },
+    ".agents/skills/grilling": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/grilling/SKILL.md": {
+      "kind": "file",
+      "identity": "fae9c161c4a3208176c7c71cea0b04c9344a4506d01da3bb073eeea462f93451"
+    },
+    ".agents/skills/implement": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/implement/SKILL.md": {
+      "kind": "file",
+      "identity": "2531a816d1c98573a058b1ee4f9b824bc753d1c6a9c02c36a46781c608fa1455"
+    },
+    ".agents/skills/prototype": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/prototype/LOGIC.md": {
+      "kind": "file",
+      "identity": "65d4aaabd6a23f48b6800e87e1dcca2d50050f77138f438a02e53a9df8306ad0"
+    },
+    ".agents/skills/prototype/SKILL.md": {
+      "kind": "file",
+      "identity": "53db38690acded1cec91ef2b759f21bc4e1eb7ed484d03d3b77505e963caa15e"
+    },
+    ".agents/skills/prototype/UI.md": {
+      "kind": "file",
+      "identity": "53c58d68ded996556a93f3ee4ea5544de860166998347d03979c68d27c826a4f"
+    },
+    ".agents/skills/research": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/research/SKILL.md": {
+      "kind": "file",
+      "identity": "dbd4377c7252753150fcb6a47792b9722aef64e1823529b89e755cf2045173f0"
+    },
+    ".agents/skills/tdd": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/tdd/SKILL.md": {
+      "kind": "file",
+      "identity": "7ec25a6ddbcddaa1aeacbb81da9cdc00a33d64bf0a872fa7b648dcce5f2d7d5e"
+    },
+    ".agents/skills/tdd/mocking.md": {
+      "kind": "file",
+      "identity": "74dbedc7708526588a6fd5d3009c23c413d69d1b493a630428cdbd87ffcbe9fa"
+    },
+    ".agents/skills/tdd/tests.md": {
+      "kind": "file",
+      "identity": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a"
+    },
+    ".agents/skills/to-spec": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/to-spec/SKILL.md": {
+      "kind": "file",
+      "identity": "bc12994e7a175aa638cc4f02ffd5b03018cc0fa46b4c169168cc4e295afe9cb9"
+    },
+    ".agents/skills/to-tickets": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/to-tickets/SKILL.md": {
+      "kind": "file",
+      "identity": "4c140dc969fb610724a55134240a9ca718cf558a89db152bf7a96b8ba4e4b7e6"
+    },
+    ".agents/skills/wayfinder": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/wayfinder/SKILL.md": {
+      "kind": "file",
+      "identity": "3088b6912fb207467064e95c884a49a9aa0731b747df62e126348bb3a5e58d49"
+    },
+    ".agents/skills/workflow-debugging": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/workflow-debugging/SKILL.md": {
+      "kind": "file",
+      "identity": "5324543fe81b1b445ad080be7bc8a75a1d4123dfd49d90857de971519fe8dfca"
+    },
+    ".agents/skills/workflow-discovery": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/workflow-discovery/SKILL.md": {
+      "kind": "file",
+      "identity": "862d51c20282b1d51b413119bd649175b3c87a884997c670e598ddf681d304a2"
+    },
+    ".agents/skills/workflow-implementation": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/workflow-implementation/SKILL.md": {
+      "kind": "file",
+      "identity": "1fb4036df17c4a379c363321fde6a3b3c5f197205debe07e1929f066244caafd"
+    },
+    ".agents/skills/workflow-verification": {
+      "kind": "directory",
+      "identity": ""
+    },
+    ".agents/skills/workflow-verification/SKILL.md": {
+      "kind": "file",
+      "identity": "6f4627520f5ced6f9b2377236ccc2cc0d156be6587fa24b33b1ab12938f1d1f3"
+    },
+    "AGENTS.md": {
+      "kind": "file",
+      "identity": "02ebf8820b7ccdea38e7e3cb18f0f572db7b4b400bc38194c01272699d6c5d41"
+    },
+    "CLAUDE.md": {
+      "kind": "file",
+      "identity": "858e2dbf95635a376844ea39bbd95efca0c9a7f05733402b91f8b7f1f052c4d5"
+    },
+    "context.md": {
+      "kind": "file",
+      "identity": "1f62a6f294346a2ba956fa26aa750156651fee5f3bdec4f8c0c8269245503413"
+    },
+    "responsibilities.md": {
+      "kind": "file",
+      "identity": "f53efbf99752b378855dfa602c013a136110832c0ca80b0334b7d707854b4c6a"
+    }
+  },
+  "process_execution": "completed",
+  "behavior_verdict": "INCONCLUSIVE",
+  "reason": "All four subject tool calls were rejected by sandbox_apply before execution; no files changed and no map was created.",
+  "cli_version": "codex-cli 0.144.6",
+  "subject_invocations": 1,
+  "unexecuted_stages": [
+    "correct",
+    "read",
+    "resume"
+  ],
+  "initial_preflight": {
+    "execution": "rejected-before-invocation",
+    "reason": "Source-repository path detected in prompt audit when disposable consumer was placed under the repository. Retained at evals/artifacts/map-authoring/create/raw; moved subsequent disposable consumer outside repository."
+  },
+  "standalone_isolation_probe": {
+    "passed": true,
+    "writer_returncode": 0,
+    "reader_returncode": 0,
+    "write_succeeded": true,
+    "reader_write_denied": true
+  },
+  "input_hashes": {
+    "evals/map-authoring/correct.txt": "c0e23738fbea3107cf472798791ec7dfcf3efdcabfc83c85335d4587e7271b53",
+    "evals/map-authoring/create.txt": "d16349217ac52e2adfa4e2a871e577948033ef73c53753928dd10a3bab2e7de5",
+    "evals/map-authoring/read.txt": "1ce4e13c59cc3e22a94b6f5d63a46e20a35d9cd6dbc7be031d091969b9cad48d",
+    "evals/map-authoring/resume.txt": "0ba3dd977d6e189ce4ab426ae890bd0c6af8873df009ee70437319393522ef6d"
+  },
+  "source_revision": "b8ac8a4c48b61ac7fbca923c2c673ab19945577e plus authored map-authoring edits represented by before snapshot hashes"
+}
