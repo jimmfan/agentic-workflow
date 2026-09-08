@@ -257,14 +257,25 @@ Do not scan unrelated efforts, the entire repository, or Git history.
 
 Use this common sequence for every affected reconciliation:
 
-1. Preserve any still-useful result in the artifact designated to maintain it.
+1. Preserve newly supplied, corrected, and still-valid information whose loss would materially affect the accepted result, its use, authority, dependencies, or established next work.
+   Keep operational details in the artifact designated to maintain the result or a usable durable reference, not solely in chat or a high-level summary.
+   Keep the map brief and link that detail; do not duplicate the detailed result or retain everything.
 2. Update affected map content, records, conditions blocking affected work, dependencies, ready work, and known references.
+   Preserve the relationships among identities, statuses, sources, and scopes under the authority and evidence rules in `## Current knowledge`.
+   Do not infer verification from a report, commitment from a proposal, action authorization from a committed choice, or fresh verification from recorded external evidence.
+   When a choice or contingency changes, reconcile its consequences for established dependencies and ready work without inventing requirements or making every unknown a blocker.
 3. Prune only recognized records that no longer have independent current value.
+   Before pruning, verify that any still-useful information in the record is retrievable from its designated maintaining artifact and that affected references resolve.
+   If preservation cannot be established, retain the affected record without blocking independent work.
+4. Before claiming a material authorized update complete, reread the affected saved results and references against the relevant input and current state.
+   Check that consequential details and relationships remain retrievable and usable without the original conversation, including whether a retained reference actually supplies the needed detail.
+   Bound this check to affected work; it is not required for every message or across the whole repository.
 
 Update only affected records and references to artifacts that maintain relevant results.
 Do not copy those artifact bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
 Do not manufacture inconsistency merely because one artifact summarizes, abstracts, or omits detail held elsewhere.
 Reconcile only a concrete incompatible statement or a requirement the designated artifact no longer satisfies.
+Linking a project artifact does not make it a Wayfinder record or grant authorization to write it.
 When evidence is insufficient for a truthful update, preserve state and report what prevents the affected work from proceeding.
 
 ### Apply record-specific changes
@@ -281,7 +292,8 @@ Do not create an E#/U# pair by template.
 
 When a U# is answered, preserve any independently useful result through the common sequence and prune the U#; an answered question is no longer a current unresolved question and is not retained as history.
 If the person, role, or valid delegate with project decision authority explicitly accepts unresolved uncertainty for a named boundary, the question remains factually unresolved: keep its U# current and unresolved, record that authority and the accepted boundary in the project artifact that records the committed choice, and unblock only that accepted boundary.
-The same uncertainty may remain a blocker for other work.
+The acceptance alone establishes neither a new dependency for other work nor its readiness.
+Preserve independently established restrictions and require relevant evidence or authority for an additional dependency.
 The acceptance does not answer the U#: no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
 
 When factual evidence changes, review dependent D# records and ready work under the authority rule in `## Current knowledge`.
