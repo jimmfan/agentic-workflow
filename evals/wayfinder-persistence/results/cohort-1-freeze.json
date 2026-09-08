@@ -1,0 +1,193 @@
+{
+  "base": "a963f707f9123d5af870dfe06f06d3d1ee1802f8",
+  "candidate": "d0b0d9b4c7b549cf9cc122d50e7d46cc413a776a",
+  "inputs": {
+    "evals/persistence.py": "d1ed046072295ae0391f3c83ee6b9263725055577cf28c56a1fc77ee108d83eb",
+    "tests/behavior.py": "94a7e12cdaf5c6dbd010066190495b98388aec157d8b942460f321e02693982b",
+    "evals/routing_smoke.py": "745c5139dcfe2810add172a214bc26b2ca9b4e1550cc07208b7dcf727bf05168",
+    "evals/wayfinder-persistence/cases.json": "9b967312ea8d693040c60c1972dd6dd9116021ef596bb3f82f4c71c189206a0a",
+    "evals/wayfinder-persistence/README.md": "8323fab8ab657aa2242723e99228fb75f379e2b1c26005ef9f3a70964b713bcb",
+    "evals/wayfinder-persistence/controls.json": "d8e0467ec99a5608fc8372585f6eb15873957a42681d9e7b49f7b4debec28cbf",
+    "evals/token_forensics/models.py": "e3ec28735638d37a631a1bd1a396810cd3f95be6087e30a1e3fed0d57446122c",
+    "evals/token_forensics/__init__.py": "cb11f3dc8c0b4027363ae15db8a03b1d8ad7607a3c618c854644855cf4a2a770",
+    "evals/token_forensics/cli.py": "88a1e02666a3e5d723f96a2e3904b416fec07688ee457264c831f916847e87f2",
+    "evals/token_forensics/__main__.py": "0f7d54f3fbb1f79a85eb8110f11793db99da6f3c61ee979de5abe9a1b5f3fdb3",
+    "evals/token_forensics/report.py": "7de5ea7eb6ae7f7908f9347e82adeb3d2abd64741a1cb3bbe65766b7ab0124f7",
+    "evals/token_forensics/parsers/codex.py": "04a84d203398cd0427b1e0bf9b5b7a486ebc2389202934682b74d7d28bdd40fc",
+    "evals/token_forensics/parsers/__init__.py": "02a2e68c72d5e58661b2528eb57fa22289d9e0b06aea3abc78a9671df9f16e71",
+    "evals/token_forensics/analysis/tools.py": "ea1705cb792fd433362f67df27aa44a1d2b4a2a74eacb1d174fef37d237acc16",
+    "evals/token_forensics/analysis/__init__.py": "91dc8fce8c7185ef0e3251231d9e0fd65968324ac60fd23d7b6ba56a33fb3b4f",
+    "evals/token_forensics/analysis/tokens.py": "6f92e4a54dbdb2fbf3e75e044c7cda9d9497545793cdf93db3c23a6a30f4d19e",
+    "evals/token_forensics/analysis/context.py": "eeae85199df67acc6bab78b0f43f4985fb69d9d1634e3a0a45a022fc5b362887"
+  },
+  "policy": {
+    "A": {
+      ".agent-workflow/README.md": "2e2eb86e4bffd2f87e925e30f18661df77a92d334f6faf1be51c79bc687b233b",
+      ".agent-workflow/contracts/wayfinder-state.md": "29873d8e8165d988ea753321c10620921b27d0e1359494adbd34e03df8367f89",
+      ".agent-workflow/routing.md": "48ba112e3cf3c6a95ccc2b36897453b2c51d3bc601c3dd35d6a08ef6e03dbe50",
+      ".agent-workflow/terminology.md": "b62a8980cf0ba451dd9a94a5a03eda948d053d33838301043bef00ef8f8f4ab8",
+      ".agents/skills/code-review/SKILL.md": "ffa6f53bf087d9624c6bf916f05e0b128ed84c80a8ffddd0012a1f9d8500cfde",
+      ".agents/skills/codebase-design/DEEPENING.md": "a569b5bb6e1c0913e7abb9e6d11e63a8326dd1bf2d74bc1b7e03e6b526f47c6d",
+      ".agents/skills/codebase-design/DESIGN-IT-TWICE.md": "4d873639dd89b4301b94f9b01f984fa2f7562f886520b2736b828c3ad1fc6d49",
+      ".agents/skills/codebase-design/SKILL.md": "e93d60757f737fb2022181c11162d35e7d9018f255996561ebc91392a8743d56",
+      ".agents/skills/domain-modeling/CONTEXT-FORMAT.md": "c10934093bea426dd8ac59665bcc5869ced806b017f0a7e39b54d4f369ec008a",
+      ".agents/skills/domain-modeling/SKILL.md": "c572ed295c338c99129f1adcc02f9674aa02bda2c5a1517be66810e185503e15",
+      ".agents/skills/grilling/SKILL.md": "fae9c161c4a3208176c7c71cea0b04c9344a4506d01da3bb073eeea462f93451",
+      ".agents/skills/implement/SKILL.md": "2531a816d1c98573a058b1ee4f9b824bc753d1c6a9c02c36a46781c608fa1455",
+      ".agents/skills/prototype/LOGIC.md": "65d4aaabd6a23f48b6800e87e1dcca2d50050f77138f438a02e53a9df8306ad0",
+      ".agents/skills/prototype/SKILL.md": "53db38690acded1cec91ef2b759f21bc4e1eb7ed484d03d3b77505e963caa15e",
+      ".agents/skills/prototype/UI.md": "53c58d68ded996556a93f3ee4ea5544de860166998347d03979c68d27c826a4f",
+      ".agents/skills/research/SKILL.md": "dbd4377c7252753150fcb6a47792b9722aef64e1823529b89e755cf2045173f0",
+      ".agents/skills/tdd/SKILL.md": "7ec25a6ddbcddaa1aeacbb81da9cdc00a33d64bf0a872fa7b648dcce5f2d7d5e",
+      ".agents/skills/tdd/mocking.md": "74dbedc7708526588a6fd5d3009c23c413d69d1b493a630428cdbd87ffcbe9fa",
+      ".agents/skills/tdd/tests.md": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a",
+      ".agents/skills/to-spec/SKILL.md": "bc12994e7a175aa638cc4f02ffd5b03018cc0fa46b4c169168cc4e295afe9cb9",
+      ".agents/skills/to-tickets/SKILL.md": "4c140dc969fb610724a55134240a9ca718cf558a89db152bf7a96b8ba4e4b7e6",
+      ".agents/skills/wayfinder/SKILL.md": "2068ecd8a14f313b4ba6b557542585d4f85b204caf11c8a81c1823098ab4a6d3",
+      ".agents/skills/workflow-debugging/SKILL.md": "5324543fe81b1b445ad080be7bc8a75a1d4123dfd49d90857de971519fe8dfca",
+      ".agents/skills/workflow-discovery/SKILL.md": "862d51c20282b1d51b413119bd649175b3c87a884997c670e598ddf681d304a2",
+      ".agents/skills/workflow-implementation/SKILL.md": "1fb4036df17c4a379c363321fde6a3b3c5f197205debe07e1929f066244caafd",
+      ".agents/skills/workflow-verification/SKILL.md": "6f4627520f5ced6f9b2377236ccc2cc0d156be6587fa24b33b1ab12938f1d1f3",
+      "agent_workflow/install/AGENTS.md.template": "a32fdd2ff0aaeb62259fb35f90f4dd903c2b04435d1ad475ac8da5df44581dc5",
+      "agent_workflow/install/CLAUDE.md.template": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+      "agent_workflow/install/manifest.json": "4808b265a6c15b80230568d5dac32feeb3c110d82d01ae1ec8fc6449f251c483"
+    },
+    "B": {
+      ".agent-workflow/README.md": "2e2eb86e4bffd2f87e925e30f18661df77a92d334f6faf1be51c79bc687b233b",
+      ".agent-workflow/contracts/wayfinder-state.md": "7df108598d2516aaf8d03ce7b88f60d158a2838c337404e93cedc571c116e3fd",
+      ".agent-workflow/routing.md": "48ba112e3cf3c6a95ccc2b36897453b2c51d3bc601c3dd35d6a08ef6e03dbe50",
+      ".agent-workflow/terminology.md": "b62a8980cf0ba451dd9a94a5a03eda948d053d33838301043bef00ef8f8f4ab8",
+      ".agents/skills/code-review/SKILL.md": "ffa6f53bf087d9624c6bf916f05e0b128ed84c80a8ffddd0012a1f9d8500cfde",
+      ".agents/skills/codebase-design/DEEPENING.md": "a569b5bb6e1c0913e7abb9e6d11e63a8326dd1bf2d74bc1b7e03e6b526f47c6d",
+      ".agents/skills/codebase-design/DESIGN-IT-TWICE.md": "4d873639dd89b4301b94f9b01f984fa2f7562f886520b2736b828c3ad1fc6d49",
+      ".agents/skills/codebase-design/SKILL.md": "e93d60757f737fb2022181c11162d35e7d9018f255996561ebc91392a8743d56",
+      ".agents/skills/domain-modeling/CONTEXT-FORMAT.md": "c10934093bea426dd8ac59665bcc5869ced806b017f0a7e39b54d4f369ec008a",
+      ".agents/skills/domain-modeling/SKILL.md": "c572ed295c338c99129f1adcc02f9674aa02bda2c5a1517be66810e185503e15",
+      ".agents/skills/grilling/SKILL.md": "fae9c161c4a3208176c7c71cea0b04c9344a4506d01da3bb073eeea462f93451",
+      ".agents/skills/implement/SKILL.md": "2531a816d1c98573a058b1ee4f9b824bc753d1c6a9c02c36a46781c608fa1455",
+      ".agents/skills/prototype/LOGIC.md": "65d4aaabd6a23f48b6800e87e1dcca2d50050f77138f438a02e53a9df8306ad0",
+      ".agents/skills/prototype/SKILL.md": "53db38690acded1cec91ef2b759f21bc4e1eb7ed484d03d3b77505e963caa15e",
+      ".agents/skills/prototype/UI.md": "53c58d68ded996556a93f3ee4ea5544de860166998347d03979c68d27c826a4f",
+      ".agents/skills/research/SKILL.md": "dbd4377c7252753150fcb6a47792b9722aef64e1823529b89e755cf2045173f0",
+      ".agents/skills/tdd/SKILL.md": "7ec25a6ddbcddaa1aeacbb81da9cdc00a33d64bf0a872fa7b648dcce5f2d7d5e",
+      ".agents/skills/tdd/mocking.md": "74dbedc7708526588a6fd5d3009c23c413d69d1b493a630428cdbd87ffcbe9fa",
+      ".agents/skills/tdd/tests.md": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a",
+      ".agents/skills/to-spec/SKILL.md": "bc12994e7a175aa638cc4f02ffd5b03018cc0fa46b4c169168cc4e295afe9cb9",
+      ".agents/skills/to-tickets/SKILL.md": "4c140dc969fb610724a55134240a9ca718cf558a89db152bf7a96b8ba4e4b7e6",
+      ".agents/skills/wayfinder/SKILL.md": "2068ecd8a14f313b4ba6b557542585d4f85b204caf11c8a81c1823098ab4a6d3",
+      ".agents/skills/workflow-debugging/SKILL.md": "5324543fe81b1b445ad080be7bc8a75a1d4123dfd49d90857de971519fe8dfca",
+      ".agents/skills/workflow-discovery/SKILL.md": "862d51c20282b1d51b413119bd649175b3c87a884997c670e598ddf681d304a2",
+      ".agents/skills/workflow-implementation/SKILL.md": "1fb4036df17c4a379c363321fde6a3b3c5f197205debe07e1929f066244caafd",
+      ".agents/skills/workflow-verification/SKILL.md": "6f4627520f5ced6f9b2377236ccc2cc0d156be6587fa24b33b1ab12938f1d1f3",
+      "agent_workflow/install/AGENTS.md.template": "a32fdd2ff0aaeb62259fb35f90f4dd903c2b04435d1ad475ac8da5df44581dc5",
+      "agent_workflow/install/CLAUDE.md.template": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+      "agent_workflow/install/manifest.json": "4808b265a6c15b80230568d5dac32feeb3c110d82d01ae1ec8fc6449f251c483"
+    }
+  },
+  "model": "gpt-5.6-sol",
+  "reasoning": "medium",
+  "limits": {
+    "seconds": 180,
+    "output_bytes": 2000000,
+    "invocations": 48
+  },
+  "order": [
+    [
+      "coding",
+      "B",
+      1
+    ],
+    [
+      "coding",
+      "A",
+      1
+    ],
+    [
+      "coding",
+      "C",
+      1
+    ],
+    [
+      "planning",
+      "B",
+      1
+    ],
+    [
+      "planning",
+      "A",
+      1
+    ],
+    [
+      "planning",
+      "C",
+      1
+    ],
+    [
+      "coding",
+      "C",
+      2
+    ],
+    [
+      "coding",
+      "A",
+      2
+    ],
+    [
+      "coding",
+      "B",
+      2
+    ],
+    [
+      "planning",
+      "C",
+      2
+    ],
+    [
+      "planning",
+      "A",
+      2
+    ],
+    [
+      "planning",
+      "B",
+      2
+    ]
+  ],
+  "configuration_template": [
+    "-c",
+    "model=\"gpt-5.6-sol\"",
+    "-c",
+    "model_reasoning_effort=\"medium\"",
+    "-c",
+    "approval_policy=\"never\"",
+    "-c",
+    "default_permissions=\"pilot\"",
+    "-c",
+    "permissions.pilot.filesystem={\":minimal\"=\"read\", \"/WORKSPACE\"=\"write\"}",
+    "-c",
+    "permissions.pilot.network.enabled=false",
+    "-c",
+    "web_search=\"disabled\"",
+    "-c",
+    "features.apps=false",
+    "-c",
+    "features.plugins=false",
+    "-c",
+    "features.memories=false",
+    "-c",
+    "features.multi_agent=false",
+    "-c",
+    "features.shell_snapshot=false",
+    "-c",
+    "shell_environment_policy.inherit=\"none\"",
+    "-c",
+    "allow_login_shell=false",
+    "-c",
+    "model_provider=\"openai\"",
+    "-c",
+    "project_doc_max_bytes=65536"
+  ],
+  "transfer": "All project files; remove source-once.txt before stage 2; no chats, homes, traces or grader files; no repairs",
+  "cli": "codex-cli 0.144.6",
+  "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff"
+}

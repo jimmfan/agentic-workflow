@@ -20,16 +20,22 @@ The compact report maintains findings and reproduction instructions.
 
 The frozen pre-change base is `a963f707f9123d5af870dfe06f06d3d1ee1802f8`, current `origin/main` at task start.
 The reported missing hotel identities motivate the experiment; overcompression remains an unproven hypothesis.
-The accepted change preserves consequential details in their designated artifact and adds bounded readback without altering state topology or authorization.
+The implemented change preserves consequential details in their designated artifact and adds bounded readback without altering state topology or authorization.
+The [compact report](../../evals/wayfinder-persistence/REPORT.md) maintains exact revisions, verification, failed-cohort evidence and limitations.
+The first live writer was infrastructure-blocked: the native edit helper was denied, then the 180-second deadline expired without any project changes.
+One of 48 permitted stage invocations was attempted; no stage or trajectory completed, and the narrow gate remains unmet.
+An offline adapter correction passed non-model isolation probes but has no evaluated continuation evidence.
 
 ## Blockers and dependencies
 
-Broader live comparison depends on the narrow evidence-precedence preflight and demonstrable fresh-session isolation.
-Live execution also requires the exact requested model through existing authentication.
+The stopped cohort cannot continue or be repaired.
+Broader live comparison still depends on the narrow evidence-precedence preflight and full native-edit observability under the corrected adapter.
+Any separately reported cohort must count the consumed attempt against both the 12-trajectory and 48-stage limits.
 
 ## Ready work
 
-Complete the contract, synthetic cases and offline controls; freeze the pilot; run available verification and sequential live stages; report limitations; review and push.
+Review the delivered evidence and decide whether to pursue a separately frozen cohort.
+No A/B or B/C advantage is established; keep the instruction provisional and do not merge or release from this effort.
 
 ## Key links
 

@@ -672,7 +672,9 @@ def main():
     run.add_argument("--run-root", type=Path, required=True)
     args = parser.parse_args()
     if args.action == "isolation":
-        print(json.dumps(isolation_probe(), indent=2))
+        probe = isolation_probe()
+        print(json.dumps(probe, indent=2))
+        raise SystemExit(0 if probe["passed"] else 2)
     elif args.action == "freeze":
         freeze(args.output, args.candidate)
     else:
@@ -726,6 +728,11 @@ def isolation_probe():
             }
         result["write_succeeded"] = (project / "write.txt").exists()
         result["reader_write_denied"] = not (project / "readonly.txt").exists()
+        result["passed"] = (
+            all(result[str(stage)]["returncode"] == 0 for stage in (1, 4))
+            and result["write_succeeded"]
+            and result["reader_write_denied"]
+        )
         return result
 
 
