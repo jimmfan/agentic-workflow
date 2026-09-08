@@ -43,14 +43,17 @@ The deepened module takes the external dependency as an injected port; tests pro
   Don't introduce a port unless at least two adapters are justified (typically production + test).
   A single-adapter seam is just indirection.
 - **Internal seams vs external seams.**
-  A deep module can have internal seams (private to its implementation, used by its own tests) as well as the external seam at its interface.
-  Don't expose internal seams through the interface just because tests use them.
+  Identify the module under test and its caller-facing interface, which may be internal to the application.
+  Tests of that module exercise its interface, not private seams inside its implementation.
+  Don't expose private seams just because tests use them.
 
 ## Testing strategy: replace, don't layer
 
-- Old unit tests on shallow modules become waste once tests at the deepened module's interface exist — delete them.
 - Write new tests at the deepened module's interface.
   The **interface is the test surface**.
+- Before deleting old tests, compare their behavior and failure coverage with the retained tests.
+  Remove a test only when its useful coverage is demonstrably retained or its behavior has intentionally left scope.
+  The presence of higher-level tests alone does not prove redundancy; keep or replace coverage for failures and edge cases they do not exercise.
 - Tests assert on observable outcomes through the interface, not internal state.
 - Tests should survive internal refactors — they describe behaviour, not implementation.
   If a test has to change when the implementation changes, it's testing past the interface.

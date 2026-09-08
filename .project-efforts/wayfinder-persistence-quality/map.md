@@ -7,7 +7,7 @@ Improve authorized reconciliation and evaluate fresh-session continuation with t
 ## Scope
 
 One focused reconciliation-contract change, deterministic evaluator controls, and six sequential four-stage trajectories using `gpt-5.6-sol` at medium reasoning.
-The user authorized logical commits and a non-force push to `origin/fix/wayfinder-persistence-quality`, with no merge, release, tag or VERSION change.
+The original campaign authorization allowed logical commits and a non-force push to `origin/fix/wayfinder-persistence-quality`, with no merge, release, tag or VERSION change.
 Only disposable synthetic consumers were used; no travel repository, personal data or real infrastructure was accessed.
 
 ## Areas and relationships
@@ -18,7 +18,8 @@ The [compact report](../../evals/wayfinder-persistence/REPORT.md) maintains find
 
 ## Current state
 
-The pre-change base remains current `origin/main`, `a963f707f9123d5af870dfe06f06d3d1ee1802f8`.
+The experiment's original policy baseline is `a963f707f9123d5af870dfe06f06d3d1ee1802f8`.
+Subsequent project delivery completed through [PR #30](https://github.com/jimmfan/agentic-workflow/pull/30), merged as `b8ac8a4c48b61ac7fbca923c2c673ab19945577e`.
 Both stopped historical cohorts remain unchanged.
 One repair cycle clarified scoped uncertainty and separated behavioral outcomes from safe execution.
 Its diagnostic writer completed; the updater timed out with incomplete reconciliation, preserved as a separate result.
@@ -41,9 +42,8 @@ No further model invocation, policy tuning or sample replacement is planned in t
 ## Ready work
 
 Final evidence/documentation verification is complete; the delivery consists of the tested clarification, evaluator controls and preserved results.
-Review the report when deciding whether to merge this clarification or authorize further behavioral investigation.
-The report separates retaining the clarification from claims of improved behavior and from merge readiness.
-Any further behavioral investigation or merge requires its own authorized scope.
+No delivery work remains for this clarification; PR #30's merge does not establish improved behavior or authorize another experiment.
+Review the report if considering further behavioral investigation, which requires its own authorized scope.
 Actual use is 26 new invocations (two diagnostic and 24 final), 30 cumulative invocations and nine trajectory attempts, within all limits.
 Raw traces, copied workspaces and temporary authentication homes remain outside Git.
 

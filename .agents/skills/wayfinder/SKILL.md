@@ -4,169 +4,92 @@ name: wayfinder
 ---
 # Wayfinder
 
-Wayfinder is Agent Workflow's sole durable coordination layer.
-Routing selects Wayfinder for a consequential objective when the root durable-coordination threshold is met.
-Known work may still need continuity across sessions, agents, external dependencies, or participants; material uncertainty is not required.
-An objective alone does not select Wayfinder.
-Without that continuity need, clear bounded work, one isolated unresolved question, and read-only work stay on their minimum useful route.
-
 This maintained skill is derived from Matt Pocock's Wayfinder methodology.
-It helps orient the effort, choose the minimum resolution method, and identify ready work; `.agent-workflow/contracts/wayfinder-state.md` defines state mechanics.
+It orients an effort, chooses the minimum useful resolution method, reconsiders the route as evidence develops, and identifies ready work.
+Root policy determines when Wayfinder is selected; an objective or existing state alone does not select it.
 
-## Operating rules
+## Load the state boundary
 
-- Existing Wayfinder state alone never selects Wayfinder.
-- Selection may conclude that no consequential continuity earns persistence; in that case create no effort, map, or supporting record.
-- One Wayfinder effort has one objective and scope.
-  Use user intent and accepted project evidence to establish them.
-  Do not create a new effort until its objective and scope are sufficiently established to identify it.
-  Unresolved route, choices, dependencies, or involved areas may justify Wayfinder and do not prevent creation when effort identity is otherwise sufficiently established.
-  If materially different interpretations of the user's intent would produce different effort objectives or scope, use the minimum sufficient clarification or resolution method first.
-  Do not materially invent objective or scope merely to create an effort.
-  Scope may be clarified, narrowed, or elaborated as understanding and evidence develop.
-  Reuse the same effort while its objective and substantive scope remain the same; a materially different objective or substantive scope is a different effort.
-  Resume efforts by their semantic objective-and-scope match; scope wording need not remain textually identical.
-  Never repurpose an effort for unrelated work.
-- Establish the objective and scope, then enough relevant areas and relationships to orient the effort before substantial decomposition.
-  Keep `map.md` brief, preserve enough information to resume safely, and load detail only when relevant.
-  Use the state contract's default-map authoring conventions; existing layouts remain resumable without formatting-only rewrites.
-- The map summarizes the effort's current coordination state, conditions blocking particular work, dependencies, and ready work.
-  Optional F/D ledger sections and U/E artifacts are records that preserve only useful current conclusions, choices, unresolved questions, and evidence.
-- Create a separate U/E/F/D record because it is an independently useful coordination or retrieval unit, not merely because it belongs to a semantic category.
-- Live source and accepted project artifacts outrank unsupported or outdated map claims.
-- Inspect Git/session state when useful for safe execution, but do not normally persist volatile observations.
-  Retain durable Git constraints and dependencies under the state contract.
-- Durable Wayfinder state can record authority; it cannot create authority.
-  Apply accepted project policy when it already determines a choice.
-  Otherwise obtain a required project choice from the person, role, or valid delegate with project decision authority.
-  If decision authority itself is unclear, clarify who may decide.
-  Responsibility alone does not establish project decision authority.
-  Evidence-backed technical judgment already delegated by the user or accepted project policy remains valid.
-  Keep the question, the unresolved consequential uncertainty, and the affected work explicit.
-- Authorization to perform an action does not commit a project choice, and a committed project choice does not authorize an unrelated action.
-  Host permission supplies neither.
-  A workflow or skill, its instructions, a test, specification, ticket, or Wayfinder record grants neither.
-  When both the required project choice is committed and an action is authorized, proceed only within that authorized scope.
+Once Wayfinder is selected, read `.agent-workflow/contracts/wayfinder-state.md` before inspecting or changing effort state.
+The contract owns recognition, creation and resumption identity, map authoring, selective record preservation, identifiers, reconciliation, pruning, and ending.
+Resume from `map.md`, following the contract's progressive detail loading; do not substitute a specialist notebook or parallel coordination record.
+If the contract is unavailable, stop affected Wayfinder work: do not inspect or change a map, invent substitute persistence, or create tracker, specialist-record, or scratch state.
+Report the incomplete installation.
 
-When selecting or resuming Wayfinder, read the state contract before effort state.
-When resuming a Wayfinder effort, read `map.md` first among its effort files.
-The state contract defines effort recognition and selection, paths and identifiers, reconciliation, pruning, and effort ending.
-If the state contract is unavailable, fail closed for the affected Wayfinder work:
-
-- Do not inspect or change a map.
-- Do not invent substitute persistence or create tracker, specialist-record, or scratch state.
-- Report the incomplete installation.
+Establish objective and scope from user intent and accepted project evidence, using the contract's identity and creation rules.
+Selection may still leave no consequential continuity worth preserving; in that case create no effort or records.
+Inspect Git/session state when useful for safe execution; the contract's Current state convention governs what earns durable retention.
+Apply root policy's authority, authorization, evidence-precedence, and preservation rules throughout this method.
 
 ## Establish areas and relationships
 
-Wayfinder establishes its own effort-specific areas and relationships.
-Reuse accepted project structure when it supplies a useful objective, scope, areas, and important operating boundaries.
-Otherwise establish the smallest useful structure directly.
-Make consequential participant responsibilities and operating boundaries explicit, using established assignments or their designated maintaining sources under the state contract.
+Establish enough relevant areas and relationships to orient the effort before substantial decomposition, then derive the effort name and stable path from its objective and scope under the contract.
+Reuse accepted project structure when it supplies a useful objective, scope, areas, and important operating boundaries; otherwise establish the smallest useful structure directly.
+Make consequential participant responsibilities and operating boundaries explicit using established assignments or their designated maintaining sources, following the contract's responsibility authoring rules.
 Clarify consequential unknown responsibility or decision authority when affected work requires it; continue independent authorized work without inventing assignments or prerequisites.
-The effort's view of its areas and relationships is provisional, adaptive, and judgment-based; established assignments and authority remain grounded in their sources.
-It helps Wayfinder challenge incomplete framing and revise its understanding as evidence develops.
-Exploration may broaden understanding, but must not silently broaden the user's goal, delegated authority, or implementation scope.
+The effort's view is provisional and adaptive, while established assignments and authority remain grounded in their sources.
+Use this view to challenge incomplete framing as evidence develops without silently broadening the user's goal, delegated authority, or implementation scope.
 
-Domain Modeling applies only when clarifying or reorganizing domain concepts, terminology and ubiquitous language, domain or context boundaries, or domain responsibilities and relationships would materially improve the work; progress need not already be blocked.
-It does not own generic implementation or module architecture, all project structure, or Wayfinder's effort-specific view merely because the map contains areas and relationships.
-When Domain Modeling would help, resolve enough domain-model ambiguity before substantial U/E/F/D accumulates.
-In every case, establish enough effort-specific areas and relationships before substantial decomposition, then derive the effort name and stable path from the objective and scope.
-
+Domain Modeling applies when clarifying or reorganizing domain concepts, terminology and ubiquitous language, domain or context boundaries, or domain responsibilities and relationships would materially improve the work; progress need not already be blocked.
+It does not own generic implementation or module architecture, all project structure, or Wayfinder's effort view merely because the map contains areas and relationships.
+When it would help, resolve enough domain-model ambiguity before substantial U/E/F/D accumulates.
 On resumption, do not reload Domain Modeling merely because Wayfinder resumed.
-If later evidence shows that the effort's areas and relationships no longer fit current truth, revise the same map directly or load the specialist appropriate to the actual uncertainty.
-Load Domain Modeling again only for domain-model ambiguity.
-Reconcile the current effort view rather than preserving unsupported or parallel representations.
+If the effort view no longer fits current truth, revise the same map or select the specialist appropriate to the actual uncertainty; load Domain Modeling again only for domain-model ambiguity.
 
 ## Chart the visible route
 
-After establishing the objective, scope, and relevant areas and relationships, chart only as far as current evidence supports.
-Do not fully decompose uncertain future work.
-
+After orientation, chart only as far as current evidence supports; do not fully decompose uncertain future work.
 Distinguish precise questions that can be addressed now from consequential in-scope territory that is **Not yet specified** because the relevant question cannot yet be stated clearly.
 Do not turn that unclear territory into speculative questions, records, tickets, dependencies, implementation scopes, or assumed answers.
-
 For each useful precise question, choose the minimum resolution method below.
-Wayfinder coordinates the question; the selected specialist retains its method.
 
 After a consequential resolution or material new finding, revisit the affected route before continuing.
 Newly understood territory may become precise, earlier questions may no longer apply, and areas, relationships, dependencies, blockers, or ready work may change.
-
 Stop expanding the route when the work that may proceed is sufficiently clear.
-A question being precise enough to address does not by itself justify a U#; preserve one only when separate durable retention is independently useful under the state contract.
 
 ## Choose the minimum resolution method
 
 Continue directly when no additional method is needed.
-Otherwise load only the smallest specialist needed to resolve or accurately frame the current question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity:
+Otherwise select only the smallest specialist needed to resolve or accurately frame the current question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity:
 
 - **Discovery** for consequential alternatives and tradeoffs.
 - **Debugging** for an observed behavior with an unknown cause.
 - **Research** for external uncertainty needing primary-source evidence.
-- **Prototype** when a disposable experiment is the cheapest honest test.
-- **Domain Modeling** for domain concepts and terminology, ubiquitous language, domain or context boundaries, and domain responsibilities or relationships under the rule above.
+- **Prototype** when an interactive logic demo or contrasting UI variants would answer the design question.
+  CLI and infrastructure experiments may use Direct or another applicable method.
+- **Domain Modeling** for domain concepts, language, context boundaries, responsibilities, and relationships under the rule above.
 - **Human clarification or Grilling** for authority, intent, preference, or prioritization.
 
-Research resolves external uncertainty, Prototype answers a design question, and Debugging investigates an unexplained cause within established areas and relationships.
-They do not replace Domain Modeling when the actual uncertainty concerns the domain model.
+Research, Prototype, and Debugging operate on uncertainties and questions within established areas and relationships; they do not replace Domain Modeling when the uncertainty concerns the domain model.
+Use detailed routing when composition or selected-skill availability materially matters.
+Each specialist retains its method and creates no separate Agent Workflow durable coordination state.
 
-The resolution method determines how a question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity should be addressed and what evidence or authority that method requires.
-It is not merely an artifact label:
+A resolution method determines the evidence or authority needed, not merely an artifact label:
 
 - Human clarification requires the person with the relevant intent or preference, or the person, role, or valid delegate with project decision authority.
 - Research requires appropriate source evidence.
 - Prototype or Debugging requires relevant observed or experimental evidence.
 
-Existing evidence from a source that establishes the scoped claim may satisfy the method without a ceremonial specialist invocation, but one method cannot substitute for another's required authority or evidence.
-
+Existing evidence from a source that establishes the scoped claim may satisfy the method without a ceremonial specialist invocation.
+One method cannot substitute for another's required authority or evidence.
 Do not load specialists speculatively.
-Specialists retain their methods.
-A specialist creates no Agent Workflow durable coordination state.
-If work is interrupted, reconcile only consequential questions, uncertainties, unexplained causes, choices, domain-model ambiguity, conditions blocking particular work, evidence or conclusions, artifact references, the resolution method when useful, and ready work into Wayfinder.
-When resuming, read the map first rather than a specialist notebook or coordination record.
 
 ## Reconcile and transition ready work
 
-The map summarizes the objective, scope, current coordination state, conditions blocking particular work, dependencies, and ready work.
-Keep it sufficient for a fresh session to continue the effort.
-Reference the artifacts that maintain lasting results instead of copying them.
-The state contract defines when U/E/F/D records are worth retaining, how records are pruned, and when an effort ends.
+Map uncertainty broadly, then preserve selectively using the contract's Current knowledge rules.
+A precise question alone does not earn a U#.
+When project knowledge determines whether separate preservation is useful, ask the substantive project question rather than asking merely whether to create a record.
+Keep the map brief and sufficient for a fresh session to continue, linking the artifacts that maintain lasting results.
+If work is interrupted, retain only consequential coordination and references under the contract rather than a specialist activity log.
 
-Map uncertainty broadly, then preserve selectively.
-Record a precise question as U# when separate preservation while unanswered is independently useful to a later developer making or evaluating a decision.
-This applies within the current objective and scope, especially when the answer requires a project choice from the person, role, or valid delegate with project decision authority, depends on an external participant or approval, or gates multiple downstream areas or a consequential boundary.
-Ask the substantive project question when project knowledge determines whether separate preservation is useful; do not ask merely whether to create a U#.
-Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
-Precision alone is insufficient.
-Ordinary external uncertainty, an unexplained cause, a long list, or a template does not by itself justify a U#.
-A temporary U# is useful only when separate preservation improves current coordination or later continuation, not as create-and-prune ceremony.
-
-When dependency evidence is sufficient, surface the navigation shape concisely: the critical path, independent parallel work, and any off-path dependency whose external lead time changes ordering or readiness.
+Use the contract's Dependencies and readiness rules to distinguish required inputs, conditions blocking particular work, and independent work that may proceed.
+When dependency evidence is sufficient, surface the critical path, independent parallel work, and any off-path dependency whose external lead time changes ordering or readiness.
 Do not infer a critical path from an unordered backlog or incomplete evidence.
+For a consequential unresolved question affecting a transition, obtain the appropriate evidence or project choice, or record authorized scoped acceptance under the contract; acceptance leaves the question unresolved.
 
-A blocker is a condition that currently prevents particular work from proceeding.
-An unsatisfied dependency, unresolved consequential uncertainty, or missing required authority can be a blocker for affected work.
-The missing condition may be that a required project choice has not yet been committed, a required action has not yet been authorized, or a required dependency remains unsatisfied.
-Blocking is scoped to affected work: the same condition may block one scope without blocking another.
-An unresolved U# record contains a question and is not itself a blocker.
-Delay, inconvenience, risk, or unfinished work alone does not make a condition a blocker.
-Ready work is work to which no blocker currently applies.
-Independent ready work may proceed while other work remains blocked.
-
-Dependencies are satisfied by obtaining the action, artifact, decision, participation from a person, system result, external result, or other input they require.
-Questions and uncertainties are resolved through appropriate evidence or their resolution method.
-Obtain a required project choice from the person, role, or valid delegate with project decision authority, or apply accepted project policy when it already determines the choice.
-If decision authority itself is unclear, clarify who may decide.
-Responsibility alone does not establish project decision authority.
-Where the state contract permits it, the person, role, or valid delegate with that authority may explicitly accept unresolved uncertainty for one named boundary.
-For an unresolved consequential question, either resolve the question or record that authority and acceptance in the project artifact recording the committed choice.
-The acceptance leaves the U# current and unresolved and unblocks only that named boundary.
-Apply the state contract’s scoped-acceptance rule to other work: no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
-Satisfying a dependency or accepting unresolved uncertainty for one boundary changes blocking only for affected work and does not automatically unblock unrelated work.
-Reconcile and shrink the map, then transition one or more ready implementation scopes to the Implementation workflow without advancing work that remains dependency-blocked.
-Each workflow transition to Implementation consumes one ready scope and its acceptance criteria; Verification follows material execution.
+Reconcile affected state through the contract's common sequence before handing off ready work.
+That sequence distinguishes current-state checks before mutation, retrievability verification before pruning, and saved-result readback before claiming completion.
+Transition one or more ready implementation scopes without advancing dependency-blocked work.
+Each transition to Implementation consumes one ready scope and its acceptance criteria; Verification follows material execution.
 Use `to-tickets` only when approved work needs substantial dependency ordering or independently deliverable sessions.
-When no durable ticket or ticket set exists, the map may state ready work directly.
-Once `to-tickets` creates a durable ticket or ticket set, that ticket or ticket set maintains its contents, dependencies, ordering, and readiness.
-The map links that durable ticket or ticket set and does not mirror ticket-level state; it may include the current ready-work reference.
-A chat-only draft is not a durable ticket or ticket set.
+Follow the contract's map-versus-ticket responsibility rule when referring to that work.

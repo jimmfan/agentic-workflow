@@ -14,13 +14,10 @@ Do not invent a local destination, label, or status.
 1. Explore the repo to understand the current state of the codebase, if you haven't already.
    Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
 
-2. Sketch out the seams at which you're going to test the feature.
-   Existing seams should be preferred to new ones.
-   Use the highest seam possible.
-   If new seams are needed, propose them at the highest point you can.
-   The fewer seams across the codebase, the better - the ideal number is one.
-
-Check with the user that these seams match their expectations.
+2. Reuse scope and testing decisions accepted in the request, conversation, project artifacts, or invoking workflow.
+   Describe the modules under test and their agreed caller-facing seams.
+   Prefer existing seams that can verify the supported behavior.
+   Mark missing decisions as unresolved and any suggested seams or scope as proposals; do not turn inference into agreement or start an interview.
 
 3. Write the spec using the template below.
 
@@ -36,7 +33,7 @@ The solution to the problem, from the user's perspective.
 
 ## User Stories
 
-A LONG, numbered list of user stories.
+A numbered list covering the supported in-scope behavior completely, without duplicate stories or speculative expansion.
 Each user story should be in the format of:
 
 1. As an <actor>, I want a <feature>, so that <benefit>
@@ -45,11 +42,13 @@ Each user story should be in the format of:
 1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
 </user-story-example>
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+Include distinct actors, outcomes, and consequential failure or edge cases supported by the conversation and accepted artifacts.
+Keep unresolved scope questions in Further Notes rather than inventing stories to fill them.
 
 ## Implementation Decisions
 
 A list of implementation decisions that were made.
+Distinguish accepted decisions from proposals and unresolved matters; writing the spec does not approve them.
 This can include:
 
 - The modules that will be built/modified
@@ -71,7 +70,7 @@ Trim to the decision-rich parts — not a working demo, just the important bits.
 A list of testing decisions that were made.
 Include:
 
-- A description of what makes a good test (only test external behavior, not implementation details)
+- A description of what makes a good test (test caller-observable behavior of the module under test, not private implementation details)
 - Which modules will be tested
 - Prior art for the tests (i.e. similar types of tests in the codebase)
 
@@ -82,5 +81,6 @@ A description of the things that are out of scope for this spec.
 ## Further Notes
 
 Any further notes about the feature.
+Include consequential unresolved questions and the boundaries they affect, without inventing answers or approval.
 
 </spec-template>

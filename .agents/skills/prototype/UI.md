@@ -24,7 +24,8 @@ Only reach for sub-shape B if the prototype genuinely has no nearby home.
 
 The route already exists.
 Variants are rendered **on the same route**, gated by a `?variant=` URL search param.
-The existing data fetching, params, and auth all stay — only the rendering swaps.
+Preserve existing params and auth, use only authorized read-only data fetching, and stub actions that would mutate real data.
+Gate prototype variants to the development preview so production rendering stays intact.
 This is the default; pick it unless there's a specific reason not to.
 
 If the prototype is for something that doesn't yet have a page but *would naturally live inside one* (a new section of the dashboard, a new card on the settings screen, a new step in an existing flow) — that's still sub-shape A.
@@ -74,7 +75,7 @@ If two drafts come out too similar, redo one with explicit "do not use a card gr
 Create a single switcher component on the route:
 
 ```tsx
-// pseudo-code — adapt to the project's framework
+// Inside the development-only preview — adapt to the project's framework
 const variant = searchParams.get('variant') ?? 'A';
 return (
   <>
@@ -86,7 +87,7 @@ return (
 );
 ```
 
-For sub-shape A (existing page): keep all the existing data fetching above the switcher; only the rendered subtree changes per variant.
+For sub-shape A (existing page): keep authorized read-only data fetching above the switcher; only the preview's rendered subtree changes per variant.
 
 For sub-shape B (new page): the throwaway route under `/prototype/<name>` mounts the same switcher.
 
@@ -119,12 +120,14 @@ The interesting feedback is usually **"I want the header from B with the sidebar
 ### 6. Capture the answer and clean up
 
 Once a variant has won, capture the answer — which variant and why — then capture the prototype the way the [SKILL](SKILL.md) describes.
-Fold the winner into the real code and move the rest onto the throwaway branch, not into main:
+When production adoption is authorized, implement and verify the accepted design to production standards:
 
 - **Sub-shape A** — fold the winner into the existing page; drop the losing variants and the switcher from main.
 - **Sub-shape B** — promote the winning variant to a real route; drop the throwaway route and the switcher from main.
 
-The full set of variants is the primary source, so it lands on the throwaway branch, not the bin — variant components and the switcher left in the main branch rot fast and confuse the next reader.
+When preservation is authorized, keep the full set of variants as the primary source on the throwaway branch with a usable reference.
+Any commits or publication require authorization for those actions when performed.
+Apply the same authorization boundary to removing prototype files; do not discard unrelated work.
 
 ## Anti-patterns
 

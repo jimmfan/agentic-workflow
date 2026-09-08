@@ -1,6 +1,6 @@
 ---
 name: workflow-implementation
-description: Orchestrate one ready implementation scope through `implement` and independent framework verification. Use after material consequential choices are resolved; skip trivial direct edits and unexplained failures.
+description: Coordinate the outer transition from one ready implementation scope into `implement`, then independent framework verification. Use after material consequential choices are resolved; the inner skill owns building and Code Review. Skip trivial direct edits and unexplained failures.
 ---
 
 # Implementation integration
@@ -23,7 +23,8 @@ Implementation defines the workflow transition into execution, not build methodo
 Invoke `implement` once.
 Never simulate its execution or claim it ran.
 
-Pass the accepted scope and observable acceptance criteria, plus any references to artifacts or records that maintain the scope.
+Pass the governing authorized request or specification, accepted scope, observable acceptance criteria, relevant baseline, and any references to artifacts or records that maintain the scope.
+`implement` establishes pre-edit context and carries those inputs and the actual changed scope into its closing Code Review.
 
 Do not rerun `tdd` or `code-review` work already completed by `implement` unless a distinct request or new evidence creates a gap.
 
@@ -31,7 +32,7 @@ Do not rerun `tdd` or `code-review` work already completed by `implement` unless
 
 ## Verify the result
 
-Invoke `workflow-verification` once with the accepted scope and its acceptance criteria, expected artifacts, changed scope, existing test and review evidence, and remaining integration risks.
+Invoke `workflow-verification` once with the accepted scope and its acceptance criteria, expected artifacts, changed scope, existing test and review evidence including actual coverage and limitations, and remaining integration risks.
 Verification reuses covered evidence and adds only missing acceptance, artifact, or boundary checks.
 
 Completion requires the scope to be finished and required Verification to pass, unless accepted project policy determines that a limitation is acceptable for the named completion boundary or the person, role, or valid delegate with project decision authority explicitly accepts it.

@@ -1,17 +1,20 @@
 # When to Mock
 
-Mock at **system boundaries** only:
+Identify the module under test and mock dependencies across the relevant **system boundaries** when needed:
 
 - External APIs (payment, email, etc.)
+- Separately running owned services through their caller-facing interface
 - Databases (sometimes - prefer test DB)
 - Time/randomness
 - File system (sometimes)
 
-Don't mock:
+Don't replace private implementation inside the module under test with mocks:
 
-- Your own classes/modules
 - Internal collaborators
-- Anything you control
+- Private classes, modules, or methods
+
+An application-internal module can still be tested through its own agreed caller-facing interface.
+Ownership of a remote service does not make its transport a private implementation detail of its caller.
 
 ## Designing for Mockability
 

@@ -1,8 +1,8 @@
 ---
-description: Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes — Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to "review since X".
+description: Review a requested committed range or the actual implementation scope, including attributed pending changes, along independent Standards and Spec axes. Runs parallel sub-agents and reports their findings and coverage separately. Use for branch, PR, fixed-point, or work-in-progress review and implementation handoffs.
 name: code-review
 ---
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+Two-axis review of the established change scope:
 
 - **Standards** — does the code conform to this repo's documented coding standards?
 - **Spec** — does the code faithfully implement the originating issue / spec?
@@ -11,27 +11,44 @@ Both axes run as **parallel sub-agents** so they don't pollute each other's cont
 
 ## Process
 
-### 1. Pin the fixed point
+### 1. Establish the review boundary
 
-Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.
-If they didn't specify one, ask for it.
+Use the supplied review mode, baseline or range, and scope before discovering alternatives.
+Preserve the user's chosen comparison semantics; do not silently expand an explicitly committed-only review to pending work.
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base).
-Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+- **Committed-range / fixed-point review:** resolve and record the requested refs to immutable commits.
+  For a standalone fixed point without another requested comparison, use `git diff <fixed-point>...HEAD` (merge-base to HEAD) and `git log <fixed-point>..HEAD --oneline`.
+  Respect an explicit endpoint comparison or other range instead.
+  Inspect content at the reviewed revision, since working-tree files may differ.
+- **Implementation-scope / work-in-progress review:** use the handoff's governing request or specification, acceptance criteria, baseline, pre-edit context, and attributed changes.
+  Establish the relevant committed delta and pending changes through the actual resulting content.
+  Inspect `git --no-optional-locks status --short`, staged changes (`git diff --cached`), unstaged changes (`git diff`), and relevant new files (`git ls-files --others --exclude-standard` plus content reads).
+  Include applicable additions, deletions, and renames across these surfaces; a commit diff alone is insufficient.
+  Inspect the index version where staged and working-tree content differ, as well as the resulting working-tree content and relevant committed versions.
+  Compare with pre-edit observations to exclude unrelated user changes, including unrelated hunks in a file also edited for this task.
+  File dirtiness alone does not establish attribution.
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty.
-A bad ref or empty diff should fail here — not inside two parallel sub-agents.
+Record the included paths/hunks, relevant versions, commands or content observations, and exclusions once for both reviewers.
+Validate refs and coverage before spawning; an empty commit diff does not imply an empty implementation scope, and a nonempty diff does not establish complete coverage.
+If a required baseline, mode, or material attribution cannot be established from supplied inputs and repository evidence, obtain only the missing scope information or explicitly limit the review.
+Do not claim complete coverage while required inputs remain missing or attribution remains materially ambiguous.
+
+Review is read-only: do not modify project files, the index, or Git history, or stage, commit, stash, reset, clean, or rewrite work to make it reviewable.
+Run Git observations with `GIT_OPTIONAL_LOCKS=0` to suppress optional index writes.
+If the reviewed content changes during review, identify the affected evidence gap and review only what became uncovered before claiming completion.
 
 ### 2. Identify the spec source
 
-Look for the originating spec, in this order:
+Use the governing request or specification and acceptance criteria supplied by the user or invoking workflow first.
+A sufficiently defined current request needs no separate spec file, tracker lookup, or repeated confirmation.
+Only for missing requirements, look for the originating spec in this order:
 
-1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.)
+1. A path or source reference supplied with the review.
+2. Issue references in the relevant commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.)
    — if the project has a configured, available issue tracker, fetch them using its documented workflow.
-2. A path the user passed as an argument.
 3. A spec file under `docs/` or `specs/` matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is.
-   If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+   If requirements remain unavailable, report the **Spec** coverage gap; the Standards axis may still proceed.
 
 ### 3. Identify the standards sources
 
@@ -74,9 +91,12 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 ### 4. Spawn both sub-agents in parallel
 
+Give both independent reviewers the same established inputs: review mode, resolved baseline/range and relevant commits, governing request/specification and acceptance criteria, pre-edit context when applicable, included paths/hunks and versions, exclusions or uncertainty, and commands/content needed to inspect the actual scope.
+Each reviewer must inspect that scope and report actual coverage, not merely echo a supplied diff command or success claim.
+
 **Standards sub-agent prompt** — include:
 
-- The full diff command and commit list.
+- The established review inputs above.
 - The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full — the sub-agent has no other access to it.
 - The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk.
   Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline.
@@ -85,18 +105,21 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 **Spec sub-agent prompt** — include:
 
-- The diff command and commit list.
-- The path or fetched contents of the spec.
+- The same established review inputs, including the supplied request/specification contents or usable references.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong.
   Quote the spec line for each finding.
   Under 400 words."
 
-If the spec is missing, skip the Spec sub-agent and note this in the final report.
+If required Spec inputs are missing, report that axis as incomplete.
+If an independent reviewer is unavailable, report the unavailable axis and any separately performed checks honestly; do not substitute a fabricated review execution or PASS.
 
 ### 5. Aggregate
 
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned.
 Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
+Check each reviewer's actual coverage against the established inputs, including relevant pending and new files.
+Report omissions and attribution limitations even if a reviewer claims success; zero findings with missing coverage is not a complete review.
+Pass covered scope, findings, and remaining evidence gaps to subsequent acceptance verification so it reuses evidence and adds only missing checks.
 
 End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any).
 Don't pick a single winner across axes — that's the reranking the separation exists to prevent.

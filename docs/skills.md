@@ -37,6 +37,24 @@ Historical skill inventories are not part of the current runtime.
 `domain-modeling` maintains domain concepts, terminology and ubiquitous language, domain or context boundaries, domain responsibilities and relationships, and the applicable `CONTEXT.md` or `CONTEXT-MAP.md` model.
 It does not own generic implementation or module architecture, all project structure, Wayfinder's effort-specific areas and relationships, or a generic architecture-decision store.
 `implement` owns its inner build, TDD, and `code-review` loop; `workflow-implementation` remains the outer transition into execution and independent acceptance verification.
+Its closing review covers the attributed implementation changes through the current working tree, using the supplied request, acceptance criteria, baseline, and pre-edit context.
+Standalone Code Review preserves the requested range semantics; an explicitly committed-only review excludes pending work.
+
+## Method boundaries
+
+`to-spec` synthesizes the supported scope and testing decisions already available; it labels proposals and unresolved matters without turning synthesis into an interview or approval.
+`tdd` reuses agreed test seams and keeps its red-to-green method; integration tests alone do not select it.
+Codebase Design's vocabulary applies to deep-module analysis and preserves distinct project concepts such as services and APIs.
+The module under test may expose an application-internal caller interface; its private implementation remains behind that interface.
+Deepening retains useful behavior and failure coverage before old tests are removed.
+
+`grilling` works through relevant unresolved choices requiring human input in dependency-aware rounds, with thoroughness when requested.
+`to-tickets` cuts across applicable layers and records genuine ticket and external prerequisites; ticket drafting does not authorize execution.
+Expand–contract is appropriate when compatibility or independent transitions require coexistence, while a safely verifiable bounded change may be atomic.
+
+`prototype` offers interactive logic demos and UI exploration; CLI and infrastructure experiments may use Direct or existing methods.
+Prototype evidence informs production work, whose adoption and verification remain separate from authorization to commit or publish.
+Research and factual lookup can run synchronously when their evidence requirements are met; required independent or parallel methods retain that requirement and report unavailable capability honestly.
 
 ## Discovery and invocation
 
@@ -55,7 +73,8 @@ Deterministic fixtures validate the packaged files and mappings; live host disco
 Neither invents a local destination, label, or status.
 
 `code-review` treats tracker access as optional source lookup.
-It continues when the fixed point and specification are otherwise available and never blocks the Standards axis solely because tracker access is absent.
+It uses the supplied request or specification before artifact discovery and never blocks the Standards axis solely because tracker access is absent.
+Missing required inputs or independent reviewers remain explicit coverage gaps; subsequent verification reuses covered evidence.
 
 ## Lifecycle and maintenance
 

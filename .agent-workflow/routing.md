@@ -22,7 +22,7 @@ This table resolves overlaps:
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
 | Interdependent choices requiring human input or project decision authority materially shape downstream work | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual questions and one straightforward clarification use the minimum sufficient method |
 | Domain concepts, terminology or ubiquitous language, domain or context boundaries, or domain responsibilities and relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the domain model materially helps; ordinary vocabulary lookup stays Direct |
-| Throwaway implementation would answer a design or behavior question | Direct or `prototype` | Ordinary production implementation stays Direct or with its primary workflow |
+| An interactive logic demo or UI exploration would answer a design question | Direct or `prototype` | CLI and infrastructure experiments may use Direct or existing methods; production implementation retains its normal route |
 | Module interface, seam, depth, locality, or testability needs explicit design | Direct or `codebase-design` | Load Codebase Design only when its vocabulary materially improves the design; ordinary edits and refactors stay Direct or with their primary workflow |
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis grants no action authorization for a fix |
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
@@ -53,16 +53,13 @@ Scope refinement need not preserve the original wording when the objective and s
 A safe regular map identifies current resumable coordination; a mapless directory is not a candidate.
 An unrelated map never captures the route.
 
-After selecting Wayfinder, read `contracts/wayfinder-state.md`, then the map and only relevant F#/D# ledger sections or U#/E# artifacts.
+After selecting Wayfinder, read the [state contract](contracts/wayfinder-state.md) before effort state; it owns full recognition, creation, map-first resumption, and preservation mechanics.
 Implementation may consume ready work from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses the Wayfinder threshold.
 Inside selected Wayfinder, use each needed specialist once for the relevant question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity without creating another Agent Workflow durable coordination model.
 Meaningful Implementation runs Verification once.
 New causal uncertainty returns to Debugging; a material unresolved choice returns to Discovery or Wayfinder according to the coordination threshold.
-
-Discovery is the method for bounded consequential choice and tradeoff analysis.
-Compose Domain Modeling when ambiguity in domain concepts, terminology, ubiquitous language, domain or context boundaries, or domain responsibilities and relationships materially affects that analysis; otherwise Discovery runs alone.
 
 ## Use selected skills
 
@@ -71,10 +68,11 @@ Read the selected skill's instructions and only the support files needed for the
 Selecting a skill is not execution: include it in the route marker only when its method actually ran.
 
 Choosing a route, selecting a skill, loading its instructions, using its method, completing the request, and verifying the result are distinct.
-The agent chooses Direct or one primary workflow.
-A request may remain Direct while the agent uses a skill for focused work.
-A skill may also support the current route without becoming its primary workflow.
+Using a skill for focused work need not change the primary route, including Direct.
 Loading a selected skill makes its instructions available; execution means actually using the skill's method; and completion and verification require evidence beyond the route marker.
+
+Research and factual lookup may run synchronously when their evidence requirements remain satisfied.
+Preserve a selected method's required independence or parallelism; if that capability is unavailable, report the execution gap under the availability conventions below rather than claiming independent work ran.
 
 If a selected skill is unavailable or cannot run without explicit user invocation, continue Direct only when the user did not require that skill and available capabilities can satisfy the request.
 Otherwise, give the exact supported invocation instruction and stop with `<skill>-handoff` when explicit user invocation remains required, or stop with `<skill>-unavailable` when the skill is unavailable.
@@ -88,7 +86,7 @@ Selected skills supply their methods, terminology, and evidence.
 Wayfinder is Agent Workflow's sole durable coordinator and stores only consequential state and references.
 Specifications, tickets, research, maps, and reviews remain in the artifacts or records designated to maintain their results; external identifiers remain unchanged.
 
-The Implementation integration supplies accepted scope, references to the artifacts or records that maintain it, and acceptance criteria from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set.
+The Implementation integration supplies the accepted scope, its maintaining references, and acceptance criteria from the resumption inputs above.
 Invoked `implement` is responsible for its build loop, TDD, and closing Code Review.
 Framework Verification runs afterward and adds only uncovered evidence.
 Using a skill for specialist work does not create separate Agent Workflow durable coordination state.

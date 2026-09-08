@@ -2,11 +2,13 @@
 description: Grill the user through interdependent choices requiring human input or project decision authority that materially shape downstream work. Also use when the user explicitly asks to be grilled or stress-test a plan, decision, or idea.
 name: grilling
 ---
-Interview the user relentlessly until you reach a shared understanding.
-Map this as a **design tree**: every decision branches into the decisions that hang off it.
+Work through relevant unresolved choices that require human input or project decision authority until you reach a shared understanding.
+When the user explicitly requests thorough grilling, examine the relevant assumptions, alternatives, and consequences in depth.
+Reuse settled choices, choices determined by accepted project policy, and technical judgment already delegated to the agent.
+Map the remaining choices as a **design tree**: each decision branches into the decisions that depend on it.
 
 Work the tree in **rounds**.
-The **frontier** is every decision whose prerequisites are already settled — the questions you can ask _now_ without guessing at answers you haven't heard yet.
+The **frontier** is the relevant unresolved human-owned decisions whose prerequisites are already settled — the questions you can ask _now_ without guessing at answers you haven't heard yet.
 Ask the whole frontier in one round: number each question and give your recommended answer.
 Then wait for the user's answers before the next round.
 
@@ -22,10 +24,11 @@ Each round the user answers reshapes the tree — settled decisions push the fro
 Recompute the frontier and ask the next round.
 A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
-Finding _facts_ is your job, never the user's.
-When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent to find it — don't ask the user for anything you could look up yourself.
-Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report — ask the rest of the frontier now.
-The _decisions_ are the user's — put each to them and wait.
+Look up accessible facts before asking the user for information available from the environment or sources.
+Look up facts directly when that satisfies the evidence need; delegate when available and useful for independent exploration.
+A running exploration is an unsettled prerequisite, so only downstream questions wait for its result — ask the rest of the frontier now.
+Put choices requiring human input or project decision authority to the appropriate person and wait for those answers.
 
-The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed.
-Do not act on it until the user confirms you have reached a shared understanding.
+Finish when the relevant design tree is resolved to the agreed scope, with no required choice silently assumed.
+State the shared understanding and any explicitly deferred question with its affected boundary; obtain confirmation where material understanding or a required choice remains unsettled.
+Applying those choices still requires action authorization from the request or accepted project policy.

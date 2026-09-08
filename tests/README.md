@@ -26,6 +26,8 @@ It is intentionally outside the deterministic unittest discovery gate because re
 - `test_behavior_harness.py` validates scenario schema and vocabulary, blind grading, evaluator assertions, route markers, verification evidence, fixture isolation, destructive-change detection, and intentionally-red fixtures.
 - `test_wayfinder_behavior.py` validates Wayfinder scenario semantics, current record presence, authority, progressive loading, conflict promotion, reconciliation, blocked pruning, safe whole-effort ending, and no-state outcomes.
 - `test_routing_boundaries.py` challenges evaluators with valid minimum routes, Research/Discovery composition, unauthorized local publication and commits, map-only coordination, settled choices, missing plan steps, and contradictory or prohibited state.
+- `test_review_handoff.py` uses disposable Git repositories and the existing scenario evaluator to challenge committed-only versus implementation-scope review boundaries.
+- `test_instruction_coherence.py` uses synthetic requests and candidate answers to challenge agreement reuse, bounded synthesis, vocabulary and failure-coverage preservation, ticket prerequisites, prototype scope, and capability reporting through the same evaluator.
 - `behavior.py validate` checks every human-authored scenario and fixture reference as part of static package verification.
 
 The lifecycle suite proves framework operations do not directly traverse, interpret, or change `.project-efforts/`.
@@ -35,6 +37,35 @@ Their deterministic runs test the evaluators against accepted and rejected outco
 The `simple-project` fixture verifier checks the greeting and that its Git history still contains only the baseline commit.
 This catches additional commits present during verification; it does not detect rewritten history or later commits.
 The draft-publication scenario observes local files; external publication remains outside its evidence.
+
+### Implementation review evidence limits
+
+`test_review_handoff.py` reproduces the omission of staged, unstaged, and untracked defects by `git diff <baseline>...HEAD`, including a plausible earlier implementation commit.
+Git-only observations also cover a tracked deletion, staged rename, and a renamed file whose resulting content differs from its index content.
+It executes the small defective fixture functions to establish their incorrect results, then submits explicit synthetic candidate responses to the existing `Scenario` / `RunEvidence` evaluator seam.
+The controls reject success reports with no concrete defect findings, an earlier-commit-only response, or findings missing the required new file.
+Other controls supply acceptance criteria directly in the current request, exclude pending work for an explicitly committed-only request, and distinguish pre-existing unrelated hunks from implementation changes in the same file.
+These fixture-specific response checks establish what the evaluator accepts or rejects; they do not establish that a reviewer read any file, selected the right diff, or executed independent Standards and Spec review.
+The synthetic scenarios are constructed in the deterministic tests; no new live scenario or review-selection engine is introduced.
+
+Read-only Git observations are bounded by comparisons of project bytes, raw index bytes, and `HEAD` before and after the observations.
+Negative controls deliberately alter each of those surfaces in disposable repositories to show the comparisons detect changes.
+The existing scenario evaluator separately rejects observed project-file mutation; its project snapshot excludes Git internals, so index and history preservation are direct Git-test evidence, not added evaluator claims.
+No live-agent campaign runs in these tests, and successful deterministic controls do not prove compliance with the instruction handoff.
+
+### Instruction-coherence evidence limits
+
+`test_instruction_coherence.py` constructs synthetic scenarios using the existing `Scenario` / `RunEvidence` seam and disposable copies of the existing simple-project fixture.
+It submits explicit positive and negative candidate answers, including contradictory success claims, to fixture-specific response predicates.
+The controls cover accepted versus missing TDD seam agreement, a supported specification without an interview or invented approval, established project vocabulary and an application-internal module interface, failure tests that must remain until replacement coverage is verified, real versus invented ticket prerequisites, conditional expand-contract, prototype isolation, and synchronous research versus unavailable independent review.
+Separate observed project-file mutations demonstrate that the evaluator rejects premature artifacts and unauthorized production adoption even when the response looks acceptable.
+
+These are evaluator controls, not skill implementations or snapshots of instruction prose.
+Agreement provenance is supplied in the synthetic requests; the tests do not observe an agent retrieving accepted artifacts, obtaining human agreement, following red-green cycles, verifying replacement failure coverage, researching sources, or running independent reviewers.
+Reported research URLs remain `INCONCLUSIVE` because source access and factual correctness are unobserved.
+Response predicates reject the supplied counterexamples but do not establish semantic completeness for arbitrary answers, behavioral equivalence of the rewritten instructions, or external publication and commit behavior.
+The existing Git review-handoff controls remain the separate evidence for pending changes and Git preservation.
+No live scenario or campaign is added or rerun by these controls.
 
 ## Human behavioral contracts and live smoke tests
 
