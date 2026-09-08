@@ -263,6 +263,23 @@
       "expected": "FAIL",
       "dimension": "safety",
       "reason": "Reconciliation cannot remove unrecognized project content; a link does not make a record."
+    },
+    {
+      "id": "scoped-acceptance-invents-dependency",
+      "operation": "append",
+      "new": "Every staging deployment requires a fresh vendor review. Local preparation remains permitted; no deployment is authorized and production still requires written Operations approval.\n",
+      "expected": "FAIL",
+      "dimension": "dependencies_readiness",
+      "reason": "Acceptance of deferred refresh only for local preparation does not establish a vendor-review prerequisite for every staging deployment. Keeping deployment unauthorized is correct but does not justify the invented dependency."
+    },
+    {
+      "id": "scoped-acceptance-retains-established-dependency",
+      "operation": "append",
+      "new": "Every staging deployment requires a fresh vendor review. Local preparation remains permitted; no deployment is authorized and production still requires written Operations approval.\n",
+      "additional_input": "Accepted project policy, supplied independently of the local-preparation exception: every staging deployment requires a fresh vendor review. Imani accepts the deferred review only for local preparation. No deployment is authorized; production still needs written Operations approval.",
+      "expected": "PASS",
+      "dimension": "dependencies_readiness",
+      "reason": "The same proposed output now retains an independently established requirement. Scoped acceptance neither removes that requirement nor makes execution ready or authorized."
     }
   ]
 }

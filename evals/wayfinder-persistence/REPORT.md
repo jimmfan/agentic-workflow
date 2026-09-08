@@ -7,7 +7,32 @@ B-over-A improvement and B-over-C value remain **INCONCLUSIVE**; no general pres
 Recommend **revise before merge**: retain the focused refinements provisionally, investigate the demonstrated dependency-scope error, and require acceptable continuation evidence before behavioral endorsement.
 No merge, release, tag or VERSION change was performed.
 
-## Revisions and frozen design
+## Newly authorized diagnosis and correction
+
+The following development work is separate from the two stopped cohorts documented below.
+Their frozen inputs, judgments, results and journals remain unchanged.
+The cohort-2 error is an observed candidate error, not a proven policy-caused regression; neither A nor C has yet been evaluated.
+
+The exact input defers vendor review until production approval, and the writer retained that boundary.
+The first incompatible saved claim appears in the updater's native patch, which adds fresh review to all staging execution.
+This establishes a subject inference error and rules out loss of the relevant boundary as its explanation.
+The policy's statement that the same uncertainty may remain a blocker elsewhere is a plausible contributor, although the contract already prohibits invented requirements.
+Generic deployment caution is another plausible contributor; the final A/C conditions can inform that question without proving causation.
+An unfair-grader explanation has low support: retaining unauthorized deployment is correct, but asserting a particular prerequisite requires independent support.
+
+Repair cycle 1 tests a minimal clarification: acceptance alone establishes neither a new dependency elsewhere nor readiness; retain independently established restrictions and require relevant evidence or authority for an additional dependency.
+The Wayfinder skill references that owning rule instead of repeating the ambiguous phrase.
+Paired controls use identical output: it fails without an independently established staging-review requirement and passes when that exact requirement is supplied.
+Actual deployment authorization stays absent in both controls.
+The live cases, ordinary requests and existing rubric remain unchanged.
+
+Plan: commit the corrected rule, controls and execution-gate separation; use a fresh coding writer/update pair from the unchanged starting fixture for one diagnostic cycle.
+No feedback, prior conversation, patched subject output or hidden answer is supplied.
+This familiar-case diagnostic is development evidence, not an unbiased comparison or a complete reader result.
+A second cycle requires a distinct evidence-backed correction; unchanged retries are prohibited.
+The final frozen comparison then runs the six declared four-stage trajectories, permitting contained behavioral failures to propagate while preserving hard safety and observability gates.
+
+## Prior cohort: revisions and frozen design
 
 - A remains original pre-change `origin/main`: `a963f707f9123d5af870dfe06f06d3d1ee1802f8`.
 - Resumed from remote branch head `d2a0b5308d70bf3ff2ec68d6d64f255cea2f5b6e`, preserving the stopped first cohort.
@@ -153,7 +178,7 @@ A future revised cohort requires separately frozen inputs, explicit remaining-bu
 No external account or app action is needed to resolve the current stop.
 
 **Merge readiness: hold.**
-Offline implementation/evaluator checks pass, but the candidate has a material demonstrated dependency regression and no completed reader trajectory.
+Offline implementation/evaluator checks pass, but the candidate has a material demonstrated dependency error and no completed reader trajectory.
 **Behavioral endorsement: withhold.**
 Investigate the limited-uncertainty-to-new-requirement inference against the existing owning rules before proposing another bounded run.
 The hotel-omission cause, overcompression hypothesis, planning behavior, unrelated-edit retention, live read-only continuation and B-over-A/B-over-C value remain untested or inconclusive.

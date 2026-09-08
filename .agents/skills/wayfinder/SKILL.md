@@ -163,7 +163,7 @@ Responsibility alone does not establish project decision authority.
 Where the state contract permits it, the person, role, or valid delegate with that authority may explicitly accept unresolved uncertainty for one named boundary.
 For an unresolved consequential question, either resolve the question or record that authority and acceptance in the project artifact recording the committed choice.
 The acceptance leaves the U# current and unresolved and unblocks only that named boundary.
-The same uncertainty may remain a blocker for other work: no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
+Apply the state contract’s scoped-acceptance rule to other work: no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
 Satisfying a dependency or accepting unresolved uncertainty for one boundary changes blocking only for affected work and does not automatically unblock unrelated work.
 Reconcile and shrink the map, then transition one or more ready implementation scopes to the Implementation workflow without advancing work that remains dependency-blocked.
 Each workflow transition to Implementation consumes one ready scope and its acceptance criteria; Verification follows material execution.

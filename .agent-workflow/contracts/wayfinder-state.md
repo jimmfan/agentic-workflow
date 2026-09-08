@@ -292,7 +292,8 @@ Do not create an E#/U# pair by template.
 
 When a U# is answered, preserve any independently useful result through the common sequence and prune the U#; an answered question is no longer a current unresolved question and is not retained as history.
 If the person, role, or valid delegate with project decision authority explicitly accepts unresolved uncertainty for a named boundary, the question remains factually unresolved: keep its U# current and unresolved, record that authority and the accepted boundary in the project artifact that records the committed choice, and unblock only that accepted boundary.
-The same uncertainty may remain a blocker for other work.
+The acceptance alone establishes neither a new dependency for other work nor its readiness.
+Preserve independently established restrictions and require relevant evidence or authority for an additional dependency.
 The acceptance does not answer the U#: no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
 
 When factual evidence changes, review dependent D# records and ready work under the authority rule in `## Current knowledge`.

@@ -7,7 +7,8 @@ Improve authorized reconciliation and evaluate fresh-session continuation with t
 ## Scope
 
 One focused state-contract change, deterministic evaluator controls, and a resumed comparison of six sequential four-stage trajectories using `gpt-5.6-sol` at medium reasoning.
-The user authorized at most two new native-helper probes plus 24 new stages, still within the original cumulative caps of 48 invocations and 12 trajectory attempts.
+The current request authorizes up to two hypothesis-driven repair cycles using at most eight diagnostic/probe invocations, followed by one frozen 24-stage comparison.
+All 32 new invocations remain within the original cumulative caps of 48 invocations and 12 trajectory attempts; four invocations and two trajectory attempts are already consumed.
 No travel repository, personal data, infrastructure access, merge, release, VERSION change, or lifecycle operations in this source checkout.
 The user authorized logical commits and a non-force push to `origin/fix/wayfinder-persistence-quality`.
 
@@ -32,13 +33,16 @@ The report maintains dimensional evidence, exact budgets, frozen revisions and u
 ## Blockers and dependencies
 
 Both stopped cohorts remain stopped without repairs or replacement attempts.
-Native editing is validated; the remaining obstacle is the demonstrated dependency-scope regression and absent full continuation evidence.
+Native editing remains validated under the unchanged executable/configuration.
+The observed candidate dependency-scope error is not a proven policy-caused regression; A and C have not run.
+The authorized runner change separates gates for safe, interpretable execution from behavioral scores so safe failures can propagate through the new comparison.
 No A/B or B/C advantage is established.
 
 ## Ready work
 
-Review the evidence and investigate the limited-uncertainty-to-new-requirement inference against the existing owning rules before proposing another separately authorized and frozen cohort.
-Retain the focused refinements provisionally, but revise before recommending merge or behavioral endorsement.
+The bounded diagnosis found the relevant boundary survived in the writer; a subject inference error is established, and policy wording is a plausible contributor rather than a proven cause.
+Clarify the owning scoped-acceptance rule, validate the focused controls and runner changes, then run a fresh two-stage diagnostic before freezing the final comparison.
+Preserve every outcome; no unchanged retry-to-green or manual subject repair is permitted.
 No external account action is needed, and no merge or release is authorized.
 
 ## Key links
