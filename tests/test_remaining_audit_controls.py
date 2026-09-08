@@ -2,12 +2,14 @@
 
 from dataclasses import replace
 import json
+import importlib.util
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from _behavior_test_support import behavior
 
@@ -177,6 +179,30 @@ class RemainingAuditControls(unittest.TestCase):
                     "Unavailable trace, or observed premature pruning/no readback.",
                 )
                 self.assertEqual(behavior.verdict((*checks, temporal)), expected)
+
+    def test_adapter_rejects_failed_isolation_before_subject_launch(self):
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "evals/remaining-audit-behavior/codex_subject.py"
+        )
+        spec = importlib.util.spec_from_file_location("audit_subject", source)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.workspace.mkdir()
+        run = Path(self.temporary.name) / "run"
+        (run / "codex-home").mkdir(parents=True)
+        scratch = run / "scratch"
+        scratch.mkdir()
+        rejected = subprocess.CompletedProcess([], 11, "outside-read-permitted\n", "")
+        with patch.object(module.subprocess, "run", return_value=rejected):
+            with self.assertRaisesRegex(
+                ValueError, "no credentials copied or model launched"
+            ):
+                module.verify_isolation("codex", [], self.workspace, {}, run, scratch)
+        self.assertEqual(
+            json.loads((run / "isolation.json").read_text())["returncode"], 11
+        )
+        self.assertFalse((run / "codex-home/auth.json").exists())
 
 
 if __name__ == "__main__":

@@ -34,7 +34,7 @@
     "agent_workflow/install/AGENTS.md.template": "a32fdd2ff0aaeb62259fb35f90f4dd903c2b04435d1ad475ac8da5df44581dc5",
     "evals/persistence.py": "4d5386ded9ef14f187b0e4c9634c75bf8c0eb49b1ecd3874236b8afed74d70f2",
     "evals/remaining-audit-behavior/README.md": "696c2d3320e918f703706ae12cd2d18639502a8bee89e00a29762e4f44662873",
-    "evals/remaining-audit-behavior/codex_subject.py": "85fc88ad69f76e168f5d0a13a46d98fcf1a641c3acd63289a2edd478a963cac4",
+    "evals/remaining-audit-behavior/codex_subject.py": "1e76a629685087926607a793b5f96c4b192a06ea87b01b7f31914d9a60774cf1",
     "tests/behavior.py": "94a7e12cdaf5c6dbd010066190495b98388aec157d8b942460f321e02693982b",
     "tests/fixtures/arc-local/README.md": "8a8fa9666baad30e396f78c2afeafc6f22ddd27ff33648fce883be0e7e1f2fc7",
     "tests/fixtures/arc-local/part-03-arc-runners/README.md": "a78fd29839669716b713c0cc6a3ad9164969dd4016648bd825e6c65427240726",
@@ -94,5 +94,19 @@
   "protocol_execution_clarification": {
     "previous_sha256": "72b3a6ca35ca97c18c82740497b68af0ff5d39a68f8972432fdf175e45e13910",
     "note": "Document the chosen model and exact existing-harness wrapper invocation; no subject prompt or fixture changed."
+  },
+  "python_alias_amendment": {
+    "reason": "An alias was added during execution, but later native commands still could not spawn python. Effective propagation is unestablished; subjects recovered using python3. Actual requested settings are retained per invocation.",
+    "previous_sha256": "85fc88ad69f76e168f5d0a13a46d98fcf1a641c3acd63289a2edd478a963cac4",
+    "new_sha256": "1e76a629685087926607a793b5f96c4b192a06ea87b01b7f31914d9a60774cf1"
+  },
+  "dataset_commit": "2582dd416838006847917418855323c552f271ed",
+  "post_execution_support_changes": {
+    "reason": "Failed standalone and native canary checks stopped the campaign. The adapter now adds explicit deny rules and a mandatory pre-credential, pre-model isolation check. No scenario request or fixture was changed in response to subject outcomes.",
+    "files": {
+      "evals/remaining-audit-behavior/codex_subject.py": "b58763fadc3e8d8f835796233b0992a1bf02f2f62a84f8a62e5782e35c3f96ee",
+      "tests/test_remaining_audit_controls.py": "ee8f4eb91a9cfb3c8871e1e1b3b2b2dcdde2d29ba5f7d6d7052644256332c222",
+      "evals/remaining-audit-behavior/README.md": "553fe9ee29b430b797e00650ff3d655c2edef3c9a34c69f03888b190c9add177"
+    }
   }
 }

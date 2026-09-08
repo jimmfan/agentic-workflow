@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -21,10 +22,59 @@ sys.path.insert(0, str(ROOT))
 from evals.persistence import bounded_process, codex_binary  # noqa: E402
 
 
+def verify_isolation(binary, config, workspace, env, run, scratch):
+    """Reject this adapter before loading credentials when deny checks fail."""
+    outside = run / "isolation-canary.txt"
+    credential = run / "codex-home/credential-canary.txt"
+    outside.write_text("synthetic evaluation canary\n")
+    credential.write_text("synthetic credential canary; not authentication\n")
+    probe = scratch / "write-probe.txt"
+    script = (
+        "test -r AGENTS.md || exit 10; "
+        f"if test -r {shlex.quote(str(outside))}; then "
+        "echo outside-read-permitted; exit 11; fi; "
+        f"if test -r {shlex.quote(str(credential))}; then "
+        "echo credential-canary-readable; exit 12; fi; "
+        f"printf probe > {shlex.quote(str(probe))} && "
+        f"test -r {shlex.quote(str(probe))} && rm {shlex.quote(str(probe))}"
+    )
+    checked = subprocess.run(
+        [
+            str(binary),
+            "sandbox",
+            *config,
+            "-C",
+            str(workspace),
+            "-P",
+            "audit",
+            "/bin/sh",
+            "-c",
+            script,
+        ],
+        cwd=workspace,
+        env=env,
+        text=True,
+        capture_output=True,
+        timeout=30,
+    )
+    result = {
+        "returncode": checked.returncode,
+        "stdout": checked.stdout,
+        "stderr": checked.stderr,
+    }
+    (run / "isolation.json").write_text(json.dumps(result, indent=2) + "\n")
+    if checked.returncode:
+        raise ValueError(
+            "Subject isolation preflight failed; no credentials copied or model launched"
+        )
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--web", action="store_true")
+    parser.add_argument("--preflight-only", action="store_true")
     args = parser.parse_args()
     workspace = Path.cwd().resolve()
     output_root = args.output_root.resolve()
@@ -43,13 +93,24 @@ def main():
     python = Path(sys.executable).resolve()
     uv = Path(shutil.which("uv")).resolve()
     git = Path(subprocess.check_output(["xcrun", "--find", "git"], text=True).strip())
+    # Homebrew exposes python3 but the fixtures use the conventional `python`
+    # command. Supply that alias only inside this disposable runtime directory.
+    (scratch / "bin").mkdir()
+    (scratch / "bin/python").symlink_to(python)
     source_auth = (
         Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "auth.json"
     )
     if source_auth.is_symlink() or not source_auth.is_file():
         raise ValueError("Existing regular auth.json required")
     filesystem = {
+        ":root": "deny",
         ":minimal": "read",
+        ":tmpdir": "deny",
+        ":slash_tmp": "deny",
+        str(output_root.parent): "deny",
+        str(output_root): "deny",
+        str(home): "deny",
+        str(home / "skills/.system"): "read",
         str(workspace): "write",
         str(scratch): "write",
         str(binary): "read",
@@ -58,7 +119,14 @@ def main():
         str(git.parent.parent): "read",
     }
     path = ":".join(
-        (str(python.parent), str(uv.parent), str(git.parent), "/usr/bin", "/bin")
+        (
+            str(scratch / "bin"),
+            str(python.parent),
+            str(uv.parent),
+            str(git.parent),
+            "/usr/bin",
+            "/bin",
+        )
     )
     child_environment = {
         "PATH": path,
@@ -66,6 +134,8 @@ def main():
         "UV_CACHE_DIR": str(scratch / "uv-cache"),
         "UV_OFFLINE": "1",
         "PYTHONDONTWRITEBYTECODE": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
     }
     settings = [
         'model="gpt-5.6-sol"',
@@ -108,6 +178,12 @@ def main():
     }
     code = 2
     try:
+        record["isolation"] = verify_isolation(
+            binary, config, workspace, env, run, scratch
+        )
+        if args.preflight_only:
+            record.update(execution="preflight-completed", returncode=0)
+            return 0
         shutil.copyfile(source_auth, home / "auth.json")
         (home / "auth.json").chmod(0o600)
         (raw / "prompt.txt").write_text(prompt)

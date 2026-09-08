@@ -66,3 +66,11 @@ For `audit-research` only, append `--web` to that wrapper command.
 Use a 420-second outer harness timeout, allowing the wrapper's 360-second process limit to save interrupted evidence and remove its credential copy.
 The wrapper records the actual invocation, context audit, public events and final response; it does not grade behavior.
 Independent Standards and Spec reviewers inspect design, fixture leakage, outcome criteria and conclusions before delivery.
+
+## Execution-boundary amendment
+
+The [report](REPORT.md#infrastructure-and-evidence-limits) records an observed isolation failure and the resulting stopped campaign; no subject prompt was tuned or unsuccessful attempt replaced.
+The current adapter requires a synthetic data/credential-canary check before it copies authentication or launches a model.
+Use `--preflight-only` to test that boundary without a model invocation.
+Do not bypass a failed preflight; require an effective host boundary and a successful native-tool denial probe before resuming the matrix.
+The [official permission-profile documentation](https://learn.chatgpt.com/docs/permissions#file-access-limited-to-workspace) describes explicit root/temp deny rules, but configured rules alone did not establish enforcement in this campaign.
