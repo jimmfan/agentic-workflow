@@ -23,21 +23,23 @@ The frozen pre-change base is `a963f707f9123d5af870dfe06f06d3d1ee1802f8`, curren
 The reported missing hotel identities motivate the experiment; overcompression remains an unproven hypothesis.
 The implemented change preserves consequential details in their designated artifact and adds bounded readback without altering state topology or authorization.
 The [compact report](../../evals/wayfinder-persistence/REPORT.md) maintains exact revisions, verification, failed-cohort evidence and limitations.
-The first live writer was infrastructure-blocked: the native edit helper was denied, then the 180-second deadline expired without any project changes.
-One of 48 permitted stage invocations was attempted; no stage or trajectory completed, and the narrow gate remains unmet.
-The resumed scope adds preservation-before-pruning and non-inference wording, strengthens the planning refer-back commitment, and expands focused evaluator controls.
-Native edit validation must precede the separately frozen comparison; prior-cohort evidence remains unchanged.
+The first cohort remains infrastructure-blocked and unchanged.
+In the resumed cohort, the native edit probe and coding writer/update completed, preserving the supported fact and applying the accepted configuration.
+The narrow gate failed because the updater invented a fresh vendor-review prerequisite for all staging execution; expansion stopped before the reader and other conditions.
+Cumulative use is four subject invocations and two trajectory attempts, including the prior failure; no complete trajectory exists.
+The report maintains dimensional evidence, exact budgets, frozen revisions and untested behavior.
 
 ## Blockers and dependencies
 
-The stopped cohort cannot continue or be repaired.
-Broader live comparison still depends on the narrow evidence-precedence preflight and full native-edit observability under the corrected adapter.
-Any separately reported cohort must count the consumed attempt against both the 12-trajectory and 48-stage limits.
+Both stopped cohorts remain stopped without repairs or replacement attempts.
+Native editing is validated; the remaining obstacle is the demonstrated dependency-scope regression and absent full continuation evidence.
+No A/B or B/C advantage is established.
 
 ## Ready work
 
-Finish focused controls and required verification, commit and freeze the revised cohort, then validate native editing and the narrow continuation gate before expansion.
-No A/B or B/C advantage is established; keep the instruction provisional and do not merge or release from this effort.
+Review the evidence and investigate the limited-uncertainty-to-new-requirement inference against the existing owning rules before proposing another separately authorized and frozen cohort.
+Retain the focused refinements provisionally, but revise before recommending merge or behavioral endorsement.
+No external account action is needed, and no merge or release is authorized.
 
 ## Key links
 
