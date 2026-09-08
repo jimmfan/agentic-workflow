@@ -1,0 +1,146 @@
+[
+  {
+    "timestamp": "2026-09-08T18:31:29.964Z",
+    "type": "response_item",
+    "payload": {
+      "type": "custom_tool_call",
+      "id": "ctc_0f74b14a2d50c77c016aa0547ecec487d0884c17a1d7e05b92",
+      "status": "completed",
+      "call_id": "call_jjYE7ekVatuVT3QhcUj3p5na",
+      "name": "exec",
+      "input": "const r = await tools.exec_command({cmd:\"sed -n '1,240p' .agents/skills/wayfinder/SKILL.md && sed -n '1,240p' context.md && sed -n '1,240p' responsibilities.md\",\"workdir\":\"/private/tmp/wayfinder-map-authoring-smoke/create/project\",\"yield_time_ms\":10000,\"max_output_tokens\":30000}); text(r.output);\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a08249-f316-7c30-a3ca-5c2c3311954a"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-09-08T18:31:30.201Z",
+    "type": "response_item",
+    "payload": {
+      "type": "custom_tool_call_output",
+      "call_id": "call_jjYE7ekVatuVT3QhcUj3p5na",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.2 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "sandbox-exec: sandbox_apply: Operation not permitted\n"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a08249-f316-7c30-a3ca-5c2c3311954a"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-09-08T18:31:36.218Z",
+    "type": "response_item",
+    "payload": {
+      "type": "custom_tool_call",
+      "id": "ctc_0f74b14a2d50c77c016aa054866b3c87d09c21c0841e602c48",
+      "status": "completed",
+      "call_id": "call_L8RY2MHMPMqvilzrAQStsuG2",
+      "name": "exec",
+      "input": "const r = await tools.exec_command({cmd:\"pwd\",\"workdir\":\"/private/tmp/wayfinder-map-authoring-smoke/create/project\",\"yield_time_ms\":10000,\"max_output_tokens\":1000}); text(r.output);\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a08249-f316-7c30-a3ca-5c2c3311954a"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-09-08T18:31:36.284Z",
+    "type": "response_item",
+    "payload": {
+      "type": "custom_tool_call_output",
+      "call_id": "call_L8RY2MHMPMqvilzrAQStsuG2",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.1 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "sandbox-exec: sandbox_apply: Operation not permitted\n"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a08249-f316-7c30-a3ca-5c2c3311954a"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-09-08T18:31:40.497Z",
+    "type": "response_item",
+    "payload": {
+      "type": "custom_tool_call",
+      "id": "ctc_0f74b14a2d50c77c016aa0548b527087d08ac349408ff1ccb3",
+      "status": "completed",
+      "call_id": "call_lk8rsKLBe04ljPLCEtqtWXjE",
+      "name": "exec",
+      "input": "const r = await tools.exec_command({cmd:\"pwd\",\"yield_time_ms\":10000,\"max_output_tokens\":1000}); text(r.output);\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a08249-f316-7c30-a3ca-5c2c3311954a"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-09-08T18:31:40.558Z",
+    "type": "response_item",
+    "payload": {
+      "type": "custom_tool_call_output",
+      "call_id": "call_lk8rsKLBe04ljPLCEtqtWXjE",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.1 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "sandbox-exec: sandbox_apply: Operation not permitted\n"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a08249-f316-7c30-a3ca-5c2c3311954a"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-09-08T18:31:48.212Z",
+    "type": "response_item",
+    "payload": {
+      "type": "custom_tool_call",
+      "id": "ctc_0f74b14a2d50c77c016aa05491b6b887d09726f9197d8ed1d1",
+      "status": "completed",
+      "call_id": "call_4ATieH6Iyy2DcuP0sqQRkXvQ",
+      "name": "exec",
+      "input": "const r = await tools.exec_command({cmd:\"pwd\",\"shell\":\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/codex-resources/zsh/bin/zsh\",\"yield_time_ms\":10000,\"max_output_tokens\":1000}); text(r.output);\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a08249-f316-7c30-a3ca-5c2c3311954a"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-09-08T18:31:48.269Z",
+    "type": "response_item",
+    "payload": {
+      "type": "custom_tool_call_output",
+      "call_id": "call_4ATieH6Iyy2DcuP0sqQRkXvQ",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.1 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "sandbox-exec: sandbox_apply: Operation not permitted\n"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a08249-f316-7c30-a3ca-5c2c3311954a"
+      }
+    }
+  }
+]

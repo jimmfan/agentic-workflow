@@ -29,11 +29,7 @@ It helps orient the effort, choose the minimum resolution method, and identify r
   Never repurpose an effort for unrelated work.
 - Establish the objective and scope, then enough relevant areas and relationships to orient the effort before substantial decomposition.
   Keep `map.md` brief, preserve enough information to resume safely, and load detail only when relevant.
-  New default maps retain **Blockers and dependencies** and write `None` when no blocker or dependency currently applies.
-  Other inapplicable empty headings may be omitted, and a clearer equivalent may be used.
-  Existing maps remain valid without that heading or literal `None`.
-  This is default authoring guidance, not an effort-recognition or parser requirement, and does not require migration, compatibility parsing, or rewriting.
-  Unfinished tests, verification, commits, pushes, and other workflow steps are not blockers merely because they remain.
+  Use the state contract's default-map authoring conventions; existing layouts remain resumable without formatting-only rewrites.
 - The map summarizes the effort's current coordination state, conditions blocking particular work, dependencies, and ready work.
   Optional F/D ledger sections and U/E artifacts are records that preserve only useful current conclusions, choices, unresolved questions, and evidence.
 - Create a separate U/E/F/D record because it is an independently useful coordination or retrieval unit, not merely because it belongs to a semantic category.
@@ -66,7 +62,9 @@ If the state contract is unavailable, fail closed for the affected Wayfinder wor
 Wayfinder establishes its own effort-specific areas and relationships.
 Reuse accepted project structure when it supplies a useful objective, scope, areas, and important operating boundaries.
 Otherwise establish the smallest useful structure directly.
-The effort's view of its areas, relationships, and ownership or operating constraints is provisional, adaptive, and judgment-based.
+Make consequential participant responsibilities and operating boundaries explicit, using established assignments or their designated maintaining sources under the state contract.
+Clarify consequential unknown responsibility or decision authority when affected work requires it; continue independent authorized work without inventing assignments or prerequisites.
+The effort's view of its areas and relationships is provisional, adaptive, and judgment-based; established assignments and authority remain grounded in their sources.
 It helps Wayfinder challenge incomplete framing and revise its understanding as evidence develops.
 Exploration may broaden understanding, but must not silently broaden the user's goal, delegated authority, or implementation scope.
 

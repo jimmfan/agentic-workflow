@@ -1,0 +1,48 @@
+schema_version = 1
+id = "wayfinder-map-resume"
+name = "Consumer handoff coordination"
+fixture = "wayfinder-map-resume"
+request = "Continue the existing consumer-handoff effort for a bounded documentation task: add the supplied inventory result to inventory.md: the only consumer call site is src/adapter.py. The result is sufficient for the inventory scope; reconcile that fact in the map. Preserve other coordination and sources. Only these documentation changes are authorized."
+starting_state = ["The supplied documents describe a synthetic consumer handoff; no real infrastructure access is authorized."]
+expect = ["task_completed", "meaningful_repository_change"]
+must_not = ["overwrite_project_owned_state"]
+live = false
+blind_grading = true
+verification_command = "Inspect actual artifacts and references against the stage rubric in evals/map-authoring/README.md; automated assertions are limited evaluator controls."
+preserve_paths = ["responsibilities.md", "context.md"]
+forbid_created_globs = ["tickets/**", "issues/**"]
+
+[[assertions]]
+kind = "glob_any_matches"
+path = "inventory.md"
+value = '''src/adapter\.py'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?m)^## Purpose and limits\n'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?m)^## Route now\n'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?m)^## Interfaces and people\n'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?m)^## Waiting and unknown territory\n'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?m)^## Sources\n'''
+
+[[assertions]]
+kind = "glob_none_matches"
+path = ".project-efforts/*/map.md"
+value = '''(?m)^## (?:Objective|Scope|Ready work|Current state|Areas and relationships|Dependencies|Blockers|Key references)\n'''

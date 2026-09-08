@@ -147,8 +147,8 @@ It records enough current coordination context for a later agent or developer to
 
 A simple effort may need only `map.md`.
 
-New default maps retain `Blockers and dependencies` and use `None` when no blocker or dependency currently applies; other inapplicable empty headings may be omitted.
-Existing maps remain valid without that heading or marker.
+The [state contract](.agent-workflow/contracts/wayfinder-state.md) maintains default-map authoring conventions, including separate dependencies and scoped blocker assessments.
+Existing maps remain valid with alternate layouts.
 This is authoring guidance, not a recognition requirement or migration trigger.
 
 Additional records are created only when they are useful to preserve separately:
