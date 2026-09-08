@@ -3,6 +3,8 @@
 ## Good Tests
 
 **Integration-style**: Test through real interfaces, not mocks of internal parts.
+Identify the module under test first: its caller-facing interface may be application-internal.
+Integration style describes how a test exercises behavior; it does not establish a test-first workflow.
 
 ```typescript
 // GOOD: Tests observable behavior
@@ -17,14 +19,14 @@ test("user can checkout with valid cart", async () => {
 Characteristics:
 
 - Tests behavior users/callers care about
-- Uses public API only
+- Uses the module's caller-facing interface only
 - Survives internal refactors
 - Describes WHAT, not HOW
 - One logical assertion per test
 
 ## Bad Tests
 
-**Implementation-detail tests**: Coupled to internal structure.
+**Implementation-detail tests**: Coupled to the private structure of the module under test.
 
 ```typescript
 // BAD: Tests implementation details

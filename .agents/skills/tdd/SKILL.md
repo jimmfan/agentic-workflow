@@ -1,5 +1,5 @@
 ---
-description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
+description: Build features or fix bugs test-first through a red-to-green loop at agreed seams. Use for test-first work; integration tests alone do not imply TDD. Refactoring belongs to the later review stage.
 name: tdd
 ---
 # Test-Driven Development
@@ -12,7 +12,8 @@ When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and 
 
 ## What a good test is
 
-Tests verify behavior through public interfaces, not implementation details.
+Identify the module under test and verify behavior through its caller-facing interface, not its private implementation.
+That interface may be internal to the application; public here means available to the module's callers, not necessarily an end-user or platform API.
 Code can change entirely; tests shouldn't.
 A good test reads like a specification — "user can checkout with valid cart" tells you exactly what capability exists — and survives refactors because it doesn't care about internal structure.
 
@@ -20,15 +21,16 @@ See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking g
 
 ## Seams — where tests go
 
-A **seam** is the public boundary you test at: the interface where you observe behavior without reaching inside.
+A **seam** is where you exercise the module's caller-facing interface and observe behavior without reaching inside.
 Tests live at seams, never against internals.
 
 **Test only at pre-agreed seams.**
-Before writing any test, write down the seams under test and confirm them with the user.
-No test is written at an unconfirmed seam.
+Reuse seam agreement from the current request, accepted artifacts, or invoking workflow and identify those seams before writing tests.
+Ask only when material seam agreement is missing; preserve existing agreement instead of requesting it again.
+A needed new or changed seam requires agreement unless choosing it is already delegated by the user or accepted project policy.
 You can't test everything — agreeing the seams up front is how testing effort lands on the critical paths and complex logic instead of every edge case.
 
-Ask: "What's the public interface, and which seams should we test?"
+When agreement is missing, ask which caller-facing behavior and seams need coverage.
 
 When the shape of that interface is itself in question — how deep the module is, where the seam belongs, what the interface should expose — use the `/codebase-design` skill for the vocabulary.
 It is the shared source of the module, interface, depth, seam, adapter, leverage and locality terms, and it is a reference to consult, not a session to run.

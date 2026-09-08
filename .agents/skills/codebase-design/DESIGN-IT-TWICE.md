@@ -22,6 +22,8 @@ The user reads and thinks while the sub-agents work in parallel.
 
 Spawn 3+ sub-agents in parallel.
 Each must produce a **radically different** interface for the deepened module.
+If the required parallel agent capability is unavailable, report that limitation using the current availability and route-reporting conventions.
+Do not present designs from one agent as independent parallel work.
 
 Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [DEEPENING.md](DEEPENING.md), what sits behind the seam).
 The brief is independent of the user-facing problem-space explanation in Step 1.
@@ -33,7 +35,7 @@ Give each agent a different design constraint:
 - Agent 3: "Optimise for the most common caller — make the default case trivial."
 - Agent 4 (if applicable): "Design around ports & adapters for cross-seam dependencies."
 
-Include both [SKILL.md](SKILL.md) vocabulary and CONTEXT.md vocabulary in the brief so each sub-agent names things consistently with the architecture language and the project's domain language.
+Include both the scoped [SKILL.md](SKILL.md) vocabulary and applicable CONTEXT.md vocabulary in the brief so each sub-agent preserves the project's domain and platform concepts while naming the module and interface under analysis consistently.
 
 Each sub-agent outputs:
 

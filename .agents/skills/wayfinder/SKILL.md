@@ -55,7 +55,8 @@ Otherwise select only the smallest specialist needed to resolve or accurately fr
 - **Discovery** for consequential alternatives and tradeoffs.
 - **Debugging** for an observed behavior with an unknown cause.
 - **Research** for external uncertainty needing primary-source evidence.
-- **Prototype** when a disposable experiment is the cheapest honest test.
+- **Prototype** when an interactive logic demo or contrasting UI variants would answer the design question.
+  CLI and infrastructure experiments may use Direct or another applicable method.
 - **Domain Modeling** for domain concepts, language, context boundaries, responsibilities, and relationships under the rule above.
 - **Human clarification or Grilling** for authority, intent, preference, or prioritization.
 

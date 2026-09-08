@@ -22,7 +22,7 @@ This table resolves overlaps:
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
 | Interdependent choices requiring human input or project decision authority materially shape downstream work | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual questions and one straightforward clarification use the minimum sufficient method |
 | Domain concepts, terminology or ubiquitous language, domain or context boundaries, or domain responsibilities and relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the domain model materially helps; ordinary vocabulary lookup stays Direct |
-| Throwaway implementation would answer a design or behavior question | Direct or `prototype` | Ordinary production implementation stays Direct or with its primary workflow |
+| An interactive logic demo or UI exploration would answer a design question | Direct or `prototype` | CLI and infrastructure experiments may use Direct or existing methods; production implementation retains its normal route |
 | Module interface, seam, depth, locality, or testability needs explicit design | Direct or `codebase-design` | Load Codebase Design only when its vocabulary materially improves the design; ordinary edits and refactors stay Direct or with their primary workflow |
 | Unexplained failure or regression | Direct or Debugging | Load Debugging only when causal investigation helps; diagnosis grants no action authorization for a fix |
 | External uncertainty needing primary sources | Direct or `research` | Simple lookups stay Direct |
@@ -70,6 +70,9 @@ Selecting a skill is not execution: include it in the route marker only when its
 Choosing a route, selecting a skill, loading its instructions, using its method, completing the request, and verifying the result are distinct.
 Using a skill for focused work need not change the primary route, including Direct.
 Loading a selected skill makes its instructions available; execution means actually using the skill's method; and completion and verification require evidence beyond the route marker.
+
+Research and factual lookup may run synchronously when their evidence requirements remain satisfied.
+Preserve a selected method's required independence or parallelism; if that capability is unavailable, report the execution gap under the availability conventions below rather than claiming independent work ran.
 
 If a selected skill is unavailable or cannot run without explicit user invocation, continue Direct only when the user did not require that skill and available capabilities can satisfy the request.
 Otherwise, give the exact supported invocation instruction and stop with `<skill>-handoff` when explicit user invocation remains required, or stop with `<skill>-unavailable` when the skill is unavailable.

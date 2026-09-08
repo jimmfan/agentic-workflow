@@ -4,7 +4,9 @@ name: research
 ---
 # Research
 
-Spin up a **background agent** to do substantive research while you continue independent work.
+Investigate synchronously when that satisfies the evidence need, or use a background agent when delegation is available and independent work can proceed usefully.
+Evidence requirements remain the same in either mode.
+If the invoking method requires independent or parallel work, preserve that requirement and report unavailable capability honestly instead of presenting one agent's work as independent review.
 Research establishes externally sourced facts and evidence.
 It does not select the project's preferred alternative.
 Return evidence to the caller; evidence concerning a consequential choice does not automatically require a Discovery transition.

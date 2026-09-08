@@ -1,7 +1,7 @@
 # Logic Prototype
 
 A single, self-contained HTML file — a **shareable demo** — that lets anyone drive a state model by clicking buttons.
-Use this when the question is about **business logic, state transitions, or data shape** — the kind of thing that looks reasonable on paper but only feels wrong once you push it through real cases.
+Use this when clicking through **business logic, state transitions, or data shape** will help someone assess cases that are hard to reason about on paper.
 
 Because it's one file with nothing to install, you can hand it to a non-developer — a designer, a PM, a domain expert — and let them feel the model for themselves.
 So it speaks their language, not the code's.
@@ -10,7 +10,7 @@ So it speaks their language, not the code's.
 
 - "I'm not sure if this state machine handles the edge case where X then Y."
 - "Does this data model actually let me represent the case where..."
-- "I want to feel out what the API should look like before writing it."
+- "I want to click through how callers would use this API before writing it."
 - Anything where someone wants to **press buttons and watch state change**.
 
 If the question is "what should this look like" — wrong branch.
@@ -27,7 +27,7 @@ A logic prototype that answers the wrong question is pure waste — make the que
 ### 2. Isolate the logic in a portable module
 
 Put the actual logic — the bit that's answering the question — in a single `<script>` block written as a small, pure module that could be lifted out and dropped into the real codebase later.
-The page around it is throwaway; this module isn't.
+The page and logic remain prototype code until production adoption is authorized and verified.
 
 The right shape depends on the question:
 
@@ -42,7 +42,7 @@ The right shape depends on the question:
 Pick whichever shape best fits the question being asked, *not* whichever is easiest to wire to a page.
 Keep it pure: no DOM, no `document`, no button handlers reaching inside it.
 The page calls into it; nothing flows the other direction.
-This is what makes the prototype useful past its own lifetime: once the question's answered, the validated reducer / machine / function set lifts into the real module on its own.
+This separation makes the logic useful evidence for an eventual production implementation without treating the demo as production-ready.
 
 ### 3. Build the shareable HTML file
 
@@ -80,7 +80,8 @@ Prototypes evolve.
 ### 5. Capture the answer and the prototype
 
 Once the prototype has answered its question, capture the answer, then capture the prototype the way the [SKILL](SKILL.md) describes.
-The logic-specific mapping: the validated reducer / machine / function set lifts into the real module (the decision, absorbed); the HTML shell rides along to the throwaway branch that keeps the prototype as a primary source — and being one self-contained file, it stays trivially re-runnable there.
+When authorized, retain the self-contained HTML as a runnable primary source on the throwaway branch.
+Adopting the reducer, state machine, or functions into real code follows the skill's separate authorization and production-verification boundary.
 
 ## Anti-patterns
 
@@ -98,4 +99,4 @@ The logic-specific mapping: the validated reducer / machine / function set lifts
   One file the recipient double-clicks; a React app or a dev server defeats "shareable".
 - **Don't ship the HTML shell into production.**
   The page is optimised for being clicked through by hand.
-  The logic module behind it is the bit worth keeping.
+  The logic module may inform an authorized, verified production implementation.

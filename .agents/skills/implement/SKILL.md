@@ -1,5 +1,5 @@
 ---
-description: Implement a defined piece of work.
+description: Execute a supplied implementation scope with agreed test seams and closing Code Review. This is the inner build method; workflow-implementation owns the outer transition through readiness and independent acceptance verification.
 name: implement
 ---
 Implement the defined work supplied by the current user request or invoking workflow.

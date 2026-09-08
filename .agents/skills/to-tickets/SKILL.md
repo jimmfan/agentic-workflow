@@ -22,8 +22,8 @@ If the user passes a reference (a spec path, an issue number or URL) as an argum
 If you have not already explored the codebase, do so to understand the current state of the code.
 Ticket titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
 
-Look for opportunities to prefactor the code to make the implementation easier.
-"Make the change easy, then make the easy change."
+Consider prefactoring only when current code and the proposed change establish a concrete need.
+Do not invent preparatory work merely to fill out the ticket sequence.
 
 ### 3. Draft vertical slices
 
@@ -31,23 +31,26 @@ Break the work into **tracer bullet** tickets.
 
 <vertical-slice-rules>
 
-- Each slice cuts a narrow but COMPLETE path through every layer (schema, API, UI, tests) — vertical, NOT a horizontal slice of one layer
+- Each slice cuts a narrow but complete path through the layers applicable to its behavior, such as schema, API, UI, or tests
 - A completed slice is demoable or verifiable on its own
 - Each slice is sized to fit in a single fresh context window
-- Any prefactoring should be done first
+- Order justified prefactoring before only the work that requires it
 
 </vertical-slice-rules>
 
 Give each ticket its **blocking edges** — the other tickets that must complete before it can start.
-A ticket with no blockers can start immediately.
+Include an edge only when that ticket supplies a real prerequisite.
+State known external prerequisites separately, such as a required decision, access, or an external result; mark any material unassessed prerequisite honestly.
+No ticket blockers means only that no other ticket gates the work.
+Execution still requires applicable external prerequisites and action authorization; drafting or approving tickets supplies neither by itself.
 
 **Wide refactors are the exception to vertical slicing.**
 A **wide refactor** is one mechanical change — rename a column, retype a shared symbol — whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green.
-Don't force it into a tracer bullet; sequence it as **expand–contract**.
-First expand: add the new form beside the old so nothing breaks.
-Then migrate the call sites over in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, keeping CI green batch to batch because the old form still exists.
-Finally contract: delete the old form once no caller remains, in a ticket blocked by every migrate batch.
-When even the batches can't stay green alone, keep the sequence but let them share an integration branch that all block a final integrate-and-verify ticket — green is promised only there.
+Use a bounded atomic change when all affected callers can change and be verified together safely.
+Use **expand–contract** when compatibility obligations or independent transitions require old and new forms to coexist.
+In that case, first expand by adding the new form beside the old, then migrate callers in independently verifiable batches, then contract once no required caller needs the old form.
+Declare only the blocking edges that this transition actually requires.
+Do not invent migration machinery, compatibility obligations, or an integration branch from the fact that a refactor is wide.
 
 ### 4. Quiz the user
 
@@ -56,6 +59,7 @@ For each ticket, show:
 
 - **Title**: short descriptive name
 - **Blocked by**: which other tickets (if any) must complete first
+- **Other prerequisites**: known external requirements and any material uncertainty about them
 - **What it delivers**: the end-to-end behaviour this ticket makes work
 
 Ask the user:
@@ -76,8 +80,8 @@ Preserve blocking edges in the form that destination supports:
 - **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers.
   Use the platform's native blocking or sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues.
 
-Work the **frontier**: any ticket whose blockers are all done.
-For a purely linear chain that means top to bottom.
+Publish in dependency order; for a purely linear chain that means top to bottom.
+Publishing the tickets does not start their implementation or authorize other tracker changes.
 
 Do NOT close or modify any parent issue.
 
@@ -87,7 +91,9 @@ Do NOT close or modify any parent issue.
 
 **What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective — not a layer-by-layer implementation list.
 
-**Blocked by:** the numbers/titles of the tickets that gate this one, or "None — can start immediately".
+**Blocked by:** the numbers/titles of the tickets that gate this one, or "None — no ticket dependencies".
+
+**Other prerequisites:** known external requirements and material unassessed conditions, or "None identified" when assessed.
 
 - [ ] Acceptance criterion 1
 - [ ] Acceptance criterion 2
@@ -111,7 +117,11 @@ The end-to-end behaviour this ticket makes work, from the user's perspective —
 
 ## Blocked by
 
-- A reference to each blocking ticket, or "None — can start immediately".
+- A reference to each blocking ticket, or "None — no ticket dependencies".
+
+## Other prerequisites
+
+Known external requirements and material unassessed conditions, or "None identified" when assessed.
 
 </issue-template>
 
