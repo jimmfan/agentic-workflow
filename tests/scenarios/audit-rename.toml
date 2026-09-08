@@ -1,0 +1,21 @@
+schema_version = 1
+id = "audit-rename"
+name = "Project task"
+fixture = "audit-order"
+request = "Rename normalize_account to canonical_account throughout the project, preserving behavior. This is only a symbol rename. Run the existing checks."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "meaningful_repository_change"]
+must_not = []
+live = false
+blind_grading = true
+route_must_not_include = ["codebase-design"]
+
+[[assertions]]
+kind = "path_not_contains"
+path = "orders.py"
+value = "normalize_account"
+
+[[assertions]]
+kind = "path_contains"
+path = "orders.py"
+value = "canonical_account"

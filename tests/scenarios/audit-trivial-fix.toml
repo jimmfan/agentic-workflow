@@ -1,0 +1,16 @@
+schema_version = 1
+id = "audit-trivial-fix"
+name = "Project task"
+fixture = "audit-config"
+request = "Find why the local status configuration check fails and fix the causal configuration value. Validate the repair using the existing check."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed"]
+must_not = []
+live = false
+blind_grading = true
+preserve_paths = ["check.py", "README.md"]
+
+[[assertions]]
+kind = "path_contains"
+path = "settings.json"
+value = "8080"

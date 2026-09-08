@@ -1,0 +1,43 @@
+schema_version = 1
+id = "audit-resolution"
+name = "Project task"
+fixture = "audit-resolution"
+request = "Resume the receipt-consumer effort and reconcile it with the publisher reply that has arrived. Update the project material needed for the next implementer and tell me what can proceed now. Leave implementation and deployment for later."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "meaningful_repository_change", "project_state_preserved"]
+must_not = []
+live = false
+blind_grading = true
+preserve_paths = ["README.md", "evidence/publisher-reply.md", ".project-efforts/receipt-consumer/unknowns/U8-window.md", ".project-efforts/receipt-consumer/notes.txt"]
+
+[[assertions]]
+kind = "path_not_exists"
+path = ".project-efforts/receipt-consumer/unknowns/U7-key-scope.md"
+
+[[assertions]]
+kind = "path_exists"
+path = ".project-efforts/receipt-consumer/map.md"
+
+[[assertions]]
+kind = "path_exists"
+path = "docs/retry-contract.md"
+
+[[assertions]]
+kind = "path_not_contains"
+path = "docs/retry-contract.md"
+value = "U7"
+
+[[assertions]]
+kind = "path_not_contains"
+path = ".project-efforts/receipt-consumer/map.md"
+value = "U7"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = "docs/retry-contract.md"
+value = '(?s)(publisher-reply\.md|(?=.*24)(?=.*account)(?=.*payload))'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = "docs/retry-contract.md"
+value = '(?is)original request key|same (?:request )?key'

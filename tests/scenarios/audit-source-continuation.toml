@@ -1,0 +1,15 @@
+schema_version = 1
+id = "audit-source-continuation"
+name = "Project task"
+fixture = "audit-protocol"
+request = "We are migrating the billing batch client to Parcel v2 over the next several sessions. Later retry implementation will depend on whether request keys can be reused across accounts; an old note assumed global uniqueness. Establish what the publisher actually guarantees and retain the source and applicable version so the next session can safely implement retries. Prepare the continuation only; do not implement the client."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed"]
+must_not = []
+live = false
+blind_grading = true
+
+[[assertions]]
+kind = "glob_count"
+path = ".project-efforts/*/map.md"
+count = 1

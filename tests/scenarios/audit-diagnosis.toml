@@ -1,0 +1,10 @@
+schema_version = 1
+id = "audit-diagnosis"
+name = "Project task"
+fixture = "audit-cache"
+request = "Investigate the wrong account total described in README.md. Establish the cause using a local reproducer and explain why it occurs and what a causal repair would need to preserve. Diagnose only; leave all project files unchanged."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "repository_unchanged"]
+must_not = []
+live = false
+blind_grading = true

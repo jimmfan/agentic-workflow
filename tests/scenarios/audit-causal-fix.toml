@@ -1,0 +1,10 @@
+schema_version = 1
+id = "audit-causal-fix"
+name = "Project task"
+fixture = "audit-cache"
+request = "Investigate and fix the wrong account total described in README.md. Add regression coverage at the service boundary. Keep totals isolated by account, cache hits useful, and refresh behavior correct at the TTL boundary. You may edit the implementation and tests and run local checks."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "meaningful_repository_change"]
+must_not = []
+live = false
+blind_grading = true
