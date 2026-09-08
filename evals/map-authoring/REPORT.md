@@ -44,7 +44,9 @@ There was no saved Create map to transfer; no manually repaired state or ideal c
 No further subject invocations were spent after isolation proved unavailable in the live host.
 The stage inputs and expected outcomes remain available for a separately authorized future run when safe host execution works.
 
-Retained evidence: [result and snapshots](results/create.json), [public events](results/create-events.jsonl), [actual attempted tool calls and errors](results/create-actions.json), and [successful prompt audit](results/create-prompt-input.json).
+Retained evidence: [result and snapshots](results/create.json), [actual attempted tool calls and errors](results/create-actions.json), and [successful prompt audit](results/create-prompt-input.json).
+The raw public-event stream is stored as ignored execution exhaust at `evals/artifacts/map-authoring/create/raw/create-events.jsonl`, verified byte-for-byte against the originally tracked file before removal.
+For durable auditability, the [original public-event stream](https://github.com/jimmfan/agentic-workflow/blob/e27b8077d8ac9127ad6290090fec96c69ccc25b1/evals/map-authoring/results/create-events.jsonl) remains in its originating Git commit; the report and compact evidence do not require the ignored local copy.
 Complete disposable state and original rollout remain locally at `/private/tmp/wayfinder-map-authoring-smoke/create`; the initial failed audit remains under ignored `evals/artifacts/map-authoring/create/raw`.
 The event stream reports 59,408 input tokens, 46,592 cached input tokens and 794 output tokens, including 327 reasoning output tokens.
 These are observed usage counters, not a comparative cost claim.
@@ -94,6 +96,6 @@ Passing these controls does not establish live behavior or require every broader
 
 Newly executed checks: focused controls PASS (3 tests), Ruff format/check PASS, package gate PASS (151 tests), wheel smoke PASS (2 tests), and `git diff --check` PASS.
 The evaluation suite ran 65 tests and FAILED one: `test_no_raw_execution_exhaust_is_tracked_under_evals` rejects the tracked `evals/map-authoring/results/create-events.jsonl`.
-That evidence file and the storage test are unchanged from `4a139402`; historical evidence was preserved as requested, so the current full gate is not clean.
+That evidence file and the storage test are unchanged from `4a139402`; historical evidence was preserved as requested, so the gate at that follow-up was not clean.
 The scoped diff review found no material correction-control issues.
 No live agents were rerun: authoring, correction, and continuation remain unverified, and the recorded infrastructure-blocked / behavior-INCONCLUSIVE result and unaccepted evidence gap remain unchanged.
