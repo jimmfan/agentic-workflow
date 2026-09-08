@@ -41,3 +41,13 @@ value = '''incident.response[^.\n]*(?:unknown|unassigned|unresolved)'''
 kind = "glob_none_matches"
 path = ".project-efforts/*/map.md"
 value = '''(?m)^[ \t*-]*Production(?: rollout)? (?:is approved|may proceed|is authorized|is ready)'''
+
+[[assertions]]
+kind = "glob_any_matches"
+path = "context.md"
+value = '''\bendpoint\s+(?:(?:is|remains)\s+)?(?:now\s+)?available\b'''
+
+[[assertions]]
+kind = "glob_none_matches"
+path = "context.md"
+value = '''\b(?:endpoint\s+(?:(?:is|remains)\s+)?(?:now\s+)?(?:unavailable|not\s+available)|(?:endpoint\s+)?integration\s+(?:cannot\s+proceed|(?:is|remains)\s+blocked))\b'''

@@ -81,3 +81,19 @@ The focused evaluator suite passed after its last adjustment; the full gate evid
 The change is suitable for code review with deterministic checks passing.
 Live acceptance is withheld: meaningful ownership, correction, fresh read and alternate-layout behavior have not been observed in this smoke.
 Do not claim the full requested verification is complete or merge-ready without resolving or explicitly accepting this named evidence gap.
+
+## Correction-control follow-up
+
+The follow-up starts from reviewed branch HEAD `4a139402` and changes only the correction scenario, its disposable evaluator controls, and this note.
+Before the fix, the new stale-context negative failed its regression assertion because the evaluator returned no failures even though `context.md` still said the endpoint was unavailable and integration could not proceed.
+After the fix, two fixture-specific context checks require the availability fact in a retained file and reject the obsolete unavailability/blocking claim without requiring an exact sentence.
+The stale-context control now fails only those context assertions and their dependent task-completion check; the corrected positive has no evaluator failures.
+Missing context, erased availability, and a retained blocking claim are also rejected, and every candidate starts from a fresh disposable fixture copy.
+Existing controls and checked-in starting fixtures are unchanged in meaning; corrected copies preserve provider/maintainer assignments, production restrictions, constraints, and unknowns.
+Passing these controls does not establish live behavior or require every broader evaluator verdict to be PASS rather than INCONCLUSIVE.
+
+Newly executed checks: focused controls PASS (3 tests), Ruff format/check PASS, package gate PASS (151 tests), wheel smoke PASS (2 tests), and `git diff --check` PASS.
+The evaluation suite ran 65 tests and FAILED one: `test_no_raw_execution_exhaust_is_tracked_under_evals` rejects the tracked `evals/map-authoring/results/create-events.jsonl`.
+That evidence file and the storage test are unchanged from `4a139402`; historical evidence was preserved as requested, so the current full gate is not clean.
+The scoped diff review found no material correction-control issues.
+No live agents were rerun: authoring, correction, and continuation remain unverified, and the recorded infrastructure-blocked / behavior-INCONCLUSIVE result and unaccepted evidence gap remain unchanged.
