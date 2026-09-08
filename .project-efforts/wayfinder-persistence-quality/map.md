@@ -6,7 +6,8 @@ Improve authorized reconciliation and evaluate fresh-session continuation with t
 
 ## Scope
 
-One focused state-contract change, deterministic evaluator controls, and at most 12 sequential four-stage trajectories using `gpt-5.6-sol` at medium reasoning.
+One focused state-contract change, deterministic evaluator controls, and a resumed comparison of six sequential four-stage trajectories using `gpt-5.6-sol` at medium reasoning.
+The user authorized at most two new native-helper probes plus 24 new stages, still within the original cumulative caps of 48 invocations and 12 trajectory attempts.
 No travel repository, personal data, infrastructure access, merge, release, VERSION change, or lifecycle operations in this source checkout.
 The user authorized logical commits and a non-force push to `origin/fix/wayfinder-persistence-quality`.
 
@@ -24,7 +25,8 @@ The implemented change preserves consequential details in their designated artif
 The [compact report](../../evals/wayfinder-persistence/REPORT.md) maintains exact revisions, verification, failed-cohort evidence and limitations.
 The first live writer was infrastructure-blocked: the native edit helper was denied, then the 180-second deadline expired without any project changes.
 One of 48 permitted stage invocations was attempted; no stage or trajectory completed, and the narrow gate remains unmet.
-An offline adapter correction passed non-model isolation probes but has no evaluated continuation evidence.
+The resumed scope adds preservation-before-pruning and non-inference wording, strengthens the planning refer-back commitment, and expands focused evaluator controls.
+Native edit validation must precede the separately frozen comparison; prior-cohort evidence remains unchanged.
 
 ## Blockers and dependencies
 
@@ -34,7 +36,7 @@ Any separately reported cohort must count the consumed attempt against both the 
 
 ## Ready work
 
-Review the delivered evidence and decide whether to pursue a separately frozen cohort.
+Finish focused controls and required verification, commit and freeze the revised cohort, then validate native editing and the narrow continuation gate before expansion.
 No A/B or B/C advantage is established; keep the instruction provisional and do not merge or release from this effort.
 
 ## Key links

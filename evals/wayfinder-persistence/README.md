@@ -24,7 +24,7 @@ The comparison therefore does not measure a reviewer swarm or the full implement
 Notes layouts, filenames and counts do not earn points; the designated project result may link detail maintained elsewhere.
 Framework-specific checks apply only to A/B.
 
-Each of 12 trajectories has four fresh stages: writer, correction/commitment, unrelated small edit, then an ordinary read-only next task.
+Each of six trajectories has four fresh stages: writer, correction/commitment, unrelated small edit, then an ordinary read-only next task.
 Stage 2 receives every saved file from stage 1 except `source-once.txt`.
 Stages 3 and 4 receive every saved file from their predecessor.
 No answer-dependent selection, repairs, source reinjection, grader notes, earlier responses, homes or traces are transferred.
@@ -32,11 +32,14 @@ A subject-created copy of supplied material is transferred like any other file a
 Checkpoint each stage's complete saved files, response, before/after hashes and diff in ignored storage, including interrupted stages.
 Raw workspaces, traces, homes and secrets never enter compact results.
 
-The fixed order is coding B/A/C then planning B/A/C for repetition 1; coding C/A/B then planning C/A/B for repetition 2.
-This offers limited order variation, not statistical counterbalancing.
-There are at most 48 evaluated stage invocations, including failed starts and preflight attempts.
-Each stage allows 180 seconds and 2 MB combined process output; these are hard runner limits, not inferred token limits.
-No retry-to-green, replacement model, parallel trajectories, extra pilot, global configuration change or new paid service is permitted.
+The resumed cohort has one repetition, ordered coding B/A/C then planning B/A/C.
+There are at most 24 evaluated stages plus two separately recorded native-helper probes: 26 new subject invocations, including failed starts.
+The prior stopped cohort consumed one invocation and one trajectory attempt; the cumulative caps remain 48 invocations and 12 trajectory attempts.
+This schedule can consume at most 27 cumulative invocations and seven trajectory attempts; no second repetition or automatic replacement is authorized.
+Each stage and model probe allows 360 seconds and 2 MB combined process output.
+The time allowance is revised before execution from the prior 180 seconds to accommodate framework reads and a useful write/readback within one bounded session; the failed prior run supplies no estimate of normal edit performance.
+All conditions receive this same finite allowance; do not change it after comparative outcomes.
+No retry-to-green, replacement model, parallel trajectories, global configuration change or new paid service is permitted.
 
 ## Narrow experiment before comparison
 
@@ -73,6 +76,10 @@ Route/read claims alone establish none of these.
 Mechanical link checks cover file targets; anchors, plain-text references, cross-file meaning and external-reference sufficiency require adjudication.
 
 [Controls](controls.json) include sufficient inline, linked and alternate-layout results and each requested negative class.
+Positive controls also allow separately supported reports/verification and commitments/action authorization, and preserve usable detail in an ordinary result before a record disappears.
+Pruning examples include lost-only-source, dangling links, and linked/unrecognized project-owned content.
+Final snapshots cannot establish that verification preceded pruning; claim ordering only from execution evidence, otherwise mark it unverified.
+Control-specific additional input supplies independent evidence or authorization only for that control, never for live cases.
 Their expected labels are independent review answers, never subject input and never an automatic prose oracle.
 Deterministic tests validate mechanical failures, evidence requirements, transfer and limits; semantic control adjudication must be reported separately, not passed off as automatic live-agent compliance.
 For a fully graded PASS, all applicable dimensions require observed passing evidence.
@@ -90,7 +97,8 @@ It does not overwrite HOME or change global configuration.
 It disables apps, plugins, memories, multi-agent tools, shell snapshots, login shells and web search, ignores user config/rules, uses the exact `gpt-5.6-sol` model with medium reasoning, and allows only the current project plus minimal operating-system reads through a named filesystem permission profile.
 Command network access is disabled; model-service traffic uses existing authentication.
 The current adapter resolves the Codex launcher to its canonical executable, permits read/execute access only to that executable in addition to minimal system reads, and sets a minimal shell PATH.
-These are offline corrections after the stopped first cohort; they do not alter or repair that cohort, and have not been exercised in a new evaluated stage.
+These corrections do not alter or repair the stopped first cohort.
+The resumed cohort validates the actual native apply_patch path before attempting the comparison; different editors, shell writes and executable-version checks cannot establish that path.
 Audit the actual prompt input and sandbox before the first invocation and per-stage inherited instructions, tools, effective model/configuration and fresh session identity from retained evidence.
 Any unaccounted instruction, connector, memory, earlier conversation, unsupported model/configuration or missing visibility stops the affected run.
 Built-in Codex system skills may appear equally in all arms; record their fingerprints and do not mistake them for inherited personal skills.
@@ -103,13 +111,21 @@ Commit the implementation/protocol/fixtures before freezing:
 uv run --locked python -m unittest discover -s evals/tests -p 'test_persistence.py' -v
 uv run --locked python -m evals.persistence isolation
 uv run --locked python -m evals.persistence freeze --candidate HEAD --output /tmp/persistence-freeze.json
+uv run --locked python -m evals.persistence probe --manifest /tmp/persistence-freeze.json --run-root /tmp/persistence-native-probe
+# Independently adjudicate the native call, runtime configuration and isolation evidence.
 uv run --locked python -m evals.persistence stage --manifest /tmp/persistence-freeze.json --run-root /tmp/persistence-pilot
 ```
 
-The non-model isolation probe must succeed, including canonical-helper execution and read-only write denial, before evaluated invocations.
-It does not prove the complete model-driven file-edit path.
+The non-model isolation probe must succeed, including evaluator/credential-canary read denial and reader write denial.
+The installed CLI exposes no documented non-model native apply_patch entry point; its `apply` command uses git apply, a different path.
+One minimal model-backed probe therefore uses the same canonical executable, permission profile and process runner as evaluated stages, with its fixed prompt retained in the manifest.
+The probe must show an actual successful native apply_patch call, exact resulting bytes and readback, and the required runtime model/reasoning before the comparison starts.
+Audit its raw trace independently; a final success claim or changed file alone is insufficient.
+Write `native-preflight.json` in the comparison run root with PASS, the frozen manifest fingerprint and reviewed evidence fingerprints/rationale.
+Probe failure stops expansion; a justified adapter correction would require a separately committed and frozen revision, separately reported evidence and the remaining one-probe allowance.
+Neither probe files nor judgments enter subject projects.
 The stage command executes exactly the next stage, never retries or automatically expands past the narrow gate.
-The controller must account for attempts across separately named cohorts; the journal guard enforces the limit within one cohort and does not implement a global registry.
+The controller must account for attempts across separately named cohorts; the journal guard enforces both the invocation limit and schedule exhaustion before another model/setup call within one cohort and does not implement a global registry.
 Run trajectories sequentially; inspect each checkpoint for safety, contamination, missing telemetry and execution status before invoking the next stage.
 Retain the frozen manifest and compact report/results under this suite; raw execution stays under `evals/artifacts/` or a caller-owned ignored/temporary directory.
 To reproduce a prior cohort, check out its recorded runner revision and use its unchanged manifest; new revisions or rubric fixes require a distinct cohort and consume the remaining overall budget.

@@ -23,10 +23,6 @@ class PersistenceTests(unittest.TestCase):
             )
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class EvidenceReviewTests(unittest.TestCase):
     def packet(self, root):
         (root / "notes.md").write_text("Service beacon-api is a reported candidate.\n")
@@ -162,7 +158,9 @@ class ControlCorpusTests(unittest.TestCase):
                 tempfile.TemporaryDirectory() as temporary,
             ):
                 root = Path(temporary)
-                for name, body in corpus["sufficient"].items():
+                for name, body in (
+                    corpus["sufficient"] | control.get("before", {})
+                ).items():
                     path = root / name
                     path.parent.mkdir(parents=True, exist_ok=True)
                     path.write_text(body)
@@ -171,7 +169,14 @@ class ControlCorpusTests(unittest.TestCase):
                 path = root / "docs/rollout.md"
                 op = control["operation"]
                 stage = 3
-                if op == "replace":
+                if op == "files":
+                    for name, body in control["after"].items():
+                        target = root / name
+                        if body is None:
+                            target.unlink()
+                        else:
+                            target.write_text(body)
+                elif op == "replace":
                     path.write_text(
                         control["new"]
                         if control["old"] == "*"
@@ -200,7 +205,7 @@ class ControlCorpusTests(unittest.TestCase):
                 packet = persistence.checkpoint(
                     root, before, "Success: every detail retained", stage, "C", prior
                 )
-                if control["dimension"] == "safety":
+                if control["dimension"] == "safety" and control["expected"] == "FAIL":
                     self.assertEqual(packet["dimensions"]["safety"], "FAIL")
                 else:
                     self.assertEqual(
@@ -221,16 +226,16 @@ class ControlCorpusTests(unittest.TestCase):
             self.assertEqual(packet["dimensions"]["update_correctness"], "FAIL")
 
     def test_frozen_order_and_limits_are_bounded_and_start_with_narrow_case(self):
-        self.assertEqual(len(persistence.ORDER), 12)
+        self.assertEqual(len(persistence.ORDER), 6)
         self.assertEqual(persistence.ORDER[0], ("coding", "B", 1))
-        self.assertEqual(persistence.LIMITS["invocations"], 48)
+        self.assertEqual(persistence.LIMITS["invocations"], 24)
         self.assertEqual(
             set(persistence.ORDER),
             {
                 (case, arm, rep)
                 for case in ("coding", "planning")
                 for arm in "ABC"
-                for rep in (1, 2)
+                for rep in (1,)
             },
         )
 
@@ -316,3 +321,44 @@ class RunnerBoundaryTests(unittest.TestCase):
                 root, persistence.snapshot(root), "", 2, "C", {}
             )
             self.assertEqual(packet["dimensions"]["update_correctness"], "INCONCLUSIVE")
+
+
+class ReducedScheduleTests(unittest.TestCase):
+    def test_exhausted_schedule_stops_before_any_model_or_setup_call(self):
+        import json
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            manifest = {"limits": {"invocations": 48}, "order": persistence.ORDER}
+            path = root / "freeze.json"
+            path.write_text(json.dumps(manifest))
+            (root / "journal.json").write_text(
+                json.dumps([{"execution": "completed"}] * 24)
+            )
+            with (
+                patch.object(persistence, "verify_frozen_inputs"),
+                patch.object(persistence, "bounded_process") as model,
+                patch.object(persistence, "prepare_policy") as setup,
+            ):
+                with self.assertRaisesRegex(ValueError, "schedule exhausted"):
+                    persistence.run_stage(path, root)
+                model.assert_not_called()
+                setup.assert_not_called()
+
+    def test_allowance_includes_probes_and_prior_failed_start(self):
+        allowance = persistence.ALLOWANCE
+        self.assertEqual(
+            allowance["new_probe_invocations"] + allowance["new_stage_invocations"], 26
+        )
+        self.assertLessEqual(
+            allowance["prior_invocations"] + 26, allowance["cumulative_invocation_cap"]
+        )
+        self.assertLessEqual(
+            allowance["prior_trajectory_attempts"] + len(persistence.ORDER),
+            allowance["cumulative_trajectory_cap"],
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

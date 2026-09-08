@@ -261,9 +261,12 @@ Use this common sequence for every affected reconciliation:
    Keep operational details in the artifact designated to maintain the result or a usable durable reference, not solely in chat or a high-level summary.
    Keep the map brief and link that detail; do not duplicate the detailed result or retain everything.
 2. Update affected map content, records, conditions blocking affected work, dependencies, ready work, and known references.
-   Preserve the relationships among identities, statuses, sources, and scopes under the authority and evidence rules in `## Current knowledge`: reported is not verified, proposed is not committed, committed is not action-authorized, and recorded external evidence is not freshly checked.
+   Preserve the relationships among identities, statuses, sources, and scopes under the authority and evidence rules in `## Current knowledge`.
+   Do not infer verification from a report, commitment from a proposal, action authorization from a committed choice, or fresh verification from recorded external evidence.
    When a choice or contingency changes, reconcile its consequences for established dependencies and ready work without inventing requirements or making every unknown a blocker.
 3. Prune only recognized records that no longer have independent current value.
+   Before pruning, verify that any still-useful information in the record is retrievable from its designated maintaining artifact and that affected references resolve.
+   If preservation cannot be established, retain the affected record without blocking independent work.
 4. Before claiming a material authorized update complete, reread the affected saved results and references against the relevant input and current state.
    Check that consequential details and relationships remain retrievable and usable without the original conversation, including whether a retained reference actually supplies the needed detail.
    Bound this check to affected work; it is not required for every message or across the whole repository.

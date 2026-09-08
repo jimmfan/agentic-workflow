@@ -52,13 +52,17 @@ DIMENSIONS = (
 VERDICTS = {"PASS", "FAIL", "INCONCLUSIVE"}
 BASE = "a963f707f9123d5af870dfe06f06d3d1ee1802f8"
 MODEL = "gpt-5.6-sol"
-LIMITS = {"seconds": 180, "output_bytes": 2_000_000, "invocations": 48}
-ORDER = [
-    (case, arm, rep)
-    for rep, arms in ((1, "BAC"), (2, "CAB"))
-    for case in ("coding", "planning")
-    for arm in arms
-]
+LIMITS = {"seconds": 360, "output_bytes": 2_000_000, "invocations": 24}
+ORDER = [(case, arm, 1) for case in ("coding", "planning") for arm in "BAC"]
+ALLOWANCE = {
+    "prior_invocations": 1,
+    "prior_trajectory_attempts": 1,
+    "new_probe_invocations": 2,
+    "new_stage_invocations": 24,
+    "cumulative_invocation_cap": 48,
+    "cumulative_trajectory_cap": 12,
+}
+PROBE_PROMPT = """Use the native apply_patch tool to change note.txt from 'before' to 'after', then read the file to verify it. Do not use another editing method or retry a failed patch. If the native tool is unavailable or fails, report that and stop. Work only in this project; no network, external tools, or delegation."""
 
 
 def dump(path: Path, value: object) -> None:
@@ -352,6 +356,8 @@ def freeze(destination: Path, candidate: str) -> None:
             "reasoning": "medium",
             "limits": LIMITS,
             "order": ORDER,
+            "allowance": ALLOWANCE,
+            "native_probe_prompt": PROBE_PROMPT,
             "configuration_template": config_args(Path("/WORKSPACE"), 1),
             "transfer": "All project files; remove source-once.txt before stage 2; no chats, homes, traces or grader files; no repairs",
             "cli": subprocess.check_output(["codex", "--version"], text=True).strip(),
@@ -510,8 +516,7 @@ def audit_context(binary, workspace, home, stage, env, prompt, raw):
     }
 
 
-def run_stage(manifest_path: Path, run_root: Path) -> None:
-    manifest = json.loads(manifest_path.read_text())
+def verify_frozen_inputs(manifest: dict) -> None:
     if (
         hashlib.sha256(Path(codex_binary()).read_bytes()).hexdigest()
         != manifest["cli_sha256"]
@@ -520,11 +525,18 @@ def run_stage(manifest_path: Path, run_root: Path) -> None:
     for name, sha in manifest["inputs"].items():
         if hashlib.sha256((ROOT / name).read_bytes()).hexdigest() != sha:
             raise ValueError(f"Frozen input changed: {name}")
+
+
+def run_stage(manifest_path: Path, run_root: Path) -> None:
+    manifest = json.loads(manifest_path.read_text())
+    verify_frozen_inputs(manifest)
     run_root.mkdir(parents=True, exist_ok=True)
     journal = run_root / "journal.json"
     ledger = json.loads(journal.read_text()) if journal.exists() else []
-    if len(ledger) >= LIMITS["invocations"]:
-        raise ValueError("Invocation budget exhausted")
+    if len(ledger) >= min(
+        manifest["limits"]["invocations"], 4 * len(manifest["order"])
+    ):
+        raise ValueError("Invocation budget or frozen schedule exhausted")
     if ledger and ledger[-1]["execution"] != "completed":
         raise ValueError("Stopped cohort cannot be retried")
     index = len(ledger)
@@ -545,6 +557,17 @@ def run_stage(manifest_path: Path, run_root: Path) -> None:
             or not gate.get("rationale")
         ):
             raise ValueError("Narrow preflight did not pass for this checkpoint")
+    native = run_root / "native-preflight.json"
+    evidence = json.loads(native.read_text()) if native.exists() else {}
+    if (
+        evidence.get("verdict") != "PASS"
+        or evidence.get("manifest_sha256") != fingerprint(manifest)
+        or not evidence.get("evidence_sha256")
+        or not evidence.get("rationale")
+    ):
+        raise ValueError(
+            "Native patch and isolation evidence required before comparison"
+        )
     case, arm, rep = manifest["order"][trajectory]
     fixture = json.loads((SUITE / "cases.json").read_text())
     entry = fixture["cases"][case]
@@ -658,6 +681,87 @@ def run_stage(manifest_path: Path, run_root: Path) -> None:
     )
 
 
+def run_probe(manifest_path: Path, run_root: Path) -> None:
+    """A separately counted native-edit attempt using the comparison adapter."""
+    manifest = json.loads(manifest_path.read_text())
+    verify_frozen_inputs(manifest)
+    run_root.mkdir(parents=True, exist_ok=True)
+    journal = run_root / "probe-journal.json"
+    ledger = json.loads(journal.read_text()) if journal.exists() else []
+    if len(ledger) >= manifest["allowance"]["new_probe_invocations"]:
+        raise ValueError("Native probe allowance exhausted")
+    if ledger:
+        raise ValueError(
+            "No automatic probe replacement; a revision requires a separate cohort"
+        )
+    root = run_root / "probe-01"
+    project, home, raw = root / "project", root / "codex-home", root / "raw"
+    project.mkdir(parents=True)
+    home.mkdir(mode=0o700)
+    raw.mkdir()
+    (project / "note.txt").write_text("before\n")
+    prompt = manifest["native_probe_prompt"]
+    before = snapshot(project)
+    binary = codex_binary()
+    env = {
+        "CODEX_HOME": str(home),
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "LANG": "en_US.UTF-8",
+    }
+    command = [
+        binary,
+        "exec",
+        "--ignore-user-config",
+        "--ignore-rules",
+        *config_args(project, 1),
+        "-C",
+        str(project),
+        "--skip-git-repo-check",
+        "--json",
+        "-o",
+        str(raw / "response.txt"),
+        "-",
+    ]
+    source_auth = (
+        Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "auth.json"
+    )
+    if source_auth.is_symlink() or not source_auth.is_file():
+        raise ValueError("Existing regular auth.json required; no new authentication")
+    item = {
+        "execution": "started",
+        "command": command,
+        "manifest_sha256": fingerprint(manifest),
+        "prompt_sha256": fingerprint(prompt),
+        "before": {p: asdict(e) for p, e in before.items()},
+    }
+    ledger.append(item)
+    dump(journal, ledger)  # Failed starts consume the allowance too.
+    try:
+        shutil.copyfile(source_auth, home / "auth.json")
+        (home / "auth.json").chmod(0o600)
+        item["context_audit"] = audit_context(
+            binary, project, home, 1, env, prompt, raw
+        )
+        status, code, elapsed = bounded_process(
+            command, cwd=project, env=env, prompt=prompt, raw=raw
+        )
+        item.update(execution=status, returncode=code, elapsed_seconds=elapsed)
+    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+        item.update(execution="infrastructure-blocked", error=str(exc))
+    except KeyboardInterrupt:
+        item.update(execution="interrupted")
+    finally:
+        (home / "auth.json").unlink(missing_ok=True)
+        try:
+            item["after"] = {p: asdict(e) for p, e in snapshot(project).items()}
+            item["native_path_verdict"] = (
+                "INCONCLUSIVE: requires actual native-call and runtime configuration evidence"
+            )
+        finally:
+            dump(journal, ledger)
+    print(json.dumps(item, indent=2))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
@@ -667,9 +771,10 @@ def main():
     frozen = sub.add_parser("freeze")
     frozen.add_argument("--candidate", default="HEAD")
     frozen.add_argument("--output", type=Path, required=True)
-    run = sub.add_parser("stage")
-    run.add_argument("--manifest", type=Path, required=True)
-    run.add_argument("--run-root", type=Path, required=True)
+    for action in ("stage", "probe"):
+        run = sub.add_parser(action)
+        run.add_argument("--manifest", type=Path, required=True)
+        run.add_argument("--run-root", type=Path, required=True)
     args = parser.parse_args()
     if args.action == "isolation":
         probe = isolation_probe()
@@ -677,6 +782,8 @@ def main():
         raise SystemExit(0 if probe["passed"] else 2)
     elif args.action == "freeze":
         freeze(args.output, args.candidate)
+    elif args.action == "probe":
+        run_probe(args.manifest, args.run_root.resolve())
     else:
         run_stage(args.manifest, args.run_root.resolve())
 
