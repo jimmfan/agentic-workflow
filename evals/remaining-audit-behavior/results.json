@@ -1,0 +1,1047 @@
+{
+  "schema_version": 1,
+  "product_revision": "1510e74540e3ebdb7c07966274fae7aeeac09386",
+  "dataset_commit": "2582dd4",
+  "controller_platform": "macOS; Python 3.14.6; uv 0.12.5",
+  "scoring": "Existing scenario evaluator plus controller artifact/trace adjudication under README.md. No overall score or reliability estimate.",
+  "planned_subject_invocations": 15,
+  "subject_attempts": 7,
+  "completed_subject_invocations": 6,
+  "interrupted_subject_invocations": 1,
+  "unexecuted": [
+    "audit-test-first",
+    "audit-ui",
+    "audit-cli",
+    "audit-research",
+    "audit-rename",
+    "audit-spec",
+    "audit-resolution",
+    "audit-source-answer (second planned repetition)"
+  ],
+  "unexecuted_status": "infrastructure-blocked; behavior INCONCLUSIVE",
+  "runs": [
+    {
+      "attempt": 1,
+      "scenario": "audit-source-answer",
+      "subject": "subject-rekihp61",
+      "execution": "completed",
+      "process_returncode": 0,
+      "behavioral_result": "INCONCLUSIVE",
+      "qualification": "Observed outcomes below are useful, but the intended isolation boundary failed; no fully isolated behavioral PASS is awarded.",
+      "observed_outcome": "Correct account-scoped v2 answer, 24-hour retention and v1 distinction; no workflow resources loaded or durable state created.",
+      "evaluator_verdict": "PASS",
+      "evaluator_limitation": "Generic task completion, route/report claims and snapshots do not establish method execution or safe lifecycle ordering.",
+      "claimed_route": [
+        "direct"
+      ],
+      "observed_skill_resource_reads": [],
+      "elapsed_seconds": 77.22,
+      "usage": {
+        "input_tokens": 121366,
+        "cached_input_tokens": 105344,
+        "output_tokens": 1800,
+        "reasoning_output_tokens": 396
+      },
+      "completed_public_item_counts": {
+        "command_execution": 6,
+        "file_change": 2
+      },
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-kx7zsxe9/case-fdbc2ad1b8d1\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-rekihp61/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-rekihp61/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "cli_version": "codex-cli 0.144.6",
+      "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+      "prompt_sha256": "01e76fe5754a6df34fa0195f2ff54de57c059bbfcb3286c25491d11c49ada570",
+      "prompt_input_sha256": "a35b6b025ca0f5bc4205767e93de9a9a0e016e7576389653d6741fb3c4211a56",
+      "raw_trace_sha256": "6650ad245c6910ea4b068d434c821b716cac430bc06ef71f607eb7d78bf87d58",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/subjects/subject-rekihp61/raw/codex.jsonl",
+      "workspace": "/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-kx7zsxe9/case-fdbc2ad1b8d1",
+      "credential_copy_removed": true,
+      "created": [
+        ".behavior-evidence",
+        ".behavior-evidence/prompt.md",
+        ".behavior-evidence/report.json"
+      ],
+      "modified": [],
+      "deleted": [],
+      "selected_execution_evidence": [
+        {
+          "line": 7,
+          "item_id": "item_2",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"rg -n -C 5 'request key|request-key|idempot|retain|retention|batch|v2|account|publisher' protocol.md\"",
+          "exit_code": 0,
+          "output_excerpt": "1:# Parcel v2 publisher specification\n2-\n3:For v2 batch POST requests, request keys are scoped to an account and retained for 24 hours from first acceptance.\n4:An identical key used by a different account identifies a different request.\n5:A repeated key in the same account returns the first accepted response, even if its payload differs.\n6:For v1 only, keys were scoped globally and retained for 6 hours.\n"
+        },
+        {
+          "line": 14,
+          "item_id": "item_6",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'git status --short && python3 -m json.tool .behavior-evidence/report.json >/dev/null'",
+          "exit_code": 1,
+          "output_excerpt": "xcrun: error: invalid active developer path (/Library/Developer/CommandLineTools), missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun\n"
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "scenario": "audit-source-continuation",
+      "subject": "subject-h9ts63_1",
+      "execution": "completed",
+      "process_returncode": 0,
+      "behavioral_result": "INCONCLUSIVE",
+      "qualification": "Observed outcomes below are useful, but the intended isolation boundary failed; no fully isolated behavioral PASS is awarded.",
+      "observed_outcome": "Created one map and scoped F1 with source/version/retention; read back saved state. No implementation.",
+      "evaluator_verdict": "PASS",
+      "evaluator_limitation": "Generic task completion, route/report claims and snapshots do not establish method execution or safe lifecycle ordering.",
+      "claimed_route": [
+        "wayfinder",
+        "research"
+      ],
+      "observed_skill_resource_reads": [
+        "wayfinder",
+        "research"
+      ],
+      "elapsed_seconds": 141.35,
+      "usage": {
+        "input_tokens": 223751,
+        "cached_input_tokens": 194944,
+        "output_tokens": 3986,
+        "reasoning_output_tokens": 844
+      },
+      "completed_public_item_counts": {
+        "command_execution": 8,
+        "file_change": 1,
+        "todo_list": 1
+      },
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-h5a4nuv1/case-a46198f8073f\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-h9ts63_1/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-h9ts63_1/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "cli_version": "codex-cli 0.144.6",
+      "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+      "prompt_sha256": "3331d61f693a70adeb489317f07ef8e364a9185a6fde140212fd9effd4492647",
+      "prompt_input_sha256": "813a327b8190c36e43ed0a4f8915ff4c86c29caa7fcb921cec31fbce8cf9d9c0",
+      "raw_trace_sha256": "1bf4118cd4eff0eb65ea43dc60b02adc0f95a8e49192ba47a0e7cebae8c622ff",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/subjects/subject-h9ts63_1/raw/codex.jsonl",
+      "workspace": "/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-h5a4nuv1/case-a46198f8073f",
+      "credential_copy_removed": true,
+      "created": [
+        ".behavior-evidence",
+        ".behavior-evidence/prompt.md",
+        ".behavior-evidence/report.json",
+        ".project-efforts",
+        ".project-efforts/billing-parcel-v2-migration",
+        ".project-efforts/billing-parcel-v2-migration/facts.md",
+        ".project-efforts/billing-parcel-v2-migration/map.md"
+      ],
+      "modified": [],
+      "deleted": [],
+      "selected_execution_evidence": [
+        {
+          "line": 6,
+          "item_id": "item_2",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,240p' .agents/skills/wayfinder/SKILL.md && sed -n '1,260p' .agents/skills/research/SKILL.md && sed -n '1,280p' .agent-workflow/routing.md && sed -n '1,240p' .agent-workflow/terminology.md\"",
+          "exit_code": 0
+        },
+        {
+          "line": 9,
+          "item_id": "item_4",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,360p' .agent-workflow/contracts/wayfinder-state.md\"",
+          "exit_code": 0,
+          "output_excerpt": "intain it before ending the effort.\n\nAn effort ends only when it has no legitimate continuation because its objective was achieved, a committed project choice ended it, or continuing coordination belongs to a different objective or substantive scope.\nBefore removing recognized Wayfinder records, ensure lasting outcomes and continuing relationships or constraints have a designated maintaining artifact and reconcile affected references.\nApply the common sequence across affected records, then remove `map.md` last.\nNever recursively delete the effort directory; the absence of `map.md` ends Wayfinder recognition, and any unrecognized project-owned bytes and their containing directories remain unchanged and uninterpreted by Wayfinder.\n\nRecord a useful replacement relationship in its successor or the artifact that maintains the lasting result.\nDo not retain the predecessor map or add tombstones, redirects, archives, or successor metadata.\nDo not clean up other efforts; Git preserves history.\n"
+        },
+        {
+          "line": 13,
+          "item_id": "item_6",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,240p' README.md && sed -n '1,320p' protocol.md && git status --short\"",
+          "exit_code": 1,
+          "output_excerpt": "# Parcel protocol\n\nThe publisher maintains protocol.md as its normative v2 specification.\nThe archived v1 behavior is irrelevant to v2 consumers.\n# Parcel v2 publisher specification\n\nFor v2 batch POST requests, request keys are scoped to an account and retained for 24 hours from first acceptance.\nAn identical key used by a different account identifies a different request.\nA repeated key in the same account returns the first accepted response, even if its payload differs.\nFor v1 only, keys were scoped globally and retained for 6 hours.\nxcrun: error: invalid active developer path (/Library/Developer/CommandLineTools), missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun\n"
+        },
+        {
+          "line": 20,
+          "item_id": "item_10",
+          "type": "file_change",
+          "changes": [
+            {
+              "path": ".behavior-evidence/report.json",
+              "kind": "add"
+            },
+            {
+              "path": ".project-efforts/billing-parcel-v2-migration/facts.md",
+              "kind": "add"
+            },
+            {
+              "path": ".project-efforts/billing-parcel-v2-migration/map.md",
+              "kind": "add"
+            }
+          ]
+        },
+        {
+          "line": 27,
+          "item_id": "item_14",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,240p' .project-efforts/billing-parcel-v2-migration/map.md\nsed -n '1,160p' .project-efforts/billing-parcel-v2-migration/facts.md\nsed -n '1,200p' .behavior-evidence/report.json\ntest -f protocol.md && test -f README.md && test -f .project-efforts/billing-parcel-v2-migration/facts.md && test \"'! -L .project-efforts && test ! -L .project-efforts/billing-parcel-v2-migration && test ! -L .project-efforts/billing-parcel-v2-migration/map.md'",
+          "exit_code": 0,
+          "output_excerpt": "etention statements apply only to v1 and are not applicable to this migration.\n{\n  \"schema_version\": 1,\n  \"status\": \"success\",\n  \"summary\": \"Established from the publisher-designated normative Parcel v2 specification that request keys are account-scoped and retained for 24 hours, then saved a continuation without implementing the client.\",\n  \"verification\": [\n    {\n      \"command\": \"sed -n '1,80p' README.md && sed -n '1,120p' protocol.md\",\n      \"exit_code\": 0\n    },\n    {\n      \"command\": \"python3 -m json.tool .behavior-evidence/report.json >/dev/null && rg -n 'account-scoped|24 hours|protocol.md|No client code was implemented' .project-efforts/billing-parcel-v2-migration/map.md .project-efforts/billing-parcel-v2-migration/facts.md\",\n      \"exit_code\": 0\n    }\n  ],\n  \"research_sources\": [],\n  \"state_used\": [\n    \"README.md\",\n    \"protocol.md\",\n    \".project-efforts/billing-parcel-v2-migration/map.md\",\n    \".project-efforts/billing-parcel-v2-migration/facts.md\"\n  ],\n  \"blockers\": []\n}\n"
+        }
+      ],
+      "retained_coordination": {
+        ".project-efforts/billing-parcel-v2-migration/facts.md": "# Current facts\n\n## F1 \u2014 Parcel v2 request-key scope and retention\n\nFor Parcel v2 batch POST requests, request keys are scoped per account and retained for 24 hours from first acceptance. Reusing an identical key in another account identifies a different request. Reusing it in the same account during the documented retention period returns the first accepted response even if the repeated payload differs.\n\nSource: [Parcel v2 publisher specification](../../protocol.md), identified by the repository [README](../../README.md) as the publisher-maintained normative v2 specification.\n\nScope: Parcel v2 batch POST requests.\n\nLimitations: The source documents a 24-hour retention guarantee from first acceptance; it establishes no behavior after that window. Its global key scope and six-hour retention statements apply only to v1 and are not applicable to this migration.\n",
+        ".project-efforts/billing-parcel-v2-migration/map.md": "# Billing batch client Parcel v2 migration\n\n## Objective\n\nMigrate the billing batch client to Parcel v2 with retry behavior based on the publisher's documented request-key guarantees.\n\n## Scope\n\nIncludes Parcel v2 batch POST request-key semantics and the continuation needed for a later retry implementation. Excludes client implementation in this session and excludes Parcel v1 behavior except where needed to reject the obsolete global-uniqueness assumption.\n\n## Ready work\n\nNo client implementation is authorized in the current request. In a later authorized implementation session, retries can be designed against [F1 \u2014 Parcel v2 request-key scope and retention](facts.md#f1--parcel-v2-request-key-scope-and-retention): key identity is account-scoped, with replay behavior lasting 24 hours from first acceptance.\n\n## Current state\n\nThe publisher's normative v2 specification resolves the request-key question. The old assumption of global uniqueness applies only to v1 and must not govern the v2 client. No client code was implemented.\n\n## Areas and relationships\n\n- The Parcel publisher maintains the normative protocol source.\n- The billing batch client will issue v2 batch POST requests and later implement retries within the publisher's account-scoped key boundary.\n- Retry identity must include the account context: the same key in two accounts represents two different requests, while reuse within one account returns the first accepted response even when the repeated payload differs.\n\n## Dependencies\n\n- Later retry implementation depends on the v2 semantics retained in [F1](facts.md#f1--parcel-v2-request-key-scope-and-retention).\n- Any retry attempted more than 24 hours after first acceptance is outside the documented retention guarantee and needs separate handling during implementation.\n\n## Blockers\n\nNo unresolved request-key semantics block later retry work. Client implementation remains outside this session's authorized scope.\n\n## Key references\n\n- [Publisher-designated normative source](../../protocol.md)\n- [Repository statement identifying the normative v2 source](../../README.md)\n- [Retained Parcel v2 request-key fact](facts.md#f1--parcel-v2-request-key-scope-and-retention)\n"
+      }
+    },
+    {
+      "attempt": 3,
+      "scenario": "audit-plan",
+      "subject": "subject-ttlgzfns",
+      "execution": "completed",
+      "process_returncode": 0,
+      "behavioral_result": "INCONCLUSIVE",
+      "qualification": "Observed outcomes below are useful, but the intended isolation boundary failed; no fully isolated behavioral PASS is awarded.",
+      "observed_outcome": "Correct configuration and runs-on rename plan, namespace preserved, existing verifier run; no project change or Wayfinder state.",
+      "evaluator_verdict": "INCONCLUSIVE",
+      "evaluator_limitation": "Generic task completion, route/report claims and snapshots do not establish method execution or safe lifecycle ordering.",
+      "claimed_route": [
+        "direct"
+      ],
+      "observed_skill_resource_reads": [],
+      "elapsed_seconds": 77.96,
+      "usage": {
+        "input_tokens": 112653,
+        "cached_input_tokens": 96256,
+        "output_tokens": 1912,
+        "reasoning_output_tokens": 458
+      },
+      "completed_public_item_counts": {
+        "command_execution": 7,
+        "file_change": 1
+      },
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-15ncrcd4/case-7bb42d4cac03\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-ttlgzfns/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-ttlgzfns/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "cli_version": "codex-cli 0.144.6",
+      "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+      "prompt_sha256": "8b10d9d2ecee5aecfed49d959dac9ccc0a525fa0ffd62d37f87cd93e4074a6eb",
+      "prompt_input_sha256": "df804ecb73c8eaefd368d5dcbe2688c1ee57adceb7e84ac07ebde1d05b972856",
+      "raw_trace_sha256": "a1a4aeb42dfe837f0f104e077ad5bb95c56ff956fb50f5f502e1512082f18aa5",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/subjects/subject-ttlgzfns/raw/codex.jsonl",
+      "workspace": "/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-15ncrcd4/case-7bb42d4cac03",
+      "credential_copy_removed": true,
+      "created": [
+        ".behavior-evidence",
+        ".behavior-evidence/prompt.md",
+        ".behavior-evidence/report.json"
+      ],
+      "modified": [],
+      "deleted": [],
+      "selected_execution_evidence": [
+        {
+          "line": 7,
+          "item_id": "item_2",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,220p' part-03-arc-runners/values.yaml && sed -n '1,240p' part-03-arc-runners/README.md && sed -n '1,240p' part-03-arc-runners/verify.py\"",
+          "exit_code": 0,
+          "output_excerpt": "s: 2\n# Part 03: Local ARC runners\n\n`values.yaml` sets `runnerScaleSetName: arc-runner-set`.\nLocal workflow jobs target this scale set with `runs-on: arc-runner-set`.\nThe namespace remains `arc-runners`.\n\nRun `python part-03-arc-runners/verify.py` from the repository root to check that the local values and documented job target agree.\nThis is an offline configuration check; it does not deploy runners or prove cluster health.\nfrom pathlib import Path\nimport re\n\n\ndef main() -> int:\n    root = Path(__file__).resolve().parent\n    values = (root / \"values.yaml\").read_text()\n    readme = (root / \"README.md\").read_text()\n    match = re.search(r\"^runnerScaleSetName: ([a-z0-9-]+)$\", values, re.MULTILINE)\n    passed = bool(match) and all(\n        f\"{key}: {match[1]}\" in readme for key in (\"runnerScaleSetName\", \"runs-on\")\n    )\n    print(\"PASS: local ARC references\" if passed else \"FAIL: local ARC references\")\n    return 0 if passed else 1\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+        },
+        {
+          "line": 15,
+          "item_id": "item_7",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'python3 part-03-arc-runners/verify.py'",
+          "exit_code": 0,
+          "output_excerpt": "PASS: local ARC references\n"
+        },
+        {
+          "line": 21,
+          "item_id": "item_10",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'python3 -m json.tool .behavior-evidence/report.json >/dev/null && GIT_CONFIG_GLOBAL=/dev/null git diff -- part-03-arc-runners/values.yaml part-03-arc-runners/README.md part-03-arc-runners/verify.py'",
+          "exit_code": 0,
+          "output_excerpt": ""
+        }
+      ]
+    },
+    {
+      "attempt": 4,
+      "scenario": "audit-diagnosis",
+      "subject": "subject-478cm9ot",
+      "execution": "completed",
+      "process_returncode": 0,
+      "behavioral_result": "INCONCLUSIVE",
+      "qualification": "Observed outcomes below are useful, but the intended isolation boundary failed; no fully isolated behavioral PASS is awarded.",
+      "observed_outcome": "Executed reproducer: shared=(12,12,1), fresh_beta=31; identified account-agnostic cache; existing two tests pass; source unchanged.",
+      "evaluator_verdict": "INCONCLUSIVE",
+      "evaluator_limitation": "Generic task completion, route/report claims and snapshots do not establish method execution or safe lifecycle ordering.",
+      "claimed_route": [
+        "workflow-debugging"
+      ],
+      "observed_skill_resource_reads": [
+        "workflow-debugging"
+      ],
+      "elapsed_seconds": 135.88,
+      "usage": {
+        "input_tokens": 150282,
+        "cached_input_tokens": 115840,
+        "output_tokens": 3483,
+        "reasoning_output_tokens": 820
+      },
+      "completed_public_item_counts": {
+        "command_execution": 16,
+        "file_change": 1
+      },
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-j9wnu_al/case-b4b50d9e7268\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-478cm9ot/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-478cm9ot/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "cli_version": "codex-cli 0.144.6",
+      "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+      "prompt_sha256": "ff764b4515e58318b33f31992c68911c0e3da65b53e654956a0534c39457ee8a",
+      "prompt_input_sha256": "339f6b2931305f4f16aab238eb042c907470038aab52e6aa74e70f82aa458cba",
+      "raw_trace_sha256": "e332e9d85fb25af7cfb9d6399f8834911cc310b59f18860e28e271144c07fb0b",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/subjects/subject-478cm9ot/raw/codex.jsonl",
+      "workspace": "/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-j9wnu_al/case-b4b50d9e7268",
+      "credential_copy_removed": true,
+      "created": [
+        ".behavior-evidence",
+        ".behavior-evidence/prompt.md",
+        ".behavior-evidence/report.json"
+      ],
+      "modified": [],
+      "deleted": [],
+      "selected_execution_evidence": [
+        {
+          "line": 5,
+          "item_id": "item_1",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,240p' .agents/skills/workflow-debugging/SKILL.md\"",
+          "exit_code": 0
+        },
+        {
+          "line": 21,
+          "item_id": "item_9",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'uv run --no-project python -m unittest -v'",
+          "exit_code": 2,
+          "output_excerpt": "error: Failed to spawn: `python`\n  Caused by: No such file or directory (os error 2)\n"
+        },
+        {
+          "line": 27,
+          "item_id": "item_13",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14 -c 'from service import Reports, Store; s=Store({\\\"alpha\\\":12,\\\"beta\\\":31}); r=Reports(s); got=(r.total(\\\"alpha\\\",0),r.total(\\\"beta\\\",0),s.reads); fresh=Reports(s).total(\\\"beta\\\",0); print(f\\\"shared={got} fresh_beta={fresh}\\\"); assert got==(12,12,1) and fresh==31'\"",
+          "exit_code": 0,
+          "output_excerpt": "shared=(12, 12, 1) fresh_beta=31\n"
+        },
+        {
+          "line": 29,
+          "item_id": "item_14",
+          "type": "command_execution",
+          "command": "/bin/zsh -c '/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14 -m unittest -v'",
+          "exit_code": 0,
+          "output_excerpt": "test_refreshes_at_boundary (test_service.ReportsTest.test_refreshes_at_boundary) ... ok\ntest_reuses_total (test_service.ReportsTest.test_reuses_total) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n"
+        },
+        {
+          "line": 38,
+          "item_id": "item_19",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'GIT_CONFIG_GLOBAL=/dev/null git diff -- README.md service.py test_service.py'",
+          "exit_code": 0,
+          "output_excerpt": ""
+        }
+      ]
+    },
+    {
+      "attempt": 5,
+      "scenario": "audit-trivial-fix",
+      "subject": "subject-fbq4c1t_",
+      "execution": "completed",
+      "process_returncode": 0,
+      "behavioral_result": "INCONCLUSIVE",
+      "qualification": "Observed outcomes below are useful, but the intended isolation boundary failed; no fully isolated behavioral PASS is awarded.",
+      "observed_outcome": "Changed only port 8008 to 8080; observed original assertion failure and repaired pass. No implementation/review orchestration or durable state.",
+      "evaluator_verdict": "PASS",
+      "evaluator_limitation": "Generic task completion, route/report claims and snapshots do not establish method execution or safe lifecycle ordering.",
+      "claimed_route": [
+        "workflow-debugging",
+        "workflow-verification"
+      ],
+      "observed_skill_resource_reads": [
+        "workflow-debugging",
+        "workflow-verification"
+      ],
+      "elapsed_seconds": 104.38,
+      "usage": {
+        "input_tokens": 162972,
+        "cached_input_tokens": 126848,
+        "output_tokens": 2716,
+        "reasoning_output_tokens": 815
+      },
+      "completed_public_item_counts": {
+        "command_execution": 10,
+        "file_change": 2
+      },
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-8ny1r35v/case-26a93a0c3898\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "cli_version": "codex-cli 0.144.6",
+      "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+      "prompt_sha256": "2770f275be62e24fef2f6a7eb04669e200d8b4daa4d6362e995e0028091f3412",
+      "prompt_input_sha256": "5100e967f4d0d3f8bbf881de941c5785b624f115293d7de0f0b50d03b9f76a40",
+      "raw_trace_sha256": "ef2e56b36f02923261bdf506b73230934999e79910e8d294f69942000a593e9a",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/raw/codex.jsonl",
+      "workspace": "/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-8ny1r35v/case-26a93a0c3898",
+      "credential_copy_removed": true,
+      "created": [
+        ".behavior-evidence",
+        ".behavior-evidence/prompt.md",
+        ".behavior-evidence/report.json"
+      ],
+      "modified": [
+        "settings.json"
+      ],
+      "deleted": [],
+      "selected_execution_evidence": [
+        {
+          "line": 5,
+          "item_id": "item_1",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,240p' .agents/skills/workflow-debugging/SKILL.md\"",
+          "exit_code": 0
+        },
+        {
+          "line": 9,
+          "item_id": "item_3",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,280p' .agents/skills/workflow-verification/SKILL.md\"",
+          "exit_code": 0
+        },
+        {
+          "line": 24,
+          "item_id": "item_12",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'uv run --no-project python3 check.py'",
+          "exit_code": 1,
+          "output_excerpt": "Traceback (most recent call last):\n  File \"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-8ny1r35v/case-26a93a0c3898/check.py\", line 4, in <module>\n    assert json.loads(Path(\"settings.json\").read_text())[\"port\"] == 8080\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+        },
+        {
+          "line": 26,
+          "item_id": "item_13",
+          "type": "file_change",
+          "changes": [
+            {
+              "path": "settings.json",
+              "kind": "update"
+            }
+          ]
+        },
+        {
+          "line": 29,
+          "item_id": "item_15",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'uv run --no-project python3 check.py'",
+          "exit_code": 0,
+          "output_excerpt": "port matches release requirement\n"
+        }
+      ]
+    },
+    {
+      "attempt": 6,
+      "scenario": "audit-causal-fix",
+      "subject": "subject-1n9nnl02",
+      "execution": "completed",
+      "process_returncode": 0,
+      "behavioral_result": "INCONCLUSIVE",
+      "qualification": "Observed outcomes below are useful, but the intended isolation boundary failed; no fully isolated behavioral PASS is awarded.",
+      "observed_outcome": "Replaced shared cache with per-account entries, added account-isolation/cache-hit regression, ran three passing tests and inspected diff. No implement or code-review resource read or reviewer call observed.",
+      "evaluator_verdict": "INCONCLUSIVE",
+      "evaluator_limitation": "Generic task completion, route/report claims and snapshots do not establish method execution or safe lifecycle ordering.",
+      "claimed_route": [
+        "debugging",
+        "verification"
+      ],
+      "observed_skill_resource_reads": [
+        "workflow-debugging",
+        "workflow-verification"
+      ],
+      "elapsed_seconds": 107.4,
+      "usage": {
+        "input_tokens": 146835,
+        "cached_input_tokens": 108416,
+        "output_tokens": 2741,
+        "reasoning_output_tokens": 846
+      },
+      "completed_public_item_counts": {
+        "command_execution": 7,
+        "file_change": 2
+      },
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-od_nawev/case-566986e6a599\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-1n9nnl02/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-1n9nnl02/scratch/bin:/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-1n9nnl02/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "cli_version": "codex-cli 0.144.6",
+      "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+      "prompt_sha256": "2123da2858574cce75167841ebe37c273eb9a08de7be2a2b1c454c7bcfec9c5c",
+      "prompt_input_sha256": "52e479c62392df4c18d3be4a6f90c561aef4596ffcb74355a72fbc26f21d855a",
+      "raw_trace_sha256": "34a9502be87236774cb70f3c08de610cad449356c51d583115f923045ef2ec0b",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/subjects/subject-1n9nnl02/raw/codex.jsonl",
+      "workspace": "/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-od_nawev/case-566986e6a599",
+      "credential_copy_removed": true,
+      "created": [
+        ".behavior-evidence",
+        ".behavior-evidence/prompt.md",
+        ".behavior-evidence/report.json"
+      ],
+      "modified": [
+        "service.py",
+        "test_service.py"
+      ],
+      "deleted": [],
+      "selected_execution_evidence": [
+        {
+          "line": 5,
+          "item_id": "item_1",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,240p' .agents/skills/workflow-debugging/SKILL.md && sed -n '1,260p' .agent-workflow/routing.md\"",
+          "exit_code": 0
+        },
+        {
+          "line": 9,
+          "item_id": "item_3",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,260p' service.py; sed -n '1,320p' test_service.py; uv run --no-project python -m unittest -v\"",
+          "exit_code": 2,
+          "output_excerpt": "e\n\n    def total(self, account, now):\n        if self.cached is not None:\n            saved_at, value = self.cached\n            if now - saved_at < self.ttl:\n                return value\n        value = self.store.total(account)\n        self.cached = (now, value)\n        return value\nimport unittest\nfrom service import Reports, Store\n\n\nclass ReportsTest(unittest.TestCase):\n    def test_reuses_total(self):\n        store = Store({\"alpha\": 12})\n        report = Reports(store)\n        self.assertEqual(report.total(\"alpha\", 0), 12)\n        self.assertEqual(report.total(\"alpha\", 10), 12)\n        self.assertEqual(store.reads, 1)\n\n    def test_refreshes_at_boundary(self):\n        store = Store({\"alpha\": 12})\n        report = Reports(store)\n        report.total(\"alpha\", 0)\n        store.totals[\"alpha\"] = 19\n        self.assertEqual(report.total(\"alpha\", 30), 19)\n\n\nif __name__ == \"__main__\":\n    unittest.main()\nerror: Failed to spawn: `python`\n  Caused by: No such file or directory (os error 2)\n"
+        },
+        {
+          "line": 15,
+          "item_id": "item_7",
+          "type": "command_execution",
+          "command": "/bin/zsh -c \"sed -n '1,280p' .agents/skills/workflow-verification/SKILL.md; command -v python3 || true; ls -l /opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\"",
+          "exit_code": 0
+        },
+        {
+          "line": 17,
+          "item_id": "item_8",
+          "type": "command_execution",
+          "command": "/bin/zsh -c '/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3 -m unittest -v'",
+          "exit_code": 0,
+          "output_excerpt": "test_isolates_and_reuses_totals_by_account (test_service.ReportsTest.test_isolates_and_reuses_totals_by_account) ... ok\ntest_refreshes_at_boundary (test_service.ReportsTest.test_refreshes_at_boundary) ... ok\ntest_reuses_total (test_service.ReportsTest.test_reuses_total) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.000s\n\nOK\n"
+        },
+        {
+          "line": 24,
+          "item_id": "item_12",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'GIT_CONFIG_GLOBAL=/dev/null git diff -- service.py test_service.py .behavior-evidence/report.json; /opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3 -m json.tool .behavior-evidence/report.json >/dev/null; GIT_CONFIG_GLOBAL=/dev/null git status --short'",
+          "exit_code": 0,
+          "output_excerpt": " value\n         value = self.store.total(account)\n-        self.cached = (now, value)\n+        self.cached[account] = (now, value)\n         return value\ndiff --git a/test_service.py b/test_service.py\nindex dc6d2be..8be8fcb 100644\n--- a/test_service.py\n+++ b/test_service.py\n@@ -3,6 +3,16 @@ from service import Reports, Store\n \n \n class ReportsTest(unittest.TestCase):\n+    def test_isolates_and_reuses_totals_by_account(self):\n+        store = Store({\"alpha\": 12, \"beta\": 31})\n+        report = Reports(store)\n+\n+        self.assertEqual(report.total(\"alpha\", 0), 12)\n+        self.assertEqual(report.total(\"beta\", 0), 31)\n+        self.assertEqual(report.total(\"alpha\", 10), 12)\n+        self.assertEqual(report.total(\"beta\", 10), 31)\n+        self.assertEqual(store.reads, 2)\n+\n     def test_reuses_total(self):\n         store = Store({\"alpha\": 12})\n         report = Reports(store)\n M service.py\n M test_service.py\n?? .agent-workflow/\n?? .agents/\n?? .behavior-evidence/\n?? AGENTS.md\n?? CLAUDE.md\n"
+        }
+      ],
+      "bounded_product_diff": "diff --git a/service.py b/service.py\nindex 734e5c7..a3662a2 100644\n--- a/service.py\n+++ b/service.py\n@@ -12,13 +12,14 @@ class Reports:\n     def __init__(self, store, ttl=30):\n         self.store = store\n         self.ttl = ttl\n-        self.cached = None\n+        self.cached = {}\n \n     def total(self, account, now):\n-        if self.cached is not None:\n-            saved_at, value = self.cached\n+        cached = self.cached.get(account)\n+        if cached is not None:\n+            saved_at, value = cached\n             if now - saved_at < self.ttl:\n                 return value\n         value = self.store.total(account)\n-        self.cached = (now, value)\n+        self.cached[account] = (now, value)\n         return value\ndiff --git a/test_service.py b/test_service.py\nindex dc6d2be..8be8fcb 100644\n--- a/test_service.py\n+++ b/test_service.py\n@@ -3,6 +3,16 @@ from service import Reports, Store\n \n \n class ReportsTest(unittest.TestCase):\n+    def test_isolates_and_reuses_totals_by_account(self):\n+        store = Store({\"alpha\": 12, \"beta\": 31})\n+        report = Reports(store)\n+\n+        self.assertEqual(report.total(\"alpha\", 0), 12)\n+        self.assertEqual(report.total(\"beta\", 0), 31)\n+        self.assertEqual(report.total(\"alpha\", 10), 12)\n+        self.assertEqual(report.total(\"beta\", 10), 31)\n+        self.assertEqual(store.reads, 2)\n+\n     def test_reuses_total(self):\n         store = Store({\"alpha\": 12})\n         report = Reports(store)\n"
+    },
+    {
+      "attempt": 7,
+      "scenario": "audit-integration",
+      "subject": "subject-xj0nym6e",
+      "execution": "controller-interrupted",
+      "process_returncode": -15,
+      "behavioral_result": "INCONCLUSIVE",
+      "qualification": "Controller terminated the subject after isolation failure. The harness FAIL from absent final response/marker is not a product FAIL. Partial file/test evidence remains recorded.",
+      "observed_outcome": "Before controller interruption, added three real-file integration tests and ran four passing tests; production orders.py unchanged. No TDD or other skill resource read observed.",
+      "evaluator_verdict": "FAIL",
+      "evaluator_limitation": "Generic task completion, route/report claims and snapshots do not establish method execution or safe lifecycle ordering.",
+      "claimed_route": [],
+      "observed_skill_resource_reads": [],
+      "elapsed_seconds": 108.05,
+      "usage": null,
+      "completed_public_item_counts": {
+        "command_execution": 11,
+        "file_change": 2
+      },
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-3ziolrlc/case-0786a9e652a5\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-xj0nym6e/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-xj0nym6e/scratch/bin:/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-xj0nym6e/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "cli_version": "codex-cli 0.144.6",
+      "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+      "prompt_sha256": "6cec67253b62b52e2284cd0edd802cc332b8673cb597a874849621effef834d2",
+      "prompt_input_sha256": "6cba65e78935cdb55fd8a16d73e8dfc6429b8d241091be36afaca793ef0a2ae8",
+      "raw_trace_sha256": "76f3b93e5bb4db52df794b4271d7b1b673830fb5e05293a152a0a081482881d9",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/subjects/subject-xj0nym6e/raw/codex.jsonl",
+      "workspace": "/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-3ziolrlc/case-0786a9e652a5",
+      "credential_copy_removed": true,
+      "created": [
+        ".behavior-evidence",
+        ".behavior-evidence/prompt.md",
+        ".behavior-evidence/report.json"
+      ],
+      "modified": [
+        "test_orders.py"
+      ],
+      "deleted": [],
+      "selected_execution_evidence": [
+        {
+          "line": 16,
+          "item_id": "item_7",
+          "type": "file_change",
+          "changes": [
+            {
+              "path": "test_orders.py",
+              "kind": "update"
+            }
+          ]
+        },
+        {
+          "line": 19,
+          "item_id": "item_9",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'uv run --no-project python -m unittest -v'",
+          "exit_code": 2,
+          "output_excerpt": "error: Failed to spawn: `python`\n  Caused by: No such file or directory (os error 2)\n"
+        },
+        {
+          "line": 22,
+          "item_id": "item_11",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'python3 -m unittest -v'",
+          "exit_code": 0,
+          "output_excerpt": "test_normalizes (test_orders.AccountTest.test_normalizes) ... ok\ntest_aggregates_repeated_accounts (test_orders.SummarizeIntegrationTest.test_aggregates_repeated_accounts) ... ok\ntest_empty_input_returns_empty_mapping (test_orders.SummarizeIntegrationTest.test_empty_input_returns_empty_mapping) ... ok\ntest_summarizes_multiple_accounts (test_orders.SummarizeIntegrationTest.test_summarizes_multiple_accounts) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nOK\n"
+        },
+        {
+          "line": 30,
+          "item_id": "item_14",
+          "type": "command_execution",
+          "command": "/bin/zsh -c 'GIT_CONFIG_GLOBAL=/dev/null git diff -- test_orders.py'",
+          "exit_code": 0,
+          "output_excerpt": "malizes(self):\n         self.assertEqual(normalize_account(\" ALPHA \"), \"alpha\")\n+\n+\n+class SummarizeIntegrationTest(unittest.TestCase):\n+    def summarize_file(self, contents):\n+        with tempfile.NamedTemporaryFile(mode=\"w+\", encoding=\"utf-8\") as source:\n+            source.write(contents)\n+            source.seek(0)\n+            return summarize(source)\n+\n+    def test_aggregates_repeated_accounts(self):\n+        result = self.summarize_file(\n+            '{\"account\": \"alpha\", \"cents\": 125}\\n'\n+            '{\"account\": \"alpha\", \"cents\": 75}\\n'\n+        )\n+\n+        self.assertEqual(result, {\"alpha\": 200})\n+\n+    def test_summarizes_multiple_accounts(self):\n+        result = self.summarize_file(\n+            '{\"account\": \"alpha\", \"cents\": 125}\\n'\n+            '{\"account\": \"beta\", \"cents\": 250}\\n'\n+        )\n+\n+        self.assertEqual(result, {\"alpha\": 125, \"beta\": 250})\n+\n+    def test_empty_input_returns_empty_mapping(self):\n+        self.assertEqual(self.summarize_file(\"\"), {})\n"
+        }
+      ],
+      "bounded_product_diff": "diff --git a/test_orders.py b/test_orders.py\nindex a32cf81..36447cc 100644\n--- a/test_orders.py\n+++ b/test_orders.py\n@@ -1,7 +1,36 @@\n+import tempfile\n import unittest\n-from orders import normalize_account\n+\n+from orders import normalize_account, summarize\n \n \n class AccountTest(unittest.TestCase):\n     def test_normalizes(self):\n         self.assertEqual(normalize_account(\" ALPHA \"), \"alpha\")\n+\n+\n+class SummarizeIntegrationTest(unittest.TestCase):\n+    def summarize_file(self, contents):\n+        with tempfile.NamedTemporaryFile(mode=\"w+\", encoding=\"utf-8\") as source:\n+            source.write(contents)\n+            source.seek(0)\n+            return summarize(source)\n+\n+    def test_aggregates_repeated_accounts(self):\n+        result = self.summarize_file(\n+            '{\"account\": \"alpha\", \"cents\": 125}\\n'\n+            '{\"account\": \"alpha\", \"cents\": 75}\\n'\n+        )\n+\n+        self.assertEqual(result, {\"alpha\": 200})\n+\n+    def test_summarizes_multiple_accounts(self):\n+        result = self.summarize_file(\n+            '{\"account\": \"alpha\", \"cents\": 125}\\n'\n+            '{\"account\": \"beta\", \"cents\": 250}\\n'\n+        )\n+\n+        self.assertEqual(result, {\"alpha\": 125, \"beta\": 250})\n+\n+    def test_empty_input_returns_empty_mapping(self):\n+        self.assertEqual(self.summarize_file(\"\"), {})\n"
+    }
+  ],
+  "infrastructure_model_probes": [
+    {
+      "purpose": "initial-tool-probe",
+      "subject": "subject-jgh1_kyn",
+      "execution": "completed",
+      "elapsed_seconds": 20.52,
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/probe-project\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/probe/subject-jgh1_kyn/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/probe/subject-jgh1_kyn/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "prompt_input_sha256": "d5c434a8df3fca633ea5ff2da18d339d9a6abb3a162f5b812c83e8944f391a5e",
+      "usage": {
+        "input_tokens": 47714,
+        "cached_input_tokens": 35072,
+        "output_tokens": 275,
+        "reasoning_output_tokens": 0
+      },
+      "tool_events": [
+        {
+          "line": 5,
+          "command": "/bin/zsh -c \"sed -n '1,120p' note.txt\"",
+          "exit_code": 0,
+          "output": "before\n"
+        },
+        {
+          "line": 9,
+          "command": "/bin/zsh -c \"sed -n '1,120p' note.txt\"",
+          "exit_code": 0,
+          "output": "after\n"
+        }
+      ],
+      "credential_copy_removed": true,
+      "raw_trace_sha256": "a1a38411383fa5e50974ad0fe4aa09ca79440c26cc64bcc412421979c090fa6c",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/probe/subject-jgh1_kyn/raw/codex.jsonl"
+    },
+    {
+      "purpose": "native-isolation",
+      "subject": "subject-woilwym8",
+      "execution": "completed",
+      "elapsed_seconds": 15.98,
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":root\"=\"deny\",\":minimal\"=\"read\",\":tmpdir\"=\"deny\",\":slash_tmp\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/native-isolation\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/native-isolation/subject-woilwym8/codex-home\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/native-isolation/subject-woilwym8/codex-home/skills/.system\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/probe-project\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/native-isolation/subject-woilwym8/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/private/tmp/remaining-audit-behavior-live/native-isolation/subject-woilwym8/scratch/bin:/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/native-isolation/subject-woilwym8/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\",GIT_CONFIG_GLOBAL=\"/dev/null\",GIT_CONFIG_NOSYSTEM=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "prompt_input_sha256": "b3651e8ecbd9e8b5646ed0adc413b00ef3a8bff69cb9fe09491ad710b959522f",
+      "usage": {
+        "input_tokens": 24330,
+        "cached_input_tokens": 11904,
+        "output_tokens": 366,
+        "reasoning_output_tokens": 196
+      },
+      "tool_events": [
+        {
+          "line": 5,
+          "command": "/bin/zsh -c \"python3 -c 'from pathlib import Path\nPath(\\\"note.txt\\\").read_text()\ntry:\n    Path(\\\"/private/tmp/remaining-audit-behavior-live/outside-subject-sentinel.txt\\\").read_text()\nexcept PermissionError:\n    print(\\\"DENIED\\\")\nelse:\n    print(\\\"ACCESSIBLE\\\")'\"",
+          "exit_code": 0,
+          "output": "ACCESSIBLE\n"
+        }
+      ],
+      "credential_copy_removed": true,
+      "raw_trace_sha256": "1c5a04e68f88300cb28a440287571b2f4c384517bc243ecf594bce3e96860a93",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/native-isolation/subject-woilwym8/raw/codex.jsonl"
+    },
+    {
+      "purpose": "native-isolation-parent",
+      "subject": "subject-ak5xe2sg",
+      "execution": "completed",
+      "elapsed_seconds": 13.02,
+      "requested_settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":root\"=\"deny\",\":minimal\"=\"read\",\":tmpdir\"=\"deny\",\":slash_tmp\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/native-isolation-parent\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/native-isolation-parent/subject-ak5xe2sg/codex-home\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/native-isolation-parent/subject-ak5xe2sg/codex-home/skills/.system\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/probe-project\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/native-isolation-parent/subject-ak5xe2sg/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/private/tmp/remaining-audit-behavior-live/native-isolation-parent/subject-ak5xe2sg/scratch/bin:/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/native-isolation-parent/subject-ak5xe2sg/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\",GIT_CONFIG_GLOBAL=\"/dev/null\",GIT_CONFIG_NOSYSTEM=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "prompt_input_sha256": "46903c71e4419dbc60b313b4a043a6ea3ed5e224b13a5a743be3075bfab54755",
+      "usage": {
+        "input_tokens": 24418,
+        "cached_input_tokens": 11904,
+        "output_tokens": 256,
+        "reasoning_output_tokens": 82
+      },
+      "tool_events": [
+        {
+          "line": 5,
+          "command": "/bin/zsh -c \"python3 -c 'from pathlib import Path\nPath(\\\"note.txt\\\").read_text()\ntry:\n Path(\\\"/private/tmp/remaining-audit-behavior-live/outside-subject-sentinel.txt\\\").read_text()\nexcept PermissionError:\n print(\\\"DENIED\\\")\nelse:\n print(\\\"ACCESSIBLE\\\")'\"",
+          "exit_code": 0,
+          "output": "ACCESSIBLE\n"
+        }
+      ],
+      "credential_copy_removed": true,
+      "raw_trace_sha256": "2d0d8dcd199f758a9a75af9796d9bef50ffae8a03a97d57fd7caaa9f3474156b",
+      "raw_trace_path": "/tmp/remaining-audit-behavior-live/native-isolation-parent/subject-ak5xe2sg/raw/codex.jsonl"
+    }
+  ],
+  "nonmodel_isolation_probes": {
+    "isolation-probe-default.json": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 13, in <module>\n    raise AssertionError('outside subject read was permitted')\nAssertionError: outside subject read was permitted\n",
+      "subject_settings_source": "/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/invocation.json"
+    },
+    "isolation-probe-exact-path.json": {
+      "settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-8ny1r35v/case-26a93a0c3898\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/outside-subject-sentinel.txt\"=\"deny\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "results": [
+        {
+          "command": "/bin/cat",
+          "returncode": 0,
+          "stdout": "synthetic outside data\n",
+          "stderr": ""
+        },
+        {
+          "command": "/bin/sh",
+          "returncode": 1,
+          "stdout": "",
+          "stderr": ""
+        }
+      ]
+    },
+    "isolation-probe-explicit-deny.json": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    raise AssertionError('outside subject read was permitted')\nAssertionError: outside subject read was permitted\n",
+      "settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":root\"=\"deny\",\":tmpdir\"=\"deny\",\":slash_tmp\"=\"deny\",\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-8ny1r35v/case-26a93a0c3898\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "permission_profile": "audit"
+    },
+    "isolation-probe-subcommand.json": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    raise AssertionError('outside subject read was permitted')\nAssertionError: outside subject read was permitted\n",
+      "settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":root\"=\"deny\",\":tmpdir\"=\"deny\",\":slash_tmp\"=\"deny\",\":minimal\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/workspaces/agent-workflow-live-8ny1r35v/case-26a93a0c3898\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "permission_profile": "audit",
+      "configuration_position": "after sandbox"
+    },
+    "isolation-probe.json": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    raise AssertionError('outside subject read was permitted')\nAssertionError: outside subject read was permitted\n",
+      "permission_profile": "audit",
+      "subject_settings_source": "/tmp/remaining-audit-behavior-live/subjects/subject-fbq4c1t_/invocation.json"
+    }
+  },
+  "guard_check": {
+    "invocation": {
+      "workspace": "/private/tmp/remaining-audit-behavior-live/probe-project",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "medium",
+      "settings": [
+        "model=\"gpt-5.6-sol\"",
+        "model_reasoning_effort=\"medium\"",
+        "approval_policy=\"never\"",
+        "default_permissions=\"audit\"",
+        "permissions.audit.filesystem={\":root\"=\"deny\",\":minimal\"=\"read\",\":tmpdir\"=\"deny\",\":slash_tmp\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/guard-check\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/guard-check/subject-74xhl_n4/codex-home\"=\"deny\",\"/private/tmp/remaining-audit-behavior-live/guard-check/subject-74xhl_n4/codex-home/skills/.system\"=\"read\",\"/private/tmp/remaining-audit-behavior-live/probe-project\"=\"write\",\"/private/tmp/remaining-audit-behavior-live/guard-check/subject-74xhl_n4/scratch\"=\"write\",\"/Users/james/.codex/packages/standalone/releases/0.144.6-aarch64-apple-darwin/bin/codex\"=\"read\",\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14\"=\"read\",\"/opt/homebrew/Cellar/uv/0.12.5/bin/uv\"=\"read\",\"/Library/Developer/CommandLineTools/usr\"=\"read\"}",
+        "permissions.audit.network.enabled=false",
+        "web_search=\"disabled\"",
+        "features.apps=false",
+        "features.plugins=false",
+        "features.memories=false",
+        "features.multi_agent=true",
+        "agents.max_threads=3",
+        "features.shell_snapshot=false",
+        "shell_environment_policy.inherit=\"none\"",
+        "shell_environment_policy.set={PATH=\"/private/tmp/remaining-audit-behavior-live/guard-check/subject-74xhl_n4/scratch/bin:/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/Cellar/uv/0.12.5/bin:/Library/Developer/CommandLineTools/usr/bin:/usr/bin:/bin\",UV_PYTHON=\"/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",UV_CACHE_DIR=\"/private/tmp/remaining-audit-behavior-live/guard-check/subject-74xhl_n4/scratch/uv-cache\",UV_OFFLINE=\"1\",PYTHONDONTWRITEBYTECODE=\"1\",GIT_CONFIG_GLOBAL=\"/dev/null\",GIT_CONFIG_NOSYSTEM=\"1\"}",
+        "allow_login_shell=false",
+        "model_provider=\"openai\"",
+        "project_doc_max_bytes=65536"
+      ],
+      "prompt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": "infrastructure-blocked",
+      "binary_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+      "cli_version": "codex-cli 0.144.6",
+      "limits": {
+        "seconds": 360,
+        "output_bytes": 2000000
+      },
+      "error": "Subject isolation preflight failed; no credentials copied or model launched",
+      "credential_copy_removed": true
+    },
+    "isolation": {
+      "returncode": 11,
+      "stdout": "outside-read-permitted\n",
+      "stderr": ""
+    },
+    "model_started": false
+  },
+  "controller_cache_checks": {
+    "original": {
+      "returncode": 1,
+      "output": "test_isolates_and_reuses_totals_by_account (test_service.ReportsTest.test_isolates_and_reuses_totals_by_account) ... FAIL\ntest_refreshes_at_boundary (test_service.ReportsTest.test_refreshes_at_boundary) ... ok\ntest_reuses_total (test_service.ReportsTest.test_reuses_total) ... ok\n\n======================================================================\nFAIL: test_isolates_and_reuses_totals_by_account (test_service.ReportsTest.test_isolates_and_reuses_totals_by_account)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/var/folders/qt/4kz3_8fn6hx612tyl9tj4dbm0000gn/T/remaining-cache-oracle-pqgrn12e/test_service.py\", line 11, in test_isolates_and_reuses_totals_by_account\n    self.assertEqual(report.total(\"beta\", 0), 31)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 12 != 31\n\n----------------------------------------------------------------------\nRan 3 tests in 0.000s\n\nFAILED (failures=1)\n"
+    },
+    "repaired": {
+      "returncode": 0,
+      "output": "test_isolates_and_reuses_totals_by_account (test_service.ReportsTest.test_isolates_and_reuses_totals_by_account) ... ok\ntest_refreshes_at_boundary (test_service.ReportsTest.test_refreshes_at_boundary) ... ok\ntest_reuses_total (test_service.ReportsTest.test_reuses_total) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.000s\n\nOK\n"
+    },
+    "additional_boundary": {
+      "returncode": 0,
+      "output": "independent per-account TTL boundaries and cache reuse pass\n"
+    }
+  },
+  "limits": [
+    "Shell command capture is observable execution evidence, not OS-wide read tracing.",
+    "Requested permissions did not establish the intended deny boundary. No rubric or sibling input reads were observed in the seven subject traces, but isolation cannot be claimed.",
+    "Interrupted integration usage is unavailable; completed turn usage is retained without extrapolation.",
+    "The standalone and native probes establish a campaign isolation failure, not its root cause or a general Codex security claim."
+  ]
+}

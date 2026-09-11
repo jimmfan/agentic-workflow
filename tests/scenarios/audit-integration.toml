@@ -1,0 +1,11 @@
+schema_version = 1
+id = "audit-integration"
+name = "Project task"
+fixture = "audit-order"
+request = "Add integration coverage for the established summarize behavior using real temporary input files: repeated accounts, multiple accounts, and empty input. Keep production behavior unchanged."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "meaningful_repository_change"]
+must_not = []
+live = false
+blind_grading = true
+preserve_paths = ["orders.py"]

@@ -1,0 +1,10 @@
+schema_version = 1
+id = "audit-test-first"
+name = "Project task"
+fixture = "audit-order"
+request = "Extend summarize with an optional minimum_cents argument that filters final account totals below that threshold after aggregation. Start with a failing test, implement only enough to pass, then cover the remaining boundary cases the same way. Omission must preserve current behavior."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "meaningful_repository_change"]
+must_not = []
+live = false
+blind_grading = true

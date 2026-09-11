@@ -1,0 +1,12 @@
+schema_version = 1
+id = "audit-plan"
+name = "Project task"
+fixture = "arc-local"
+request = "Give me a short plan to rename the runner scale set from arc-runner-set to build-runners in this project, covering configuration references and a local validation step. Leave files unchanged."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "repository_unchanged"]
+must_not = []
+live = false
+blind_grading = true
+route_must_not_include = ["wayfinder"]
+forbid_created_globs = [".project-efforts/**"]

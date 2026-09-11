@@ -1,0 +1,10 @@
+schema_version = 1
+id = "audit-cli"
+name = "Project task"
+fixture = "audit-cli"
+request = "Test the export feasibility question in README.md with a small local command-line experiment. Measure completion and received record count, explain what the result establishes and what remains untested. Keep any probe disposable."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed"]
+must_not = []
+live = false
+blind_grading = true

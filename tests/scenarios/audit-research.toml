@@ -1,0 +1,10 @@
+schema_version = 1
+id = "audit-research"
+name = "Project task"
+fixture = "audit-research"
+request = "Investigate PostgreSQL 18 transaction_timeout for our request budget: what happens when it overlaps statement_timeout or idle_in_transaction_session_timeout, and are prepared transactions covered? Consult current primary documentation, explain the operational implications and uncertainty, and cite the exact sources. Return findings here; leave files unchanged."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "repository_unchanged", "external_fact_researched"]
+must_not = []
+live = false
+blind_grading = true

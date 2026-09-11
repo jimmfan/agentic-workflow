@@ -1,0 +1,13 @@
+schema_version = 1
+id = "audit-source-answer"
+name = "Project task"
+fixture = "audit-protocol"
+request = "According to the publisher specification in protocol.md, would the same request key from two different accounts collide for v2 batch POST requests, and for how long is a key retained? Explain the applicable version and cite the source. Answer here; leave the repository unchanged."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed", "repository_unchanged"]
+must_not = []
+live = false
+blind_grading = true
+route_must_not_include = ["wayfinder"]
+forbid_created_globs = [".project-efforts/**"]
+response_must_match = ["24\\s*(?:hours|h\\b)", "protocol\\.md"]

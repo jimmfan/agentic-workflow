@@ -1,0 +1,15 @@
+schema_version = 1
+id = "audit-spec"
+name = "Project task"
+fixture = "audit-spec"
+request = "Turn the already-settled design.md into a concise implementation specification in docs/export-spec.md with acceptance criteria. Preserve the accepted choices; this is synthesis of that design. Do not implement the command."
+starting_state = ["All local project data is synthetic."]
+expect = ["task_completed"]
+must_not = []
+live = false
+blind_grading = true
+preserve_paths = ["design.md"]
+
+[[assertions]]
+kind = "path_exists"
+path = "docs/export-spec.md"
