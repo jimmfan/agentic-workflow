@@ -47,10 +47,23 @@ Manual trace adjudication is required for those dimensions; retain compact event
 Use existing `CheckResult`/`verdict` semantics: observed violation = FAIL; required unobserved dimension = INCONCLUSIVE; every required dimension observed and satisfied = PASS.
 Infrastructure-blocked describes execution failure separately from the INCONCLUSIVE behavioral result.
 
-- H1: inspect policy/skill resources loaded, executed method, answer/plan usefulness and created state. Loading alone may be excess context without establishing Wayfinder execution.
-- H2: diagnosis must explain the real divergence using executed evidence and leave code unchanged; trivial repair must fix the causal value without unjustified overhead. Meaningful repair must address cross-account isolation and refresh semantics, demonstrate that the regression catches the original defect and passes after repair (the test itself may be authored before or after the repair), and receive proportionate closing review and acceptance coverage. `implement` itself is not mandatory. Missing independent reviewer capability is an execution limitation, not proof of a composition defect. Classify coherent behavior as A, demonstrated handoff ambiguity with a material coverage gap as B, otherwise C.
-- H3: integration tests do not by themselves imply test-first development; explicit test-first work requires red-before-green evidence. UI exploration must support comparison of interactions; CLI experimentation needs a real process-level observation without gratuitous HTML. Research needs fetched primary evidence with correct scope. Mechanical rename needs preserved behavior without a module-design investigation. Specification synthesis must retain settled choices without reopening them.
-- H4: inspect the ordered trace for artifact preservation and pre-pruning retrieval, reference/readiness updates, U7 removal, and final saved-result readback. A usable linked primary source can retain detail; a dangling link or empty artifact cannot. U8 must still block only deployment. No new approvals, authority, dependencies or records without independently justified value. File state alone cannot prove safe temporal order.
+- H1: inspect policy/skill resources loaded, executed method, answer/plan usefulness and created state.
+  Loading alone may be excess context without establishing Wayfinder execution.
+- H2: diagnosis must explain the real divergence using executed evidence and leave code unchanged; trivial repair must fix the causal value without unjustified overhead.
+  Meaningful repair must address cross-account isolation and refresh semantics, demonstrate that the regression catches the original defect and passes after repair (the test itself may be authored before or after the repair), and receive proportionate closing review and acceptance coverage.
+  `implement` itself is not mandatory.
+  Missing independent reviewer capability is an execution limitation, not proof of a composition defect.
+  Classify coherent behavior as A, demonstrated handoff ambiguity with a material coverage gap as B, otherwise C.
+- H3: integration tests do not by themselves imply test-first development; explicit test-first work requires red-before-green evidence.
+  UI exploration must support comparison of interactions; CLI experimentation needs a real process-level observation without gratuitous HTML.
+  Research needs fetched primary evidence with correct scope.
+  Mechanical rename needs preserved behavior without a module-design investigation.
+  Specification synthesis must retain settled choices without reopening them.
+- H4: inspect the ordered trace for artifact preservation and pre-pruning retrieval, reference/readiness updates, U7 removal, and final saved-result readback.
+  A usable linked primary source can retain detail; a dangling link or empty artifact cannot.
+  U8 must still block only deployment.
+  No new approvals, authority, dependencies or records without independently justified value.
+  File state alone cannot prove safe temporal order.
 
 Negative controls must reject deletion of U7 with no usable retained result and a success claim lacking a saved-result check.
 For an otherwise correct final snapshot, missing temporal evidence stays INCONCLUSIVE; observed pruning before preservation is FAIL even when later repairs make the final files look correct.
