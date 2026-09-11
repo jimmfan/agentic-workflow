@@ -32,6 +32,7 @@ checks = [
     "Derived from: E1" in facts,
     "Source: release-policy.txt" in facts,
     "](facts.md#f1--python-311-is-the-minimum-supported-runtime)" in mapping,
+    not (effort / "unknowns.md").exists(),
     not (effort / "unknowns").exists(),
     not (effort / "decisions.md").exists(),
     not (effort / "tickets").exists(),

@@ -98,7 +98,7 @@ These snapshot checks cover section identity, not semantic sufficiency, reads, o
 Optional `response_must_match` expressions check the final stdout response, case-insensitively and across newlines.
 Use them sparingly for chat deliverables such as a plan whose useful contents cannot be established from repository state or a success report alone.
 These evaluator expressions are never included in the agent prompt.
-A broad exact count can reject extra children while a stable-ID content glob such as `U1-*.md` requires the intended identity and meaning without fixing the descriptive filename slug.
+A broad exact count can reject extra children while a stable-ID content glob such as `E1-*.md` requires the intended identity and meaning without fixing the descriptive filename slug.
 This keeps contracts focused on outcomes and prevents the harness from becoming a second router.
 
 The optional `state_must_include` and `state_must_not_include` arrays constrain the public `state_used` report.
@@ -112,7 +112,7 @@ They test the reported route, not execution of the named specialists, without tr
 A new scenario should need one TOML file and one small fixture directory.
 The validator rejects unrecognized behavior names, unsafe paths, missing preserved files, unrecognized fields, and unsupported assertion kinds.
 
-The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement while the objective and substantive scope remain the same, specialist composition and exclusions, pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
+The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement while the objective and substantive scope remain the same, specialist composition and exclusions, pruning behavior for answered U# ledger sections and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
 These are human-authored behavior contracts, not evidence that an unrun model obeyed them.
 The clear-objective, implicit new-effort, ambiguous-objective, scope-refinement, and specialist-selection scenarios use blind grading with factual starting evidence.
 Guided cases remain useful for contract smoke tests but do not establish implicit selection.

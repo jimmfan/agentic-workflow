@@ -2,11 +2,16 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 
 
 effort = Path(".project-efforts/deployment-mode")
 evidence = sorted((effort / "evidence").glob("E2-*.md"))
-unknowns = sorted((effort / "unknowns").glob("U1-*.md"))
+unknowns_path = effort / "unknowns.md"
+unknowns = re.findall(
+    r"(?ms)^## U1 — [^\n]+\n.*?(?=^## |\Z)",
+    unknowns_path.read_text() if unknowns_path.is_file() else "",
+)
 decision = (effort / "decisions.md").read_text()
 mapping = (effort / "map.md").read_text()
 
@@ -16,7 +21,7 @@ checks = [
     and "Source: config.txt" in evidence[0].read_text()
     and "Scope: current deployment configuration" in evidence[0].read_text()
     and "## Limitations" in evidence[0].read_text(),
-    len(unknowns) == 1 and "deployment mode" in unknowns[0].read_text().lower(),
+    len(unknowns) == 1 and "deployment mode" in unknowns[0].lower(),
     not (effort / "facts.md").exists(),
     "U1" in mapping and "review D1" in mapping,
     "Authority: platform architecture policy" in decision
