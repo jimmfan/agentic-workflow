@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import fnmatch
 import hashlib
 import json
@@ -68,6 +68,8 @@ ASSERTION_KINDS = {
     "glob_count",
     "glob_none_contains",
     "glob_none_matches",
+    "section_absent",
+    "section_preserved",
     "path_exists",
     "path_not_exists",
     "path_contains",
@@ -145,6 +147,7 @@ class Scenario:
 class Entry:
     kind: str
     identity: str
+    sections: dict[str, str] | None = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -227,6 +230,8 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
         value = item.get("value")
         count = item.get("count")
         needs_value = kind in {
+            "section_absent",
+            "section_preserved",
             "glob_any_contains",
             "glob_any_matches",
             "glob_contains",
@@ -448,6 +453,32 @@ def load_scenarios() -> tuple[Scenario, ...]:
     return scenarios
 
 
+def ledger_section_hashes(content: bytes) -> dict[str, str] | None:
+    """Literal fixture sections, not a runtime editor or semantic evaluator.
+
+    Refuse malformed/duplicate U IDs rather than treating ambiguous input as absent.
+    All H2 headings delimit sections, including unrecognized project content.
+    """
+    try:
+        text = content.decode("utf-8")
+    except UnicodeError:
+        return None
+    headings = list(re.finditer(r"^## (.+)$", text, re.MULTILINE))
+    sections = {}
+    for index, heading in enumerate(headings):
+        title = heading[1]
+        if re.match(r"U(?:[0-9]|\b)", title) is None:
+            continue
+        match = re.fullmatch(r"(U[1-9][0-9]*) — \S.*", title)
+        if match is None or match[1] in sections:
+            return None
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
+        sections[match[1]] = hashlib.sha256(
+            text[heading.start() : end].encode()
+        ).hexdigest()
+    return sections
+
+
 def snapshot(root: Path) -> dict[str, Entry]:
     result: dict[str, Entry] = {}
     if not root.exists():
@@ -459,8 +490,11 @@ def snapshot(root: Path) -> dict[str, Entry]:
         if path.is_symlink():
             result[relative] = Entry("symlink", os.readlink(path))
         elif path.is_file():
+            content = path.read_bytes()
             result[relative] = Entry(
-                "file", hashlib.sha256(path.read_bytes()).hexdigest()
+                "file",
+                hashlib.sha256(content).hexdigest(),
+                ledger_section_hashes(content) if path.name == "unknowns.md" else {},
             )
         elif path.is_dir():
             result[relative] = Entry("directory", "")
@@ -642,6 +676,27 @@ def wayfinder_ledger_changed(evidence: RunEvidence, ledger: str) -> bool:
     )
 
 
+def changed_unknown_evidence(evidence: RunEvidence) -> bool | None:
+    created, modified, _ = changed_paths(evidence.before, evidence.after)
+    for path in created | modified:
+        parts = PurePosixPath(path).parts
+        if (
+            len(parts) == 3
+            and parts[0] == ".project-efforts"
+            and parts[2] == "unknowns.md"
+            and evidence.after[path].sections
+        ):
+            previous = evidence.before.get(path)
+            old_sections = previous.sections or {} if previous else {}
+            if any(
+                old_sections.get(identifier) != digest
+                for identifier, digest in evidence.after[path].sections.items()
+            ):
+                return True
+    # A map-only question is valid, but a changed map alone proves no meaning.
+    return None if wayfinder_ledger_changed(evidence, "map.md") else False
+
+
 def decision_artifact_changed(evidence: RunEvidence) -> bool:
     if wayfinder_ledger_changed(evidence, "decisions.md"):
         return True
@@ -663,15 +718,15 @@ def is_recognized_current_wayfinder_path(path: str, entry: Entry) -> bool:
     if len(parts) == 2:
         return entry.kind == "directory"
     if len(parts) == 3:
+        if parts[2] == "unknowns.md":
+            return entry.kind == "file" and entry.sections is not None
         if parts[2] in {"map.md", "facts.md", "decisions.md"}:
             return entry.kind == "file"
-        if parts[2] in {"unknowns", "evidence"}:
+        if parts[2] == "evidence":
             return entry.kind == "directory"
         return False
     if len(parts) != 4 or entry.kind != "file":
         return False
-    if parts[2] == "unknowns":
-        return re.fullmatch(r"U[1-9][0-9]*-[^.]+\.md", parts[3]) is not None
     if parts[2] == "evidence":
         return re.fullmatch(r"E[1-9][0-9]*-[^.]+\.md", parts[3]) is not None
     return False
@@ -706,6 +761,23 @@ def recognized_wayfinder_changes(evidence: RunEvidence) -> tuple[bool, str]:
 
 
 def evaluate_assertion(evidence: RunEvidence, assertion: Assertion) -> CheckResult:
+    if assertion.kind in {"section_absent", "section_preserved"}:
+        path = assertion.path.as_posix()
+        before = evidence.before.get(path)
+        after = evidence.after.get(path)
+        safe = after is None or (after.kind == "file" and after.sections is not None)
+        previous = dict(before.sections or ()).get(assertion.value) if before else None
+        current = dict(after.sections or ()).get(assertion.value) if after else None
+        passed = safe and (
+            current is None
+            if assertion.kind == "section_absent"
+            else previous is not None and previous == current
+        )
+        return CheckResult(
+            f"assert:{path}#{assertion.value}:{assertion.kind}",
+            passed,
+            "selected section presence/identity checked",
+        )
     if assertion.kind in {
         "glob_any_contains",
         "glob_any_matches",
@@ -956,8 +1028,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         ),
         "uncertainty_recorded_or_blocked": (
             (status == "blocked" and bool(blockers))
-            or wayfinder_record_changed(evidence, "unknowns", "U"),
-            "specific blockers reported or a current U# was created or updated",
+            or changed_unknown_evidence(evidence),
+            "specific blockers reported or current U# section changed; map-only meaning needs adjudication",
         ),
         "existing_state_reused": (
             None if state_used else False,
@@ -990,7 +1062,10 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     prohibition_checks: dict[str, tuple[bool | None, str]] = {
         "unnecessary_planning_artifacts": (forbidden_ok, forbidden_detail),
         "manufacture_uncertainty": (
-            not wayfinder_child_changed(evidence, "unknowns"),
+            not (
+                wayfinder_ledger_changed(evidence, "unknowns.md")
+                or wayfinder_child_changed(evidence, "unknowns")
+            ),
             "no unknown child was created or updated",
         ),
         "invent_external_fact": (

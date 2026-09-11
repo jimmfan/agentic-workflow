@@ -38,9 +38,9 @@ kind = "path_exists"
 path = ".project-efforts/persistence-authority/map.md"
 
 [[assertions]]
-kind = "glob_count"
-path = ".project-efforts/persistence-authority/unknowns/U*.md"
-count = 1
+kind = "glob_any_matches"
+path = ".project-efforts/persistence-authority/unknowns.md"
+value = '(?m)^## U[1-9][0-9]* — '
 
 [[assertions]]
 kind = "path_not_exists"

@@ -12,7 +12,7 @@ Use [Agent Workflow terminology](../terminology.md) for cross-cutting meanings w
 
 Wayfinder is Agent Workflow's sole durable coordination model.
 Load this state contract before effort state.
-When resuming, read the selected effort's `map.md` first, then only the ledger sections or U/E files relevant to the work.
+When resuming, read the selected effort's `map.md` first, then only the ledger sections or E# files relevant to the work.
 No other Agent Workflow durable coordination record may compete with this brief coordination summary.
 
 Each specialist retains its method.
@@ -37,14 +37,13 @@ Only `map.md` is required:
     ├── map.md                    # required coordination summary
     ├── facts.md                  # optional current F# ledger
     ├── decisions.md              # optional current D# ledger
-    ├── unknowns/                 # optional current U# files
-    │   └── U<ID>-<slug>.md
+    ├── unknowns.md               # optional current U# ledger
     └── evidence/                 # optional reusable E# files
         └── E<ID>-<slug>.md
 ```
 
 A safe regular `.project-efforts/<effort>/map.md` is recognized as a whole and makes an effort current and resumable.
-A map-only effort is valid; `facts.md`, `decisions.md`, `unknowns/U<ID>-<slug>.md`, and `evidence/E<ID>-<slug>.md` are created lazily under [Current knowledge](#current-knowledge).
+A map-only effort is valid; `facts.md`, `decisions.md`, `unknowns.md`, and `evidence/E<ID>-<slug>.md` are created lazily under [Current knowledge](#current-knowledge).
 Without `map.md`, a directory is not a recognized resumable effort.
 
 ## Effort shape and selection
@@ -175,14 +174,18 @@ No type must produce another.
 Represent areas, relationships, and ownership or operating boundaries in the single `map.md`.
 Do not add area identifiers, nested state by domain or phase, parallel maps, or another state hierarchy.
 
-A U# file uses a readable question title and states why it matters.
-Presence in `unknowns/` means the question is current and unresolved.
+A U# is an H2 section in `unknowns.md` stating the question and why it matters.
+Presence in `unknowns.md` means the question is current and unresolved.
 Preserve a precise question separately while unanswered when doing so helps a later developer make or evaluate a decision within the effort's objective and scope.
 This is especially useful when the answer requires project decision authority, depends on an external participant or approval, or gates several downstream areas or a consequential boundary.
 Precision, ordinary external uncertainty, an unexplained cause, a long list, or a template alone does not justify a U#.
 A temporary U# must improve current coordination or later continuation, not serve create-and-prune ceremony.
 Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
-Record its resolution method, dependencies, sources, and required authority only when they help later resumption or continuation.
+Record its resolution method, dependencies, sources, and required human input or authority only when they help later resumption or continuation.
+Short records are valid.
+Clarify vague concerns into useful questions without padding or invented precision; link substantial results in their maintaining artifacts.
+Keep map-only questions valid, with no mandatory Open questions heading or promotion into U#.
+Do not create an empty ledger, retain answered sections as a completed archive, split records by size, or maintain dual U# formats.
 
 An E# file states independently useful evidence using `Source:`, `Scope:`, the existing `Observation` heading or field language, and `Limitations:`.
 Record when it was observed only when timing changes meaning, applicability, or validity.
@@ -225,8 +228,10 @@ Preserve independently established restrictions and require relevant evidence or
 ### Identifiers and references
 
 Identifiers are effort-local, positive, and unique within their type.
-U/E files retain readable slugs.
-F/D records retain these exact H2 representations:
+E# files retain readable slugs.
+U/F/D records retain these exact H2 representations:
+
+- `## U<ID> — <question>`
 
 - `## F<ID> — <title>`
 - `## D<ID> — <title>`
@@ -236,18 +241,32 @@ Allocate one greater than the highest current same-type identifier, or 1 when no
 Do not deliberately recycle interior gaps; a pruned highest number is not reserved.
 
 Immediately before assigning an identifier, reread all recognized same-type identifiers and reject malformed or duplicate identifiers in current coordination state.
-Append an F/D section only if its ledger still matches the content used to plan the append.
-Before creating a U/E file, recheck the same-type identifiers and create the target without overwriting an existing path.
+Append a U/F/D section only if its ledger still matches the content used to plan the append.
+Before creating an E# file, recheck the same-type identifiers and create the target without overwriting an existing path.
 
-An identity-like U/E entry that cannot be interpreted safely blocks only operations whose correctness depends on identifying records in that affected U/E container.
+An identity-like ledger section or E# entry that cannot be interpreted safely blocks only operations whose correctness depends on identifying records in that affected ledger or evidence container.
 It does not automatically block unrelated work elsewhere; ambiguous content remains unchanged.
 
 A bare identifier is local shorthand only.
-Durable references outside the selected effort use a readable repository-relative Markdown link to the exact U/E file, F/D heading, or longer-lived artifact that maintains the referenced result.
+Durable references outside the selected effort use a readable repository-relative Markdown link to the exact E# file, U/F/D heading, or longer-lived artifact that maintains the referenced result.
 Inside the effort, prefer navigable links when a path or heading matters.
 
-F/D anchors must retain the established lowercase `f<ID>--<slug>` and `d<ID>--<slug>` forms derived from those headings' em-dash representation.
-Reconcile affected references before renaming a U/E file or F/D heading.
+U/F/D anchors must retain the established lowercase `u<ID>--<slug>`, `f<ID>--<slug>`, and `d<ID>--<slug>` forms derived from those headings' em-dash representation.
+Reconcile affected references before renaming an E# file or U/F/D heading.
+
+### Explicit conversion of old question files
+
+Individual `unknowns/U<ID>-<slug>.md` files are not a second current representation.
+Absence of `unknowns.md` does not establish absence of unresolved questions: inspect the selected map and relevant maintaining artifacts, and report encountered unconverted or unassessed old-format data.
+Preserve that data unless the current request explicitly authorizes bounded conversion of those files.
+Do not perform installer migration, downstream sweeps, or automatic conversion or deletion of ordinary document question lists.
+
+For an authorized conversion, read the affected files and ledger, preserve IDs, contents, sources, relative-link meaning, and qualifications, and plan exact target sections and affected reference repairs.
+Recheck inputs immediately before mutation; collisions, malformed or duplicate IDs, ambiguous section boundaries, unsafe paths, or intervening changes stop only affected operations.
+Never overwrite a ledger: create it without overwriting an existing path or add only checked noncolliding sections to its current content.
+Verify every converted target and repaired reference before removing the corresponding old file.
+Remove only explicitly converted files, never directories recursively; preserve and report remaining old or unrecognized data.
+An interrupted conversion requires checking actual targets, sources, and references before continuing; do not infer completion from a missing ledger or partial copy.
 
 ## Reconciliation and pruning
 
@@ -263,9 +282,12 @@ Read-only work may report stale or conflicting state but does not change it.
 Plan a mutation from current affected state.
 Immediately before writing, renaming, or removing, confirm that the directly affected state and known affected references still support the planned mutation.
 Create a new target without overwriting an existing path.
-If affected state changed or conflicts, stop rather than overwrite it.
+If affected state changed or conflicts, stop the affected operation rather than overwrite it; independent work may proceed.
+For ledger edits, reread the ledger and affected references, validate the target ID and H2 boundaries, and edit only the intended section.
+Protect neighboring sections, preambles, and unrecognized content; ambiguous boundaries prevent that edit.
+All selected Wayfinder state paths, including their ancestors, ledgers, and E# files, must use regular files/directories without crossing symlinks or escaping the selected effort.
 
-Before renaming or pruning state, inspect the selected map, ledgers, U/E files, and known current references outside the effort for affected identifiers, paths, or heading anchors.
+Before renaming or pruning state, inspect the selected map, ledgers, E# files, and known current references outside the effort for affected identifiers, paths, or heading anchors.
 Do not scan unrelated efforts, the entire repository, or Git history.
 
 Use this common sequence for every affected reconciliation:
@@ -315,9 +337,9 @@ When a D# no longer records the current binding choice, apply the common sequenc
 Before removal, apply the common sequence's preservation, reference reconciliation, and pre-pruning retrievability check.
 Pruning does not require committing a transient record first.
 
-Pruning U/E removes only the selected file.
-Pruning F/D removes only the selected H2 section.
-An otherwise empty ledger may be removed.
+Pruning E# removes only the selected file.
+Pruning U/F/D removes only the selected H2 section, stopping at the next H2 or end of file.
+Remove an empty ledger only when no useful or unrelated content remains.
 Unrelated ledger content remains byte-for-byte unchanged where practical, and unrecognized project-owned content remains unchanged and uninterpreted by Wayfinder.
 Never recursively delete an effort, `unknowns/`, or `evidence/` directory.
 

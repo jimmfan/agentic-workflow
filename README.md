@@ -131,7 +131,7 @@ A Wayfinder effort is map-first:
     ├── map.md
     ├── facts.md        # optional
     ├── decisions.md    # optional
-    ├── unknowns/       # optional
+    ├── unknowns.md     # optional
     └── evidence/       # optional
 ```
 

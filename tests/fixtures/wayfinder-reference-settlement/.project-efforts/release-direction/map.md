@@ -6,7 +6,7 @@ Keep only the current release-direction knowledge needed for navigation.
 
 ## Current state
 
-[U17](unknowns/U17-source-constraint.md) is answered by
+[U17](unknowns.md#u17--which-release-mode-does-the-published-source-require) is answered by
 [E12](evidence/E12-source-observation.md).
 [F8](facts.md#f8--published-source-selects-staged-release) and
 [D4](decisions.md#d4--adopt-the-staged-release-direction) remain current.

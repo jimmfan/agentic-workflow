@@ -149,9 +149,12 @@ class RemainingAuditControls(unittest.TestCase):
             "# Receipt consumer\n\n"
             "Local implementation and independent inventory may proceed.\n"
             "The [contract](../../docs/retry-contract.md) maintains the v2 guarantee.\n"
-            "Deployment still awaits [U8](unknowns/U8-window.md); it does not block local work.\n"
+            "Deployment still awaits [U8](unknowns.md#u8--when-is-the-maintenance-window); it does not block local work.\n"
         )
-        (self.workspace / EFFORT / "unknowns/U7-key-scope.md").unlink()
+        ledger = self.workspace / EFFORT / "unknowns.md"
+        ledger.write_text(
+            "# Unknowns\n\n" + "## U8" + ledger.read_text().split("## U8", 1)[1]
+        )
         return scenario, before
 
     def test_pruning_without_usable_result_is_rejected(self):
@@ -161,7 +164,7 @@ class RemainingAuditControls(unittest.TestCase):
 
     def test_unrelated_state_loss_is_rejected(self):
         scenario, before = self.resolved_candidate()
-        (self.workspace / EFFORT / "unknowns/U8-window.md").unlink()
+        (self.workspace / EFFORT / "unknowns.md").unlink()
         self.assertEqual(behavior.verdict(self.evaluate(scenario, before)), "FAIL")
 
     def test_correct_snapshot_does_not_establish_temporal_compliance(self):

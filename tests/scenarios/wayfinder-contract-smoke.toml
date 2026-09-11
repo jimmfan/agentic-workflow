@@ -28,7 +28,7 @@ preserve_paths = [
 forbid_created_globs = [
   ".project-efforts/runtime-rollout/tickets",
   ".project-efforts/runtime-rollout/tickets/**",
-  ".project-efforts/runtime-rollout/unknowns",
+  ".project-efforts/runtime-rollout/unknowns.md",
   ".project-efforts/runtime-rollout/unknowns/**",
   ".project-efforts/runtime-rollout/decisions.md",
 ]

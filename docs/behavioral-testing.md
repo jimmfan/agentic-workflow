@@ -56,7 +56,7 @@ forbid_created_globs = ["/**"]
 route_must_include = ["implement"]
 route_must_not_include = ["discovery"]
 state_must_include = [".project-efforts/example/map.md"]
-state_must_not_include = [".project-efforts/example/unknowns/U9-unrelated.md"]
+state_must_not_include = [".project-efforts/unrelated-effort/map.md"]
 
 [[assertions]]
 kind = "path_contains"
@@ -64,23 +64,23 @@ path = "app.py"
 value = "observable result"
 
 [[assertions]]
-kind = "glob_count"
-path = ".project-efforts/example/unknowns/U*.md"
-count = 1
+kind = "section_preserved"
+path = ".project-efforts/example/unknowns.md"
+value = "U9"
 
 [[assertions]]
 kind = "glob_contains"
-path = ".project-efforts/example/unknowns/U1-*.md"
+path = ".project-efforts/example/unknowns.md"
 value = "known unresolved question"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".project-efforts/example/unknowns/U*.md"
+path = ".project-efforts/example/unknowns.md"
 value = "external approval"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".project-efforts/example/unknowns/U*.md"
+path = ".project-efforts/example/unknowns.md"
 value = "incidental detail"
 ```
 
@@ -91,6 +91,8 @@ Prefer ordinary guided smoke tests when prompt contamination is not the behavior
 
 `expect` and `must_not` use a deliberately small vocabulary implemented in `tests/behavior.py`.
 Case-specific assertions support path existence, UTF-8 substring presence/absence, and case-insensitive substring checks or exact regular-file counts for a safe relative glob.
+`section_preserved` and `section_absent` check one U# section in `unknowns.md` using its ID as `value`; malformed or duplicate IDs cannot establish absence.
+These snapshot checks cover section identity, not semantic sufficiency, reads, or temporal ordering.
 `glob_any_matches` and `glob_none_matches` apply a case-insensitive expression that may span newlines to require a match in at least one or no matching files; use them sparingly when related semantic outcomes must be associated without requiring a particular document layout.
 `glob_contains` requires every match to contain the value, while `glob_any_contains` and `glob_none_contains` test whether at least one or no matching file contains it without fixing the artifact count.
 Optional `response_must_match` expressions check the final stdout response, case-insensitively and across newlines.

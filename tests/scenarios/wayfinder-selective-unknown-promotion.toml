@@ -51,10 +51,10 @@ value = "precise cost model"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".project-efforts/*/unknowns/U*.md"
+path = ".project-efforts/*/unknowns.md"
 value = "review"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".project-efforts/*/unknowns/U*.md"
+path = ".project-efforts/*/unknowns.md"
 value = "precise cost model"

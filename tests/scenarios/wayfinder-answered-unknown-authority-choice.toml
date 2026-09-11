@@ -2,7 +2,7 @@ schema_version = 1
 id = "wayfinder-answered-unknown-authority-choice"
 name = "Project decision authority answer prunes the dependent unresolved question"
 fixture = "wayfinder-authority-answer"
-request = "Resume the rollout-choice Wayfinder effort. As the responsible project owner, I change the existing rollout-strategy decision to Option B: a staged rollout. Update that same D1 boundary in place, reconcile the map's release-checklist dependency and ready work, then prune the answered U1. Preserve D7 and unrelated state. Do not create D2, the allocator-next D8, or retain the superseded choice as history; do not implement the rollout, create an ADR or ticket, or treat the empty unknowns directory as state."
+request = "Resume the rollout-choice Wayfinder effort. As the responsible project owner, I change the existing rollout-strategy decision to Option B: a staged rollout. Update that same D1 boundary in place, reconcile the map's release-checklist dependency and ready work, then prune the answered U1. Preserve D7 and unrelated state. Do not create D2, the allocator-next D8, or retain the superseded choice as history; do not implement the rollout, create an ADR or ticket, or retain an empty ledger as state."
 starting_state = [
   "U1 is a current unresolved consequential question requiring project decision authority.",
   "The unresolved rollout-strategy uncertainty recorded in U1 currently blocks the release checklist.",
@@ -34,7 +34,7 @@ forbid_created_globs = [
 ]
 state_must_include = [
   ".project-efforts/rollout-choice/map.md",
-  ".project-efforts/rollout-choice/unknowns/U1-rollout-strategy.md",
+  ".project-efforts/rollout-choice/unknowns.md",
   ".project-efforts/rollout-choice/decisions.md",
 ]
 state_must_not_include = [
@@ -43,7 +43,7 @@ state_must_not_include = [
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".project-efforts/rollout-choice/unknowns/U1-rollout-strategy.md"
+path = ".project-efforts/rollout-choice/unknowns.md"
 
 [[assertions]]
 kind = "path_exists"

@@ -22,19 +22,19 @@ def identifier_errors(effort: Path) -> list[str]:
     for kind, container in (
         ("F", "facts.md"),
         ("D", "decisions.md"),
-        ("U", "unknowns"),
+        ("U", "unknowns.md"),
         ("E", "evidence"),
     ):
         path = effort / container
         if path.is_symlink():
             errors.append(f"symlink: {container}")
             continue
-        if kind in "FD":
+        if kind in "UFD":
             candidates = (
                 [
                     line
                     for line in path.read_text().splitlines()
-                    if line.startswith("## ")
+                    if re.match(rf"## {kind}(?:[0-9]|\b)", line)
                 ]
                 if path.is_file()
                 else []
@@ -56,7 +56,7 @@ def identifier_errors(effort: Path) -> list[str]:
                 errors.append(f"duplicate {kind}{match[1]}")
             else:
                 seen.add(match[1])
-            if kind in "UE" and (
+            if kind == "E" and (
                 (path / candidate).is_symlink() or not (path / candidate).is_file()
             ):
                 errors.append(f"unsafe record: {candidate}")
@@ -122,7 +122,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         for name in ("map.md", "facts.md", "decisions.md"):
             text = (after / name).read_text()
             self.assertNotRegex(text, r"\b(?:U17|E12)\b")
-        self.assertFalse((after / "unknowns/U17-source-constraint.md").exists())
+        self.assertFalse((after / "unknowns.md").exists())
         self.assertFalse((after / "evidence/E12-source-observation.md").exists())
 
     def test_identifier_checks_reject_duplicate_malformed_zero_and_symlink_records(
@@ -135,8 +135,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         for relative, content, expected in (
             ("facts.md", "# Facts\n\n## F8 — A\n\n## F8 — B\n", "duplicate F8"),
             ("decisions.md", "# Decisions\n\n## D0 — Bad\n", "malformed D"),
-            ("unknowns/U17-duplicate.md", "duplicate", "duplicate U17"),
-            ("unknowns/U1.md", "malformed", "malformed U"),
+            ("unknowns.md", "## U17 — A\n\n## U17 — B\n", "duplicate U17"),
+            ("unknowns.md", "## U0 — Bad\n", "malformed U"),
             ("evidence/E0-zero.md", "zero", "malformed E"),
         ):
             with (
@@ -152,8 +152,17 @@ class WayfinderStateContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
             shutil.copytree(source, effort)
-            (effort / "unknowns/U18-linked.md").symlink_to(effort / "project-notes.txt")
-            self.assertIn("unsafe record: U18-linked.md", identifier_errors(effort))
+            (effort / "unknowns.md").unlink()
+            (effort / "unknowns.md").symlink_to(effort / "project-notes.txt")
+            self.assertIn("symlink: unknowns.md", identifier_errors(effort))
+
+    def test_unrecognized_ledger_heading_is_not_a_malformed_identifier(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary)
+            (effort / "unknowns.md").write_text(
+                "## U1 — A question?\n\n## Unrelated notes\nProject-owned bytes.\n"
+            )
+            self.assertEqual(identifier_errors(effort), [])
 
     def test_link_checks_reject_dangling_file_and_renamed_ledger_anchor(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -176,7 +185,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             ".project-efforts/<effort>/map.md",
             "facts.md",
             "decisions.md",
-            "unknowns/U<ID>-<slug>.md",
+            "unknowns.md",
             "evidence/E<ID>-<slug>.md",
         ):
             with self.subTest(path=path):
@@ -202,8 +211,10 @@ class WayfinderStateContractTests(unittest.TestCase):
 
     def test_contract_keeps_identifier_and_anchor_representation(self) -> None:
         for representation in (
+            "## U<ID> — <question>",
             "## F<ID> — <title>",
             "## D<ID> — <title>",
+            "u<ID>--<slug>",
             "f<ID>--<slug>",
             "d<ID>--<slug>",
         ):

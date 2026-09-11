@@ -31,7 +31,7 @@ forbid_created_globs = [
 ]
 state_must_include = [
   ".project-efforts/release-direction/map.md",
-  ".project-efforts/release-direction/unknowns/U17-source-constraint.md",
+  ".project-efforts/release-direction/unknowns.md",
   ".project-efforts/release-direction/evidence/E12-source-observation.md",
   ".project-efforts/release-direction/facts.md",
   ".project-efforts/release-direction/decisions.md",
@@ -43,7 +43,7 @@ state_must_not_include = [
 
 [[assertions]]
 kind = "path_not_exists"
-path = ".project-efforts/release-direction/unknowns/U17-source-constraint.md"
+path = ".project-efforts/release-direction/unknowns.md"
 
 [[assertions]]
 kind = "path_not_exists"

@@ -55,11 +55,11 @@ path = ".project-efforts/*/map.md"
 value = '''(?:\bproduction\b[^.!?\n]{0,120}(?<!not\s)\b(?:ready|unblocked)\b|(?<!not\s)\b(?:ready|unblocked)\b[^.!?\n]{0,120}\bproduction\b)'''
 
 [[assertions]]
-kind = "glob_count"
-path = ".project-efforts/*/unknowns/U*.md"
-count = 1
+kind = "glob_any_matches"
+path = ".project-efforts/*/unknowns.md"
+value = '(?m)^## U[1-9][0-9]* — '
 
 [[assertions]]
 kind = "glob_any_matches"
-path = ".project-efforts/*/unknowns/U1-*.md"
+path = ".project-efforts/*/unknowns.md"
 value = '''(?i)(?:\bremains?\s+unresolved\b|\bno\s+(?:available|current)\s+source\b[^.!?\n]{0,100}\b(?:establishes|supports)\b[^.!?\n]{0,60}\b(?:requirement|answer)\b)'''

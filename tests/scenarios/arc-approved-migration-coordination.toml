@@ -70,5 +70,5 @@ value = "(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|order|appr
 
 [[assertions]]
 kind = "glob_none_matches"
-path = ".project-efforts/*/unknowns/U*.md"
+path = ".project-efforts/*/unknowns.md"
 value = "(?m)^#+[^\\n]*(?:(?:which|what|choose|decide|select|determine)\\s+(?:the\\s+)?(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|order|approach)|rollback\\s+(?:approach|boundary|boundaries))|(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|approach)|rollback\\s+(?:approach|boundaries))[^\\n]*(?:unresolved|undecided))"

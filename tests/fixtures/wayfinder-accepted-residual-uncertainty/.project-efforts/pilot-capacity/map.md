@@ -7,7 +7,7 @@ Prepare the non-production worker pilot without claiming production readiness.
 ## Current state
 
 Peak concurrency remains unknown; see
-[U1](unknowns/U1-peak-concurrency.md).
+[U1](unknowns.md#u1--what-peak-concurrency-must-the-worker-platform-support).
 
 ## Blockers and dependencies
 

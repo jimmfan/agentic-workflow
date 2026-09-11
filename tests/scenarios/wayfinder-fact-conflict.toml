@@ -61,13 +61,13 @@ path = ".project-efforts/deployment-mode/evidence/E2-*.md"
 value = "## Limitations"
 
 [[assertions]]
-kind = "glob_count"
-path = ".project-efforts/deployment-mode/unknowns/U*.md"
-count = 1
+kind = "glob_any_matches"
+path = ".project-efforts/deployment-mode/unknowns.md"
+value = '(?m)^## U[1-9][0-9]* — '
 
 [[assertions]]
 kind = "glob_contains"
-path = ".project-efforts/deployment-mode/unknowns/U1-*.md"
+path = ".project-efforts/deployment-mode/unknowns.md"
 value = "deployment mode"
 
 [[assertions]]

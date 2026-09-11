@@ -61,7 +61,7 @@ PROJECT-OWNED, DURABLE
         ├── map.md
         ├── facts.md            # optional current F# ledger
         ├── decisions.md        # optional current D# ledger
-        ├── unknowns/           # optional independent U# files
+        ├── unknowns.md         # optional current U# ledger
         └── evidence/           # optional substantial E# files
 
 OPTIONAL, INDEPENDENT

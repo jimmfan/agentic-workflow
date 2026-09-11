@@ -337,7 +337,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
         self.assertTrue(
             any(
                 item.kind == "glob_any_matches"
-                and item.path.as_posix() == ".project-efforts/*/unknowns/U1-*.md"
+                and item.path.as_posix() == ".project-efforts/*/unknowns.md"
                 for item in accepted.assertions
             )
         )
@@ -470,7 +470,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
         self.assertIn(
             (
                 "path_not_exists",
-                ".project-efforts/rollout-choice/unknowns/U1-rollout-strategy.md",
+                ".project-efforts/rollout-choice/unknowns.md",
                 None,
             ),
             assertion_paths,
@@ -572,8 +572,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
 
             (workspace / ".project-efforts/blocked-provider-direction/map.md").unlink()
             (
-                workspace / ".project-efforts/blocked-provider-direction/unknowns/"
-                "U1-provider-checksum.md"
+                workspace / ".project-efforts/blocked-provider-direction/unknowns.md"
             ).unlink()
             ended = behavior.RunEvidence(
                 scenario=scenario,
@@ -620,10 +619,10 @@ class WayfinderBehaviorTests(unittest.TestCase):
                     evidence_path.parent.mkdir()
                     evidence_path.write_text("# E1: Observation\n", encoding="utf-8")
                 if keep_unknown:
-                    unknown_path = effort / "unknowns/U1-current-question.md"
-                    unknown_path.parent.mkdir()
+                    unknown_path = effort / "unknowns.md"
+                    unknown_path.parent.mkdir(exist_ok=True)
                     unknown_path.write_text(
-                        "# U1: Current question?\n", encoding="utf-8"
+                        "## U1 — Current question?\n", encoding="utf-8"
                     )
                 run = behavior.RunEvidence(
                     scenario=scenario,
@@ -642,7 +641,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                     keep_evidence,
                 )
                 self.assertEqual(
-                    behavior.wayfinder_record_changed(run, "unknowns", "U"),
+                    behavior.wayfinder_ledger_changed(run, "unknowns.md"),
                     keep_unknown,
                 )
 
@@ -663,7 +662,13 @@ class WayfinderBehaviorTests(unittest.TestCase):
             ("glob_count", ".project-efforts/*/evidence/E*.md", None, 1), required
         )
         self.assertIn(
-            ("glob_count", ".project-efforts/*/unknowns/U*.md", None, 1), required
+            (
+                "glob_any_matches",
+                ".project-efforts/*/unknowns.md",
+                r"(?m)^## U[1-9][0-9]* — ",
+                None,
+            ),
+            required,
         )
         self.assertIn(("glob_count", ".project-efforts/*/facts.md", None, 0), required)
         self.assertIn(
@@ -705,7 +710,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             result for result in results if result.name == "state-loading:progressive"
         )
         self.assertFalse(progressive.passed)
-        self.assertIn("U1-name-telemetry-metric.md", progressive.detail)
+        self.assertIn("unknowns.md", progressive.detail)
 
     def test_presence_defines_current_records_and_conflicts_prune_unsupported_facts(
         self,
@@ -749,7 +754,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
         )
         for record in (
             ".project-efforts/deployment-mode/evidence/E2-*.md",
-            ".project-efforts/deployment-mode/unknowns/U1-*.md",
+            ".project-efforts/deployment-mode/unknowns.md",
         ):
             self.assertTrue(
                 any(item.path.as_posix() == record for item in conflict.assertions)
@@ -784,7 +789,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             / "wayfinder-settlement/.project-efforts/blocked-provider-direction"
         )
         self.assertTrue((blocked / "map.md").is_file())
-        self.assertTrue((blocked / "unknowns/U1-provider-checksum.md").is_file())
+        self.assertTrue((blocked / "unknowns.md").is_file())
 
 
 if __name__ == "__main__":

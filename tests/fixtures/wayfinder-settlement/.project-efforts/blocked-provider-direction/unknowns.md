@@ -1,4 +1,6 @@
-# U1: Which checksum identifies the provider release?
+# Unknowns
+
+## U1 — Which checksum identifies the provider release?
 
 The external provider owner has not published the checksum required to verify
 the current runtime projection.

@@ -9,7 +9,7 @@ Verify the current runtime projection against the external provider checksum.
 The governing direction is recorded in
 [the provider direction](../../docs/provider-direction.md). Verification can
 resume when the external checksum in
-[U1](unknowns/U1-provider-checksum.md) is available.
+[U1](unknowns.md#u1--which-checksum-identifies-the-provider-release) is available.
 
 ## Blockers and dependencies
 
@@ -23,4 +23,4 @@ that dependency is resolved.
 ## Key links
 
 - [Provider direction](../../docs/provider-direction.md)
-- [U1 — Which checksum identifies the provider release?](unknowns/U1-provider-checksum.md)
+- [U1 — Which checksum identifies the provider release?](unknowns.md#u1--which-checksum-identifies-the-provider-release)
