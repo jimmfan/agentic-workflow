@@ -312,6 +312,22 @@ Apply root policy's cross-artifact rule: a useful summary or omitted detail held
 Linking a project artifact does not make it a Wayfinder record or grant authorization to write it.
 When evidence is insufficient for a truthful update, preserve state and report what prevents the affected work from proceeding.
 
+### Interpret review answers before recording
+
+A review request alone grants no blanket write permission; a read-only review changes no files.
+When recording is authorized, distinguish committed choices, tentative preferences, partial or conditional replies, factual reports, corrections, deferrals, scoped uncertainty acceptance, and scope changes by their meaning, without adding statuses.
+Apply the evidence and authority gates in Current knowledge: a recommendation is not a decision, a factual report is not fresh verification, and a reply cannot invent an assignment or approval.
+Clarify materially ambiguous scope, conditions, or authority; do not reconfirm a clear authorized answer.
+Preserve qualifications, conditions, scope, sources, and authority in the designated maintaining artifact.
+Accepted uncertainty stays unresolved under the scoped acceptance rule; a scope change may instead make a question inapplicable without answering it.
+Partial answers preserve the remaining consequential question and its qualifications.
+
+Apply the common sequence to answered subsets at meaningful round boundaries, not per sentence or through a journal.
+Reuse the existing decision for the same boundary and respect specification, ticket, and decision ownership.
+Recording a choice authorizes neither implementation/publication nor arbitrary edits to linked artifacts; runtime-contract and skill Markdown changes are implementation too.
+If a required maintaining-artifact edit is unauthorized or blocked, retain the affected information and report incomplete reconciliation rather than losing it, pruning prematurely, or creating a competing authoritative copy.
+Do not automatically create tickets, ADRs, U/E/F/D records, archives, or end the effort because a review round finished.
+
 ### Apply record-specific changes
 
 When evidence strengthens or narrows an F#, update the same F# in place with its current scoped conclusion, the source or records from which it was derived, and material limitations.

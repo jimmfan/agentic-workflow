@@ -112,3 +112,12 @@ The current contract and Wayfinder skill define agent behavior; these fixture ch
 A synthetic evaluator positive may contain no observed failure while its overall behavioral verdict is still INCONCLUSIVE.
 `None` is never a behavioral PASS.
 The deterministic suite's success means its graders accept/reject/abstain on those synthetic observations as specified.
+
+### Question ledger and human-review controls
+
+`test_question_review_controls.py` uses the existing Scenario/RunEvidence evaluator and one synthetic parcel-review fixture.
+Section identity snapshots allow an answered middle section to disappear while neighboring questions retain their exact contents; malformed or duplicate U IDs and unsafe ledger targets cannot masquerade as section absence.
+Controls also expose stale replacement, dangling references, unauthorized review writes, selected prerequisite/answer mistakes, changed deferral consequences, and unavailable or standalone Grilling.
+Map-only question meaning is left for adjudication when only a map mutation is observable.
+These checks do not execute conversion, agent race checks, actual questioning, interruption recovery, or fresh-session continuation.
+See the [bounded smoke procedure and execution limitation](../evals/wayfinder-question-resolution/README.md).
