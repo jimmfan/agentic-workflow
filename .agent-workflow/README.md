@@ -12,7 +12,7 @@ Lifecycle commands do not directly traverse, interpret, or change it.
 
 - `routing.md`: detailed minimum-workflow selection, composition, handling of unavailable selected skills, action authorization, evidence, and required route-marker rules.
 - `terminology.md`: the single canonical source for Agent Workflow term meanings, consulted when a framework-specific term materially affects interpretation or behavior.
-- `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for current maps, optional F#/D# ledgers, independently useful U#/E# files, identifiers, reconciliation, pruning, effort ending, and progressive loading.
+- `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for current maps, optional U#/F#/D# ledgers, independently useful E# files, identifiers, reconciliation, pruning, effort ending, and progressive loading.
 
 The root policy loads routing, terminology, and specialized contracts progressively.
 No hook, daemon, lifecycle controller, or telemetry analyzer is installed.
@@ -52,11 +52,13 @@ Existing content at those reserved names is ordinary install/update convergence 
 Wayfinder and Research are directly distributed maintained versions.
 
 Local Wayfinder data is a configured project-owned durable representation under `.project-efforts/`, never a distributed template or framework-owned lifecycle tree.
-A map may stand alone.
-The current default places F# fact records containing supported, scoped, revisable conclusions in optional `facts.md` and D# decision records containing choices determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority in optional `decisions.md`.
-U# unresolved question records and E# evidence records with source, scope, observation, and limitations earn separate files only when they are independently useful coordination or retrieval units.
+A map may stand alone; ledgers and separate records are optional.
+U# unresolved question records are H2 sections in optional `unknowns.md`, each containing one current consequential question that remains unanswered.
+F# fact records containing supported, scoped, revisable conclusions are H2 sections in optional `facts.md`, and D# decision records containing choices determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority are H2 sections in optional `decisions.md`.
+E# evidence records with source, scope, observation, and material limitations remain individual files.
+Each record is retained only when it has independently useful coordination, evaluation, retrieval, reference, or update value beyond the map.
 The map summarizes current coordination state, conditions blocking particular work, dependencies, and ready work, indexing rather than duplicating supporting detail.
-When resuming, read the map before retrieving a relevant ledger section or U#/E# artifact.
+When resuming, read `map.md` first, then retrieve only the relevant ledger sections and E# files.
 
 The [state contract](contracts/wayfinder-state.md) maintains default-map presentation and responsibility authoring conventions, including separate dependencies and scoped blocker assessments.
 Existing layouts remain resumable; authoring conventions are not recognition requirements or migration triggers.

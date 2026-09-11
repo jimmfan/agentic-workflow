@@ -120,11 +120,14 @@ The map links that durable ticket or ticket set and may include the current read
 A ticket draft returned only in chat remains session-local and is not a durable reference target.
 The [state contract](../.agent-workflow/contracts/wayfinder-state.md) maintains default-map presentation and responsibility authoring conventions, including separate dependencies and scoped blocker assessments.
 Existing layouts remain resumable; authoring conventions are not recognition requirements or migration triggers.
-Optional `facts.md` and `decisions.md` ledgers hold current F# fact records and D# decision records.
+A map-only effort is valid; ledgers and separate records are optional.
+Optional `unknowns.md`, `facts.md`, and `decisions.md` ledgers hold current U# unresolved question records, F# fact records, and D# decision records as H2 sections.
+U# contains one current consequential question that remains unanswered.
 F# contains a current scoped descriptive conclusion judged sufficiently supported and remains revisable; D# contains a current choice determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority.
-Independently useful U# unresolved question records and E# evidence records with source, scope, observation, and limitations remain separate files.
+E# evidence records with source, scope, observation, and material limitations remain individual files.
+Each record is retained only when it has independently useful coordination, evaluation, retrieval, reference, or update value beyond the map.
 The map indexes relevant detail rather than duplicating those stores.
-After map orientation, only the relevant ledger section or U#/E# file loads.
+After reading `map.md`, retrieve only the relevant ledger sections and E# files.
 If most supporting records are needed merely to recover the current route, the effort is over-decomposed and needs reconciliation.
 This intermediate-granularity default reduces unnecessary retrieval decisions without treating one topology as universally superior.
 
