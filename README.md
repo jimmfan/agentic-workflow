@@ -8,13 +8,25 @@ The project is pre-1.0 and actively evolving.
 
 ## Quick Start
 
-Install the CLI:
+Install and manage the CLI and framework with:
 
-```bash
-uv tool install git+https://github.com/jimmfan/agentic-workflow.git
-```
+| Purpose | `uv` | `pip` |
+|---|---|---|
+| Install CLI | `uv tool install git+https://github.com/jimmfan/agentic-workflow.git` | `python3 -m pip install "git+https://github.com/jimmfan/agentic-workflow.git"` |
+| Upgrade CLI | `uv tool upgrade agent-workflow` | `python3 -m pip install --upgrade "git+https://github.com/jimmfan/agentic-workflow.git"` |
+| Force reinstall CLI | `uv tool install --force git+https://github.com/jimmfan/agentic-workflow.git` | `python3 -m pip install --force-reinstall "git+https://github.com/jimmfan/agentic-workflow.git"` |
+| Install framework | `agent-workflow install` | `agent-workflow install` |
+| Update framework | `agent-workflow update` | `agent-workflow update` |
+| Check framework | `agent-workflow status` | `agent-workflow status` |
+| Remove framework | `agent-workflow remove` | `agent-workflow remove` |
 
-Install Agent Workflow in the current project:
+`uv tool` installs the CLI in an isolated tool environment.
+Plain `pip` installs it into the active Python environment.
+
+The CLI and installed framework are updated separately.
+`agent-workflow update` updates the framework in the target project, while the CLI itself is upgraded with the applicable `uv` or `pip` command above.
+
+For first-time setup, install the CLI using either `uv` or `pip`, then install Agent Workflow in the current project:
 
 ```bash
 agent-workflow install
@@ -24,14 +36,6 @@ Then start a new supported coding-agent session from the project root and ask fo
 
 You do not need to choose a workflow first.
 Agent Workflow routes the request and loads additional instructions or skills when needed.
-
-Manage the installed framework with:
-
-```bash
-agent-workflow update
-agent-workflow status
-agent-workflow remove
-```
 
 With no target path, lifecycle commands use the containing Git worktree root when Git can discover one, otherwise the current directory.
 An explicit target path is always used directly.
@@ -43,10 +47,10 @@ Install and update select the newest stable Agent Workflow release, so ordinary 
 
 The structural release is a pre-1.0 clean break.
 Older CLIs hard-code the former `skills/agent-workflow/` snapshot location and cannot update themselves across this layout change.
-When this release ships, reinstall the CLI once, then update the framework:
+
+If upgrading from one of those older CLI installations, use the **Force reinstall CLI** command in the table above, then run:
 
 ```bash
-uv tool install --force git+https://github.com/jimmfan/agentic-workflow.git
 agent-workflow update
 ```
 
@@ -175,8 +179,8 @@ As lasting results are established, they should live with the artifact or record
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
-
 Example text to use Wayfinder:
+
 ```text
 Effort or plan (optional: describe the work, paste a plan, or attach/reference a file):
 
@@ -300,7 +304,7 @@ If an optional selected skill is unavailable or cannot run without explicit user
 The current CLI requires:
 
 - Python 3.11 or newer;
-- `uv`;
+- either `uv` or `pip` to install and manage the CLI;
 - HTTPS access when installing the CLI from GitHub; and
 - a POSIX-style shell.
 
