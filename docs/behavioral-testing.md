@@ -93,6 +93,15 @@ Prefer ordinary guided smoke tests when prompt contamination is not the behavior
 Case-specific assertions support path existence, UTF-8 substring presence/absence, and case-insensitive substring checks or exact regular-file counts for a safe relative glob.
 `section_preserved` and `section_absent` check one U# section in `unknowns.md` using its ID as `value`; malformed or duplicate IDs cannot establish absence.
 These snapshot checks cover section identity, not semantic sufficiency, reads, or temporal ordering.
+The section reader excludes H2-like lines inside ordinary backtick and tilde fences, including unclosed fences, while hashing the complete original section through the next real H2 or end of file.
+It is bounded fixture support, not a general Markdown parser or runtime editor.
+`section_any_matches`, `section_all_match`, and `section_none_matches` apply a case-insensitive, multiline-capable expression separately to U# sections selected by a ledger path glob, excluding preambles and fenced examples.
+The optional `record = "U1"` selects an established identity; omit it when the scenario permits allocating a new ID.
+Any/all require at least one selected section; none permits no sections unless a specific record is required.
+Unreadable, unsafe, malformed, or duplicate-identity ledgers fail these assertions.
+Use all only when that scenario excludes unrelated questions; any/none allow valid neighboring questions without a universal record count.
+These are bounded content controls, not a general semantic grader or live-agent compliance evidence.
+The fact-conflict scenario owns its U1 checks here; its standalone fixture verifier checks the remaining non-ledger state without duplicating section parsing.
 `glob_any_matches` and `glob_none_matches` apply a case-insensitive expression that may span newlines to require a match in at least one or no matching files; use them sparingly when related semantic outcomes must be associated without requiring a particular document layout.
 `glob_contains` requires every match to contain the value, while `glob_any_contains` and `glob_none_contains` test whether at least one or no matching file contains it without fixing the artifact count.
 Optional `response_must_match` expressions check the final stdout response, case-insensitively and across newlines.

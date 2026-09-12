@@ -50,11 +50,11 @@ path = ".project-efforts/*/map.md"
 value = "precise cost model"
 
 [[assertions]]
-kind = "glob_any_contains"
+kind = "section_any_matches"
 path = ".project-efforts/*/unknowns.md"
 value = "review"
 
 [[assertions]]
-kind = "glob_none_contains"
+kind = "section_none_matches"
 path = ".project-efforts/*/unknowns.md"
 value = "precise cost model"

@@ -10,6 +10,8 @@ import shutil
 import tempfile
 import unittest
 
+from _behavior_test_support import behavior
+
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = REPOSITORY_ROOT / "agent_workflow"
 CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md"
@@ -32,14 +34,14 @@ def identifier_errors(effort: Path) -> list[str]:
         if kind in "UFD":
             candidates = (
                 [
-                    line
-                    for line in path.read_text().splitlines()
-                    if re.match(rf"## {kind}(?:[0-9]|\b)", line)
+                    heading[1].rstrip()
+                    for heading in behavior.markdown_h2_headings(path.read_text())
+                    if re.match(rf"{kind}(?:[0-9]|\b)", heading[1] or "")
                 ]
                 if path.is_file()
                 else []
             )
-            pattern = rf"## {kind}([1-9][0-9]*) — \S.*"
+            pattern = rf"{kind}([1-9][0-9]*) — \S.*"
         else:
             candidates = (
                 [item.name for item in path.iterdir() if item.name.startswith(kind)]
@@ -67,15 +69,20 @@ def broken_fixture_links(paths: list[Path]) -> list[str]:
     """Check Markdown links in the named files, without discovering more state."""
     broken = []
     for path in paths:
-        for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", path.read_text()):
+        for target in re.findall(
+            r"\[[^\]]+\]\(([^)]+)\)", behavior.markdown_prose(path.read_text())
+        ):
             filename, _, anchor = target.partition("#")
             destination = path.parent / filename if filename else path
             if destination.is_symlink() or not destination.is_file():
                 broken.append(target)
             elif anchor:
-                headings = re.findall(
-                    r"^## (.+)$", destination.read_text(), re.MULTILINE
-                )
+                headings = [
+                    heading[1] or ""
+                    for heading in behavior.markdown_h2_headings(
+                        destination.read_text()
+                    )
+                ]
                 anchors = [
                     re.sub(r"[^\w -]", "", heading.lower()).replace(" ", "-")
                     for heading in headings
@@ -163,6 +170,25 @@ class WayfinderStateContractTests(unittest.TestCase):
                 "## U1 — A question?\n\n## Unrelated notes\nProject-owned bytes.\n"
             )
             self.assertEqual(identifier_errors(effort), [])
+
+    def test_fixture_id_and_anchor_checks_ignore_fenced_headings(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary)
+            ledger = effort / "unknowns.md"
+            link = effort / "map.md"
+            for fence in ("```", "~~~"):
+                with self.subTest(fence=fence):
+                    ledger.write_text(
+                        f"## U1 — Real question\n{fence}markdown\n"
+                        f"## U1 — Example only\n{fence}\n"
+                    )
+                    self.assertEqual(identifier_errors(effort), [])
+                    link.write_text("[Example](unknowns.md#u1--example-only)\n")
+                    self.assertEqual(
+                        broken_fixture_links([link]), ["unknowns.md#u1--example-only"]
+                    )
+                    link.write_text("[Real](unknowns.md#u1--real-question)\n")
+                    self.assertEqual(broken_fixture_links([link]), [])
 
     def test_link_checks_reject_dangling_file_and_renamed_ledger_anchor(self):
         with tempfile.TemporaryDirectory() as temporary:

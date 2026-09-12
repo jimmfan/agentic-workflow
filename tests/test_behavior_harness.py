@@ -703,8 +703,172 @@ print('Fixed and verified. [route: router → direct]')
                         )
                     )
                 )
+                self.assertTrue(
+                    all(
+                        check(
+                            f"## U{number} — Can our project rely on strict request order?\n"
+                        )
+                    )
+                )
             self.assertFalse(all(check("## U7 — A different question?\n")))
             self.assertFalse(all(check("# Unknowns\n")))
+            for bad in (
+                "Current project ordering is discussed here.\n## U7 — Which logo?\n",
+                "## U7 — Which logo?\n```markdown\nDoes the current project guarantee ordering?\n```\n",
+                "## U7 — Which logo for the current project?\n## U8 — Does another system guarantee ordering?\n",
+                "## U7 — Does the current project guarantee ordering?\n## U8 — Which logo?\n",
+            ):
+                with self.subTest(bad=bad):
+                    self.assertFalse(all(check(bad)))
+
+    def test_migrated_question_checks_bind_content_to_records(self):
+        scenarios = {item.id: item for item in behavior.load_scenarios()}
+        cases = (
+            (
+                "wayfinder-domain-modeling-discovery",
+                "zero-downtime-platform-cutover",
+                "## U7 — What does Consumer mean in this context?\n",
+                "Consumer context",
+            ),
+            (
+                "wayfinder-fact-conflict",
+                "deployment-mode",
+                "## U1 — Which deployment mode applies?\n",
+                "deployment mode",
+            ),
+            (
+                "wayfinder-human-authority-clarification",
+                "persistence-authority",
+                "## U7 — Which durable backend and operating owner?\n",
+                "durable backend",
+            ),
+            (
+                "wayfinder-accepted-residual-uncertainty",
+                "pilot-capacity",
+                "## U1 — What peak concurrency must be supported?\nCapacity remains unresolved.\n",
+                "Capacity remains unresolved",
+            ),
+            (
+                "wayfinder-selective-unknown-promotion",
+                "release-readiness",
+                "## U7 — Has the full-team review occurred?\n",
+                "review",
+            ),
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary)
+            for name, effort, good, preamble in cases:
+                with self.subTest(scenario=name):
+                    scenario = scenarios[name]
+                    assertions = [
+                        a for a in scenario.assertions if a.path.name == "unknowns.md"
+                    ]
+                    ledger = workspace / f".project-efforts/{effort}/unknowns.md"
+                    ledger.parent.mkdir(parents=True)
+
+                    def check(content):
+                        ledger.write_text(content)
+                        evidence = behavior.RunEvidence(
+                            scenario,
+                            workspace,
+                            {},
+                            behavior.snapshot(workspace),
+                            "",
+                            "",
+                            0,
+                            {},
+                            (),
+                            (),
+                        )
+                        return all(
+                            behavior.evaluate_assertion(evidence, a).passed
+                            for a in assertions
+                        )
+
+                    self.assertTrue(check(good))
+                    for bad in (
+                        f"{preamble}\n## U7 — Which logo?\n",
+                        f"## U7 — Which logo?\n~~~\n{good}\n~~~\n",
+                    ):
+                        with self.subTest(bad=bad):
+                            self.assertFalse(check(bad))
+                    if name in {
+                        "wayfinder-fact-conflict",
+                        "wayfinder-accepted-residual-uncertainty",
+                    }:
+                        self.assertFalse(check(good.replace("U1", "U8")))
+                        self.assertFalse(
+                            check("## U1 — Which logo?\n" + good.replace("U1", "U8"))
+                        )
+                    elif name == "wayfinder-human-authority-clarification":
+                        self.assertTrue(
+                            check(
+                                good
+                                + "## U8 — Who owns encryption keys?\n## U9 — Which retention policy applies?\n"
+                            )
+                        )
+                    elif name == "wayfinder-selective-unknown-promotion":
+                        self.assertTrue(
+                            check(good + "## U8 — Who approves pilot access?\n")
+                        )
+                        self.assertFalse(
+                            check(
+                                good
+                                + "## U8 — What precise cost model should we use?\n"
+                            )
+                        )
+                    ledger.unlink()
+
+    def test_section_assertion_schema_validates_expression_and_optional_identity(self):
+        base = {
+            "kind": "section_any_matches",
+            "path": ".project-efforts/example/unknowns.md",
+            "value": "capacity",
+            "record": "U1",
+        }
+        self.assertEqual(behavior.load_assertions([base], "control")[0].record, "U1")
+        for changes in (
+            {"record": "U0"},
+            {"record": "F1"},
+            {"record": 1},
+            {"value": "["},
+            {"kind": "path_exists"},
+        ):
+            with self.subTest(changes=changes):
+                with self.assertRaises(behavior.BehaviorError):
+                    behavior.load_assertions([{**base, **changes}], "control")
+
+    def test_accepted_capacity_identity_cannot_be_supplied_by_another_effort(self):
+        scenario = next(
+            s
+            for s in behavior.load_scenarios()
+            if s.id == "wayfinder-accepted-residual-uncertainty"
+        )
+        assertion = next(a for a in scenario.assertions if a.record == "U1")
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary)
+            for effort, state in (
+                ("pilot-capacity", "resolved"),
+                ("other-pilot", "unresolved"),
+            ):
+                ledger = workspace / f".project-efforts/{effort}/unknowns.md"
+                ledger.parent.mkdir(parents=True)
+                ledger.write_text(
+                    f"## U1 — What capacity is required?\nCapacity remains {state}.\n"
+                )
+            evidence = behavior.RunEvidence(
+                scenario,
+                workspace,
+                {},
+                behavior.snapshot(workspace),
+                "",
+                "",
+                0,
+                {},
+                (),
+                (),
+            )
+            self.assertFalse(behavior.evaluate_assertion(evidence, assertion).passed)
 
     def test_fixture_copy_is_disposable_and_resettable(self) -> None:
         scenario = next(

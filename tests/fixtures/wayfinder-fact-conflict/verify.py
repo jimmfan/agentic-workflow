@@ -2,16 +2,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import re
 
 
 effort = Path(".project-efforts/deployment-mode")
 evidence = sorted((effort / "evidence").glob("E2-*.md"))
-unknowns_path = effort / "unknowns.md"
-unknowns = re.findall(
-    r"(?ms)^## U1 — [^\n]+\n.*?(?=^## |\Z)",
-    unknowns_path.read_text() if unknowns_path.is_file() else "",
-)
+# The scenario's section assertions own U1 identity/content checks, using the
+# evaluator's fence-aware reader. This standalone verifier checks non-ledger state.
 decision = (effort / "decisions.md").read_text()
 mapping = (effort / "map.md").read_text()
 
@@ -21,7 +17,6 @@ checks = [
     and "Source: config.txt" in evidence[0].read_text()
     and "Scope: current deployment configuration" in evidence[0].read_text()
     and "## Limitations" in evidence[0].read_text(),
-    len(unknowns) == 1 and "deployment mode" in unknowns[0].lower(),
     not (effort / "facts.md").exists(),
     "U1" in mapping and "review D1" in mapping,
     "Authority: platform architecture policy" in decision
@@ -40,5 +35,5 @@ with (root / "verification.jsonl").open("a", encoding="utf-8") as stream:
         json.dumps({"command": "python verify.py", "exit_code": 0 if passed else 1})
         + "\n"
     )
-print("PASS: fact conflict reconciled" if passed else f"FAIL: checks={checks}")
+print("PASS: fact-conflict non-ledger checks" if passed else f"FAIL: checks={checks}")
 raise SystemExit(0 if passed else 1)

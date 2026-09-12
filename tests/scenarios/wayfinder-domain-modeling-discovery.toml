@@ -81,11 +81,6 @@ path = ".project-efforts/zero-downtime-platform-cutover/map.md"
 value = "depends on"
 
 [[assertions]]
-kind = "glob_any_matches"
+kind = "section_all_match"
 path = ".project-efforts/zero-downtime-platform-cutover/unknowns.md"
-value = '(?m)^## U[1-9][0-9]* — '
-
-[[assertions]]
-kind = "glob_contains"
-path = ".project-efforts/zero-downtime-platform-cutover/unknowns.md"
-value = "consumer"
+value = '(?=.*consumer)(?=.*(?:mean|context|owner|responsibilit))'

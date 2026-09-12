@@ -38,9 +38,9 @@ kind = "path_exists"
 path = ".project-efforts/persistence-authority/map.md"
 
 [[assertions]]
-kind = "glob_any_matches"
+kind = "section_all_match"
 path = ".project-efforts/persistence-authority/unknowns.md"
-value = '(?m)^## U[1-9][0-9]* — '
+value = 'backend|operating owner|encrypt|key ownership|owns.*keys|retention|deletion'
 
 [[assertions]]
 kind = "path_not_exists"

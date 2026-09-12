@@ -70,6 +70,9 @@ ASSERTION_KINDS = {
     "glob_none_matches",
     "section_absent",
     "section_preserved",
+    "section_any_matches",
+    "section_all_match",
+    "section_none_matches",
     "path_exists",
     "path_not_exists",
     "path_contains",
@@ -117,6 +120,7 @@ class Assertion:
     path: PurePosixPath
     value: str | None = None
     count: int | None = None
+    record: str | None = None
 
 
 @dataclass(frozen=True)
@@ -221,7 +225,7 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
         item_label = f"{label}[{index}]"
         if not isinstance(item, dict):
             raise BehaviorError(f"{item_label} must be a table")
-        if set(item) - {"kind", "path", "value", "count"}:
+        if set(item) - {"kind", "path", "value", "count", "record"}:
             raise BehaviorError(f"{item_label} has unknown fields")
         kind = item.get("kind")
         if kind not in ASSERTION_KINDS:
@@ -229,6 +233,20 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
         path = safe_relative(item.get("path"), f"{item_label}.path")
         value = item.get("value")
         count = item.get("count")
+        record = item.get("record")
+        section_content = kind in {
+            "section_any_matches",
+            "section_all_match",
+            "section_none_matches",
+        }
+        if record is not None and (
+            not section_content
+            or not isinstance(record, str)
+            or re.fullmatch(r"U[1-9][0-9]*", record) is None
+        ):
+            raise BehaviorError(
+                f"{item_label}.record must select a U# for a section-content assertion"
+            )
         needs_value = kind in {
             "section_absent",
             "section_preserved",
@@ -239,11 +257,14 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
             "glob_none_matches",
             "path_contains",
             "path_not_contains",
+            "section_any_matches",
+            "section_all_match",
+            "section_none_matches",
         }
         needs_count = kind == "glob_count"
         if needs_value and (not isinstance(value, str) or not value):
             raise BehaviorError(f"{item_label}.value must be a non-empty string")
-        if kind in {"glob_any_matches", "glob_none_matches"}:
+        if kind in {"glob_any_matches", "glob_none_matches"} or section_content:
             try:
                 re.compile(value, re.IGNORECASE | re.DOTALL)
             except re.error as exc:
@@ -258,7 +279,9 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
             raise BehaviorError(f"{item_label}.count must be a non-negative integer")
         if not needs_count and count is not None:
             raise BehaviorError(f"{item_label}.count is not valid for {kind}")
-        assertions.append(Assertion(kind=kind, path=path, value=value, count=count))
+        assertions.append(
+            Assertion(kind=kind, path=path, value=value, count=count, record=record)
+        )
     return tuple(assertions)
 
 
@@ -453,30 +476,76 @@ def load_scenarios() -> tuple[Scenario, ...]:
     return scenarios
 
 
-def ledger_section_hashes(content: bytes) -> dict[str, str] | None:
-    """Literal fixture sections, not a runtime editor or semantic evaluator.
+def markdown_prose(text: str) -> str:
+    """Mask ordinary fenced code without changing offsets or line endings.
+
+    Supports backtick/tilde fences with up to three leading spaces, matching
+    closers at least as long as the opener, and unclosed fences through EOF.
+    This is bounded fixture support, not a general Markdown parser.
+    """
+    fence = ""
+    lines = []
+    for line in text.splitlines(keepends=True):
+        marker = re.fullmatch(r" {0,3}(`{3,}|~{3,})([^\r\n]*)", line.rstrip("\r\n"))
+        masked = bool(fence)
+        if fence:
+            if (
+                marker
+                and marker[1][0] == fence[0]
+                and len(marker[1]) >= len(fence)
+                and not marker[2].strip(" \t")
+            ):
+                fence = ""
+        elif marker and (marker[1][0] == "~" or "`" not in marker[2]):
+            fence = marker[1]
+            masked = True
+        lines.append(re.sub(r"[^\r\n]", " ", line) if masked else line)
+    return "".join(lines)
+
+
+def markdown_h2_headings(text: str) -> list[re.Match[str]]:
+    return list(
+        re.finditer(
+            r"^ {0,3}##(?:[ \t]+([^\r\n]*))?[ \t]*\r?$",
+            markdown_prose(text),
+            re.MULTILINE,
+        )
+    )
+
+
+def ledger_sections(content: bytes) -> dict[str, str] | None:
+    """Literal U sections, not a runtime editor or semantic evaluator.
 
     Refuse malformed/duplicate U IDs rather than treating ambiguous input as absent.
-    All H2 headings delimit sections, including unrecognized project content.
+    Real H2 headings delimit sections, including unrecognized project content.
+    Retain the original bytes' decoded text, including fenced examples, for hashing.
     """
     try:
         text = content.decode("utf-8")
     except UnicodeError:
         return None
-    headings = list(re.finditer(r"^## (.+)$", text, re.MULTILINE))
+    headings = markdown_h2_headings(text)
     sections = {}
     for index, heading in enumerate(headings):
-        title = heading[1]
+        title = (heading[1] or "").rstrip()
         if re.match(r"U(?:[0-9]|\b)", title) is None:
             continue
         match = re.fullmatch(r"(U[1-9][0-9]*) — \S.*", title)
         if match is None or match[1] in sections:
             return None
         end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
-        sections[match[1]] = hashlib.sha256(
-            text[heading.start() : end].encode()
-        ).hexdigest()
+        sections[match[1]] = text[heading.start() : end]
     return sections
+
+
+def ledger_section_hashes(content: bytes) -> dict[str, str] | None:
+    sections = ledger_sections(content)
+    if sections is None:
+        return None
+    return {
+        identity: hashlib.sha256(section.encode()).hexdigest()
+        for identity, section in sections.items()
+    }
 
 
 def snapshot(root: Path) -> dict[str, Entry]:
@@ -761,6 +830,52 @@ def recognized_wayfinder_changes(evidence: RunEvidence) -> tuple[bool, str]:
 
 
 def evaluate_assertion(evidence: RunEvidence, assertion: Assertion) -> CheckResult:
+    if assertion.kind in {
+        "section_any_matches",
+        "section_all_match",
+        "section_none_matches",
+    }:
+        outcomes = []
+        invalid = []
+        for relative, entry in sorted(evidence.after.items()):
+            if not fnmatch.fnmatchcase(relative, assertion.path.as_posix()):
+                continue
+            path = evidence.workspace / relative
+            if entry.kind != "file" or any(
+                parent.is_symlink()
+                for parent in (path, *path.parents)
+                if parent != evidence.workspace and evidence.workspace in parent.parents
+            ):
+                invalid.append(relative)
+                continue
+            try:
+                sections = ledger_sections(path.read_bytes())
+            except OSError:
+                sections = None
+            if sections is None:
+                invalid.append(relative)
+                continue
+            for identity, section in sections.items():
+                if assertion.record is None or identity == assertion.record:
+                    outcomes.append(
+                        re.search(
+                            assertion.value,
+                            markdown_prose(section),
+                            re.IGNORECASE | re.DOTALL,
+                        )
+                        is not None
+                    )
+        if assertion.kind == "section_any_matches":
+            passed = any(outcomes)
+        elif assertion.kind == "section_all_match":
+            passed = bool(outcomes) and all(outcomes)
+        else:
+            passed = not any(outcomes) and (assertion.record is None or bool(outcomes))
+        return CheckResult(
+            f"assert:{assertion.path}:{assertion.kind}",
+            passed and not invalid,
+            f"checked {len(outcomes)} selected U sections outside fenced code; invalid={invalid}",
+        )
     if assertion.kind in {"section_absent", "section_preserved"}:
         path = assertion.path.as_posix()
         before = evidence.before.get(path)

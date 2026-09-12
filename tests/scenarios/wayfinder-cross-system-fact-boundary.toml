@@ -47,14 +47,9 @@ path = ".project-efforts/*/evidence/E1-*.md"
 value = "Limitations"
 
 [[assertions]]
-kind = "glob_any_matches"
+kind = "section_all_match"
 path = ".project-efforts/*/unknowns.md"
-value = '(?m)^## U[1-9][0-9]* — '
-
-[[assertions]]
-kind = "glob_contains"
-path = ".project-efforts/*/unknowns.md"
-value = "current project"
+value = '(?=.*\b(?:current|this|our) project\b)(?=.*\border(?:ing)?\b)'
 
 [[assertions]]
 kind = "glob_count"

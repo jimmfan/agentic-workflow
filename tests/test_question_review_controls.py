@@ -123,6 +123,89 @@ class QuestionReviewControls(unittest.TestCase):
         self.ledger.symlink_to(self.workspace / "notes.txt")
         self.assertFalse(behavior.evaluate_assertion(self.evidence(), assertion).passed)
 
+    def test_section_preservation_includes_fenced_examples_and_later_restrictions(self):
+        for fence in ("```", "~~~"):
+            with self.subTest(fence=fence):
+                original = (
+                    "## U1 — Which request boundary applies?\n\n"
+                    f"{fence}markdown\n## Request format\nexample\n{fence}\n"
+                    "Only the ten-account pilot is authorized.\n\n"
+                    "## U2 — Which support contact?\nKeep this question.\n"
+                )
+                self.ledger.write_text(original)
+                before = behavior.snapshot(self.workspace)
+                self.ledger.write_text(original.replace("ten-account", "unlimited"))
+                evidence = self.evidence(before=before)
+                for identity, expected in (("U1", False), ("U2", True)):
+                    assertion = behavior.Assertion(
+                        "section_preserved", PurePosixPath(LEDGER), identity
+                    )
+                    self.assertEqual(
+                        behavior.evaluate_assertion(evidence, assertion).passed,
+                        expected,
+                    )
+
+    def test_fenced_record_examples_do_not_create_or_duplicate_ids(self):
+        for opener, closer in (
+            ("```markdown", "```"),
+            ("~~~", "~~~~"),
+            ("   ````", "```\n~~~~\n````"),
+            ("~~~", ""),
+            ("```", ""),
+        ):
+            with self.subTest(opener=opener, closer=closer):
+                example = f"{opener}\n## U1 — Example only\n## U0 malformed\n{closer}\n"
+                for prefix, expected in (
+                    ("", set()),
+                    ("## U1 — Real question\n", {"U1"}),
+                ):
+                    self.ledger.write_text(prefix + example)
+                    sections = behavior.snapshot(self.workspace)[LEDGER].sections
+                    self.assertIsNotNone(sections)
+                    self.assertEqual(set(sections), set(expected))
+                # Complete hashes retain examples even when the fence never closes.
+                original = (
+                    "## U1 — Real question\n" + example + "Restriction: ten accounts.\n"
+                )
+                self.ledger.write_text(original)
+                before = behavior.snapshot(self.workspace)
+                self.ledger.write_text(original.replace("ten accounts", "unlimited"))
+                self.assertFalse(
+                    behavior.evaluate_assertion(
+                        self.evidence(before=before),
+                        behavior.Assertion(
+                            "section_preserved", PurePosixPath(LEDGER), "U1"
+                        ),
+                    ).passed
+                )
+
+    def test_section_content_checks_reject_ambiguous_or_unsafe_ledgers(self):
+        assertions = [
+            behavior.Assertion(kind, PurePosixPath(LEDGER), "capacity")
+            for kind in (
+                "section_any_matches",
+                "section_all_match",
+                "section_none_matches",
+            )
+        ]
+        for content in (
+            "## U1 — Capacity?\n## U1 — Duplicate?\n",
+            "## U0 — Capacity?\n",
+            "## U1 malformed\n",
+        ):
+            self.ledger.write_text(content)
+            for assertion in assertions:
+                with self.subTest(content=content, kind=assertion.kind):
+                    self.assertFalse(
+                        behavior.evaluate_assertion(self.evidence(), assertion).passed
+                    )
+        self.ledger.unlink()
+        self.ledger.symlink_to(self.workspace / "notes.txt")
+        for assertion in assertions:
+            self.assertFalse(
+                behavior.evaluate_assertion(self.evidence(), assertion).passed
+            )
+
     def test_map_only_and_unconverted_data_are_distinct(self):
         self.ledger.unlink()
         before = behavior.snapshot(self.workspace)

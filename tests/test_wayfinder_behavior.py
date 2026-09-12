@@ -336,8 +336,9 @@ class WayfinderBehaviorTests(unittest.TestCase):
         self.assertEqual(len(accepted_relationships), 4)
         self.assertTrue(
             any(
-                item.kind == "glob_any_matches"
-                and item.path.as_posix() == ".project-efforts/*/unknowns.md"
+                item.kind == "section_any_matches"
+                and item.path.as_posix()
+                == ".project-efforts/pilot-capacity/unknowns.md"
                 for item in accepted.assertions
             )
         )
@@ -663,9 +664,9 @@ class WayfinderBehaviorTests(unittest.TestCase):
         )
         self.assertIn(
             (
-                "glob_any_matches",
+                "section_all_match",
                 ".project-efforts/*/unknowns.md",
-                r"(?m)^## U[1-9][0-9]* — ",
+                r"(?=.*\b(?:current|this|our) project\b)(?=.*\border(?:ing)?\b)",
                 None,
             ),
             required,

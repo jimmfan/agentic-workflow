@@ -61,14 +61,15 @@ path = ".project-efforts/deployment-mode/evidence/E2-*.md"
 value = "## Limitations"
 
 [[assertions]]
-kind = "glob_any_matches"
+kind = "section_all_match"
 path = ".project-efforts/deployment-mode/unknowns.md"
-value = '(?m)^## U[1-9][0-9]* — '
+value = 'deployment[ _-]mode'
 
 [[assertions]]
-kind = "glob_contains"
+kind = "section_any_matches"
 path = ".project-efforts/deployment-mode/unknowns.md"
-value = "deployment mode"
+record = "U1"
+value = 'deployment[ _-]mode'
 
 [[assertions]]
 kind = "path_not_exists"
