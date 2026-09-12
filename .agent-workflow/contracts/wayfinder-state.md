@@ -174,7 +174,8 @@ No type must produce another.
 Represent areas, relationships, and ownership or operating boundaries in the single `map.md`.
 Do not add area identifiers, nested state by domain or phase, parallel maps, or another state hierarchy.
 
-A U# is an H2 section in `unknowns.md` stating the question and why it matters.
+A U# captures an unresolved consequential question whose answer could materially change the direction of the effort or what work should happen next.
+Represent it as an H2 section in `unknowns.md` stating the question and why it matters.
 Presence in `unknowns.md` means the question is current and unresolved.
 Preserve a precise question separately while unanswered when doing so helps a later developer make or evaluate a decision within the effort's objective and scope.
 This is especially useful when the answer requires project decision authority, depends on an external participant or approval, or gates several downstream areas or a consequential boundary.
@@ -195,10 +196,9 @@ This illustrative example establishes no project choice or required approval and
 ```markdown
 # Unknowns
 
-## U1 — Should the pilot include external users?
+## U1 — Should this platform use EKS Auto Mode or managed node groups?
 
-Why it matters: This determines the pilot audience and affects authentication requirements.
-How to resolve: The project owner needs to choose the intended audience.
+Why it matters: The choice affects how much infrastructure the team must operate, how much control it retains over worker nodes, and how the cluster scales and is maintained.
 ```
 
 An E# file states independently useful evidence using `Source:`, `Scope:`, the existing `Observation` heading or field language, and `Limitations:`.
