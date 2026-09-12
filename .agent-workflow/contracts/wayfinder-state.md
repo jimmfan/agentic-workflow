@@ -287,8 +287,13 @@ For ledger edits, reread the ledger and affected references, validate the target
 Protect neighboring sections, preambles, and unrecognized content; ambiguous boundaries prevent that edit.
 All selected Wayfinder state paths, including their ancestors, ledgers, and E# files, must use regular files/directories without crossing symlinks or escaping the selected effort.
 
-Before renaming or pruning state, inspect the selected map, ledgers, E# files, and known current references outside the effort for affected identifiers, paths, or heading anchors.
-Do not scan unrelated efforts, the entire repository, or Git history.
+Before an affected rename or pruning operation, inspect the selected state and discover incoming references with a narrowly targeted, read-only search across current repository text, including relevant hidden directories.
+Search for the specific affected file/path and heading anchors, accounting for relative links whose text omits the full repository-relative path; inspect only relevant matches.
+Bare IDs are effort-local: an `E1` or `U1` elsewhere is not by itself a reference to this record.
+This operation-specific search does not authorize reading every document, discovering or reconciling unrelated efforts, or searching Git history; it is not part of every message or ordinary resumption.
+Repository text search does not establish the absence of external or dynamically constructed references; report material discovery limits.
+Repair affected references only within the request's authorization; discovering a backlink grants no permission to edit its document.
+If a necessary reference or preservation requirement cannot be assessed or safely repaired, retain the affected record and report the limitation; independent authorized work may continue.
 
 Use this common sequence for every affected reconciliation:
 
@@ -301,6 +306,7 @@ Use this common sequence for every affected reconciliation:
    When a choice or contingency changes, reconcile its consequences for established dependencies and ready work without inventing requirements or making every unknown a blocker.
 3. Prune only recognized records that no longer have independent current value.
    Before pruning, verify that any still-useful information in the record is retrievable from its designated maintaining artifact and that affected references resolve.
+   A working replacement link is insufficient if its target loses useful evidence, source/scope qualifications, or consequential relationships.
    If preservation cannot be established, retain the affected record without blocking independent work.
 4. Before claiming a material authorized update complete, reread the affected saved results and references against the relevant input and current state.
    Check that consequential details and relationships remain retrievable and usable without the original conversation, including whether a retained reference actually supplies the needed detail.
@@ -353,7 +359,7 @@ When a D# no longer records the current binding choice, apply the common sequenc
 Before removal, apply the common sequence's preservation, reference reconciliation, and pre-pruning retrievability check.
 Pruning does not require committing a transient record first.
 
-Pruning E# removes only the selected file.
+Pruning an E# removes only that E# file.
 Pruning U/F/D removes only the selected H2 section, stopping at the next H2 or end of file.
 Remove an empty ledger only when no useful or unrelated content remains.
 Unrelated ledger content remains byte-for-byte unchanged where practical, and unrecognized project-owned content remains unchanged and uninterpreted by Wayfinder.

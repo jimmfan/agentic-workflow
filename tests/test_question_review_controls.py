@@ -291,6 +291,104 @@ class QuestionReviewControls(unittest.TestCase):
         )
         self.assertTrue(behavior.evaluate_assertion(self.evidence(), assertion).passed)
 
+    def test_incoming_reference_candidates_require_preservation_and_authorized_repair(
+        self,
+    ):
+        # Construct outcomes; this does not execute agent search or mutation order.
+        root = self.workspace / "settlement"
+        shutil.copytree(behavior.FIXTURE_ROOT / "wayfinder-reference-settlement", root)
+        effort = root / ".project-efforts/release-direction"
+        record = effort / "evidence/E12-source-observation.md"
+        facts = effort / "facts.md"
+        map_path = effort / "map.md"
+        backlinks = [root / "docs/release.md", root / ".notes/release.md"]
+        old_link = (
+            "../.project-efforts/release-direction/evidence/E12-source-observation.md"
+        )
+        new_link = "../.project-efforts/release-direction/facts.md#f8--published-source-selects-staged-release"
+        for backlink in backlinks:
+            backlink.parent.mkdir()
+            backlink.write_text(
+                f"Use the [configuration observation]({old_link}) for this release.\n"
+            )
+        unrelated = root / "notes.txt"
+        unrelated.write_text(
+            "E12 belongs to another effort; leave these notes unchanged.\n"
+        )
+        before = behavior.snapshot(root)
+
+        def evidence(scenario):
+            return behavior.RunEvidence(
+                scenario, root, before, behavior.snapshot(root), "", "", 0, {}, (), ()
+            )
+
+        blocked = replace(
+            self.base,
+            preserve_paths=tuple(
+                PurePosixPath(p.relative_to(root)) for p in [*backlinks, unrelated]
+            ),
+        )
+        retained = behavior.Assertion(
+            "path_exists", PurePosixPath(record.relative_to(root))
+        )
+        self.assertTrue(behavior.evaluate_assertion(evidence(blocked), retained).passed)
+        self.assertTrue(behavior.preserved(evidence(blocked))[0])
+        original_record = record.read_bytes()
+        record.unlink()
+        self.assertFalse(
+            behavior.evaluate_assertion(evidence(blocked), retained).passed
+        )
+        self.assertEqual(broken_fixture_links(backlinks), [old_link, old_link])
+        record.write_bytes(original_record)
+
+        # A permitted repair must preserve content as well as replace the URL.
+        for backlink in backlinks:
+            backlink.write_text(backlink.read_text().replace(old_link, new_link))
+        self.assertFalse(behavior.preserved(evidence(blocked))[0])
+        authorized = replace(self.base, preserve_paths=(PurePosixPath("notes.txt"),))
+        source = behavior.Assertion(
+            "path_contains",
+            PurePosixPath(facts.relative_to(root)),
+            "[published source](../../source.txt)",
+        )
+        self.assertEqual(broken_fixture_links(backlinks), [])
+        self.assertFalse(
+            behavior.evaluate_assertion(evidence(authorized), source).passed
+        )
+        facts.write_text(
+            facts.read_text().replace(
+                "Derived from: E12", "Source: [published source](../../source.txt)"
+            )
+        )
+        map_path.write_text(
+            map_path.read_text().replace(
+                "evidence/E12-source-observation.md",
+                "facts.md#f8--published-source-selects-staged-release",
+            )
+        )
+        record.unlink()
+        self.assertTrue(
+            behavior.evaluate_assertion(evidence(authorized), source).passed
+        )
+        for qualification in (
+            "Scope: current release configuration",
+            "Limitations: Applies only to the current release configuration.",
+            "The published source selects a staged release.",
+        ):
+            self.assertTrue(
+                behavior.evaluate_assertion(
+                    evidence(authorized),
+                    behavior.Assertion(
+                        "path_contains",
+                        PurePosixPath(facts.relative_to(root)),
+                        qualification,
+                    ),
+                ).passed
+            )
+        self.assertEqual(broken_fixture_links([*backlinks, map_path, facts]), [])
+        self.assertTrue(behavior.preserved(evidence(authorized))[0])
+        self.assertTrue((effort / "evidence").is_dir())
+
     def test_prerequisite_and_answer_controls_accept_paraphrases(self):
         # Each predicate is fixture-specific observable meaning, not a router,
         # general language grader, required wording template or fixed round size.

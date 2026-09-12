@@ -118,6 +118,11 @@ The deterministic suite's success means its graders accept/reject/abstain on tho
 `test_question_review_controls.py` uses the existing Scenario/RunEvidence evaluator and one synthetic parcel-review fixture.
 Section identity snapshots allow an answered middle section to disappear while neighboring questions retain their exact contents; malformed or duplicate U IDs and unsafe ledger targets cannot masquerade as section absence.
 Controls also expose stale replacement, dangling references, unauthorized review writes, selected prerequisite/answer mistakes, changed deferral consequences, and unavailable or standalone Grilling.
+Fence-aware section controls include restrictions after code examples and distinguish real identifiers from fenced headings.
+Migrated scenario assertions bind expected content to individual questions, retain required existing IDs, and reject unrelated extra records only where the scenario scope excludes them.
+Disposable incoming-reference controls construct retained and pruned E# outcomes with relative backlinks from an outside document and a hidden directory.
+They check authorized reference repair, preserved source/scope qualifications, and unrelated bytes; a working link alone does not satisfy the preservation controls.
+They do not demonstrate that an agent discovered the backlink or performed preservation before pruning.
 Map-only question meaning is left for adjudication when only a map mutation is observable.
 These checks do not execute agent race checks, actual questioning, interruption recovery, or fresh-session continuation.
 See the [bounded smoke procedure and execution limitation](../evals/wayfinder-question-resolution/README.md).
