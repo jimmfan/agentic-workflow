@@ -190,7 +190,7 @@ Clarify vague concerns into useful questions without padding or invented precisi
 Keep map-only questions valid, with no mandatory Open questions heading or promotion into U#.
 Do not create an empty ledger, retain answered sections as a completed archive, split records by size, or maintain dual U# formats.
 
-Short labels such as `Why it matters:` and `How to resolve:` are recommended authoring aids, not required field names or recognition criteria.
+`Why it matters:` is a recommended authoring aid, not a required field name or recognition criterion.
 This illustrative example establishes no project choice or required approval and does not instruct creation of a record:
 
 ```markdown
