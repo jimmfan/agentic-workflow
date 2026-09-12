@@ -74,7 +74,7 @@ Existing evidence from a source that establishes the scoped claim may satisfy th
 One method cannot substitute for another's required authority or evidence.
 Do not load specialists speculatively.
 
-## Review questions and request human input
+## Reconcile and transition ready work
 
 For a requested review, resume the matching effort map first, then relevant ledger sections and linked maintaining artifacts.
 Discover consequential questions from those sources even when no U# exists; use the contract's old-format boundary when encountered.
