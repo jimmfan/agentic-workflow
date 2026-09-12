@@ -254,20 +254,6 @@ Inside the effort, prefer navigable links when a path or heading matters.
 U/F/D anchors must retain the established lowercase `u<ID>--<slug>`, `f<ID>--<slug>`, and `d<ID>--<slug>` forms derived from those headings' em-dash representation.
 Reconcile affected references before renaming an E# file or U/F/D heading.
 
-### Explicit conversion of old question files
-
-Individual `unknowns/U<ID>-<slug>.md` files are not a second current representation.
-Absence of `unknowns.md` does not establish absence of unresolved questions: inspect the selected map and relevant maintaining artifacts, and report encountered unconverted or unassessed old-format data.
-Preserve that data unless the current request explicitly authorizes bounded conversion of those files.
-Do not perform installer migration, downstream sweeps, or automatic conversion or deletion of ordinary document question lists.
-
-For an authorized conversion, read the affected files and ledger, preserve IDs, contents, sources, relative-link meaning, and qualifications, and plan exact target sections and affected reference repairs.
-Recheck inputs immediately before mutation; collisions, malformed or duplicate IDs, ambiguous section boundaries, unsafe paths, or intervening changes stop only affected operations.
-Never overwrite a ledger: create it without overwriting an existing path or add only checked noncolliding sections to its current content.
-Verify every converted target and repaired reference before removing the corresponding old file.
-Remove only explicitly converted files, never directories recursively; preserve and report remaining old or unrecognized data.
-An interrupted conversion requires checking actual targets, sources, and references before continuing; do not infer completion from a missing ledger or partial copy.
-
 ## Reconciliation and pruning
 
 Use the common sequence below for affected current state, including every record-specific change, pruning operation, and effort ending.
@@ -357,7 +343,7 @@ Pruning E# removes only the selected file.
 Pruning U/F/D removes only the selected H2 section, stopping at the next H2 or end of file.
 Remove an empty ledger only when no useful or unrelated content remains.
 Unrelated ledger content remains byte-for-byte unchanged where practical, and unrecognized project-owned content remains unchanged and uninterpreted by Wayfinder.
-Never recursively delete an effort, `unknowns/`, or `evidence/` directory.
+Never recursively delete an effort or `evidence/` directory.
 
 ### Keep or end the effort
 

@@ -155,7 +155,7 @@ Name the effort when context does not identify it clearly.
 Wayfinder prepares from the map and relevant linked artifacts, asks simple clarifications directly, and uses Grilling for interdependent human choices.
 Recording is limited to authorized maintaining artifacts; review alone permits no blanket edits, implementation, or publication.
 The optional `unknowns.md` ledger uses `## U<ID> — <question>` sections; map-only questions remain valid.
-Old individual U# files require explicit bounded conversion under the [state contract](.agent-workflow/contracts/wayfinder-state.md#explicit-conversion-of-old-question-files); updates do not migrate them, and an absent ledger does not mean there are no unresolved questions.
+An absent ledger does not mean there are no unresolved questions.
 
 The [state contract](.agent-workflow/contracts/wayfinder-state.md) maintains default-map authoring conventions, including separate dependencies and scoped blocker assessments.
 Existing maps remain valid with alternate layouts.

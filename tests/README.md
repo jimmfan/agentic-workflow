@@ -119,5 +119,5 @@ The deterministic suite's success means its graders accept/reject/abstain on tho
 Section identity snapshots allow an answered middle section to disappear while neighboring questions retain their exact contents; malformed or duplicate U IDs and unsafe ledger targets cannot masquerade as section absence.
 Controls also expose stale replacement, dangling references, unauthorized review writes, selected prerequisite/answer mistakes, changed deferral consequences, and unavailable or standalone Grilling.
 Map-only question meaning is left for adjudication when only a map mutation is observable.
-These checks do not execute conversion, agent race checks, actual questioning, interruption recovery, or fresh-session continuation.
+These checks do not execute agent race checks, actual questioning, interruption recovery, or fresh-session continuation.
 See the [bounded smoke procedure and execution limitation](../evals/wayfinder-question-resolution/README.md).
