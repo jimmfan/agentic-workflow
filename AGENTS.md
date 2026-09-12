@@ -188,6 +188,12 @@ Keep experiments reversible and isolated until adoption is intentional.
   Separate product behavior from harness, evaluator, fixture, authentication, quota, timeout, permission, host, and other infrastructure failures.
 - Do not regenerate or modify derived metadata merely to make an unexplained difference disappear.
 
+## Versioning
+
+- A change intended to merge to `main` that modifies distributed framework behavior or installed framework content MUST update the root `VERSION` in the same PR unless the user explicitly says the change is not being released.
+- Before declaring such a change complete, compare `VERSION` with the PR base and existing semantic release tags and choose a valid higher version under the current release policy. A version decision is part of delivery verification, not optional cleanup.
+- Do not confuse a VERSION bump with publication: feature branches update `VERSION`, while the verified `main` workflow owns release-tag creation.
+
 ## Checkout state
 
 Treat the user's checkout state as working state that must be preserved.
