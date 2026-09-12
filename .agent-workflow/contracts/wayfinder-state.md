@@ -181,11 +181,25 @@ This is especially useful when the answer requires project decision authority, d
 Precision, ordinary external uncertainty, an unexplained cause, a long list, or a template alone does not justify a U#.
 A temporary U# must improve current coordination or later continuation, not serve create-and-prune ceremony.
 Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
-Record its resolution method, dependencies, sources, and required human input or authority only when they help later resumption or continuation.
-Short records are valid.
+Record dependencies, sources, and required human input or authority only when they help later resumption or continuation.
+Include a resolution method only when useful and sufficiently known; it may involve evidence, investigation, or relevant human input.
+Short records are valid; omit unnecessary fields.
+Preserve consequential uncertainty when the resolution method or authority is unknown rather than inventing an answer to fill a field.
 Clarify vague concerns into useful questions without padding or invented precision; link substantial results in their maintaining artifacts.
 Keep map-only questions valid, with no mandatory Open questions heading or promotion into U#.
 Do not create an empty ledger, retain answered sections as a completed archive, split records by size, or maintain dual U# formats.
+
+Short labels such as `Why it matters:` and `How to resolve:` are recommended authoring aids, not required field names or recognition criteria.
+This illustrative example establishes no project choice or required approval and does not instruct creation of a record:
+
+```markdown
+# Unknowns
+
+## U1 — Should the pilot include external users?
+
+Why it matters: This determines the pilot audience and affects authentication requirements.
+How to resolve: The project owner needs to choose the intended audience.
+```
 
 An E# file states independently useful evidence using `Source:`, `Scope:`, the existing `Observation` heading or field language, and `Limitations:`.
 Record when it was observed only when timing changes meaning, applicability, or validity.
