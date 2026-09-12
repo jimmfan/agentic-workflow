@@ -74,30 +74,35 @@ Existing evidence from a source that establishes the scoped claim may satisfy th
 One method cannot substitute for another's required authority or evidence.
 Do not load specialists speculatively.
 
-## Reconcile and transition ready work
+## Review questions and request human input
 
 For a requested review, resume the matching effort map first, then relevant ledger sections and linked maintaining artifacts.
-Discover consequential questions from those sources even when no U# exists; use the contract's old-format boundary when encountered.
+Discover consequential questions from those sources even when no U# exists.
+For encountered old-format data, follow the contract's “Explicit conversion of old question files” rules.
 Reuse settled choices, accepted policy, and delegated judgment instead of reopening them.
-Distinguish questions requiring evidence, human intent/preference or project decision authority, and external results.
+Distinguish questions that need evidence, human intent or preference, project decision authority, or an external result.
 Prepare from accessible evidence within the authorized scope; do not run unauthorized experiments or ask humans to guess empirical answers.
 
 Use direct clarification for simple input and Grilling for interdependent human choices.
-Ask only prerequisite-ready questions: explain their context, alternatives and tradeoffs, grounded recommendation or uncertainty, and the work their answers affect.
+Ask only questions whose prerequisite evidence and choices are established.
+For each question, explain the context, alternatives and tradeoffs, grounded recommendation or uncertainty, and the work the answer affects.
 A research or external-result prerequisite delays only its downstream questions; obtain independent human input without waiting for unrelated investigations.
 Do not present the backlog or speculative downstream questions as the current round.
 Follow detailed routing if a needed specialist is unavailable; do not claim Grilling ran or invent replacement persistence.
 
 During relevant authorized work, ask before crossing a boundary that requires an uncommitted choice.
-Also surface approaching consequential human-input bottlenecks at useful planning and handoff points, even when easier independent work remains.
+At useful planning and handoff points, also surface approaching consequential bottlenecks that require human input.
+Do this even when easier independent work remains.
 Prioritize by the objective, important progress, supported dependencies, answerability, and consequences of delay, rather than record counts, age, IDs, or descendant totals.
 Explain affected work without inventing prerequisites or a critical path.
 Continue independent authorized work without avoiding important input or replacing the user's task with an interview.
-Respect deferrals: revisit on their stated condition or materially changed consequences, explaining the change; only dependent work and questions wait.
+Respect deferrals: revisit when their stated condition is met or their consequences materially change, and explain the change.
+Only dependent work and questions wait.
 Do not expand a plan around assumed upstream answers; preserve useful discoveries selectively.
-This is attention within the current task, not a mandatory interview, global sweep, scoring system, backlog threshold, escalation state, scheduler, or background notification.
+Keep this attention within the current task.
+Do not introduce a mandatory interview, global sweep, scoring system, backlog threshold, escalation state, scheduler, or background notification.
 
-At meaningful review-round boundaries, apply the contract's answer interpretation and common reconciliation sequence to the answered subset when recording is authorized.
+At meaningful review-round boundaries, when recording is authorized, apply the contract's “Interpret review answers before recording” rules and the common sequence in “Reconcile affected state” to the answered subset.
 On interruption, retain only authorized consequential continuation state; resume from saved affected state rather than assuming the last response was fully recorded.
 Explain actual saved outcomes and their consequences, remaining limitations, and the next relevant questions.
 Distinguish potential next work from authorized ready work.
