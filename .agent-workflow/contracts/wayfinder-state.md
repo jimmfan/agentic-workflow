@@ -12,7 +12,7 @@ Use [Agent Workflow terminology](../terminology.md) for cross-cutting meanings w
 
 Wayfinder is Agent Workflow's sole durable coordination model.
 Load this state contract before effort state.
-When resuming, read the selected effort's `map.md` first, then only the ledger sections or U/E files relevant to the work.
+When resuming, read the selected effort's `map.md` first, then only the ledger sections or E# files relevant to the work.
 No other Agent Workflow durable coordination record may compete with this brief coordination summary.
 
 Each specialist retains its method.
@@ -37,14 +37,13 @@ Only `map.md` is required:
     ├── map.md                    # required coordination summary
     ├── facts.md                  # optional current F# ledger
     ├── decisions.md              # optional current D# ledger
-    ├── unknowns/                 # optional current U# files
-    │   └── U<ID>-<slug>.md
+    ├── unknowns.md               # optional current U# ledger
     └── evidence/                 # optional reusable E# files
         └── E<ID>-<slug>.md
 ```
 
 A safe regular `.project-efforts/<effort>/map.md` is recognized as a whole and makes an effort current and resumable.
-A map-only effort is valid; `facts.md`, `decisions.md`, `unknowns/U<ID>-<slug>.md`, and `evidence/E<ID>-<slug>.md` are created lazily under [Current knowledge](#current-knowledge).
+A map-only effort is valid; `facts.md`, `decisions.md`, `unknowns.md`, and `evidence/E<ID>-<slug>.md` are created lazily under [Current knowledge](#current-knowledge).
 Without `map.md`, a directory is not a recognized resumable effort.
 
 ## Effort shape and selection
@@ -175,14 +174,32 @@ No type must produce another.
 Represent areas, relationships, and ownership or operating boundaries in the single `map.md`.
 Do not add area identifiers, nested state by domain or phase, parallel maps, or another state hierarchy.
 
-A U# file uses a readable question title and states why it matters.
-Presence in `unknowns/` means the question is current and unresolved.
+A U# captures an unresolved consequential question whose answer could materially change the direction of the effort or what work should happen next.
+Represent it as an H2 section in `unknowns.md` stating the question and why it matters.
+Presence in `unknowns.md` means the question is current and unresolved.
 Preserve a precise question separately while unanswered when doing so helps a later developer make or evaluate a decision within the effort's objective and scope.
 This is especially useful when the answer requires project decision authority, depends on an external participant or approval, or gates several downstream areas or a consequential boundary.
 Precision, ordinary external uncertainty, an unexplained cause, a long list, or a template alone does not justify a U#.
 A temporary U# must improve current coordination or later continuation, not serve create-and-prune ceremony.
 Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
-Record its resolution method, dependencies, sources, and required authority only when they help later resumption or continuation.
+Record dependencies, sources, and required human input or authority only when they help later resumption or continuation.
+Include a resolution method only when useful and sufficiently known; it may involve evidence, investigation, or relevant human input.
+Short records are valid; omit unnecessary fields.
+Preserve consequential uncertainty when the resolution method or authority is unknown rather than inventing an answer to fill a field.
+Clarify vague concerns into useful questions without padding or invented precision; link substantial results in their maintaining artifacts.
+Keep map-only questions valid, with no mandatory Open questions heading or promotion into U#.
+Do not create an empty ledger, retain answered sections as a completed archive, split records by size, or maintain dual U# formats.
+
+`Why it matters:` is a recommended authoring aid, not a required field name or recognition criterion.
+This illustrative example establishes no project choice or required approval and does not instruct creation of a record:
+
+```markdown
+# Unknowns
+
+## U1 — Should this platform use EKS Auto Mode or managed node groups?
+
+Why it matters: The choice affects how much infrastructure the team must operate, how much control it retains over worker nodes, and how the cluster scales and is maintained.
+```
 
 An E# file states independently useful evidence using `Source:`, `Scope:`, the existing `Observation` heading or field language, and `Limitations:`.
 Record when it was observed only when timing changes meaning, applicability, or validity.
@@ -225,8 +242,10 @@ Preserve independently established restrictions and require relevant evidence or
 ### Identifiers and references
 
 Identifiers are effort-local, positive, and unique within their type.
-U/E files retain readable slugs.
-F/D records retain these exact H2 representations:
+E# files retain readable slugs.
+U/F/D records retain these exact H2 representations:
+
+- `## U<ID> — <question>`
 
 - `## F<ID> — <title>`
 - `## D<ID> — <title>`
@@ -236,18 +255,18 @@ Allocate one greater than the highest current same-type identifier, or 1 when no
 Do not deliberately recycle interior gaps; a pruned highest number is not reserved.
 
 Immediately before assigning an identifier, reread all recognized same-type identifiers and reject malformed or duplicate identifiers in current coordination state.
-Append an F/D section only if its ledger still matches the content used to plan the append.
-Before creating a U/E file, recheck the same-type identifiers and create the target without overwriting an existing path.
+Append a U/F/D section only if its ledger still matches the content used to plan the append.
+Before creating an E# file, recheck the same-type identifiers and create the target without overwriting an existing path.
 
-An identity-like U/E entry that cannot be interpreted safely blocks only operations whose correctness depends on identifying records in that affected U/E container.
+An identity-like ledger section or E# entry that cannot be interpreted safely blocks only operations whose correctness depends on identifying records in that affected ledger or evidence container.
 It does not automatically block unrelated work elsewhere; ambiguous content remains unchanged.
 
 A bare identifier is local shorthand only.
-Durable references outside the selected effort use a readable repository-relative Markdown link to the exact U/E file, F/D heading, or longer-lived artifact that maintains the referenced result.
+Durable references outside the selected effort use a readable repository-relative Markdown link to the exact E# file, U/F/D heading, or longer-lived artifact that maintains the referenced result.
 Inside the effort, prefer navigable links when a path or heading matters.
 
-F/D anchors must retain the established lowercase `f<ID>--<slug>` and `d<ID>--<slug>` forms derived from those headings' em-dash representation.
-Reconcile affected references before renaming a U/E file or F/D heading.
+U/F/D anchors must retain the established lowercase `u<ID>--<slug>`, `f<ID>--<slug>`, and `d<ID>--<slug>` forms derived from those headings' em-dash representation.
+Reconcile affected references before renaming an E# file or U/F/D heading.
 
 ## Reconciliation and pruning
 
@@ -263,10 +282,18 @@ Read-only work may report stale or conflicting state but does not change it.
 Plan a mutation from current affected state.
 Immediately before writing, renaming, or removing, confirm that the directly affected state and known affected references still support the planned mutation.
 Create a new target without overwriting an existing path.
-If affected state changed or conflicts, stop rather than overwrite it.
+If affected state changed or conflicts, stop the affected operation rather than overwrite it; independent work may proceed.
+For ledger edits, reread the ledger and affected references, validate the target ID and H2 boundaries, and edit only the intended section.
+Protect neighboring sections, preambles, and unrecognized content; ambiguous boundaries prevent that edit.
+All selected Wayfinder state paths, including their ancestors, ledgers, and E# files, must use regular files/directories without crossing symlinks or escaping the selected effort.
 
-Before renaming or pruning state, inspect the selected map, ledgers, U/E files, and known current references outside the effort for affected identifiers, paths, or heading anchors.
-Do not scan unrelated efforts, the entire repository, or Git history.
+Before an affected rename or pruning operation, inspect the selected state and discover incoming references with a narrowly targeted, read-only search across current repository text, including relevant hidden directories.
+Search for the specific affected file/path and heading anchors, accounting for relative links whose text omits the full repository-relative path; inspect only relevant matches.
+Bare IDs are effort-local: an `E1` or `U1` elsewhere is not by itself a reference to this record.
+This operation-specific search does not authorize reading every document, discovering or reconciling unrelated efforts, or searching Git history; it is not part of every message or ordinary resumption.
+Repository text search does not establish the absence of external or dynamically constructed references; report material discovery limits.
+Repair affected references only within the request's authorization; discovering a backlink grants no permission to edit its document.
+If a necessary reference or preservation requirement cannot be assessed or safely repaired, retain the affected record and report the limitation; independent authorized work may continue.
 
 Use this common sequence for every affected reconciliation:
 
@@ -279,6 +306,7 @@ Use this common sequence for every affected reconciliation:
    When a choice or contingency changes, reconcile its consequences for established dependencies and ready work without inventing requirements or making every unknown a blocker.
 3. Prune only recognized records that no longer have independent current value.
    Before pruning, verify that any still-useful information in the record is retrievable from its designated maintaining artifact and that affected references resolve.
+   A working replacement link is insufficient if its target loses useful evidence, source/scope qualifications, or consequential relationships.
    If preservation cannot be established, retain the affected record without blocking independent work.
 4. Before claiming a material authorized update complete, reread the affected saved results and references against the relevant input and current state.
    Check that consequential details and relationships remain retrievable and usable without the original conversation, including whether a retained reference actually supplies the needed detail.
@@ -289,6 +317,22 @@ Do not copy those artifact bodies, normalize unchanged files, resolve unrelated 
 Apply root policy's cross-artifact rule: a useful summary or omitted detail held elsewhere is not itself an inconsistency.
 Linking a project artifact does not make it a Wayfinder record or grant authorization to write it.
 When evidence is insufficient for a truthful update, preserve state and report what prevents the affected work from proceeding.
+
+### Interpret review answers before recording
+
+A review request alone grants no blanket write permission; a read-only review changes no files.
+When recording is authorized, distinguish committed choices, tentative preferences, partial or conditional replies, factual reports, corrections, deferrals, scoped uncertainty acceptance, and scope changes by their meaning, without adding statuses.
+Apply the evidence and authority gates in Current knowledge: a recommendation is not a decision, a factual report is not fresh verification, and a reply cannot invent an assignment or approval.
+Clarify materially ambiguous scope, conditions, or authority; do not reconfirm a clear authorized answer.
+Preserve qualifications, conditions, scope, sources, and authority in the designated maintaining artifact.
+Accepted uncertainty stays unresolved under the scoped acceptance rule; a scope change may instead make a question inapplicable without answering it.
+Partial answers preserve the remaining consequential question and its qualifications.
+
+Apply the common sequence to answered subsets at meaningful round boundaries, not per sentence or through a journal.
+Reuse the existing decision for the same boundary and respect specification, ticket, and decision ownership.
+Recording a choice authorizes neither implementation/publication nor arbitrary edits to linked artifacts; runtime-contract and skill Markdown changes are implementation too.
+If a required maintaining-artifact edit is unauthorized or blocked, retain the affected information and report incomplete reconciliation rather than losing it, pruning prematurely, or creating a competing authoritative copy.
+Do not automatically create tickets, ADRs, U/E/F/D records, archives, or end the effort because a review round finished.
 
 ### Apply record-specific changes
 
@@ -315,11 +359,11 @@ When a D# no longer records the current binding choice, apply the common sequenc
 Before removal, apply the common sequence's preservation, reference reconciliation, and pre-pruning retrievability check.
 Pruning does not require committing a transient record first.
 
-Pruning U/E removes only the selected file.
-Pruning F/D removes only the selected H2 section.
-An otherwise empty ledger may be removed.
+Pruning an E# removes only that E# file.
+Pruning U/F/D removes only the selected H2 section, stopping at the next H2 or end of file.
+Remove an empty ledger only when no useful or unrelated content remains.
 Unrelated ledger content remains byte-for-byte unchanged where practical, and unrecognized project-owned content remains unchanged and uninterpreted by Wayfinder.
-Never recursively delete an effort, `unknowns/`, or `evidence/` directory.
+Never recursively delete an effort or `evidence/` directory.
 
 ### Keep or end the effort
 

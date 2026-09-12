@@ -10,6 +10,8 @@ import shutil
 import tempfile
 import unittest
 
+from _behavior_test_support import behavior
+
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = REPOSITORY_ROOT / "agent_workflow"
 CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md"
@@ -22,24 +24,24 @@ def identifier_errors(effort: Path) -> list[str]:
     for kind, container in (
         ("F", "facts.md"),
         ("D", "decisions.md"),
-        ("U", "unknowns"),
+        ("U", "unknowns.md"),
         ("E", "evidence"),
     ):
         path = effort / container
         if path.is_symlink():
             errors.append(f"symlink: {container}")
             continue
-        if kind in "FD":
+        if kind in "UFD":
             candidates = (
                 [
-                    line
-                    for line in path.read_text().splitlines()
-                    if line.startswith("## ")
+                    heading[1].rstrip()
+                    for heading in behavior.markdown_h2_headings(path.read_text())
+                    if re.match(rf"{kind}(?:[0-9]|\b)", heading[1] or "")
                 ]
                 if path.is_file()
                 else []
             )
-            pattern = rf"## {kind}([1-9][0-9]*) — \S.*"
+            pattern = rf"{kind}([1-9][0-9]*) — \S.*"
         else:
             candidates = (
                 [item.name for item in path.iterdir() if item.name.startswith(kind)]
@@ -56,7 +58,7 @@ def identifier_errors(effort: Path) -> list[str]:
                 errors.append(f"duplicate {kind}{match[1]}")
             else:
                 seen.add(match[1])
-            if kind in "UE" and (
+            if kind == "E" and (
                 (path / candidate).is_symlink() or not (path / candidate).is_file()
             ):
                 errors.append(f"unsafe record: {candidate}")
@@ -67,15 +69,20 @@ def broken_fixture_links(paths: list[Path]) -> list[str]:
     """Check Markdown links in the named files, without discovering more state."""
     broken = []
     for path in paths:
-        for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", path.read_text()):
+        for target in re.findall(
+            r"\[[^\]]+\]\(([^)]+)\)", behavior.markdown_prose(path.read_text())
+        ):
             filename, _, anchor = target.partition("#")
             destination = path.parent / filename if filename else path
             if destination.is_symlink() or not destination.is_file():
                 broken.append(target)
             elif anchor:
-                headings = re.findall(
-                    r"^## (.+)$", destination.read_text(), re.MULTILINE
-                )
+                headings = [
+                    heading[1] or ""
+                    for heading in behavior.markdown_h2_headings(
+                        destination.read_text()
+                    )
+                ]
                 anchors = [
                     re.sub(r"[^\w -]", "", heading.lower()).replace(" ", "-")
                     for heading in headings
@@ -122,7 +129,7 @@ class WayfinderStateContractTests(unittest.TestCase):
         for name in ("map.md", "facts.md", "decisions.md"):
             text = (after / name).read_text()
             self.assertNotRegex(text, r"\b(?:U17|E12)\b")
-        self.assertFalse((after / "unknowns/U17-source-constraint.md").exists())
+        self.assertFalse((after / "unknowns.md").exists())
         self.assertFalse((after / "evidence/E12-source-observation.md").exists())
 
     def test_identifier_checks_reject_duplicate_malformed_zero_and_symlink_records(
@@ -135,8 +142,8 @@ class WayfinderStateContractTests(unittest.TestCase):
         for relative, content, expected in (
             ("facts.md", "# Facts\n\n## F8 — A\n\n## F8 — B\n", "duplicate F8"),
             ("decisions.md", "# Decisions\n\n## D0 — Bad\n", "malformed D"),
-            ("unknowns/U17-duplicate.md", "duplicate", "duplicate U17"),
-            ("unknowns/U1.md", "malformed", "malformed U"),
+            ("unknowns.md", "## U17 — A\n\n## U17 — B\n", "duplicate U17"),
+            ("unknowns.md", "## U0 — Bad\n", "malformed U"),
             ("evidence/E0-zero.md", "zero", "malformed E"),
         ):
             with (
@@ -152,8 +159,36 @@ class WayfinderStateContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             effort = Path(temporary) / "effort"
             shutil.copytree(source, effort)
-            (effort / "unknowns/U18-linked.md").symlink_to(effort / "project-notes.txt")
-            self.assertIn("unsafe record: U18-linked.md", identifier_errors(effort))
+            (effort / "unknowns.md").unlink()
+            (effort / "unknowns.md").symlink_to(effort / "project-notes.txt")
+            self.assertIn("symlink: unknowns.md", identifier_errors(effort))
+
+    def test_unrecognized_ledger_heading_is_not_a_malformed_identifier(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary)
+            (effort / "unknowns.md").write_text(
+                "## U1 — A question?\n\n## Unrelated notes\nProject-owned bytes.\n"
+            )
+            self.assertEqual(identifier_errors(effort), [])
+
+    def test_fixture_id_and_anchor_checks_ignore_fenced_headings(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            effort = Path(temporary)
+            ledger = effort / "unknowns.md"
+            link = effort / "map.md"
+            for fence in ("```", "~~~"):
+                with self.subTest(fence=fence):
+                    ledger.write_text(
+                        f"## U1 — Real question\n{fence}markdown\n"
+                        f"## U1 — Example only\n{fence}\n"
+                    )
+                    self.assertEqual(identifier_errors(effort), [])
+                    link.write_text("[Example](unknowns.md#u1--example-only)\n")
+                    self.assertEqual(
+                        broken_fixture_links([link]), ["unknowns.md#u1--example-only"]
+                    )
+                    link.write_text("[Real](unknowns.md#u1--real-question)\n")
+                    self.assertEqual(broken_fixture_links([link]), [])
 
     def test_link_checks_reject_dangling_file_and_renamed_ledger_anchor(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -176,7 +211,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             ".project-efforts/<effort>/map.md",
             "facts.md",
             "decisions.md",
-            "unknowns/U<ID>-<slug>.md",
+            "unknowns.md",
             "evidence/E<ID>-<slug>.md",
         ):
             with self.subTest(path=path):
@@ -202,8 +237,10 @@ class WayfinderStateContractTests(unittest.TestCase):
 
     def test_contract_keeps_identifier_and_anchor_representation(self) -> None:
         for representation in (
+            "## U<ID> — <question>",
             "## F<ID> — <title>",
             "## D<ID> — <title>",
+            "u<ID>--<slug>",
             "f<ID>--<slug>",
             "d<ID>--<slug>",
         ):

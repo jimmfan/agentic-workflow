@@ -8,7 +8,7 @@ dependency-ordered implementation frontier that fresh sessions can resume.
 ## Current state
 
 - This effort is valid map-only state at the start of the smoke.
-- The approved decomposition is in [`rollout-plan.md`](../../../rollout-plan.md).
+- The approved decomposition is in [`rollout-plan.md`](../../rollout-plan.md).
 - The current policy source has not yet been reconciled into durable evidence.
 
 ## Blockers and dependencies

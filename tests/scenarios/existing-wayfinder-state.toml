@@ -22,7 +22,7 @@ must_not = [
 live = false
 verification_command = "Run python verify.py after implementing serialize_payload."
 preserve_paths = [
-  ".project-efforts/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".project-efforts/response-serialization/unknowns.md",
   ".project-efforts/response-serialization/decisions.md",
   ".project-efforts/unrelated-billing-migration/map.md",
 ]
@@ -38,7 +38,7 @@ state_must_include = [
   ".project-efforts/response-serialization/decisions.md",
 ]
 state_must_not_include = [
-  ".project-efforts/response-serialization/unknowns/U1-name-telemetry-metric.md",
+  ".project-efforts/response-serialization/unknowns.md",
   ".project-efforts/unrelated-billing-migration/map.md",
 ]
 

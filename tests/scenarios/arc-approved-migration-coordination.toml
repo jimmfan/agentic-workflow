@@ -69,6 +69,6 @@ path = ".project-efforts/*/map.md"
 value = "(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|order|approach)|rollback\\s+(?:boundary|boundaries|approach))[^.!?\\n]*(?:(?:is|remains?)\\s+(?:unresolved|undecided)|not\\s+(?:yet\\s+)?(?:chosen|settled|decided))"
 
 [[assertions]]
-kind = "glob_none_matches"
-path = ".project-efforts/*/unknowns/U*.md"
+kind = "section_none_matches"
+path = ".project-efforts/*/unknowns.md"
 value = "(?m)^#+[^\\n]*(?:(?:which|what|choose|decide|select|determine)\\s+(?:the\\s+)?(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|order|approach)|rollback\\s+(?:approach|boundary|boundaries))|(?:identity\\s+(?:mechanism|approach)|rollout\\s+(?:ordering|approach)|rollback\\s+(?:approach|boundaries))[^\\n]*(?:unresolved|undecided))"

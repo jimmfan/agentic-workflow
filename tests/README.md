@@ -78,7 +78,7 @@ Live cases are opt-in and not part of ordinary pull requests.
 
 The broader deterministic catalog also covers clear requests with an objective staying on the minimum route, ambiguous intent stopping before invented Wayfinder creation, consequential objectives selecting durable coordination without naming Wayfinder, and scope refinement resuming the semantically matching effort without exact wording or a sibling effort.
 It covers bounded architectural choices using Discovery rather than Domain Modeling, Discovery composing Research for external facts, Domain Modeling surfacing consequential domain-language or context-boundary uncertainty, choices requiring project decision authority asking a concrete human question without creating downstream work, Wayfinder assessment concluding that no durable state is needed, and creating recognized map-first state without implementation work-item children.
-Current facts and decisions use optional `facts.md` and `decisions.md` ledgers; independently useful unresolved questions and substantial evidence retain U#/E# files.
+Current U#/F#/D# records use optional `unknowns.md`, `facts.md`, and `decisions.md` ledgers; independently useful evidence retains E# files.
 Presence means a U# remains unresolved and a D# remains the current choice committed by project decision authority; neither uses a lifecycle status field.
 Fixtures encode direct fact-source relations, project decision authority, relevant-section retrieval, and reference reconciliation for answered questions and redundant evidence.
 They do not execute an agent's retrieval, allocation, race checks, pruning, or no-overwrite behavior.
@@ -96,14 +96,14 @@ See [Behavioral testing](../docs/behavioral-testing.md) for the schema, evidence
 `test_wayfinder_state.py` now contains contract/fixture validation only.
 The former test-local substring selector and create/update/rename/prune/end algorithms had no callers outside that file and were not shipped implementations.
 No Wayfinder initializer exists in current shipped source; the actual lifecycle/CLI and disposable fixture initialization tests remain.
-The contract, routing policy, skill prose, identifiers, map shape, and empty-blocker authoring convention are unchanged.
+The current contract and Wayfinder skill define agent behavior; these fixture checks do not execute those instructions.
 
 | Removed test-local claim | Retained evidence or explicit limit |
 |---|---|
 | Semantic selection, exact-path selection, mapless exclusion, collisions, in-place scope refinement | Existing scenario inputs and negative evaluator controls remain; actual semantic matching and safe agent path selection are unverified without a live run. |
 | F/D/U/E parsing and duplicate detection | Small explicit fixture checks reject zero/malformed/duplicate IDs and symlink records; these validate fixture syntax only. |
-| ID allocation after the highest current ID, no interior recycling, late duplicates | Required by the unchanged contract; agent allocation and immediate rereads remain unverified. |
-| No-overwrite creation/rename, changed-map/ledger rejection, optimistic concurrency | Required by the unchanged contract; no test-local implementation is presented as execution evidence. |
+| ID allocation after the highest current ID, no interior recycling, late duplicates | Required by the current contract; agent allocation and immediate rereads remain unverified. |
+| No-overwrite creation/rename, changed-map/ledger rejection, optimistic concurrency | Required by the current contract; no test-local implementation is presented as execution evidence. |
 | Rename/prune reference reconciliation, direct fact support, stable F8/D4 identity | Explicit before/after settlement fixtures and dangling-file/renamed-anchor negative cases check the claimed final references and identities; other scenarios retain outcome assertions. |
 | Scoped ambiguity and unrecognized-content isolation | Fixture shape checks and scenario preservation assertions remain; agent interpretation and operation scoping remain unverified. |
 | Byte preservation, symlink/root safety, composite handling, partial failure | Real lifecycle/bootstrap/direct-distribution tests remain, including historical composite bytes, permissive consumer updates, non-Git/dirty targets, and injected later-write failure. These prove lifecycle safety, not Wayfinder mutation safety. |
@@ -112,3 +112,17 @@ The contract, routing policy, skill prose, identifiers, map shape, and empty-blo
 A synthetic evaluator positive may contain no observed failure while its overall behavioral verdict is still INCONCLUSIVE.
 `None` is never a behavioral PASS.
 The deterministic suite's success means its graders accept/reject/abstain on those synthetic observations as specified.
+
+### Question ledger and human-review controls
+
+`test_question_review_controls.py` uses the existing Scenario/RunEvidence evaluator and one synthetic parcel-review fixture.
+Section identity snapshots allow an answered middle section to disappear while neighboring questions retain their exact contents; malformed or duplicate U IDs and unsafe ledger targets cannot masquerade as section absence.
+Controls also expose stale replacement, dangling references, unauthorized review writes, selected prerequisite/answer mistakes, changed deferral consequences, and unavailable or standalone Grilling.
+Fence-aware section controls include restrictions after code examples and distinguish real identifiers from fenced headings.
+Migrated scenario assertions bind expected content to individual questions, retain required existing IDs, and reject unrelated extra records only where the scenario scope excludes them.
+Disposable incoming-reference controls construct retained and pruned E# outcomes with relative backlinks from an outside document and a hidden directory.
+They check authorized reference repair, preserved source/scope qualifications, and unrelated bytes; a working link alone does not satisfy the preservation controls.
+They do not demonstrate that an agent discovered the backlink or performed preservation before pruning.
+Map-only question meaning is left for adjudication when only a map mutation is observable.
+These checks do not execute agent race checks, actual questioning, interruption recovery, or fresh-session continuation.
+See the [bounded smoke procedure and execution limitation](../evals/wayfinder-question-resolution/README.md).

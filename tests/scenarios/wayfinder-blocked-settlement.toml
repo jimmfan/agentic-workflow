@@ -20,7 +20,7 @@ must_not = [
 live = false
 preserve_paths = [
   ".project-efforts/blocked-provider-direction/map.md",
-  ".project-efforts/blocked-provider-direction/unknowns/U1-provider-checksum.md",
+  ".project-efforts/blocked-provider-direction/unknowns.md",
   ".project-efforts/retired-provider-direction/project-notes.txt",
 ]
 forbid_created_globs = [
@@ -30,7 +30,7 @@ forbid_created_globs = [
 ]
 state_must_include = [
   ".project-efforts/blocked-provider-direction/map.md",
-  ".project-efforts/blocked-provider-direction/unknowns/U1-provider-checksum.md",
+  ".project-efforts/blocked-provider-direction/unknowns.md",
 ]
 state_must_not_include = [
   ".project-efforts/retired-provider-direction/project-notes.txt",
@@ -46,7 +46,7 @@ path = ".project-efforts/blocked-provider-direction/map.md"
 
 [[assertions]]
 kind = "path_exists"
-path = ".project-efforts/blocked-provider-direction/unknowns/U1-provider-checksum.md"
+path = ".project-efforts/blocked-provider-direction/unknowns.md"
 
 [[assertions]]
 kind = "path_not_exists"

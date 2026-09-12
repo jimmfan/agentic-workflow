@@ -1,17 +1,19 @@
-# U1: Name the telemetry metric
+# Unknowns
+
+## U1 — Name the telemetry metric
 
 - Resolution mode: human clarification
 - Blocked by: none
 - Related: none
 
-## Question
+### Question
 
 What stable public name should the final telemetry metric use?
 
-## Evidence
+### Evidence
 
 No naming decision has been accepted. This does not block response serialization.
 
-## Resolution
+### Resolution
 
 Open. Do not invent an answer while implementing the map's current next work.

@@ -10,7 +10,7 @@ An earlier agent note says OAuth was approved and implementation may proceed.
 
 ## Blockers and dependencies
 
-See [U1](unknowns/U1-authentication-choice.md).
+See [U1](unknowns.md#u1--which-public-api-authentication-mechanism-is-approved).
 
 ## Next work
 

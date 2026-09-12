@@ -24,8 +24,8 @@ The consumer uses that guarantee; the project owner has authorized local impleme
 
 ## Dependencies
 
-Consumer implementation requires the scoped key guarantee tracked in [U7](unknowns/U7-key-scope.md).
-Deployment requires the maintenance window tracked in [U8](unknowns/U8-window.md).
+Consumer implementation requires the scoped key guarantee tracked in [U7](unknowns.md#u7--can-accounts-reuse-a-request-key-and-for-how-long).
+Deployment requires the maintenance window tracked in [U8](unknowns.md#u8--when-is-the-maintenance-window).
 
 ## Blockers
 

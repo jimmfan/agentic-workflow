@@ -56,7 +56,7 @@ forbid_created_globs = ["/**"]
 route_must_include = ["implement"]
 route_must_not_include = ["discovery"]
 state_must_include = [".project-efforts/example/map.md"]
-state_must_not_include = [".project-efforts/example/unknowns/U9-unrelated.md"]
+state_must_not_include = [".project-efforts/unrelated-effort/map.md"]
 
 [[assertions]]
 kind = "path_contains"
@@ -64,23 +64,23 @@ path = "app.py"
 value = "observable result"
 
 [[assertions]]
-kind = "glob_count"
-path = ".project-efforts/example/unknowns/U*.md"
-count = 1
+kind = "section_preserved"
+path = ".project-efforts/example/unknowns.md"
+value = "U9"
 
 [[assertions]]
 kind = "glob_contains"
-path = ".project-efforts/example/unknowns/U1-*.md"
+path = ".project-efforts/example/unknowns.md"
 value = "known unresolved question"
 
 [[assertions]]
 kind = "glob_any_contains"
-path = ".project-efforts/example/unknowns/U*.md"
+path = ".project-efforts/example/unknowns.md"
 value = "external approval"
 
 [[assertions]]
 kind = "glob_none_contains"
-path = ".project-efforts/example/unknowns/U*.md"
+path = ".project-efforts/example/unknowns.md"
 value = "incidental detail"
 ```
 
@@ -91,12 +91,23 @@ Prefer ordinary guided smoke tests when prompt contamination is not the behavior
 
 `expect` and `must_not` use a deliberately small vocabulary implemented in `tests/behavior.py`.
 Case-specific assertions support path existence, UTF-8 substring presence/absence, and case-insensitive substring checks or exact regular-file counts for a safe relative glob.
+`section_preserved` and `section_absent` check one U# section in `unknowns.md` using its ID as `value`; malformed or duplicate IDs cannot establish absence.
+These snapshot checks cover section identity, not semantic sufficiency, reads, or temporal ordering.
+The section reader excludes H2-like lines inside ordinary backtick and tilde fences, including unclosed fences, while hashing the complete original section through the next real H2 or end of file.
+It is bounded fixture support, not a general Markdown parser or runtime editor.
+`section_any_matches`, `section_all_match`, and `section_none_matches` apply a case-insensitive, multiline-capable expression separately to U# sections selected by a ledger path glob, excluding preambles and fenced examples.
+The optional `record = "U1"` selects an established identity; omit it when the scenario permits allocating a new ID.
+Any/all require at least one selected section; none permits no sections unless a specific record is required.
+Unreadable, unsafe, malformed, or duplicate-identity ledgers fail these assertions.
+Use all only when that scenario excludes unrelated questions; any/none allow valid neighboring questions without a universal record count.
+These are bounded content controls, not a general semantic grader or live-agent compliance evidence.
+The fact-conflict scenario owns its U1 checks here; its standalone fixture verifier checks the remaining non-ledger state without duplicating section parsing.
 `glob_any_matches` and `glob_none_matches` apply a case-insensitive expression that may span newlines to require a match in at least one or no matching files; use them sparingly when related semantic outcomes must be associated without requiring a particular document layout.
 `glob_contains` requires every match to contain the value, while `glob_any_contains` and `glob_none_contains` test whether at least one or no matching file contains it without fixing the artifact count.
 Optional `response_must_match` expressions check the final stdout response, case-insensitively and across newlines.
 Use them sparingly for chat deliverables such as a plan whose useful contents cannot be established from repository state or a success report alone.
 These evaluator expressions are never included in the agent prompt.
-A broad exact count can reject extra children while a stable-ID content glob such as `U1-*.md` requires the intended identity and meaning without fixing the descriptive filename slug.
+A broad exact count can reject extra children while a stable-ID content glob such as `E1-*.md` requires the intended identity and meaning without fixing the descriptive filename slug.
 This keeps contracts focused on outcomes and prevents the harness from becoming a second router.
 
 The optional `state_must_include` and `state_must_not_include` arrays constrain the public `state_used` report.
@@ -110,7 +121,7 @@ They test the reported route, not execution of the named specialists, without tr
 A new scenario should need one TOML file and one small fixture directory.
 The validator rejects unrecognized behavior names, unsafe paths, missing preserved files, unrecognized fields, and unsupported assertion kinds.
 
-The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement while the objective and substantive scope remain the same, specialist composition and exclusions, pruning behavior for answered U# and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
+The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement while the objective and substantive scope remain the same, specialist composition and exclusions, pruning behavior for answered U# ledger sections and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
 These are human-authored behavior contracts, not evidence that an unrun model obeyed them.
 The clear-objective, implicit new-effort, ambiguous-objective, scope-refinement, and specialist-selection scenarios use blind grading with factual starting evidence.
 Guided cases remain useful for contract smoke tests but do not establish implicit selection.

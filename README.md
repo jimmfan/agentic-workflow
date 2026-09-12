@@ -131,7 +131,7 @@ A Wayfinder effort is map-first:
     ├── map.md
     ├── facts.md        # optional
     ├── decisions.md    # optional
-    ├── unknowns/       # optional
+    ├── unknowns.md     # optional
     └── evidence/       # optional
 ```
 
@@ -146,6 +146,16 @@ It records enough current coordination context for a later agent or developer to
 - ready work.
 
 A simple effort may need only `map.md`.
+
+To review an effort together:
+
+> Use Wayfinder to review this effort's unresolved questions with me and record our conclusions. Do not implement resulting changes.
+
+Name the effort when context does not identify it clearly.
+Wayfinder prepares from the map and relevant linked artifacts, asks simple clarifications directly, and uses Grilling for interdependent human choices.
+Recording is limited to authorized maintaining artifacts; review alone permits no blanket edits, implementation, or publication.
+The optional `unknowns.md` ledger uses `## U<ID> — <question>` sections; map-only questions remain valid.
+An absent ledger does not mean there are no unresolved questions.
 
 The [state contract](.agent-workflow/contracts/wayfinder-state.md) maintains default-map authoring conventions, including separate dependencies and scoped blocker assessments.
 Existing maps remain valid with alternate layouts.

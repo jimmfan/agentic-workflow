@@ -42,7 +42,7 @@ _ABSOLUTE_ROOTS = (
 )
 _CURRENT_WAYFINDER_PATH = re.compile(
     r"^[^/]+/(?:map\.md|facts\.md|decisions\.md|"
-    r"unknowns/U[1-9][0-9]*-[^/]+\.md|"
+    r"unknowns\.md|"
     r"evidence/E[1-9][0-9]*-[^/]+\.md)$"
 )
 

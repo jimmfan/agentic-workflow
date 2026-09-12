@@ -36,7 +36,7 @@ The parser tolerates missing fields and incomplete older logs.
 Unavailable measurements remain `null` in JSON and `unknown / unavailable` in text.
 
 The current JSON shape is `token-forensics/v2`.
-Only current `<effort>/map.md`, `facts.md` and `decisions.md` ledgers, and canonical U#/E# artifact paths are classified as current Wayfinder state.
+Only current `<effort>/map.md`, optional `unknowns.md`, `facts.md`, and `decisions.md` ledgers, and canonical E# evidence-file paths are classified as current Wayfinder state.
 All other `.project-efforts/` paths remain visible in generic repository observations but are not classified as current state.
 
 Primary schema references:

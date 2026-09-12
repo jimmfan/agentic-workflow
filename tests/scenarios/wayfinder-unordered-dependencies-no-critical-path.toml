@@ -19,7 +19,7 @@ live = false
 blind_grading = true
 preserve_paths = ["README.md"]
 forbid_created_globs = [
-  ".project-efforts/*/unknowns",
+  ".project-efforts/*/unknowns.md",
   ".project-efforts/*/unknowns/**",
   ".project-efforts/*/tickets",
   ".project-efforts/*/tickets/**",

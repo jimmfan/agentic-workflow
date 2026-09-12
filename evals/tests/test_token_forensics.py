@@ -75,10 +75,11 @@ class GenericAnalysisTests(unittest.TestCase):
             ".project-efforts/current-effort/map.md",
             ".project-efforts/current-effort/facts.md",
             ".project-efforts/current-effort/decisions.md",
-            ".project-efforts/current-effort/unknowns/U3-open-question.md",
+            ".project-efforts/current-effort/unknowns.md",
             ".project-efforts/current-effort/evidence/E2-test-output.md",
         )
         unrecognized_paths = (
+            ".project-efforts/current-effort/unknowns/U3-open-question.md",
             ".project-efforts/unrecognized-project-data/note.txt",
             ".project-efforts/current-effort/notes/free-form.md",
             ".project-efforts/current-effort/unknowns/question.md",

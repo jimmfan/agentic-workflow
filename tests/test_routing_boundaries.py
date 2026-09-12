@@ -382,29 +382,29 @@ class RoutingBoundaryTests(unittest.TestCase):
             effort = workspace / ".project-efforts/arc-migration"
             effort.mkdir(parents=True)
             (effort / "map.md").write_text(content)
-            unknown = effort / "unknowns/U1-review.md"
-            unknown.parent.mkdir()
+            unknown = effort / "unknowns.md"
+            unknown.parent.mkdir(exist_ok=True)
             for question, expected in (
                 (
-                    "# U1: What identity permissions must Security approve?\n"
+                    "## U1 — What identity permissions must Security approve?\n"
                     "The identity mechanism, rollout, and rollback remain settled.\n",
                     True,
                 ),
                 (
-                    "# U1: What permissions must Security approve for workload identity?\n",
+                    "## U1 — What permissions must Security approve for workload identity?\n",
                     True,
                 ),
                 (
-                    "# U1: What Security approval is needed before rollout?\n",
+                    "## U1 — What Security approval is needed before rollout?\n",
                     True,
                 ),
                 (
-                    "# U1: When will Security approve workload permissions?\nThe approved identity mechanism and rollout are in docs/migration.md.\n",
+                    "## U1 — When will Security approve workload permissions?\nThe approved identity mechanism and rollout are in docs/migration.md.\n",
                     True,
                 ),
-                ("# U1: Which identity mechanism should we choose?\n", False),
-                ("# U1: What rollout ordering should we use?\n", False),
-                ("# U1: Which rollback approach should we choose?\n", False),
+                ("## U1 — Which identity mechanism should we choose?\n", False),
+                ("## U1 — What rollout ordering should we use?\n", False),
+                ("## U1 — Which rollback approach should we choose?\n", False),
             ):
                 with self.subTest(question=question):
                     unknown.write_text(question)
