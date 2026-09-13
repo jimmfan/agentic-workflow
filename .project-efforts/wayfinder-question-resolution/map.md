@@ -22,7 +22,7 @@ Live interaction remains conditional on both isolation gates; independent delive
 Choices in the supplied request are approved.
 Ledger representation, human-review integration, active fixture conversions, and focused controls are implemented.
 The follow-up corrects fenced-section identity checks, record-specific scenario content and effort-local identities, and targeted incoming-reference discovery before rename/pruning.
-Focused regressions reproduced the evaluator failures before correction; current controls and their evidence limits are described in [the testing guide](../../tests/README.md#question-ledger-and-human-review-controls).
+Focused regressions reproduced the evaluator failures before correction; current controls and their evidence limits are described in [the testing guide](../../tests/README.md#wayfinder-coverage-and-evidence-limits).
 The [earlier verification report and smoke procedure](../../evals/wayfinder-question-resolution/README.md) retains its historical execution evidence and live limitations.
 Existing historical efforts have different objectives and remain untouched.
 No old U# files were found in the three current effort directories assessed before creating this effort; active synthetic fixtures do contain affected files.

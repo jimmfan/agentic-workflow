@@ -153,6 +153,11 @@ Do not force one term across genuinely different bounded contexts.
 - Define Agent Workflow's own data-preservation boundaries instead of relying on host or model defaults.
   Do not duplicate generic host or model safety policy unless Agent Workflow introduces a specific risk that requires a project-owned rule.
 
+## Documentation maintenance
+
+Update the existing topic owner and retain useful summaries and warnings with links to it.
+Keep routine completion and audit narratives in Git or PRs rather than permanent documentation.
+
 ## Working practice
 
 For substantial changes:

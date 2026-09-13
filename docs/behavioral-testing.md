@@ -1,234 +1,205 @@
 # Behavioral testing
 
-## Purpose
+The behavioral suite checks observable engineering outcomes: requested changes, verification, state preservation, research grounding, and clean blocker handling.
+It does not treat one exact route or a success claim as proof of correct behavior.
+Deterministic tests exercise the harness and its evaluators; live agent runs supply separate, opt-in evidence.
 
-The behavioral suite asks whether orchestration improves observable engineering behavior.
-It does not treat the current router implementation or one exact route trace as inherently correct.
-A scenario succeeds when the requested outcome, verification, state use, research grounding, or clean blocker behavior is observable—and prohibited repository effects did not occur.
+## Commands and prerequisites
 
-The framework uses only Python 3.11 standard-library modules.
-Normal pull requests do not need a model, network credential, live skill discovery, Git repository, or hidden reasoning trace.
-
-## Testing layers
-
-1. **Shipped-code tests** exercise lifecycle convergence and managed-path safety, direct skill distribution, package verification, bootstrap safety, and release publication through their public boundaries.
-   Literal routing and Wayfinder contract/fixture checks validate interfaces and examples, not agent semantic behavior.
-2. **Behavior-harness tests** validate TOML schema and vocabulary, blind-rubric isolation, evaluator failure modes, route-marker syntax, fixture reset, and command-runner evidence.
-3. **Wayfinder behavioral scenarios** provide fixture-backed observable contracts for authority, effort selection, reconciliation, and record pruning or effort ending without duplicating product implementation.
-4. **Live behavioral smoke tests** are opt-in.
-   A caller supplies an agent command that operates in a disposable fixture workspace.
-   The default set remains a representative sample rather than an exhaustive catalog.
-5. **Evaluation-tooling tests** under `evals/tests/` are deterministic and network-free, but remain separate from the distributed package gate.
-
-The deterministic package tests and scenario validation are the required pre-merge gate.
-Live smoke tests are manual or suitable for a separately credentialed scheduled/release job; they are not required on ordinary pull requests.
-
-## Human-authored scenario format
-
-Scenarios are TOML files under `tests/scenarios/`.
-TOML is readable and available in Python 3.11 without another dependency.
-A maintainer normally supplies:
-
-```toml
-schema_version = 1
-id = "example-scenario"
-name = "Readable scenario name"
-fixture = "example-project"
-request = "Natural-language request given to the live agent."
-starting_state = [
-  "A resolved project decision exists.",
-  "One non-blocking unresolved question remains.",
-]
-expect = [
-  "existing_state_reused",
-  "meaningful_repository_change",
-  "verification_performed",
-]
-must_not = [
-  "repeat_resolved_discovery",
-  "overwrite_project_owned_state",
-]
-live = false
-blind_grading = false
-verification_command = "Run python verify.py after the change."
-preserve_paths = ["project-state/unknowns.md"]
-forbid_created_globs = ["/**"]
-route_must_include = ["implement"]
-route_must_not_include = ["discovery"]
-state_must_include = [".project-efforts/example/map.md"]
-state_must_not_include = [".project-efforts/unrelated-effort/map.md"]
-
-[[assertions]]
-kind = "path_contains"
-path = "app.py"
-value = "observable result"
-
-[[assertions]]
-kind = "section_preserved"
-path = ".project-efforts/example/unknowns.md"
-value = "U9"
-
-[[assertions]]
-kind = "glob_contains"
-path = ".project-efforts/example/unknowns.md"
-value = "known unresolved question"
-
-[[assertions]]
-kind = "glob_any_contains"
-path = ".project-efforts/example/unknowns.md"
-value = "external approval"
-
-[[assertions]]
-kind = "glob_none_contains"
-path = ".project-efforts/example/unknowns.md"
-value = "incidental detail"
-```
-
-Set optional `blind_grading = true` for behavioral-judgment scenarios where showing the rubric would coach the agent toward the classification under test.
-The live prompt then withholds `expect`, `must_not`, state-loading constraints, report requirements, and `verification_command`; hidden evaluation and assertions still run normally.
-The scenario name, request, and starting state must remain neutral, and the live workspace uses a non-descriptive case name so the scenario identifier does not reveal the rubric.
-Prefer ordinary guided smoke tests when prompt contamination is not the behavior under evaluation.
-
-`expect` and `must_not` use a deliberately small vocabulary implemented in `tests/behavior.py`.
-Case-specific assertions support path existence, UTF-8 substring presence/absence, and case-insensitive substring checks or exact regular-file counts for a safe relative glob.
-`section_preserved` and `section_absent` check one U# section in `unknowns.md` using its ID as `value`; malformed or duplicate IDs cannot establish absence.
-These snapshot checks cover section identity, not semantic sufficiency, reads, or temporal ordering.
-The section reader excludes H2-like lines inside ordinary backtick and tilde fences, including unclosed fences, while hashing the complete original section through the next real H2 or end of file.
-It is bounded fixture support, not a general Markdown parser or runtime editor.
-`section_any_matches`, `section_all_match`, and `section_none_matches` apply a case-insensitive, multiline-capable expression separately to U# sections selected by a ledger path glob, excluding preambles and fenced examples.
-The optional `record = "U1"` selects an established identity; omit it when the scenario permits allocating a new ID.
-Any/all require at least one selected section; none permits no sections unless a specific record is required.
-Unreadable, unsafe, malformed, or duplicate-identity ledgers fail these assertions.
-Use all only when that scenario excludes unrelated questions; any/none allow valid neighboring questions without a universal record count.
-These are bounded content controls, not a general semantic grader or live-agent compliance evidence.
-The fact-conflict scenario owns its U1 checks here; its standalone fixture verifier checks the remaining non-ledger state without duplicating section parsing.
-`glob_any_matches` and `glob_none_matches` apply a case-insensitive expression that may span newlines to require a match in at least one or no matching files; use them sparingly when related semantic outcomes must be associated without requiring a particular document layout.
-`glob_contains` requires every match to contain the value, while `glob_any_contains` and `glob_none_contains` test whether at least one or no matching file contains it without fixing the artifact count.
-Optional `response_must_match` expressions check the final stdout response, case-insensitively and across newlines.
-Use them sparingly for chat deliverables such as a plan whose useful contents cannot be established from repository state or a success report alone.
-These evaluator expressions are never included in the agent prompt.
-A broad exact count can reject extra children while a stable-ID content glob such as `E1-*.md` requires the intended identity and meaning without fixing the descriptive filename slug.
-This keeps contracts focused on outcomes and prevents the harness from becoming a second router.
-
-The optional `state_must_include` and `state_must_not_include` arrays constrain the public `state_used` report.
-They check only the agent's public claim: a relevant map/child must be reported as consulted, while a known unrelated child must not be.
-Missing or contradictory claims fail that report requirement; matching claims leave actual progressive reads INCONCLUSIVE.
-Every named path must be a regular file in the starting fixture.
-
-The optional `route_must_include` and `route_must_not_include` arrays constrain the final route marker by required and prohibited executed components.
-They test the reported route, not execution of the named specialists, without treating request phrases as routing triggers.
-
-A new scenario should need one TOML file and one small fixture directory.
-The validator rejects unrecognized behavior names, unsafe paths, missing preserved files, unrecognized fields, and unsupported assertion kinds.
-
-The deterministic catalog includes semantic objective/scope routing boundaries, in-place scope refinement while the objective and substantive scope remain the same, specialist composition and exclusions, pruning behavior for answered U# ledger sections and redundant E# files only after reference reconciliation, keeping blocked efforts resumable, excluding mapless directories from selection, updating the same D# decision boundary through project decision authority, and preventing reference-system observations from becoming unsupported current-project facts.
-These are human-authored behavior contracts, not evidence that an unrun model obeyed them.
-The clear-objective, implicit new-effort, ambiguous-objective, scope-refinement, and specialist-selection scenarios use blind grading with factual starting evidence.
-Guided cases remain useful for contract smoke tests but do not establish implicit selection.
-New-effort coordination may remain entirely in the map; selective-question and authority-choice scenarios separately exercise supporting records where their value is established.
-Evaluator regression tests accept sufficient map-only coordination and reject appended evidence that leaves stale claims, loses the unresolved handoff condition, or blocks independent inventory work.
-
-## Fixtures and reset
-
-Fixtures live under `tests/fixtures/`.
-They contain only the minimum repository evidence and validation command needed to make the starting state understandable.
-They do not copy framework payload files.
-
-Each deterministic or live run uses `shutil.copytree` into a newly created temporary directory, installs the current framework with `lifecycle.py`, and takes its baseline snapshot only after installation.
-The source fixture is never mutated.
-`--keep-workspaces` creates a unique run directory under a caller-owned location when post-run inspection is useful; otherwise temporary workspaces are removed automatically.
-
-## Observable evidence
-
-The evaluator uses public artifacts only:
-
-- file creation, modification, deletion, and SHA-256 identity before/after;
-- exact preservation of paths declared project-owned by the scenario;
-- prohibited created-path globs;
-- fixture verification events in `.behavior-evidence/verification.jsonl`, including exit codes and ordering;
-- a concise agent-written `.behavior-evidence/report.json` containing status, commands/exit codes, cited research URLs, claimed state paths, selected/executed skill claims, and blockers;
-- exactly one syntactically valid route marker ending the agent's stdout final response; and
-- case-specific path assertions.
-
-Route-marker presence is a required visibility contract.
-General scenarios do not require one exact workflow sequence: route-specific exclusions and scenario evidence evaluate truthfulness only where the scenario establishes it.
-No evaluator asks for chain-of-thought, private model reasoning, exact prose, or a fixed stage count.
-
-The report is a claim, so important outcomes are cross-checked against repository diffs, fixture verification logs, state preservation, and scenario assertions.
-Fixture-recorded verification events are cooperative public evidence, distinct from the agent's report.
-For scenarios requiring verification or recovery from failed verification with a root `verify.py`, the harness also executes that unchanged fixture verifier after capturing the agent's events; a changed verifier fails, and forged success or recovery events cannot hide an incorrect final result.
-That independent check establishes the final fixture outcome, not the agent's internal process or the authenticity of earlier self-written log entries.
-A reported path proves neither a read nor reuse, even when the file exists.
-A URL proves neither research execution nor the correctness of a changing fact.
-The external-Python fixture checks version/support/source structure only; current factual accuracy still requires source adjudication.
-Likewise, no change at known decision paths does not prove that unsupported choices are absent from other files or the final response.
-
-## Commands
-
-Run all commands from the **source repository root** in the macOS/Linux host Terminal or the VS Code Dev Container terminal that owns this checkout.
-
-The behavior-harness and Wayfinder behavior suites are deterministic and read-only outside temporary directories:
+Run from the **source repository root** with Python 3.11+, Git, and `uv` in a POSIX-style shell.
+The harness uses the Python standard library.
+Focused deterministic checks need no model or credentials:
 
 ```bash
-python3 -B -m unittest discover -s tests -p 'test_behavior_harness.py' -v
-python3 -B -m unittest discover -s tests -p 'test_wayfinder_behavior.py' -v
+uv run --locked python tests/behavior.py validate
+uv run --locked python -m unittest discover -s tests -p 'test_behavior_harness.py' -v
+uv run --locked python -m unittest discover -s tests -p 'test_wayfinder_behavior.py' -v
 ```
 
-The full required pre-merge gate runs package/static checks plus every deterministic unit, lifecycle, routing, and fixture test:
+Use the [verification runbook](verification.md#maintainer-and-ci-gate) for the full required gate, including package, evaluation-tooling, and build checks.
+Live runs are not required for ordinary PRs.
+
+For a live run, supply an installed agent executable/wrapper, its model credentials, and any required host/network permission.
+The wrapper runs in a disposable fixture, but inherits its environment and can consume model quota or contact external services.
+Fixture isolation is not a credential or network sandbox.
 
 ```bash
-python3 agent_workflow/verify_package.py --tests
-```
-
-For a live run, use an environment with the chosen agent executable, model credentials, and any host permission for research/network access required by the selected scenarios.
-This can consume model quota and contact external services.
-The command must read the prompt from standard input, operate in its current working directory, and write only the final user-facing response to standard output.
-Progress, tool, transport, and diagnostic output belongs on standard error.
-This output boundary lets the evaluator verify that the final response ends with exactly one route marker without depending on a host-specific event stream.
-Run:
-
-```bash
-python3 tests/behavior.py live \
+uv run --locked python tests/behavior.py live \
   --agent-command-json '["/absolute/path/to/your-agent-command-wrapper"]' \
-  --output /tmp/agent-workflow-live-report.json
-```
-
-If the agent CLI needs explicit paths, the JSON command may use the placeholders `{workspace}`, `{prompt_file}`, and `{report_file}`.
-For example:
-
-```bash
-python3 tests/behavior.py live \
-  --agent-command-json '["/absolute/path/to/your-agent-command-wrapper", "--workspace", "{workspace}", "--prompt", "{prompt_file}"]' \
+  --scenario simple-bounded-task \
   --keep-workspaces /tmp/agent-workflow-live \
   --output /tmp/agent-workflow-live-report.json
 ```
 
-`--scenario simple-bounded-task` may be repeated to select named contracts, including contracts outside the default smoke set.
-Without it, every scenario marked `live = true` runs.
-Kept workspaces and reports are persistent caller artifacts; remove those explicitly after review.
-The normal temporary mode cleans workspaces automatically.
+Replace the wrapper path with your executable.
+Repeat `--scenario` to select multiple cases, including ones outside the default smoke set; without it, all scenarios marked `live = true` run.
+`--timeout-seconds` defaults to 600 per agent command.
+`AGENT_WORKFLOW_AGENT_COMMAND_JSON` can supply the JSON command array instead of the command-line option.
 
-### Canonical Wayfinder activation boundary set
+### Agent wrapper and retained outputs
 
-This set reuses the blind `objective-clear-request` implementation case and adds three ARC cases:
+The wrapper must read the prompt from stdin, work in its current directory, and write **only the final user-facing response to stdout**.
+Send progress, tool logs, and diagnostics to stderr.
+Command arguments may contain `{workspace}`, `{prompt_file}`, and `{report_file}` placeholders, for example:
+
+```text
+["/absolute/path/to/wrapper", "--workspace", "{workspace}", "--prompt", "{prompt_file}"]
+```
+
+The prompt asks the agent to write `.behavior-evidence/report.json` with schema version 1:
+
+```json
+{
+  "schema_version": 1,
+  "status": "success",
+  "summary": "Short observed outcome",
+  "verification": [{"command": "python verify.py", "exit_code": 0}],
+  "research_sources": [],
+  "state_used": [],
+  "blockers": []
+}
+```
+
+Use the actual status (`success`, `blocked`, or `failed`), commands, exit codes, source URLs, state paths, and blockers; empty arrays mean not applicable.
+The final stdout response must end with exactly one truthful route marker, such as `[route: router → direct]`.
+Neither the report nor the marker requests private reasoning.
+
+The aggregate `--output` JSON contains verdicts, execution status, checks, changed paths, route claims, the agent report, and any independent fixture-verification result.
+Kept workspaces retain changed files and `.behavior-evidence/` inputs/reports/logs; the aggregate report does not retain the agent's full stdout/stderr trace.
+Arrange wrapper-side trace capture separately if the evaluation needs it.
+`--keep-workspaces` creates a unique run directory beneath the supplied parent.
+Remove that specific run directory and output report after review when no longer needed; otherwise the default temporary workspace is cleaned automatically, while an explicit output report persists.
+
+## Author a scenario
+
+Add one TOML file under `tests/scenarios/` and, when needed, a small fixture under `tests/fixtures/`.
+This valid example reuses the existing `simple-project` fixture; save it as `example-greeting.toml` and run `validate` before a live run:
+
+```toml
+schema_version = 1
+id = "example-greeting"
+name = "Update a greeting"
+fixture = "simple-project"
+request = "Make greeting() return exactly 'hello, world!' and validate the change."
+starting_state = ["The repository contains a small Python function and verify.py."]
+expect = ["task_completed", "meaningful_repository_change", "verification_performed", "project_state_preserved"]
+must_not = ["unnecessary_planning_artifacts"]
+live = false
+blind_grading = true
+verification_command = "Run python verify.py after the change."
+preserve_paths = ["README.md"]
+forbid_created_globs = [".project-efforts/**"]
+route_must_not_include = ["wayfinder"]
+
+[[assertions]]
+kind = "path_contains"
+path = "app.py"
+value = "hello, world!"
+```
+
+`schema_version`, `id`, `name`, `fixture`, `request`, `starting_state`, `expect`, `must_not`, and `live` are required.
+The lowercase hyphenated `id` must match the filename stem, and `fixture` must name an existing fixture directory.
+`expect` is nonempty; `must_not` may be empty.
+Unknown fields, unsupported behavior names, unsafe paths, and missing fixture references fail validation.
+
+The accepted behavior vocabulary is:
+
+| Field | Names |
+|---|---|
+| `expect` | `task_completed`, `repository_unchanged`, `external_fact_researched`, `uncertainty_recorded_or_blocked`, `existing_state_reused`, `meaningful_repository_change`, `verification_performed`, `verification_failure_recovered`, `blocked_cleanly`, `project_state_preserved` |
+| `must_not` | `unnecessary_planning_artifacts`, `manufacture_uncertainty`, `invent_external_fact`, `full_discovery_for_lookup`, `silent_decision_invention`, `repeat_resolved_discovery`, `overwrite_project_owned_state`, `success_after_failed_check` |
+
+Choose names for the outcome being tested, then add assertions for case-specific evidence.
+Their exact evaluator behavior lives in [`tests/behavior.py`](../tests/behavior.py).
+Optional controls are:
+
+- `preserve_paths` lists existing fixture entries for exact preservation checks.
+  Activate those checks with `expect = ["project_state_preserved"]` or the `overwrite_project_owned_state` or `repeat_resolved_discovery` prohibition, alongside other relevant behaviors.
+- `forbid_created_globs` lists prohibited new paths.
+  Activate that check with the `unnecessary_planning_artifacts`, `full_discovery_for_lookup`, or `repeat_resolved_discovery` prohibition.
+  Declaring either path list alone does not enforce its constraint.
+- `route_must_include` and `route_must_not_include` constrain reported route components, not actual specialist execution.
+- `state_must_include` and `state_must_not_include` constrain the public `state_used` claim and must name regular files in the starting fixture.
+  Matching claims still leave actual reads/reuse INCONCLUSIVE.
+- `report_must_include` requires text in the report summary/blockers; `response_must_match` uses case-insensitive regular expressions that can span lines in final stdout.
+  Use response checks sparingly for chat deliverables that file outcomes cannot establish.
+- `verification_command` supplies guided validation instructions; it is not a shell command automatically executed from that string.
+
+### Blind and guided scenarios
+
+`blind_grading` defaults to false.
+Set it true when exposing the rubric would coach the routing or judgment under test: the prompt then withholds expectations, prohibitions, state/report requirements, and verification guidance.
+Assertions and response expressions are never shown in either mode.
+Hidden evaluation still runs, and all agents receive the public report/output convention.
+Keep the request and starting facts neutral; blind runs also conceal the descriptive scenario name and use a non-descriptive workspace name.
+Guided scenarios remain useful for contract smoke checks but do not establish implicit selection.
+
+### Assertions
+
+Every `[[assertions]]` table requires `kind` and a safe repository-relative `path` (or glob).
+Absolute paths and `..` traversal are invalid.
+Supply `value` only for content/section assertions, `count` only for `glob_count`, and optional `record` only for section-content matching.
+
+| Kind | Meaning |
+|---|---|
+| `path_exists`, `path_not_exists` | Require a regular non-symlink file, or absence of any entry, respectively. |
+| `path_contains`, `path_not_contains` | Check a case-sensitive UTF-8 substring given by `value` in an existing regular file. |
+| `glob_count` | Require exactly `count` matching regular files; `count` is a nonnegative integer. |
+| `glob_contains`, `glob_any_contains`, `glob_none_contains` | Check a case-insensitive substring in every, at least one, or no matching regular file. Every/any require a match; none allows zero files. |
+| `glob_any_matches`, `glob_none_matches` | Require a case-insensitive regular expression in at least one or no matching file; expressions may span lines. |
+| `section_preserved`, `section_absent` | Check exact before/after identity or absence of a U# section in `unknowns.md`, with its ID (for example `value = "U9"`). Malformed/duplicate IDs cannot establish absence. |
+| `section_any_matches`, `section_all_match`, `section_none_matches` | Apply a case-insensitive expression to individual U# sections selected by a ledger path glob, excluding preambles and fenced examples. Optional `record = "U1"` restricts the check to an established ID. |
+
+Section any/all require at least one selected section; none permits zero unless a specific `record` is required.
+Unreadable, unsafe, malformed, or duplicate-identity ledgers fail section-content checks.
+Use all only when the scenario excludes unrelated questions; any/none can allow valid neighboring questions.
+Prefer stable identities and relevant content over fixed filenames, artifact counts, or exact prose unless those are the actual boundary under test.
+Snapshot assertions establish content and preservation, not semantic sufficiency, reads, or ordering.
+
+## Fixtures and observable evidence
+
+Fixtures contain minimum starting evidence and validation scripts, without copied framework payload.
+The harness copies each fixture into a fresh temporary directory, initializes a disposable Git baseline, installs the current framework through `lifecycle.py`, then snapshots the installed workspace.
+Source fixtures remain unchanged.
+
+Evaluation combines file creation/modification/deletion and byte identities, declared preservation constraints, prohibited paths, scenario assertions, final stdout, the public report, and fixture events in `.behavior-evidence/verification.jsonl`.
+For verification/recovery cases with root `verify.py`, it captures the agent's events and then independently runs that unchanged verifier against the final result.
+Changing the verifier fails the check; forged success events cannot hide a broken final implementation.
+That proves the final fixture outcome, not the authenticity of earlier events or the agent's internal process.
+
+## Verdicts and limitations
+
+Aggregate output uses schema version 2 and separates execution status from behavioral verdict.
+Each check has `passed: true`, `false`, or `null`:
+
+- **FAIL:** At least one required check observably failed.
+- **INCONCLUSIVE:** No observed failure, but at least one required behavior was unobserved.
+- **PASS:** All required checks were observed and passed.
+
+Exit codes are 0 for PASS, 1 for observed failure, and 2 for INCONCLUSIVE or runner error.
+Report authentication, quota, network, timeout, host, fixture, and harness failures separately; an unavailable run does not establish a product verdict.
+
+A reported state path proves neither a read nor reuse; a URL proves neither research execution nor current factual accuracy.
+Changing facts require source adjudication, and route markers alone do not prove skill execution.
+Absence of changes at known decision paths cannot prove that no unsupported choice appears elsewhere or in chat.
+Live tracker behavior and editor skill discovery need separate host/credential evidence.
+Synthetic-answer controls validate the evaluator, not instruction compliance or independent review; see [test coverage and gaps](../tests/README.md#wayfinder-coverage-and-evidence-limits).
+
+## Canonical Wayfinder activation boundary set
+
+These four blind cases distinguish coordination needs from bounded work:
 
 | Scenario | Boundary |
 |---|---|
-| `objective-clear-request` | Complete and verify the greeting change without Wayfinder; other appropriate routes remain allowed. |
-| `arc-managed-identity-coordination` | Preserve one migration effort with unresolved rollout/rollback, pending Security input, and independent preparation. |
-| `arc-approved-migration-coordination` | Preserve one effort across a pending Security approval even though identity, rollout, and rollback are already settled. |
-| `arc-runner-rename-plan` | Return configuration, reference-update, and verification steps without Wayfinder; a project plan artifact alone does not fail this routing case. |
+| `objective-clear-request` | Complete and verify the greeting change without Wayfinder. |
+| `arc-managed-identity-coordination` | Keep one migration effort with unresolved rollout/rollback, pending Security input, and independent preparation. |
+| `arc-approved-migration-coordination` | Keep one effort across pending Security approval despite settled identity, rollout, and rollback choices. |
+| `arc-runner-rename-plan` | Return configuration, reference-update, and verification steps without Wayfinder; a useful plan artifact is allowed. |
 
-All four use `blind_grading = true` with factual starting state.
-The ARC cases use two small synthetic fixtures, `arc-local` and `arc-approved`; only the latter contains accepted migration evidence.
-Runs copy these local fixtures and create a fresh Git baseline using the existing harness.
-They never clone `learn-kubernetes` or require cluster credentials.
-The ARC verification script checks local configuration references only; it cannot establish cluster health or prove a real migration has zero downtime.
-
-Set `AGENT_WORKFLOW_AGENT_COMMAND_JSON` to a JSON command array satisfying the live-runner contract above, then run this exact command from the source repository root:
+Set `AGENT_WORKFLOW_AGENT_COMMAND_JSON` to your wrapper's JSON command array, then run:
 
 ```bash
-uv run python tests/behavior.py live \
+uv run --locked python tests/behavior.py live \
   --agent-command-json "$AGENT_WORKFLOW_AGENT_COMMAND_JSON" \
   --scenario objective-clear-request \
   --scenario arc-managed-identity-coordination \
@@ -237,32 +208,8 @@ uv run python tests/behavior.py live \
   --output /tmp/agent-workflow-routing-regression.json
 ```
 
-The positive cases accept map-only coordination and do not require fixed U/E/F/D counts.
-The known-route case permits a useful Security question while rejecting questions that reopen settled choices.
-Deterministic evaluator tests in `test_routing_boundaries.py` challenge missing or duplicate maps, contradictory current state, manufactured choice questions, configuration mutation, missing plan steps, and unwanted Wayfinder state.
-The existing scope-refinement falsification test also rejects appending new terminology while leaving incompatible current claims intact.
-These checks test the evaluator; only an actual live run supplies evidence of agent routing behavior.
-
-## Current limitations
-
-- Existing-state reuse remains INCONCLUSIVE from a public `state_used` report; scenario-specific output assertions separately test the expected result.
-- Progressive-loading checks likewise rely on the public `state_used` report; they detect overloading reported by a cooperative agent but are not operating system file-access tracing.
-- External research and absence of invented facts remain INCONCLUSIVE when only source claims and structural checks are available; changing facts require source adjudication.
-- Required route markers remain agent claims rather than proof of execution; scenario evidence and route-specific checks establish truthfulness where observable.
-- Live tracker interactions and editor-host skill behavior need a separately credentialed environment and are not represented as deterministic success.
-- The live runner is command-based rather than tied to one vendor CLI.
-  A host command wrapper must satisfy the documented stdin/current-directory contract.
-
-## Verdicts and negative controls
-
-Live output reports schema version 2 with a separate execution status and behavioral verdict.
-Each check has `passed: true`, `false`, or `null`; `null` means required behavior was not observed.
-Any observed failed check makes the verdict FAIL; otherwise an unobserved requirement makes it INCONCLUSIVE; only all observed passing checks produce PASS.
-Exit codes are 0 for PASS, 1 for an observed failure, and 2 for INCONCLUSIVE or a runner error.
-Agent status, route markers, URLs, and reported paths are labeled claims and cannot alone establish task completion, research, reads, reuse, or lack of unsupported decisions.
-
-Deterministic negative controls include an agent that prints success, URLs, paths, and a route marker while forging a successful verification event without changing the broken implementation.
-The unchanged fixture verifier still fails that run.
-Other controls check unobserved reads/research, unsupported choices outside conventional decision paths, invalid identifiers, dangling references, and stale-state outcomes.
-No exact tool sequence is required by these changes.
-See the [Wayfinder coverage ledger](../tests/README.md#wayfinder-coverage-and-evidence-limits) for instruction requirements that remain unverified.
+The ARC fixtures are synthetic and local: no `learn-kubernetes` clone or cluster credentials are needed.
+Their verifier checks configuration references, not cluster health or zero-downtime migration.
+Positive cases accept map-only coordination without fixed record counts; the approved case permits a useful Security question without reopening settled choices.
+`test_routing_boundaries.py` challenges these evaluators with missing/duplicate maps, contradictory claims, invented questions, missing steps, and prohibited changes.
+Only an actual live run supplies agent-routing evidence.

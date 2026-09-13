@@ -28,7 +28,7 @@ Excluded:
 - **Authority and policy:** [AGENTS.md](../../AGENTS.md), its [distributed template](../../agent_workflow/install/AGENTS.md.template), and [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) maintain the operational separation among project choices, action authorization, host permission, and delegated technical judgment.
 - **Wayfinder coordination:** the [state contract](../../.agent-workflow/contracts/wayfinder-state.md) and [Wayfinder skill](../../.agents/skills/wayfinder/SKILL.md) maintain map authoring, blocker, uncertainty, authority, and resumption semantics.
   Installed surfaces are reconstructable projections of these sources.
-- **Routing and verification:** [routing](../../docs/routing.md), [verification guidance](../../docs/verification.md), and the focused [routing](../../tests/test_routing.py) and [Wayfinder](../../tests/test_wayfinder_state.py) tests protect cross-surface meaning and compatibility boundaries.
+- **Routing and verification:** [routing](../../.agent-workflow/routing.md), [verification guidance](../../docs/verification.md), and the focused [routing](../../tests/test_routing.py) and [Wayfinder](../../tests/test_wayfinder_state.py) tests protect cross-surface meaning and compatibility boundaries.
 
 ## Current state
 
@@ -54,6 +54,6 @@ This limits the live-verification boundary only; independent review of the autho
 
 - [Agent Workflow terminology](../../.agent-workflow/terminology.md)
 - [Architecture](../../docs/architecture.md)
-- [Routing](../../docs/routing.md)
+- [Routing](../../.agent-workflow/routing.md)
 - [Verification](../../docs/verification.md)
 - [Wayfinder state contract](../../.agent-workflow/contracts/wayfinder-state.md)
