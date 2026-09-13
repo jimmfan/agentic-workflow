@@ -190,7 +190,7 @@ Establish or update the effort's Wayfinder state.
 Do not implement product changes during this pass.
 
 When finished, summarize what you created or updated, what remains uncertain, and the recommended next prompt for continuing the work.
-````
+```
 
 Or use the `wayfinder-effort` skill:
 
