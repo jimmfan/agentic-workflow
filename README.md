@@ -179,21 +179,13 @@ As lasting results are established, they should live with the artifact or record
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
-Example text to use Wayfinder directly:
+Invoke the convenience skill with instructions or a file path:
 
 ```text
-Effort or plan (optional: describe the work, paste a plan, or attach/reference a file):
-
-Use the installed Agent Workflow and explicitly use Wayfinder to orient this repository's development effort for continued work across sessions.
-
-Establish or update the effort's Wayfinder state.
-Do not implement product changes during this pass.
-
-When finished, summarize what you created or updated, what remains uncertain, and the recommended next prompt for continuing the work.
+/wayfinder-effort <instructions-or-path-to-file>
 ```
 
-You can also invoke the thin `wayfinder-effort` skill with the objective, plan, or referenced material.
-It delegates the same orientation pass to installed Wayfinder and does not implement product changes.
+If the plan is attached, `/wayfinder-effort` is sufficient.
 
 ## Project ownership
 

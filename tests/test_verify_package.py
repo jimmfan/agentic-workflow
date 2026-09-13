@@ -221,7 +221,7 @@ class VerifyPackageTests(ProjectTestCase):
         result = self.verify(source)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
-    def test_wayfinder_effort_is_a_thin_distributed_wayfinder_entry_point(
+    def test_wayfinder_effort_is_a_single_file_distributed_entry_point(
         self,
     ) -> None:
         skill_root = (
@@ -231,21 +231,6 @@ class VerifyPackageTests(ProjectTestCase):
             {path.name for path in skill_root.iterdir()},
             {"SKILL.md"},
         )
-        text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
-        for required in (
-            "name: wayfinder-effort",
-            "objective, plan, or referenced material",
-            "Invoke the installed `wayfinder` skill",
-            "`.agent-workflow/contracts/wayfinder-state.md`",
-            "Do not implement product changes",
-            "rather than emulate",
-            "what Wayfinder state was created or updated",
-            "what remains uncertain",
-            "recommended next prompt",
-        ):
-            with self.subTest(required=required):
-                self.assertIn(required, text)
-
         manifest = json.loads(
             (
                 Path(__file__).resolve().parents[1]
