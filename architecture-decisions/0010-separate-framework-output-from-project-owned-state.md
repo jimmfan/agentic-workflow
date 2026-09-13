@@ -38,7 +38,7 @@ In consuming repositories, separate framework-owned reconstructable output from 
   Repository state, `HEAD`, tracked changes, untracked files, and ignore rules are not prerequisites or recovery boundaries.
   Managed roots and their parents must not themselves be symlinks, unsupported entry types, or escapes from the target, and ambiguous composite ownership stops mutation before project-authored bytes can be lost.
   Nested entries inside a replaceable managed directory are ordinary convergence input.
-- The source repository authors `.agent-workflow/` and the fifteen curated `.agents/skills/<name>/` trees directly at their distribution target paths.
+- The source repository authors `.agent-workflow/` and the current curated `.agents/skills/<name>/` trees directly at their distribution target paths.
   Those source trees are not generated output.
   Composite root policies remain non-active templates under `agent_workflow/install/`, alongside the current manifest whose source paths resolve from the repository snapshot root.
   By default, the installed CLI acts as a thin transport: it selects the highest stable `vX.Y.Z` release tag, resolves that tag to an immutable commit, downloads one repository snapshot, and runs that snapshot's `agent_workflow/lifecycle.py` against its canonical framework, skill, and install sources.

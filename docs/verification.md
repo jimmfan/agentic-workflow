@@ -51,7 +51,7 @@ The package verifier checks:
 
 - required package structure, the current `VERSION` format and single-source boundary, and required files being regular non-symlink files;
 - the ordinary current source-to-target distribution mapping;
-- the exact canonical framework and fifteen-skill inventories and non-active composite template locations;
+- the exact canonical framework inventory, safely discovered current curated skill directories, and non-active composite template locations;
 - canonical `.agent-workflow/terminology.md` distribution;
 - skill frontmatter, canonical support-file closure, local links, checked-in composite managed regions, and complete attribution for retained derived skills; and
 - local documentation links.

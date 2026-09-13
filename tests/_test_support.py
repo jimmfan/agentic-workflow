@@ -17,6 +17,13 @@ MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
 MANAGED_END = b"<!-- agent-workflow:managed-end -->"
 
 
+def curated_skill_names(repository_root: Path = REPOSITORY_ROOT) -> set[str]:
+    return {
+        path.parent.name
+        for path in (repository_root / ".agents/skills").glob("*/SKILL.md")
+    }
+
+
 def run_script(
     script: Path,
     *arguments: object,
