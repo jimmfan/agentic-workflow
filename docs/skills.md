@@ -1,6 +1,6 @@
 # Curated skills
 
-Agent Workflow distributes fifteen curated skills from the authored `.agents/skills/` tree through the current distribution map.
+Agent Workflow distributes the current curated skills from the authored `.agents/skills/` tree through the current distribution map.
 Those skill directories are the single maintained runtime representation.
 
 Each discoverable package under `.agents/skills/` is a skill.
@@ -8,9 +8,10 @@ See [Workflow routing](routing.md) for how a skill participates in a route.
 
 ## Inventory
 
-The canonical inventory under `.agents/skills/` is exactly:
+The current curated skills under `.agents/skills/` are:
 
 - `wayfinder`
+- `wayfinder-effort`
 - `research`
 - `to-spec`
 - `to-tickets`
@@ -26,13 +27,14 @@ The canonical inventory under `.agents/skills/` is exactly:
 - `workflow-implementation`
 - `workflow-verification`
 
-The first eleven are copied from or derived from Matt Pocock's Skills for Real Engineers release `v1.2.3`.
+The skills identified in the installed third-party notice are copied from or derived from Matt Pocock's Skills for Real Engineers release `v1.2.3`.
 Agent Workflow maintains their effective installed versions and preserves complete copyright and MIT license attribution in the installed `.agent-workflow/README.md`.
 Historical skill inventories are not part of the current runtime.
 
 `wayfinder` and `research` preserve Agent Workflow's maintained contracts.
 `research` returns cited findings in chat by default and writes a repository file only after an explicit authorized request.
 `wayfinder` remains the sole durable coordinator under `.project-efforts/`.
+`wayfinder-effort` is a thin convenience entry point that delegates effort orientation to installed `wayfinder` without implementing product changes or defining another state model.
 `workflow-discovery` analyzes one bounded consequential choice and its alternatives, evidence, tradeoffs, reversibility, consequences, authority, and uncertainty; a lasting architecture decision remains in the project record designated to maintain it.
 `domain-modeling` maintains domain concepts, terminology and ubiquitous language, domain or context boundaries, domain responsibilities and relationships, and the applicable `CONTEXT.md` or `CONTEXT-MAP.md` model.
 It does not own generic implementation or module architecture, all project structure, Wayfinder's effort-specific areas and relationships, or a generic architecture-decision store.

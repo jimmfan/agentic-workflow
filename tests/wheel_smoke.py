@@ -10,7 +10,7 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from _test_support import REPOSITORY_ROOT
+from _test_support import REPOSITORY_ROOT, curated_skill_names
 
 
 def copy_source_snapshot(repository: Path, destination: Path) -> None:
@@ -269,7 +269,8 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                         (REPOSITORY_ROOT / ".agent-workflow" / name).read_bytes(),
                     )
                 self.assertEqual(
-                    len(list((project / ".agents/skills").glob("*/SKILL.md"))), 16
+                    curated_skill_names(project),
+                    curated_skill_names() | {"project-local"},
                 )
                 for name in ("AGENTS.md", "CLAUDE.md"):
                     content = (project / name).read_bytes()

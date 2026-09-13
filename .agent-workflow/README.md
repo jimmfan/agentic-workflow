@@ -44,7 +44,7 @@ Repeated install and update keep exactly one such region.
 The existing `CLAUDE.md` composite integration remains unchanged.
 Required local workflow skills similarly live under `.agents/skills`.
 
-The fifteen curated skills live directly under `.agents/skills`.
+The current curated skills live directly under `.agents/skills`.
 Their current directory names are reserved for Agent Workflow.
 Install and update replace each complete current curated skill directory, including extra files, while preserving unrelated skill directories.
 Remove deletes those current curated directories.

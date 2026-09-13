@@ -62,24 +62,6 @@ EXPECTED_INSTALL_FILES = frozenset(
 )
 
 
-EXPECTED_SKILL_FILES = {
-    "code-review": frozenset({"SKILL.md"}),
-    "codebase-design": frozenset({"DEEPENING.md", "DESIGN-IT-TWICE.md", "SKILL.md"}),
-    "domain-modeling": frozenset({"CONTEXT-FORMAT.md", "SKILL.md"}),
-    "grilling": frozenset({"SKILL.md"}),
-    "implement": frozenset({"SKILL.md"}),
-    "prototype": frozenset({"LOGIC.md", "SKILL.md", "UI.md"}),
-    "research": frozenset({"SKILL.md"}),
-    "tdd": frozenset({"SKILL.md", "mocking.md", "tests.md"}),
-    "to-spec": frozenset({"SKILL.md"}),
-    "to-tickets": frozenset({"SKILL.md"}),
-    "wayfinder": frozenset({"SKILL.md"}),
-    "workflow-debugging": frozenset({"SKILL.md"}),
-    "workflow-discovery": frozenset({"SKILL.md"}),
-    "workflow-implementation": frozenset({"SKILL.md"}),
-    "workflow-verification": frozenset({"SKILL.md"}),
-}
-
 ATTRIBUTED_SKILLS = frozenset(
     {
         "code-review",
@@ -202,6 +184,26 @@ def refresh_manifest() -> None:
     print(f"Refreshed {MANIFEST.relative_to(PACKAGE_ROOT)}")
 
 
+def current_curated_skills() -> Mapping[str, frozenset[str]]:
+    require(
+        SKILLS_ROOT.is_dir() and not SKILLS_ROOT.is_symlink(),
+        "canonical curated skills is missing or unsafe",
+    )
+    skills: dict[str, frozenset[str]] = {}
+    for root in sorted(SKILLS_ROOT.iterdir()):
+        require(
+            root.is_dir() and not root.is_symlink(),
+            f"curated skill entry is not a safe regular directory: {root.name}",
+        )
+        name = safe_relative(root.name, "curated skill name")
+        require(
+            len(name.parts) == 1,
+            f"unsafe curated skill name: {root.name!r}",
+        )
+        skills[root.name] = tree_files(root)
+    return skills
+
+
 def check_structure() -> None:
     for relative in REQUIRED_PACKAGE_FILES:
         path = PACKAGE_ROOT / relative
@@ -253,6 +255,7 @@ def check_manifest() -> None:
     )
     mappings = actual["framework_owned"]
     require(isinstance(mappings, list), "manifest mappings must be an array")
+    curated_skills = current_curated_skills()
     sources: list[str] = []
     targets: list[str] = []
     for item in mappings:
@@ -269,7 +272,7 @@ def check_manifest() -> None:
             or (
                 len(target.parts) >= 4
                 and target.parts[:2] == (".agents", "skills")
-                and target.parts[2] in EXPECTED_SKILL_FILES
+                and target.parts[2] in curated_skills
             )
         )
         require(
@@ -317,24 +320,13 @@ def validate_skill_links(root: Path) -> None:
 
 
 def check_curated_skills() -> None:
-    skills_root = SKILLS_ROOT
-    require(
-        skills_root.is_dir() and not skills_root.is_symlink(),
-        "canonical curated skills is missing or unsafe",
-    )
-    actual_names = {path.name for path in skills_root.iterdir()}
-    require(
-        actual_names == set(EXPECTED_SKILL_FILES),
-        "curated skill inventory differs from the accepted fifteen-skill inventory",
-    )
-    for name, expected_files in EXPECTED_SKILL_FILES.items():
-        root = skills_root / name
-        actual_files = tree_files(root)
+    for name, authored_files in current_curated_skills().items():
+        root = SKILLS_ROOT / name
         require(
-            actual_files == expected_files,
-            f"curated skill {name} is incomplete or contains unexpected files",
+            "SKILL.md" in authored_files,
+            f"curated skill {name} lacks SKILL.md",
         )
-        for relative in expected_files:
+        for relative in authored_files:
             path = root / relative
             require(
                 path.is_file() and not path.is_symlink() and bool(path.read_bytes()),

@@ -11,6 +11,7 @@ from _test_support import (
     REPOSITORY_ROOT,
     ProjectTestCase,
     commit_all,
+    curated_skill_names,
     initialize_repository,
     load_module,
     run_git,
@@ -18,24 +19,6 @@ from _test_support import (
     tree_snapshot,
     workspace_snapshot,
 )
-
-RETAINED_SKILLS = {
-    "code-review",
-    "codebase-design",
-    "domain-modeling",
-    "grilling",
-    "implement",
-    "prototype",
-    "research",
-    "tdd",
-    "to-spec",
-    "to-tickets",
-    "wayfinder",
-    "workflow-debugging",
-    "workflow-discovery",
-    "workflow-implementation",
-    "workflow-verification",
-}
 
 
 class InteractiveInput(io.StringIO):
@@ -96,6 +79,7 @@ class DirectDistributionTests(ProjectTestCase):
     def assert_current_sources_installed(
         self, additional_skills: set[str] | None = None
     ) -> None:
+        current_skills = curated_skill_names()
         framework = self.project / ".agent-workflow"
         self.assertEqual(
             file_snapshot(framework),
@@ -106,9 +90,9 @@ class DirectDistributionTests(ProjectTestCase):
         installed = self.project / ".agents/skills"
         self.assertEqual(
             {path.name for path in installed.iterdir() if path.is_dir()},
-            RETAINED_SKILLS | {"project-local"} | (additional_skills or set()),
+            current_skills | {"project-local"} | (additional_skills or set()),
         )
-        for name in RETAINED_SKILLS:
+        for name in current_skills:
             with self.subTest(skill=name):
                 self.assertEqual(
                     tree_snapshot(installed / name),
@@ -121,7 +105,7 @@ class DirectDistributionTests(ProjectTestCase):
             self.state_before,
         )
 
-    def test_fresh_install_distributes_fifteen_skills_without_install_state(
+    def test_fresh_install_distributes_curated_skills_without_install_state(
         self,
     ) -> None:
         self.assert_ok(self.lifecycle("install"))
@@ -404,7 +388,7 @@ class DirectDistributionTests(ProjectTestCase):
 
         self.assert_ok(self.lifecycle("remove"))
         self.assertFalse((self.project / ".agent-workflow").exists())
-        for name in RETAINED_SKILLS:
+        for name in curated_skill_names():
             self.assertFalse((self.project / ".agents/skills" / name).exists())
         self.assertEqual(
             (self.project / ".agents/skills/project-local/SKILL.md").read_bytes(),

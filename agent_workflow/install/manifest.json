@@ -85,6 +85,10 @@
       "target": ".agents/skills/to-tickets/SKILL.md"
     },
     {
+      "source": ".agents/skills/wayfinder-effort/SKILL.md",
+      "target": ".agents/skills/wayfinder-effort/SKILL.md"
+    },
+    {
       "source": ".agents/skills/wayfinder/SKILL.md",
       "target": ".agents/skills/wayfinder/SKILL.md"
     },

@@ -70,7 +70,7 @@ OPTIONAL, INDEPENDENT
 
 ### Canonical repository sources
 
-The source repository authors runtime framework content directly in `.agent-workflow/` and the fifteen curated skill directories directly in `.agents/skills/`.
+The source repository authors runtime framework content directly in `.agent-workflow/` and the current curated skill directories directly in `.agents/skills/`.
 These authored trees are distributed to the same relative paths in consuming repositories; they are not generated projections in this source repository.
 Maintainers follow the [source-checkout ownership rule](../AGENTS.md#source-checkout-ownership) when editing or exercising delivery.
 The Python implementation lives directly in `agent_workflow/`.
@@ -142,7 +142,7 @@ Wayfinder decision records may link an ADR but do not become a second ADR or oth
 
 ## Curated skill boundary
 
-The ordinary distribution manifest maps the complete fifteen-skill canonical source directly into `.agents/skills/`.
+The ordinary distribution manifest maps the complete canonical skill source directly into `.agents/skills/`.
 Each current curated skill name is a reserved, reconstructable directory that install and update replace completely; unrelated local skill directories are preserved.
 Supported hosts discover project skills from that location and expose them to the agent.
 
@@ -189,7 +189,7 @@ Current execution uses Python 3.11+ standard-library APIs on POSIX-style shells 
 Native PowerShell and CMD are not supported.
 These runtime and transport facts are current compatibility documentation rather than architecture decisions.
 
-The package is distributed through the repository-owned Python bootstrap rather than a recursive skill installer, because the distribution contains root policy, routing contracts, and fifteen independently discoverable project skills.
+The package is distributed through the repository-owned Python bootstrap rather than a recursive skill installer, because the distribution contains root policy, routing contracts, and independently discoverable project skills.
 
 ## Verification boundary
 

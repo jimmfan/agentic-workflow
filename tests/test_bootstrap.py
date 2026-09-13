@@ -15,6 +15,7 @@ from _test_support import (
     PACKAGE_ROOT,
     REPOSITORY_ROOT,
     commit_all,
+    curated_skill_names,
     initialize_repository,
     load_module,
     run_script,
@@ -156,7 +157,8 @@ target = Path(sys.argv[2])
             self.assertFalse((target / "CONTEXT.md").exists())
             self.assertFalse((target / "VERSION").exists())
             self.assertEqual(
-                len(list((target / ".agents/skills").glob("*/SKILL.md"))), 15
+                curated_skill_names(target),
+                curated_skill_names(),
             )
             for name in ("AGENTS.md", "CLAUDE.md"):
                 content = (target / name).read_bytes()

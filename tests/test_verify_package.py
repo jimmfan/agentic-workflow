@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import unittest
 
-from _test_support import ProjectTestCase, run_script
+from _test_support import ProjectTestCase, load_module, run_script
 
 
 class VerifyPackageTests(ProjectTestCase):
@@ -159,18 +159,10 @@ class VerifyPackageTests(ProjectTestCase):
                     source, "distributed root policy must use an install template"
                 )
 
-    def test_verifier_requires_complete_curated_skill_directories(self) -> None:
+    def test_verifier_requires_valid_curated_skill_directories(self) -> None:
         missing = self.copy_source("missing-skill-file")
         (missing / ".agents/skills/tdd/tests.md").unlink()
-        self.assert_verify_failure(missing, "curated skill tdd is incomplete")
-
-        extra = self.copy_source("extra-skill-file")
-        (extra / ".agents/skills/research/notes.md").write_text(
-            "unexpected\n", encoding="utf-8"
-        )
-        self.assert_verify_failure(
-            extra, "curated skill research is incomplete or contains unexpected files"
-        )
+        self.assert_verify_failure(missing, "curated skill link target is missing")
 
         wrong_name = self.copy_source("wrong-skill-name")
         self.replace_once(
@@ -182,6 +174,31 @@ class VerifyPackageTests(ProjectTestCase):
         self.assert_verify_failure(
             wrong_name, "curated skill name differs from its directory"
         )
+
+    def test_verifier_discovers_new_skills_and_support_files_from_canonical_source(
+        self,
+    ) -> None:
+        source = self.copy_source("discovered-canonical-skill")
+        skill = source / ".agents/skills/example"
+        skill.mkdir()
+        (skill / "SKILL.md").write_text(
+            "---\nname: example\ndescription: Exercise canonical discovery.\n---\n\n"
+            "Read [support](support.md).\n",
+            encoding="utf-8",
+        )
+        (skill / "support.md").write_text("# Support\n", encoding="utf-8")
+
+        result = self.verify(source, "--refresh-manifest")
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        manifest = json.loads(
+            (source / "agent_workflow/install/manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        sources = {item["source"] for item in manifest["framework_owned"]}
+        self.assertIn(".agents/skills/example/SKILL.md", sources)
+        self.assertIn(".agents/skills/example/support.md", sources)
 
     def test_domain_modeling_distributes_context_support(self) -> None:
         source = self.copy_source("domain-modeling-context-support")
@@ -203,6 +220,45 @@ class VerifyPackageTests(ProjectTestCase):
 
         result = self.verify(source)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_wayfinder_effort_is_a_thin_distributed_wayfinder_entry_point(
+        self,
+    ) -> None:
+        skill_root = (
+            Path(__file__).resolve().parents[1] / ".agents/skills/wayfinder-effort"
+        )
+        self.assertEqual(
+            {path.name for path in skill_root.iterdir()},
+            {"SKILL.md"},
+        )
+        text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+        for required in (
+            "name: wayfinder-effort",
+            "objective, plan, or referenced material",
+            "Invoke the installed `wayfinder` skill",
+            "`.agent-workflow/contracts/wayfinder-state.md`",
+            "Do not implement product changes",
+            "rather than emulate",
+            "what Wayfinder state was created or updated",
+            "what remains uncertain",
+            "recommended next prompt",
+        ):
+            with self.subTest(required=required):
+                self.assertIn(required, text)
+
+        manifest = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "agent_workflow/install/manifest.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertIn(
+            {
+                "source": ".agents/skills/wayfinder-effort/SKILL.md",
+                "target": ".agents/skills/wayfinder-effort/SKILL.md",
+            },
+            manifest["framework_owned"],
+        )
 
     def test_verifier_does_not_lock_skill_descriptions(self) -> None:
         source = self.copy_source("description-copy")
@@ -356,6 +412,30 @@ If neither authorizes a commit, keep the changes uncommitted and report that sta
                 )
                 self.assert_verify_failure(source, expected)
 
+    def test_attribution_boundary_covers_only_derived_skills(self) -> None:
+        source = self.copy_source("attribution-boundary")
+        verifier = load_module(
+            "attribution_boundary_verifier",
+            source / "agent_workflow/verify_package.py",
+        )
+
+        self.assertEqual(
+            verifier.ATTRIBUTED_SKILLS,
+            {
+                "code-review",
+                "codebase-design",
+                "domain-modeling",
+                "grilling",
+                "implement",
+                "prototype",
+                "research",
+                "tdd",
+                "to-spec",
+                "to-tickets",
+                "wayfinder",
+            },
+        )
+
     def test_verifier_rejects_install_history_and_invalid_composite_markers(
         self,
     ) -> None:
@@ -386,17 +466,6 @@ If neither authorizes a commit, keep the changes uncommitted and report that sta
         self.assert_verify_failure(
             extra_prefix, "checked-in composite has invalid managed markers"
         )
-
-    def test_verifier_rejects_changes_to_the_canonical_skill_inventory(self) -> None:
-        source = self.copy_source("unexpected-source-skill")
-        unrelated = source / ".agents/skills/project-local"
-        unrelated.mkdir(parents=True)
-        (unrelated / "SKILL.md").write_text(
-            "---\nname: project-local\ndescription: Project-owned skill.\n---\n",
-            encoding="utf-8",
-        )
-
-        self.assert_verify_failure(source, "curated skill inventory differs")
 
     def test_verifier_ignores_existing_cache_and_does_not_add_cache_files(self) -> None:
         source = self.copy_source("verifier-bytecode")

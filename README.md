@@ -60,7 +60,7 @@ Projects with state at the former `.agent-wayfinder/` path must explicitly move 
 
 ## Source layout
 
-This repository authors `.agent-workflow/` and the fifteen `.agents/skills/<name>/` directories directly at their consuming-project paths.
+This repository authors `.agent-workflow/` and the current `.agents/skills/<name>/` directories directly at their consuming-project paths.
 There is one canonical copy of each runtime resource.
 `.agent-workflow/terminology.md` defines Agent Workflow's terminology for both this repository and consuming projects; agents read it when those meanings materially affect their work.
 Maintainers follow the [source-checkout ownership rule](AGENTS.md#source-checkout-ownership) for source edits and disposable lifecycle exercises.
@@ -179,7 +179,7 @@ As lasting results are established, they should live with the artifact or record
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
-Example text to use Wayfinder:
+Example text to use Wayfinder directly:
 
 ```text
 Effort or plan (optional: describe the work, paste a plan, or attach/reference a file):
@@ -192,6 +192,9 @@ Do not implement product changes during this pass.
 When finished, summarize what you created or updated, what remains uncertain, and the recommended next prompt for continuing the work.
 ```
 
+You can also invoke the thin `wayfinder-effort` skill with the objective, plan, or referenced material.
+It delegates the same orientation pass to installed Wayfinder and does not implement product changes.
+
 ## Project ownership
 
 Agent Workflow separates reconstructable framework files from durable project-owned state.
@@ -202,7 +205,7 @@ target-project/
 ├── CLAUDE.md
 ├── .agents/
 │   └── skills/
-│       └── <15 curated skills>
+│       └── <curated skills>
 │
 ├── .agent-workflow/          # framework-owned
 │   ├── routing.md
@@ -223,7 +226,7 @@ There is no installed manifest, provenance record, migration history, or framewo
 
 ### `.agents/skills/`
 
-Each of the fifteen current curated skill names is reserved for Agent Workflow.
+Each current curated skill name is reserved for Agent Workflow.
 Install and update replace those complete skill directories, including extra files inside them, while preserving unrelated skill directories.
 
 ### `.project-efforts/`
