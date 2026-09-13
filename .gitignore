@@ -4,6 +4,7 @@ venv/
 /build/
 /dist/
 
+# Ignore all files that start with a hash symbol (#)
 *.DS_Store
 __pycache__/
 *.py[cod]
