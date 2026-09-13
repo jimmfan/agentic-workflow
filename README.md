@@ -179,7 +179,7 @@ As lasting results are established, they should live with the artifact or record
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
-Example text to use Wayfinder:
+Example prompt to start a Wayfinder effort:
 
 ```text
 Effort or plan (optional: describe the work, paste a plan, or attach/reference a file):
@@ -190,12 +190,22 @@ Establish or update the effort's Wayfinder state.
 Do not implement product changes during this pass.
 
 When finished, summarize what you created or updated, what remains uncertain, and the recommended next prompt for continuing the work.
-```
+````
 
-Or, with the `wayfinder-effort` skill:
+Or use the `wayfinder-effort` skill:
 
 ```text
-/wayfinder-effort <instructions-or-path-to-file>
+/wayfinder-effort <effort or plan>
+```
+
+For example:
+
+```text
+/wayfinder-effort Migrate our GitHub Actions runners to ARC on EKS.
+```
+
+```text
+/wayfinder-effort docs/implementation-plan.md
 ```
 
 The user may also invoke `/wayfinder-effort` and paste or attach the plan in the same request.
