@@ -179,13 +179,17 @@ As lasting results are established, they should live with the artifact or record
 
 Exact Wayfinder representation and reconciliation behavior is defined in the installed Wayfinder state contract.
 
-Invoke the convenience skill with instructions or a file path:
-
 ```text
 /wayfinder-effort <instructions-or-path-to-file>
 ```
 
-If the plan is attached, `/wayfinder-effort` is sufficient.
+or
+
+```text
+/wayfinder-effort
+```
+
+The plan may be pasted, referenced by path, or attached.
 
 ## Project ownership
 
