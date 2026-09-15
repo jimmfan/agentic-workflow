@@ -111,7 +111,7 @@ If a fresh session must read most supporting records to recover the current rout
 ### Dependencies and readiness
 
 Dependencies are required inputs; blockers are conditions currently preventing particular work, not a separate record type.
-Do not create blocker identifiers, files, ledgers, directories, stores, or statuses.
+Do not create separate blocker records, identifiers, statuses, or storage.
 Represent ready, paused, or waiting work through map content, without a map status or historical label.
 Planned tests, verification, commit or push steps, and other unfinished work are not automatically blockers or dependencies merely because they remain.
 Identify the condition preventing particular work: for example, an unsatisfied dependency, unresolved consequential uncertainty, an uncommitted required project choice, or missing action authorization.
@@ -126,7 +126,8 @@ These changes affect only the corresponding work; none automatically unblocks un
 
 ## Current knowledge
 
-U/E/F/D are the only durable record types; they are not stages of a mandatory U → E → F → D pipeline:
+U/E/F/D are Wayfinder's only durable record types. 
+Using one does not require creating the others:
 
 - `U#` (unresolved question record) contains one current consequential question that remains unanswered and is independently useful to preserve.
 - `E#` (evidence record) contains independently useful evidence with its source, scope, observation, and material limitations.
@@ -144,7 +145,9 @@ Do not add area identifiers, nested state by domain or phase, parallel maps, or 
 Represent a U# as an H2 section in `unknowns.md` stating the question and why it matters.
 Presence means the question is current and unresolved.
 Preserve it separately when its answer could change the effort's direction or next work and retention helps a later developer make or evaluate a decision within the effort's objective and scope.
-Precision, ordinary external uncertainty, an unexplained cause, or a long list alone does not justify a U#; temporary records must improve coordination, not serve create-and-prune ceremony.
+Precision, ordinary external uncertainty, an unexplained cause, or a long list alone does not justify a U#.
+
+A temporary U# must help current coordination or later continuation.
 Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
 Include dependencies, sources, human input or authority, and a sufficiently known resolution method only when useful for continuation.
 Preserve consequential uncertainty when its resolution method or authority is unknown; clarify vague concerns without inventing answers or precision.
