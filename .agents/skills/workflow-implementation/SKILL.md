@@ -36,4 +36,5 @@ Invoke `workflow-verification` once with the accepted scope and its acceptance c
 Verification reuses covered evidence and adds only missing acceptance, artifact, or boundary checks.
 
 Completion requires the scope to be finished and required Verification to pass, unless accepted project policy determines that a limitation is acceptable for the named completion boundary or the person, role, or valid delegate with project decision authority explicitly accepts it.
+If the implementation scope came from or remains part of a selected Wayfinder effort, and recording is authorized, reconcile consequential Verification results that change completion, blockers, dependencies, verification boundaries, or remaining ready work through `.agent-workflow/contracts/wayfinder-state.md` before claiming completion or handing off remaining work.
 Remaining durable next work must be maintained in the selected Wayfinder map, accepted specification, or approved durable ticket or ticket set.

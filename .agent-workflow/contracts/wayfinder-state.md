@@ -342,6 +342,7 @@ Prune the F# when no supported conclusion with independent current value remains
 Do not create a second fact record merely to preserve history.
 
 When an observation independently earns E# preservation through its source, method, limitations, or reuse value, preserve it as E#.
+Treat consequential evidence supplied by a user or observed from an external system as independently useful when it materially supports a diagnosis or implementation choice and a future agent cannot reliably reconstruct the needed source, scope, observation, and limitations from durable project sources. Preserve it before dependent work relies on it or before final response or handoff; use a separate E# when its source, method, limitations, or reuse value justify independent preservation.
 Otherwise do not create or retain an E# merely as a transition step.
 Create or reopen a U# only when the precise unresolved question has consequential current coordination value, and surface it in the map only when it affects the route.
 Do not create an E#/U# pair by template.

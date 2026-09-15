@@ -49,3 +49,4 @@ A vanished symptom without causal evidence is a mitigation, not a proven root ca
 Do not duplicate Code Review already performed by `implement`.
 
 Inside Wayfinder, reconcile only consequential evidence, conclusions, conditions blocking particular work, and next work; the selected map remains the durable coordination summary.
+When user-provided or tool-observed evidence materially supports or changes the diagnosis, selected fix, blockers, dependencies, or verification boundary during Wayfinder work, reconcile the affected Wayfinder state through its contract before further work relies on the finding or before final response or handoff. Do not wait for a separate persistence request.

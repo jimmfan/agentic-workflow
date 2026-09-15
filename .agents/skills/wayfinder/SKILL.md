@@ -63,6 +63,7 @@ Otherwise select only the smallest specialist needed to resolve or accurately fr
 Research, Prototype, and Debugging operate on uncertainties and questions within established areas and relationships; they do not replace Domain Modeling when the uncertainty concerns the domain model.
 Use detailed routing when composition or selected-skill availability materially matters.
 Each specialist retains its method and creates no separate Agent Workflow durable coordination state.
+When a composed specialist produces a consequential result affecting the selected effort, and recording is authorized, reconcile affected Wayfinder state through the state contract before dependent work relies on the result or before final response or handoff.
 
 A resolution method determines the evidence or authority needed, not merely an artifact label:
 

@@ -25,6 +25,7 @@ Python caches are ignored and need no manual cleanup.
 | `test_snapshots.py` | Preservation snapshots that exclude root Git metadata before reads while retaining project entries and read errors. |
 | `test_behavior_harness.py` | Scenario validation, blind grading, assertions, route markers, verification evidence, fixture isolation, and negative controls. |
 | `test_wayfinder_state.py`, `test_wayfinder_behavior.py`, `test_routing_boundaries.py` | Literal state fixtures and evaluator acceptance/rejection of routing, authority, reconciliation, and no-state outcomes. |
+| `test_specialist_reconciliation.py` | Structural specialist/Wayfinder trigger, ownership, timing, authorization, and selective-state guards; a broken-relative-link fixture control. These do not execute agent reconciliation. |
 | `test_review_handoff.py`, `test_instruction_coherence.py` | Disposable Git review-scope observations and synthetic-answer evaluator controls for review and skill boundaries. |
 | `test_question_review_controls.py`, `test_map_authoring_controls.py` | Question-section preservation, incoming references, scoped review outcomes, and map-authoring evaluator controls. |
 | `evals/tests/` | Separate network-free tests of evaluation tooling. |
