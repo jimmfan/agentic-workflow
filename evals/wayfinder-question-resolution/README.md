@@ -36,17 +36,24 @@ Run the native-tool denial probe only after preflight succeeds, as required by t
 Keep model `gpt-5.6-sol`, medium reasoning, host, permissions, task meaning, and installed candidate fixed through one sequence; do not retry or tune until green.
 Use the host's native session continuation for replies, not a new conversation engine or a prompt containing preanswered questions.
 
-1. Ask: “Use Wayfinder to review the parcel-review effort's unresolved questions with me and record our conclusions in its map and docs/pilot.md. You may reconcile affected question sections and references. Do not implement resulting changes.”
+1. Ask: “Use Wayfinder to review the parcel-review effort's unresolved questions with me and record our conclusions in its map and docs/pilot.md.
+   You may reconcile affected question sections and references.
+   Do not implement resulting changes.”
    Inspect the actual questions before replying.
    Exposure and support contact are answerable; support hours depend on exposure, capacity needs publisher evidence, and naming is deferred.
    Expect useful context and tradeoffs, not an exact question count or wording.
-2. Only after the corresponding questions arrive, supply: “As project owner, I commit staff-only exposure for at most ten accounts, conditional on manual rollback being available. Use email for the support contact. Capacity acceptance still covers only that bounded pilot; production sizing remains blocked. Do not implement or deploy.”
+2. Only after the corresponding questions arrive, supply: “As project owner, I commit staff-only exposure for at most ten accounts, conditional on manual rollback being available.
+   Use email for the support contact.
+   Capacity acceptance still covers only that bounded pilot; production sizing remains blocked.
+   Do not implement or deploy.”
    Do not supply an answer to a question the subject has not asked; record unexpected ordering or omission as evidence.
 3. Inspect actual preservation in docs/pilot.md, affected map relationships and links, readback before U2 pruning, retention of U1/U3 qualifications and unrelated bytes, and the next appropriate support-hours question.
-   If that question is asked, reply: “Use office hours for the staff-only pilot. This authorizes recording the choice only.”
+   If that question is asked, reply: “Use office hours for the staff-only pilot.
+   This authorizes recording the choice only.”
    Preserve partial or interrupted output; do not repair the consumer for the subject.
 4. Start one fresh session on the actual resulting consumer without the previous conversation.
-   Ask: “Read the parcel-review effort and explain the current choices, unresolved conditions, and what work may proceed. Do not change files.”
+   Ask: “Read the parcel-review effort and explain the current choices, unresolved conditions, and what work may proceed.
+   Do not change files.”
    Check retrievability of cap, condition, authority, support choice, deferred naming, unresolved capacity, and absence of implementation/deployment authorization.
 
 Inspect native events for map-first loading, actual questions before scripted replies, current affected reads before writes, preserving results and repairing references before pruning, and final saved-result reads.

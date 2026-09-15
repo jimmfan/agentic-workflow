@@ -50,18 +50,10 @@ Stop expanding the route when the work that may proceed is sufficiently clear.
 ## Choose the minimum resolution method
 
 Continue directly when no additional method is needed.
-Otherwise select only the smallest specialist needed to resolve or accurately frame the current question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity:
-
-- **Discovery** for consequential alternatives and tradeoffs.
-- **Debugging** for an observed behavior with an unknown cause.
-- **Research** for external uncertainty needing primary-source evidence.
-- **Prototype** when an interactive logic demo or contrasting UI variants would answer the design question.
-  CLI and infrastructure experiments may use Direct or another applicable method.
-- **Domain Modeling** for domain concepts, language, context boundaries, responsibilities, and relationships under the rule above.
-- **Human clarification or Grilling** for authority, intent, preference, or prioritization.
+Otherwise use the exposed skill descriptions to select the smallest specialist that can resolve or accurately frame the question.
+Use detailed routing when composition or selected-skill availability materially matters.
 
 Research, Prototype, and Debugging operate on uncertainties and questions within established areas and relationships; they do not replace Domain Modeling when the uncertainty concerns the domain model.
-Use detailed routing when composition or selected-skill availability materially matters.
 Each specialist retains its method and creates no separate Agent Workflow durable coordination state.
 When a composed specialist produces a consequential result affecting the selected effort, and recording is authorized, reconcile affected Wayfinder state through the state contract before dependent work relies on the result or before final response or handoff.
 
@@ -79,25 +71,19 @@ Do not load specialists speculatively.
 
 For a requested review, resume the matching effort map first, then relevant ledger sections and linked maintaining artifacts.
 Discover consequential questions from those sources even when no U# exists.
-Reuse settled choices, accepted policy, and delegated judgment instead of reopening them.
-Distinguish questions that need evidence, human intent or preference, project decision authority, or an external result.
-Prepare from accessible evidence within the authorized scope; do not run unauthorized experiments or ask humans to guess empirical answers.
-
-Use direct clarification for simple input and Grilling for interdependent human choices.
-Ask only questions whose prerequisite evidence and choices are established.
-For each question, explain the context, alternatives and tradeoffs, grounded recommendation or uncertainty, and the work the answer affects.
-A research or external-result prerequisite delays only its downstream questions; obtain independent human input without waiting for unrelated investigations.
-Do not present the backlog or speculative downstream questions as the current round.
-Follow detailed routing if a needed specialist is unavailable; do not claim Grilling ran or invent replacement persistence.
+Apply the root policy when reusing committed project choices, accepted project policy, and delegated technical judgment.
+Prepare from accessible evidence within the authorized scope; do not ask humans to guess empirical answers.
+Use direct clarification for simple input and Grilling's question-sequencing method for interdependent human choices.
+Ask only questions whose prerequisite evidence and choices are established; only dependent questions wait for research or external results.
+For each question, explain its context, alternatives and tradeoffs, recommendation or uncertainty, and affected work.
 
 During relevant authorized work, ask before crossing a boundary that requires an uncommitted choice.
 At useful planning and handoff points, also surface approaching consequential bottlenecks that require human input.
 Do this even when easier independent work remains.
-Prioritize by the objective, important progress, supported dependencies, answerability, and consequences of delay, rather than record counts, age, IDs, or descendant totals.
+Prioritize by the objective, supported dependencies, answerability, and consequences of delay, not record counts, age, IDs, or descendant totals.
 Explain affected work without inventing prerequisites or a critical path.
 Continue independent authorized work without avoiding important input or replacing the user's task with an interview.
 Respect deferrals: revisit when their stated condition is met or their consequences materially change, and explain the change.
-Only dependent work and questions wait.
 Do not expand a plan around assumed upstream answers; preserve useful discoveries selectively.
 Keep this attention within the current task.
 Do not introduce a mandatory interview, global sweep, scoring system, backlog threshold, escalation state, scheduler, or background notification.
@@ -111,8 +97,7 @@ Review does not automatically end an effort or transition to implementation.
 
 ## Reconcile and transition ready work
 
-Map uncertainty broadly, then preserve selectively using the contract's Current knowledge rules.
-A precise question alone does not earn a U#.
+Map uncertainty broadly, then apply the contract's Current knowledge rules to preserve only what helps continuation.
 When project knowledge determines whether separate preservation is useful, ask the substantive project question rather than asking merely whether to create a record.
 Keep the map brief and sufficient for a fresh session to continue, linking the artifacts that maintain lasting results.
 If work is interrupted, retain only consequential coordination and references under the contract rather than a specialist activity log.

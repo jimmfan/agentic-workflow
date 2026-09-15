@@ -34,7 +34,9 @@ Excluded:
 
 - The accepted Phase 2 language is part of current project source.
   Current surfaces distinguish project decision authority from action authorization and host permission, use unresolved consequential uncertainty as the potentially blocking condition, preserve U# as the unresolved-question record, and retain delegated technical judgment within its authorized scope.
-- The identified ambiguous `settled`, decision-related `project-owned`, and `semantic coordination state` constructions have been removed from current canonical prose while historical fixture names and identifiers remain available for compatibility coverage.
+- Current reuse instructions distinguish committed project choices, accepted project policy, and technical judgment already delegated to the agent.
+  Historical terminology, fixture names, and identifiers retain their scoped meanings.
+  The [maintainer verification guidance](../../docs/verification.md#maintainer-and-ci-gate) includes contextual prose review and checks of operational claims against their implementation and maintaining documentation.
 - The current map-authoring request supersedes the earlier direction to omit all empty headings.
   New default maps keep Objective, Scope, Ready work, and an honest Blockers assessment visible, separate dependencies from blocking effects, and preserve existing-layout resumption.
   The state contract maintains presentation and responsibility rules; the Wayfinder skill maintains navigation and specialist method.
@@ -43,12 +45,11 @@ Excluded:
 ## Blockers and dependencies
 
 The isolated live host rejected command execution before reading or writing, preventing the map-authoring smoke from establishing live acceptance.
-This limits the live-verification boundary only; independent review of the authored changes can proceed.
+This limits the live-verification boundary only; deterministic checks and editorial review do not establish live map-authoring behavior.
 
 ## Ready work
 
-- Review the already-made coherence changes only against the accepted correction scope and address concrete remaining mismatches without broadening the work.
-- Run the documented deterministic verification and closing Standards and Spec review before treating the effort as complete.
+- When live verification is separately authorized and an effective execution-isolation boundary is available, revisit the map-authoring smoke described in [map-authoring verification](../../evals/map-authoring/REPORT.md).
 
 ## Key links
 

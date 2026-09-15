@@ -15,7 +15,7 @@ Use Wayfinder when consequential investigation must survive session continuation
 1. Define expected and observed behavior, impact, onset, frequency, and last known good state.
 2. Read relevant project diagnostics and system context.
    The workflow supplies no technology-specific commands.
-3. Fix the mutation boundary.
+3. Establish which diagnostic actions are authorized.
    Diagnosis-only work uses existing evidence and read-only observations; request action authorization before adding instrumentation or running a mutating check.
 4. Gather the smallest useful evidence.
    Redact secrets and record commands and baseline results actually observed.
@@ -49,4 +49,5 @@ A vanished symptom without causal evidence is a mitigation, not a proven root ca
 Do not duplicate Code Review already performed by `implement`.
 
 Inside Wayfinder, reconcile only consequential evidence, conclusions, conditions blocking particular work, and next work; the selected map remains the durable coordination summary.
-When user-provided or tool-observed evidence materially supports or changes the diagnosis, selected fix, blockers, dependencies, or verification boundary during Wayfinder work, reconcile the affected Wayfinder state through its contract before further work relies on the finding or before final response or handoff. Do not wait for a separate persistence request.
+When user-provided or tool-observed evidence materially supports or changes the diagnosis, selected fix, blockers, dependencies, or verification boundary during Wayfinder work, reconcile the affected Wayfinder state through its contract before further work relies on the finding or before final response or handoff.
+Do not wait for a separate persistence request.

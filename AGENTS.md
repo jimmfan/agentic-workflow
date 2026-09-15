@@ -196,7 +196,8 @@ Keep experiments reversible and isolated until adoption is intentional.
 ## Versioning
 
 - A change intended to merge to `main` that modifies distributed framework behavior or installed framework content MUST update the root `VERSION` in the same PR unless the user explicitly says the change is not being released.
-- Before declaring such a change complete, compare `VERSION` with the PR base and existing semantic release tags and choose a valid higher version under the current release policy. A version decision is part of delivery verification, not optional cleanup.
+- Before declaring such a change complete, compare `VERSION` with the PR base and existing semantic release tags and choose a valid higher version under the current release policy.
+  A version decision is part of delivery verification, not optional cleanup.
 - Do not confuse a VERSION bump with publication: feature branches update `VERSION`, while the verified `main` workflow owns release-tag creation.
 
 ## Checkout state

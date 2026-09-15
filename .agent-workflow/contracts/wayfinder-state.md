@@ -4,7 +4,7 @@ Use this contract only after routing selects Wayfinder or a request explicitly c
 Existing Wayfinder state alone is never a routing signal.
 
 This contract owns recognition, representation, map authoring, identifiers, reconciliation, preservation, pruning, and effort ending.
-The Wayfinder skill owns navigation and specialist methodology; detailed routing owns workflow selection and composition.
+The Wayfinder skill owns navigation and specialist handoffs; specialists own their methods, and detailed routing owns selection and composition.
 The already-loaded root policy's authority, authorization, preservation, and truthfulness rules remain binding.
 Use [Agent Workflow terminology](../terminology.md) for cross-cutting meanings when they materially affect interpretation or behavior.
 
@@ -126,27 +126,25 @@ These changes affect only the corresponding work; none automatically unblocks un
 
 ## Current knowledge
 
-U/E/F/D are Wayfinder's only durable record types. 
-Using one does not require creating the others:
-
-- `U#` (unresolved question record) contains one current consequential question that remains unanswered and is independently useful to preserve.
-- `E#` (evidence record) contains independently useful evidence with its source, scope, observation, and material limitations.
-- `F#` (fact record) contains one current scoped descriptive conclusion judged sufficiently supported.
-- `D#` (decision record) contains one current consequential choice determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority.
-
 Keep a separate record only when it has independently useful coordination, evaluation, retrieval, reference, or update value beyond the map.
-A map may remain the entire result.
+This gate applies to all four record types; using one does not require creating the others, and the map may remain the entire result.
+Do not create records from ceremony, templates, counts, or category fit.
+
+U/E/F/D are Wayfinder's only durable record types:
+
+- `U#` (unresolved question record): one current consequential unanswered question.
+- `E#` (evidence record): evidence with its source, scope, observation, and material limitations.
+- `F#` (fact record): one current scoped descriptive conclusion judged sufficiently supported.
+- `D#` (decision record): one current consequential choice committed under the root policy's evidence and project decision authority rules.
+
 A recognized record's presence carries only its type's meaning; U# and E# do not automatically become established project truth.
-Do not create U/E/F/D from ceremony, templates, counts, or category fit.
 
 Represent areas, relationships, and ownership or operating boundaries in the single `map.md`.
 Do not add area identifiers, nested state by domain or phase, parallel maps, or another state hierarchy.
 
 Represent a U# as an H2 section in `unknowns.md` stating the question and why it matters.
-Presence means the question is current and unresolved.
-Preserve it separately when its answer could change the effort's direction or next work and retention helps a later developer make or evaluate a decision within the effort's objective and scope.
-A question does not justify a U# merely because it is precise, externally unresolved, unexplained, or part of a long list.
-A temporary U# must help current coordination or later continuation.
+Retain it only while unanswered, when its answer could change direction or next work and retaining it helps later decisions within the effort's objective and scope.
+Precision, external uncertainty, or an unexplained condition alone does not satisfy this gate, even for a temporary U#.
 Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
 Include dependencies, sources, human input or authority, and a sufficiently known resolution method only when useful for continuation.
 Preserve consequential uncertainty when its resolution method or authority is unknown; clarify vague concerns without inventing answers or precision.
@@ -154,7 +152,7 @@ Short records are valid; `Why it matters:` is a recommended authoring aid, not a
 Map-only questions need no Open questions heading or promotion into U#.
 Do not create empty ledgers, retain answered sections as archives, split records by size, or maintain dual U# formats.
 
-An E# file states independently useful evidence using `Source:`, `Scope:`, the existing `Observation` heading or field language, and `Limitations:`.
+An E# file states evidence using `Source:`, `Scope:`, the existing `Observation` heading or field language, and `Limitations:`.
 Record when it was observed only when timing changes meaning, applicability, or validity.
 Prefer a direct source link on a fact record when a separate evidence record adds no independent value.
 Treat consequential evidence supplied by a user or observed from an external system as independently useful when it materially supports a diagnosis or implementation choice and a future agent cannot reliably reconstruct the needed source, scope, observation, and limitations from durable project sources.

@@ -30,6 +30,10 @@ Package validity concerns structure, safety, attribution, and machine-readable c
 For derived-skill prose edits, distinguish editorial changes from intentional instruction changes, preserve complete support files and attribution, and run the package gate.
 For focused commands and ownership, see [tests](../tests/README.md).
 
+Review changed instructional prose in context against the [Markdown policy](../AGENTS.md#markdown-prose-line-breaks) and [canonical terminology](../.agent-workflow/terminology.md), including affected sentence meaning and rendered Markdown structure.
+For changed operational guidance, check command behavior, prerequisites, network requirements, and verification coverage against the implementation and the documentation designated to maintain those requirements.
+Package-test success alone does not establish prose conformance.
+
 The verifier's documentation-link check covers `README.md`, `docs/`, and `.agent-workflow/`; skill-local links are checked separately.
 It checks local targets, not Markdown anchors or every tracked document/reference form.
 For documentation moves or deletions, search all tracked files, including dot-directories, and manually check incoming links, reference-style links, anchors, and code-formatted paths.
