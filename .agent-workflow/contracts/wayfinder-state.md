@@ -145,8 +145,7 @@ Do not add area identifiers, nested state by domain or phase, parallel maps, or 
 Represent a U# as an H2 section in `unknowns.md` stating the question and why it matters.
 Presence means the question is current and unresolved.
 Preserve it separately when its answer could change the effort's direction or next work and retention helps a later developer make or evaluate a decision within the effort's objective and scope.
-Precision, ordinary external uncertainty, an unexplained cause, or a long list alone does not justify a U#.
-
+A question does not justify a U# merely because it is precise, externally unresolved, unexplained, or part of a long list.
 A temporary U# must help current coordination or later continuation.
 Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
 Include dependencies, sources, human input or authority, and a sufficiently known resolution method only when useful for continuation.
