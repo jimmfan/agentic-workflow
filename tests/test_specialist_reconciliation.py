@@ -46,9 +46,13 @@ class SpecialistReconciliationTests(unittest.TestCase):
             read(".agent-workflow/contracts/wayfinder-state.md"),
             "consequential evidence supplied by a user",
             "observed from an external system",
+            "materially supports a diagnosis or implementation choice",
             "future agent cannot reliably reconstruct",
             "source, scope, observation, and limitations",
+            "durable project sources",
             "before dependent work relies",
+            "before final response or handoff",
+            "use a separate E# when its source, method, limitations, or reuse value",
         )
 
     def test_composed_specialist_handoff_belongs_to_wayfinder(self):
