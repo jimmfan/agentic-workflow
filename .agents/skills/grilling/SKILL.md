@@ -4,7 +4,7 @@ name: grilling
 ---
 Work through relevant unresolved choices that require human input or project decision authority until you reach a shared understanding.
 When the user explicitly requests thorough grilling, examine the relevant assumptions, alternatives, and consequences in depth.
-Reuse settled choices, choices determined by accepted project policy, and technical judgment already delegated to the agent.
+Reuse committed project choices, choices determined by accepted project policy, and technical judgment already delegated to the agent.
 Map the remaining choices as a **design tree**: each decision branches into the decisions that depend on it.
 
 Work the tree in **rounds**.

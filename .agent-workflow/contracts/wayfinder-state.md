@@ -126,7 +126,7 @@ These changes affect only the corresponding work; none automatically unblocks un
 
 ## Current knowledge
 
-U/E/F/D are Wayfinder's only durable record types. 
+U/E/F/D are Wayfinder's only durable record types.
 Using one does not require creating the others:
 
 - `U#` (unresolved question record) contains one current consequential question that remains unanswered and is independently useful to preserve.

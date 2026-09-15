@@ -3,9 +3,9 @@
 This development container supplies the complete toolchain needed to develop and verify Agent Workflow without changing the macOS host's Python setup.
 It uses Python 3.14 on Debian Bookworm, `uv`, Git, the GitHub CLI for authorized GitHub work, and an exactly pinned Codex extension with a persistent project-specific login volume.
 
-The project itself has no third-party Python dependencies: its runtime, installer, analyzer, release gate, and tests intentionally use only the Python standard library.
-For that reason, opening this container does not create a virtual environment or run a package sync.
-`uv` remains available for running Python commands and for future dependency work if the project contract changes.
+The runtime uses only the Python standard library; development verification also uses Ruff and isolated package-build tooling.
+Opening this container does not create a virtual environment or run a package sync.
+The [documented locked verification commands](../docs/verification.md#maintainer-and-ci-gate) use `uv` to prepare the project environment and run its checks.
 
 Codex stores its login and local state in the Docker volume `agent-workflow-instructions-codex-home`, mounted at `/home/vscode/.codex`.
 The image configures file-backed credential storage through `/etc/codex/config.toml`; credentials are never copied into the image or repository.
@@ -45,21 +45,13 @@ It is read-only and confirms the exact interpreter, required command-line interf
 python3 .devcontainer/check_environment.py
 ```
 
-Run the full repository gate from the **same Dev Container terminal at the repository root**.
-It is read-only for tracked repository files and removes its temporary test directories automatically:
+Run every command in the [maintainer and CI gate](../docs/verification.md#maintainer-and-ci-gate) from the **same Dev Container terminal at the repository root**.
+The gate checks Python formatting and lint, package contracts, evaluation tooling, wheel installation, and diff whitespace.
+Dependency setup and isolated builds may need package-index access; lifecycle tests use disposable consumers and leave tracked source unchanged.
 
-```bash
-python3 agent_workflow/verify_package.py --tests
-```
-
-To run that same gate through `uv` without inventing a package or virtual environment, use this equivalent command in the **same Dev Container terminal**:
-
-```bash
-uv run --no-project python agent_workflow/verify_package.py --tests
-```
-
-Normal lifecycle install and update use direct packaged skill bytes and need no GitHub CLI authentication or network access.
-Authentication is needed only for separately authorized GitHub work.
+Normal CLI install and update require HTTPS access to GitHub to resolve and download a framework snapshot; they do not require GitHub CLI authentication.
+Local snapshot overrides used by tests can avoid those network requests; see [distribution and lifecycle](../docs/architecture.md#distribution-and-lifecycle).
+GitHub CLI authentication is needed only for separately authorized GitHub work that requires it.
 If that work is required, run this persistent login in the **Dev Container terminal**:
 
 ```bash

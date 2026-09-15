@@ -79,7 +79,7 @@ Do not load specialists speculatively.
 
 For a requested review, resume the matching effort map first, then relevant ledger sections and linked maintaining artifacts.
 Discover consequential questions from those sources even when no U# exists.
-Reuse settled choices, accepted policy, and delegated judgment instead of reopening them.
+Reuse committed project choices, accepted project policy, and technical judgment already delegated to the agent instead of reopening them.
 Distinguish questions that need evidence, human intent or preference, project decision authority, or an external result.
 Prepare from accessible evidence within the authorized scope; do not run unauthorized experiments or ask humans to guess empirical answers.
 

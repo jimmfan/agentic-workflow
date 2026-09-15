@@ -20,8 +20,7 @@ Ownership of a remote service does not make its transport a private implementati
 
 At system boundaries, design interfaces that are easy to mock:
 
-**1.
-Use dependency injection**
+**1. Use dependency injection**
 
 Pass external dependencies in rather than creating them internally:
 
@@ -38,8 +37,7 @@ function processPayment(order) {
 }
 ```
 
-**2.
-Prefer SDK-style interfaces over generic fetchers**
+**2. Prefer SDK-style interfaces over generic fetchers**
 
 Create specific functions for each external operation instead of one generic function with conditional logic:
 
