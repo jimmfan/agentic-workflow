@@ -42,8 +42,6 @@ The ordinary distribution manifest is the current source-to-target map; no insta
 In `AGENTS.md`, one framework-owned region is bounded by the logical managed-begin and managed-end lines; every byte outside it is preserved as opaque project content.
 Repeated install and update keep exactly one such region.
 The existing `CLAUDE.md` composite integration remains unchanged.
-Required local workflow skills similarly live under `.agents/skills`.
-
 The current curated skills live directly under `.agents/skills`.
 Their current directory names are reserved for Agent Workflow.
 Install and update replace each complete current curated skill directory, including extra files, while preserving unrelated skill directories.
@@ -51,30 +49,10 @@ Remove deletes those current curated directories.
 Existing content at those reserved names is ordinary install/update convergence input.
 Wayfinder and Research are directly distributed maintained versions.
 
-Local Wayfinder data is a configured project-owned durable representation under `.project-efforts/`, never a distributed template or framework-owned lifecycle tree.
-A map may stand alone; ledgers and separate records are optional.
-U# unresolved question records are H2 sections in optional `unknowns.md`, each containing one current consequential question that remains unanswered.
-F# fact records containing supported, scoped, revisable conclusions are H2 sections in optional `facts.md`, and D# decision records containing choices determined directly by accepted project policy or committed by the person, role, or valid delegate with project decision authority are H2 sections in optional `decisions.md`.
-E# evidence records with source, scope, observation, and material limitations remain individual files.
-Each record is retained only when it has independently useful coordination, evaluation, retrieval, reference, or update value beyond the map.
-The map summarizes current coordination state, conditions blocking particular work, dependencies, and ready work, indexing rather than duplicating supporting detail.
-When resuming, read `map.md` first, then retrieve only the relevant ledger sections and E# files.
-
-The [state contract](contracts/wayfinder-state.md) maintains default-map presentation and responsibility authoring conventions, including separate dependencies and scoped blocker assessments.
-Existing layouts remain resumable; authoring conventions are not recognition requirements or migration triggers.
-
-Fact records identify the source or records from which their scoped conclusion was derived.
-Decision records identify the accepted project policy that determines their choice or the person, role, or valid delegate with project decision authority who commits it; evidence alone cannot commit that choice.
-
-Before detailed decomposition, the map may state ready work directly.
-A durable ticket or ticket set created by `to-tickets` maintains ticket contents, dependencies, ordering, and readiness.
-The map links that durable ticket or ticket set and may include the current ready-work reference without mirroring ticket-level state; a chat-only draft remains session-local.
-See `contracts/wayfinder-state.md` for the precise, lazily loaded semantics.
-Discovery, Debugging, Research, Prototype, and Domain Modeling are specialists.
-Specialists retain their methods and create no Agent Workflow durable coordination state.
-Discovery analyzes consequential alternatives and tradeoffs, Research establishes externally sourced facts, and Domain Modeling clarifies domain concepts, language, context boundaries, responsibilities, and relationships.
-Lasting architecture decisions remain in the project artifact or record designated to maintain them.
-Implementation is a workflow transition into execution.
+Wayfinder keeps project-owned durable coordination under `.project-efforts/`, outside framework lifecycle ownership.
+A map can stand alone and links supporting records and lasting artifacts when needed.
+The [state contract](contracts/wayfinder-state.md) owns record formats, selective preservation, resumption, map authoring, and map-versus-ticket responsibilities.
+Specialist methods and their handoffs follow [detailed routing](routing.md); specialists create no separate Agent Workflow durable coordination state.
 
 ## Status and recovery
 

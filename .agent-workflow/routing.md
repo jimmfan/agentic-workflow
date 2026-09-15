@@ -9,9 +9,6 @@ Root rules for action authorization, project decision authority, preservation, a
 Choose the minimum useful process justified by intent, uncertainty, impact, reversibility, and expected duration.
 File count does not select a workflow.
 
-1. Choose Direct or one primary workflow; add only supporting capabilities that materially help.
-2. Read the instructions for each selected skill and only the support files those instructions require.
-
 Before making or acting on a consequential choice, resolve any material unresolved prerequisite using the minimum sufficient method.
 This table resolves overlaps:
 
@@ -65,20 +62,17 @@ New causal uncertainty returns to Debugging; a material unresolved choice return
 
 Use a skill only when it is exposed in the current session.
 Read the selected skill's instructions and only the support files needed for the current request.
-Selecting a skill is not execution: include it in the route marker only when its method actually ran.
-
-Choosing a route, selecting a skill, loading its instructions, using its method, completing the request, and verifying the result are distinct.
+Execution means using the skill's method; selecting it, reading instructions, checking availability, or giving invocation instructions does not count.
 Using a skill for focused work need not change the primary route, including Direct.
-Loading a selected skill makes its instructions available; execution means actually using the skill's method; and completion and verification require evidence beyond the route marker.
+Completion and verification require evidence beyond execution or a route marker.
 
 Research and factual lookup may run synchronously when their evidence requirements remain satisfied.
 Preserve a selected method's required independence or parallelism; if that capability is unavailable, report the execution gap under the availability conventions below rather than claiming independent work ran.
 
-If a selected skill is unavailable or cannot run without explicit user invocation, continue Direct only when the user did not require that skill and available capabilities can satisfy the request.
-Otherwise, give the exact supported invocation instruction and stop with `<skill>-handoff` when explicit user invocation remains required, or stop with `<skill>-unavailable` when the skill is unavailable.
-
-If authorization, current state, a required input, or an integrity check prevents the selected work from proceeding, stop with `<skill>-blocked`.
-Never claim an unavailable skill ran or present Direct work as that skill's result.
+If a selected skill is unavailable or requires explicit user invocation, continue Direct only when the user did not require that skill and available capabilities can satisfy the request.
+Otherwise stop, explain what is needed, give the exact supported invocation instruction when applicable, and use the terminal suffix below.
+Also stop affected work when authorization, current state, a required input, or an integrity check prevents it from proceeding.
+Never present Direct work as execution of a skill that could not run.
 
 ## Preserve responsibilities and transitions
 
@@ -108,10 +102,9 @@ Use a terminal suffix only when selection did not become equivalent execution:
 - `<skill>-unavailable`: the required skill cannot run;
 - `<skill>-blocked`: action authorization, state, prerequisite, or integrity stopped it.
 
-After a successful Direct fallback, omit the skill that could not run from the marker; use `direct` only when no named workflow or skill ran.
-Availability or status checks, invocation instructions, and unexecuted selections do not count as execution.
+After a successful Direct fallback, omit the skill that could not run from the marker.
 TDD and Code Review run within `implement` remain represented by `implement` unless separately selected.
 The ASCII `->` separator is valid when Unicode is unavailable.
 
-The marker is instruction-level observability, not proof of execution.
+The marker reports execution; it does not prove it.
 Never reroute, load skills, execute work, explain rejected routes, or write state only to produce it.

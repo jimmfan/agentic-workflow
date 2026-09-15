@@ -2,8 +2,7 @@
 
 ## Good Tests
 
-**Integration-style**: Test through real interfaces, not mocks of internal parts.
-Identify the module under test first: its caller-facing interface may be application-internal.
+These examples apply the [skill's test-quality rules](SKILL.md#what-a-good-test-is).
 Integration style describes how a test exercises behavior; it does not establish a test-first workflow.
 
 ```typescript
@@ -16,13 +15,7 @@ test("user can checkout with valid cart", async () => {
 });
 ```
 
-Characteristics:
-
-- Tests behavior users/callers care about
-- Uses the module's caller-facing interface only
-- Survives internal refactors
-- Describes WHAT, not HOW
-- One logical assertion per test
+Use one logical assertion per test.
 
 ## Bad Tests
 
@@ -37,14 +30,8 @@ test("checkout calls paymentService.process", async () => {
 });
 ```
 
-Red flags:
-
-- Mocking internal collaborators
-- Testing private methods
-- Asserting on call counts/order
-- Test breaks when refactoring without behavior change
-- Test name describes HOW not WHAT
-- Verifying through external means instead of interface
+The mock assertion above checks an internal collaborator's calls rather than checkout behavior.
+The next pair shows verification through a side channel versus the agreed interface:
 
 ```typescript
 // BAD: Bypasses interface to verify

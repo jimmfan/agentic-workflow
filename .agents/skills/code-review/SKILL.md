@@ -20,7 +20,7 @@ Preserve the user's chosen comparison semantics; do not silently expand an expli
   For a standalone fixed point without another requested comparison, use `git diff <fixed-point>...HEAD` (merge-base to HEAD) and `git log <fixed-point>..HEAD --oneline`.
   Respect an explicit endpoint comparison or other range instead.
   Inspect content at the reviewed revision, since working-tree files may differ.
-- **Implementation-scope / work-in-progress review:** use the handoff's governing request or specification, acceptance criteria, baseline, pre-edit context, and attributed changes.
+- **Implementation-scope / work-in-progress review:** use the handoff's inputs and attribute changes against pre-edit context.
   Establish the relevant committed delta and pending changes through the actual resulting content.
   Inspect `git --no-optional-locks status --short`, staged changes (`git diff --cached`), unstaged changes (`git diff`), and relevant new files (`git ls-files --others --exclude-standard` plus content reads).
   Include applicable additions, deletions, and renames across these surfaces; a commit diff alone is insufficient.
@@ -28,7 +28,13 @@ Preserve the user's chosen comparison semantics; do not silently expand an expli
   Compare with pre-edit observations to exclude unrelated user changes, including unrelated hunks in a file also edited for this task.
   File dirtiness alone does not establish attribution.
 
-Record the included paths/hunks, relevant versions, commands or content observations, and exclusions once for both reviewers.
+Keep one shared review-input set for both reviewers:
+
+- Review mode, resolved baseline/range and relevant commits.
+- Governing request or specification and acceptance criteria, resolved in step 2.
+- Pre-edit context when applicable, attributed paths/hunks and versions, and any exclusions or uncertainty.
+- Commands or content observations needed to inspect the actual scope.
+
 Validate refs and coverage before spawning; an empty commit diff does not imply an empty implementation scope, and a nonempty diff does not establish complete coverage.
 If a required baseline, mode, or material attribution cannot be established from supplied inputs and repository evidence, obtain only the missing scope information or explicitly limit the review.
 Do not claim complete coverage while required inputs remain missing or attribution remains materially ambiguous.
@@ -91,12 +97,11 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 ### 4. Spawn both sub-agents in parallel
 
-Give both independent reviewers the same established inputs: review mode, resolved baseline/range and relevant commits, governing request/specification and acceptance criteria, pre-edit context when applicable, included paths/hunks and versions, exclusions or uncertainty, and commands/content needed to inspect the actual scope.
+Give both independent reviewers the shared review-input set from step 1, including the specification contents or usable references from step 2.
 Each reviewer must inspect that scope and report actual coverage, not merely echo a supplied diff command or success claim.
 
 **Standards sub-agent prompt** — include:
 
-- The established review inputs above.
 - The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full — the sub-agent has no other access to it.
 - The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk.
   Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline.
@@ -105,7 +110,6 @@ Each reviewer must inspect that scope and report actual coverage, not merely ech
 
 **Spec sub-agent prompt** — include:
 
-- The same established review inputs, including the supplied request/specification contents or usable references.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong.
   Quote the spec line for each finding.
   Under 400 words."

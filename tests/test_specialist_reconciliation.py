@@ -113,7 +113,19 @@ class SpecialistReconciliationTests(unittest.TestCase):
                     ".agent-workflow/contracts/wayfinder-state.md", skill(name)
                 )
                 self.assertNotIn(".project-efforts/", skill(name))
-        self.assertIn("unless accepted project policy", integration)
+        self.assert_clause(
+            integration,
+            "scope is finished",
+            "required `workflow-verification` completion gate is satisfied",
+        )
+        self.assert_clause(
+            skill("workflow-verification"),
+            "every required acceptance criterion to pass",
+            "unless accepted project policy",
+            "named completion boundary",
+            "person, role, or valid delegate with project decision authority",
+            "explicitly accepts it",
+        )
         self.assertIn(
             "cannot commit a project choice", skill("workflow-implementation")
         )
@@ -147,8 +159,9 @@ class SpecialistReconciliationTests(unittest.TestCase):
             "Keep a separate record only when",
             "independently useful",
             "beyond the map",
-            "A map may remain the entire result",
-            "Do not create U/E/F/D from ceremony",
+            "applies to all four record types",
+            "the map may remain the entire result",
+            "Do not create records from ceremony",
         )
         self.assertIn(
             "do not create or retain an E# merely as a transition step", contract
