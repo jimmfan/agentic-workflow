@@ -219,7 +219,7 @@ class WayfinderStateContractTests(unittest.TestCase):
 
     def test_contract_documents_record_type_inventory(self) -> None:
         self.assertEqual(
-            set(re.findall(r"^- `([A-Z])#`", self.contract, re.MULTILINE)),
+            set(re.findall(r"^### [^\n]+ — ([A-Z])#$", self.contract, re.MULTILINE)),
             {"U", "E", "F", "D"},
         )
 

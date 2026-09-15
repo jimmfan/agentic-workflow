@@ -87,26 +87,24 @@ Preserve uncertainty and **Not yet specified** content without requiring a compl
 These are authoring conventions, never effort-recognition or parser requirements.
 Existing maps with alternate layouts remain valid and resumable; do not rewrite them merely to match this default.
 
+Keep the map brief, preserve enough information to resume safely, and link detailed roadmaps, specifications, ADRs, tickets, project artifacts, and sources that establish relevant claims instead of copying their bodies or detailed backlogs.
+If a fresh session must read most supporting records to recover the current route, reconcile the map instead of adding more supporting detail.
+
+Represent areas, relationships, and ownership or operating boundaries in the single `map.md`.
+Do not add area identifiers, nested state by domain or phase, parallel maps, or another state hierarchy.
+
 ### Responsibilities in the map
 
-Make consequential participant responsibilities explicit within Areas and relationships, optionally using an `### Ownership` subsection rather than a mandatory top-level section or responsibility matrix.
+State consequential participant responsibilities within Areas and relationships, optionally under `### Ownership`; no separate section or matrix is required.
 Use precise verbs such as provides, maintains, implements, or decides.
 Do not infer an assignment or decision authority from a title, implementation responsibility, access, or agent-authored text.
 Naming the decision-maker does not establish approval or authorize execution.
 When no designated artifact maintains established effort-specific responsibilities, the map may maintain them directly.
-Otherwise link the relevant maintaining content; a brief source-linked orientation summary is useful when it helps navigation without creating a competing matrix or mirroring ticket assignments.
+Otherwise link that content, adding a brief source-linked summary only when useful for navigation; do not create a competing matrix or mirror ticket assignments.
 Responsibilities, required inputs, and their blocking effects are different relationships and may each deserve mention.
 Avoid independently maintained copies of status, dates, and assignments across sections.
 Keep consequential unknown responsibility or authority explicit and clarify it when required.
 Unknown ownership blocks only work that actually requires it; do not invent assignments or prerequisites, or create U/E/F/D records merely to categorize ownership.
-
-When no durable ticket or ticket set exists, the map may state ready work directly.
-Once a durable ticket or ticket set exists, that artifact maintains its contents, dependencies, ordering, and readiness.
-The map links it with a readable Markdown link and may include a current ready-work reference without copying or mirroring ticket-level state.
-A chat-only draft is not a durable ticket or ticket set.
-
-Keep the map brief, preserve enough information to resume safely, and link detailed roadmaps, specifications, ADRs, tickets, project artifacts, and sources that establish relevant claims instead of copying their bodies or detailed backlogs.
-If a fresh session must read most supporting records to recover the current route, reconcile the map instead of adding more supporting detail.
 
 ### Dependencies and readiness
 
@@ -124,33 +122,38 @@ Questions and uncertainties are resolved through appropriate evidence or their r
 Apply root policy to required project choices and action authorization, and the [scoped acceptance rule](#scoped-uncertainty-acceptance) when uncertainty is explicitly accepted.
 These changes affect only the corresponding work; none automatically unblocks unrelated work.
 
+When no durable ticket or ticket set exists, the map may state ready work directly.
+Once a durable ticket or ticket set exists, that artifact maintains its contents, dependencies, ordering, and readiness.
+The map links it with a readable Markdown link and may include a current ready-work reference without copying or mirroring ticket-level state.
+A chat-only draft is not a durable ticket or ticket set.
+
 ## Current knowledge
 
 Keep a separate record only when it has independently useful coordination, evaluation, retrieval, reference, or update value beyond the map.
 This gate applies to all four record types; using one does not require creating the others, and the map may remain the entire result.
 Do not create records from ceremony, templates, counts, or category fit.
 
-U/E/F/D are Wayfinder's only durable record types:
-
-- `U#` (unresolved question record): one current consequential unanswered question.
-- `E#` (evidence record): evidence with its source, scope, observation, and material limitations.
-- `F#` (fact record): one current scoped descriptive conclusion judged sufficiently supported.
-- `D#` (decision record): one current consequential choice committed under the root policy's evidence and project decision authority rules.
-
+U/E/F/D are Wayfinder's only durable record types, described below.
 A recognized record's presence carries only its type's meaning; U# and E# do not automatically become established project truth.
+Apply [Reconcile affected state](#reconcile-affected-state) to every record change; the following rules describe each type's lifecycle.
 
-Represent areas, relationships, and ownership or operating boundaries in the single `map.md`.
-Do not add area identifiers, nested state by domain or phase, parallel maps, or another state hierarchy.
+### Unresolved questions — U#
 
-Represent a U# as an H2 section in `unknowns.md` stating the question and why it matters.
-Retain it only while unanswered, when its answer could change direction or next work and retaining it helps later decisions within the effort's objective and scope.
+Represent a U# as an H2 section in `unknowns.md` stating one current consequential question and why it matters.
+Create, reopen, or retain it only while unanswered, when its answer could change direction or next work and retaining it helps later decisions within the effort's objective and scope.
+Surface it in the map only when it affects the route.
 Precision, external uncertainty, or an unexplained condition alone does not satisfy this gate, even for a temporary U#.
 Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
 Include dependencies, sources, human input or authority, and a sufficiently known resolution method only when useful for continuation.
 Preserve consequential uncertainty when its resolution method or authority is unknown; clarify vague concerns without inventing answers or precision.
 Short records are valid; `Why it matters:` is a recommended authoring aid, not a required field or recognition criterion.
 Map-only questions need no Open questions heading or promotion into U#.
-Do not create empty ledgers, retain answered sections as archives, split records by size, or maintain dual U# formats.
+Do not create empty ledgers, split records by size, or maintain dual U# formats.
+
+When a U# is answered, preserve its independently useful result through reconciliation, then prune it; do not retain answered questions as history.
+For [scoped uncertainty acceptance](#scoped-uncertainty-acceptance), keep the U# unresolved.
+
+### Evidence — E#
 
 An E# file states evidence using `Source:`, `Scope:`, the existing `Observation` heading or field language, and `Limitations:`.
 Record when it was observed only when timing changes meaning, applicability, or validity.
@@ -159,13 +162,26 @@ Treat consequential evidence supplied by a user or observed from an external sys
 Preserve it before dependent work relies on it or before final response or handoff; use a separate E# when its source, method, limitations, or reuse value justify independent preservation.
 Otherwise do not create or retain an E# merely as a transition step.
 
+### Facts — F#
+
 Fact records are H2 sections in `facts.md`.
 Presence means the conclusion is sufficiently supported and current, not immutable; no separate status field is required.
 State the relation directly: `Source:` identifies a source that establishes the conclusion for its stated scope, `Derived from:` identifies evidence or another record from which it was derived, and `Authority:` may name a source that establishes a policy claim.
-Each fact record contains its scoped descriptive conclusion and material limitations.
+Each fact record contains one scoped descriptive conclusion and its material limitations.
 Repeated agent summaries are not independent evidence.
 
-Decision records are H2 sections in `decisions.md`; presence means the choice is current and committed for its boundary under the root policy's evidence and project-choice gate.
+A conclusion about another system remains scoped to that system; it does not establish a conclusion about the current project.
+Record a project-specific F# only when project evidence or current source sufficiently supports the claim for that scope.
+Otherwise preserve independently useful external evidence as E#, a consequential unresolved project question as U#, or a working proposal in the map or specialist artifact, only when that representation independently earns preservation.
+
+When evidence strengthens or narrows a fact, update the same F# with its current conclusion, sources, scope, and material limitations.
+When support is invalidated, narrow or remove the unsupported conclusion and reconcile references that treated it as supported.
+Prune the F# when no supported conclusion with independent current value remains; do not create a second fact record to preserve history.
+Changed factual evidence also requires reviewing dependent decisions and ready work under the authority rules below.
+
+### Decisions — D#
+
+Decision records are H2 sections in `decisions.md`; each holds one current consequential choice committed for its boundary under the root policy's evidence and project-choice gate.
 `Authority:` identifies the person, role, or valid delegate whose choice binds that boundary, or references accepted project policy that determines the choice directly; policy is not an entity holding authority.
 Record the choice, decisive basis or constraints, material consequences, and a revisit condition only when one genuinely applies.
 Reference the project artifact recording the choice when one exists.
@@ -173,9 +189,9 @@ Wayfinder can record authority; it cannot create it.
 Alternatives, research findings, hypotheses, recommendations, inferred preferences, and routine implementation judgment within delegated scope do not independently justify a D# or replace a binding choice.
 Neither persistence nor agent inference turns a proposal into a committed choice or an assumption into a supported conclusion.
 
-A conclusion about another system remains scoped to that system; it does not establish a conclusion about the current project.
-Record a project-specific F# only when project evidence or current source sufficiently supports the claim for that scope.
-Otherwise preserve independently useful external evidence as E#, a consequential unresolved project question as U#, or a working proposal in the map or specialist artifact, only when that representation independently earns preservation.
+When accepted project policy determines a different choice, or the person, role, or valid delegate with project decision authority commits one, update the same D# and its authority, basis, consequences, revisit condition, and affected references.
+Allocate another D# only for a distinct current decision.
+Prune a D# that no longer records the current binding choice through the common reconciliation sequence; Git retains the prior choice.
 
 ### Scoped uncertainty acceptance
 
@@ -219,79 +235,65 @@ The common sequence below applies to every record-specific change, pruning opera
 
 ### Reconcile affected state
 
-Reconciliation is required before renaming or pruning recognized state and whenever work authorized within the current scope changes reality represented by the selected effort before claiming completion.
+Reconcile before renaming or pruning recognized state, and before claiming completion when authorized work changes what the selected effort represents.
 Read-only work may report stale or conflicting state but does not change it.
 
-Plan a mutation from current affected state.
-Immediately before writing, renaming, or removing, confirm that the directly affected state and known affected references still support the planned mutation.
-Create targets without overwriting existing paths.
-If affected state changed or conflicts, stop the affected operation rather than overwrite it; independent work may proceed.
-For ledger edits, reread the ledger and affected references, validate the target ID and H2 boundaries, and edit only the intended section.
-Protect neighboring sections, preambles, and unrecognized content; ambiguous boundaries prevent that edit.
-All selected Wayfinder state paths, including their ancestors, ledgers, and E# files, must use regular files/directories without crossing symlinks or escaping the selected effort.
-
-Before an affected rename or pruning operation, inspect the selected state and discover incoming references with a narrowly targeted, read-only search across current repository text, including relevant hidden directories.
-Search for the specific affected file/path and heading anchors, accounting for relative links whose text omits the full repository-relative path; inspect only relevant matches.
-Bare IDs are effort-local: an `E1` or `U1` elsewhere is not by itself a reference to this record.
-This operation-specific search does not authorize reading every document, discovering or reconciling unrelated efforts, or searching Git history; it is not part of every message or ordinary resumption.
-Repository text search does not establish the absence of external or dynamically constructed references; report material discovery limits.
-Repair affected references only within the request's authorization; discovering a backlink grants no permission to edit its document.
-If a necessary reference or preservation requirement cannot be assessed or safely repaired, retain the affected record and report the limitation; independent authorized work may continue.
-
-Use this common sequence for every affected reconciliation:
-
-1. Preserve newly supplied, corrected, and still-valid information whose loss would materially affect the accepted result, its use, authority, dependencies, or established next work.
-   Keep operational details in the artifact designated to maintain the result or a usable durable reference, not solely in chat or a high-level summary.
-   Keep the map brief and link that detail; do not duplicate the detailed result or retain everything.
-2. Update affected map content, records, conditions blocking affected work, dependencies, ready work, and known references.
-   Preserve the relationships among identities, statuses, sources, and scopes under the authority and evidence rules in `## Current knowledge`.
-   Do not infer verification from a report, commitment from a proposal, action authorization from a committed choice, or fresh verification from recorded external evidence.
-   When a choice or contingency changes, reconcile its consequences for established dependencies and ready work without inventing requirements or making every unknown a blocker.
-3. Prune only recognized records that no longer have independent current value.
-   Before pruning, verify that any still-useful information in the record is retrievable from its designated maintaining artifact and that affected references resolve.
-   A working replacement link is insufficient if its target loses useful evidence, source/scope qualifications, or consequential relationships.
-   If preservation cannot be established, retain the affected record without blocking independent work.
-4. Before claiming a material authorized update complete, reread the affected saved results and references against the relevant input and current state.
-   Check that consequential details and relationships remain retrievable and usable without the original conversation, including whether a retained reference actually supplies the needed detail.
-   Bound this check to affected work; it is not required for every message or across the whole repository.
-
+Work only within current action authorization, including edits to linked artifacts.
+A link neither makes its target a Wayfinder record nor authorizes editing it.
 Do not copy maintaining-artifact bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
-Apply root policy's cross-artifact rule: a useful summary or omitted detail held elsewhere is not itself an inconsistency.
-Linking a project artifact does not make it a Wayfinder record or grant authorization to write it.
-When evidence is insufficient for a truthful update, preserve state and report what prevents the affected work from proceeding.
+Apply root policy's cross-artifact rule: a useful summary or detail held elsewhere is not itself an inconsistency.
+
+If affected state changed or conflicts, evidence is insufficient, or a required edit, preservation check, or reference repair is unauthorized or blocked, stop that operation and report the limitation.
+Retain affected records and useful information without creating a competing authoritative copy; independent authorized work may continue.
+
+Use this sequence for every affected reconciliation:
+
+1. **Check current state immediately before mutation.**
+   Confirm the affected state and known references still support each planned write, rename, or removal; create targets without overwriting existing paths.
+   Use regular files/directories; reject symlinks in selected state paths or their ancestors and paths escaping the selected effort.
+   For ledger edits, reread the ledger and affected references, validate the target ID and H2 boundaries, and change only the intended section.
+   Preserve neighboring sections, preambles, and unrecognized content; ambiguous boundaries prevent the edit.
+2. **Preserve useful information.**
+   Retain newly supplied, corrected, and still-valid details that matter to the accepted result, its use, authority, dependencies, or established next work.
+   Keep operational detail in the artifact designated to maintain it or a usable durable reference, not only in chat or a high-level summary.
+   Keep the map brief and link the detail rather than duplicating the result or retaining everything.
+3. **Update affected relationships.**
+   Reconcile map content, records, blocking conditions, dependencies, ready work, and known references under [Current knowledge](#current-knowledge).
+   Preserve relationships among identities, statuses, sources, and scopes.
+   Do not infer verification from a report, commitment from a proposal, action authorization from a committed choice, or fresh verification from recorded external evidence.
+   Reassess established dependencies and readiness when choices or contingencies change, without inventing requirements or making every unknown a blocker.
+4. **Prune obsolete records after preservation and reference checks.**
+   Remove only recognized records without independent current value.
+   First verify that still-useful information is retrievable from its designated artifact and affected references resolve.
+   A working link is insufficient if its target loses useful evidence, source/scope qualifications, or consequential relationships.
+5. **Read back the saved result before claiming a material authorized update complete.**
+   Check affected results and references against relevant input and current state, including whether linked targets supply the needed detail.
+   Consequential information and relationships must remain usable without the original conversation.
+   This is an affected-work check, not a requirement for every message or the whole repository.
+
+#### Before renaming or pruning
+
+Discover incoming references with a narrowly targeted, read-only search of current repository text, including relevant hidden directories.
+Match affected paths and heading anchors, accounting for relative links that omit the full path; inspect only relevant matches.
+A bare ID outside the effort is not by itself a reference to its record.
+This search applies only to the operation, not ordinary resumption or every message; it authorizes no broad document reads, unrelated-effort discovery or reconciliation, or Git-history search.
+Report material limits: repository search cannot establish the absence of external or dynamically constructed references.
 
 ### Interpret review answers before recording
 
 A review request alone grants no blanket write permission.
-When recording is authorized, distinguish committed choices, tentative preferences, partial or conditional replies, factual reports, corrections, deferrals, scoped uncertainty acceptance, and scope changes by their meaning, without adding statuses.
-Apply the evidence and authority gates in [Current knowledge](#current-knowledge) and the common sequence; a reply cannot invent an assignment or approval.
+When recording is authorized, interpret answers under [Current knowledge](#current-knowledge) without adding statuses:
+
+- Distinguish committed choices from preferences, factual reports, and corrections; apply the evidence and authority gates rather than inferring assignments or approval.
+- Preserve conditions and the remaining consequential question in partial answers.
+- Accepted uncertainty stays unresolved under the scoped acceptance rule; a scope change may make a question inapplicable without answering it.
+- Respect deferrals and preserve qualifications, scope, sources, and authority in the artifact that maintains the result.
+
 Clarify materially ambiguous scope, conditions, or authority; do not reconfirm a clear authorized answer.
-Preserve qualifications, conditions, scope, sources, and authority in the designated maintaining artifact.
-Accepted uncertainty stays unresolved under the scoped acceptance rule; a scope change may instead make a question inapplicable without answering it.
-Partial answers preserve the remaining consequential question and its qualifications.
-
-Apply the common sequence to answered subsets at meaningful round boundaries, not per sentence or through a journal.
+Apply the common reconciliation sequence to answered subsets at meaningful round boundaries, not per sentence or through a journal.
 Reuse the existing decision for the same boundary and respect specification, ticket, and decision ownership.
-Recording a choice authorizes neither implementation/publication nor arbitrary edits to linked artifacts; runtime-contract and skill Markdown changes are implementation too.
-If a required maintaining-artifact edit is unauthorized or blocked, retain the affected information and report incomplete reconciliation rather than losing it, pruning prematurely, or creating a competing authoritative copy.
-Do not automatically create tickets, ADRs, U/E/F/D records, archives, or end the effort because a review round finished.
-
-### Apply record-specific changes
-
-When evidence strengthens or narrows an F#, update the same F# in place with its current scoped conclusion, the source or records from which it was derived, and material limitations.
-When evidence invalidates its support, narrow or remove the unsupported conclusion and reconcile references that treated it as supported.
-Prune the F# when no supported conclusion with independent current value remains.
-Do not create a second fact record merely to preserve history.
-
-Create or reopen a U# only under Current knowledge's selective gate, and surface it in the map only when it affects the route.
-
-When a U# is answered, preserve any independently useful result through the common sequence and prune the U#; an answered question is no longer a current unresolved question and is not retained as history.
-For accepted uncertainty, apply [Scoped uncertainty acceptance](#scoped-uncertainty-acceptance); do not prune the unresolved U#.
-
-When factual evidence changes, review dependent D# records and ready work under the authority rule in `## Current knowledge`.
-When accepted project policy changes the choice for a decision boundary, or the person, role, or valid delegate with project decision authority commits a different choice, update the same D# and its authority, basis, consequences, revisit condition, and affected references.
-Allocate another D# only for a distinct current decision.
-When a D# no longer records the current binding choice, apply the common sequence and prune it; Git retains the prior choice.
+Recording a choice does not authorize implementation or publication; runtime-contract and skill Markdown edits are implementation too.
+A completed review round does not itself justify tickets, ADRs, U/E/F/D records, archives, or ending the effort.
 
 ### Prune one record
 
