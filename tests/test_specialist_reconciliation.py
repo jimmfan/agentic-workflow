@@ -33,10 +33,16 @@ class SpecialistReconciliationTests(unittest.TestCase):
     def test_debugging_reconciles_user_and_tool_evidence_before_reliance(self):
         self.assert_clause(
             skill("workflow-debugging"),
-            "when recording is authorized",
+            "Inside Wayfinder",
+            "reconcile state only within current action authorization",
+            "only for consequential evidence",
+            "selected map remains the durable coordination summary",
+        )
+        self.assert_clause(
+            skill("workflow-debugging"),
+            "Within that authorized scope",
             "user-provided or tool-observed evidence",
             "materially supports or changes",
-            "during Wayfinder work",
             "reconcile",
             "through its contract",
             "before further work relies",

@@ -48,5 +48,6 @@ Apply the smallest causal fix, remove temporary diagnostics, and invoke Verifica
 A vanished symptom without causal evidence is a mitigation, not a proven root cause.
 Do not duplicate Code Review already performed by `implement`.
 
-Inside Wayfinder, when recording is authorized, reconcile only consequential evidence, conclusions, conditions blocking particular work, and next work; the selected map remains the durable coordination summary.
-When user-provided or tool-observed evidence materially supports or changes the diagnosis, selected fix, blockers, dependencies, or verification boundary during Wayfinder work, reconcile the affected Wayfinder state through its contract before further work relies on the finding or before final response or handoff.
+Inside Wayfinder, reconcile state only within current action authorization and only for consequential evidence, conclusions, conditions blocking particular work, and next work; the selected map remains the durable coordination summary.
+
+Within that authorized scope, when user-provided or tool-observed evidence materially supports or changes the diagnosis, selected fix, blockers, dependencies, or verification boundary, reconcile the affected Wayfinder state through its contract before further work relies on the finding or before final response or handoff.
