@@ -196,8 +196,10 @@ Keep experiments reversible and isolated until adoption is intentional.
 ## Versioning
 
 - A change intended to merge to `main` that modifies distributed framework behavior or installed framework content MUST update the root `VERSION` in the same PR unless the user explicitly says the change is not being released.
-- Before declaring such a change complete, compare `VERSION` with the PR base and existing semantic release tags and choose a valid higher version under the current release policy.
+- Before declaring such a change complete, verify the current remote PR base and semantic release tags rather than assuming local remote-tracking refs are current, then choose a valid higher version under the [release policy](docs/verification.md#release-tags).
   A version decision is part of delivery verification, not optional cleanup.
+  If the checkout is behind the remote base, explain any apparent skipped version using the intervening release; a version bump does not establish that the changes are integrated with the current base.
+  Retain an existing unreleased version bump when it remains valid for the combined PR scope; do not increment again merely because another task, follow-up edit, or verification pass occurs.
 - Do not confuse a VERSION bump with publication: feature branches update `VERSION`, while the verified `main` workflow owns release-tag creation.
 
 ## Checkout state

@@ -33,6 +33,7 @@ class SpecialistReconciliationTests(unittest.TestCase):
     def test_debugging_reconciles_user_and_tool_evidence_before_reliance(self):
         self.assert_clause(
             skill("workflow-debugging"),
+            "when recording is authorized",
             "user-provided or tool-observed evidence",
             "materially supports or changes",
             "during Wayfinder work",
@@ -40,7 +41,6 @@ class SpecialistReconciliationTests(unittest.TestCase):
             "through its contract",
             "before further work relies",
             "before final response or handoff",
-            "Do not wait for a separate persistence request",
         )
         self.assert_clause(
             read(".agent-workflow/contracts/wayfinder-state.md"),
