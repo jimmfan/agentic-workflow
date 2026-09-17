@@ -302,6 +302,12 @@ def config_args(workspace: Path, stage: int) -> list[str]:
         str(workspace): access,
         str(executable): "read",
     }
+    if sys.platform == "darwin":
+        # /usr/bin/git is an xcrun shim; :minimal alone may hide its toolchain.
+        developer_directory = subprocess.check_output(
+            ["/usr/bin/xcode-select", "-p"], text=True, timeout=10
+        ).strip()
+        filesystem[str(Path(developer_directory).resolve())] = "read"
     filesystem_toml = ", ".join(
         f"{json.dumps(path)}={json.dumps(mode)}" for path, mode in filesystem.items()
     )
@@ -881,7 +887,7 @@ def isolation_probe():
         env = {"CODEX_HOME": str(home), "PATH": "/usr/bin:/bin:/usr/sbin:/sbin"}
         result = {}
         for stage in (1, 4):
-            script = "test -r visible.txt && test ! -r ../hidden.txt && test ! -r ../home/auth.json && /usr/bin/sed -n 1p visible.txt && "
+            script = "/bin/cat visible.txt && ! /bin/cat ../hidden.txt && ! /bin/cat ../home/auth.json && /usr/bin/git --version && "
             script += shlex.quote(binary) + " --version && "
             script += (
                 "echo allowed > write.txt"

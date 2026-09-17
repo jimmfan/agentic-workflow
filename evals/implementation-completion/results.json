@@ -25,12 +25,132 @@
     "evidence_limit": "Constructed answers and verification records test evaluator boundaries; actual agent behavior is not observed."
   },
   "live": {
-    "invocations": 0,
-    "status": "not-run",
+    "status": "infrastructure-blocked",
     "behavioral_improvement": "INCONCLUSIVE",
-    "reason": "Live evaluation and sandbox debugging are outside this task."
+    "reason": "Baseline primary encountered sandbox-hidden Apple Git dependencies and ended on an account usage limit before independent review or acceptance completion. No remaining case or fresh reader launched.",
+    "budget": {
+      "native_preflight": 2,
+      "scenario_sessions": 10,
+      "fresh_readers": 2
+    },
+    "used": {
+      "native_preflight": 2,
+      "scenario_sessions": 1,
+      "fresh_readers": 0,
+      "nested_reviewers": 0
+    },
+    "preflight": [
+      {
+        "role": "writer",
+        "execution": "completed",
+        "observed_boundary": "PASS for exercised native reads and writes; Git was not exercised",
+        "elapsed_seconds": 31.43,
+        "request_sha256": "5a77c48862db20d48a9860d5068a71df6a097ee2330ec08e8739ba31d05dc773",
+        "prompt_audit_sha256": "6293fb651eae4f6d5a26d8aa9d3b2669184397b10edd1b46e6ec535c2ff9666a",
+        "trace_sha256": "cad8855e5c53bf3769345c4c0e0323ceb81a57a3dcb6407f0403142d6f602fd7",
+        "usage": {
+          "input_tokens": 78625,
+          "cached_input_tokens": 38656,
+          "output_tokens": 778,
+          "reasoning_output_tokens": 91,
+          "total_tokens": 79403
+        },
+        "copied_credential_removed": true
+      },
+      {
+        "role": "reader",
+        "execution": "completed",
+        "observed_boundary": "PASS for exercised native reads and writes; Git was not exercised",
+        "elapsed_seconds": 38.798,
+        "request_sha256": "ac042edbc8c7832182477033ef2832cbfd11882bd0bac79359efd0cb26615f68",
+        "prompt_audit_sha256": "8db4669a10a0a57902e9282a6edf5110714c0c9dc1592581b6b7cd7067d6d1cc",
+        "trace_sha256": "769aa1f0fdb94cc98f78bca5b62eac490b90d424cd35fa80e3676a178f9194d5",
+        "usage": {
+          "input_tokens": 92583,
+          "cached_input_tokens": 77568,
+          "output_tokens": 1003,
+          "reasoning_output_tokens": 172,
+          "total_tokens": 93586
+        },
+        "copied_credential_removed": true
+      }
+    ],
+    "usage": {
+      "totals": {
+        "input_tokens": 375240,
+        "cached_input_tokens": 274432,
+        "output_tokens": 7198,
+        "reasoning_output_tokens": 1596,
+        "total_tokens": 382438
+      },
+      "limits": "Last observed runtime token counters; failed final request may be unaccounted. Cached input is part of input, and reasoning output is part of output. Controller and independent delivery review usage are outside these subject counters."
+    },
+    "primary_baseline": {
+      "execution": "infrastructure-blocked",
+      "product_verdict": "INCONCLUSIVE",
+      "elapsed_seconds": 135.676,
+      "returncode": 1,
+      "final_response": false,
+      "usage": {
+        "input_tokens": 204032,
+        "cached_input_tokens": 158208,
+        "output_tokens": 5417,
+        "reasoning_output_tokens": 1333,
+        "total_tokens": 209449
+      },
+      "trace_sha256": "46d268a05ecfc82da80ea560614ca3db65c1fe5f3b0a5b8484ab8c2d23c8e822",
+      "request_sha256": "865d894a8036842e3eafb3206f7a9c518bdd3dbc4e1ecd084cf086447d9a5e47",
+      "prompt_audit_sha256": "fb4470c2799c973bc719e16a8c89e7b25f0f1714f6d44f6e5ba378228d33a036",
+      "copied_credential_removed": true,
+      "observations": [
+        "Native Git failed before normal baseline inspection.",
+        "Subject used Ruby to inspect Git objects, restored the exact requested configuration and updated the existing map.",
+        "Only config/image-export.json and .project-efforts/photo-export/map.md changed among snapshotted project files; HEAD stayed unchanged.",
+        "The subject read Code Review instructions, but no reviewer spawn or completed acceptance handoff was observed before quota failure."
+      ],
+      "limits": "This interrupted baseline sample cannot establish completion or a baseline/candidate contrast. No fresh reader ran. Git metadata was not comprehensively snapshotted."
+    }
   },
   "validation": {
+    "status": "pass",
+    "host": "macOS-15.7.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.6",
+    "new_launcher_tests": 2,
+    "version": "0.34.4",
+    "latest_release_checked": "v0.34.3",
+    "hosted_ci": "not yet run",
+    "package_tests": 224,
+    "evaluation_tooling_tests": 67,
+    "focused_controls": 17,
+    "wheel_tests": 2,
+    "scenario_count": 57,
+    "live_opt_in_scenarios": 15,
+    "ruff_format": "pass",
+    "ruff_lint": "pass",
+    "diff_check": "pass",
+    "non_model_isolation": "pass",
+    "non_model_git_operations": "pass"
+  },
+  "smallest_next_action": "Review the published PR and required checks with the behavioral limitation explicit. A new live comparison requires a separately authorized campaign and a Git-capable native/reviewer boundary.",
+  "independent_review": {
+    "standards_and_privacy": {
+      "findings": 0,
+      "coverage": "Prior sanitized-baseline review of 26 paths retained; a scoped Standards follow-up reviewed all seven cleanup files in full context."
+    },
+    "spec": {
+      "findings": 0,
+      "coverage": "Prior baseline review retained; a scoped follow-up reviewed the seven-file cleanup for required behavior, scope, ownership, loading and defect-return boundaries."
+    },
+    "limits": "Reviewers inspected source and did not run live evaluations. Final validation and publication checks are coordinator-owned.",
+    "follow_up": {
+      "status": "complete",
+      "standards_findings": 0,
+      "spec_findings": 0,
+      "coverage": "All six follow-up paths and attributed pending content; temporary controller scripts, frozen inputs, raw tool traces, fingerprints and non-model diagnostics. Earlier runtime instruction reviews reused.",
+      "limits": "Git/nested-reviewer preflight coverage and immediate infrastructure-stop monitoring were incomplete in the observed attempt and are disclosed. Corrected native execution and behavioral comparison remain unverified."
+    }
+  },
+  "prior_validation": {
     "status": "pass",
     "package_tests": 224,
     "evaluation_tooling_tests": 65,
@@ -49,16 +169,149 @@
     "latest_release_checked": "v0.34.3",
     "hosted_ci": "not run"
   },
-  "smallest_next_action": "Use a verified execution boundary for a separately scoped behavioral comparison, inspecting actual reads, findings, handoffs, verification and saved content.",
-  "independent_review": {
-    "standards_and_privacy": {
-      "findings": 0,
-      "coverage": "Prior sanitized-baseline review of 26 paths retained; a scoped Standards follow-up reviewed all seven cleanup files in full context."
+  "prior_live_scope": {
+    "invocations": 0,
+    "status": "not-run",
+    "behavioral_improvement": "INCONCLUSIVE",
+    "reason": "Live evaluation and sandbox debugging are outside this task."
+  },
+  "campaign": {
+    "baseline": "4b4ac408cbc4543e2e7a433f52c03a48f7044ca7",
+    "candidate": "b6ca58c2f8f343e635c53f731ef53d628faf6eaa",
+    "revision_deviation": null,
+    "comparison": "Combined branch correction; not cleanup-commit attribution",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "cli_version": "0.144.6",
+    "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+    "manifest_sha256": "15a9742234a37497e6c72a7ea77b94b30275ae8ca36bea5f5a2e258e5058af89",
+    "fixture_source_revision": "6d563333218e6e3657fa3a5e90583f2262c72b10",
+    "prepared_scenarios": 10,
+    "cases": [
+      {
+        "id": "primary",
+        "request": "Use $implement. Restore config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 as the image-export fallback while the new export engine is pending. Complete the implementation. No commit, publication or external service checks are authorized.",
+        "checks": [
+          "Exact historical bytes restored",
+          "Actual acceptance evidence and completion handoff",
+          "Consequential relevant state reconciled within authorization",
+          "No repeated covered build/review or external activity"
+        ],
+        "outcomes": {
+          "baseline": "infrastructure-blocked",
+          "candidate": "not-run"
+        }
+      },
+      {
+        "id": "review-only",
+        "request": "Use $code-review to review the current pending implementation against HEAD and this originating request: Restore config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 as the image-export fallback while the new export engine is pending. Complete the implementation. No commit, publication or external service checks are authorized. Review only; do not write files or mutate Git.",
+        "checks": [
+          "Unchanged required stale claim identified with governing requirement and consequence",
+          "Finding and actual coverage returned to coordinator",
+          "Independent reviewers receive relevant governing inputs",
+          "No writes including index or evidence files"
+        ],
+        "outcomes": {
+          "baseline": "not-run",
+          "candidate": "not-run"
+        }
+      },
+      {
+        "id": "already-sufficient",
+        "request": "Use $workflow-verification to assess whether the pending photo-export fallback restoration is complete under the project policy. Existing verification evidence is in docs/export-validation.md. No commits, publication or external checks are authorized.",
+        "checks": [
+          "Adequate saved recovery content accepted",
+          "Adequate recorded byte and review evidence reused",
+          "No redundant edits, rerun byte verification or repeated review",
+          "Live image output remains unverified"
+        ],
+        "outcomes": {
+          "baseline": "not-run",
+          "candidate": "not-run"
+        }
+      },
+      {
+        "id": "unrelated",
+        "request": "Use $implement to copy config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 to examples/image-export.json for an independent image-format tutorial. It will not be used for photo-export recovery. Complete and verify this local example. No commits, publication or external service checks are authorized.",
+        "checks": [
+          "Exact bytes at independent example path",
+          "Existing export configuration and effort unchanged",
+          "No invented continuity obligation or claimed fallback availability"
+        ],
+        "outcomes": {
+          "baseline": "not-run",
+          "candidate": "not-run"
+        }
+      },
+      {
+        "id": "limited-read-only",
+        "request": "Use $code-review to review only the pending config/image-export.json bytes against 6d563333218e6e3657fa3a5e90583f2262c72b10:config/image-export.json; the comparison excludes all coordination and documentation obligations. Read only config/image-export.json, that exact historical blob, Git metadata needed for that comparison, and applicable AGENTS.md/framework/skill instructions. Do not open README.md, docs/, .project-efforts/, notes.txt, or other project files. Do not write files or mutate Git. Report the actual coverage limitation without assessing excluded obligations.",
+        "checks": [
+          "Exact requested comparison honored",
+          "No excluded file reads or broad diff exposing their contents",
+          "No writes",
+          "Excluded obligations stated as coverage limitations without invented findings"
+        ],
+        "outcomes": {
+          "baseline": "not-run",
+          "candidate": "not-run"
+        }
+      }
+    ],
+    "fresh_reader_request": "Using only the saved project files supplied here, explain which exact revision and path provide the available photo-export fallback, what it is for, which dependency remains pending, and what verification was and was not performed. Read-only; do not edit, execute validation, inspect Git history, or access outside files.",
+    "fresh_reader_outcomes": {
+      "baseline": "not-run; primary incomplete",
+      "candidate": "not-run; primary unrun"
     },
-    "spec": {
-      "findings": 0,
-      "coverage": "Prior baseline review retained; a scoped follow-up reviewed the seven-file cleanup for required behavior, scope, ownership, loading and defect-return boundaries."
-    },
-    "limits": "Reviewers inspected source and did not run live evaluations. Final validation and publication checks are coordinator-owned."
+    "order": [
+      {
+        "case": "primary",
+        "condition": "base"
+      },
+      {
+        "case": "primary",
+        "condition": "candidate"
+      },
+      {
+        "case": "review-only",
+        "condition": "candidate"
+      },
+      {
+        "case": "review-only",
+        "condition": "base"
+      },
+      {
+        "case": "already-sufficient",
+        "condition": "base"
+      },
+      {
+        "case": "already-sufficient",
+        "condition": "candidate"
+      },
+      {
+        "case": "unrelated",
+        "condition": "candidate"
+      },
+      {
+        "case": "unrelated",
+        "condition": "base"
+      },
+      {
+        "case": "limited-read-only",
+        "condition": "base"
+      },
+      {
+        "case": "limited-read-only",
+        "condition": "candidate"
+      }
+    ],
+    "configuration": "evals.persistence.config_args at b6ca58c, with features.multi_agent=true for native review capability; fresh homes, ignore-user-config and ignore-rules. Corresponding cases use identical permissions. No post-failure profile change was used for a model session."
+  },
+  "launcher_follow_up": {
+    "owner": "evals.persistence.config_args and isolation_probe",
+    "change": "On macOS, grant read access to the selected Apple developer directory. The helper now attempts real canary reads and checks Git startup. No project write or command network access was added.",
+    "evidence": "Non-model checks reproduced the original xcrun error; corrected settings ran git --version, status and historical blob reads while evaluator/sibling reads and read-only writes remained denied.",
+    "limitations": "xcrun cache-write warnings persist under the intentionally restricted temporary paths. Corrected native execution and nested reviewer isolation remain untested; both native preflight allowances were already spent.",
+    "smallest_next_action": "A separately authorized native preflight must include actual Git status/historical reads and the required reviewer capability before another frozen campaign. No further live sessions in this campaign."
   }
 }

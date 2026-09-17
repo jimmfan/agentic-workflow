@@ -638,5 +638,58 @@ class ExecutionClearanceTests(unittest.TestCase):
         self.assertFalse((run_root / "stage-01/codex-home/auth.json").exists())
 
 
+class LauncherPermissionsTests(unittest.TestCase):
+    def test_other_platforms_do_not_require_an_apple_toolchain(self):
+        import tomllib
+        from unittest.mock import patch
+
+        with (
+            patch.object(persistence.sys, "platform", "linux"),
+            patch.object(persistence, "codex_binary", return_value="/opt/codex"),
+            patch.object(
+                persistence.subprocess,
+                "check_output",
+                side_effect=AssertionError("No Apple toolchain lookup on Linux"),
+            ),
+        ):
+            arguments = persistence.config_args(Path("/fixture/project"), 4)
+        settings = tomllib.loads("\n".join(arguments[1::2]))
+        self.assertEqual(
+            settings["permissions"]["pilot"]["filesystem"],
+            {":minimal": "read", "/fixture/project": "read", "/opt/codex": "read"},
+        )
+
+    def test_macos_git_toolchain_is_readable_without_expanding_project_writes(self):
+        import tomllib
+        from unittest.mock import patch
+
+        with (
+            patch.object(persistence.sys, "platform", "darwin"),
+            patch.object(persistence, "codex_binary", return_value="/opt/codex"),
+            patch.object(
+                persistence.subprocess,
+                "check_output",
+                return_value="/Library/Developer/CommandLineTools\n",
+            ),
+        ):
+            for stage, access in ((1, "write"), (4, "read")):
+                with self.subTest(stage=stage):
+                    arguments = persistence.config_args(Path("/fixture/project"), stage)
+                    settings = tomllib.loads("\n".join(arguments[1::2]))
+                    self.assertEqual(
+                        settings["permissions"]["pilot"]["filesystem"],
+                        {
+                            ":minimal": "read",
+                            "/fixture/project": access,
+                            "/opt/codex": "read",
+                            "/Library/Developer/CommandLineTools": "read",
+                        },
+                    )
+                    self.assertFalse(
+                        settings["permissions"]["pilot"]["network"]["enabled"]
+                    )
+                    self.assertEqual(settings["approval_policy"], "never")
+
+
 if __name__ == "__main__":
     unittest.main()
