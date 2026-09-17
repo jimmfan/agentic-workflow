@@ -211,7 +211,11 @@ Treat the user's checkout state as working state that must be preserved.
 
 - Prefer read-only Git commands and existing refs for inspection; do not detach or switch the user's primary checkout merely to inspect another commit or branch.
 - Before changing branch, HEAD, or worktree checkout state, record the starting state.
-- If the task changes checkout state, restore the original checkout before handing back unless the user explicitly requested a different final checkout state.
+- Leave the task's working branch checked out when finished so the completed work remains available for code review.
+- Restore the original checkout only when the user explicitly requests it.
 - Never leave the user's primary checkout detached as an inspection side effect.
-- Preserve staged, unstaged, and untracked work while restoring checkout state.
-- If restoring the original state is not safe, stop and report the blocker instead of guessing or discarding work.
+- Preserve staged, unstaged, and untracked work.
+  Never reset, discard changes, or force a checkout to satisfy this checkout preference.
+- If the task uses a separate worktree, identify its absolute path and branch clearly; switch the primary checkout only when safe.
+- If a requested checkout change is unsafe, leave the work in place and report the blocker.
+- Before handing back, report the final branch, worktree path, and whether the changes are committed.
