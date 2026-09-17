@@ -91,3 +91,47 @@ Labels, keywords, route markers and self-reported success do not establish behav
 Keep product PASS/FAIL, infrastructure-blocked execution, unrun cases and INCONCLUSIVE conclusions separate.
 A small successful comparison would supply bounded evidence only.
 Concrete defects should identify their owning layer and smallest correction/retest; residual uncertainty alone does not justify additional runtime instructions.
+
+## Newly authorized comparison
+
+The previous campaign above remains separately recorded and INCONCLUSIVE.
+The continuation request authorizes a new campaign with the same runtime revisions, requests, grading criteria, paired fixture contents and counterbalanced order.
+The PR head at campaign start was `4cd10600edc788f077d79e4d82bf430d284d6af9`; it added only the later wording edit to reported head `c3cf6855e0d7a80b50b3d5135320a947333da4b5`.
+The runtime candidate remains the explicitly requested `b6ca58c2f8f343e635c53f731ef53d628faf6eaa`, so that later wording is not part of the evaluated candidate.
+Both conditions use the corrected permission launcher from `c3cf685` plus the focused campaign corrections recorded below.
+
+This campaign permits four top-level native preflight attempts: one writer and one read-only attempt, plus at most one targeted retry per mode after a concrete infrastructure correction.
+Real nested Standards and Spec reviewers are additionally authorized and counted separately.
+Preflights must exercise actual Git version, status, working-tree/index comparisons and historical blob reads in both parents and children, along with native writes or write-denial probes and sibling, evaluator and synthetic credential-canary read denials.
+Expected canary denials are successful boundary checks.
+Do not launch scenario sessions while required execution boundaries remain unverified.
+
+Available capacity is checked through supported host information before launch, without requiring visibility the host does not provide.
+`bounded_process` retains the existing time/output limits and now accepts a failure monitor that can terminate its own process group without another model decision.
+`NativeExecutionMonitor` reads new parent and child rollout tool results and CLI errors, stops on observed infrastructure failures or disclosed canaries, and checks project and Git snapshots in read-only runs.
+It does not classify ordinary product failures or treat expected denial probes and known Git cache warnings as execution failures.
+Deterministic controls exercise monitor termination and failure/denial distinctions; they supply no model-behavior evidence.
+
+Freeze the new controller, model settings, requests, initial project/Git snapshots and order before scenario launch.
+Use fresh copies of the original starting fixtures, never the previous partial outcome as a new completed sample.
+Ten new scenario sessions and two possible fresh readers are authorized.
+Continue independent cases after a product failure while the environment remains valid; stop new launches on infrastructure, isolation or usage-limit failure.
+Keep runtime instructions frozen and preserve failed samples without replacement.
+Report equal successful outcomes as no demonstrated improvement, and retain all unobserved boundaries.
+
+The first writer attempt stopped when Git tried to read the denied personal `.gitconfig`.
+The targeted correction sets `GIT_CONFIG_GLOBAL=/dev/null`, `GIT_CONFIG_NOSYSTEM=1` and `GIT_OPTIONAL_LOCKS=0` for subject commands; it does not grant access to personal configuration.
+The writer retry and initial read-only preflight then passed all required Git, command/patch and outside-read probes in their parents and two native reviewers each.
+Only the six expected probe files changed in the writer fixture; the reader project and both Git snapshots remained unchanged.
+Three top-level preflight attempts and four native reviewers were used.
+
+Before any scenario launch, independent harness review reproduced two cleanup defects: delayed termination when monitoring raises and skipped process-group cleanup when the leader has already exited.
+The corrected runner always attempts cleanup of its owned group, tolerates an already absent group, and propagates monitoring exceptions to the controller's infrastructure-failure record.
+Both new subprocess controls failed before the correction and passed afterward.
+This monitor-only correction changed no subject permissions, requests, runtime instructions, limits or fixture state; the final manifest preserves the earlier preflight fingerprints and records the refreeze explicitly.
+The initial manifest, Git-corrected preflight manifest and final scenario manifest remain separate local evidence.
+
+The campaign later stopped during candidate JSON validation when Ruby and Perl startup encountered additional sandbox dependency denials.
+The frozen monitor missed those signatures; coordinator inspection triggered termination, so automatic stopping for those failures was not established by this run.
+Detection was corrected and checked against the captured rollout only after the campaign stopped, with no further model launches or permission expansion.
+The [report](REPORT.md#new-campaign-verified-git-boundary-interrupted-candidate) and compact results distinguish the frozen controller from this unexercised live correction.

@@ -2,7 +2,8 @@
 
 The instruction correction makes required completion obligations explicit across implementation, review and acceptance verification.
 Behavioral improvement remains INCONCLUSIVE.
-The authorized follow-up stopped after its first scenario encountered infrastructure failures; it produced no completed baseline/candidate comparison.
+The first campaign stopped during its baseline primary; the separately authorized new campaign completed that case but stopped during the candidate primary on different sandbox runtime failures.
+Neither campaign produced a completed pair.
 
 ## Owning boundaries
 
@@ -122,3 +123,94 @@ The 17 existing photo-export controls are included in the package gate.
 `VERSION` remains 0.34.4, valid above the unchanged remote main and latest release v0.34.3.
 Hosted PR checks are separate delivery evidence.
 No product regression, duplicate completion logic or new canonical terminology was established by this interrupted sample; those questions retain the earlier source-review evidence and the current behavioral uncertainty.
+
+## New campaign: verified Git boundary, interrupted candidate
+
+This separately authorized campaign reused the frozen baseline `4b4ac408cbc4543e2e7a433f52c03a48f7044ca7` and candidate `b6ca58c2f8f343e635c53f731ef53d628faf6eaa`.
+The actual starting PR head was `4cd10600edc788f077d79e4d82bf430d284d6af9`, a plain-wording follow-up to the reported launcher head `c3cf6855e0d7a80b50b3d5135320a947333da4b5`.
+The later wording was not substituted into the frozen candidate.
+The CLI remained 0.144.6 with `gpt-5.6-sol / medium`, fresh subject homes and the same 360-second/2,000,000-byte limits.
+All ten paired starting projects were checked against the original fixture snapshots; the previous partial baseline was not counted as a new sample.
+Supported capacity information allowed ordinary usage and showed 3% of the weekly account window consumed before launch.
+
+The first writer preflight failed because native Git attempted to read the denied personal `.gitconfig`.
+The targeted retry disabled personal/system Git configuration instead of granting access to it.
+The writer retry and initial read-only preflight each passed all five Git operations, three outside-canary denials and command/patch probes in the parent and two real native reviewers.
+Writer changes were limited to the six expected probe files; reader content and all preflight Git snapshots were unchanged.
+Three top-level preflights and four nested preflight reviewers ran; the unused read-only retry did not authorize replacing a failed scenario.
+
+Independent harness review found and fixed delayed cleanup on monitoring exceptions and skipped cleanup when a process-group leader had already exited.
+Both defects were reproduced with deterministic subprocess tests before correction.
+The cleanup-only change was frozen before scenario launch without changing subject permissions, runtime instructions or prompts.
+Earlier and final manifest hashes are retained separately in the compact results.
+
+| Case | Baseline | Candidate | Observed difference |
+|---|---|---|---|
+| Direct `implement` | Completed restoration, map reconciliation and local validation; explicit outer completion handoff not observed | Infrastructure-blocked before review and acceptance completion | No completed pair; improvement INCONCLUSIVE |
+| Review-only | Not run | Not run | Unobserved |
+| Already sufficient | Not run | Not run | Unobserved |
+| Unrelated effort | Not run | Not run | Unobserved |
+| Limited read-only comparison | Not run | Not run | Unobserved |
+| Fresh reader | Not run after campaign stop | Not run; primary incomplete | Unobserved |
+
+The baseline restored the exact historical bytes and updated only the existing recovery map alongside the configuration.
+The saved map identifies source revision, path, purpose, pending engine and the local validation limits.
+Two native reviewers completed their reads of the actual changes and relevant governing artifacts and reported no findings.
+The parent checked JSON, historical equality, recovery links and unchanged HEAD; it repeated the byte/JSON checks after review as a final integrity check.
+It did not repeat implementation or spawn a second review pair.
+No explicit transition to the outer completion owner was observed; instruction loading or a route marker alone is not the grading criterion.
+This supports the observed local outcomes, without claiming every completion-handoff requirement passed.
+
+The candidate restored the same exact bytes and updated its recovery map, then encountered two infrastructure failures during local JSON validation.
+At about 89.3 seconds, Ruby startup was denied access to `/Library/Ruby/Gems/2.6.0/specifications/default` (`Errno::EPERM`).
+At about 110.1 seconds, Perl startup failed because its system `libperl.dylib` was blocked by the sandbox.
+A separate `plutil` attempt rejected JSON input; that tool-selection error is distinct from the runtime permission failures.
+The subject continued to a successful `jq` check and started two reviewers before the coordinator stopped it.
+Neither reviewer completed, and acceptance completion was not observed.
+Only the configuration and existing map changed, and Git snapshots were unchanged in both primary runs.
+These partial candidate observations are not a product PASS or a demonstrated semantic regression.
+
+The automatic monitor did not recognize the Ruby/Perl signatures in this frozen run.
+Full-rollout inspection exposed the gap; after verifying process ownership, the coordinator killed only the candidate evaluation process group at about 148.9 seconds.
+Thus this campaign did not meet the automatic-stop requirement for the newly observed failures: approximately 59.6 seconds elapsed after the first runtime error before termination.
+The controller retained the interrupted evidence, marked infrastructure failure, removed copied credentials and blocked further launches.
+No remaining scenario, fresh reader or replacement sample ran.
+
+After stopping, a targeted regression test reproduced both missed signatures and then passed with their detection added.
+Replaying the captured candidate rollout now reports infrastructure failure at the first Ruby error.
+This correction grants no additional filesystem access, changes no runtime instruction and has no corrected live retest in this campaign.
+The successful native permission preflights remain evidence for their exercised Git/command/patch boundary; they did not establish arbitrary interpreter startup.
+The monitor recognizes the documented failure forms, not every possible infrastructure diagnostic.
+
+Usage comprises three top-level preflights, two scenario sessions, zero readers and eight nested reviewers: four preflight reviewers, two completed baseline reviewers and two interrupted candidate reviewers.
+Observed counters total 2,518,781 input tokens (2,214,528 cached) and 34,219 output tokens, including 880,372 total tokens attributable to nested reviewers after subtracting inherited parent counters.
+Counters from interrupted requests may be incomplete; controller work and separate delivery reviews are excluded.
+Raw delegation-message bodies are encrypted in native traces, so exact reviewer prompts cannot be inspected; native spawn timing, model settings, child tool inputs/outputs and resulting state remain observable.
+No result from the first campaign was added to these totals.
+
+The concrete premerge blocker remains the missing behavioral comparison, including candidate acceptance completion, all four negative/control cases and both fresh readers.
+The next bounded step is non-model verification of interpreter startup and monitoring under the restricted profile, followed by a separately authorized fresh comparison with successful native preflights.
+Do not widen access to personal configuration, replace this failed sample, or combine a later run with these results.
+The successful baseline alone demonstrates no candidate improvement and does not eliminate semantic risk.
+
+### New campaign delivery validation
+
+Local validation passed: 224 package tests, 78 evaluation-tooling tests, two wheel checks, Ruff format/lint, all 57 scenario definitions and `git diff --check`.
+The package/wheel evidence and original runtime-instruction reviews were reused where the evaluated surface was unchanged; focused monitor tests and captured-rollout replay cover the post-stop detector correction.
+The prior campaign JSON values, frozen manifest, actual launch counts, exact candidate bytes and credential cleanup were independently checked.
+Remote PR base and semantic tags still identify `4b4ac40` / v0.34.3, so the existing unreleased `VERSION` 0.34.4 remains valid.
+Hosted CI and publication are separate delivery evidence.
+
+### Standards
+
+The independent final review covered all eight pending repository paths, the actual rollout fingerprints and state changes, and reused the prior controller review.
+Both earlier cleanup findings are resolved; zero actionable findings remain.
+No actionable duplication, speculative machinery or new canonical terminology was found.
+
+### Spec
+
+The independent final review covered all eight paths, campaign limits and frozen inputs, actual errors, snapshots, usage and outcome interpretation.
+Zero actionable findings remain in the evidence and harness changes.
+The failed live automatic stop and missing behavioral comparison remain explicit premerge blockers; review success does not turn those outcomes into PASS.
+
+Review summary: Standards 0 remaining findings; Spec 0 remaining findings.

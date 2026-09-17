@@ -12,8 +12,8 @@ No merge or release.
 
 ## Ready work
 
-Review the published branch and required PR checks with the behavioral limitations explicit.
-No further live sessions in this campaign; a new comparison requires a separately authorized scope and verified execution boundary.
+Resolve restricted-profile interpreter startup and monitoring coverage before a fresh live comparison.
+No further live evaluation launches are authorized within this stopped campaign.
 
 ## Current state
 
@@ -24,7 +24,11 @@ Read-only review, coordinator ownership and the existing authorization boundarie
 The cleanup passed local validation and scoped independent Standards and Spec reviews.
 The bounded comparison stopped after two native preflights and one infrastructure-blocked baseline scenario; the other nine cases and both readers were not run.
 Git was hidden by the restricted macOS profile, and the scenario later ended on a usage limit before review or acceptance completion.
-The focused toolchain-read correction passed non-model checks, local repository gates and independent Standards/Spec review; native verification of the corrected launcher is still outstanding.
+The focused toolchain-read correction passed non-model checks, local repository gates and independent Standards/Spec review.
+The new campaign preserved the previous results separately, passed Git and native-reviewer preflights, and completed its baseline primary.
+Its candidate primary then hit denied Ruby/Perl startup dependencies; the automatic monitor missed these new signatures, and coordinator inspection triggered termination.
+The remaining eight scenarios and both readers were not run.
+The post-stop monitor correction passes deterministic tests and captured-trace replay, with no corrected native retest.
 Behavioral improvement remains INCONCLUSIVE.
 
 ## Areas and relationships
@@ -39,6 +43,8 @@ A new behavioral comparison requires a Git-capable native execution boundary, ve
 
 ## Blockers
 
-The current campaign cannot establish a baseline/candidate difference.
-Both native preflight allowances were consumed before the launcher correction; no corrected native run is authorized within this campaign.
+No completed baseline/candidate pair establishes improvement.
+Candidate acceptance completion, four control-case pairs and fresh-reader continuity remain unverified.
+The next evaluation requires non-model interpreter-startup and monitoring checks under the restricted profile, then separate authorization for a fresh campaign and native preflights.
+Preserve the current failed sample; do not replace or combine it with a later run.
 Delivery can proceed independently with these limits reported.

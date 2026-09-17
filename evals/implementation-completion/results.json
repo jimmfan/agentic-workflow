@@ -313,5 +313,809 @@
     "evidence": "Non-model checks reproduced the original xcrun error; corrected settings ran git --version, status and historical blob reads while evaluator/sibling reads and read-only writes remained denied.",
     "limitations": "xcrun cache-write warnings persist under the intentionally restricted temporary paths. Corrected native execution and nested reviewer isolation remain untested; both native preflight allowances were already spent.",
     "smallest_next_action": "A separately authorized native preflight must include actual Git status/historical reads and the required reviewer capability before another frozen campaign. No further live sessions in this campaign."
+  },
+  "new_campaign": {
+    "status": "infrastructure-blocked",
+    "behavioral_improvement": "INCONCLUSIVE",
+    "baseline": "4b4ac408cbc4543e2e7a433f52c03a48f7044ca7",
+    "candidate": "b6ca58c2f8f343e635c53f731ef53d628faf6eaa",
+    "reported_pr_head": "c3cf6855e0d7a80b50b3d5135320a947333da4b5",
+    "actual_pr_head_at_start": "4cd10600edc788f077d79e4d82bf430d284d6af9",
+    "comparison": "Combined branch correction; not cleanup-commit attribution",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "cli_version": "codex-cli 0.144.6",
+    "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+    "host": "macOS-15.7.3-arm64-arm-64bit-Mach-O",
+    "launcher": "c3cf685 corrected macOS profile plus isolated Git configuration and monitored owned-process cleanup; same final controller for both arms.",
+    "manifest_sha256": "67031bdcf4a7f538f07f6fd6d5823719043db913eea01f20554248e433fc3829",
+    "initial_preflight_manifest_sha256": "0adc2754da148beafe6d08bf531223bd9b8cb6ad25be8f7703082e415d6dc936",
+    "git_corrected_preflight_manifest_sha256": "44b36e8b106d44a43bfb23fc8fe5183397a3be753d470b81f8d66295aff4d181",
+    "controller_source_sha256": {
+      "persistence.py": "1faf3287c22c4074d0f7ac0fa0048751e7bd74686bb09a5baeb051687156303b",
+      "native_execution.py": "6cfd792801002423601c98392689a80acc73656f97e674662988002713eec8a4",
+      "completion_campaign2.py": "ae1600658ce78a3bcb7adea2b303f6b99c263923159d65fff1176c4eff39dbc0"
+    },
+    "capacity_before_launch": {
+      "ordinaryUsageAllowed": true,
+      "weekly_used_percent": 3,
+      "secondary_window": "unavailable",
+      "scope": "Supported account-wide host information; not a promise of per-model capacity."
+    },
+    "settings": {
+      "seconds": 360,
+      "output_bytes": 2000000,
+      "approval_policy": "never",
+      "filesystem": "minimal system reads, exact subject project write/read, exact CLI and selected Apple developer directory reads",
+      "network_access": false,
+      "web_apps_plugins_memories_shell_snapshot": false,
+      "native_multi_agent": true,
+      "shell_environment": {
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_OPTIONAL_LOCKS": "0"
+      },
+      "model_provider": "openai",
+      "project_doc_max_bytes": 65536
+    },
+    "budget": {
+      "native_preflight": 4,
+      "per_preflight_mode": 2,
+      "scenario_sessions": 10,
+      "fresh_readers": 2
+    },
+    "fixture_source_revision": "6d563333218e6e3657fa3a5e90583f2262c72b10",
+    "fixture_equivalence": "Fresh copies asserted byte-for-byte equal to all original frozen starting project snapshots; new Git snapshots recorded. Previous partial baseline outcome not reused as a sample.",
+    "order": [
+      {
+        "index": 0,
+        "case": "primary",
+        "arm": "base",
+        "comparison_head": "5b58575aae80c24ed5f67660c814e3a222748571",
+        "request_sha256": "865d894a8036842e3eafb3206f7a9c518bdd3dbc4e1ecd084cf086447d9a5e47",
+        "project_snapshot_sha256": "e36e7f934ae44076a4c6d6e418aaa524d9539034875a8f882f9bfb6fe91c8920",
+        "git_snapshot_sha256": "116d066eed17d1420247e974f7260e6c9f16a560614022d26fc070caa7edfc0d"
+      },
+      {
+        "index": 1,
+        "case": "primary",
+        "arm": "candidate",
+        "comparison_head": "37fba5b213a93e9e30696fd496b00fe559fd9e86",
+        "request_sha256": "865d894a8036842e3eafb3206f7a9c518bdd3dbc4e1ecd084cf086447d9a5e47",
+        "project_snapshot_sha256": "f04872d0256a493555d44798dddf77fd5baec5bdc59fa66719d1bda7896da781",
+        "git_snapshot_sha256": "97394477207e8e9374649e6d56ec9a9dd9b823b851ac019c486a0e41292d5d38"
+      },
+      {
+        "index": 2,
+        "case": "review-only",
+        "arm": "candidate",
+        "comparison_head": "a7e4dd6ca482d16eebada072195b2700a442a9e9",
+        "request_sha256": "89e53a0d5317f90216e51cbc2183724ac03a1ae0c041e2ad64cac761d4ad4130",
+        "project_snapshot_sha256": "bd7e2cc3b1b1867f2d1dceeec34b7d08f4f003c15dfbd2a69ae22d35a06a3919",
+        "git_snapshot_sha256": "f68a272527b920b987b4143d959f1baf6f3a3ff6ca8733f9f01ba22362bfacd6"
+      },
+      {
+        "index": 3,
+        "case": "review-only",
+        "arm": "base",
+        "comparison_head": "3ee17fcb6c08fa5ac3f18e5e817d5ff1bab1a357",
+        "request_sha256": "89e53a0d5317f90216e51cbc2183724ac03a1ae0c041e2ad64cac761d4ad4130",
+        "project_snapshot_sha256": "3ee75cd2a2e4a75029392f63de3e7862a46695360ca56c7ec62716f357b4b696",
+        "git_snapshot_sha256": "eefc0561759d666401be15330ef583f5c0574a672a429d6bbbbd9aae2375740f"
+      },
+      {
+        "index": 4,
+        "case": "already-sufficient",
+        "arm": "base",
+        "comparison_head": "3ee17fcb6c08fa5ac3f18e5e817d5ff1bab1a357",
+        "request_sha256": "dee171b92514cb1c1ca256ce00dbdcaaa730b0207364bbea89fbfb4e3d6198fc",
+        "project_snapshot_sha256": "efeb61f7eb7b38bb5fc9a9544a3398ab3903ca06a2fca163df54a2b4aeb5543e",
+        "git_snapshot_sha256": "1abe7c5c381b4420ebbea60f93df42331b5ffd53cbadb43487588fc182c6b47d"
+      },
+      {
+        "index": 5,
+        "case": "already-sufficient",
+        "arm": "candidate",
+        "comparison_head": "a7e4dd6ca482d16eebada072195b2700a442a9e9",
+        "request_sha256": "dee171b92514cb1c1ca256ce00dbdcaaa730b0207364bbea89fbfb4e3d6198fc",
+        "project_snapshot_sha256": "bc0bd38b189511ef58cb0ec0819f032ff28691d0f98b42b6de20fc611ab4dfea",
+        "git_snapshot_sha256": "df37fc476fd34945e4893936189e72e63e99248d4795f69b51bc5087d6a1198e"
+      },
+      {
+        "index": 6,
+        "case": "unrelated",
+        "arm": "candidate",
+        "comparison_head": "f7685eb097e203c25dda4388818cef222c29f91a",
+        "request_sha256": "04999a804b263f051b0ea84b352e93d5542ce6bca8de20ebbac442c2798428ea",
+        "project_snapshot_sha256": "f04872d0256a493555d44798dddf77fd5baec5bdc59fa66719d1bda7896da781",
+        "git_snapshot_sha256": "20efa4c8b3851845f9b1fa82b4d8edc22e02b8a242c36a34c2d214be97793177"
+      },
+      {
+        "index": 7,
+        "case": "unrelated",
+        "arm": "base",
+        "comparison_head": "f3173454e3a62a621da3d79d7bce95b2947ea68f",
+        "request_sha256": "04999a804b263f051b0ea84b352e93d5542ce6bca8de20ebbac442c2798428ea",
+        "project_snapshot_sha256": "e36e7f934ae44076a4c6d6e418aaa524d9539034875a8f882f9bfb6fe91c8920",
+        "git_snapshot_sha256": "0b919c100b5c1e26a7be7eefe7f05454d1d19c4a05008582775f3f2a0ed7a71b"
+      },
+      {
+        "index": 8,
+        "case": "limited-read-only",
+        "arm": "base",
+        "comparison_head": "f3173454e3a62a621da3d79d7bce95b2947ea68f",
+        "request_sha256": "dbe427d92ffdb8c361440f7735b48da81e3f8730fb3a3926d09d97c07ec45953",
+        "project_snapshot_sha256": "3ee75cd2a2e4a75029392f63de3e7862a46695360ca56c7ec62716f357b4b696",
+        "git_snapshot_sha256": "d4937356443c7496ac27252a4dbc5e8962816efcd7196ad2aceb38a958f32c7c"
+      },
+      {
+        "index": 9,
+        "case": "limited-read-only",
+        "arm": "candidate",
+        "comparison_head": "f7685eb097e203c25dda4388818cef222c29f91a",
+        "request_sha256": "dbe427d92ffdb8c361440f7735b48da81e3f8730fb3a3926d09d97c07ec45953",
+        "project_snapshot_sha256": "bd7e2cc3b1b1867f2d1dceeec34b7d08f4f003c15dfbd2a69ae22d35a06a3919",
+        "git_snapshot_sha256": "c0cbeb62638093af1b2ee41bd43135093cabb8da479d5cb60fb12f4e3c2781bf"
+      }
+    ],
+    "cases": [
+      {
+        "id": "primary",
+        "request": "Use $implement. Restore config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 as the image-export fallback while the new export engine is pending. Complete the implementation. No commit, publication or external service checks are authorized.",
+        "checks": [
+          "Exact historical bytes restored",
+          "Actual acceptance evidence and completion handoff",
+          "Consequential relevant state reconciled within authorization",
+          "No repeated covered build/review or external activity"
+        ]
+      },
+      {
+        "id": "review-only",
+        "request": "Use $code-review to review the current pending implementation against HEAD and this originating request: Restore config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 as the image-export fallback while the new export engine is pending. Complete the implementation. No commit, publication or external service checks are authorized. Review only; do not write files or mutate Git.",
+        "checks": [
+          "Unchanged required stale claim identified with governing requirement and consequence",
+          "Finding and actual coverage returned to coordinator",
+          "Independent reviewers receive relevant governing inputs",
+          "No writes including index or evidence files"
+        ]
+      },
+      {
+        "id": "already-sufficient",
+        "request": "Use $workflow-verification to assess whether the pending photo-export fallback restoration is complete under the project policy. Existing verification evidence is in docs/export-validation.md. No commits, publication or external checks are authorized.",
+        "checks": [
+          "Adequate saved recovery content accepted",
+          "Adequate recorded byte and review evidence reused",
+          "No redundant edits, rerun byte verification or repeated review",
+          "Live image output remains unverified"
+        ]
+      },
+      {
+        "id": "unrelated",
+        "request": "Use $implement to copy config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 to examples/image-export.json for an independent image-format tutorial. It will not be used for photo-export recovery. Complete and verify this local example. No commits, publication or external service checks are authorized.",
+        "checks": [
+          "Exact bytes at independent example path",
+          "Existing export configuration and effort unchanged",
+          "No invented continuity obligation or claimed fallback availability"
+        ]
+      },
+      {
+        "id": "limited-read-only",
+        "request": "Use $code-review to review only the pending config/image-export.json bytes against 6d563333218e6e3657fa3a5e90583f2262c72b10:config/image-export.json; the comparison excludes all coordination and documentation obligations. Read only config/image-export.json, that exact historical blob, Git metadata needed for that comparison, and applicable AGENTS.md/framework/skill instructions. Do not open README.md, docs/, .project-efforts/, notes.txt, or other project files. Do not write files or mutate Git. Report the actual coverage limitation without assessing excluded obligations.",
+        "checks": [
+          "Exact requested comparison honored",
+          "No excluded file reads or broad diff exposing their contents",
+          "No writes",
+          "Excluded obligations stated as coverage limitations without invented findings"
+        ]
+      }
+    ],
+    "reader_request": "Using only the saved project files supplied here, explain which exact revision and path provide the available photo-export fallback, what it is for, which dependency remains pending, and what verification was and was not performed. Read-only; do not edit, execute validation, inspect Git history, or access outside files.",
+    "preflight_clearance": {
+      "manifest_sha256": "67031bdcf4a7f538f07f6fd6d5823719043db913eea01f20554248e433fc3829",
+      "checks": [
+        {
+          "mode": "writer",
+          "attempt": "preflight-writer-2",
+          "verdict": "PASS",
+          "trace_sha256": {
+            "rollout-2026-09-17T16-30-50-01a0b110-9ad5-73d0-9b63-5a496eec4577.jsonl": "f99c063a353adaf0ccbab2c24a8d2e3c71f59dce6acd6bfc759875de19424e3f",
+            "rollout-2026-09-17T16-32-11-01a0b111-d736-71b3-b177-d212f8a9f724.jsonl": "eca404dfcdf77cfb4a30b5ba4000dedf378a0f2b0b97a857adebcbe7814b935b",
+            "rollout-2026-09-17T16-32-22-01a0b112-02ad-73b0-93cd-62d8738eb913.jsonl": "135033ac15d173e5907fcf4acaac812193acb4489486b3e07e040c2b1abf4915"
+          },
+          "observations": "Parent and two native reviewers each executed all five Git commands, three denied canary reads, command/patch probes and readback. Writer six expected file changes only; reader project and Git unchanged. gpt-5.6-sol/medium, network disabled."
+        },
+        {
+          "mode": "reader",
+          "attempt": "preflight-reader-1",
+          "verdict": "PASS",
+          "trace_sha256": {
+            "rollout-2026-09-17T16-33-57-01a0b113-766b-7992-bda2-c2cecc56df2c.jsonl": "3df4efb6e3e6053b923637a3fb46c733bd9468ec84ceb4ae7c9d2edb5354597e",
+            "rollout-2026-09-17T16-35-20-01a0b114-b987-7823-9bfb-12291a26c797.jsonl": "22dfd1841feda52913f386edda5a6feb095f364f0dce7816391d9a2b61b929b4",
+            "rollout-2026-09-17T16-35-31-01a0b114-e447-7033-9f0f-aab2cb53cad4.jsonl": "3fb23bfd445d339414de3462f56807b2e1b71fb206cd2cb736d10c005b1bcbe2"
+          },
+          "observations": "Parent and two native reviewers each executed all five Git commands, three denied canary reads, command/patch probes and readback. Writer six expected file changes only; reader project and Git unchanged. gpt-5.6-sol/medium, network disabled."
+        }
+      ],
+      "cleanup_validation": "77 evaluation tooling tests and independent correction reviews; monitor-only changes recorded separately."
+    },
+    "corrections": [
+      {
+        "failure": "Git read denied personal .gitconfig in first native writer preflight.",
+        "correction": "Set GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_NOSYSTEM=1 and GIT_OPTIONAL_LOCKS=0 in the native command environment. Add observed fatal Git configuration access to automatic failure detection.",
+        "initial_manifest_sha256": "0adc2754da148beafe6d08bf531223bd9b8cb6ad25be8f7703082e415d6dc936",
+        "corrected_manifest_sha256": "44b36e8b106d44a43bfb23fc8fe5183397a3be753d470b81f8d66295aff4d181",
+        "scope": "One writer retry and initial read-only preflight; no scenario launched yet."
+      },
+      {
+        "prior_manifest_sha256": "44b36e8b106d44a43bfb23fc8fe5183397a3be753d470b81f8d66295aff4d181",
+        "final_manifest_sha256": "67031bdcf4a7f538f07f6fd6d5823719043db913eea01f20554248e433fc3829",
+        "reason": "Independent review reproduced delayed cleanup on monitor exception and surviving owned descendants after leader exit. Both fixed and regression-tested before any scenario launch. Native runtime, permission configuration, fixtures, requests, limits and order unchanged. Completed native preflights exercise the same subject boundary; final cleanup exercised through deterministic subprocess controls.",
+        "validation": "Two tests failed before and passed after; 77 evaluation tests passed; independent Standards and Spec correction reviews each zero remaining findings."
+      },
+      {
+        "phase": "after campaign stop; no further launches",
+        "native_retest": false,
+        "added_detection": [
+          "Errno::EPERM",
+          "Library not loaded:",
+          "(blocked by sandbox)"
+        ],
+        "monitor_sha256": "1305b6625da8c016c7e61da88bdbb721939e16f0b8ed05980cec8a6e0c7d69e6",
+        "validation": "New startup-denial test failed before and passed after; all 78 evaluation tests passed. Replay of captured candidate rollout reports infrastructure-blocked at first Ruby error.",
+        "frozen_campaign_manifest_unchanged": "67031bdcf4a7f538f07f6fd6d5823719043db913eea01f20554248e433fc3829"
+      }
+    ],
+    "sessions": [
+      {
+        "kind": "preflight",
+        "mode": "writer",
+        "index": "writer",
+        "case": "preflight-writer",
+        "project": "preflight-writer-1/project",
+        "execution": "completed",
+        "request_sha256": "c7d493cc7660248c23ae1455ca8b8de67285b671e34a4ed45935ad2162682ca1",
+        "prompt_audit_sha256": "4cbd7f0475097d7580d12af57d36b4dfa14f5bd722e8a95ec3283c0bfaefb346",
+        "started_at": 1789676927.597412,
+        "returncode": 0,
+        "elapsed_seconds": 16.971901000011712,
+        "monitor_failure": null,
+        "copied_credential_removed": true,
+        "stop_campaign": false,
+        "boundary_verdict": "infrastructure-blocked",
+        "boundary_reason": "Native git --version exited 128 because Git tried to read denied personal .gitconfig; no reviewers ran.",
+        "manifest_sha256": "0adc2754da148beafe6d08bf531223bd9b8cb6ad25be8f7703082e415d6dc936",
+        "traces": [
+          {
+            "trace": "rollout-2026-09-17T16-28-48-01a0b10e-bcbb-77d3-b50f-f968c25d77e3.jsonl",
+            "sha256": "c9bc16adb8b22e8b39aa47a1f830a3497455ef22b81f0dc567cf7dbaa51f4a90",
+            "role": "parent",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {},
+            "usage": {
+              "input_tokens": 26669,
+              "cached_input_tokens": 12928,
+              "output_tokens": 546,
+              "reasoning_output_tokens": 273,
+              "total_tokens": 27215
+            },
+            "complete": true
+          }
+        ],
+        "changed_project_files": [],
+        "changed_git_files": []
+      },
+      {
+        "kind": "preflight",
+        "mode": "writer",
+        "index": "writer",
+        "case": "preflight-writer",
+        "project": "preflight-writer-2/project",
+        "execution": "completed",
+        "request_sha256": "06c402078e06b70f5f93b15ca20b310687791424685ad7188152a76930a061ca",
+        "prompt_audit_sha256": "ec39cc7fb0fbe8df14e9bad64ac2e1fa60e7bb240762962675bb98b53378f90e",
+        "started_at": 1789677050.142462,
+        "manifest_sha256": "44b36e8b106d44a43bfb23fc8fe5183397a3be753d470b81f8d66295aff4d181",
+        "returncode": 0,
+        "elapsed_seconds": 181.47868237504736,
+        "monitor_failure": null,
+        "copied_credential_removed": true,
+        "stop_campaign": false,
+        "boundary_verdict": "PASS",
+        "traces": [
+          {
+            "trace": "rollout-2026-09-17T16-30-50-01a0b110-9ad5-73d0-9b63-5a496eec4577.jsonl",
+            "sha256": "f99c063a353adaf0ccbab2c24a8d2e3c71f59dce6acd6bfc759875de19424e3f",
+            "role": "parent",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {},
+            "usage": {
+              "input_tokens": 410024,
+              "cached_input_tokens": 374272,
+              "output_tokens": 4488,
+              "reasoning_output_tokens": 1320,
+              "total_tokens": 414512
+            },
+            "complete": true
+          },
+          {
+            "trace": "rollout-2026-09-17T16-32-11-01a0b111-d736-71b3-b177-d212f8a9f724.jsonl",
+            "sha256": "eca404dfcdf77cfb4a30b5ba4000dedf378a0f2b0b97a857adebcbe7814b935b",
+            "role": "/root/standards",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {},
+            "usage": {
+              "input_tokens": 121087,
+              "cached_input_tokens": 104704,
+              "output_tokens": 2245,
+              "reasoning_output_tokens": 861,
+              "total_tokens": 123332
+            },
+            "complete": true
+          },
+          {
+            "trace": "rollout-2026-09-17T16-32-22-01a0b112-02ad-73b0-93cd-62d8738eb913.jsonl",
+            "sha256": "135033ac15d173e5907fcf4acaac812193acb4489486b3e07e040c2b1abf4915",
+            "role": "/root/spec",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {},
+            "usage": {
+              "input_tokens": 180476,
+              "cached_input_tokens": 158336,
+              "output_tokens": 2239,
+              "reasoning_output_tokens": 603,
+              "total_tokens": 182715
+            },
+            "complete": true
+          }
+        ],
+        "changed_project_files": [
+          "command-parent.txt",
+          "command-spec.txt",
+          "command-standards.txt",
+          "probe-parent.txt",
+          "probe-spec.txt",
+          "probe-standards.txt"
+        ],
+        "changed_git_files": []
+      },
+      {
+        "kind": "preflight",
+        "mode": "reader",
+        "index": "reader",
+        "case": "preflight-reader",
+        "project": "preflight-reader-1/project",
+        "execution": "completed",
+        "request_sha256": "4b115e407d282b746ef667f023fff7e97afba99ee2b4499d13e15d214207c8dc",
+        "prompt_audit_sha256": "e3f9034b903f827bc07f09232fec9d836fa9db3072826b9afec472a5b2883d67",
+        "started_at": 1789677237.136779,
+        "manifest_sha256": "44b36e8b106d44a43bfb23fc8fe5183397a3be753d470b81f8d66295aff4d181",
+        "returncode": 0,
+        "elapsed_seconds": 172.82449383311905,
+        "monitor_failure": null,
+        "copied_credential_removed": true,
+        "stop_campaign": false,
+        "boundary_verdict": "PASS",
+        "traces": [
+          {
+            "trace": "rollout-2026-09-17T16-33-57-01a0b113-766b-7992-bda2-c2cecc56df2c.jsonl",
+            "sha256": "3df4efb6e3e6053b923637a3fb46c733bd9468ec84ceb4ae7c9d2edb5354597e",
+            "role": "parent",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {},
+            "usage": {
+              "input_tokens": 323975,
+              "cached_input_tokens": 299520,
+              "output_tokens": 4548,
+              "reasoning_output_tokens": 1087,
+              "total_tokens": 328523
+            },
+            "complete": true
+          },
+          {
+            "trace": "rollout-2026-09-17T16-35-20-01a0b114-b987-7823-9bfb-12291a26c797.jsonl",
+            "sha256": "22dfd1841feda52913f386edda5a6feb095f364f0dce7816391d9a2b61b929b4",
+            "role": "/root/standards",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {
+              "input_tokens": 201510,
+              "cached_input_tokens": 180992,
+              "output_tokens": 2073,
+              "reasoning_output_tokens": 442,
+              "total_tokens": 203583
+            },
+            "usage": {
+              "input_tokens": 184657,
+              "cached_input_tokens": 175872,
+              "output_tokens": 2095,
+              "reasoning_output_tokens": 404,
+              "total_tokens": 186752
+            },
+            "complete": true
+          },
+          {
+            "trace": "rollout-2026-09-17T16-35-31-01a0b114-e447-7033-9f0f-aab2cb53cad4.jsonl",
+            "sha256": "3fb23bfd445d339414de3462f56807b2e1b71fb206cd2cb736d10c005b1bcbe2",
+            "role": "/root/spec",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {
+              "input_tokens": 220261,
+              "cached_input_tokens": 199424,
+              "output_tokens": 3142,
+              "reasoning_output_tokens": 739,
+              "total_tokens": 223403
+            },
+            "usage": {
+              "input_tokens": 201676,
+              "cached_input_tokens": 177920,
+              "output_tokens": 2460,
+              "reasoning_output_tokens": 523,
+              "total_tokens": 204136
+            },
+            "complete": true
+          }
+        ],
+        "changed_project_files": [],
+        "changed_git_files": []
+      },
+      {
+        "kind": "scenario",
+        "mode": null,
+        "index": 0,
+        "case": "primary",
+        "project": "s00/project",
+        "execution": "completed",
+        "request_sha256": "865d894a8036842e3eafb3206f7a9c518bdd3dbc4e1ecd084cf086447d9a5e47",
+        "prompt_audit_sha256": "9731e1d7aac53a211eca8f613f2ac2de52bf4ca6043d283e199df91e6f08cd8b",
+        "started_at": 1789677430.457945,
+        "manifest_sha256": "67031bdcf4a7f538f07f6fd6d5823719043db913eea01f20554248e433fc3829",
+        "returncode": 0,
+        "elapsed_seconds": 170.73944124998525,
+        "monitor_failure": null,
+        "copied_credential_removed": true,
+        "stop_campaign": false,
+        "traces": [
+          {
+            "trace": "rollout-2026-09-17T16-37-10-01a0b116-689a-71c0-b5bf-e75b5ca484a5.jsonl",
+            "sha256": "ded0ee89439cf1500cd6da5a67cc4cf6bd534228b8609fda54440b279770872c",
+            "role": "parent",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {},
+            "usage": {
+              "input_tokens": 403841,
+              "cached_input_tokens": 338304,
+              "output_tokens": 5645,
+              "reasoning_output_tokens": 1815,
+              "total_tokens": 409486
+            },
+            "complete": true
+          },
+          {
+            "trace": "rollout-2026-09-17T16-38-46-01a0b117-df32-7be0-928f-a54fc1b0e873.jsonl",
+            "sha256": "0e0575d22d70feccc3f73a0e04d89b0b3d838fdb14379ec40942954170348fa4",
+            "role": "/root/standards_review",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {
+              "input_tokens": 155467,
+              "cached_input_tokens": 99200,
+              "output_tokens": 3538,
+              "reasoning_output_tokens": 1371,
+              "total_tokens": 159005
+            },
+            "usage": {
+              "input_tokens": 67067,
+              "cached_input_tokens": 57088,
+              "output_tokens": 1501,
+              "reasoning_output_tokens": 447,
+              "total_tokens": 68568
+            },
+            "complete": true
+          },
+          {
+            "trace": "rollout-2026-09-17T16-38-55-01a0b118-014f-7010-9e3f-d10226f088fb.jsonl",
+            "sha256": "a1a47e110b8887395eec55019ca064511939e42636aa9c5db200c54a0cb5c7f8",
+            "role": "/root/spec_review",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {
+              "input_tokens": 185325,
+              "cached_input_tokens": 128000,
+              "output_tokens": 4154,
+              "reasoning_output_tokens": 1379,
+              "total_tokens": 189479
+            },
+            "usage": {
+              "input_tokens": 64907,
+              "cached_input_tokens": 55424,
+              "output_tokens": 1271,
+              "reasoning_output_tokens": 521,
+              "total_tokens": 66178
+            },
+            "complete": true
+          }
+        ],
+        "changed_project_files": [
+          ".project-efforts/photo-export/map.md",
+          "config/image-export.json"
+        ],
+        "changed_git_files": []
+      },
+      {
+        "kind": "scenario",
+        "mode": null,
+        "index": 1,
+        "case": "primary",
+        "project": "s01/project",
+        "execution": "infrastructure-blocked",
+        "request_sha256": "865d894a8036842e3eafb3206f7a9c518bdd3dbc4e1ecd084cf086447d9a5e47",
+        "prompt_audit_sha256": "6775ff46f5f84f5f726d0d1e8f238075ef57b80e7853cb4141f0e6f5e541fcc3",
+        "started_at": 1789677610.7780821,
+        "manifest_sha256": "67031bdcf4a7f538f07f6fd6d5823719043db913eea01f20554248e433fc3829",
+        "returncode": -9,
+        "elapsed_seconds": 148.9127972498536,
+        "monitor_failure": null,
+        "copied_credential_removed": true,
+        "stop_campaign": true,
+        "controller_stop": {
+          "cause": "Observed Ruby gem startup permission denial and Perl dylib sandbox denial were missed by the automatic monitor. Subject continued to other validators before coordinator inspection.",
+          "operation": "After verifying ownership with ps, coordinator sent SIGKILL to evaluation process group 4209; controller recorded return -9 and removed copied credentials.",
+          "automatic_detection": false,
+          "no_further_launches": true
+        },
+        "traces": [
+          {
+            "trace": "rollout-2026-09-17T16-40-11-01a0b119-28b3-7232-87bb-8839357e2fdd.jsonl",
+            "sha256": "41e2776ff0b433c7ba3ad768b001a22e5944819e32f9c3c20e3f6a1e87d453da",
+            "role": "parent",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {},
+            "usage": {
+              "input_tokens": 486305,
+              "cached_input_tokens": 436736,
+              "output_tokens": 6587,
+              "reasoning_output_tokens": 1391,
+              "total_tokens": 492892
+            },
+            "complete": false
+          },
+          {
+            "trace": "rollout-2026-09-17T16-42-20-01a0b11b-202d-7dc1-a280-307b5f7a328f.jsonl",
+            "sha256": "9d3b60ae97ae76ac38ed81ef9e1f1b4d4530e9c828378c3d910afee77ae87abf",
+            "role": "/root/standards_review",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {
+              "input_tokens": 346703,
+              "cached_input_tokens": 299136,
+              "output_tokens": 5264,
+              "reasoning_output_tokens": 1230,
+              "total_tokens": 351967
+            },
+            "usage": {
+              "input_tokens": 34738,
+              "cached_input_tokens": 23424,
+              "output_tokens": 409,
+              "reasoning_output_tokens": 90,
+              "total_tokens": 35147
+            },
+            "complete": false
+          },
+          {
+            "trace": "rollout-2026-09-17T16-42-29-01a0b11b-45b5-7121-9039-aeb88a775290.jsonl",
+            "sha256": "56ae9a52d7047325c2158ddd54defbb600d6fd1ceb9db0de4754ea003ebf203a",
+            "role": "/root/spec_review",
+            "model_settings": [
+              [
+                "gpt-5.6-sol",
+                "medium"
+              ]
+            ],
+            "inherited_usage": {
+              "input_tokens": 392548,
+              "cached_input_tokens": 344576,
+              "output_tokens": 6033,
+              "reasoning_output_tokens": 1322,
+              "total_tokens": 398581
+            },
+            "usage": {
+              "input_tokens": 13359,
+              "cached_input_tokens": 0,
+              "output_tokens": 185,
+              "reasoning_output_tokens": 46,
+              "total_tokens": 13544
+            },
+            "complete": false
+          }
+        ],
+        "changed_project_files": [
+          ".project-efforts/photo-export/map.md",
+          "config/image-export.json"
+        ],
+        "changed_git_files": []
+      }
+    ],
+    "evidence_limits": [
+      "One sample per arm per case, no statistical generalization; equal success is no demonstrated improvement.",
+      "Raw native delegation message bodies are encrypted; exact reviewer prompt wording cannot be inspected. Native spawn timing, child settings and actual child tool inputs/outputs remain observable.",
+      "Recorded counters subtract inherited full-fork usage; cached input is included in input, reasoning output in output. Controller and delivery reviews excluded."
+    ],
+    "validation": {
+      "package_tests": 224,
+      "evaluation_tooling_tests": 78,
+      "wheel_checks": 2,
+      "scenario_definitions": 57,
+      "ruff": "passed",
+      "code_review": {
+        "Standards": "All eight pending paths and observed evidence reviewed; two prior cleanup findings resolved; zero remaining actionable findings.",
+        "Spec": "All eight pending paths and observed evidence reviewed; cleanup finding resolved; zero remaining actionable findings. Live automatic-stop and comparison requirements remain blocked as documented."
+      },
+      "captured_trace_replay": {
+        "status": "infrastructure-blocked",
+        "first_failure": "Ruby Errno::EPERM",
+        "phase": "post-stop correction; no additional model execution"
+      },
+      "version": {
+        "retained": "0.34.4",
+        "verified_remote_pr_base": "4b4ac408cbc4543e2e7a433f52c03a48f7044ca7",
+        "latest_remote_semantic_release": "v0.34.3",
+        "release_or_merge_authorized": false
+      }
+    },
+    "used": {
+      "native_preflight": 3,
+      "scenario_sessions": 2,
+      "fresh_readers": 0,
+      "nested_reviewers": 8,
+      "nested_preflight_reviewers": 4,
+      "nested_scenario_reviewers_completed": 2,
+      "nested_scenario_reviewers_interrupted": 2
+    },
+    "usage": {
+      "totals": {
+        "parents": {
+          "input_tokens": 1650814,
+          "cached_input_tokens": 1461760,
+          "output_tokens": 21814,
+          "reasoning_output_tokens": 5886,
+          "total_tokens": 1672628
+        },
+        "children": {
+          "input_tokens": 867967,
+          "cached_input_tokens": 752768,
+          "output_tokens": 12405,
+          "reasoning_output_tokens": 3495,
+          "total_tokens": 880372
+        },
+        "total": {
+          "input_tokens": 2518781,
+          "cached_input_tokens": 2214528,
+          "output_tokens": 34219,
+          "reasoning_output_tokens": 9381,
+          "total_tokens": 2553000
+        }
+      },
+      "limits": "Last observed counters, subtracting inherited full-fork parent totals. Interrupted requests may be incomplete. Cached input is part of input; reasoning output is part of output. Controller/delivery-review use excluded."
+    },
+    "outcomes": [
+      {
+        "case": "primary",
+        "baseline": {
+          "execution": "completed",
+          "product_verdict": "INCONCLUSIVE for full primary acceptance",
+          "restoration": "PASS",
+          "state_reconciliation": "PASS",
+          "code_review": "PASS: two completed native reviewers inspected actual scope",
+          "local_acceptance_evidence": "PASS",
+          "completion_handoff": "NOT OBSERVED; do not infer full acceptance from local checks, an agent claim or route marker",
+          "scope": "Only config and existing map changed; Git unchanged; no repeat implementation or review pair. Final byte/JSON integrity recheck observed."
+        },
+        "candidate": {
+          "execution": "infrastructure-blocked",
+          "product_verdict": "INCONCLUSIVE",
+          "partial_observations": "Exact historical bytes and existing map restored; Ruby and Perl startup denials interrupted valid evaluation. Two reviewers started but neither completed; acceptance completion unobserved.",
+          "first_runtime_error_seconds": 89.346,
+          "second_runtime_error_seconds": 110.122,
+          "stopped_seconds": 148.913,
+          "automatic_stop": false,
+          "scope": "Only config and existing map changed; Git unchanged."
+        },
+        "difference": "No completed pair; no demonstrated improvement."
+      },
+      {
+        "case": "review-only",
+        "baseline": "not-run",
+        "candidate": "not-run",
+        "difference": "unobserved"
+      },
+      {
+        "case": "already-sufficient",
+        "baseline": "not-run",
+        "candidate": "not-run",
+        "difference": "unobserved"
+      },
+      {
+        "case": "unrelated",
+        "baseline": "not-run",
+        "candidate": "not-run",
+        "difference": "unobserved"
+      },
+      {
+        "case": "limited-read-only",
+        "baseline": "not-run",
+        "candidate": "not-run",
+        "difference": "unobserved"
+      },
+      {
+        "case": "fresh-reader",
+        "baseline": "not-run",
+        "candidate": "not-run",
+        "difference": "unobserved"
+      }
+    ],
+    "interpretation": "Baseline restoration, reconciliation and Code Review passed; full completion handoff was not established. Candidate infrastructure interruption prevents paired behavioral inference. No candidate semantic regression or improvement is established by these observations.",
+    "remaining_blockers": [
+      "Candidate review and acceptance completion unverified.",
+      "All four control-case pairs and both fresh readers unrun.",
+      "Automatic detection missed actual Ruby/Perl failures in frozen run; correction only deterministic-tested and replayed after stop.",
+      "Interpreter startup coverage remains incomplete under the restricted profile; next bounded step is non-model startup/monitoring checks, then separately authorized fresh native preflights and campaign."
+    ]
   }
 }
