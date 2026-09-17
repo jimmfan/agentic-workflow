@@ -12,9 +12,10 @@ No merge or release.
 
 ## Ready work
 
-Investigate and correct the two preserved failures under the authorized focused follow-up, then run bounded affected-case checks and independent review.
-The [report](../../evals/implementation-completion/REPORT.md#focused-behavioral-follow-up) records the causal evidence and limits; the protocol records the budget.
-Leave the working branch checked out; do not merge, release, or accept unresolved failures.
+Keep PR #48 unmerged and leave `fix/implementation-completion-handoff` checked out for review.
+The authorized five-case follow-up is complete; preserve its failed sufficient-evidence result rather than launching replacement samples.
+Further correction requires new concrete causal evidence for the agent's repeated checks; another synonymous prohibition is not supported by the inspected traces.
+No new execution framework, merge, release, or acceptance of failures is authorized.
 
 ## Current state
 
@@ -22,12 +23,17 @@ The [report](../../evals/implementation-completion/REPORT.md) maintains findings
 Completion mechanics remain in the outer Implementation step, with short handoffs in routing and `implement`.
 Review checks unchanged artifacts only for in-scope requirements; Verification reuses adequate review evidence.
 The macOS interpreter-access repair and monitor/process cleanup passed non-model checks and native writer/read-only preflights, including four nested reviewers.
-The current-candidate campaign completed all ten paired scenarios and both fresh readers without infrastructure recovery or runtime-instruction edits.
+The preserved 14-session campaign completed all ten paired scenarios and both fresh readers without infrastructure recovery or runtime-instruction edits.
 Both arms passed primary completion, review-only detection, unrelated-artifact preservation, limited-read boundaries and saved-artifact recovery.
 Both failed already-sufficient evidence reuse by repeating covered byte verification.
 A candidate tutorial reviewer also created and removed a temporary directory, violating read-only reviewer ownership despite unchanged final state.
 The frozen tutorial criteria passed; that additional violation is recorded separately.
-No behavioral improvement is demonstrated, and the candidate does not meet the stated premerge criterion.
+That comparison demonstrated no behavioral improvement.
+The focused follow-up at `4a90232` completed five candidate sessions and six nested reviewers without infrastructure recovery.
+Both write-capable implementation paths respected the reviewer boundary; the invalidated-evidence and limited-read controls passed.
+The already-sufficient case still repeated byte checks after explicitly acknowledging their accepted coverage.
+The primary parent also retained an undisclosed empty `.tmp` directory and repeated narrow checks.
+The [report](../../evals/implementation-completion/REPORT.md#focused-behavioral-follow-up) and separate results retain these limits; the candidate still does not meet the premerge criterion.
 
 ## Areas and relationships
 
@@ -37,14 +43,14 @@ The coordinator reassesses routing and reconciles authorized affected state.
 
 ## Dependencies
 
-Merge readiness depends on addressing or explicitly accepting the named behavioral limits.
-Existing successful execution and bounded behavioral evidence should be reused.
+Merge readiness depends on correcting the unresolved evidence-reuse failure and addressing the additional parent cleanup/disclosure defect.
+Reuse the preserved campaign and focused follow-up evidence for unchanged boundaries.
+Positive reviewer retests are bounded observations, not proof of universal reliability or per-reviewer OS enforcement.
 
 ## Blockers
 
-Candidate evidence reuse and reviewer read-only ownership have observed failures.
-Both instructions reached the failing agents.
-The focused correction targets evidence selection order and the delegated review boundary, rather than adding a separate owner or another global prohibition.
-The model reasoning behind the failures remains uncertain; corrected behavior must be observed before changing their disposition.
-All planned evaluation evidence has been obtained; missing quota, interpreter access or comparison coverage is no longer the blocker.
-Delivery of the repairs and honest results can proceed independently of merge readiness.
+The evidence-selection clarification was insufficient: accepted byte evidence reached the deciding agent, but it still repeated the checks.
+Independent review found no further specific missing instruction in that trace.
+A further correction needs materially different supporting evidence within the authorized architecture and scope; blind reruns or another duplicate prohibition are not justified.
+The five planned follow-ups completed; the three reserved infrastructure-recovery attempts remain unused because no infrastructure problem occurred.
+No quota, access or interpreter problem blocks delivery of the corrections and honest findings.

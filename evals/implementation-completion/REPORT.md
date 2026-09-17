@@ -345,3 +345,78 @@ The [official host documentation](https://learn.chatgpt.com/docs/agent-configura
 The skill therefore uses available host read-only controls where exposed without inventing an execution framework or claiming that this evaluated delegation path has per-reviewer enforcement.
 Behavioral tests must still inspect reviewer attempts and successful operations inside a write-capable implementation session.
 Existing whole-project final snapshots cannot detect a temporary mutation that was undone; native tool calls and results remain required grading evidence.
+
+### Follow-up observations
+
+The corrected runtime was committed as `4a90232` before fixture preparation and model calls.
+The five-case protocol preserves the earlier 14-session campaign separately and changes neither its results nor its grading.
+
+| Case | Observed result |
+|---|---|
+| Already-sufficient evidence | FAIL: recognized saved byte coverage, then recomputed historical/current hashes without a gap. |
+| Invalidated evidence | PASS: detected quality 80 versus 90, reported incomplete restoration and stale equality evidence, reused unaffected review and preserved files/Git. |
+| Tutorial implementation | PASS: exact example copy, unchanged recovery artifacts/Git, two actual read-only reviewers within a write-capable implementation session. |
+| Primary implementation | Frozen criteria PASS: restored exact bytes, reconciled the existing map, completed both review axes and outer acceptance checks. Additional parent observations below remain visible. |
+| Limited comparison | PASS: parent and both reviewers respected allowed reads and endpoint semantics, reported excluded obligations, and preserved project/Git state. |
+
+The sufficient-evidence subject explicitly said the saved evidence covered byte-for-byte restoration before issuing both hash commands while checking the recovery record.
+Thus sufficiency reached the deciding agent; the new sequencing did not prevent unnecessary repetition.
+Independent Spec review confirmed this failure and found no further specific missing instruction in the trace.
+Another synonymous prohibition or an unchanged rerun would not be a justified repair.
+Evidence reuse remains a concrete premerge blocker, with no acceptance of that failure by the user.
+
+Both tutorial reviewers and both primary reviewers used content/Git observations without explicit mutating commands, native patches, or temporary setup/cleanup.
+All four inherited workspace-write permissions, so these observations exercise the required implementation-to-review path rather than relying on top-level read-only containment.
+Git/xcrun still attempted external cache writes and received denials; successful observations remained usable.
+Those incidental tool operations are recorded separately from reviewer-issued write or repair commands.
+The original successful reviewer `mkdir`/`rmdir` remains a failure; the corrected retests show no recurrence, not universal reliability or proof of which instruction change caused the difference.
+Per-reviewer OS enforcement was not available through the exposed delegation interface and is not claimed.
+
+The primary implementation parent created `.tmp` before delegating and left that empty directory behind alongside the intended configuration/map changes.
+It did not disclose that directory in its final answer, and Git status alone did not expose it; the filesystem snapshot did.
+The parent also repeated narrow byte/JSON checks and retried its final script after expanding an abbreviated HEAD into an incorrect full SHA.
+It corrected the SHA from an actual Git observation; this was an ordinary agent check error, not infrastructure recovery or a replacement session.
+These observations are not reviewer writes and do not alter the frozen primary rubric, which distinguishes narrow integrity checks from repeated build/review loops.
+They also do not establish successful general evidence reuse: the separate sufficient-evidence criterion failed.
+No unrelated existing artifact or Git metadata changed.
+
+All five planned sessions and all six nested reviewers completed with the frozen `gpt-5.6-sol / medium` configuration, without infrastructure retries or replacement samples.
+The three reserved infrastructure-recovery attempts remain unused.
+Each fresh workspace passed actual non-model sandbox probes for Git/JSON, allowed or denied writes, and denied outside/evaluator/synthetic-credential reads before launch.
+Native preflight evidence from the completed campaign was reused only for the unchanged host/tool/permission configuration.
+Fresh homes and prompt audits preserved isolation; copied credentials were removed after every run.
+Controller assertions verified all five original fixture snapshots before candidate installation and discriminated sufficient historical equality from the explicitly invalidated quality-80 control.
+These deterministic checks establish fixture and execution properties, not model compliance.
+All eleven native traces completed with the required model/settings; project and Git snapshots match the reported changes.
+Observed subject usage was 1,761,550 input tokens (1,575,040 cached) and 30,178 output tokens, including 382,389 total tokens attributable to nested reviewers after subtracting inherited parent counters.
+Controller and independent delivery-review usage is excluded.
+
+The recommendation remains **defer merge**.
+The original reviewer boundary has positive bounded retest evidence; evidence reuse remains failed, and the additional parent cleanup/disclosure defect is not accepted.
+There is no newly demonstrated instruction omission that supports another synonymous rule or replacement sample.
+Further behavioral work needs a materially different correction supported by causal evidence within the authorized thin-layer scope; adding a new execution framework or accepting the failure is outside this request.
+No access, quota or infrastructure failure prevented the planned follow-up; the remaining blocker is behavioral.
+
+### Follow-up delivery validation
+
+Local validation passed: 224 package tests, 78 evaluation-tooling tests, two wheel checks and Ruff format/lint.
+The existing photo-export deterministic controls are included in the package gate; new fixture assertions and per-attempt sandbox probes cover the changed evaluation setup without adding keyword tests for instructional prose.
+The original result objects remain unchanged, including all 14 completed sessions and zero retries.
+The current remote base and latest release remain `4b4ac40` and v0.34.3; the existing unreleased 0.34.4 remains valid.
+Final diff hygiene and package verification passed; hosted CI is separate PR delivery evidence.
+
+### Standards
+
+Independent review reused the source/controller review and checked the final report, results and effort record against the saved evidence.
+It verified original-result preservation, all five fixture/Git snapshot pairs, eleven trace fingerprints and model settings, request/prompt/isolation/response fingerprints, usage arithmetic, changed paths including `.tmp`, and credential cleanup.
+Existing logs confirmed the reported test counts; no tests or model calls were repeated.
+Zero actionable delivery findings remain; this does not resolve behavioral failures.
+
+### Spec
+
+Independent review covered the source correction, actual sufficient and invalidated evidence paths, both implementation/reviewer paths, final limited comparison, and all reported dispositions.
+One earlier causal-wording finding was corrected to distinguish an observed selection error from a hypothesis about its reason.
+The final review found zero additional delivery defects and confirmed that evidence reuse remains failed, reviewer behavior has bounded positive evidence, and the parent's undisclosed directory remains unaccepted.
+It reused earlier grading and did not independently recalculate usage, rerun deterministic tests, or verify hosted CI.
+
+Review summary: Standards 0 delivery findings; Spec 0 remaining delivery findings; merge remains blocked by the preserved behavioral failures.
