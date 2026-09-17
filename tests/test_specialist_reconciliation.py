@@ -30,17 +30,33 @@ class SpecialistReconciliationTests(unittest.TestCase):
             f"Missing a single instruction paragraph covering {parts!r}",
         )
 
-    def test_debugging_reconciles_user_and_tool_evidence_before_reliance(self):
+    def test_debugging_reconciliation_requires_action_authorization(self):
         self.assert_clause(
             skill("workflow-debugging"),
+            "Inside Wayfinder",
+            "reconcile state only within current action authorization",
+            "only for consequential evidence",
+            "selected map remains the durable coordination summary",
+        )
+        self.assert_clause(
+            read("agent_workflow/install/AGENTS.md.template"),
+            "current user request or accepted project policy authorizes",
+            "Workflows, skills and their instructions",
+            "Wayfinder records supply neither",
+        )
+
+    def test_debugging_reconciles_authorized_evidence_without_another_request(self):
+        self.assert_clause(
+            skill("workflow-debugging"),
+            "Within that authorized scope",
             "user-provided or tool-observed evidence",
             "materially supports or changes",
-            "during Wayfinder work",
             "reconcile",
             "through its contract",
             "before further work relies",
             "before final response or handoff",
-            "Do not wait for a separate persistence request",
+            "Once those state writes are authorized",
+            "do not wait for a separate persistence request",
         )
         self.assert_clause(
             read(".agent-workflow/contracts/wayfinder-state.md"),
