@@ -135,3 +135,34 @@ The campaign later stopped during candidate JSON validation when Ruby and Perl s
 The frozen monitor missed those signatures; coordinator inspection triggered termination, so automatic stopping for those failures was not established by this run.
 Detection was corrected and checked against the captured rollout only after the campaign stopped, with no further model launches or permission expansion.
 The [report](REPORT.md#new-campaign-verified-git-boundary-interrupted-candidate) and compact results distinguish the frozen controller from this unexercised live correction.
+
+## Recoverable comparison against the intended merge candidate
+
+This authorized campaign uses baseline `4b4ac408cbc4543e2e7a433f52c03a48f7044ca7` and initial candidate `67c0ef5bc7d3295791fc94d3b106a75d09f5eca1`, including the later wording changes.
+The earlier campaigns remain separate evidence.
+The budget is 24 top-level model sessions: two native preflights, ten planned scenarios, two applicable readers, and ten recovery or affected-case reruns.
+Allow at most 64 nested subject reviewers separately; use `gpt-5.6-sol / medium` throughout and retain the existing 360-second and 2,000,000-byte limits.
+Non-model diagnostics and delivery reviews are separate from this subject budget.
+
+Stop affected processes on infrastructure failures, retain every attempt, diagnose and verify a concrete repair, then retry within the recorded budget.
+Record each recovery's reason and environment fingerprint before relaunching.
+Preserve valid earlier outcomes when the repair does not affect their interpretation; if it could affect behavior, apply it consistently and rerun the affected comparison.
+A behavioral failure remains a result and cannot be replaced merely to get a pass.
+A concrete product defect may receive a minimal correction, a newly frozen candidate revision and reruns of affected cases and relevant controls, retaining the earlier result.
+Pause only for unavailable access/quota, required out-of-scope authority, a protection that cannot be preserved, or exhausted campaign budget.
+Satisfactory candidate behavior across the required cases supports the merge recommendation even when baseline outcomes are equally successful.
+
+The repaired macOS profile adds read-only access to system Perl libraries and system Ruby gem metadata.
+Personal configuration, credentials, sibling projects, command network access and read-only write boundaries remain protected.
+Before model calls, verify interpreter/JSON/file/Git operations and controlled monitor cleanup inside the actual sandbox; expected denials and ordinary tool errors must remain distinguishable from infrastructure failure.
+
+The non-model repair comparison reproduced Ruby's denied system gem discovery and Perl's blocked shared library before these two grants, then passed Ruby, Perl, Python and jq JSON reads in writer and read-only modes afterward.
+The shared isolation helper now uses the same isolated Git environment as native subjects.
+A controlled real sandbox failure fed into the rollout monitor stopped an owned child after its leader exited; ordinary missing-file errors and expected denial probes did not trigger infrastructure failure.
+Native preflights then passed in both parents and all four nested reviewers, including interpreter startup, Git reads, protected-read denials and command/patch permissions.
+Both preflight Git snapshots and the read-only project were unchanged; the writer changed only its six designated probe files.
+
+The completed campaign used all 14 planned sessions and 21 nested agents, with no recovery attempt or revised candidate.
+Both arms failed the frozen already-sufficient evidence-reuse check; a separate transient write by a candidate reviewer is reported under reviewer ownership without changing the unrelated-case rubric.
+Unused recovery allowance does not authorize replacing behavioral failures without an established product correction.
+See the [current-candidate findings](REPORT.md#repaired-environment-and-current-candidate-comparison) for the paired outcomes and premerge limits.

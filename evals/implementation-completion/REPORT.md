@@ -1,9 +1,10 @@
 # Implementation completion findings
 
 The instruction correction makes required completion obligations explicit across implementation, review and acceptance verification.
-Behavioral improvement remains INCONCLUSIVE.
-The first campaign stopped during its baseline primary; the separately authorized new campaign completed that case but stopped during the candidate primary on different sandbox runtime failures.
-Neither campaign produced a completed pair.
+The repaired campaign completed all five paired cases and both fresh readers, but the candidate does not satisfy every required behavior.
+Both conditions failed to reuse sufficient saved byte-verification evidence, and one candidate reviewer performed a transient write during read-only review.
+No improvement is demonstrated; defer merge pending a focused follow-up or explicit acceptance of those named limits.
+The two earlier interrupted campaigns remain separately recorded below.
 
 ## Owning boundaries
 
@@ -214,3 +215,106 @@ Zero actionable findings remain in the evidence and harness changes.
 The failed live automatic stop and missing behavioral comparison remain explicit premerge blockers; review success does not turn those outcomes into PASS.
 
 Review summary: Standards 0 remaining findings; Spec 0 remaining findings.
+
+## Repaired environment and current-candidate comparison
+
+This campaign freezes baseline `4b4ac408cbc4543e2e7a433f52c03a48f7044ca7` and candidate `67c0ef5bc7d3295791fc94d3b106a75d09f5eca1`, including the later ordinary-wording changes.
+It preserves the earlier campaigns separately and uses the same five cases, synthetic product fixtures, requests, rubric and counterbalanced order.
+The authorized budget is 24 top-level sessions and a separately monitored allowance of 64 nested subject agents, retaining the 360-second/2,000,000-byte session limits.
+The protocol records recovery before launch: preserve infrastructure attempts, verify a concrete repair, document comparability, then retry; behavioral failures cannot be silently replaced.
+
+The smallest environment repair grants read-only access to `/System/Library/Perl` and `/Library/Ruby/Gems` on macOS.
+The launcher and direct isolation probe now share the same isolated shell/Git environment.
+No runtime instruction, canonical term, project write boundary or command-network permission changed in this follow-up.
+The existing unreleased version remains 0.34.4.
+
+Without model calls, the old profile reproduced Ruby's system-gem `EPERM` and Perl's blocked shared library.
+The repaired profile passed Ruby, Perl, Python and jq JSON parsing, representative Git operations and file access in both writer and read-only modes.
+Actual sibling/auth-canary reads, read-only writes and loopback network connections remained denied; a readability predicate also confirmed personal Git configuration remained inaccessible.
+A controlled real sandbox startup failure was passed through a rollout adapter to the monitor.
+The runner recognized it and cleaned up an owned child whose leader had already exited in about 0.2 seconds.
+Expected permission denials and an ordinary missing-file error completed without an infrastructure classification.
+This establishes the exercised execution path, not arbitrary interpreter support or model behavior.
+
+Both native preflights passed, including actual Git and interpreter operations, outside-canary reads, and command/patch probes in the two parents and four real nested reviewers.
+Only six designated writer probe files changed; the reader project and both Git snapshots remained unchanged.
+All observed parent and child settings were `gpt-5.6-sol / medium`.
+Fresh subject homes, prompt audits and filesystem restrictions kept other conditions and evaluator material outside each subject's context; copied credentials were removed after each run.
+The exact manifest, controller, request and trace fingerprints are retained in [compact results](results.json).
+
+| Case | Baseline | Candidate |
+|---|---|---|
+| Direct `implement` | PASS | PASS |
+| Review-only detection and handoff | PASS | PASS |
+| Already sufficient: evidence reuse | FAIL — repeated covered byte checks | FAIL — repeated covered byte checks |
+| Unrelated effort: frozen criteria | PASS | PASS; separate reviewer-boundary failure below |
+| Limited read-only comparison | PASS | PASS |
+| Fresh reader | PASS | PASS |
+
+Both primary subjects restored the exact historical configuration and reconciled only the existing recovery map.
+They saved the revision, restored path, purpose, pending engine and local-validation limits, then completed two native review axes and acceptance checks.
+The baseline delegated acceptance to a third native agent; the candidate resumed the outer completion step and checked links, recorded limits, pending dependency and authorized scope itself.
+Neither restarted implementation or launched a second Code Review pair, although final integrity checks repeated narrow JSON/blob comparisons.
+Both review-only subjects identified the concrete stale availability claim and missing recovery details, returned the governing policy and completion consequence, and left project/Git snapshots unchanged.
+Both limited-read subjects and their reviewers stayed within the permitted configuration/blob/instruction reads and reported the excluded obligations as coverage limits.
+Both tutorial subjects created only `examples/` and its exact historical configuration copy, preserving the original configuration and recovery state without inventing a fallback obligation.
+
+The already-sufficient failure is behavioral, not environmental.
+Both subjects read accepted saved evidence stating that the historical bytes had been compared, prior review was sufficient and no files had changed.
+Both then recomputed current/historical hashes and compared the same bytes without establishing a missing criterion.
+The baseline used `git show` with `cmp`; the candidate used hashes and `git diff --quiet` against the source.
+Both preserved files and reused prior review, but those successes do not satisfy the separate no-repeat-byte-check criterion.
+Independent Spec inspection confirmed that the existing instruction already requires reusing evidence that covers a criterion and checking only uncovered obligations.
+This run establishes noncompliance with that rule, not a concrete missing instruction that would justify another prohibition.
+The failures remain recorded without a replacement run, product edit or fixture change.
+
+A separate candidate observation concerns reviewer ownership.
+During the tutorial case, the Standards child created and removed `.review-tmp` while trying to avoid harmless Git cache warnings.
+That transient directory mutation violated the existing read-only review rule even though the final snapshot contained only the intended example addition and unchanged Git metadata.
+It does not change the frozen three-criterion tutorial grade; it remains an additional failure under the requested reviewer-ownership assessment.
+No corresponding reviewer write was observed in the baseline tutorial.
+The child inherited the parent's write-capable sandbox, which permitted the action but did not authorize it.
+Git operations already succeeded, and the temporary-directory attempt did not remove the warnings, so neither an infrastructure retry nor broader access was justified.
+
+No improvement is demonstrated by the five paired cases: four of five cases passed and one failed in each condition.
+The candidate-only transient reviewer write is an additional observed difference; this small sample cannot establish its causal relationship to the instruction change.
+There is no evidence here of duplicated completion ownership or newly introduced canonical terminology, but source clarity did not guarantee behavioral compliance.
+The premerge criterion is not met: candidate evidence reuse and reviewer read-only ownership remain concrete limitations.
+The recommendation is to defer merge, retaining these results for a focused follow-up or an explicit acceptance decision for those named limits.
+Do not change the rubric, add speculative instructions or spend the unused recovery allowance merely to obtain a passing sample.
+
+Both fresh readers recovered the exact revision, path, purpose, pending engine and recorded verification limits from saved project files alone.
+They received no original conversation, Git history or grading material, executed no validation, and changed no project files.
+Their answers recover recorded evidence; they do not independently prove that photo export works.
+
+All 14 planned top-level sessions completed: two preflights, ten scenarios and two readers.
+There were 21 nested subject agents: four preflight reviewers, sixteen scenario code reviewers and one baseline acceptance verifier.
+No recovery attempt, revised candidate or replacement sample was used; ten top-level recovery sessions remain unused.
+The nested-agent limit is monitored as a stopping threshold, not an atomic reservation against simultaneous spawns.
+Native delegation-message bodies are encrypted, so exact messages are not independently inspectable; actual fork/spawn behavior, child settings, tool reads/results and saved state remain observable.
+Observed subject counters total 5,719,302 input tokens (5,059,840 cached) and 93,365 output tokens, including 2,189,469 total tokens attributable to nested agents after subtracting inherited parent counters.
+Controller and delivery-review usage are excluded.
+
+### Delivery validation
+
+Local validation passed: 224 package tests, 78 evaluation-tooling tests, two wheel checks, Ruff format/lint, all 57 scenario definitions and `git diff --check`.
+The focused macOS permission test failed before the runtime-access repair and passed afterward; Linux permission behavior remains unchanged.
+Prior runtime-instruction reviews remain applicable because this follow-up changes only evaluation tooling and evidence.
+The remote PR base and semantic tags were rechecked at delivery: main remains `4b4ac40` and the latest release remains v0.34.3, so the existing 0.34.4 bump is valid.
+Hosted CI remains separate publication evidence.
+
+### Standards
+
+The independent final review covered all six pending paths and reused the completed launcher/controller and prior runtime-instruction reviews.
+It independently reconciled all 14 sessions, 21 nested agents, 35 trace fingerprints, usage totals, credential cleanup and final snapshots, and inspected the failure and reader evidence.
+Zero actionable findings, design smells, duplicated runtime logic or new canonical terminology were found in this delivery.
+This reviewer did not re-grade every successful tool sequence, rerun the repository gates or inspect encrypted delegation messages; coordinator grading and validation supply the separately reported evidence.
+
+### Spec
+
+The independent final review covered all six paths, reused the repair/controller review and checked preflight outputs, primary completion, review findings, limited reads, tutorial preservation and reader activity.
+It reconciled snapshots, trace fingerprints, model settings and usage, and confirmed preservation of the earlier campaign values and unchanged runtime instructions.
+Zero actionable defects remain in the evidence and harness delivery; the two behavioral premerge limitations remain unresolved and accurately reported.
+Encrypted delegation bodies, untested live image export and unexercised recovery/revised-candidate paths remain explicit coverage limits.
+
+Review summary: Standards 0 delivery findings; Spec 0 delivery findings; evidence reuse and reviewer ownership remain failed behavioral boundaries.

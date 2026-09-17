@@ -7,29 +7,26 @@ Preserve consequential completion obligations across implementation, review and 
 ## Scope
 
 Instruction handoffs, generic photo-export regression controls and supporting harness boundaries.
-The bounded synthetic comparison and focused evaluation-launcher correction are authorized, along with commit, push and PR preparation.
+The repaired execution environment, bounded comparison, evidence updates and PR delivery are authorized.
 No merge or release.
 
 ## Ready work
 
-Resolve restricted-profile interpreter startup and monitoring coverage before a fresh live comparison.
-No further live evaluation launches are authorized within this stopped campaign.
+Defer merge and use the preserved behavioral failures for a focused follow-up or an explicit decision accepting their named limits.
+No concrete instruction omission currently justifies another prohibition or a replacement sample.
 
 ## Current state
 
-The [report](../../evals/implementation-completion/REPORT.md) maintains findings and the [protocol](../../evals/implementation-completion/README.md) defines the synthetic controls.
+The [report](../../evals/implementation-completion/REPORT.md) maintains findings, the [protocol](../../evals/implementation-completion/README.md) defines the synthetic controls, and [results](../../evals/implementation-completion/results.json) retain each campaign separately.
 Completion mechanics remain in the outer Implementation step, with short handoffs in routing and `implement`.
 Review checks unchanged artifacts only for in-scope requirements; Verification reuses adequate review evidence.
-Read-only review, coordinator ownership and the existing authorization boundaries remain required.
-The cleanup passed local validation and scoped independent Standards and Spec reviews.
-The bounded comparison stopped after two native preflights and one infrastructure-blocked baseline scenario; the other nine cases and both readers were not run.
-Git was hidden by the restricted macOS profile, and the scenario later ended on a usage limit before review or acceptance completion.
-The focused toolchain-read correction passed non-model checks, local repository gates and independent Standards/Spec review.
-The new campaign preserved the previous results separately, passed Git and native-reviewer preflights, and completed its baseline primary.
-Its candidate primary then hit denied Ruby/Perl startup dependencies; the automatic monitor missed these new signatures, and coordinator inspection triggered termination.
-The remaining eight scenarios and both readers were not run.
-The post-stop monitor correction passes deterministic tests and captured-trace replay, with no corrected native retest.
-Behavioral improvement remains INCONCLUSIVE.
+The macOS interpreter-access repair and monitor/process cleanup passed non-model checks and native writer/read-only preflights, including four nested reviewers.
+The current-candidate campaign completed all ten paired scenarios and both fresh readers without infrastructure recovery or runtime-instruction edits.
+Both arms passed primary completion, review-only detection, unrelated-artifact preservation, limited-read boundaries and saved-artifact recovery.
+Both failed already-sufficient evidence reuse by repeating covered byte verification.
+A candidate tutorial reviewer also created and removed a temporary directory, violating read-only reviewer ownership despite unchanged final state.
+The frozen tutorial criteria passed; that additional violation is recorded separately.
+No behavioral improvement is demonstrated, and the candidate does not meet the stated premerge criterion.
 
 ## Areas and relationships
 
@@ -39,12 +36,12 @@ The coordinator reassesses routing and reconciles authorized affected state.
 
 ## Dependencies
 
-A new behavioral comparison requires a Git-capable native execution boundary, verified reviewer isolation, model capacity and actual tool/result evidence.
+Merge readiness depends on addressing or explicitly accepting the named behavioral limits.
+Existing successful execution and bounded behavioral evidence should be reused.
 
 ## Blockers
 
-No completed baseline/candidate pair establishes improvement.
-Candidate acceptance completion, four control-case pairs and fresh-reader continuity remain unverified.
-The next evaluation requires non-model interpreter-startup and monitoring checks under the restricted profile, then separate authorization for a fresh campaign and native preflights.
-Preserve the current failed sample; do not replace or combine it with a later run.
-Delivery can proceed independently with these limits reported.
+Candidate evidence reuse and reviewer read-only ownership have observed failures.
+The existing instructions already state both requirements; instruction expansion or another sample is not justified merely to obtain a pass.
+All planned evaluation evidence has been obtained; missing quota, interpreter access or comparison coverage is no longer the blocker.
+Delivery of the repairs and honest results can proceed independently of merge readiness.

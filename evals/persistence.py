@@ -52,6 +52,12 @@ DIMENSIONS = (
 VERDICTS = {"PASS", "FAIL", "INCONCLUSIVE"}
 BASE = "a963f707f9123d5af870dfe06f06d3d1ee1802f8"
 MODEL = "gpt-5.6-sol"
+SHELL_ENVIRONMENT = {
+    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_OPTIONAL_LOCKS": "0",
+}
 LIMITS = {"seconds": 360, "output_bytes": 2_000_000, "invocations": 24}
 ORDER = [(case, arm, 1) for case in ("coding", "planning") for arm in "BAC"]
 ALLOWANCE = {
@@ -308,6 +314,9 @@ def config_args(workspace: Path, stage: int) -> list[str]:
             ["/usr/bin/xcode-select", "-p"], text=True, timeout=10
         ).strip()
         filesystem[str(Path(developer_directory).resolve())] = "read"
+        # Apple Perl libraries and Ruby system gem metadata are outside :minimal.
+        filesystem["/System/Library/Perl"] = "read"
+        filesystem["/Library/Ruby/Gems"] = "read"
     filesystem_toml = ", ".join(
         f"{json.dumps(path)}={json.dumps(mode)}" for path, mode in filesystem.items()
     )
@@ -325,7 +334,11 @@ def config_args(workspace: Path, stage: int) -> list[str]:
         "features.multi_agent=false",
         "features.shell_snapshot=false",
         'shell_environment_policy.inherit="none"',
-        'shell_environment_policy.set={PATH="/usr/bin:/bin:/usr/sbin:/sbin", GIT_CONFIG_GLOBAL="/dev/null", GIT_CONFIG_NOSYSTEM="1", GIT_OPTIONAL_LOCKS="0"}',
+        "shell_environment_policy.set={"
+        + ", ".join(
+            f"{key}={json.dumps(value)}" for key, value in SHELL_ENVIRONMENT.items()
+        )
+        + "}",
         "allow_login_shell=false",
         'model_provider="openai"',
         "project_doc_max_bytes=65536",
@@ -885,7 +898,7 @@ def isolation_probe():
             "synthetic credential canary; not authentication"
         )
         (project / "visible.txt").write_text("public\n")
-        env = {"CODEX_HOME": str(home), "PATH": "/usr/bin:/bin:/usr/sbin:/sbin"}
+        env = {"CODEX_HOME": str(home), **SHELL_ENVIRONMENT}
         result = {}
         for stage in (1, 4):
             script = "/bin/cat visible.txt && ! /bin/cat ../hidden.txt && ! /bin/cat ../home/auth.json && /usr/bin/git --version && "

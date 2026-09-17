@@ -778,7 +778,7 @@ class LauncherPermissionsTests(unittest.TestCase):
             {":minimal": "read", "/fixture/project": "read", "/opt/codex": "read"},
         )
 
-    def test_macos_git_toolchain_is_readable_without_expanding_project_writes(self):
+    def test_macos_system_runtimes_are_readable_without_expanding_project_writes(self):
         import tomllib
         from unittest.mock import patch
 
@@ -802,6 +802,8 @@ class LauncherPermissionsTests(unittest.TestCase):
                             "/fixture/project": access,
                             "/opt/codex": "read",
                             "/Library/Developer/CommandLineTools": "read",
+                            "/System/Library/Perl": "read",
+                            "/Library/Ruby/Gems": "read",
                         },
                     )
                     self.assertFalse(
