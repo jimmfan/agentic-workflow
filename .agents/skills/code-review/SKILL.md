@@ -42,7 +42,6 @@ Do not claim complete coverage while required inputs remain missing or attributi
 
 Review is read-only: do not create, modify, or remove files or directories, including temporary setup or cleanup, or mutate the index or Git history.
 Do not stage, commit, stash, reset, clean, or rewrite work to make it reviewable.
-Run Git observations with `GIT_OPTIONAL_LOCKS=0` to suppress optional index writes.
 Use successful read results despite non-blocking warnings; report a blocked required observation to the coordinator instead of performing a mutating environment repair.
 If the reviewed content changes during review, identify the affected evidence gap and review only what became uncovered before claiming completion.
 
