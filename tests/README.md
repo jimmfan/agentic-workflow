@@ -27,6 +27,7 @@ Python caches are ignored and need no manual cleanup.
 | `test_wayfinder_state.py`, `test_wayfinder_behavior.py`, `test_routing_boundaries.py` | Literal state fixtures and evaluator acceptance/rejection of routing, authority, reconciliation, and no-state outcomes. |
 | `test_specialist_reconciliation.py` | Structural specialist/Wayfinder trigger, ownership, timing, authorization, and selective-state guards; a broken-relative-link fixture control. These do not execute agent reconciliation. |
 | `test_review_handoff.py`, `test_instruction_coherence.py` | Disposable Git review-scope observations and synthetic-answer evaluator controls for review and skill boundaries. |
+| `test_export_completion.py`, `test_export_continuity.py` | Fictional photo-export recovery, exact configuration bytes, unchanged maintaining artifacts, review handoff and completion controls, including ambiguous, sufficient, unrelated and read-only cases. |
 | `test_question_review_controls.py`, `test_map_authoring_controls.py` | Question-section preservation, incoming references, scoped review outcomes, and map-authoring evaluator controls. |
 | `evals/tests/` | Separate network-free tests of evaluation tooling. |
 

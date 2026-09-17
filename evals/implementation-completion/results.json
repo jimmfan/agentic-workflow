@@ -1,0 +1,62 @@
+{
+  "scope": "Implementation completion handoffs with fictional photo-export controls.",
+  "version": "0.34.4",
+  "source_contract": {
+    "implementation": "Return meaningful direct implementation to outer acceptance without replaying build or review.",
+    "review": "Carry governing policies and maintaining references; report concrete unmet requirements in relevant unchanged artifacts within the requested comparison; remain read-only.",
+    "coordinator": "Reassess relevant findings under the existing threshold and reconcile authorized affected state before completion.",
+    "verification": "Reuse sufficient evidence and add only uncovered acceptance checks."
+  },
+  "deterministic_controls": {
+    "focus_tests": 17,
+    "coverage": [
+      "Exact version bytes and historical Git recovery",
+      "Implicit effort relevance",
+      "Stale or missing claim in unchanged artifact outside diff",
+      "Review detection and concrete finding handoff",
+      "Acceptance evidence and saved reconciliation",
+      "Already sufficient state",
+      "Unrelated purpose",
+      "Ambiguous intent",
+      "Read-only requests and evidence-directory preservation",
+      "Limited review comparison",
+      "User-reported operation distinct from independent output validation"
+    ],
+    "evidence_limit": "Constructed answers and verification records test evaluator boundaries; actual agent behavior is not observed."
+  },
+  "live": {
+    "invocations": 0,
+    "status": "not-run",
+    "behavioral_improvement": "INCONCLUSIVE",
+    "reason": "Live evaluation and sandbox debugging are outside this task."
+  },
+  "validation": {
+    "status": "pass",
+    "package_tests": 224,
+    "evaluation_tooling_tests": 65,
+    "focused_controls": 17,
+    "wheel_tests": 2,
+    "scenario_count": 57,
+    "live_opt_in_scenarios": 15,
+    "ruff_format": "pass",
+    "ruff_lint": "pass",
+    "diff_check": "pass",
+    "generated_distribution_inspection": "pass",
+    "existing_ownership_tests": "unchanged and passing",
+    "version": "0.34.4",
+    "latest_release_checked": "v0.34.3",
+    "hosted_ci": "not run"
+  },
+  "smallest_next_action": "Use a verified execution boundary for a separately scoped behavioral comparison, inspecting actual reads, findings, handoffs, verification and saved content.",
+  "independent_review": {
+    "standards_and_privacy": {
+      "findings": 0,
+      "coverage": "All 26 proposed paths, complete contents and filenames, narrative meaning, fixture data and generated test commit messages."
+    },
+    "spec": {
+      "findings": 0,
+      "coverage": "Required behavior, ownership boundaries, source dependencies and regression controls."
+    },
+    "limits": "Reviewers inspected source and did not run live evaluations. Final validation and publication checks are coordinator-owned."
+  }
+}

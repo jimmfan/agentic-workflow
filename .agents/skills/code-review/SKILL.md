@@ -31,7 +31,7 @@ Preserve the user's chosen comparison semantics; do not silently expand an expli
 Keep one shared review-input set for both reviewers:
 
 - Review mode, resolved baseline/range and relevant commits.
-- Governing request or specification and acceptance criteria, resolved in step 2.
+- Governing request or specification, applicable project policies, acceptance criteria, and references to relevant maintaining artifacts, resolved in steps 2 and 3.
 - Pre-edit context when applicable, attributed paths/hunks and versions, and any exclusions or uncertainty.
 - Commands or content observations needed to inspect the actual scope.
 
@@ -42,6 +42,11 @@ Do not claim complete coverage while required inputs remain missing or attributi
 Review is read-only: do not modify project files, the index, or Git history, or stage, commit, stash, reset, clean, or rewrite work to make it reviewable.
 Run Git observations with `GIT_OPTIONAL_LOCKS=0` to suppress optional index writes.
 If the reviewed content changes during review, identify the affected evidence gap and review only what became uncovered before claiming completion.
+
+Within the requested review and read boundaries, inspect relevant unchanged maintaining artifacts identified by the governing inputs or ordinary repository references.
+A missing required update can be a finding even when its artifact is absent from the diff: identify the governing requirement, concrete stale claim or missing information, affected artifact and consequence for the reviewed work.
+Do not infer a defect from omitted detail that is adequately maintained elsewhere or demand a rewrite when the obligation is already satisfied.
+Context reads do not expand the requested comparison or authorize edits; explicitly excluded obligations remain coverage limitations rather than in-scope findings.
 
 ### 2. Identify the spec source
 
@@ -124,6 +129,8 @@ Do **not** merge or rerank findings — the two axes are deliberately separate (
 Check each reviewer's actual coverage against the established inputs, including relevant pending and new files.
 Report omissions and attribution limitations even if a reviewer claims success; zero findings with missing coverage is not a complete review.
 Pass covered scope, findings, and remaining evidence gaps to subsequent acceptance verification so it reuses evidence and adds only missing checks.
+When a finding reveals consequential coordination needs, include the governing requirement, affected maintaining reference and consequence in the handoff to the coordinating agent for route reassessment.
+The reviewer reports the finding read-only; the coordinator owns route changes and authorized state maintenance.
 
 End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any).
 Don't pick a single winner across axes — that's the reranking the separation exists to prevent.

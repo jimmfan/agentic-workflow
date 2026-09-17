@@ -124,6 +124,9 @@ Optional controls are:
 - `report_must_include` requires text in the report summary/blockers; `response_must_match` uses case-insensitive regular expressions that can span lines in final stdout.
   Use response checks sparingly for chat deliverables that file outcomes cannot establish.
 - `verification_command` supplies guided validation instructions; it is not a shell command automatically executed from that string.
+- `write_report` defaults to true; set it false for a strict read-only request so the prompt does not require a report-file write.
+  The harness snapshots its prompt input before subject execution and includes subsequent evidence-directory file changes in `repository_unchanged`.
+  Report-dependent checks remain unobserved or fail without a report; use file-preservation checks and separate response/trace adjudication for that case.
 
 ### Blind and guided scenarios
 
@@ -144,6 +147,7 @@ Supply `value` only for content/section assertions, `count` only for `glob_count
 |---|---|
 | `path_exists`, `path_not_exists` | Require a regular non-symlink file, or absence of any entry, respectively. |
 | `path_contains`, `path_not_contains` | Check a case-sensitive UTF-8 substring given by `value` in an existing regular file. |
+| `path_sha256` | Require exact file bytes matching the lowercase SHA-256 in `value`; reject a symlink at the file or any path ancestor. |
 | `glob_count` | Require exactly `count` matching regular files; `count` is a nonnegative integer. |
 | `glob_contains`, `glob_any_contains`, `glob_none_contains` | Check a case-insensitive substring in every, at least one, or no matching regular file. Every/any require a match; none allows zero files. |
 | `glob_any_matches`, `glob_none_matches` | Require a case-insensitive regular expression in at least one or no matching file; expressions may span lines. |

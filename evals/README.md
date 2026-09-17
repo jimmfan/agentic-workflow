@@ -12,6 +12,9 @@ Every adapter receives the same routing-only cases; the harness does not simulat
 The [bounded Wayfinder preservation pilot](wayfinder-persistence/README.md) tests authorized reconciliation and four-stage fresh-session continuation with synthetic cases.
 It performs the narrow evidence-precedence investigation below and compares frozen/candidate instructions with a strong ordinary handoff baseline; it does not replace the larger protocol or evaluate default routing.
 
+The [implementation completion controls](implementation-completion/README.md) use a fictional photo editor to check exact recovery and review-to-completion boundaries.
+Deterministic evaluator controls are separate from live behavioral evidence.
+
 Token forensics analyzes an existing Codex trace without running a model:
 
 ```bash

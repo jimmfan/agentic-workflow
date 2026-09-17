@@ -1,0 +1,7 @@
+{
+  "version": "export-r4",
+  "format": "avif",
+  "color_space": "Display-P3",
+  "max_edge_pixels": 4096,
+  "preserve_metadata": false
+}

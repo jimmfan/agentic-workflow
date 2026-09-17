@@ -22,7 +22,7 @@ Implementation defines the workflow transition into execution, not build methodo
 Invoke `implement` once.
 Never simulate its execution or claim it ran.
 
-Pass the governing authorized request or specification, accepted scope, observable acceptance criteria, relevant baseline, and any references to artifacts or records that maintain the scope.
+Pass the governing authorized request or specification, applicable project policies, accepted scope, observable acceptance criteria, relevant baseline, and any references to artifacts or records that maintain the scope.
 `implement` establishes pre-edit context and carries those inputs and the actual changed scope into its closing Code Review.
 
 Do not rerun `tdd` or `code-review` work already completed by `implement` unless a distinct request or new evidence creates a gap.
@@ -31,8 +31,12 @@ Do not rerun `tdd` or `code-review` work already completed by `implement` unless
 
 ## Verify the result
 
-Invoke `workflow-verification` once with the accepted scope and its acceptance criteria, expected artifacts, changed scope, existing test and review evidence including actual coverage and limitations, and remaining integration risks.
+This step also receives meaningful work completed through a direct or explicit `implement` invocation; reuse its build and Code Review evidence instead of invoking them again.
+Invoke `workflow-verification` once with the governing request and project policies, accepted scope and its acceptance criteria, relevant maintaining-artifact references, expected artifacts, changed scope, existing test and review evidence including actual coverage and limitations, and remaining integration risks.
 Verification reuses covered evidence and adds only missing acceptance, artifact, or boundary checks.
+
+Before completion, use review and Verification findings and relevant maintaining references to reassess the route under the existing Wayfinder threshold, including a clearly relevant effort that was not selected earlier.
+Use the bounded resumption check in detailed routing when needed; do not scan all efforts or select Wayfinder merely because an artifact exists.
 
 Claim completion only when the scope is finished and the required `workflow-verification` completion gate is satisfied.
 If the implementation scope came from or remains part of a selected Wayfinder effort, and recording is authorized, reconcile consequential Verification results that change completion, blockers, dependencies, verification boundaries, or remaining ready work through `.agent-workflow/contracts/wayfinder-state.md` before claiming completion or handing off remaining work.
