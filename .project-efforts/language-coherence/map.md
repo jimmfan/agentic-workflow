@@ -32,6 +32,9 @@ This is a source-audit conclusion, not proof of reliable agent interpretation.
 
 The following repetitions have supported purposes and do not currently justify consolidation:
 
+- **Truthfulness across scopes:** the [root policy](../../AGENTS.md) and synchronized [consumer template](../../agent_workflow/install/AGENTS.md.template) explicitly prioritize factual accuracy over output completion, extending the existing prohibition on claiming unexecuted work.
+  The source repository's [verification guidance](../../AGENTS.md#testing-and-verification), [Code Review](../../.agents/skills/code-review/SKILL.md), and [spec synthesis](../../.agents/skills/to-spec/SKILL.md) retain narrower applications to reporting checks, unavailable reviewers, and unresolved scope.
+  These contextual rules add operational detail; their overlap does not make the general priority redundant or establish that agents reliably follow it.
 - **Authority at different loading boundaries:** [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) explains why the always-loaded root policy carries authority rules.
   [Discovery](../../.agents/skills/workflow-discovery/SKILL.md#resolve-the-decision) applies them to project choices; [Debugging](../../.agents/skills/workflow-debugging/SKILL.md#fix-and-verify) applies authorization and reconciliation timing to causal work.
   Removing the root obligation would leave work before specialist loading without that instruction; removing contextual clauses could lose the specific trigger or timing.

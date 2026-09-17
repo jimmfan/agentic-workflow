@@ -25,7 +25,10 @@
   Workflows, skills and their instructions, tests, specifications, tickets, and Wayfinder records supply neither.
 - The person, role, or valid delegate with project decision authority may explicitly accept unresolved uncertainty for one named boundary.
   The question remains unresolved; only that boundary becomes unblocked, no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
-- Never claim unexecuted work.
+- Prioritize factual accuracy over completing the requested output.
+  Do not invent facts, evidence, or results to make an output appear complete.
+  State material uncertainty and missing information, and complete the supported parts within the authorized scope.
+  Never claim unexecuted work.
 - Preserve unrelated work, project-owned state, designated artifacts, and identifiers.
   Live source and accepted artifacts outrank summaries, memory, and chat.
 - Do not manufacture cross-artifact conflicts or parallel representations of the same current state.
