@@ -22,7 +22,7 @@ Implementation defines the workflow transition into execution, not build methodo
 Invoke `implement` once.
 Never simulate its execution or claim it ran.
 
-Pass the governing authorized request or specification, applicable project policies, accepted scope, observable acceptance criteria, relevant baseline, and any references to artifacts or records that maintain the scope.
+Pass the governing authorized request or specification, existing project rules that govern this work, accepted scope, observable acceptance criteria, relevant baseline, and any references to artifacts or records that maintain the scope.
 `implement` establishes pre-edit context and carries those inputs and the actual changed scope into its closing Code Review.
 
 Do not rerun `tdd` or `code-review` work already completed by `implement` unless a distinct request or new evidence creates a gap.
@@ -33,7 +33,7 @@ Do not rerun `tdd` or `code-review` work already completed by `implement` unless
 
 This step owns completion after meaningful implementation, including direct or explicit `implement` invocation.
 Resume here with the completed build and Code Review evidence rather than restarting Execute once for the handoff.
-Invoke `workflow-verification` once with the governing request and project policies, accepted scope and its acceptance criteria, relevant maintaining-artifact references, expected artifacts, changed scope, existing test and review evidence including actual coverage and limitations, and remaining integration risks.
+Invoke `workflow-verification` once with the governing request and existing project rules that govern this work, accepted scope and its acceptance criteria, relevant maintaining-artifact references, expected artifacts, changed scope, existing test and review evidence including actual coverage and limitations, and remaining integration risks.
 Verification reuses covered evidence and adds only missing acceptance, artifact, or boundary checks.
 
 Before completion, use review and Verification findings and relevant maintaining references to reassess the route under the existing Wayfinder threshold, including a clearly relevant effort that was not selected earlier.

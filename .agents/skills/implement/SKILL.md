@@ -4,7 +4,7 @@ name: implement
 ---
 Implement the defined work supplied by the current user request or invoking workflow.
 
-Before editing, retain the governing request or specification, applicable project policies, acceptance criteria, references to relevant maintaining artifacts, relevant baseline, and intended change scope.
+Before editing, retain the governing request or specification, existing project rules that govern this work, acceptance criteria, references to relevant maintaining artifacts, relevant baseline, and intended change scope.
 Inspect HEAD, status, staged and unstaged diffs, and relevant untracked files; retain enough pre-edit content to distinguish existing user work from this implementation, including separate hunks in shared files.
 Keep this as execution context, not a new required repository artifact.
 

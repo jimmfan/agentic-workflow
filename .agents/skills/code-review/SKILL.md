@@ -31,7 +31,7 @@ Preserve the user's chosen comparison semantics; do not silently expand an expli
 Keep one shared review-input set for both reviewers:
 
 - Review mode, resolved baseline/range and relevant commits.
-- Governing request or specification, applicable project policies, acceptance criteria, and references to relevant maintaining artifacts, resolved in steps 2 and 3.
+- Governing request or specification, existing project rules that govern this work, acceptance criteria, and references to relevant maintaining artifacts, resolved in steps 2 and 3.
 - Pre-edit context when applicable, attributed paths/hunks and versions, and any exclusions or uncertainty.
 - Commands or content observations needed to inspect the actual scope.
 

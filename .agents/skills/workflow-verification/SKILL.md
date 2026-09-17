@@ -10,7 +10,7 @@ Implementation tests and Code Review are inputs, not automatic proof and not wor
 
 ## Select the uncovered evidence
 
-1. Read the governing request and applicable project policies, acceptance criteria, expected artifacts and relevant maintaining references, the accepted scope Implementation actually consumed, changed scope, risks, and evidence already produced by `implement`, `tdd`, or `code-review`.
+1. Read the governing request and existing project rules that govern this work, acceptance criteria, expected artifacts and relevant maintaining references, the accepted scope Implementation actually consumed, changed scope, risks, and evidence already produced by `implement`, `tdd`, or `code-review`.
 2. Select the smallest additional checks that cover unresolved acceptance behavior, integration boundaries, expected artifacts, and workflow completion.
 3. Reuse current test or review evidence when it directly covers a criterion.
    Do not rerun TDD, invoke Code Review again, or execute a full suite merely to create a framework-branded duplicate.
