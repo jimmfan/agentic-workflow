@@ -11,9 +11,12 @@ Implementation tests and Code Review are inputs, not automatic proof and not wor
 ## Select the uncovered evidence
 
 1. Read the governing request and existing project rules that govern this work, acceptance criteria, expected artifacts and relevant maintaining references, the accepted scope Implementation actually consumed, changed scope, risks, and evidence already produced by `implement`, `tdd`, or `code-review`.
-2. Select the smallest additional checks that cover unresolved acceptance behavior, integration boundaries, expected artifacts, and workflow completion.
-3. Reuse current test or review evidence when it directly covers a criterion.
-   Do not rerun TDD, invoke Code Review again, or execute a full suite merely to create a framework-branded duplicate.
+2. Match each criterion to the available evidence before selecting additional checks.
+   Establish what the evidence covers, whether it is accepted for this scope, and whether subsequent changes or other concrete facts invalidate it.
+   Accepted, sufficient evidence satisfies the covered criterion; independently assessing completion does not require independently repeating its checks.
+3. Select the smallest additional checks for the remaining gaps in acceptance behavior, integration boundaries, expected artifacts, and workflow completion.
+   Before running a check, identify the uncovered criterion or the concrete reason existing evidence is stale, incomplete, or invalid.
+   Apply this to individual checks as well as TDD, Code Review, and full suites.
 
 For required lasting results, reuse adequate review evidence and check only uncovered obligations against their relevant maintaining artifacts, including unchanged ones within the accepted scope.
 Report unmet requirements and consequential coordination findings to the coordinating workflow; it owns route reassessment and authorized reconciliation before completion.

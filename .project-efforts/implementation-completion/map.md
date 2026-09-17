@@ -12,8 +12,9 @@ No merge or release.
 
 ## Ready work
 
-Defer merge and use the preserved behavioral failures for a focused follow-up or an explicit decision accepting their named limits.
-No concrete instruction omission currently justifies another prohibition or a replacement sample.
+Investigate and correct the two preserved failures under the authorized focused follow-up, then run bounded affected-case checks and independent review.
+The [report](../../evals/implementation-completion/REPORT.md#focused-behavioral-follow-up) records the causal evidence and limits; the protocol records the budget.
+Leave the working branch checked out; do not merge, release, or accept unresolved failures.
 
 ## Current state
 
@@ -42,6 +43,8 @@ Existing successful execution and bounded behavioral evidence should be reused.
 ## Blockers
 
 Candidate evidence reuse and reviewer read-only ownership have observed failures.
-The existing instructions already state both requirements; instruction expansion or another sample is not justified merely to obtain a pass.
+Both instructions reached the failing agents.
+The focused correction targets evidence selection order and the delegated review boundary, rather than adding a separate owner or another global prohibition.
+The model reasoning behind the failures remains uncertain; corrected behavior must be observed before changing their disposition.
 All planned evaluation evidence has been obtained; missing quota, interpreter access or comparison coverage is no longer the blocker.
 Delivery of the repairs and honest results can proceed independently of merge readiness.

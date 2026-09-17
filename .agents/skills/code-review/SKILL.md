@@ -34,13 +34,16 @@ Keep one shared review-input set for both reviewers:
 - Governing request or specification, existing project rules that govern this work, acceptance criteria, and references to relevant maintaining artifacts, resolved in steps 2 and 3.
 - Pre-edit context when applicable, attributed paths/hunks and versions, and any exclusions or uncertainty.
 - Commands or content observations needed to inspect the actual scope.
+- The read-only review boundary below and any narrower read limits, independently of the parent implementation's write authorization.
 
 Validate refs and coverage before spawning; an empty commit diff does not imply an empty implementation scope, and a nonempty diff does not establish complete coverage.
 If a required baseline, mode, or material attribution cannot be established from supplied inputs and repository evidence, obtain only the missing scope information or explicitly limit the review.
 Do not claim complete coverage while required inputs remain missing or attribution remains materially ambiguous.
 
-Review is read-only: do not modify project files, the index, or Git history, or stage, commit, stash, reset, clean, or rewrite work to make it reviewable.
+Review is read-only: do not create, modify, or remove files or directories, including temporary setup or cleanup, or mutate the index or Git history.
+Do not stage, commit, stash, reset, clean, or rewrite work to make it reviewable.
 Run Git observations with `GIT_OPTIONAL_LOCKS=0` to suppress optional index writes.
+Use successful read results despite non-blocking warnings; report a blocked required observation to the coordinator instead of performing a mutating environment repair.
 If the reviewed content changes during review, identify the affected evidence gap and review only what became uncovered before claiming completion.
 
 Within the requested review and read boundaries, use governing inputs and ordinary repository references to identify unchanged maintaining artifacts needed to assess an in-scope requirement.
@@ -104,6 +107,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 ### 4. Spawn both sub-agents in parallel
 
 Give both independent reviewers the shared review-input set from step 1, including the specification contents or usable references from step 2.
+Use existing host controls to restrict reviewers to read-only access when available; inherited write capability does not broaden the supplied review boundary.
 Each reviewer must inspect that scope and report actual coverage, not merely echo a supplied diff command or success claim.
 
 **Standards sub-agent prompt** — include:

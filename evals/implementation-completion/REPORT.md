@@ -318,3 +318,30 @@ Zero actionable defects remain in the evidence and harness delivery; the two beh
 Encrypted delegation bodies, untested live image export and unexercised recovery/revised-candidate paths remain explicit coverage limits.
 
 Review summary: Standards 0 delivery findings; Spec 0 delivery findings; evidence reuse and reviewer ownership remain failed behavioral boundaries.
+
+## Focused behavioral follow-up
+
+The follow-up starts at verified local and remote PR head `72ccda11af9f7bbea5ca398db99118a6a6c5d41c` on a clean primary checkout.
+The completed 14-session campaign above is preserved, including both failures and its zero infrastructure retries.
+
+### Diagnosis and correction
+
+Four hypotheses were checked against the original requests, fixture manifest, actual tool results, native settings and saved state:
+
+| Hypothesis | Discriminating evidence and disposition |
+|---|---|
+| Prior evidence did not cover exact restoration or was invalidated | The fixture controller established byte equality; `docs/export-validation.md` named the exact revision/path/hash and successful comparison, accepted prior review and unchanged files. Both agents read it before repeating equality checks. No invalidation was observed. Rejected for this synthetic case. |
+| Evidence or governing instructions failed to reach the deciding agent | Both verification agents read the workflow and saved evidence. The candidate called covered obligations “needing direct confirmation” without naming a gap. The reviewer read Code Review and project policy before its write. Instruction unavailability is rejected; precise encrypted delegation messages remain unavailable. |
+| Verification procedure selected checks before resolving evidence coverage | The old procedure selected additional checks in step 2 and addressed reuse in step 3. The candidate selected new direct observations for already covered obligations. The ordering is a plausible contributing weakness, not an established explanation of the model’s reasoning. Replace that order with criterion/evidence matching and require a concrete gap before selecting a check, including narrow checks. |
+| Reviewer inherited implementation behavior and write capability | The parent created a temporary Git directory before a full-context reviewer fork. The child later created/removed `.review-tmp` after successful Git results with cache warnings. Its native context had the parent's workspace-write sandbox. Successful `mkdir`/`rmdir` are a mutation, regardless of the final snapshot. Context imitation is plausible, not proven; the permission inheritance and successful mutation are observed. |
+
+The correction stays in Verification's evidence-selection procedure and Code Review's shared handoff and read-only boundary.
+Code Review now carries that boundary into each delegation, explicitly includes temporary setup/cleanup, and sends genuinely blocked observations back to the coordinator instead of permitting reviewer environment repair.
+No routing, completion owner, comparison semantics, artifact ownership or canonical terminology changes.
+These are focused procedural mitigations; a passing retest cannot prove a universal model-level cause or reliability.
+
+The actual native `collaboration.spawn_agent` interface exposes no permission/role selector; prior child contexts confirm inherited workspace-write access.
+The [official host documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents#approvals-and-sandbox-controls) describes inheritance and parent live permission overrides, even when custom-agent defaults differ.
+The skill therefore uses available host read-only controls where exposed without inventing an execution framework or claiming that this evaluated delegation path has per-reviewer enforcement.
+Behavioral tests must still inspect reviewer attempts and successful operations inside a write-capable implementation session.
+Existing whole-project final snapshots cannot detect a temporary mutation that was undone; native tool calls and results remain required grading evidence.
