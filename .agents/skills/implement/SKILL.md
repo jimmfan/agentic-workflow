@@ -17,8 +17,7 @@ Pass those governing inputs and maintaining-artifact references along with the b
 The supplied request can define the work without a separate spec file or tracker.
 Follow Code Review's coverage and read-only rules; do not commit or otherwise rearrange work merely to make review possible.
 
-Return the result, actual review coverage, findings and remaining evidence gaps to the coordinating workflow for acceptance verification.
-For meaningful implementation, including a direct or explicit invocation of this skill, continue through `workflow-implementation`'s Verify the result step before claiming completion; do not repeat the build or covered review.
+For meaningful work, continue at `workflow-implementation`'s Verify the result step with the result, actual review coverage, findings and remaining evidence gaps.
 
 Commit only when the current user request or accepted project policy authorizes it.
 Otherwise leave the work uncommitted and report its status.

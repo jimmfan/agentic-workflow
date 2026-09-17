@@ -17,6 +17,11 @@ Verification checks acceptance and supplies uncovered evidence; Code Review repo
 Existing sufficient content or references satisfy the obligation without a rewrite, new record, global effort search or repeated review.
 The accepted ownership and authorization decisions remain unchanged.
 
+Completion mechanics are maintained in `workflow-implementation`'s Verify the result step; routing and `implement` carry short handoffs to that owner.
+Direct invocation resumes at that step without re-entering the build loop.
+Unchanged-artifact reads must support an in-scope requirement; presence, topic overlap and unrelated links do not create update obligations.
+Verification reuses adequate review evidence and checks only uncovered obligations.
+
 ## Regression coverage
 
 The fictional photo editor supplies exact configuration snapshots and test-generated historical Git commits.
@@ -31,6 +36,7 @@ The [protocol](README.md) owns the detailed boundaries and evidence limits.
 ## Validation
 
 Validation passed: 17 focused controls, 224 package tests, 65 evaluation-tooling tests, two wheel checks, Ruff format/lint, scenario validation and `git diff --check`.
+The focused instruction cleanup reran these checks on Linux with Python 3.12.14; all four edited skills also passed skill validation.
 The existing ownership tests remain unchanged and pass in the package gate.
 Generated distributions were inspected, with the packaged regression tests matching reviewed source.
 The instruction correction and supporting harness were preserved without behavioral weakening.
@@ -40,13 +46,13 @@ The remaining empirical action is a bounded evaluation through a verified execut
 
 ## Standards
 
-Independent review covered all 26 proposed paths and their complete contents, including privacy, narrative meaning, generated fixture data and preservation of unrelated references.
-No documented-standard violation, privacy omission or actionable heuristic smell was found.
+The sanitized baseline received independent review of all 26 proposed paths, including privacy, narrative meaning, generated fixture data and preservation of unrelated references, with zero findings.
+Scoped follow-up review covered all seven cleanup files in full context, including instruction ownership, scope and loading boundaries, terminology and evidence reuse, with zero findings.
 
 ## Spec
 
-Independent review covered the same scope against the required behavior and ownership boundaries, including source dependencies and the separate evaluator controls.
-No missing or incorrectly implemented requirement was found.
+The baseline review covered required behavior and ownership boundaries, including source dependencies and the separate evaluator controls, with zero findings.
+Scoped follow-up review covered the seven-file cleanup and found no missing requirement, semantic regression, scope expansion or conflicting ownership/loading instruction.
 Reviewers did not run live evaluations; final validation records and publication checks remain with the coordinator.
 
 Review summary: Standards 0 findings; Spec 0 findings.

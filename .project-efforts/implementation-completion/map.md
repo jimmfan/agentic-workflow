@@ -11,14 +11,16 @@ No live model evaluations, sandbox debugging, merge or release.
 
 ## Ready work
 
-The source correction and deterministic controls are verified; no further implementation is currently required.
-A separately scoped behavioral comparison can proceed only with a verified execution boundary.
+The instruction cleanup and required local checks are complete, with no outstanding review findings.
+A separately scoped behavioral comparison requires a verified execution boundary.
 
 ## Current state
 
 The [report](../../evals/implementation-completion/REPORT.md) maintains findings and the [protocol](../../evals/implementation-completion/README.md) defines the synthetic controls.
-The correction keeps review read-only, returns meaningful implementation to acceptance verification and leaves authorized reconciliation with the coordinator.
-Deterministic validation and independent privacy/behavior review pass.
+Completion mechanics remain in the outer Implementation step, with short handoffs in routing and `implement`.
+Review checks unchanged artifacts only for in-scope requirements; Verification reuses adequate review evidence.
+Read-only review, coordinator ownership and the existing authorization boundaries remain required.
+The cleanup passed local validation and scoped independent Standards and Spec reviews.
 Behavioral improvement remains INCONCLUSIVE without live evidence.
 
 ## Areas and relationships

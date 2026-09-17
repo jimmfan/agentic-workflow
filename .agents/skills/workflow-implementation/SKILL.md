@@ -31,7 +31,8 @@ Do not rerun `tdd` or `code-review` work already completed by `implement` unless
 
 ## Verify the result
 
-This step also receives meaningful work completed through a direct or explicit `implement` invocation; reuse its build and Code Review evidence instead of invoking them again.
+This step owns completion after meaningful implementation, including direct or explicit `implement` invocation.
+Resume here with the completed build and Code Review evidence rather than restarting Execute once for the handoff.
 Invoke `workflow-verification` once with the governing request and project policies, accepted scope and its acceptance criteria, relevant maintaining-artifact references, expected artifacts, changed scope, existing test and review evidence including actual coverage and limitations, and remaining integration risks.
 Verification reuses covered evidence and adds only missing acceptance, artifact, or boundary checks.
 

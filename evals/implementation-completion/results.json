@@ -2,10 +2,10 @@
   "scope": "Implementation completion handoffs with fictional photo-export controls.",
   "version": "0.34.4",
   "source_contract": {
-    "implementation": "Return meaningful direct implementation to outer acceptance without replaying build or review.",
-    "review": "Carry governing policies and maintaining references; report concrete unmet requirements in relevant unchanged artifacts within the requested comparison; remain read-only.",
+    "implementation": "The outer Verify the result step owns completion; routing and implement hand off to it without restarting the build for that transition.",
+    "review": "Read unchanged maintaining artifacts to assess in-scope requirements; presence or topic overlap creates no update obligation. Report concrete unmet requirements within the requested comparison and remain read-only.",
     "coordinator": "Reassess relevant findings under the existing threshold and reconcile authorized affected state before completion.",
-    "verification": "Reuse sufficient evidence and add only uncovered acceptance checks."
+    "verification": "Reuse adequate current review evidence and add only uncovered acceptance checks; return newly uncovered defects through the existing handoff."
   },
   "deterministic_controls": {
     "focus_tests": 17,
@@ -43,6 +43,8 @@
     "diff_check": "pass",
     "generated_distribution_inspection": "pass",
     "existing_ownership_tests": "unchanged and passing",
+    "skill_validation": "4 edited skills passed",
+    "host": "Linux / Python 3.12.14",
     "version": "0.34.4",
     "latest_release_checked": "v0.34.3",
     "hosted_ci": "not run"
@@ -51,11 +53,11 @@
   "independent_review": {
     "standards_and_privacy": {
       "findings": 0,
-      "coverage": "All 26 proposed paths, complete contents and filenames, narrative meaning, fixture data and generated test commit messages."
+      "coverage": "Prior sanitized-baseline review of 26 paths retained; a scoped Standards follow-up reviewed all seven cleanup files in full context."
     },
     "spec": {
       "findings": 0,
-      "coverage": "Required behavior, ownership boundaries, source dependencies and regression controls."
+      "coverage": "Prior baseline review retained; a scoped follow-up reviewed the seven-file cleanup for required behavior, scope, ownership, loading and defect-return boundaries."
     },
     "limits": "Reviewers inspected source and did not run live evaluations. Final validation and publication checks are coordinator-owned."
   }

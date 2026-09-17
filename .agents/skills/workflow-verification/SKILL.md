@@ -15,7 +15,7 @@ Implementation tests and Code Review are inputs, not automatic proof and not wor
 3. Reuse current test or review evidence when it directly covers a criterion.
    Do not rerun TDD, invoke Code Review again, or execute a full suite merely to create a framework-branded duplicate.
 
-Check required lasting results against their relevant maintaining artifacts, including unchanged ones when the scope or findings establish a concrete obligation.
+For required lasting results, reuse adequate review evidence and check only uncovered obligations against their relevant maintaining artifacts, including unchanged ones within the accepted scope.
 Report unmet requirements and consequential coordination findings to the coordinating workflow; it owns route reassessment and authorized reconciliation before completion.
 Existing sufficient content or references satisfy the obligation without another rewrite or review.
 

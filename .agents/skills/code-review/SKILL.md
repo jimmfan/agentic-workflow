@@ -43,8 +43,9 @@ Review is read-only: do not modify project files, the index, or Git history, or 
 Run Git observations with `GIT_OPTIONAL_LOCKS=0` to suppress optional index writes.
 If the reviewed content changes during review, identify the affected evidence gap and review only what became uncovered before claiming completion.
 
-Within the requested review and read boundaries, inspect relevant unchanged maintaining artifacts identified by the governing inputs or ordinary repository references.
-A missing required update can be a finding even when its artifact is absent from the diff: identify the governing requirement, concrete stale claim or missing information, affected artifact and consequence for the reviewed work.
+Within the requested review and read boundaries, use governing inputs and ordinary repository references to identify unchanged maintaining artifacts needed to assess an in-scope requirement.
+Inspect the relevant content without following unrelated references; an artifact's presence or topical similarity alone creates no update obligation.
+For a missing required update, identify the governing requirement, concrete stale claim or missing information, affected artifact and consequence for the reviewed work, even when the artifact is absent from the diff.
 Do not infer a defect from omitted detail that is adequately maintained elsewhere or demand a rewrite when the obligation is already satisfied.
 Context reads do not expand the requested comparison or authorize edits; explicitly excluded obligations remain coverage limitations rather than in-scope findings.
 
