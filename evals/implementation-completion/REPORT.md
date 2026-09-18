@@ -1,422 +1,184 @@
 # Implementation completion findings
 
-The instruction correction makes required completion obligations explicit across implementation, review and acceptance verification.
-The repaired campaign completed all five paired cases and both fresh readers, but the candidate does not satisfy every required behavior.
-Both conditions failed to reuse sufficient saved byte-verification evidence, and one candidate reviewer performed a transient write during read-only review.
-No improvement is demonstrated; defer merge pending a focused follow-up or explicit acceptance of those named limits.
-The two earlier interrupted campaigns remain separately recorded below.
+**Defer merge: accepted byte-verification evidence is still unnecessarily rechecked, and the implementation parent left an undisclosed temporary directory.**
+The original reviewer mutation remains a failed observation; focused retests provide bounded positive evidence for its correction.
+The completed comparison demonstrated no behavioral improvement over baseline.
+This evidence cleanup changes representation only: no new live evaluations, replaced samples or changed grades.
 
-## Owning boundaries
+## Problem and instruction correction
 
-| Gap | Correction |
+The correction makes consequential completion obligations explicit across implementation, review and acceptance verification.
+A direct `implement` invocation must reach the existing outer completion step after building and review.
+Existing project rules that govern this work and maintaining-artifact references must reach reviewers and Verification.
+An unchanged artifact can violate an in-scope requirement even when it is outside the implementation diff.
+
+| Responsibility | Owning layer and boundary |
 |---|---|
-| The inner implementation method did not explicitly return direct invocations to outer completion. | Return meaningful work to the outer acceptance step without repeating covered build or review work. |
-| Maintaining references and project policies were not explicit throughout reviewer handoffs. | Carry governing inputs and relevant maintaining-artifact references through implementation, both reviewers and Verification. |
-| Review guidance left required updates to unchanged artifacts implicit. | Identify concrete unmet requirements even outside the diff, while preserving read-only operation and explicit comparison limits. |
-| Completion reconciliation only named efforts selected earlier. | The coordinator reassesses new findings and relevant references under the existing threshold, including a clearly relevant effort missed earlier. |
+| Completion | `workflow-implementation` owns the outer acceptance step; routing and `implement` provide short handoffs without repeating the build/review loop. |
+| Findings | Code Review reports concrete unmet requirements and coverage, read-only, including required unchanged artifacts within scope. |
+| Evidence | Verification matches criteria to existing evidence and checks uncovered obligations. |
+| State maintenance | The coordinator reassesses relevance and reconciles authorized affected state under the existing routing threshold. |
 
-The coordinator retains routing and authorized state maintenance.
-Verification checks acceptance and supplies uncovered evidence; Code Review reports findings read-only.
-Existing sufficient content or references satisfy the obligation without a rewrite, new record, global effort search or repeated review.
-The accepted ownership and authorization decisions remain unchanged.
+Sufficient existing content satisfies an obligation without rewriting it or creating another record.
+Topic overlap, an unrelated link or artifact presence alone does not require an update or global effort search.
+Explicit comparison exclusions remain coverage limits; reviewers must not inspect excluded artifacts to manufacture findings.
+The correction preserves authorization, ownership and terminology boundaries.
+It adds no execution framework or new canonical term.
 
-Completion mechanics are maintained in `workflow-implementation`'s Verify the result step; routing and `implement` carry short handoffs to that owner.
-Direct invocation resumes at that step without re-entering the build loop.
-Unchanged-artifact reads must support an in-scope requirement; presence, topic overlap and unrelated links do not create update obligations.
-Verification reuses adequate review evidence and checks only uncovered obligations.
+The focused runtime correction then addressed two supported procedural weaknesses.
+Verification previously selected additional checks before resolving existing evidence coverage; it now maps criteria to evidence first and requires a concrete gap before choosing any check, including a narrow check.
+Code Review carries the read-only boundary into each delegation, explicitly covers temporary setup/cleanup, and returns genuinely blocked observations to the coordinator instead of repairing the environment itself.
+These mitigations address observed execution paths; neither is a proven explanation of the model's reasoning.
 
-## Regression coverage
+## Revisions and execution validity
 
-The fictional photo editor supplies exact configuration snapshots and test-generated historical Git commits.
-Controls cover recovery, implicit relevance, an unchanged stale plan absent from the diff, finding handoff, saved reconciliation and verification evidence.
-They include ambiguous intent, sufficient state, unrelated work, read-only requests and limited review scope.
-Copy integrity and user-reported output quality remain separate from independently tested image output.
+Full revisions and exact configuration are maintained once in [compact results](results.json).
+The [protocol](README.md) owns fixture preparation, requests/check references, execution gates and grading rules.
 
-These are deterministic evaluator controls with real local Git/file observations and constructed candidate responses.
-They establish neither agent behavior nor whether acceptance verification was executed in any unobserved session.
-The [protocol](README.md) owns the detailed boundaries and evidence limits.
-
-## Validation
-
-Validation passed: 17 focused controls, 224 package tests, 65 evaluation-tooling tests, two wheel checks, Ruff format/lint, scenario validation and `git diff --check`.
-The focused instruction cleanup reran these checks on Linux with Python 3.12.14; all four edited skills also passed skill validation.
-The existing ownership tests remain unchanged and pass in the package gate.
-Generated distributions were inspected, with the packaged regression tests matching reviewed source.
-The instruction correction and supporting harness were preserved without behavioral weakening.
-Detailed counts and evidence limits are recorded in [results.json](results.json).
-Those counts describe the earlier instruction correction and cleanup, not live behavior.
-The follow-up validation and execution limits are recorded below.
-
-## Standards
-
-The sanitized baseline received independent review of all 26 proposed paths, including privacy, narrative meaning, generated fixture data and preservation of unrelated references, with zero findings.
-Scoped follow-up review covered all seven cleanup files in full context, including instruction ownership, scope and loading boundaries, terminology and evidence reuse, with zero findings.
-The later evaluation follow-up received an independent Standards review of all six pending paths, controller scripts and observed execution evidence: zero actionable findings or material design smells.
-
-## Spec
-
-The baseline review covered required behavior and ownership boundaries, including source dependencies and the separate evaluator controls, with zero findings.
-Scoped follow-up review covered the seven-file cleanup and found no missing requirement, semantic regression, scope expansion or conflicting ownership/loading instruction.
-The later evaluation follow-up received an independent Spec review of all six pending paths and actual requests, traces, fingerprints and diagnostic records: zero actionable findings.
-The review confirmed that incomplete preflight coverage, delayed stop and unrun cases are disclosed, and that the behavioral conclusion remains INCONCLUSIVE.
-Delivery reviewers did not run live evaluations; final validation records and publication checks remain with the coordinator.
-
-Review summary: Standards 0 findings; Spec 0 findings.
-
-## Bounded comparison follow-up
-
-The frozen baseline is `4b4ac408cbc4543e2e7a433f52c03a48f7044ca7`; the candidate is `b6ca58c2f8f343e635c53f731ef53d628faf6eaa`.
-Neither differed from the supplied revision.
-Ten disposable photo-export fixtures, identical corresponding requests and grading expectations were prepared before launch, using the existing historical-Git controls.
-The [protocol](README.md#frozen-behavioral-comparison) and [compact results](results.json) retain the design, exact requests, fingerprints, per-session usage and exclusions.
-The intended comparison covers the combined branch correction; it cannot isolate the cleanup commit.
-
-| Case | Baseline | Candidate |
-|---|---|---|
-| Direct `implement` | Infrastructure-blocked; product result INCONCLUSIVE | Not run |
-| Review-only detection and handoff | Not run | Not run |
-| Already-sufficient state and evidence | Not run | Not run |
-| Unrelated effort | Not run | Not run |
-| Limited read-only review | Not run | Not run |
-| Fresh reader after completed primary | Not run; primary incomplete | Not run; primary unrun |
-
-Two native preflight sessions ran, followed by one scenario session; no fresh-reader or nested-reviewer session ran.
-The writer trace shows an allowed project read, denied evaluator/sibling reads, a successful native patch and readback.
-The independent reader session shows allowed reads, denied outside reads, command-write denial, native patch rejection and unchanged file content.
-Both loaded the expected synthetic project instructions and frozen candidate skills in fresh homes; credentials were removed afterward.
-These observations cover the exercised tools, not every capability required by the campaign.
-In particular, the preflights omitted Git and nested reviewer execution.
-
-The first baseline scenario failed to run `/usr/bin/git`: the restricted profile hid `/Library/Developer/CommandLineTools`, causing an `xcrun` invalid-developer-path error.
-The subject inspected Git objects with Ruby, restored the exact historical configuration and updated the existing recovery map with the source revision, restored path, pending engine and verification limits.
-Only the configuration and map changed among snapshotted project files, and `HEAD` remained unchanged; Git metadata was not comprehensively snapshotted.
-Those partial observations neither establish completed acceptance nor show an improvement over the candidate.
-No independent reviewer spawn, completed acceptance handoff or final response was observed before the session ended with an account usage-limit error (exit 1, about 136 seconds).
-
-The controller discovered the Git failure in the full rollout after the subject had already continued into alternative inspection.
-The short CLI output stream had not yet exposed that failure.
-An attempted process-identification/stop command was rejected by automatic approval review because of the account usage limit; the session then ended on the same limit.
-No remaining scenario or reader was launched and no failed sample was replaced.
-Future monitoring must inspect the full rollout promptly rather than wait for the short event stream to flush.
-The observed subject counters total 375,240 input tokens (274,432 cached) and 7,198 output tokens; the failed final request may be unaccounted.
-These counters exclude controller work and the separate delivery review.
-
-## Focused launcher correction
-
-The defect belongs to evaluation execution permissions and preflight coverage, not Agent Workflow runtime instructions.
-A non-model comparison reproduced the Git error under the original profile and restored Git by granting read access to the selected Apple developer directory.
-The existing `evals.persistence.config_args` now makes that bounded addition on macOS; other platforms retain their previous configuration.
-The isolation helper attempts actual canary reads and checks Git startup rather than relying only on readability predicates.
-No new execution framework, terminology, runtime instructions, project write permission or command network access was introduced.
-
-Non-model checks passed for the corrected profile: Git version, status and exact historical-blob reads worked; evaluator/sibling reads and read-only writes stayed denied.
-The existing isolation helper passed for writer and reader modes.
-Git still emitted cache-write warnings because system temporary writes remain restricted; the observed Git operations returned zero.
-The new permission test failed before the correction and passed afterward, and a Linux control confirms that Apple toolchain discovery is not required there.
-The corrected launcher has not received a native preflight: the authorized two native sessions were already spent.
-A separately authorized follow-up must verify actual Git operations and required nested reviewer boundaries before launching another frozen comparison.
-An installation of Command Line Tools is not indicated: the selected toolchain already exists and works outside the restricted profile.
-
-The original runtime instruction reviews remain applicable.
-The new execution-boundary and interpretation reviews found zero actionable findings on either axis.
-Final local checks passed on macOS/Python 3.14.6: 224 package tests, 67 evaluation-tooling tests, two wheel checks, Ruff, all 57 scenarios and `git diff --check`.
-The 17 existing photo-export controls are included in the package gate.
-`VERSION` remains 0.34.4, valid above the unchanged remote main and latest release v0.34.3.
-Hosted PR checks are separate delivery evidence.
-No product regression, duplicate completion logic or new canonical terminology was established by this interrupted sample; those questions retain the earlier source-review evidence and the current behavioral uncertainty.
-
-## New campaign: verified Git boundary, interrupted candidate
-
-This separately authorized campaign reused the frozen baseline `4b4ac408cbc4543e2e7a433f52c03a48f7044ca7` and candidate `b6ca58c2f8f343e635c53f731ef53d628faf6eaa`.
-The actual starting PR head was `4cd10600edc788f077d79e4d82bf430d284d6af9`, a plain-wording follow-up to the reported launcher head `c3cf6855e0d7a80b50b3d5135320a947333da4b5`.
-The later wording was not substituted into the frozen candidate.
-The CLI remained 0.144.6 with `gpt-5.6-sol / medium`, fresh subject homes and the same 360-second/2,000,000-byte limits.
-All ten paired starting projects were checked against the original fixture snapshots; the previous partial baseline was not counted as a new sample.
-Supported capacity information allowed ordinary usage and showed 3% of the weekly account window consumed before launch.
-
-The first writer preflight failed because native Git attempted to read the denied personal `.gitconfig`.
-The targeted retry disabled personal/system Git configuration instead of granting access to it.
-The writer retry and initial read-only preflight each passed all five Git operations, three outside-canary denials and command/patch probes in the parent and two real native reviewers.
-Writer changes were limited to the six expected probe files; reader content and all preflight Git snapshots were unchanged.
-Three top-level preflights and four nested preflight reviewers ran; the unused read-only retry did not authorize replacing a failed scenario.
-
-Independent harness review found and fixed delayed cleanup on monitoring exceptions and skipped cleanup when a process-group leader had already exited.
-Both defects were reproduced with deterministic subprocess tests before correction.
-The cleanup-only change was frozen before scenario launch without changing subject permissions, runtime instructions or prompts.
-Earlier and final manifest hashes are retained separately in the compact results.
-
-| Case | Baseline | Candidate | Observed difference |
+| Evidence group | Baseline | Runtime candidate | Scope |
 |---|---|---|---|
-| Direct `implement` | Completed restoration, map reconciliation and local validation; explicit outer completion handoff not observed | Infrastructure-blocked before review and acceptance completion | No completed pair; improvement INCONCLUSIVE |
-| Review-only | Not run | Not run | Unobserved |
-| Already sufficient | Not run | Not run | Unobserved |
-| Unrelated effort | Not run | Not run | Unobserved |
-| Limited read-only comparison | Not run | Not run | Unobserved |
-| Fresh reader | Not run after campaign stop | Not run; primary incomplete | Unobserved |
+| Two interrupted campaigns | `4b4ac40` | `b6ca58c` | Partial observations only; neither establishes a completed comparison. |
+| Completed comparison | `4b4ac40` | `67c0ef5` | Five paired cases, two native preflights and two fresh readers. |
+| Focused follow-up | No new baseline | `4a90232` | Five candidate cases, reusing unaffected comparison evidence. |
 
-The baseline restored the exact historical bytes and updated only the existing recovery map alongside the configuration.
-The saved map identifies source revision, path, purpose, pending engine and the local validation limits.
-Two native reviewers completed their reads of the actual changes and relevant governing artifacts and reported no findings.
-The parent checked JSON, historical equality, recovery links and unchanged HEAD; it repeated the byte/JSON checks after review as a final integrity check.
-It did not repeat implementation or spawn a second review pair.
-No explicit transition to the outer completion owner was observed; instruction loading or a route marker alone is not the grading criterion.
-This supports the observed local outcomes, without claiming every completion-handoff requirement passed.
+The focused follow-up started from checkout-policy head `72ccda1`; its evidence was delivered at `1c6d139`.
+Later head `884d0cd` removed one redundant Git-environment reminder from Code Review, retaining the explicit `git --no-optional-locks status --short` instruction.
+That one-line deletion has deterministic package validation but no new live evaluation.
+The latest live-evaluated runtime therefore remains `4a90232`, not the evidence-cleanup head.
+The current PR retains the existing unreleased version 0.34.4.
 
-The candidate restored the same exact bytes and updated its recovery map, then encountered two infrastructure failures during local JSON validation.
-At about 89.3 seconds, Ruby startup was denied access to `/Library/Ruby/Gems/2.6.0/specifications/default` (`Errno::EPERM`).
-At about 110.1 seconds, Perl startup failed because its system `libperl.dylib` was blocked by the sandbox.
-A separate `plutil` attempt rejected JSON input; that tool-selection error is distinct from the runtime permission failures.
-The subject continued to a successful `jq` check and started two reviewers before the coordinator stopped it.
-Neither reviewer completed, and acceptance completion was not observed.
-Only the configuration and existing map changed, and Git snapshots were unchanged in both primary runs.
-These partial candidate observations are not a product PASS or a demonstrated semantic regression.
+Subjects used `gpt-5.6-sol / medium`, Codex CLI 0.144.6 and the recorded macOS host, with fresh sessions/homes, disabled personal configuration, no command network, and bounded time/output.
+Write-capable implementation and top-level read-only scenarios used the respective project permissions.
+The exposed native delegation interface provided no per-child permission selector; children inherited their parent's live permissions.
+Thus reviewers delegated by implementation had write capability, although their instructions prohibited writes.
+No per-reviewer OS enforcement is claimed for those sessions.
 
-The automatic monitor did not recognize the Ruby/Perl signatures in this frozen run.
-Full-rollout inspection exposed the gap; after verifying process ownership, the coordinator killed only the candidate evaluation process group at about 148.9 seconds.
-Thus this campaign did not meet the automatic-stop requirement for the newly observed failures: approximately 59.6 seconds elapsed after the first runtime error before termination.
-The controller retained the interrupted evidence, marked infrastructure failure, removed copied credentials and blocked further launches.
-No remaining scenario, fresh reader or replacement sample ran.
+## Launcher failures and repairs
 
-After stopping, a targeted regression test reproduced both missed signatures and then passed with their detection added.
-Replaying the captured candidate rollout now reports infrastructure failure at the first Ruby error.
-This correction grants no additional filesystem access, changes no runtime instruction and has no corrected live retest in this campaign.
-The successful native permission preflights remain evidence for their exercised Git/command/patch boundary; they did not establish arbitrary interpreter startup.
-The monitor recognizes the documented failure forms, not every possible infrastructure diagnostic.
+The earlier campaigns are retained separately, including every executed parent and nested session's observed usage.
+Their unrun cases are not failures or passes.
 
-Usage comprises three top-level preflights, two scenario sessions, zero readers and eight nested reviewers: four preflight reviewers, two completed baseline reviewers and two interrupted candidate reviewers.
-Observed counters total 2,518,781 input tokens (2,214,528 cached) and 34,219 output tokens, including 880,372 total tokens attributable to nested reviewers after subtracting inherited parent counters.
-Counters from interrupted requests may be incomplete; controller work and separate delivery reviews are excluded.
-Raw delegation-message bodies are encrypted in native traces, so exact reviewer prompts cannot be inspected; native spawn timing, model settings, child tool inputs/outputs and resulting state remain observable.
-No result from the first campaign was added to these totals.
+| Campaign | Material failure and retained limit |
+|---|---|
+| Initial: three parents, no children | Preflights omitted Git/nested execution. Native Git could not access the selected Apple developer directory; baseline used Ruby to restore files, then quota ended the run before review/acceptance. Git metadata was incompletely observed. |
+| Second: five parents, eight children | First writer hit denied personal Git configuration; one targeted retry passed after disabling it. Baseline restored/reviewed/reconciled, but explicit outer completion was unobserved. Candidate Ruby/Perl dependency denials interrupted review and acceptance. |
 
-The concrete premerge blocker remains the missing behavioral comparison, including candidate acceptance completion, all four negative/control cases and both fresh readers.
-The next bounded step is non-model verification of interpreter startup and monitoring under the restricted profile, followed by a separately authorized fresh comparison with successful native preflights.
-Do not widen access to personal configuration, replace this failed sample, or combine a later run with these results.
-The successful baseline alone demonstrates no candidate improvement and does not eliminate semantic risk.
+The launcher now grants only the required Apple developer directory and system Perl/Ruby reads, and isolates Git configuration without granting personal-config access.
+Deterministic subprocess controls cover cleanup when monitoring raises and when a process-group leader exits before its child.
+The second campaign's frozen monitor missed interpreter failures; coordinator termination occurred about 60 seconds after the first error, so that run did not prove automatic stopping.
+The signatures were repaired afterward and checked against captured evidence before any further model call.
+Actual non-model sandbox comparisons reproduced the old interpreter failures and passed with the repaired profile while protected-read and read-only-write denials remained intact.
+A controlled real sandbox failure exercised monitor cleanup of an owned child after its leader exited.
+Native writer/reader preflights then passed Git, interpreter, command/patch and protected-read probes in both parents and four nested reviewers.
+Writer probes changed only their six designated files; read-only project and Git snapshots stayed unchanged.
+These explicitly authorized preflight writes are not reviewer-compliance samples.
 
-### New campaign delivery validation
+## Completed behavioral comparison
 
-Local validation passed: 224 package tests, 78 evaluation-tooling tests, two wheel checks, Ruff format/lint, all 57 scenario definitions and `git diff --check`.
-The package/wheel evidence and original runtime-instruction reviews were reused where the evaluated surface was unchanged; focused monitor tests and captured-rollout replay cover the post-stop detector correction.
-The prior campaign JSON values, frozen manifest, actual launch counts, exact candidate bytes and credential cleanup were independently checked.
-Remote PR base and semantic tags still identify `4b4ac40` / v0.34.3, so the existing unreleased `VERSION` 0.34.4 remains valid.
-Hosted CI and publication are separate delivery evidence.
+All **14 planned parent sessions and 21 nested agents completed**, with no infrastructure retries, revised candidate or replacement sample.
+The session records preserve condition order and distinguish preflight work from scenario behavior.
 
-### Standards
-
-The independent final review covered all eight pending repository paths, the actual rollout fingerprints and state changes, and reused the prior controller review.
-Both earlier cleanup findings are resolved; zero actionable findings remain.
-No actionable duplication, speculative machinery or new canonical terminology was found.
-
-### Spec
-
-The independent final review covered all eight paths, campaign limits and frozen inputs, actual errors, snapshots, usage and outcome interpretation.
-Zero actionable findings remain in the evidence and harness changes.
-The failed live automatic stop and missing behavioral comparison remain explicit premerge blockers; review success does not turn those outcomes into PASS.
-
-Review summary: Standards 0 remaining findings; Spec 0 remaining findings.
-
-## Repaired environment and current-candidate comparison
-
-This campaign freezes baseline `4b4ac408cbc4543e2e7a433f52c03a48f7044ca7` and candidate `67c0ef5bc7d3295791fc94d3b106a75d09f5eca1`, including the later ordinary-wording changes.
-It preserves the earlier campaigns separately and uses the same five cases, synthetic product fixtures, requests, rubric and counterbalanced order.
-The authorized budget is 24 top-level sessions and a separately monitored allowance of 64 nested subject agents, retaining the 360-second/2,000,000-byte session limits.
-The protocol records recovery before launch: preserve infrastructure attempts, verify a concrete repair, document comparability, then retry; behavioral failures cannot be silently replaced.
-
-The smallest environment repair grants read-only access to `/System/Library/Perl` and `/Library/Ruby/Gems` on macOS.
-The launcher and direct isolation probe now share the same isolated shell/Git environment.
-No runtime instruction, canonical term, project write boundary or command-network permission changed in this follow-up.
-The existing unreleased version remains 0.34.4.
-
-Without model calls, the old profile reproduced Ruby's system-gem `EPERM` and Perl's blocked shared library.
-The repaired profile passed Ruby, Perl, Python and jq JSON parsing, representative Git operations and file access in both writer and read-only modes.
-Actual sibling/auth-canary reads, read-only writes and loopback network connections remained denied; a readability predicate also confirmed personal Git configuration remained inaccessible.
-A controlled real sandbox startup failure was passed through a rollout adapter to the monitor.
-The runner recognized it and cleaned up an owned child whose leader had already exited in about 0.2 seconds.
-Expected permission denials and an ordinary missing-file error completed without an infrastructure classification.
-This establishes the exercised execution path, not arbitrary interpreter support or model behavior.
-
-Both native preflights passed, including actual Git and interpreter operations, outside-canary reads, and command/patch probes in the two parents and four real nested reviewers.
-Only six designated writer probe files changed; the reader project and both Git snapshots remained unchanged.
-All observed parent and child settings were `gpt-5.6-sol / medium`.
-Fresh subject homes, prompt audits and filesystem restrictions kept other conditions and evaluator material outside each subject's context; copied credentials were removed after each run.
-The exact manifest, controller, request and trace fingerprints are retained in [compact results](results.json).
-
-| Case | Baseline | Candidate |
+| Frozen case | Baseline | Candidate |
 |---|---|---|
-| Direct `implement` | PASS | PASS |
-| Review-only detection and handoff | PASS | PASS |
-| Already sufficient: evidence reuse | FAIL — repeated covered byte checks | FAIL — repeated covered byte checks |
-| Unrelated effort: frozen criteria | PASS | PASS; separate reviewer-boundary failure below |
+| Primary completion | PASS | PASS |
+| Review-only detection/handoff | PASS | PASS |
+| Already-sufficient evidence reuse | FAIL | FAIL |
+| Unrelated tutorial | PASS | PASS, with additional reviewer mutation |
 | Limited read-only comparison | PASS | PASS |
 | Fresh reader | PASS | PASS |
 
-Both primary subjects restored the exact historical configuration and reconciled only the existing recovery map.
-They saved the revision, restored path, purpose, pending engine and local-validation limits, then completed two native review axes and acceptance checks.
-The baseline delegated acceptance to a third native agent; the candidate resumed the outer completion step and checked links, recorded limits, pending dependency and authorized scope itself.
-Neither restarted implementation or launched a second Code Review pair, although final integrity checks repeated narrow JSON/blob comparisons.
-Both review-only subjects identified the concrete stale availability claim and missing recovery details, returned the governing policy and completion consequence, and left project/Git snapshots unchanged.
-Both limited-read subjects and their reviewers stayed within the permitted configuration/blob/instruction reads and reported the excluded obligations as coverage limits.
-Both tutorial subjects created only `examples/` and its exact historical configuration copy, preserving the original configuration and recovery state without inventing a fallback obligation.
+Both primary subjects restored exact historical bytes and updated only the existing recovery map.
+They retained source revision, path, fallback purpose, pending engine and verification limits, completed two review axes and performed acceptance checks.
+Baseline delegated acceptance to another native agent; candidate resumed outer completion itself.
+Neither repeated the build or review pair; both repeated narrow JSON/blob checks, which the frozen primary rubric distinguishes from repeating that loop.
+Primary PASS therefore does not establish general evidence reuse.
 
-The already-sufficient failure is behavioral, not environmental.
-Both subjects read accepted saved evidence stating that the historical bytes had been compared, prior review was sufficient and no files had changed.
-Both then recomputed current/historical hashes and compared the same bytes without establishing a missing criterion.
-The baseline used `git show` with `cmp`; the candidate used hashes and `git diff --quiet` against the source.
-Both preserved files and reused prior review, but those successes do not satisfy the separate no-repeat-byte-check criterion.
-Independent Spec inspection confirmed that the existing instruction already requires reusing evidence that covers a criterion and checking only uncovered obligations.
-This run establishes noncompliance with that rule, not a concrete missing instruction that would justify another prohibition.
-The failures remain recorded without a replacement run, product edit or fixture change.
+Both review-only subjects identified the unchanged stale availability claim, governing policy and consequence and returned the finding without project/Git changes.
+Both limited-read subjects and reviewers respected the permitted comparison and stated excluded obligations as limits.
+Both tutorial subjects preserved original configuration/recovery artifacts and created the requested independent example without inventing a fallback obligation.
+Both fresh readers recovered revision, path, purpose, pending dependency and verification limits from saved files alone, without Git history, validation execution or project mutation.
+Their answers recover recorded evidence, not proof of successful image export.
 
-A separate candidate observation concerns reviewer ownership.
-During the tutorial case, the Standards child created and removed `.review-tmp` while trying to avoid harmless Git cache warnings.
-That transient directory mutation violated the existing read-only review rule even though the final snapshot contained only the intended example addition and unchanged Git metadata.
-It does not change the frozen three-criterion tutorial grade; it remains an additional failure under the requested reviewer-ownership assessment.
+Both sufficient-evidence subjects read accepted prior byte/review evidence and the statement that no files had changed, then recomputed current/historical hashes and compared the same bytes without identifying a gap.
+Baseline used `cmp`; candidate used `git diff --quiet` against the source.
+Preserving files and reusing prior review do not clear the separate failed byte-reuse criterion.
+The existing rule already required evidence reuse; this is observed noncompliance, not evidence that another prohibition was missing.
+
+In the candidate tutorial, the Standards child successfully created and removed `.review-tmp` after Git observations had already succeeded with cache warnings.
+The child had read the governing review instructions and inherited the parent's write-capable sandbox and prior temporary-directory setup.
+The temporary mutation violated read-only review despite an unchanged final snapshot; permission did not supply authorization.
+It remains a separate reviewer-boundary FAIL without retroactively changing the frozen tutorial grade.
 No corresponding reviewer write was observed in the baseline tutorial.
-The child inherited the parent's write-capable sandbox, which permitted the action but did not authorize it.
-Git operations already succeeded, and the temporary-directory attempt did not remove the warnings, so neither an infrastructure retry nor broader access was justified.
+Context imitation is a hypothesis, not an established model-level cause.
 
-No improvement is demonstrated by the five paired cases: four of five cases passed and one failed in each condition.
-The candidate-only transient reviewer write is an additional observed difference; this small sample cannot establish its causal relationship to the instruction change.
-There is no evidence here of duplicated completion ownership or newly introduced canonical terminology, but source clarity did not guarantee behavioral compliance.
-The premerge criterion is not met: candidate evidence reuse and reviewer read-only ownership remain concrete limitations.
-The recommendation is to defer merge, retaining these results for a focused follow-up or an explicit acceptance decision for those named limits.
-Do not change the rubric, add speculative instructions or spend the unused recovery allowance merely to obtain a passing sample.
-
-Both fresh readers recovered the exact revision, path, purpose, pending engine and recorded verification limits from saved project files alone.
-They received no original conversation, Git history or grading material, executed no validation, and changed no project files.
-Their answers recover recorded evidence; they do not independently prove that photo export works.
-
-All 14 planned top-level sessions completed: two preflights, ten scenarios and two readers.
-There were 21 nested subject agents: four preflight reviewers, sixteen scenario code reviewers and one baseline acceptance verifier.
-No recovery attempt, revised candidate or replacement sample was used; ten top-level recovery sessions remain unused.
-The nested-agent limit is monitored as a stopping threshold, not an atomic reservation against simultaneous spawns.
-Native delegation-message bodies are encrypted, so exact messages are not independently inspectable; actual fork/spawn behavior, child settings, tool reads/results and saved state remain observable.
-Observed subject counters total 5,719,302 input tokens (5,059,840 cached) and 93,365 output tokens, including 2,189,469 total tokens attributable to nested agents after subtracting inherited parent counters.
-Controller and delivery-review usage are excluded.
-
-### Delivery validation
-
-Local validation passed: 224 package tests, 78 evaluation-tooling tests, two wheel checks, Ruff format/lint, all 57 scenario definitions and `git diff --check`.
-The focused macOS permission test failed before the runtime-access repair and passed afterward; Linux permission behavior remains unchanged.
-Prior runtime-instruction reviews remain applicable because this follow-up changes only evaluation tooling and evidence.
-The remote PR base and semantic tags were rechecked at delivery: main remains `4b4ac40` and the latest release remains v0.34.3, so the existing 0.34.4 bump is valid.
-Hosted CI remains separate publication evidence.
-
-### Standards
-
-The independent final review covered all six pending paths and reused the completed launcher/controller and prior runtime-instruction reviews.
-It independently reconciled all 14 sessions, 21 nested agents, 35 trace fingerprints, usage totals, credential cleanup and final snapshots, and inspected the failure and reader evidence.
-Zero actionable findings, design smells, duplicated runtime logic or new canonical terminology were found in this delivery.
-This reviewer did not re-grade every successful tool sequence, rerun the repository gates or inspect encrypted delegation messages; coordinator grading and validation supply the separately reported evidence.
-
-### Spec
-
-The independent final review covered all six paths, reused the repair/controller review and checked preflight outputs, primary completion, review findings, limited reads, tutorial preservation and reader activity.
-It reconciled snapshots, trace fingerprints, model settings and usage, and confirmed preservation of the earlier campaign values and unchanged runtime instructions.
-Zero actionable defects remain in the evidence and harness delivery; the two behavioral premerge limitations remain unresolved and accurately reported.
-Encrypted delegation bodies, untested live image export and unexercised recovery/revised-candidate paths remain explicit coverage limits.
-
-Review summary: Standards 0 delivery findings; Spec 0 delivery findings; evidence reuse and reviewer ownership remain failed behavioral boundaries.
+Four of five paired cases passed in each condition and one failed in each; **no comparative improvement was demonstrated**.
+The additional candidate-only reviewer mutation is also preserved without attributing causality to the instruction change.
 
 ## Focused behavioral follow-up
 
-The follow-up starts at verified local and remote PR head `72ccda11af9f7bbea5ca398db99118a6a6c5d41c` on a clean primary checkout.
-The completed 14-session campaign above is preserved, including both failures and its zero infrastructure retries.
+All **five planned parent sessions and six nested reviewers completed**, without infrastructure retries or replacement samples.
+The three reserved infrastructure-recovery attempts were unused.
+Each workspace passed fresh non-model isolation/Git/JSON probes; native preflight evidence was reused only for the unchanged execution configuration.
+Credentials were removed after every run.
 
-### Diagnosis and correction
-
-Four hypotheses were checked against the original requests, fixture manifest, actual tool results, native settings and saved state:
-
-| Hypothesis | Discriminating evidence and disposition |
+| Case | Result and scope |
 |---|---|
-| Prior evidence did not cover exact restoration or was invalidated | The fixture controller established byte equality; `docs/export-validation.md` named the exact revision/path/hash and successful comparison, accepted prior review and unchanged files. Both agents read it before repeating equality checks. No invalidation was observed. Rejected for this synthetic case. |
-| Evidence or governing instructions failed to reach the deciding agent | Both verification agents read the workflow and saved evidence. The candidate called covered obligations “needing direct confirmation” without naming a gap. The reviewer read Code Review and project policy before its write. Instruction unavailability is rejected; precise encrypted delegation messages remain unavailable. |
-| Verification procedure selected checks before resolving evidence coverage | The old procedure selected additional checks in step 2 and addressed reuse in step 3. The candidate selected new direct observations for already covered obligations. The ordering is a plausible contributing weakness, not an established explanation of the model’s reasoning. Replace that order with criterion/evidence matching and require a concrete gap before selecting a check, including narrow checks. |
-| Reviewer inherited implementation behavior and write capability | The parent created a temporary Git directory before a full-context reviewer fork. The child later created/removed `.review-tmp` after successful Git results with cache warnings. Its native context had the parent's workspace-write sandbox. Successful `mkdir`/`rmdir` are a mutation, regardless of the final snapshot. Context imitation is plausible, not proven; the permission inheritance and successful mutation are observed. |
+| Already sufficient | FAIL: explicitly acknowledged accepted byte coverage, then recomputed both hashes without a gap. |
+| Invalidated evidence | PASS: detected quality 80 versus historical 90, reported incomplete restoration, reused unaffected review and preserved project/Git state. |
+| Tutorial implementation | PASS: exact example copy and preserved recovery artifacts; both delegated reviewers issued no explicit mutating commands. |
+| Primary implementation | Frozen criteria PASS: exact restoration, map reconciliation, two review axes and outer acceptance; additional parent defects below. |
+| Limited comparison | PASS: parent and both reviewers respected permitted reads, comparison semantics and exclusions, with unchanged state. |
 
-The correction stays in Verification's evidence-selection procedure and Code Review's shared handoff and read-only boundary.
-Code Review now carries that boundary into each delegation, explicitly includes temporary setup/cleanup, and sends genuinely blocked observations back to the coordinator instead of permitting reviewer environment repair.
-No routing, completion owner, comparison semantics, artifact ownership or canonical terminology changes.
-These are focused procedural mitigations; a passing retest cannot prove a universal model-level cause or reliability.
+Evidence sufficiency reached the deciding agent; reordered verification steps did not prevent the repetition.
+Independent prior review found no further specific missing instruction in that trace.
+Another synonymous prohibition or an unchanged rerun is not a justified repair.
+The evidence-reuse finding remains unresolved and unaccepted.
 
-The actual native `collaboration.spawn_agent` interface exposes no permission/role selector; prior child contexts confirm inherited workspace-write access.
-The [official host documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents#approvals-and-sandbox-controls) describes inheritance and parent live permission overrides, even when custom-agent defaults differ.
-The skill therefore uses available host read-only controls where exposed without inventing an execution framework or claiming that this evaluated delegation path has per-reviewer enforcement.
-Behavioral tests must still inspect reviewer attempts and successful operations inside a write-capable implementation session.
-Existing whole-project final snapshots cannot detect a temporary mutation that was undone; native tool calls and results remain required grading evidence.
+Both tutorial reviewers and both primary reviewers inherited workspace-write permissions and nevertheless made no explicit mutating commands, native patches or successful temporary-directory changes.
+These four observations cover the implementation-to-review path, not merely an externally read-only scenario.
+Git/xcrun attempted incidental cache writes that were denied while required reads succeeded; these differ from reviewer-issued environment-repair commands.
+The original successful `mkdir`/`rmdir` remains a failure.
+The corrected reviewer guidance has bounded positive retest evidence, without causal isolation, universal reliability or OS enforcement claims.
 
-### Follow-up observations
-
-The corrected runtime was committed as `4a90232` before fixture preparation and model calls.
-The five-case protocol preserves the earlier 14-session campaign separately and changes neither its results nor its grading.
-
-| Case | Observed result |
-|---|---|
-| Already-sufficient evidence | FAIL: recognized saved byte coverage, then recomputed historical/current hashes without a gap. |
-| Invalidated evidence | PASS: detected quality 80 versus 90, reported incomplete restoration and stale equality evidence, reused unaffected review and preserved files/Git. |
-| Tutorial implementation | PASS: exact example copy, unchanged recovery artifacts/Git, two actual read-only reviewers within a write-capable implementation session. |
-| Primary implementation | Frozen criteria PASS: restored exact bytes, reconciled the existing map, completed both review axes and outer acceptance checks. Additional parent observations below remain visible. |
-| Limited comparison | PASS: parent and both reviewers respected allowed reads and endpoint semantics, reported excluded obligations, and preserved project/Git state. |
-
-The sufficient-evidence subject explicitly said the saved evidence covered byte-for-byte restoration before issuing both hash commands while checking the recovery record.
-Thus sufficiency reached the deciding agent; the new sequencing did not prevent unnecessary repetition.
-Independent Spec review confirmed this failure and found no further specific missing instruction in the trace.
-Another synonymous prohibition or an unchanged rerun would not be a justified repair.
-Evidence reuse remains a concrete premerge blocker, with no acceptance of that failure by the user.
-
-Both tutorial reviewers and both primary reviewers used content/Git observations without explicit mutating commands, native patches, or temporary setup/cleanup.
-All four inherited workspace-write permissions, so these observations exercise the required implementation-to-review path rather than relying on top-level read-only containment.
-Git/xcrun still attempted external cache writes and received denials; successful observations remained usable.
-Those incidental tool operations are recorded separately from reviewer-issued write or repair commands.
-The original successful reviewer `mkdir`/`rmdir` remains a failure; the corrected retests show no recurrence, not universal reliability or proof of which instruction change caused the difference.
-Per-reviewer OS enforcement was not available through the exposed delegation interface and is not claimed.
-
-The primary implementation parent created `.tmp` before delegating and left that empty directory behind alongside the intended configuration/map changes.
-It did not disclose that directory in its final answer, and Git status alone did not expose it; the filesystem snapshot did.
-The parent also repeated narrow byte/JSON checks and retried its final script after expanding an abbreviated HEAD into an incorrect full SHA.
-It corrected the SHA from an actual Git observation; this was an ordinary agent check error, not infrastructure recovery or a replacement session.
-These observations are not reviewer writes and do not alter the frozen primary rubric, which distinguishes narrow integrity checks from repeated build/review loops.
-They also do not establish successful general evidence reuse: the separate sufficient-evidence criterion failed.
+The primary parent left an empty `.tmp` directory and omitted it from its final report.
+The filesystem snapshot detected this additional change; Git status alone did not.
+The parent also repeated narrow checks and reran a script after asserting an incorrect expanded HEAD, then corrected that value from Git.
+That was an ordinary in-session check error, not infrastructure recovery.
+These observations are not reviewer writes, do not alter the frozen primary grade, and remain unaccepted limits on completion and evidence reuse.
 No unrelated existing artifact or Git metadata changed.
 
-All five planned sessions and all six nested reviewers completed with the frozen `gpt-5.6-sol / medium` configuration, without infrastructure retries or replacement samples.
-The three reserved infrastructure-recovery attempts remain unused.
-Each fresh workspace passed actual non-model sandbox probes for Git/JSON, allowed or denied writes, and denied outside/evaluator/synthetic-credential reads before launch.
-Native preflight evidence from the completed campaign was reused only for the unchanged host/tool/permission configuration.
-Fresh homes and prompt audits preserved isolation; copied credentials were removed after every run.
-Controller assertions verified all five original fixture snapshots before candidate installation and discriminated sufficient historical equality from the explicitly invalidated quality-80 control.
-These deterministic checks establish fixture and execution properties, not model compliance.
-All eleven native traces completed with the required model/settings; project and Git snapshots match the reported changes.
-Observed subject usage was 1,761,550 input tokens (1,575,040 cached) and 30,178 output tokens, including 382,389 total tokens attributable to nested reviewers after subtracting inherited parent counters.
-Controller and independent delivery-review usage is excluded.
+## Deterministic coverage and delivery verification
 
-The recommendation remains **defer merge**.
-The original reviewer boundary has positive bounded retest evidence; evidence reuse remains failed, and the additional parent cleanup/disclosure defect is not accepted.
-There is no newly demonstrated instruction omission that supports another synonymous rule or replacement sample.
-Further behavioral work needs a materially different correction supported by causal evidence within the authorized thin-layer scope; adding a new execution framework or accepting the failure is outside this request.
-No access, quota or infrastructure failure prevented the planned follow-up; the remaining blocker is behavioral.
+The 17 photo-export controls retain real local Git/filesystem observations and constructed-answer checks at review detection, coordinator handoff and completion seams.
+They cover implicit relevance, stale unchanged plans, sufficient state, unrelated artifacts, read-only requests, limited scope, byte integrity and symlink rejection.
+The invalidated-evidence fixture protects legitimate re-verification when a later change invalidates accepted evidence.
+Permission and monitor tests discriminate infrastructure failures, expected denials and ordinary tool errors.
+They do not establish model compliance or live photo-export success.
 
-### Follow-up delivery validation
+Prior delivery passed 224 package tests, 78 evaluation-tooling tests, two wheel checks, Ruff format/lint and all 57 scenario definitions; the focused controls are included in the package gate.
+The cleanup passed those gates again, including all 17 focused controls, plus JSON references, historical-result preservation, Markdown links and diff hygiene.
+The preservation audit reconciled all 27 parent sessions and 35 native children across the four campaigns; exact requests, grades, counters, elapsed times and changed-path inventories match the prior record.
+One independent cleanup review closed with zero remaining actionable evidence-integrity or storage-contract findings.
+It caught an overstatement of the initial reader snapshot; the corrected record marks the full inventory unavailable and retains only the observed unchanged probe content.
+This review approves evidence representation, not the unresolved subject behavior.
+Earlier runtime/harness reviews remain applicable to unchanged source.
+Hosted CI is separate delivery evidence reported on PR #48.
 
-Local validation passed: 224 package tests, 78 evaluation-tooling tests, two wheel checks and Ruff format/lint.
-The existing photo-export deterministic controls are included in the package gate; new fixture assertions and per-attempt sandbox probes cover the changed evaluation setup without adding keyword tests for instructional prose.
-The original result objects remain unchanged, including all 14 completed sessions and zero retries.
-The current remote base and latest release remain `4b4ac40` and v0.34.3; the existing unreleased 0.34.4 remains valid.
-Final diff hygiene and package verification passed; hosted CI is separate PR delivery evidence.
+## Evidence retention and remaining limits
 
-### Standards
+The compact record retains each campaign separately, exact scenario requests once, execution configuration, per-session counters, paired/reader references and material anomalies.
+Nested usage subtracts inherited parent counters; cached input is part of input and reasoning output is part of output.
+Controller and delivery-review usage is excluded; interrupted final requests may be unaccounted.
+Child elapsed times, aggregate tool counts and actual route summaries were not retained in the previous compact data and remain unavailable rather than inferred.
+Encrypted delegation-message bodies remain unavailable; observed fork/spawn behavior, settings, tool activity and saved state support the reported findings.
 
-Independent review reused the source/controller review and checked the final report, results and effort record against the saved evidence.
-It verified original-result preservation, all five fixture/Git snapshot pairs, eleven trace fingerprints and model settings, request/prompt/isolation/response fingerprints, usage arithmetic, changed paths including `.tmp`, and credential cleanup.
-Existing logs confirmed the reported test counts; no tests or model calls were repeated.
-Zero actionable delivery findings remain; this does not resolve behavioral failures.
+Git history at `884d0cd` preserves the expanded campaign structures, previous adjudications, validation/review chronology and raw-artifact fingerprints removed by compaction.
+Raw traces, manifests, controller scripts and copied workspaces remain local execution exhaust outside Git; their continued availability is not guaranteed.
+The retained protocol and fixtures support reconstructing the evaluation design, not bit-identical replay without those artifacts.
+This cleanup removes redundant narratives and unusable local paths without altering runtime instructions, fixture semantics, tests or observed results.
 
-### Spec
-
-Independent review covered the source correction, actual sufficient and invalidated evidence paths, both implementation/reviewer paths, final limited comparison, and all reported dispositions.
-One earlier causal-wording finding was corrected to distinguish an observed selection error from a hypothesis about its reason.
-The final review found zero additional delivery defects and confirmed that evidence reuse remains failed, reviewer behavior has bounded positive evidence, and the parent's undisclosed directory remains unaccepted.
-It reused earlier grading and did not independently recalculate usage, rerun deterministic tests, or verify hosted CI.
-
-Review summary: Standards 0 delivery findings; Spec 0 remaining delivery findings; merge remains blocked by the preserved behavioral failures.
+**Merge recommendation: defer.**
+Evidence reuse is still failed, and the parent's cleanup/disclosure defect is not accepted.
+The reviewer boundary has positive bounded follow-up evidence while its original failure stays visible.
+Further correction requires materially different supporting evidence within the existing thin-layer scope; neither a broader runtime nor blind retries are justified by these results.
+No access, quota or infrastructure blocker prevented the completed follow-up or this evidence cleanup.
