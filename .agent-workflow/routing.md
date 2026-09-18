@@ -82,7 +82,7 @@ Specifications, tickets, research, maps, and reviews remain in the artifacts or 
 
 The Implementation integration supplies the accepted scope, its maintaining references, and acceptance criteria from the resumption inputs above.
 Invoked `implement` is responsible for its build loop, TDD, and closing Code Review.
-Framework Verification runs afterward and adds only uncovered evidence.
+Completion follows `workflow-implementation`'s Verify the result step.
 Using a skill for specialist work does not create separate Agent Workflow durable coordination state.
 
 ## Report the executed route

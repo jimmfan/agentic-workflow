@@ -52,6 +52,12 @@ DIMENSIONS = (
 VERDICTS = {"PASS", "FAIL", "INCONCLUSIVE"}
 BASE = "a963f707f9123d5af870dfe06f06d3d1ee1802f8"
 MODEL = "gpt-5.6-sol"
+SHELL_ENVIRONMENT = {
+    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_OPTIONAL_LOCKS": "0",
+}
 LIMITS = {"seconds": 360, "output_bytes": 2_000_000, "invocations": 24}
 ORDER = [(case, arm, 1) for case in ("coding", "planning") for arm in "BAC"]
 ALLOWANCE = {
@@ -302,6 +308,15 @@ def config_args(workspace: Path, stage: int) -> list[str]:
         str(workspace): access,
         str(executable): "read",
     }
+    if sys.platform == "darwin":
+        # /usr/bin/git is an xcrun shim; :minimal alone may hide its toolchain.
+        developer_directory = subprocess.check_output(
+            ["/usr/bin/xcode-select", "-p"], text=True, timeout=10
+        ).strip()
+        filesystem[str(Path(developer_directory).resolve())] = "read"
+        # Apple Perl libraries and Ruby system gem metadata are outside :minimal.
+        filesystem["/System/Library/Perl"] = "read"
+        filesystem["/Library/Ruby/Gems"] = "read"
     filesystem_toml = ", ".join(
         f"{json.dumps(path)}={json.dumps(mode)}" for path, mode in filesystem.items()
     )
@@ -319,7 +334,11 @@ def config_args(workspace: Path, stage: int) -> list[str]:
         "features.multi_agent=false",
         "features.shell_snapshot=false",
         'shell_environment_policy.inherit="none"',
-        'shell_environment_policy.set={PATH="/usr/bin:/bin:/usr/sbin:/sbin"}',
+        "shell_environment_policy.set={"
+        + ", ".join(
+            f"{key}={json.dumps(value)}" for key, value in SHELL_ENVIRONMENT.items()
+        )
+        + "}",
         "allow_login_shell=false",
         'model_provider="openai"',
         "project_doc_max_bytes=65536",
@@ -435,8 +454,8 @@ def prepare_policy(workspace: Path, arm: str, manifest: dict) -> None:
         )
 
 
-def bounded_process(command, *, cwd, env, prompt, raw):
-    """Bound time and captured stdout/stderr bytes, retaining interrupted output."""
+def bounded_process(command, *, cwd, env, prompt, raw, monitor=None):
+    """Bound capture and stop the owned process when an optional monitor reports failure."""
     start = time.monotonic()
     status, captured = "completed", 0
     with (
@@ -461,7 +480,10 @@ def bounded_process(command, *, cwd, env, prompt, raw):
             with selectors.DefaultSelector() as selector:
                 selector.register(process.stdout, selectors.EVENT_READ, out)
                 selector.register(process.stderr, selectors.EVENT_READ, err)
-                while selector.get_map():
+                while selector.get_map() or process.poll() is None:
+                    if monitor is not None and (failure := monitor()):
+                        status = failure
+                        break
                     if time.monotonic() - start > LIMITS["seconds"]:
                         status = "timeout"
                         break
@@ -472,24 +494,22 @@ def bounded_process(command, *, cwd, env, prompt, raw):
                             continue
                         remaining = LIMITS["output_bytes"] - captured
                         key.data.write(chunk[:remaining])
+                        key.data.flush()
                         captured += min(len(chunk), remaining)
                         if len(chunk) > remaining:
                             status = "output-limit"
                             break
                     if status != "completed":
                         break
+            if status == "completed" and monitor is not None and (failure := monitor()):
+                status = failure
         finally:
-            if status == "completed" and process.poll() is None:
-                try:
-                    process.wait(
-                        timeout=max(
-                            0.01, LIMITS["seconds"] - (time.monotonic() - start)
-                        )
-                    )
-                except subprocess.TimeoutExpired:
-                    status = "timeout"
-            if process.poll() is None:
+            # Descendants may outlive the leader or retain its capture pipes.
+            # Always clean up this runner's session, including on monitor exceptions.
+            try:
                 os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
             process.wait()
             process.stdout.close()
             process.stderr.close()
@@ -878,10 +898,10 @@ def isolation_probe():
             "synthetic credential canary; not authentication"
         )
         (project / "visible.txt").write_text("public\n")
-        env = {"CODEX_HOME": str(home), "PATH": "/usr/bin:/bin:/usr/sbin:/sbin"}
+        env = {"CODEX_HOME": str(home), **SHELL_ENVIRONMENT}
         result = {}
         for stage in (1, 4):
-            script = "test -r visible.txt && test ! -r ../hidden.txt && test ! -r ../home/auth.json && /usr/bin/sed -n 1p visible.txt && "
+            script = "/bin/cat visible.txt && ! /bin/cat ../hidden.txt && ! /bin/cat ../home/auth.json && /usr/bin/git --version && "
             script += shlex.quote(binary) + " --version && "
             script += (
                 "echo allowed > write.txt"

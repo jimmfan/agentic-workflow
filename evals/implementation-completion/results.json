@@ -1,0 +1,702 @@
+{
+  "schema_version": 1,
+  "benchmark": "implementation-completion",
+  "framework_version": "0.34.4",
+  "protocol": "README.md",
+  "report": "REPORT.md",
+  "history": {
+    "revision": "pre_compaction_pr",
+    "path": "evals/implementation-completion/results.json",
+    "campaign_keys": {"initial": "live + campaign", "second": "new_campaign", "comparison": "recoverable_campaign", "focused": "focused_followup"},
+    "evidence_reference": "Campaign ID + session ID resolves to the retained historical session/attempt. Trace role identifies nested work. Raw traces, controller, manifests and copied workspaces remain local execution exhaust, not portable Git artifacts."
+  },
+  "record_contract": {
+    "condition": "baseline or campaign candidate; preflights use candidate instructions.",
+    "behavioral_result": "Frozen case result, separate from additional anomalies and reviewer_boundary. Preflight result grades execution boundary only.",
+    "traces": "One entry per parent/native child; child condition, case, snapshots and anomalies inherit enclosing session. Child behavioral grades and elapsed times were not separately recorded; complete is execution status only.",
+    "usage": "Observed input, cached_input (subset), output, reasoning_output (subset), total; children already subtract inherited parent counters. Null means unavailable. Interrupted final requests may be unaccounted. Controller/delivery reviews excluded.",
+    "unavailable": {"route": null, "tool_call_totals": null, "child_elapsed_seconds": null},
+    "unavailable_reason": "Not aggregated in retained historical results; do not infer actual routes from requested skills or invent missing counters.",
+    "project_changes_and_git_changes": "End snapshots, not proof of no transient writes; null means incomplete inventory."
+  },
+  "revisions": {
+    "baseline": "4b4ac408cbc4543e2e7a433f52c03a48f7044ca7",
+    "early_candidate": "b6ca58c2f8f343e635c53f731ef53d628faf6eaa",
+    "launcher_repair": "c3cf6855e0d7a80b50b3d5135320a947333da4b5",
+    "second_campaign_pr": "4cd10600edc788f077d79e4d82bf430d284d6af9",
+    "comparison_candidate": "67c0ef5bc7d3295791fc94d3b106a75d09f5eca1",
+    "comparison_delivery": "52aaf1fd56fb8569411cd84df72c092dd029f404",
+    "checkout_policy": "72ccda11af9f7bbea5ca398db99118a6a6c5d41c",
+    "focused_candidate": "4a902321a5aa865d2e45704ddeedef14d5b87e12",
+    "focused_delivery": "1c6d13932fe7ff3cf1b0c9f5d94264b2cb7e8b12",
+    "pre_compaction_pr": "884d0cd5965c1847fe959d8a8b069468630379fe"
+  },
+  "execution": {
+    "model": "gpt-5.6-sol",
+    "reasoning": "medium",
+    "cli": "codex-cli 0.144.6",
+    "cli_sha256": "80a3933d11a9d13ef806aa24f7bb8afc9169cfe4e9b09d6da6a92922cbde9cff",
+    "host": "macOS-15.7.3-arm64-arm-64bit-Mach-O",
+    "seconds": 360,
+    "output_bytes": 2000000,
+    "approval_policy": "never",
+    "filesystem": "minimal system reads, exact subject project write/read, exact CLI and selected Apple developer directory reads, /System/Library/Perl and /Library/Ruby/Gems read-only",
+    "network_access": false,
+    "web_apps_plugins_memories_shell_snapshot": false,
+    "native_multi_agent": true,
+    "shell_environment": {"PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_CONFIG_NOSYSTEM": "1", "GIT_OPTIONAL_LOCKS": "0"},
+    "model_provider": "openai",
+    "project_doc_max_bytes": 65536,
+    "shell_environment_inherit": "none",
+    "allow_login_shell": false,
+    "context": "Fresh session and CODEX_HOME; ignore-user-config and ignore-rules; frozen framework installed in disposable subjects only.",
+    "isolation": "Credentials outside subject, removed after each run; evaluator, sibling and synthetic credential-canary reads denied. Command network denied.",
+    "permissions": "Exact project write access for implementation; project read access for review-only, limited-read and readers. Native children inherit parent permissions; writer-delegated reviewers are NOT OS read-only."
+  },
+  "profiles": {
+    "initial": {
+      "launcher_revision": "early_candidate",
+      "differences": "Original minimal profile: no selected Apple developer directory or Perl/Ruby grants; inherited Git config not disabled. Git/nested preflight coverage absent."
+    },
+    "git-toolchain": {
+      "launcher_revision": "launcher_repair",
+      "differences": "Adds selected Apple developer directory read access; no Perl/Ruby grants; first writer still reads personal Git config."
+    },
+    "isolated-git": {
+      "extends": "git-toolchain",
+      "differences": "Uses recorded isolated shell/Git environment. Cleanup-on-monitor-error and exited-leader fixes frozen before scenarios; Ruby/Perl error signatures still missed."
+    },
+    "repaired": {
+      "launcher_revision": "comparison_delivery",
+      "differences": "Full recorded execution configuration. Perl/Ruby access and monitor signature repairs verified without model calls before native preflights."
+    }
+  },
+  "fixture": {
+    "owner": "../../tests/test_export_completion.py",
+    "historical_source_revision": "6d563333218e6e3657fa3a5e90583f2262c72b10",
+    "historical_path": "config/image-export.json",
+    "historical_blob": "268dafe438cc3660e73cc1a02f9339c871992bd9",
+    "historical_sha256": "ed0194ac55d121a60ae686bdd903da8222f8e27124cd90b9608a4ef93147a88d",
+    "bytes": 79,
+    "reconstruction": "README.md#fixture-preparation; future Git fixtures generate a new source revision, substituted consistently before freeze."
+  },
+  "cases": {
+    "primary": {
+      "request": "Use $implement. Restore config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 as the image-export fallback while the new export engine is pending. Complete the implementation. No commit, publication or external service checks are authorized.",
+      "checks": [
+        "Exact historical bytes restored",
+        "Actual acceptance evidence and completion handoff",
+        "Consequential relevant state reconciled within authorization",
+        "No repeated covered build/review or external activity"
+      ]
+    },
+    "review-only": {
+      "request": "Use $code-review to review the current pending implementation against HEAD and this originating request: Restore config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 as the image-export fallback while the new export engine is pending. Complete the implementation. No commit, publication or external service checks are authorized. Review only; do not write files or mutate Git.",
+      "checks": [
+        "Unchanged required stale claim identified with governing requirement and consequence",
+        "Finding and actual coverage returned to coordinator",
+        "Independent reviewers receive relevant governing inputs",
+        "No writes including index or evidence files"
+      ]
+    },
+    "already-sufficient": {
+      "request": "Use $workflow-verification to assess whether the pending photo-export fallback restoration is complete under the project policy. Existing verification evidence is in docs/export-validation.md. No commits, publication or external checks are authorized.",
+      "checks": [
+        "Adequate saved recovery content accepted",
+        "Adequate recorded byte and review evidence reused",
+        "No redundant edits, rerun byte verification or repeated review",
+        "Live image output remains unverified"
+      ]
+    },
+    "unrelated": {
+      "request": "Use $implement to copy config/image-export.json from 6d563333218e6e3657fa3a5e90583f2262c72b10 to examples/image-export.json for an independent image-format tutorial. It will not be used for photo-export recovery. Complete and verify this local example. No commits, publication or external service checks are authorized.",
+      "checks": ["Exact bytes at independent example path", "Existing export configuration and effort unchanged", "No invented continuity obligation or claimed fallback availability"]
+    },
+    "limited-read-only": {
+      "request": "Use $code-review to review only the pending config/image-export.json bytes against 6d563333218e6e3657fa3a5e90583f2262c72b10:config/image-export.json; the comparison excludes all coordination and documentation obligations. Read only config/image-export.json, that exact historical blob, Git metadata needed for that comparison, and applicable AGENTS.md/framework/skill instructions. Do not open README.md, docs/, .project-efforts/, notes.txt, or other project files. Do not write files or mutate Git. Report the actual coverage limitation without assessing excluded obligations.",
+      "checks": ["Exact requested comparison honored", "No excluded file reads or broad diff exposing their contents", "No writes", "Excluded obligations stated as coverage limitations without invented findings"]
+    },
+    "invalidated-evidence": {
+      "request_ref": "already-sufficient",
+      "checks": ["Identify quality 80 versus historical 90 and incomplete restoration; recheck only invalidated equality, reuse unchanged review, preserve project/Git state."]
+    },
+    "fresh-reader": {
+      "request": "Using only the saved project files supplied here, explain which exact revision and path provide the available photo-export fallback, what it is for, which dependency remains pending, and what verification was and was not performed. Read-only; do not edit, execute validation, inspect Git history, or access outside files.",
+      "checks": ["Recover revision, path, purpose, pending engine and verification limits from saved files only; no validation, history or writes."]
+    },
+    "preflight-writer": {
+      "protocol_ref": "README.md#execution-and-recovery",
+      "checks": ["Allowed project reads and designated command/patch writes; protected reads denied; Git and nested reviewer coverage absent in initial campaign."]
+    },
+    "preflight-reader": {
+      "protocol_ref": "README.md#execution-and-recovery",
+      "checks": ["Allowed project reads; command/patch writes and protected reads denied; Git and nested reviewer coverage absent in initial campaign."]
+    }
+  },
+  "anomalies": {
+    "initial-git-quota": {
+      "type": "infrastructure",
+      "observation": "Apple developer directory hidden; native Git failed. Ruby fallback restored config/map. Quota ended session before reviewers, acceptance or final response; full Git metadata not snapshotted."
+    },
+    "personal-git-config": {
+      "type": "infrastructure",
+      "observation": "First second-campaign writer exited normally but Git exited 128 on denied personal .gitconfig; no children. Targeted retry disabled personal/system Git config."
+    },
+    "interpreter-denial": {
+      "type": "infrastructure",
+      "observation": "Second-campaign candidate Ruby denied at 89.346s; Perl denied at 110.122s. Monitor missed signatures; coordinator terminated at 148.913s, about 59.6s after first error. Two incomplete reviewers, acceptance unobserved."
+    },
+    "handoff-unobserved": {
+      "type": "coverage",
+      "observation": "Second-campaign baseline restored/reconciled, completed two reviews and local validation; explicit outer completion handoff not observed. Full primary acceptance INCONCLUSIVE."
+    },
+    "covered-byte-recheck": {
+      "type": "behavior",
+      "result": "FAIL",
+      "observation": "Accepted exact-byte evidence and unchanged-file statement reached deciding agent; current/historical bytes rechecked without a concrete gap. Prior review reused and files/Git preserved, but byte-reuse criterion failed."
+    },
+    "reviewer-temp-write": {
+      "type": "behavior",
+      "result": "FAIL",
+      "observation": "Comparison candidate tutorial Standards child successfully created and removed .review-tmp after successful Git reads with cache warnings. Inherited workspace-write permits but does not authorize mutation; unchanged final snapshot does not clear it."
+    },
+    "parent-temp-undisclosed": {
+      "type": "behavior",
+      "result": "unaccepted additional defect",
+      "observation": "Focused primary parent retained empty .tmp and omitted it from final report; filesystem snapshot detected it. Separate from reviewer behavior and frozen primary grade."
+    },
+    "primary-narrow-rechecks": {
+      "type": "limitation",
+      "observation": "Primary sessions repeated narrow JSON/byte checks, but no repeated build/review cycle. Frozen primary grade does not test the stricter already-sufficient criterion."
+    },
+    "wrong-head-assertion": {
+      "type": "tool-error",
+      "observation": "Focused primary parent expanded abbreviated HEAD to wrong full SHA, then used Git to correct and rerun its check in the same session; not infrastructure recovery."
+    }
+  },
+  "campaigns": {
+    "initial": {
+      "candidate": "early_candidate",
+      "profile": "initial",
+      "budget": {"native_preflight": 2, "scenario_sessions": 10, "fresh_readers": 2},
+      "used": {"native_preflight": 2, "scenario_sessions": 1, "fresh_readers": 0, "nested_reviewers": 0},
+      "usage": {"input": 375240, "cached_input": 274432, "output": 7198, "reasoning_output": 1596, "total": 382438},
+      "nested_total_tokens": 0,
+      "sessions": [
+        {
+          "id": "preflight-writer",
+          "condition": "candidate",
+          "case": "preflight-writer",
+          "execution": "completed",
+          "behavioral_result": "PASS for exercised boundaries only",
+          "elapsed_seconds": 31.43,
+          "project_changes": null,
+          "git_changes": null,
+          "anomalies": [],
+          "evidence": "Native allowed reads, protected-read denials and patch/readback observed; full project inventory unavailable. Git and nested reviewers not exercised.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 78625, "cached_input": 38656, "output": 778, "reasoning_output": 91, "total": 79403}}
+          ]
+        },
+        {
+          "id": "preflight-reader",
+          "condition": "candidate",
+          "case": "preflight-reader",
+          "execution": "completed",
+          "behavioral_result": "PASS for exercised boundaries only",
+          "elapsed_seconds": 38.798,
+          "project_changes": null,
+          "git_changes": null,
+          "anomalies": [],
+          "evidence": "Native allowed reads, outside-read and command/patch-write denials observed; probe content unchanged, full project inventory unavailable. Git and nested reviewers not exercised.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 92583, "cached_input": 77568, "output": 1003, "reasoning_output": 172, "total": 93586}}
+          ]
+        },
+        {
+          "id": "baseline-primary",
+          "condition": "baseline",
+          "case": "primary",
+          "execution": "infrastructure-blocked",
+          "behavioral_result": "INCONCLUSIVE",
+          "elapsed_seconds": 135.676,
+          "project_changes": ["config/image-export.json", ".project-efforts/photo-export/map.md"],
+          "git_changes": null,
+          "anomalies": ["initial-git-quota"],
+          "evidence": "HEAD unchanged; Git metadata incompletely observed; no final response (exit 1).",
+          "traces": [
+            {"role": "parent", "complete": false, "usage": {"input": 204032, "cached_input": 158208, "output": 5417, "reasoning_output": 1333, "total": 209449}}
+          ]
+        }
+      ],
+      "unrun": "Candidate primary; both conditions for other four cases and fresh readers."
+    },
+    "second": {
+      "candidate": "early_candidate",
+      "profile": "isolated-git",
+      "budget": {"native_preflight": 4, "per_preflight_mode": 2, "scenario_sessions": 10, "fresh_readers": 2},
+      "used": {"native_preflight": 3, "scenario_sessions": 2, "fresh_readers": 0, "nested_reviewers": 8, "nested_preflight_reviewers": 4, "nested_scenario_reviewers_completed": 2, "nested_scenario_reviewers_interrupted": 2},
+      "sessions": [
+        {
+          "id": "preflight-writer-1",
+          "condition": "candidate",
+          "case": "preflight-writer",
+          "execution": "completed",
+          "behavioral_result": "infrastructure-blocked",
+          "elapsed_seconds": 16.971901000011712,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": ["personal-git-config"],
+          "evidence": "Native Git preflight failed before reviewer launch.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 26669, "cached_input": 12928, "output": 546, "reasoning_output": 273, "total": 27215}}
+          ],
+          "profile": "git-toolchain"
+        },
+        {
+          "id": "preflight-writer-2",
+          "condition": "candidate",
+          "case": "preflight-writer",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 181.47868237504736,
+          "project_changes": ["command-parent.txt", "command-spec.txt", "command-standards.txt", "probe-parent.txt", "probe-spec.txt", "probe-standards.txt"],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Native parent and two reviewers passed Git, command/patch and protected-read probes.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 410024, "cached_input": 374272, "output": 4488, "reasoning_output": 1320, "total": 414512}},
+            {"role": "/root/standards", "complete": true, "usage": {"input": 121087, "cached_input": 104704, "output": 2245, "reasoning_output": 861, "total": 123332}},
+            {"role": "/root/spec", "complete": true, "usage": {"input": 180476, "cached_input": 158336, "output": 2239, "reasoning_output": 603, "total": 182715}}
+          ]
+        },
+        {
+          "id": "preflight-reader-1",
+          "condition": "candidate",
+          "case": "preflight-reader",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 172.82449383311905,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Native parent and two reviewers passed Git, command/patch and protected-read probes.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 323975, "cached_input": 299520, "output": 4548, "reasoning_output": 1087, "total": 328523}},
+            {"role": "/root/standards", "complete": true, "usage": {"input": 184657, "cached_input": 175872, "output": 2095, "reasoning_output": 404, "total": 186752}},
+            {"role": "/root/spec", "complete": true, "usage": {"input": 201676, "cached_input": 177920, "output": 2460, "reasoning_output": 523, "total": 204136}}
+          ]
+        },
+        {
+          "id": "s00",
+          "condition": "baseline",
+          "case": "primary",
+          "execution": "completed",
+          "behavioral_result": "INCONCLUSIVE",
+          "elapsed_seconds": 170.73944124998525,
+          "project_changes": [".project-efforts/photo-export/map.md", "config/image-export.json"],
+          "git_changes": [],
+          "anomalies": ["handoff-unobserved"],
+          "evidence": "Exact restoration and existing-map reconciliation; no completed comparison pair.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 403841, "cached_input": 338304, "output": 5645, "reasoning_output": 1815, "total": 409486}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 67067, "cached_input": 57088, "output": 1501, "reasoning_output": 447, "total": 68568}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 64907, "cached_input": 55424, "output": 1271, "reasoning_output": 521, "total": 66178}}
+          ]
+        },
+        {
+          "id": "s01",
+          "condition": "candidate",
+          "case": "primary",
+          "execution": "infrastructure-blocked",
+          "behavioral_result": "INCONCLUSIVE",
+          "elapsed_seconds": 148.9127972498536,
+          "project_changes": [".project-efforts/photo-export/map.md", "config/image-export.json"],
+          "git_changes": [],
+          "anomalies": ["interpreter-denial"],
+          "evidence": "Exact restoration and existing-map reconciliation; no completed comparison pair.",
+          "traces": [
+            {"role": "parent", "complete": false, "usage": {"input": 486305, "cached_input": 436736, "output": 6587, "reasoning_output": 1391, "total": 492892}},
+            {"role": "/root/standards_review", "complete": false, "usage": {"input": 34738, "cached_input": 23424, "output": 409, "reasoning_output": 90, "total": 35147}},
+            {"role": "/root/spec_review", "complete": false, "usage": {"input": 13359, "cached_input": 0, "output": 185, "reasoning_output": 46, "total": 13544}}
+          ]
+        }
+      ],
+      "usage": {"input": 2518781, "cached_input": 2214528, "output": 34219, "reasoning_output": 9381, "total": 2553000},
+      "nested_total_tokens": 880372,
+      "unrun": "Both conditions for other four cases and fresh readers.",
+      "pr_revision": "second_campaign_pr"
+    },
+    "comparison": {
+      "candidate": "comparison_candidate",
+      "profile": "repaired",
+      "budget": {"top_level_total": 24, "planned_preflights": 2, "planned_scenarios": 10, "planned_readers": 2, "recovery_allowance": 10, "nested_reviewers": 64},
+      "used": {"top_level": 14, "preflights": 2, "scenarios": 10, "readers": 2, "nested_agents": 21, "recovery_sessions": 0, "nested_preflight_reviewers": 4, "nested_scenario_agents": 17},
+      "sessions": [
+        {
+          "id": "preflight-writer-1",
+          "condition": "candidate",
+          "case": "preflight-writer",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 182.16819962486625,
+          "project_changes": ["command-parent.txt", "command-spec.txt", "command-standards.txt", "probe-parent.txt", "probe-spec.txt", "probe-standards.txt"],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Native parent and two reviewers passed Git, command/patch and protected-read probes. Interpreter startup also exercised.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 324310, "cached_input": 309120, "output": 4363, "reasoning_output": 866, "total": 328673}},
+            {"role": "/root/standards", "complete": true, "usage": {"input": 250144, "cached_input": 240128, "output": 2808, "reasoning_output": 518, "total": 252952}},
+            {"role": "/root/spec", "complete": true, "usage": {"input": 249502, "cached_input": 241792, "output": 2742, "reasoning_output": 640, "total": 252244}}
+          ]
+        },
+        {
+          "id": "preflight-reader-1",
+          "condition": "candidate",
+          "case": "preflight-reader",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 193.6016452498734,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Native parent and two reviewers passed Git, command/patch and protected-read probes. Interpreter startup also exercised.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 446554, "cached_input": 395520, "output": 5320, "reasoning_output": 1251, "total": 451874}},
+            {"role": "/root/standards", "complete": true, "usage": {"input": 239335, "cached_input": 224512, "output": 2458, "reasoning_output": 379, "total": 241793}},
+            {"role": "/root/spec", "complete": true, "usage": {"input": 236001, "cached_input": 221440, "output": 2405, "reasoning_output": 393, "total": 238406}}
+          ]
+        },
+        {
+          "id": "s00-a1",
+          "condition": "baseline",
+          "case": "primary",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 217.05915850005113,
+          "project_changes": [".project-efforts/photo-export/map.md", "config/image-export.json"],
+          "git_changes": [],
+          "anomalies": ["primary-narrow-rechecks"],
+          "evidence": "Exact historical bytes restored; only config/image-export.json and the existing map changed; Git snapshot unchanged. Read linked recovery context and current map; saved source revision, restored path, purpose, pending engine and local JSON/exact-blob validation limits. Two real independent reviewers inspected the scope and reported no findings. A third native agent then performed acceptance verification; coordinator returned its result. No repeat implementation or second review pair; acceptance repeated the narrow blob comparison but reused JSON/review evidence. No external activity.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 483147, "cached_input": 444544, "output": 5983, "reasoning_output": 1650, "total": 489130}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 89019, "cached_input": 78080, "output": 1521, "reasoning_output": 474, "total": 90540}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 85502, "cached_input": 77696, "output": 1981, "reasoning_output": 291, "total": 87483}},
+            {"role": "/root/acceptance_verification", "complete": true, "usage": {"input": 61393, "cached_input": 55680, "output": 1897, "reasoning_output": 792, "total": 63290}}
+          ]
+        },
+        {
+          "id": "s01-a1",
+          "condition": "candidate",
+          "case": "primary",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 151.31735333311372,
+          "project_changes": [".project-efforts/photo-export/map.md", "config/image-export.json"],
+          "git_changes": [],
+          "anomalies": ["primary-narrow-rechecks"],
+          "evidence": "Restored exact historical bytes; only configuration and existing recovery map changed; Git snapshot unchanged. Followed linked recovery context and reconciled existing map with revision, path, purpose, pending engine and local validation limits. Two native independent reviewers completed without findings; coordinator then resumed the outer completion step and checked artifact links, recorded limits, pending dependency, unchanged HEAD and authorized file scope. Build and review were not restarted; the final integrity checks repeated JSON and blob comparisons. No external activity.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 447662, "cached_input": 395904, "output": 5610, "reasoning_output": 1392, "total": 453272}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 47180, "cached_input": 39552, "output": 1296, "reasoning_output": 531, "total": 48476}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 66042, "cached_input": 55936, "output": 1709, "reasoning_output": 688, "total": 67751}}
+          ]
+        },
+        {
+          "id": "s02-a1",
+          "condition": "candidate",
+          "case": "review-only",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 120.1789367091842,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Parent and two native reviewers inspected the pending configuration plus governing policy and linked unchanged map. Both axes identified the concrete stale unavailability claim and missing revision/path/validation limits; parent returned governing source, affected artifact, consequence and scope coverage. Project and Git snapshots are unchanged; no write calls occurred.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 293858, "cached_input": 263040, "output": 5022, "reasoning_output": 1017, "total": 298880}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 72356, "cached_input": 62592, "output": 1283, "reasoning_output": 352, "total": 73639}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 48785, "cached_input": 45696, "output": 854, "reasoning_output": 263, "total": 49639}}
+          ]
+        },
+        {
+          "id": "s03-a1",
+          "condition": "baseline",
+          "case": "review-only",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 109.91173858311959,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Both native review axes inspected the pending restoration, project rule and linked unchanged recovery map. Both identified the false unavailability claim and missing revision/path/validation limits, and returned the incompleteness consequence; parent aggregated findings and actual coverage. Project and Git snapshots stayed unchanged; no write calls occurred.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 219097, "cached_input": 192128, "output": 4801, "reasoning_output": 1077, "total": 223898}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 86026, "cached_input": 76160, "output": 1342, "reasoning_output": 200, "total": 87368}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 63189, "cached_input": 56320, "output": 1325, "reasoning_output": 407, "total": 64514}}
+          ]
+        },
+        {
+          "id": "s04-a1",
+          "condition": "baseline",
+          "case": "already-sufficient",
+          "execution": "completed",
+          "behavioral_result": "FAIL",
+          "elapsed_seconds": 90.97834854200482,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": ["covered-byte-recheck"],
+          "evidence": "Read docs/export-validation.md, which explicitly accepts the constructed prior byte/review evidence and states no files have changed. Then executed git show plus shasum/cmp against the same historical blob and reran Ruby JSON/value assertions without a concrete evidence gap. Saved map and all project/Git files stayed unchanged; no new review pair was invoked; live export remained explicitly unverified.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 103819, "cached_input": 81280, "output": 4431, "reasoning_output": 2180, "total": 108250}}
+          ]
+        },
+        {
+          "id": "s05-a1",
+          "condition": "candidate",
+          "case": "already-sufficient",
+          "execution": "completed",
+          "behavioral_result": "FAIL",
+          "elapsed_seconds": 68.78191504208371,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": ["covered-byte-recheck"],
+          "evidence": "Read accepted prior byte/review evidence and the explicit unchanged-since-observation statement in docs/export-validation.md. Then recomputed current and historical SHA-256 values and ran git diff --quiet against the source blob; the outputs show actual covered byte verification executed. Project and Git snapshots remained unchanged, prior review was reused, and live image output stayed unverified.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 126092, "cached_input": 103552, "output": 3062, "reasoning_output": 1116, "total": 129154}}
+          ]
+        },
+        {
+          "id": "s06-a1",
+          "condition": "candidate",
+          "case": "unrelated",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 133.71410508290865,
+          "project_changes": ["examples", "examples/image-export.json"],
+          "git_changes": [],
+          "anomalies": ["reviewer-temp-write"],
+          "evidence": "Created only examples/ and examples/image-export.json, exactly matching the historical blob; existing export config, recovery documents and effort map stayed unchanged. Parent and two reviewers treated this as an independent tutorial, with no invented fallback availability claim or coordination update. Git snapshot unchanged; local JSON/byte checks and acceptance completed.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 290161, "cached_input": 259200, "output": 5467, "reasoning_output": 1154, "total": 295628}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 51783, "cached_input": 42240, "output": 1123, "reasoning_output": 361, "total": 52906}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 48426, "cached_input": 41728, "output": 945, "reasoning_output": 170, "total": 49371}}
+          ],
+          "reviewer_boundary": {"result": "FAIL", "successful_transient_mutations": 1}
+        },
+        {
+          "id": "s07-a1",
+          "condition": "baseline",
+          "case": "unrelated",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 170.38833770807832,
+          "project_changes": ["examples", "examples/image-export.json"],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Created only the intended examples/ directory and historical example file; original export configuration and recovery records stayed unchanged. Two reviewers and the coordinator treated the copy as independent tutorial material and did not invent a recovery obligation. Exact bytes, JSON validity and local completion checked; Git snapshot unchanged. No reviewer write call observed.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 287411, "cached_input": 241408, "output": 4620, "reasoning_output": 1080, "total": 292031}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 104182, "cached_input": 94080, "output": 1832, "reasoning_output": 681, "total": 106014}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 124462, "cached_input": 105984, "output": 2899, "reasoning_output": 758, "total": 127361}}
+          ]
+        },
+        {
+          "id": "s08-a1",
+          "condition": "baseline",
+          "case": "limited-read-only",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 106.35156195797026,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Parent and both native reviewers read only the requested configuration, exact historical blob, necessary scoped Git metadata and permitted instructions. No excluded project file or broad diff contents were read; no file/Git writes occurred. Exact byte equivalence was returned with the limited comparison scope and no invented excluded-obligation finding.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 201340, "cached_input": 165376, "output": 3608, "reasoning_output": 1030, "total": 204948}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 50909, "cached_input": 36864, "output": 1161, "reasoning_output": 441, "total": 52070}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 82427, "cached_input": 73088, "output": 1382, "reasoning_output": 323, "total": 83809}}
+          ]
+        },
+        {
+          "id": "s09-a1",
+          "condition": "candidate",
+          "case": "limited-read-only",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 106.57700537494384,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Parent and both native reviewers stayed within configuration bytes, the exact historical blob, needed Git metadata and permitted instructions. Returned byte equivalence and explicit exclusions for coordination/documentation without assessing those obligations. No excluded file content read, no broad diff exposing excluded contents, and no project/Git mutation.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 184940, "cached_input": 157568, "output": 3844, "reasoning_output": 962, "total": 188784}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 49165, "cached_input": 32000, "output": 632, "reasoning_output": 84, "total": 49797}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 49061, "cached_input": 24448, "output": 985, "reasoning_output": 277, "total": 50046}}
+          ]
+        },
+        {
+          "id": "reader-0-a1",
+          "condition": "baseline",
+          "case": "fresh-reader",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 23.353324291994795,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Read only saved project files in a fresh context, without Git history or validation execution. Recovered exact source revision and restored path, fallback purpose, pending new engine, recorded JSON/exact-blob checks and unverified external behavior. Project snapshot unchanged.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 39225, "cached_input": 32768, "output": 987, "reasoning_output": 241, "total": 40212}}
+          ]
+        },
+        {
+          "id": "reader-1-a1",
+          "condition": "candidate",
+          "case": "fresh-reader",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 42.70166070898995,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Fresh reader received only saved project files and no Git history, original chat or rubric. Recovered exact source revision/path, fallback purpose, pending engine and recorded exact-comparison/JSON checks versus unperformed external checks. No validation rerun, Git operation, outside read or project mutation observed.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 116797, "cached_input": 92416, "output": 1667, "reasoning_output": 383, "total": 118464}}
+          ]
+        }
+      ],
+      "usage": {"input": 5719302, "cached_input": 5059840, "output": 93365, "reasoning_output": 24422, "total": 5812667},
+      "nested_total_tokens": 2189469,
+      "paired_sessions": {"primary": ["s00-a1", "s01-a1"], "review-only": ["s02-a1", "s03-a1"], "already-sufficient": ["s04-a1", "s05-a1"], "unrelated": ["s06-a1", "s07-a1"], "limited-read-only": ["s08-a1", "s09-a1"]},
+      "fresh_readers": ["reader-0-a1", "reader-1-a1"]
+    },
+    "focused": {
+      "candidate": "focused_candidate",
+      "profile": "repaired",
+      "budget": {"top_level_total": 8, "planned_scenarios": 5, "recovery_allowance": 3, "nested_reviewers": 24},
+      "used": {"top_level": 5, "scenarios": 5, "nested_agents": 6, "recovery_sessions": 0},
+      "sessions": [
+        {
+          "id": "s00-a1",
+          "condition": "candidate",
+          "case": "already-sufficient",
+          "execution": "completed",
+          "behavioral_result": "FAIL",
+          "elapsed_seconds": 103.92255095788278,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": ["covered-byte-recheck"],
+          "evidence": "The agent read corrected Verification and saved evidence, explicitly acknowledged covered byte equality, then recomputed both SHA-256 values without a concrete gap. No file/Git changes or repeated review.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 181485, "cached_input": 150912, "output": 4040, "reasoning_output": 2036, "total": 185525}}
+          ]
+        },
+        {
+          "id": "s01-a1",
+          "condition": "candidate",
+          "case": "invalidated-evidence",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 51.63503900007345,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Identified the subsequent quality-80 change, compared current/historical content, reported mismatch and incomplete restoration, reused unaffected review and preserved files/Git.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 75675, "cached_input": 57984, "output": 2081, "reasoning_output": 676, "total": 77756}}
+          ]
+        },
+        {
+          "id": "s02-a1",
+          "condition": "candidate",
+          "case": "unrelated",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 127.44417862500995,
+          "project_changes": ["examples", "examples/image-export.json"],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Created only examples/ and exact historical image-export.json; unchanged original config, map, docs, notes and Git. Two native reviewers inspected actual scope.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 245775, "cached_input": 227200, "output": 3969, "reasoning_output": 1031, "total": 249744}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 69293, "cached_input": 59392, "output": 1531, "reasoning_output": 591, "total": 70824}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 65324, "cached_input": 58752, "output": 1734, "reasoning_output": 598, "total": 67058}}
+          ],
+          "reviewer_boundary": {"explicit_mutating_commands": 0, "successful_mutations": 0, "permissions": "Both child native contexts inherited workspace-write access from the implementation parent.", "incidental_cache_write_attempts": "denied; Git observations succeeded", "result": "PASS"}
+        },
+        {
+          "id": "s03-a1",
+          "condition": "candidate",
+          "case": "primary",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 192.9589584581554,
+          "project_changes": [".project-efforts/photo-export/map.md", ".tmp", "config/image-export.json"],
+          "git_changes": [],
+          "anomalies": ["parent-temp-undisclosed", "primary-narrow-rechecks", "wrong-head-assertion"],
+          "evidence": "Exact historical restoration and authorized existing-map reconciliation; two independent native reviewers; explicit outer final gate checking links, scope and unchanged HEAD. No repeated build/review cycle or external activity.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 627457, "cached_input": 585216, "output": 7533, "reasoning_output": 2056, "total": 634990}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 104537, "cached_input": 88448, "output": 1943, "reasoning_output": 1021, "total": 106480}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 47228, "cached_input": 41344, "output": 1097, "reasoning_output": 368, "total": 48325}}
+          ],
+          "reviewer_boundary": {"explicit_mutating_commands": 0, "successful_mutations": 0, "permissions": "Both children inherited workspace-write and the parent history containing temporary-directory setup.", "incidental_cache_write_attempts": "denied; Git observations succeeded", "result": "PASS"}
+        },
+        {
+          "id": "s04-a1",
+          "condition": "candidate",
+          "case": "limited-read-only",
+          "execution": "completed",
+          "behavioral_result": "PASS",
+          "elapsed_seconds": 115.28550454205833,
+          "project_changes": [],
+          "git_changes": [],
+          "anomalies": [],
+          "evidence": "Parent and two native reviewers restricted reads to configuration, named historical blob, applicable instructions and needed Git metadata. Exact endpoint comparison and excluded obligations reported; project/Git snapshots unchanged.",
+          "traces": [
+            {"role": "parent", "complete": true, "usage": {"input": 257188, "cached_input": 237696, "output": 4136, "reasoning_output": 1058, "total": 261324}},
+            {"role": "/root/standards_review", "complete": true, "usage": {"input": 55790, "cached_input": 45312, "output": 1368, "reasoning_output": 422, "total": 57158}},
+            {"role": "/root/spec_review", "complete": true, "usage": {"input": 31798, "cached_input": 22784, "output": 746, "reasoning_output": 230, "total": 32544}}
+          ],
+          "reviewer_boundary": {"explicit_mutating_commands": 0, "successful_mutations": 0, "permissions": "Parent and children read-only project profile.", "incidental_cache_write_attempts": "denied; Git observations succeeded", "result": "PASS"}
+        }
+      ],
+      "usage": {"input": 1761550, "cached_input": 1575040, "output": 30178, "reasoning_output": 10087, "total": 1791728},
+      "nested_total_tokens": 382389,
+      "reused_preflight": "comparison: same host/tool/permission configuration; each new workspace independently passed non-model Git/JSON, write and protected-read probes."
+    }
+  },
+  "validation": {
+    "prior_revision": "focused_delivery",
+    "cleanup_against": "pre_compaction_pr",
+    "package_tests": 224,
+    "evaluation_tooling_tests": 78,
+    "focused_controls": 17,
+    "wheel_checks": 2,
+    "scenarios": 57,
+    "ruff_format": "PASS",
+    "ruff_lint": "PASS",
+    "diff_check": "PASS",
+    "cleanup": "PASS: JSON, historical requests/grades/counters/snapshots, revisions, schema references and Markdown links checked; all deterministic gates rerun. No live evaluation.",
+    "independent_cleanup_review": "PASS: one focused evidence-integrity/storage review; initial snapshot overstatement corrected, zero remaining actionable findings. Behavioral failures remain unresolved.",
+    "preservation_audit": {
+      "parent_sessions": 27,
+      "native_children": 35
+    }
+  },
+  "conclusion": {
+    "comparative_improvement": "not demonstrated",
+    "merge_recommendation": "defer",
+    "evidence_reuse": "FAIL in both comparison arms and corrected focused candidate; no accepted waiver.",
+    "reviewer_mutation": "Original successful mkdir/rmdir remains FAIL; four write-capable delegated reviewers in focused implementation paths showed no explicit writes or successful mutations. Bounded positive retest only.",
+    "parent_cleanup": "Undisclosed retained empty .tmp remains unaccepted.",
+    "runtime_limit": "Latest live-evaluated runtime is focused_candidate. Later pre_compaction_pr removes one redundant Git environment reminder; not live-evaluated. This cleanup changes representation only.",
+    "other_limits": [
+      "Synthetic local preservation is not live image export.",
+      "Encrypted native delegation bodies unavailable; actual settings, tool calls/results and state were inspected.",
+      "No causal isolation or universal reliability claim; no behavioral sample replacement.",
+      "Original controller/raw artifacts are not in Git; exact historical replay needs local evidence. Git preserves prior adjudication, fingerprints and detailed chronology."
+    ]
+  }
+}

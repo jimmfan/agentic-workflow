@@ -241,6 +241,110 @@ class ControlCorpusTests(unittest.TestCase):
 
 
 class RunnerBoundaryTests(unittest.TestCase):
+    def test_monitor_stops_owned_process_without_waiting_for_timeout(self):
+        import os
+        import sys
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            signal_file = root / "failure-observed"
+            status, code, elapsed = persistence.bounded_process(
+                [
+                    sys.executable,
+                    "-c",
+                    "from pathlib import Path; import time; "
+                    "Path('failure-observed').touch(); "
+                    "print('partial', flush=True); time.sleep(30); "
+                    "Path('should-not-exist').touch()",
+                ],
+                cwd=root,
+                env=os.environ.copy(),
+                prompt="",
+                raw=root,
+                monitor=lambda: (
+                    "infrastructure-blocked" if signal_file.exists() else None
+                ),
+            )
+            self.assertEqual(status, "infrastructure-blocked")
+            self.assertNotEqual(code, 0)
+            self.assertLess(elapsed, 5)
+            self.assertFalse((root / "should-not-exist").exists())
+
+    def test_monitor_exception_cleans_up_promptly(self):
+        import os
+        import sys
+        import time
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+
+            def broken_monitor():
+                if (root / "started").exists():
+                    raise ValueError("malformed observation")
+
+            start = time.monotonic()
+            with patch.dict(persistence.LIMITS, seconds=2):
+                with self.assertRaisesRegex(ValueError, "malformed observation"):
+                    persistence.bounded_process(
+                        [
+                            sys.executable,
+                            "-c",
+                            "from pathlib import Path; import time; "
+                            "Path('started').touch(); time.sleep(10)",
+                        ],
+                        cwd=root,
+                        env=os.environ.copy(),
+                        prompt="",
+                        raw=root,
+                        monitor=broken_monitor,
+                    )
+            self.assertLess(time.monotonic() - start, 1)
+
+    def test_monitor_kills_owned_child_after_leader_exits(self):
+        import os
+        import signal
+        import sys
+        import time
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            leader = root / "leader.py"
+            leader.write_text(
+                "import os, subprocess, sys\n"
+                "from pathlib import Path\n"
+                "Path('leader.pid').write_text(str(os.getpid()))\n"
+                "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(10)'])\n"
+                "Path('child.pid').write_text(str(child.pid))\n"
+            )
+            start = time.monotonic()
+            try:
+                with patch.object(persistence.os, "killpg", wraps=os.killpg) as kill:
+                    status, _, _ = persistence.bounded_process(
+                        [sys.executable, str(leader)],
+                        cwd=root,
+                        env=os.environ.copy(),
+                        prompt="",
+                        raw=root,
+                        monitor=lambda: (
+                            "infrastructure-blocked"
+                            if (root / "child.pid").exists()
+                            and time.monotonic() - start > 0.3
+                            else None
+                        ),
+                    )
+                self.assertEqual(status, "infrastructure-blocked")
+                kill.assert_called_once_with(
+                    int((root / "leader.pid").read_text()), signal.SIGKILL
+                )
+            finally:
+                if (root / "child.pid").exists():
+                    try:
+                        os.kill(int((root / "child.pid").read_text()), signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+
     def test_fast_process_exceeding_output_limit_is_not_completed(self):
         import os
         import sys
@@ -636,6 +740,76 @@ class ExecutionClearanceTests(unittest.TestCase):
         self.assertEqual(ledger[0]["schedule_index"], 0)
         self.assertTrue((run_root / "stage-01/checkpoint.json").is_file())
         self.assertFalse((run_root / "stage-01/codex-home/auth.json").exists())
+
+
+class LauncherPermissionsTests(unittest.TestCase):
+    def test_native_git_ignores_unrelated_personal_and_system_configuration(self):
+        import tomllib
+        from unittest.mock import patch
+
+        with (
+            patch.object(persistence.sys, "platform", "linux"),
+            patch.object(persistence, "codex_binary", return_value="/opt/codex"),
+        ):
+            arguments = persistence.config_args(Path("/fixture/project"), 4)
+        settings = tomllib.loads("\n".join(arguments[1::2]))
+        environment = settings["shell_environment_policy"]["set"]
+        self.assertEqual(environment["GIT_CONFIG_GLOBAL"], "/dev/null")
+        self.assertEqual(environment["GIT_CONFIG_NOSYSTEM"], "1")
+        self.assertEqual(environment["GIT_OPTIONAL_LOCKS"], "0")
+
+    def test_other_platforms_do_not_require_an_apple_toolchain(self):
+        import tomllib
+        from unittest.mock import patch
+
+        with (
+            patch.object(persistence.sys, "platform", "linux"),
+            patch.object(persistence, "codex_binary", return_value="/opt/codex"),
+            patch.object(
+                persistence.subprocess,
+                "check_output",
+                side_effect=AssertionError("No Apple toolchain lookup on Linux"),
+            ),
+        ):
+            arguments = persistence.config_args(Path("/fixture/project"), 4)
+        settings = tomllib.loads("\n".join(arguments[1::2]))
+        self.assertEqual(
+            settings["permissions"]["pilot"]["filesystem"],
+            {":minimal": "read", "/fixture/project": "read", "/opt/codex": "read"},
+        )
+
+    def test_macos_system_runtimes_are_readable_without_expanding_project_writes(self):
+        import tomllib
+        from unittest.mock import patch
+
+        with (
+            patch.object(persistence.sys, "platform", "darwin"),
+            patch.object(persistence, "codex_binary", return_value="/opt/codex"),
+            patch.object(
+                persistence.subprocess,
+                "check_output",
+                return_value="/Library/Developer/CommandLineTools\n",
+            ),
+        ):
+            for stage, access in ((1, "write"), (4, "read")):
+                with self.subTest(stage=stage):
+                    arguments = persistence.config_args(Path("/fixture/project"), stage)
+                    settings = tomllib.loads("\n".join(arguments[1::2]))
+                    self.assertEqual(
+                        settings["permissions"]["pilot"]["filesystem"],
+                        {
+                            ":minimal": "read",
+                            "/fixture/project": access,
+                            "/opt/codex": "read",
+                            "/Library/Developer/CommandLineTools": "read",
+                            "/System/Library/Perl": "read",
+                            "/Library/Ruby/Gems": "read",
+                        },
+                    )
+                    self.assertFalse(
+                        settings["permissions"]["pilot"]["network"]["enabled"]
+                    )
+                    self.assertEqual(settings["approval_policy"], "never")
 
 
 if __name__ == "__main__":

@@ -62,6 +62,7 @@ PROHIBITIONS = {
 }
 
 ASSERTION_KINDS = {
+    "path_sha256",
     "glob_any_contains",
     "glob_any_matches",
     "glob_contains",
@@ -80,6 +81,7 @@ ASSERTION_KINDS = {
 }
 
 SCENARIO_FIELDS = {
+    "write_report",
     "schema_version",
     "id",
     "name",
@@ -145,6 +147,7 @@ class Scenario:
     report_must_include: tuple[str, ...]
     assertions: tuple[Assertion, ...]
     response_must_match: tuple[str, ...] = ()
+    write_report: bool = True
 
 
 @dataclass(frozen=True)
@@ -248,6 +251,7 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
                 f"{item_label}.record must select a U# for a section-content assertion"
             )
         needs_value = kind in {
+            "path_sha256",
             "section_absent",
             "section_preserved",
             "glob_any_contains",
@@ -264,6 +268,8 @@ def load_assertions(raw: object, label: str) -> tuple[Assertion, ...]:
         needs_count = kind == "glob_count"
         if needs_value and (not isinstance(value, str) or not value):
             raise BehaviorError(f"{item_label}.value must be a non-empty string")
+        if kind == "path_sha256" and re.fullmatch(r"[0-9a-f]{64}", value) is None:
+            raise BehaviorError(f"{item_label}.value must be a lowercase SHA-256")
         if kind in {"glob_any_matches", "glob_none_matches"} or section_content:
             try:
                 re.compile(value, re.IGNORECASE | re.DOTALL)
@@ -332,6 +338,9 @@ def load_scenario(path: Path) -> Scenario:
     blind_grading = raw.get("blind_grading", False)
     if not isinstance(blind_grading, bool):
         raise BehaviorError(f"scenario {path.name} blind_grading must be true or false")
+    write_report = raw.get("write_report", True)
+    if not isinstance(write_report, bool):
+        raise BehaviorError(f"scenario {path.name} write_report must be true or false")
 
     starting_state = string_list(raw["starting_state"], f"{path.name}.starting_state")
     expect = string_list(raw["expect"], f"{path.name}.expect")
@@ -462,6 +471,7 @@ def load_scenario(path: Path) -> Scenario:
         report_must_include=report_must_include,
         assertions=assertions,
         response_must_match=response_must_match,
+        write_report=write_report,
     )
 
 
@@ -598,6 +608,8 @@ def framework_change(path: str) -> bool:
 
 def repository_changes(evidence: RunEvidence) -> set[str]:
     created, modified, deleted = changed_paths(evidence.before, evidence.after)
+    if not evidence.scenario.write_report:
+        return created | modified | deleted
     return {
         path
         for path in created | modified | deleted
@@ -985,6 +997,25 @@ def evaluate_assertion(evidence: RunEvidence, assertion: Assertion) -> CheckResu
             False,
             "path is not a readable regular file",
         )
+    if assertion.kind == "path_sha256":
+        try:
+            safe = all(
+                not evidence.workspace.joinpath(
+                    *assertion.path.parts[:index]
+                ).is_symlink()
+                for index in range(1, len(assertion.path.parts) + 1)
+            )
+            matches = (
+                safe
+                and hashlib.sha256(path.read_bytes()).hexdigest() == assertion.value
+            )
+        except OSError:
+            matches = False
+        return CheckResult(
+            f"assert:{assertion.path}:sha256",
+            matches,
+            "exact regular-file byte identity",
+        )
     try:
         text = path.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as exc:
@@ -1309,7 +1340,7 @@ Details that must appear in the report summary or blockers:
 
 Repository validation guidance:
 {validation}"""
-    return f"""You are running an opt-in Agent Workflow behavioral smoke test in a disposable repository.
+    prompt = f"""You are running an opt-in Agent Workflow behavioral smoke test in a disposable repository.
 
 Scenario: {scenario_name}
 
@@ -1321,7 +1352,9 @@ User request:
 
 {grading_context}
 
-Work normally within this repository. Do not expose hidden reasoning or chain-of-thought. Before finishing, write a concise observable report to {REPORT_PATH} with this JSON shape:
+Work normally within this repository. Do not expose hidden reasoning or chain-of-thought."""
+    if scenario.write_report:
+        prompt += f""" Before finishing, write a concise observable report to {REPORT_PATH} with this JSON shape:
 {{
   "schema_version": 1,
   "status": "success | blocked | failed",
@@ -1332,8 +1365,13 @@ Work normally within this repository. Do not expose hidden reasoning or chain-of
   "blockers": ["specific unresolved blocker when blocked"]
 }}
 Use empty arrays when a category is not applicable. This report is public test evidence, not private reasoning.
-End your user-facing final response with exactly one truthful route marker.
 """
+    else:
+        prompt += " Return your explanation in the final response; do not write a test report.\n"
+    prompt += (
+        "End your user-facing final response with exactly one truthful route marker.\n"
+    )
+    return prompt
 
 
 def parse_command_json(raw: str) -> tuple[str, ...]:
@@ -1430,6 +1468,10 @@ def run_live_scenario(
     prompt = build_prompt(scenario)
     prompt_file = evidence_root / "prompt.md"
     prompt_file.write_text(prompt, encoding="utf-8")
+    if not scenario.write_report:
+        # This is a harness input, not a subject write. Strict read-only cases
+        # must still detect new reports and edits anywhere in the evidence tree.
+        before = snapshot(workspace)
     report_file = workspace.joinpath(*REPORT_PATH.parts)
     actual_command = substitute_command(command, workspace, prompt_file, report_file)
     environment = os.environ.copy()

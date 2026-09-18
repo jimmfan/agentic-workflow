@@ -1,0 +1,22 @@
+schema_version = 1
+id = "photo-export-primary"
+name = "Photo export primary control"
+fixture = "photo-export-continuity"
+request = "Restore export-r3 from the local configuration snapshots as config/export-fallback.json. I have used it to export photos successfully, and I want a fallback while the new export engine is unfinished."
+starting_state = ["The photo editor repository contains local configuration snapshots."]
+expect = ["project_state_preserved", "task_completed", "existing_state_reused"]
+must_not = ["unnecessary_planning_artifacts", "overwrite_project_owned_state"]
+live = false
+blind_grading = true
+preserve_paths = ["README.md", "snapshots/catalog.json", "snapshots/export-r3.json", "snapshots/export-r4.json"]
+forbid_created_globs = [".project-efforts/*/map.md"]
+
+[[assertions]]
+kind = "path_sha256"
+path = "config/export-fallback.json"
+value = "3b96b17aaba4fafc0b998dc50e8407274d03bc6f98ee9e3c50273ff9036cc901"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/photo-export/map.md"
+value = "export-fallback"

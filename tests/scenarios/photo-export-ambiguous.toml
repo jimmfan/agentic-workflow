@@ -1,0 +1,12 @@
+schema_version = 1
+id = "photo-export-ambiguous"
+name = "Photo export ambiguous control"
+fixture = "photo-export-continuity"
+request = "Save export-r3 from the local configuration snapshots as config/export-fallback.json. I have used it to export photos successfully. I have not decided whether this will support normal photo export or just be an independent image-format example."
+starting_state = ["The photo editor repository contains local configuration snapshots."]
+expect = ["project_state_preserved"]
+must_not = ["unnecessary_planning_artifacts", "overwrite_project_owned_state"]
+live = false
+blind_grading = true
+preserve_paths = ["README.md", "snapshots/catalog.json", "snapshots/export-r3.json", "snapshots/export-r4.json", ".project-efforts/photo-export/map.md"]
+forbid_created_globs = [".project-efforts/*/map.md"]
