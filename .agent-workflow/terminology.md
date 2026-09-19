@@ -72,3 +72,12 @@ Durability is separate from lifecycle ownership and reconstructability.
 
 **Reconstructable**:
 Reproducible from current declared source or package content without losing unique project information.
+
+## Skill execution paths
+
+**Native skill execution**:
+Using a host's native skill mechanism to load and execute a selected skill's canonical instructions.
+
+**Portable method execution**:
+Reading a selected canonical `.agents/skills/<name>/SKILL.md` as repository instructions and executing its method directly when the host does not expose that skill natively and every capability required for the current method is available.
+It is not native skill invocation, and it does not make unavailable host-specific features available.

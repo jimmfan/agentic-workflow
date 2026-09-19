@@ -27,6 +27,8 @@ EXPECTED_FRAMEWORK_LANGUAGE = {
     "Project-owned",
     "Durable",
     "Reconstructable",
+    "Native skill execution",
+    "Portable method execution",
 }
 
 

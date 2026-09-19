@@ -19,7 +19,7 @@ Python caches are ignored and need no manual cleanup.
 |---|---|
 | `test_lifecycle.py`, `test_direct_distribution.py` | Real install/update/status/remove, managed-path safety, complete reserved-skill replacement, unrelated-byte preservation, and partial failures. |
 | `test_bootstrap.py` | Release selection, immutable refs, coherent snapshots, optional Git target discovery, archive safety, and CLI delegation. |
-| `test_verify_package.py`, `test_routing.py` | Package/distribution structure, attribution, machine-readable interfaces, canonical names, and framework references. |
+| `test_verify_package.py`, `test_routing.py`, `test_portable_skill_routing.py` | Package/distribution structure, attribution, machine-readable interfaces, canonical names, framework references, and synthetic native-versus-repository-read skill routing outcomes. |
 | `test_release_tag.py` | Release validation and immutable publication/retry using disposable repositories and remotes. |
 | `test_wheel_inputs.py`, `wheel_smoke.py` | Faithful pending-source capture; separately, sdist/wheel build and CLI execution outside checkout imports. Build dependency resolution may need network access. |
 | `test_snapshots.py` | Preservation snapshots that exclude root Git metadata before reads while retaining project entries and read errors. |

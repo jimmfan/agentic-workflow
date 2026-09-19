@@ -10,9 +10,15 @@ It is not a general agent runtime, package manager, hook framework, analytics sy
 
 ```mermaid
 flowchart TD
-    request["User request + exposed skill descriptions"] --> root["AGENTS.md / CLAUDE.md managed policy"]
+    request["User request + available skill descriptions"] --> root["AGENTS.md / CLAUDE.md managed policy"]
     root --> direct["Direct work"]
-    root --> method["Selected .agents/skills/name/SKILL.md"]
+    root --> exposure{"Skill exposed natively?"}
+    exposure -->|yes| native["Host-native skill execution"]
+    exposure -->|no| readable{"Canonical SKILL.md readable and required capabilities available?"}
+    readable -->|yes| portable["Portable method execution"]
+    readable -->|no| unavailable["Unavailable / blocked / authorized Direct fallback"]
+    native --> method["Selected .agents/skills/name/SKILL.md method"]
+    portable --> method
     direct -. focused method when useful .-> method
     root -. composition or resumption detail .-> routing[".agent-workflow/routing.md"]
     root -. framework meanings when needed .-> terms[".agent-workflow/terminology.md"]
@@ -23,8 +29,11 @@ flowchart TD
     map -. relevant detail .-> artifacts["Supporting state + designated project artifacts"]
 ```
 
-The host loads project policy and exposes available skills.
+The host loads project policy and may expose available skills.
 The root policy starts with Direct work and selects one primary workflow plus useful supporting capabilities when warranted.
+Native exposure remains the preferred instruction-loading path.
+If native exposure is absent but repository files are readable, the router may use a canonical `.agents/skills/<name>/SKILL.md` description for selection and execute its method directly when every required capability is available.
+Reading instructions is not execution, the repository-read path is not native host skill invocation, and missing required capabilities retain the existing unavailable or blocked semantics.
 There is no daemon or host hook enforcing the route; reported execution still needs evidence.
 Host permission does not itself authorize an action or commit a project choice.
 
@@ -95,3 +104,4 @@ The independently reconsiderable decisions are:
 - [ADR-0027: Direct-first progressive routing](../architecture-decisions/0027-use-direct-first-progressive-routing.md).
 - [ADR-0028: Wayfinder as sole durable coordinator](../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md).
 - [ADR-0029: Canonical framework terminology](../architecture-decisions/0029-distribute-canonical-framework-terminology.md).
+- [ADR-0030: Canonical skill methods without native discovery](../architecture-decisions/0030-use-canonical-skill-methods-without-native-discovery.md).

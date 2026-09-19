@@ -4,6 +4,7 @@
 - MUST route every request.
   Direct is default.
   Make first-pass selection from the current user intent and skill descriptions exposed in the session.
+  When the host does not expose an applicable Agent Workflow skill natively but repository files are readable, use its canonical `.agents/skills/<name>/SKILL.md` description as selection input.
   Topic overlap or skill availability alone does not select a specialist.
 - When evidence is insufficient to select or re-evaluate the route, perform only the smallest read-only reconnaissance within the scope delegated by the current user request or accepted project policy.
 - Choose Direct or one primary workflow; add only supporting capabilities that materially help.
@@ -167,7 +168,7 @@ For substantial changes:
 
 - Inspect the current implementation, repository status, exact worktree, branch, base, and relevant diff.
 - Read the applicable contracts and architectural decisions and determine which layer owns the behavior.
-- Check whether an existing host capability or skill exposed in the current session already provides the needed behavior.
+- Check whether an existing host capability, skill exposed in the current session, or readable canonical Agent Workflow method already provides the needed behavior.
 - Prefer the smallest coherent and reversible change that preserves accepted behavior.
 - Update tests and durable documentation when the resulting contract changes.
 
