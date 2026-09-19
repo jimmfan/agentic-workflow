@@ -3,6 +3,13 @@
 The authored change and deterministic gate pass; live map-authoring behavior is INCONCLUSIVE because the only subject invocation was infrastructure-blocked.
 No live map was produced, and there is no observed general or comparative improvement claim.
 
+## Delivery status
+
+The map-authoring change merged in [PR #31](https://github.com/jimmfan/agentic-workflow/pull/31); earlier domain-language changes merged in PRs #13 and #14.
+Their bounded implementation is complete, so the domain-language normalization map is retired; future consequential wording questions remain within the standing [language-coherence effort](../../.project-efforts/language-coherence/map.md).
+The live acceptance gap recorded below remains unresolved and unaccepted; neither merge nor effort closure supplies missing behavioral evidence.
+A new live smoke is optional follow-up requiring separate authorization and verified execution isolation, not outstanding implementation in that completed scope.
+
 ## Change and boundary
 
 The state contract maintains the new default order, visible honest blocker assessment, optional nested Ownership, direct versus source-linked assignments, scoped unknown ownership, and existing-layout preservation.

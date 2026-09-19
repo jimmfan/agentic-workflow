@@ -11,8 +11,9 @@ Evaluation fixtures, controls, scripts and reporting only; commit and non-force 
 
 ## Ready work
 
-Independent reviews and deterministic gates are complete.
-Further live subject work requires a verified execution-isolation boundary; use the existing adapter preflight and then a native-tool denial probe before resuming the frozen cases.
+The evaluation delivery merged in [PR #33](https://github.com/jimmfan/agentic-workflow/pull/33); independent reviews and historical deterministic gates are complete.
+The unfinished four-hypothesis campaign remains distinct continuation work.
+The current cleanup authorizes no new live evaluations; future execution requires an authorized scope, a successful current adapter preflight and a native-tool denial probe before any frozen case resumes.
 
 ## Current state
 
@@ -37,6 +38,8 @@ Standalone and native-tool probes could read a synthetic sibling file despite in
 The effective isolation cause remains unknown; the current adapter refuses further subject launches.
 This blocks remaining live cases, without turning unexecuted behavior into a product failure or blocking independent evidence review.
 The prior map-authoring failure remains a separate historical result.
+Later [preservation experiments](../../evals/wayfinder-persistence/preservation-followups.md#fixture-failure-infrastructure-block-and-unexecuted-preparation) and the [YAML experiment](../../evals/wayfinder-yaml/README.md) also encountered bounded execution limitations.
+Their configurations and failure points differ; no common root cause is established, and shared isolation concerns do not transfer their objectives or authorize their reruns into this campaign.
 
 ## Key references
 

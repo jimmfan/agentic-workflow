@@ -9,8 +9,10 @@ Keep consequential terminology and instruction-language questions understandable
 Framework term meanings, normative wording, and authored-to-consumer language consistency where differences could change behavior or create competing maintenance obligations.
 The initial task authorizes a bounded source audit and effort state; framework, glossary, documentation, test, and evaluator corrections and live evaluations remain outside that task.
 
-The [domain language normalization effort](../domain-language-normalization/map.md) retains its bounded terminology changes and outstanding map-authoring verification; its scope explicitly excludes another broad terminology audit.
-This effort does not broaden or replace it.
+The completed domain-language normalization work is maintained in canonical terminology, the state contract, and the [map-authoring report](../../evals/map-authoring/REPORT.md).
+Its bounded changes merged through PRs #13, #14, and #31; its former map no longer has unfinished implementation to coordinate.
+This standing effort retains future consequential language questions in its existing scope, without reopening those accepted choices or turning an optional live smoke into required implementation work.
+The map-authoring live acceptance gap remains unaccepted and unresolved in its report; closure of the implementation effort does not resolve it.
 The [responsibility-boundary effort's initial committed map](https://github.com/jimmfan/agentic-workflow/blob/d2ee78bd7154c53b431d8d424637920a7a46d13b/.project-efforts/workflow-responsibility-boundaries/map.md) addresses who owns responsibilities and handoffs; this effort addresses whether language consistently expresses intended meanings and obligations.
 Consult that effort's current map for continuation, retaining one detailed question owner and linking shared concerns rather than duplicating them.
 
@@ -69,7 +71,7 @@ Existing campaign limitations remain with their maintaining reports and efforts 
 - [Framework terminology and ownership decision](../../architecture-decisions/0029-distribute-canonical-framework-terminology.md).
 - [Progressive-loading decision](../../architecture-decisions/0027-use-direct-first-progressive-routing.md).
 - [Prose and verification requirements](../../docs/verification.md#maintainer-and-ci-gate).
-- [Existing language work and its remaining verification](../domain-language-normalization/map.md).
+- [Completed map-authoring work and unresolved live acceptance](../../evals/map-authoring/REPORT.md).
 
 For a future consequential finding, preserve the relevant passages and sources, the competing interpretations, the affected behavior or maintenance obligation, and the strength and limits of the evidence.
 Keep its detail in one maintaining location under the [Wayfinder state contract](../../.agent-workflow/contracts/wayfinder-state.md#current-knowledge); do not create a record merely because wording differs.

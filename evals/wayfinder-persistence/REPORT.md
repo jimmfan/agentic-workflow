@@ -5,6 +5,13 @@ All conditions preserved the required hotel/service details.
 B's coding reader succeeded where A/C failed; C's planning reader succeeded where A/B failed.
 Overall benefit over either baseline is **INCONCLUSIVE**.
 
+## Delivery status
+
+The bounded clarification and evaluator were delivered through [PR #30](https://github.com/jimmfan/agentic-workflow/pull/30), merged as `b8ac8a4c48b61ac7fbca923c2c673ab19945577e`.
+No implementation or scheduled experiment remains for that scope; its effort map is retired.
+The historical results and limitations below remain unchanged, and merge does not establish a behavioral advantage.
+Distinct later [preservation comparisons](preservation-followups.md) do not extend this campaign's authorization or replace its findings.
+
 ## Frozen revisions and method
 
 | Boundary | Exact revision / fingerprint |
