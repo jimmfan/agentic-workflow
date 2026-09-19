@@ -66,7 +66,8 @@ Ordinary framework updates do not require a CLI upgrade.
 
 Install and update replace all of `.agent-workflow/` and each [current curated skill directory](.agents/skills/), including local edits and extra files inside those directories.
 Keep project customizations outside those reserved surfaces.
-Unrelated skills, project-owned `.project-efforts/` state, and all content outside the managed regions in `AGENTS.md` and `CLAUDE.md` are preserved.
+Unrelated skills, project-owned `.project-efforts/` state, and all content outside the managed region in `AGENTS.md` are preserved.
+Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
 Remove deletes the managed directories and regions; it refuses ambiguous ownership or curated-name collisions on an otherwise unrecognized installation.
 
 Unsafe managed paths or malformed policy markers stop mutation before writes.
@@ -90,8 +91,8 @@ Projects with Wayfinder state at the former `.agent-wayfinder/` path must explic
 
 - [Codex](https://developers.openai.com/codex/skills) and [GitHub Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) discover the installed skills under `.agents/skills/`.
 - A Claude model inside GitHub Copilot uses Copilot's skill support.
-- Native Claude Code 2.1.277 and later can read [`AGENTS.md` as project instructions](https://code.claude.com/docs/en/memory#agentsmd) when no applicable `CLAUDE.md` takes precedence.
-  Agent Workflow retains its existing `CLAUDE.md` integration for sessions and configurations that need it.
+- Native Claude Code support requires a current version and configuration with [`AGENTS.md` project-instruction support](https://code.claude.com/docs/en/memory#agentsmd).
+  Agent Workflow distributes `AGENTS.md` as its only root policy and does not configure Claude Code on the project's behalf.
 - Claude Code's documented project-skill location is [`.claude/skills/`](https://code.claude.com/docs/en/skills#choose-where-skills-load).
   Agent Workflow does not copy skills there.
   Agents read the canonical `.agents/skills/<name>/SKILL.md` instructions directly.

@@ -111,7 +111,7 @@ FRAMEWORK_CHANGE_PREFIXES = (
     ".agents/",
     ".behavior-evidence/",
 )
-FRAMEWORK_CHANGE_PATHS = {"AGENTS.md", "CLAUDE.md"}
+FRAMEWORK_CHANGE_PATHS = {"AGENTS.md"}
 
 
 class BehaviorError(RuntimeError):

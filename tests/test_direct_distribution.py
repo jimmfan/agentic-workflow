@@ -1,3 +1,5 @@
+"""Exercise direct distribution, managed ownership, and project-data preservation."""
+
 from __future__ import annotations
 
 import io
@@ -303,14 +305,14 @@ class DirectDistributionTests(ProjectTestCase):
         self.assert_current_sources_installed()
         self.assert_wayfinder_untouched()
 
-    def test_update_recovers_missing_composites_and_a_drifted_skill(self) -> None:
+    def test_update_recovers_missing_agents_policy_and_a_drifted_skill(self) -> None:
         self.assert_ok(self.lifecycle("install"))
         commit_all(self.project, "install agent workflow")
-        run_git(self.project, "rm", "AGENTS.md", "CLAUDE.md")
+        run_git(self.project, "rm", "AGENTS.md")
         (self.project / ".agents/skills/research/SKILL.md").write_text(
             "committed project drift\n", encoding="utf-8"
         )
-        commit_all(self.project, "commit missing composites and skill drift")
+        commit_all(self.project, "commit missing agents policy and skill drift")
 
         status = self.lifecycle("status")
         self.assertEqual(status.returncode, 1, status.stdout + status.stderr)

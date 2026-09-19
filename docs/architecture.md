@@ -10,7 +10,7 @@ It is not a general agent runtime, package manager, hook framework, analytics sy
 
 ```mermaid
 flowchart TD
-    request["User request + available skill descriptions"] --> root["AGENTS.md / CLAUDE.md managed policy"]
+    request["User request + available skill descriptions"] --> root["AGENTS.md managed policy"]
     root --> direct["Direct work"]
     root --> method["Selected .agents/skills/name/SKILL.md"]
     direct -. focused method when useful .-> method
@@ -59,7 +59,7 @@ See the [README examples](../README.md#wayfinder) for starting and resuming work
 |---|---|---|
 | `.agent-workflow/` | Authored routing, terminology, contract, and third-party notice. | Reconstructable framework content, replaced as a unit. |
 | Current `.agents/skills/<name>/` directories | Canonical maintained skill sources. | Reserved framework directories, replaced completely. |
-| Managed root-policy regions | Authored through `agent_workflow/install/AGENTS.md.template` and `CLAUDE.md.template`. | Only the marked regions are managed; project-authored bytes outside them are preserved. |
+| `AGENTS.md` managed region | Authored through `agent_workflow/install/AGENTS.md.template`. | Only the marked region is managed; project-authored bytes outside it are preserved. |
 | `.project-efforts/` | Project-owned effort state. | Project-owned effort state; lifecycle commands do not traverse, interpret, or change it. |
 | Unrelated skill directories and project artifacts | Project-owned. | Project-owned. |
 
@@ -80,6 +80,7 @@ The Python wheel contains the CLI implementation and install resources; runtime 
 Lifecycle owns install, update, status, and remove.
 It converges declared managed surfaces while preserving project-owned bytes, with preflight checks for unsafe managed paths and ambiguous composite ownership.
 Remove additionally guards curated-name collisions on an unrecognized target.
+Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
 There is no installed provenance store, migration engine, backup, or rollback transaction.
 Exact checks belong in lifecycle/bootstrap source and tests; user recovery steps belong in the README.
 

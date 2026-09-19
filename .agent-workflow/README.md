@@ -38,10 +38,9 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMA
 In consuming repositories, `.agent-workflow/` is framework-owned, reconstructable, and replaceable from current snapshot content.
 The ordinary distribution manifest is the current source-to-target map; no installed manifest, content hashes, provenance record, created-state bits, or history is written to a consuming repository.
 
-`AGENTS.md` and `CLAUDE.md` live outside this directory because hosts require root policy files.
+`AGENTS.md` is the single distributed root policy and lives outside this directory.
 In `AGENTS.md`, one framework-owned region is bounded by the logical managed-begin and managed-end lines; every byte outside it is preserved as opaque project content.
 Repeated install and update keep exactly one such region.
-The existing `CLAUDE.md` composite integration remains unchanged.
 The current curated skills live directly under `.agents/skills`.
 The [routing policy](routing.md#use-selected-skills) uses these canonical skill instructions without requiring native discovery.
 Their current directory names are reserved for Agent Workflow.
@@ -72,8 +71,10 @@ There is no cross-surface transaction, backup, rollback journal, migration engin
 If a filesystem failure leaves partial changes, resolve the reported error and rerun the command to converge.
 
 Install and update converge to the same current package state.
-Remove deletes `.agent-workflow/` and the current curated skill directories, strips the managed regions from `AGENTS.md` and `CLAUDE.md`, and deletes either composite file only when no project-authored bytes remain.
+Remove deletes `.agent-workflow/` and the current curated skill directories, strips the managed region from `AGENTS.md`, and deletes that file only when no project-authored bytes remain.
 Unrelated skill directories and all project-authored composite bytes remain.
+Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
+Native Claude Code support requires a current version and configuration with `AGENTS.md` project-instruction support.
 
 If current curated-name directories exist but no Agent Workflow installation is recognizable, remove refuses before mutation rather than assuming those directories are framework-owned.
 

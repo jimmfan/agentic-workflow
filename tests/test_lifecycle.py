@@ -1,3 +1,5 @@
+"""Exercise lifecycle convergence and project-content preservation in disposable consumers."""
+
 from __future__ import annotations
 
 import io
@@ -32,6 +34,27 @@ class LifecycleTests(ProjectTestCase):
 
     def lifecycle(self, command: str, *extra: object):
         return run_script(LIFECYCLE, command, self.project, *extra)
+
+    def test_fresh_install_manages_only_agents_policy(self) -> None:
+        for command in ("install", "update", "status"):
+            self.assert_ok(self.lifecycle(command))
+            self.assertTrue((self.project / "AGENTS.md").is_file())
+            self.assertFalse((self.project / "CLAUDE.md").exists())
+            self.assertFalse((self.project / ".claude").exists())
+        self.assert_ok(self.lifecycle("remove"))
+        self.assertFalse((self.project / "AGENTS.md").exists())
+        self.assertFalse((self.project / "CLAUDE.md").exists())
+
+    def test_existing_claude_content_is_unrelated_to_lifecycle(self) -> None:
+        policy = self.project / "CLAUDE.md"
+        content = b"# Project instructions\r\nKeep \x00\xff bytes.\r\n"
+        policy.write_bytes(content)
+        for command in ("install", "update", "status", "remove"):
+            with self.subTest(command=command):
+                result = self.lifecycle(command)
+                self.assert_ok(result)
+                self.assertNotIn("CLAUDE.md", result.stdout + result.stderr)
+                self.assertEqual(policy.read_bytes(), content)
 
     def test_repository_relative_sources_cannot_escape_declared_surfaces(self) -> None:
         source = self.copy_source("invalid-source")
@@ -203,7 +226,6 @@ class LifecycleTests(ProjectTestCase):
     def test_repeated_install_and_update_are_composite_idempotent(self) -> None:
         project_bytes = {
             "AGENTS.md": b"# Project agents\r\n\r\nKeep \x00\xff bytes.\r\n",
-            "CLAUDE.md": b"# Project Claude\n\nKeep this exact suffix.\n",
         }
         for name, content in project_bytes.items():
             (self.project / name).write_bytes(content)
@@ -222,10 +244,7 @@ class LifecycleTests(ProjectTestCase):
                     self.assertTrue(data.endswith(project))
                     self.assertEqual(data.count(MANAGED_BEGIN), 1)
                     self.assertEqual(data.count(MANAGED_END), 1)
-                    if name == "AGENTS.md":
-                        self.assertNotIn(FORMER_PROJECT_MARKER, data)
-                    else:
-                        self.assertEqual(data.count(FORMER_PROJECT_MARKER), 1)
+                    self.assertNotIn(FORMER_PROJECT_MARKER, data)
                 self.assertEqual(
                     run_git(self.project, "status", "--porcelain").stdout,
                     "",
@@ -255,23 +274,23 @@ class LifecycleTests(ProjectTestCase):
             + b"\n",
             "partial-token": b"<!-- agent-workflow:managed-beg",
         }
-        for composite in ("AGENTS.md", "CLAUDE.md"):
-            for name, content in cases.items():
-                with self.subTest(composite=composite, name=name):
-                    project = Path(self.temporary.name) / f"{composite}-{name}"
-                    project.mkdir()
-                    initialize_repository(project)
-                    (project / composite).write_bytes(content)
-                    commit_all(project, f"add {name} markers")
-                    before = workspace_snapshot(project)
+        composite = "AGENTS.md"
+        for name, content in cases.items():
+            with self.subTest(composite=composite, name=name):
+                project = Path(self.temporary.name) / f"{composite}-{name}"
+                project.mkdir()
+                initialize_repository(project)
+                (project / composite).write_bytes(content)
+                commit_all(project, f"add {name} markers")
+                before = workspace_snapshot(project)
 
-                    result = run_script(LIFECYCLE, "install", project)
+                result = run_script(LIFECYCLE, "install", project)
 
-                    self.assertEqual(result.returncode, 2)
-                    self.assertIn(f"{composite}: managed policy markers", result.stderr)
-                    self.assertIn("managed-begin=", result.stderr)
-                    self.assertIn("managed-end=", result.stderr)
-                    self.assertEqual(workspace_snapshot(project), before)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn(f"{composite}: managed policy markers", result.stderr)
+                self.assertIn("managed-begin=", result.stderr)
+                self.assertIn("managed-end=", result.stderr)
+                self.assertEqual(workspace_snapshot(project), before)
 
     def test_logical_marker_lines_accept_crlf_and_replace_in_place(self) -> None:
         project_prefix = b"# Prefix\r\n\r\n"
@@ -301,77 +320,74 @@ class LifecycleTests(ProjectTestCase):
         self.assertEqual(policy.read_bytes(), project_prefix + project_suffix)
 
     def test_former_standard_layouts_converge_without_project_loss(self) -> None:
-        for name, newline, project_bytes, former_markers in (
-            ("AGENTS.md", b"\n", b"# Original project policy\nKeep exactly.\n", 0),
-            ("CLAUDE.md", b"\r\n", b"# Original Claude policy\r\nKeep exactly.\r\n", 1),
-        ):
-            with self.subTest(composite=name):
-                project = Path(self.temporary.name) / name
-                project.mkdir()
-                initialize_repository(project)
-                policy = project / name
-                policy.write_bytes(
-                    MANAGED_BEGIN
-                    + newline
-                    + b"stale managed bytes"
-                    + newline
-                    + MANAGED_END
-                    + newline * 2
-                    + FORMER_PROJECT_MARKER
-                    + newline
-                    + project_bytes
-                )
-                commit_all(project, "add former standard composite")
+        (name, newline, project_bytes, former_markers) = (
+            "AGENTS.md",
+            b"\n",
+            b"# Original project policy\nKeep exactly.\n",
+            0,
+        )
+        project = Path(self.temporary.name) / name
+        project.mkdir()
+        initialize_repository(project)
+        policy = project / name
+        policy.write_bytes(
+            MANAGED_BEGIN
+            + newline
+            + b"stale managed bytes"
+            + newline
+            + MANAGED_END
+            + newline * 2
+            + FORMER_PROJECT_MARKER
+            + newline
+            + project_bytes
+        )
+        commit_all(project, "add former standard composite")
 
-                self.assert_ok(run_script(LIFECYCLE, "update", project))
+        self.assert_ok(run_script(LIFECYCLE, "update", project))
 
-                updated = policy.read_bytes()
-                self.assertEqual(updated.count(MANAGED_BEGIN), 1)
-                self.assertEqual(updated.count(MANAGED_END), 1)
-                self.assertEqual(updated.count(FORMER_PROJECT_MARKER), former_markers)
-                self.assertNotIn(b"stale managed bytes", updated)
-                self.assertTrue(updated.endswith(project_bytes))
+        updated = policy.read_bytes()
+        self.assertEqual(updated.count(MANAGED_BEGIN), 1)
+        self.assertEqual(updated.count(MANAGED_END), 1)
+        self.assertEqual(updated.count(FORMER_PROJECT_MARKER), former_markers)
+        self.assertNotIn(b"stale managed bytes", updated)
+        self.assertTrue(updated.endswith(project_bytes))
 
     def test_known_nested_crlf_duplicates_preserve_project_bytes(self) -> None:
-        for name, project_bytes, former_markers in (
-            (
-                "AGENTS.md",
-                b"# Original project policy\r\nKeep \x00\xff exactly.\r\n",
-                0,
-            ),
-            ("CLAUDE.md", b"# Original Claude policy\r\nKeep \x00\xff exactly.\r\n", 1),
-        ):
-            with self.subTest(composite=name):
-                project = Path(self.temporary.name) / name
-                project.mkdir()
-                initialize_repository(project)
-                policy = project / name
-                policy.write_bytes(
-                    MANAGED_BEGIN
-                    + b"\nouter managed bytes\n"
-                    + MANAGED_END
-                    + b"\n\n"
-                    + FORMER_PROJECT_MARKER
-                    + b"\n"
-                    + MANAGED_BEGIN
-                    + b"\r\ninner managed bytes\r\n"
-                    + MANAGED_END
-                    + b"\r\n\r\n"
-                    + FORMER_PROJECT_MARKER
-                    + b"\r\n"
-                    + project_bytes
-                )
-                commit_all(project, "add historical nested duplicate")
+        (name, project_bytes, former_markers) = (
+            "AGENTS.md",
+            b"# Original project policy\r\nKeep \x00\xff exactly.\r\n",
+            0,
+        )
+        project = Path(self.temporary.name) / name
+        project.mkdir()
+        initialize_repository(project)
+        policy = project / name
+        policy.write_bytes(
+            MANAGED_BEGIN
+            + b"\nouter managed bytes\n"
+            + MANAGED_END
+            + b"\n\n"
+            + FORMER_PROJECT_MARKER
+            + b"\n"
+            + MANAGED_BEGIN
+            + b"\r\ninner managed bytes\r\n"
+            + MANAGED_END
+            + b"\r\n\r\n"
+            + FORMER_PROJECT_MARKER
+            + b"\r\n"
+            + project_bytes
+        )
+        commit_all(project, "add historical nested duplicate")
 
-                self.assert_ok(run_script(LIFECYCLE, "install", project))
+        self.assert_ok(run_script(LIFECYCLE, "install", project))
 
-                updated = policy.read_bytes()
-                self.assertEqual(updated.count(MANAGED_BEGIN), 1)
-                self.assertEqual(updated.count(MANAGED_END), 1)
-                self.assertEqual(updated.count(FORMER_PROJECT_MARKER), former_markers)
-                self.assertNotIn(b"outer managed bytes", updated)
-                self.assertNotIn(b"inner managed bytes", updated)
-                self.assertTrue(updated.endswith(project_bytes))
+        updated = policy.read_bytes()
+        self.assertEqual(updated.count(MANAGED_BEGIN), 1)
+        self.assertEqual(updated.count(MANAGED_END), 1)
+        self.assertEqual(updated.count(FORMER_PROJECT_MARKER), former_markers)
+        self.assertNotIn(b"outer managed bytes", updated)
+        self.assertNotIn(b"inner managed bytes", updated)
+        self.assertTrue(updated.endswith(project_bytes))
 
     def test_nested_duplicate_recovery_requires_the_evidenced_newline_shape(
         self,
@@ -381,47 +397,47 @@ class LifecycleTests(ProjectTestCase):
             "reversed": (b"\r\n", b"\n", b"\r\n", b"\n"),
             "hybrid-separators": (b"\n", b"\r\n", b"\r\n", b"\n"),
         }
-        for composite in ("AGENTS.md", "CLAUDE.md"):
-            for name, (
-                outer_newline,
-                inner_newline,
-                outer_separator,
-                inner_separator,
-            ) in layouts.items():
-                with self.subTest(composite=composite, name=name):
-                    project = Path(self.temporary.name) / f"{composite}-{name}"
-                    project.mkdir()
-                    initialize_repository(project)
-                    policy = project / composite
-                    policy.write_bytes(
-                        MANAGED_BEGIN
-                        + outer_newline
-                        + b"outer managed"
-                        + outer_newline
-                        + MANAGED_END
-                        + outer_newline
-                        + outer_separator
-                        + FORMER_PROJECT_MARKER
-                        + outer_newline
-                        + MANAGED_BEGIN
-                        + inner_newline
-                        + b"inner managed"
-                        + inner_newline
-                        + MANAGED_END
-                        + inner_newline
-                        + inner_separator
-                        + FORMER_PROJECT_MARKER
-                        + inner_newline
-                        + b"project bytes\n"
-                    )
-                    commit_all(project, "add unsupported nested marker layout")
-                    before = workspace_snapshot(project)
+        composite = "AGENTS.md"
+        for name, (
+            outer_newline,
+            inner_newline,
+            outer_separator,
+            inner_separator,
+        ) in layouts.items():
+            with self.subTest(composite=composite, name=name):
+                project = Path(self.temporary.name) / f"{composite}-{name}"
+                project.mkdir()
+                initialize_repository(project)
+                policy = project / composite
+                policy.write_bytes(
+                    MANAGED_BEGIN
+                    + outer_newline
+                    + b"outer managed"
+                    + outer_newline
+                    + MANAGED_END
+                    + outer_newline
+                    + outer_separator
+                    + FORMER_PROJECT_MARKER
+                    + outer_newline
+                    + MANAGED_BEGIN
+                    + inner_newline
+                    + b"inner managed"
+                    + inner_newline
+                    + MANAGED_END
+                    + inner_newline
+                    + inner_separator
+                    + FORMER_PROJECT_MARKER
+                    + inner_newline
+                    + b"project bytes\n"
+                )
+                commit_all(project, "add unsupported nested marker layout")
+                before = workspace_snapshot(project)
 
-                    result = run_script(LIFECYCLE, "update", project)
+                result = run_script(LIFECYCLE, "update", project)
 
-                    self.assertEqual(result.returncode, 2)
-                    self.assertIn(f"{composite}: managed policy markers", result.stderr)
-                    self.assertEqual(workspace_snapshot(project), before)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn(f"{composite}: managed policy markers", result.stderr)
+                self.assertEqual(workspace_snapshot(project), before)
 
     def test_dry_run_is_immutable(self) -> None:
         before = workspace_snapshot(self.project)

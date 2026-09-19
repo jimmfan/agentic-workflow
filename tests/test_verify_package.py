@@ -1,3 +1,5 @@
+"""Test package verification against valid sources and deliberate disposable defects."""
+
 from __future__ import annotations
 
 import json
@@ -158,7 +160,7 @@ class VerifyPackageTests(ProjectTestCase):
     def test_verifier_requires_non_active_root_policy_templates(self) -> None:
         cases = (
             ("literal-root-policy", "agent_workflow/install/AGENTS.md"),
-            ("literal-nested-policy", ".agents/skills/example/CLAUDE.md"),
+            ("literal-nested-policy", ".agents/skills/example/AGENTS.md"),
             ("literal-framework-policy", ".agent-workflow/AGENTS.md"),
         )
         for name, relative in cases:
@@ -349,7 +351,6 @@ class VerifyPackageTests(ProjectTestCase):
         for index, relative in enumerate(
             (
                 "AGENTS.md",
-                "CLAUDE.md",
                 "architecture-decisions/README.md",
                 "tests/README.md",
                 "evals/README.md",

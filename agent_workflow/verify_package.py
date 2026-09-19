@@ -30,11 +30,7 @@ CODE_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 INLINE_CODE = re.compile(r"`[^`\n]*`")
 MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
 MANAGED_END = b"<!-- agent-workflow:managed-end -->"
-FORMER_PROJECT_MARKER = b"<!-- agent-workflow:project-instructions -->"
 MARKER_PREFIX = b"<!-- agent-workflow:"
-CLAUDE_MANAGED_BEGIN = MANAGED_BEGIN + b"\n"
-CLAUDE_MANAGED_END = MANAGED_END + b"\n"
-CLAUDE_PROJECT_BEGIN = b"\n" + FORMER_PROJECT_MARKER + b"\n"
 
 REQUIRED_PACKAGE_FILES = (
     "__init__.py",
@@ -44,7 +40,6 @@ REQUIRED_PACKAGE_FILES = (
     "verify_package.py",
     "install/manifest.json",
     "install/AGENTS.md.template",
-    "install/CLAUDE.md.template",
 )
 EXPECTED_FRAMEWORK_FILES = frozenset(
     {
@@ -58,7 +53,6 @@ EXPECTED_INSTALL_FILES = frozenset(
     {
         "manifest.json",
         "AGENTS.md.template",
-        "CLAUDE.md.template",
     }
 )
 
@@ -162,8 +156,7 @@ def version() -> str:
 
 def expected_mappings() -> list[dict[str, str]]:
     mappings = [
-        {"source": f"agent_workflow/install/{name}.template", "target": name}
-        for name in ("AGENTS.md", "CLAUDE.md")
+        {"source": "agent_workflow/install/AGENTS.md.template", "target": "AGENTS.md"}
     ]
     for root in (FRAMEWORK_ROOT, SKILLS_ROOT):
         for path in sorted(root.rglob("*")):
@@ -239,7 +232,7 @@ def check_template_locations() -> None:
     for root in (FRAMEWORK_ROOT, SKILLS_ROOT, INSTALL_ROOT):
         for path in root.rglob("*"):
             require(
-                path.name not in {"AGENTS.md", "CLAUDE.md"},
+                path.name != "AGENTS.md",
                 f"distributed root policy must use an install template: {path.relative_to(REPOSITORY_ROOT)}",
             )
 
@@ -268,7 +261,7 @@ def check_manifest() -> None:
         target = safe_relative(item["target"], "manifest target")
         target_value = target.as_posix()
         allowed_target = (
-            target_value in {"AGENTS.md", "CLAUDE.md"}
+            target_value == "AGENTS.md"
             or target_value.startswith(".agent-workflow/")
             or (
                 len(target.parts) >= 4
@@ -378,7 +371,6 @@ def check_local_links() -> None:
     roots = (
         REPOSITORY_ROOT / "README.md",
         REPOSITORY_ROOT / "AGENTS.md",
-        REPOSITORY_ROOT / "CLAUDE.md",
         REPOSITORY_ROOT / "docs",
         REPOSITORY_ROOT / "architecture-decisions",
         REPOSITORY_ROOT / "tests/README.md",
@@ -466,23 +458,6 @@ def tree_files(root: Path) -> frozenset[str]:
 
 def managed_region(path: Path) -> bytes:
     data = path.read_bytes()
-    if path.name == "CLAUDE.md":
-        managed_end = data.find(CLAUDE_MANAGED_END, len(CLAUDE_MANAGED_BEGIN))
-        project_begin = data.find(
-            CLAUDE_PROJECT_BEGIN, managed_end + len(CLAUDE_MANAGED_END)
-        )
-        require(
-            data.count(MARKER_PREFIX) == 3
-            and data.count(CLAUDE_MANAGED_BEGIN) == 1
-            and data.count(CLAUDE_MANAGED_END) == 1
-            and data.count(CLAUDE_PROJECT_BEGIN) == 1
-            and data.startswith(CLAUDE_MANAGED_BEGIN)
-            and managed_end >= 0
-            and project_begin == managed_end + len(CLAUDE_MANAGED_END),
-            f"checked-in composite has invalid managed markers: {path.name}",
-        )
-        return data[len(CLAUDE_MANAGED_BEGIN) : managed_end]
-
     managed_begin = MANAGED_BEGIN + b"\n"
     managed_end_marker = MANAGED_END + b"\n"
     managed_end = data.find(managed_end_marker, len(managed_begin))
@@ -498,18 +473,14 @@ def managed_region(path: Path) -> bytes:
 
 
 def check_composite_templates() -> None:
-    for source_relative, target_name in (
-        ("AGENTS.md.template", "AGENTS.md"),
-        ("CLAUDE.md.template", "CLAUDE.md"),
-    ):
-        source = (INSTALL_ROOT / source_relative).read_bytes().rstrip(b"\n") + b"\n"
-        target = REPOSITORY_ROOT / target_name
-        require(
-            target.is_file()
-            and not target.is_symlink()
-            and managed_region(target) == source,
-            f"checked-in managed composite region is stale: {target_name}",
-        )
+    source = (INSTALL_ROOT / "AGENTS.md.template").read_bytes().rstrip(b"\n") + b"\n"
+    target = REPOSITORY_ROOT / "AGENTS.md"
+    require(
+        target.is_file()
+        and not target.is_symlink()
+        and managed_region(target) == source,
+        "checked-in managed composite region is stale: AGENTS.md",
+    )
 
 
 def run_tests() -> None:

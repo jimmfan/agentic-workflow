@@ -20,15 +20,10 @@ DISTRIBUTION_MANIFEST = PACKAGE_ROOT / "install" / "manifest.json"
 FRAMEWORK_ROOT = PurePosixPath(".agent-workflow")
 SKILLS_ROOT = PurePosixPath(".agents/skills")
 AGENTS_PATH = PurePosixPath("AGENTS.md")
-CLAUDE_PATH = PurePosixPath("CLAUDE.md")
-COMPOSITE_PATHS = (AGENTS_PATH, CLAUDE_PATH)
 MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
 MANAGED_END = b"<!-- agent-workflow:managed-end -->"
 FORMER_PROJECT_MARKER = b"<!-- agent-workflow:project-instructions -->"
 MARKER_PREFIX = b"<!-- agent-workflow:"
-CLAUDE_MANAGED_BEGIN = MANAGED_BEGIN + b"\n"
-CLAUDE_MANAGED_END = MANAGED_END + b"\n"
-CLAUDE_PROJECT_BEGIN = b"\n" + FORMER_PROJECT_MARKER + b"\n"
 DISTRIBUTION_SCHEMA = 8
 MINIMUM_PYTHON = (3, 11)
 
@@ -136,7 +131,7 @@ def load_distribution() -> Distribution:
         sources_seen.add(source)
         targets_seen.add(target)
 
-        if target in COMPOSITE_PATHS:
+        if target == AGENTS_PATH:
             expected = (
                 PurePosixPath("agent_workflow/install") / f"{target.name}.template"
             )
@@ -175,7 +170,7 @@ def load_distribution() -> Distribution:
             ) from exc
 
         surface[key] = data
-    if set(composites) != set(COMPOSITE_PATHS) or not framework or not skills:
+    if set(composites) != {AGENTS_PATH} or not framework or not skills:
         raise LifecycleError(
             "distribution manifest is missing a required managed surface"
         )
@@ -236,7 +231,7 @@ def require_managed_roots_safe(root: Path, distribution: Distribution) -> None:
     require_path_kind(root, SKILLS_ROOT, "directory")
     for name in distribution.skill_names:
         require_path_kind(root, SKILLS_ROOT / name, "directory")
-    for relative in COMPOSITE_PATHS:
+    for relative in distribution.composites:
         require_path_kind(root, relative, "file")
 
 
@@ -341,9 +336,7 @@ def parse_former_three_marker_layout(
     return None
 
 
-def parse_agents_composite(
-    data: bytes, relative: PurePosixPath
-) -> CompositeParts | None:
+def parse_composite(data: bytes, relative: PurePosixPath) -> CompositeParts | None:
     markers = marker_lines(data)
     if not markers:
         return None
@@ -367,27 +360,6 @@ def parse_agents_composite(
     raise marker_error(relative, markers, "missing, duplicated, or reordered")
 
 
-def parse_claude_composite(
-    data: bytes, relative: PurePosixPath
-) -> CompositeParts | None:
-    markers = marker_lines(data)
-    if not markers:
-        return None
-    known_values = {MANAGED_BEGIN, MANAGED_END, FORMER_PROJECT_MARKER}
-    if any(line.value not in known_values for line in markers):
-        raise marker_error(relative, markers, "unknown or partial")
-    former = parse_former_three_marker_layout(data, markers)
-    if former is None:
-        raise marker_error(relative, markers, "missing, duplicated, or reordered")
-    return former
-
-
-def parse_composite(data: bytes, relative: PurePosixPath) -> CompositeParts | None:
-    if relative == CLAUDE_PATH:
-        return parse_claude_composite(data, relative)
-    return parse_agents_composite(data, relative)
-
-
 def read_composite(root: Path, relative: PurePosixPath) -> bytes | None:
     path = root.joinpath(*relative.parts)
     if not path_exists(path):
@@ -398,18 +370,7 @@ def read_composite(root: Path, relative: PurePosixPath) -> bytes | None:
         raise LifecycleError(f"cannot read composite policy {relative}: {exc}") from exc
 
 
-def compose_policy(
-    relative: PurePosixPath, managed: bytes, before: bytes, after: bytes
-) -> bytes:
-    if relative == CLAUDE_PATH:
-        return (
-            CLAUDE_MANAGED_BEGIN
-            + managed.rstrip(b"\n")
-            + b"\n"
-            + CLAUDE_MANAGED_END
-            + CLAUDE_PROJECT_BEGIN
-            + after
-        )
+def compose_policy(managed: bytes, before: bytes, after: bytes) -> bytes:
     return (
         before
         + MANAGED_BEGIN
@@ -430,7 +391,7 @@ def plan_composites(
         current = read_composite(root, relative)
         if current is None:
             if not remove:
-                plan[relative] = compose_policy(relative, managed, b"", b"")
+                plan[relative] = compose_policy(managed, b"", b"")
             continue
         parts = parse_composite(current, relative)
         if parts is not None:
@@ -438,11 +399,9 @@ def plan_composites(
                 project = parts.before + parts.after
                 plan[relative] = project if project else None
             else:
-                plan[relative] = compose_policy(
-                    relative, managed, parts.before, parts.after
-                )
+                plan[relative] = compose_policy(managed, parts.before, parts.after)
         elif not remove:
-            plan[relative] = compose_policy(relative, managed, b"", current)
+            plan[relative] = compose_policy(managed, b"", current)
     return plan
 
 
@@ -498,7 +457,7 @@ def directory_matches(
 def unrecognized_remove_collisions(
     root: Path, distribution: Distribution
 ) -> tuple[PurePosixPath, ...]:
-    for relative in COMPOSITE_PATHS:
+    for relative in distribution.composites:
         current = read_composite(root, relative)
         if current is not None and parse_composite(current, relative) is not None:
             return ()
@@ -537,7 +496,7 @@ def drift_messages(root: Path, distribution: Distribution) -> list[str]:
             continue
         parts = parse_composite(current, relative)
         if parts is None or current != compose_policy(
-            relative, desired, parts.before, parts.after
+            desired, parts.before, parts.after
         ):
             messages.append(f"REPAIR: managed policy region differs: {relative}")
     return messages
@@ -632,12 +591,12 @@ def print_plan(command: str, root: Path, distribution: Distribution) -> None:
         print("- remove .agent-workflow/")
         for name in distribution.skill_names:
             print(f"- remove .agents/skills/{name}/")
-        print("- remove managed regions from AGENTS.md and CLAUDE.md")
+        print("- remove managed region from AGENTS.md")
     else:
         print("- replace .agent-workflow/ with current package bytes")
         for name in distribution.skill_names:
             print(f"- replace .agents/skills/{name}/ with current package bytes")
-        print("- converge managed regions in AGENTS.md and CLAUDE.md")
+        print("- converge managed region in AGENTS.md")
 
 
 def converge(

@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-14
-- Amended: 2026-08-31; 2026-09-05
+- Amended: 2026-08-31; 2026-09-05; 2026-09-19
 
 ## Context
 
@@ -10,7 +10,7 @@ Agent Workflow must be able to install, repair, update, and remove the files it 
 Framework-owned reconstructable output should converge to current desired state; it does not justify package-manager machinery or manual migration ceremony.
 
 The repository contains policies and skill resources destined for consuming repositories.
-The September 2026 amendment makes natural runtime locations canonical source paths while retaining non-active templates for composite root policies.
+The September 2026 amendment makes natural runtime locations canonical source paths while retaining a non-active template for the composite root policy.
 Agent Workflow is pre-1.0, and normal lifecycle use should converge declared framework surfaces regardless of whether the target is Git-tracked or what unrelated repository state exists.
 
 ## Decision
@@ -30,8 +30,8 @@ In consuming repositories, separate framework-owned reconstructable output from 
   When no region exists, installation adds one without changing existing project bytes.
   Prior reconstructable framework bytes may be normalized only when their framework ownership and the project-byte boundary are both unambiguous.
   Otherwise, ambiguous ownership stops destructive mutation rather than inviting guessed recovery.
-- `CLAUDE.md` remains under its existing composite integration for this decision.
-  Lifecycle operations continue to preserve its project-authored portion; this decision does not change that host protocol or its support boundary.
+- `AGENTS.md` is the single distributed root policy; Agent Workflow does not manage `CLAUDE.md`.
+  Native Claude Code support assumes a current version and configuration with documented `AGENTS.md` project-instruction support; other host configurations are outside this support boundary.
 - Every lifecycle command requires an existing non-root target directory.
   An explicit target is used directly.
   When the CLI target is omitted, Git may be used only to discover the containing worktree root; failed or unavailable discovery falls back to the current directory.
@@ -40,7 +40,7 @@ In consuming repositories, separate framework-owned reconstructable output from 
   Nested entries inside a replaceable managed directory are ordinary convergence input.
 - The source repository authors `.agent-workflow/` and the current curated `.agents/skills/<name>/` trees directly at their distribution target paths.
   Those source trees are not generated output.
-  Composite root policies remain non-active templates under `agent_workflow/install/`, alongside the current manifest whose source paths resolve from the repository snapshot root.
+  The composite `AGENTS.md` policy remains a non-active template under `agent_workflow/install/`, alongside the current manifest whose source paths resolve from the repository snapshot root.
   By default, the installed CLI acts as a thin transport: it selects the highest stable `vX.Y.Z` release tag, resolves that tag to an immutable commit, downloads one repository snapshot, and runs that snapshot's `agent_workflow/lifecycle.py` against its canonical framework, skill, and install sources.
   Explicit refs remain development and testing overrides.
 
@@ -49,7 +49,7 @@ Agent Workflow maintains no installation history or migration subsystem: no inst
 Pre-1.0 historical layouts do not become permanent runtime migration policy.
 A partial filesystem failure is reported truthfully; after resolving the concrete error, rerunning the command converges the managed surfaces.
 
-For remove only, a valid managed composite region or the exact current `.agent-workflow/` surface establishes an existing installation.
+For remove only, a valid managed `AGENTS.md` region or the exact current `.agent-workflow/` surface establishes an existing installation.
 Remove refuses current curated-name collisions on an otherwise unrecognized target rather than assuming they are framework-owned.
 This conservative removal guard does not participate in install or update.
 Ambiguous composite markers remain a hard preflight failure.
