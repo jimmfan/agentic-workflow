@@ -23,8 +23,8 @@ The [interruption and preservation fixes](https://github.com/jimmfan/agentic-wor
 The latter passed the required gate: 204 package tests, 86 evaluation tests, two wheel checks, Ruff and whitespace checks, with independent Standards and Spec reviews.
 The [test architecture](../../tests/README.md) maintains retained coverage and its limits; the [routing evaluator](../../evals/routing-smoke/README.md) and [forensics documentation](../../evals/token_forensics/README.md) maintain corrected grading and unavailable-measurement semantics.
 
-The [local reconciliation review](/private/tmp/agent-workflow-audit/reconciliation-review/REPORT.md) and its [selected execution records](/private/tmp/agent-workflow-audit/reconciliation-review/execution-evidence.json) maintain the support and limitations for the following findings.
-These files are local evidence, not portable repository artifacts; their source is Codex task `01a0b792-0676-7a33-9a62-0d98cd8e6e22`, and availability outside this workspace is unverified.
+The [reconciliation review](../../docs/audit-reconciliation/REPORT.md) and its [selected execution records](../../docs/audit-reconciliation/execution-evidence.json) maintain the support and limitations for the following findings.
+These artifacts are preserved in the repository; their source is Codex task `01a0b792-0676-7a33-9a62-0d98cd8e6e22`, with personal filesystem prefixes normalized and historical evidence limitations retained.
 Execution-record review confirms that the original audit used a map and checked preservation before closing it, and that test cleanup created, updated and closed a separate map.
 The original map was not kept current as findings developed; the intervening fix stages do not establish matching-effort resumption or reconciliation in their recorded actions.
 Those earlier completion reports and route markers must not be treated as proof that reconciliation ran.
