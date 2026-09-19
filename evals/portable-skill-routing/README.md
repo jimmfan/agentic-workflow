@@ -6,6 +6,8 @@ It is not part of the deterministic gate and authorizes no live run by itself.
 ## Question and evidence boundary
 
 The comparison asks whether Claude Code can load Agent Workflow's root policy, read a selected canonical `.agents/skills/<name>/SKILL.md` as an ordinary repository file, follow the method meaningfully, and report what ran without claiming `.agents/skills/` was discovered natively.
+Whether Claude misjudges missing host support, falsely claims native invocation or independent review, or follows repository-read methods unreliably remains to be observed.
+These are evaluation questions, not established Claude failures.
 
 Claude Code 2.1.277 or later is required.
 Use a configuration where root `AGENTS.md` loads, no project or personal copy of these methods exists under `.claude/skills/`, and the subject can read repository files.
@@ -28,7 +30,8 @@ git archive fix/claude-portable-skill-routing | tar -x -C "$protocol_root/candid
 
 For each case, create one empty baseline consumer and one empty candidate consumer, then install from the matching exported source with its `agent_workflow/lifecycle.py`.
 Delete only the generated `CLAUDE.md` in those disposable consumers so the case specifically exercises Claude Code's `AGENTS.md` path; do not change the source checkout or infer that installed `CLAUDE.md` support should be removed.
-Confirm that both consumers contain the same canonical `.agents/skills/` tree and no `.claude/skills/` tree.
+Confirm that each consumer contains its source revision's canonical `.agents/skills/` tree and no `.claude/skills/` tree.
+Record intentional method differences between arms, including Wayfinder's selection wording, so they remain visible during adjudication.
 
 Freeze the exact Claude Code version, model, settings, permissions, prompts, fixture bytes, Git revisions, and network availability before running either arm.
 Run baseline before candidate for half the repetitions and candidate before baseline for the other half.
@@ -37,6 +40,7 @@ Run baseline before candidate for half the repetitions and candidate before base
 
 Run each prompt in a new Claude Code session from its disposable consumer.
 The explicit method request prevents an optional Direct fallback from hiding the behavior being tested.
+These cases test explicit method use; they do not establish ordinary routing from repository-read descriptions.
 
 | Case | Fixture and prompt | Meaningful execution evidence | Required negative evidence |
 |---|---|---|---|
@@ -62,3 +66,5 @@ Reading `SKILL.md`, naming the method, or printing a route marker is insufficien
 A baseline unavailable outcome is expected under the old contract and is not a host failure.
 A candidate run passes only if it follows the canonical method meaningfully and avoids every false native-feature claim.
 Report live Claude results separately from deterministic contract tests and keep conclusions conditional on the observed version, model, configuration, and fixtures.
+This baseline comparison tests fallback enablement; it does not isolate the value of extra defensive wording.
+If observed failures motivate additional safeguards, compare them with the minimal fallback contract in a bounded follow-up before broadening permanent policy.

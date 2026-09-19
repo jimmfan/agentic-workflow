@@ -64,25 +64,15 @@ One selected skill supplies one method.
 Obtain its canonical instructions through the host's native skill mechanism when the host exposes that skill.
 Otherwise, when repository files are readable, read the canonical `.agents/skills/<name>/SKILL.md` directly and only the support files needed for the current request.
 Both instruction-loading paths lead to the same selected method.
-The method may run only when every tool or host feature it requires for this request can run.
+Reading instructions does not supply missing tools or host features.
 Repository file access is not native skill discovery, loading, or invocation.
-Do not claim that a native invocation, unavailable tool, independent reviewer, parallel worker, interactive surface, or other host feature ran merely because the instructions were readable.
-
-<!-- skill-availability-matrix -->
-| Situation | Outcome |
-|---|---|
-| Canonical instructions are missing or unreadable | unavailable |
-| A required tool or host feature does not exist or cannot run | unavailable |
-| Required support exists and could run, but authorization, project state, a required input or prerequisite, or an integrity condition prevents progress | blocked |
-<!-- /skill-availability-matrix -->
 
 Execution means using the skill's method; selecting it, reading instructions, checking availability, or giving invocation instructions does not count.
 Using a skill for focused work need not change the primary route, including Direct.
 Completion and verification require evidence beyond execution or a route marker.
 
 Research and factual lookup may run synchronously when their evidence requirements remain satisfied.
-Preserve a selected method's required independence or parallelism.
-If the required reviewer or worker support does not exist or cannot run, report the method as unavailable rather than claiming independent work ran.
+Preserve a selected method's required independence or parallelism; if that capability is unavailable, report the execution gap under the availability conventions below rather than claiming independent work ran.
 
 If a selected skill is unavailable or requires explicit user invocation, continue Direct only when the user did not require that skill and the available tools and host features can satisfy the request.
 Otherwise stop, explain what is needed, give the exact supported invocation instruction when applicable, and use the terminal suffix below.
@@ -110,8 +100,6 @@ Every user-facing final response ends with exactly one truthful marker listing o
 
 Use compact labels: `workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and `workflow-verification` become `discovery`, `debugging`, `implement`, and `verification`.
 Use `direct` when no named workflow or skill ran.
-The marker names the method that executed and does not encode how its instructions were loaded.
-After repository-read instruction loading, surrounding prose must not imply native skill discovery, loading, or invocation, or claim that unavailable host features ran.
 
 Use a terminal suffix only when selection did not become equivalent execution:
 

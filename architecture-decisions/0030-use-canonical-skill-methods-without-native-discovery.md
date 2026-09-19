@@ -12,24 +12,15 @@ Claude Code illustrates the gap without defining it: current Claude Code can loa
 Copying the curated tree into each provider-specific location would create duplicate maintained instructions and provider lifecycle surface.
 
 Many curated methods are ordinary model instructions over repository files and common tools.
-Some methods also require tools or host features such as independent parallel reviewers or an interactive surface that a particular session may not provide.
-Instruction readability therefore does not by itself establish method availability or execution.
+Reading those instructions does not supply missing execution support.
 
 ## Decision
 
 Use one selected skill method regardless of how its canonical instructions are obtained.
 When the host exposes the selected skill, the host loads those instructions through its native skill mechanism.
 When the host does not expose the selected skill, allow routing to use the canonical `.agents/skills/<name>/SKILL.md` description for selection and to read that file directly as repository instructions.
-The selected method may run only when every tool or host feature it requires for the request can run.
-
-The ordinary route label continues to name the method that actually executed, not how its instructions were loaded.
-Reporting after a repository read must not imply native discovery, loading, or invocation, or claim that unavailable host features ran.
-
-Selecting a method or reading its instructions is not execution.
-Missing canonical instructions use the existing unavailable outcome.
-A required tool or host feature that does not exist or cannot run makes the method unavailable.
-When required support exists and could run, authorization, project state, a required input or prerequisite, or an integrity condition may instead block progress.
-An optional skill may still fall back to Direct when Direct can truthfully satisfy the request.
+The loading path does not change the selected method's requirements or turn a repository read into native invocation.
+Existing execution, availability, blocking, Direct-fallback, and reporting rules remain in the [routing policy](../.agent-workflow/routing.md#use-selected-skills).
 
 ## Consequences
 
@@ -37,8 +28,9 @@ Hosts with repository-file access can use canonical Agent Workflow instructions 
 Native hosts keep their existing skill mechanics and canonical installed content.
 Authorization, project decision authority, evidence, durable-state ownership, composition, and route-reporting rules are unchanged.
 
-Deterministic tests can establish the instruction contract and synthetic outcomes, but they do not prove live model compliance.
-Live host evaluation remains separate evidence and must distinguish method execution from native skill invocation.
+Deterministic tests check canonical references and distribution; instruction meaning also requires review.
+The [live protocol](../evals/portable-skill-routing/README.md) tests method compliance and reporting on Claude Code.
+Whether additional host-specific safeguards improve behavior remains an evaluation question.
 
 ## Alternatives considered
 
