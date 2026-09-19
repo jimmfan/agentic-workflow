@@ -43,9 +43,7 @@ In `AGENTS.md`, one framework-owned region is bounded by the logical managed-beg
 Repeated install and update keep exactly one such region.
 The existing `CLAUDE.md` composite integration remains unchanged.
 The current curated skills live directly under `.agents/skills`.
-Hosts with native support may expose those skills through their normal skill mechanism.
-When they do not, the root and detailed routing policies may read the canonical `SKILL.md` files directly as repository instructions.
-Both ways of obtaining the instructions lead to the same selected method, and a repository read is not native skill invocation.
+Skills can be used through native host support or by reading their canonical instructions under the [routing policy](routing.md#use-selected-skills).
 Their current directory names are reserved for Agent Workflow.
 Install and update replace each complete current curated skill directory, including extra files, while preserving unrelated skill directories.
 Remove deletes those current curated directories.

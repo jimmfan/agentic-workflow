@@ -60,11 +60,7 @@ New causal uncertainty returns to Debugging; a material unresolved choice return
 
 ## Use selected skills
 
-One selected skill supplies one method.
-Obtain its canonical instructions through the host's native skill mechanism when the host exposes that skill.
-Otherwise, when repository files are readable, read the canonical `.agents/skills/<name>/SKILL.md` directly and only the support files needed for the current request.
-Both instruction-loading paths lead to the same selected method.
-Reading instructions does not supply missing tools or host features.
+Read the selected skill's canonical instructions through the host's native mechanism when it exposes that skill, otherwise from `.agents/skills/<name>/SKILL.md`; read only the support files needed for the request.
 Repository file access is not native skill discovery, loading, or invocation.
 
 Execution means using the skill's method; selecting it, reading instructions, checking availability, or giving invocation instructions does not count.

@@ -12,11 +12,7 @@ It is not a general agent runtime, package manager, hook framework, analytics sy
 flowchart TD
     request["User request + available skill descriptions"] --> root["AGENTS.md / CLAUDE.md managed policy"]
     root --> direct["Direct work"]
-    root --> selected["Selected skill method"]
-    selected -->|native exposure| native["Host loads canonical instructions"]
-    selected -->|otherwise, when readable| repository["Agent reads canonical instructions"]
-    native --> method["Use the selected method"]
-    repository --> method
+    root --> method["Selected .agents/skills/name/SKILL.md"]
     direct -. focused method when useful .-> method
     root -. composition or resumption detail .-> routing[".agent-workflow/routing.md"]
     root -. framework meanings when needed .-> terms[".agent-workflow/terminology.md"]
@@ -30,7 +26,6 @@ flowchart TD
 The host loads project policy and may expose available skills.
 The root policy starts with Direct work and selects one primary workflow plus useful supporting capabilities when warranted.
 The host may load a selected skill's canonical instructions through its native skill mechanism, or the agent may read the same canonical `.agents/skills/<name>/SKILL.md` directly when native exposure is absent and repository files are readable.
-Both instruction-loading paths converge before the selected method executes.
 The [detailed routing policy](../.agent-workflow/routing.md#use-selected-skills) retains the method's execution requirements and governs availability, blockers, and Direct fallback.
 There is no daemon or host hook enforcing the route; reported execution still needs evidence.
 Host permission does not itself authorize an action or commit a project choice.

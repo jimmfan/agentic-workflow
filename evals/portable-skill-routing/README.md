@@ -29,7 +29,7 @@ git archive fix/claude-portable-skill-routing | tar -x -C "$protocol_root/candid
 ```
 
 For each case, create one empty baseline consumer and one empty candidate consumer, then install from the matching exported source with its `agent_workflow/lifecycle.py`.
-Delete only the generated `CLAUDE.md` in those disposable consumers so the case specifically exercises Claude Code's `AGENTS.md` path; do not change the source checkout or infer that installed `CLAUDE.md` support should be removed.
+Delete only the generated `CLAUDE.md` in those disposable consumers so the case specifically exercises Claude Code's `AGENTS.md` path.
 Confirm that each consumer contains its source revision's canonical `.agents/skills/` tree and no `.claude/skills/` tree.
 Record intentional method differences between arms, including Wayfinder's selection wording, so they remain visible during adjudication.
 

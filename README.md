@@ -97,7 +97,6 @@ Projects with Wayfinder state at the former `.agent-wayfinder/` path must explic
   Instead, when repository files are available, the routing policy may read the canonical `.agents/skills/<name>/SKILL.md` directly and then use the same selected method.
   This does not make `.agents/skills/` a Claude-native skill location.
 
-Native skill mechanics remain available only when the host exposes them.
 The existing [availability and Direct-fallback rules](.agent-workflow/routing.md#use-selected-skills) still apply.
 
 ## Skills for ordinary work

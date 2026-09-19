@@ -162,6 +162,10 @@ Do not force one term across genuinely different bounded contexts.
 Update the existing topic owner and retain useful summaries and warnings with links to it.
 Keep routine completion and audit narratives in Git or PRs rather than permanent documentation.
 
+Add instructions only when requested or needed to address a demonstrated problem or preserve an established boundary within the task's scope.
+Do not add defensive rules for hypothetical failures or duplicate existing rules.
+Keep wording and terminology consistent with the surrounding instructions.
+
 ## Working practice
 
 For substantial changes:
