@@ -16,6 +16,46 @@ from evals import routing_smoke
 
 
 class RoutingSmokeTests(unittest.TestCase):
+    def test_nonfinite_budget_and_prices_are_rejected_before_adapter_execution(self):
+        base = [
+            "run",
+            "--adapter",
+            "codex",
+            "--model",
+            "fixture",
+            "--executable",
+            sys.executable,
+            "--max-estimated-cost-usd",
+            "2",
+            "--input-price-per-million",
+            "1",
+            "--cached-input-price-per-million",
+            "1",
+            "--output-price-per-million",
+            "1",
+        ]
+        for option in (
+            "--max-estimated-cost-usd",
+            "--input-price-per-million",
+            "--cached-input-price-per-million",
+            "--output-price-per-million",
+        ):
+            for value in ("nan", "inf", "-inf"):
+                with (
+                    self.subTest(option=option, value=value),
+                    patch.object(
+                        routing_smoke.subprocess,
+                        "run",
+                        side_effect=AssertionError(
+                            "invalid limits must not reach external execution"
+                        ),
+                    ),
+                    redirect_stderr(io.StringIO()),
+                ):
+                    self.assertEqual(
+                        routing_smoke.main([*base, f"{option}={value}"]), 2
+                    )
+
     def test_policy_is_the_disposable_consumer_policy_not_maintainer_instructions(self):
         case = routing_smoke.load_cases()["direct"]
         with tempfile.TemporaryDirectory() as temporary:

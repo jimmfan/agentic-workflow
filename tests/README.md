@@ -29,6 +29,8 @@ Python caches are ignored and need no manual cleanup.
 | `test_review_handoff.py`, `test_instruction_coherence.py` | Disposable Git review-scope observations and synthetic-answer evaluator controls for review and skill boundaries. |
 | `test_export_completion.py`, `test_export_continuity.py` | Fictional photo-export recovery, exact configuration bytes, unchanged maintaining artifacts, review handoff and completion controls, including ambiguous, sufficient, unrelated and read-only cases. |
 | `test_question_review_controls.py`, `test_map_authoring_controls.py` | Question-section preservation, incoming references, scoped review outcomes, and map-authoring evaluator controls. |
+| `test_scenario_constraints.py` | Active preservation/forbidden-path declarations and acceptance/rejection of authorized title changes, relevant resumption, read-only review, and forbidden tickets. |
+| `test_smoke_expectations.py` | Smoke evaluator rejection of missing required evidence and invented critical paths, with supported layout and truthful uncertainty controls. |
 | `evals/tests/` | Separate network-free tests of evaluation tooling. |
 
 `scenarios/*.toml` define human-authored requests and observable outcomes; `fixtures/*` supply small starting repositories without copied framework payload.
@@ -38,6 +40,8 @@ Live runs are opt-in and do not belong to ordinary PR gates.
 Synthetic-answer tests validate evaluators, not actual agent reads, independent Standards/Spec review, research, TDD cycles, or compliance with instructions.
 The Git controls separately observe staged/unstaged/untracked review scope and preservation of project bytes, index, and HEAD in disposable repositories.
 Their response predicates are fixture-specific, not proof of semantic completeness for arbitrary answers.
+When changing a scenario's grading rules, retain historical results under their original rules and compare future subjects using the same revised harness and scenario version.
+Blind prompts must remain unchanged when only hidden grading requirements change; guided rubric changes must be disclosed.
 Historical obligation-preservation rationale and review evidence remain retrievable in the [instruction-coherence review at its immutable revision](https://github.com/jimmfan/agentic-workflow/blob/727e9c9299c980e29dee5589b4638e779bf49209/docs/reviews/instruction-coherence.md); it is not the current test contract.
 
 ## Wayfinder coverage and evidence limits

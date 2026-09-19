@@ -56,4 +56,4 @@ The deepened module takes the external dependency as an injected port; tests pro
   The presence of higher-level tests alone does not prove redundancy; keep or replace coverage for failures and edge cases they do not exercise.
 - Tests assert on observable outcomes through the interface, not internal state.
 - Tests should survive internal refactors — they describe behaviour, not implementation.
-  If a test has to change when the implementation changes, it's testing past the interface.
+  If a test has to change after a behavior-preserving internal refactor, it's testing past the interface.

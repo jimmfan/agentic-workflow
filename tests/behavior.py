@@ -172,11 +172,13 @@ class RunEvidence:
     after: Mapping[str, Entry]
     stdout: str
     stderr: str
-    returncode: int
+    returncode: int | None
     report: Mapping[str, object]
     verification: tuple[Mapping[str, object], ...]
     route_components: tuple[str, ...]
     outcome_verification: Mapping[str, object] | None = None
+    execution_status: str = "completed"
+    execution_error: str | None = None
 
 
 def verdict(results: Sequence[CheckResult]) -> str:
@@ -1146,7 +1148,7 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         results.append(
             CheckResult(
                 "verification:independent-outcome",
-                outcome.get("exit_code") == 0,
+                None if outcome.get("exit_code") is None else outcome["exit_code"] == 0,
                 f"harness-run fixture verification: {dict(outcome)}",
             )
         )
@@ -1155,8 +1157,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
         if status != "success" or evidence.returncode != 0
         else all(result.passed for result in outcome_checks)
         if outcome_checks
-        else outcome.get("exit_code") == 0
-        if outcome is not None
+        else outcome["exit_code"] == 0
+        if outcome is not None and outcome.get("exit_code") is not None
         else None
     )
     expected_checks: dict[str, tuple[bool | None, str]] = {
@@ -1241,6 +1243,38 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
     for prohibition in evidence.scenario.must_not:
         passed, detail = prohibition_checks[prohibition]
         results.append(CheckResult(f"must-not:{prohibition}", passed, detail))
+    if evidence.execution_status != "completed":
+        # An interrupted subject has no final outcome. Preserve observed boundary
+        # violations, but do not grade missing completion evidence as a failure.
+        observed_boundaries = {
+            "expect:repository_unchanged",
+            "expect:project_state_preserved",
+            "must-not:overwrite_project_owned_state",
+            "must-not:unnecessary_planning_artifacts",
+            "must-not:full_discovery_for_lookup",
+            "must-not:repeat_resolved_discovery",
+            "route-marker:prohibited-components",
+        }
+        for assertion in evidence.scenario.assertions:
+            before = evidence.before.get(assertion.path.as_posix())
+            if (
+                assertion.kind == "section_preserved"
+                and before is not None
+                and assertion.value in dict(before.sections or ())
+            ):
+                observed_boundaries.add(
+                    f"assert:{assertion.path}#{assertion.value}:section_preserved"
+                )
+        results = [
+            result
+            if result.name in observed_boundaries and result.passed is False
+            else CheckResult(
+                result.name,
+                None,
+                f"execution {evidence.execution_status}; final outcome unobserved; {result.detail}",
+            )
+            for result in results
+        ]
     return tuple(results)
 
 
@@ -1476,6 +1510,8 @@ def run_live_scenario(
     actual_command = substitute_command(command, workspace, prompt_file, report_file)
     environment = os.environ.copy()
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    execution_status = "completed"
+    execution_error = None
     try:
         result = subprocess.run(
             actual_command,
@@ -1488,35 +1524,72 @@ def run_live_scenario(
             timeout=timeout_seconds,
         )
     except subprocess.TimeoutExpired as exc:
-        raise BehaviorError(
-            f"live scenario {scenario.id} exceeded {timeout_seconds} seconds"
-        ) from exc
+        execution_status = "timeout"
+        execution_error = f"agent exceeded {timeout_seconds} seconds"
+        result = subprocess.CompletedProcess(
+            actual_command,
+            None,
+            exc.stdout.decode("utf-8", errors="backslashreplace")
+            if isinstance(exc.stdout, bytes)
+            else exc.stdout or "",
+            exc.stderr.decode("utf-8", errors="backslashreplace")
+            if isinstance(exc.stderr, bytes)
+            else exc.stderr or "",
+        )
+    except OSError as exc:
+        execution_status = "runner_error"
+        execution_error = str(exc)
+        result = subprocess.CompletedProcess(actual_command, None, "", "")
+    if result.returncode not in (None, 0):
+        execution_status = "agent_error"
     after = snapshot(workspace)
     report = load_report(report_file)
     verification = load_verification(workspace.joinpath(*VERIFICATION_LOG.parts))
     outcome_verification = None
-    if {"verification_performed", "verification_failure_recovered"} & set(
-        scenario.expect
-    ) and "verify.py" in before:
+    if (
+        execution_status == "completed"
+        and {"verification_performed", "verification_failure_recovered"}
+        & set(scenario.expect)
+        and "verify.py" in before
+    ):
         if before.get("verify.py") != after.get("verify.py"):
             outcome_verification = {
                 "exit_code": 1,
                 "detail": "fixture verifier was changed",
             }
         else:
-            checked = subprocess.run(
-                [sys.executable, "verify.py"],
-                cwd=workspace,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
-                env=environment,
-            )
-            outcome_verification = {
-                "exit_code": checked.returncode,
-                "stdout": checked.stdout,
-                "stderr": checked.stderr,
-            }
+            try:
+                checked = subprocess.run(
+                    [sys.executable, "verify.py"],
+                    cwd=workspace,
+                    capture_output=True,
+                    text=True,
+                    errors="backslashreplace",
+                    timeout=timeout_seconds,
+                    env=environment,
+                )
+                outcome_verification = {
+                    "exit_code": checked.returncode,
+                    "stdout": checked.stdout,
+                    "stderr": checked.stderr,
+                }
+            except subprocess.TimeoutExpired as exc:
+                outcome_verification = {
+                    "exit_code": None,
+                    "execution_status": "timeout",
+                    "stdout": exc.stdout.decode("utf-8", errors="backslashreplace")
+                    if isinstance(exc.stdout, bytes)
+                    else exc.stdout or "",
+                    "stderr": exc.stderr.decode("utf-8", errors="backslashreplace")
+                    if isinstance(exc.stderr, bytes)
+                    else exc.stderr or "",
+                }
+            except OSError as exc:
+                outcome_verification = {
+                    "exit_code": None,
+                    "execution_status": "runner_error",
+                    "detail": str(exc),
+                }
     evidence = RunEvidence(
         scenario=scenario,
         workspace=workspace,
@@ -1529,6 +1602,8 @@ def run_live_scenario(
         verification=verification,
         route_components=route_components(result.stdout),
         outcome_verification=outcome_verification,
+        execution_status=execution_status,
+        execution_error=execution_error,
     )
     return evidence, evaluate(evidence)
 
@@ -1564,6 +1639,15 @@ def live_command(args: argparse.Namespace) -> int:
         raise BehaviorError("no live scenarios selected")
 
     output_runs: list[dict[str, object]] = []
+
+    def save_report() -> None:
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(
+                json.dumps({"schema_version": 2, "runs": output_runs}, indent=2) + "\n",
+                encoding="utf-8",
+            )
+
     failures = 0
     inconclusive = 0
     if args.keep_workspaces:
@@ -1577,9 +1661,30 @@ def live_command(args: argparse.Namespace) -> int:
         workspace_parent = Path(workspace_context.name)
     try:
         for scenario in scenarios:
-            evidence, results = run_live_scenario(
-                scenario, command, workspace_parent, args.timeout_seconds
-            )
+            attempt: dict[str, object] = {
+                "scenario": scenario.id,
+                "verdict": "INCONCLUSIVE",
+                "passed": None,
+                "execution_status": "started",
+                "checks": [],
+            }
+            output_runs.append(attempt)
+            save_report()
+            try:
+                evidence, results = run_live_scenario(
+                    scenario, command, workspace_parent, args.timeout_seconds
+                )
+            except (BehaviorError, OSError, subprocess.SubprocessError) as exc:
+                attempt.update(execution_status="runner_error", error=str(exc))
+                inconclusive += 1
+                save_report()
+                print(f"INCONCLUSIVE: {scenario.id} (runner_error): {exc}")
+                break
+            except KeyboardInterrupt:
+                attempt.update(execution_status="interrupted", error="run interrupted")
+                inconclusive += 1
+                save_report()
+                break
             outcome = verdict(results)
             failures += outcome == "FAIL"
             inconclusive += outcome == "INCONCLUSIVE"
@@ -1587,16 +1692,15 @@ def live_command(args: argparse.Namespace) -> int:
             for result in results:
                 print(f"  {verdict([result])}: {result.name}: {result.detail}")
             created, modified, deleted = changed_paths(evidence.before, evidence.after)
-            output_runs.append(
+            attempt.update(
                 {
                     "scenario": scenario.id,
                     "verdict": outcome,
                     "passed": {"PASS": True, "FAIL": False, "INCONCLUSIVE": None}[
                         outcome
                     ],
-                    "execution_status": "completed"
-                    if evidence.returncode == 0
-                    else "agent_error",
+                    "execution_status": evidence.execution_status,
+                    "error": evidence.execution_error,
                     "outcome_verification": evidence.outcome_verification,
                     "workspace": str(evidence.workspace),
                     "agent_exit_code": evidence.returncode,
@@ -1606,17 +1710,22 @@ def live_command(args: argparse.Namespace) -> int:
                     "route_components": list(evidence.route_components),
                     "checks": [result.__dict__ for result in results],
                     "report": dict(evidence.report),
+                    **(
+                        {
+                            "partial_stdout": evidence.stdout,
+                            "partial_stderr": evidence.stderr,
+                        }
+                        if evidence.execution_status != "completed"
+                        else {}
+                    ),
                 }
             )
+            save_report()
+            if evidence.execution_status != "completed":
+                break
     finally:
         if workspace_context is not None:
             workspace_context.cleanup()
-    if args.output:
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(
-            json.dumps({"schema_version": 2, "runs": output_runs}, indent=2) + "\n",
-            encoding="utf-8",
-        )
     return 1 if failures else 2 if inconclusive else 0
 
 

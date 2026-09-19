@@ -49,7 +49,7 @@ test("createUser makes user retrievable", async () => {
 });
 ```
 
-**Tautological tests**: Expected value restates the implementation, so the test passes by construction.
+**Copied expectations**: The expected value restates the implementation's algorithm, so both can repeat the same mistake.
 
 ```typescript
 // BAD: Expected value is recomputed the way the code computes it

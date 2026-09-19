@@ -23,9 +23,10 @@ INSTALL_ROOT = PACKAGE_ROOT / "install"
 MANIFEST = INSTALL_ROOT / "manifest.json"
 MINIMUM_PYTHON = (3, 11)
 MANIFEST_SCHEMA = 8
-SEMVER = re.compile(r"\d+\.\d+\.\d+")
+SEMVER = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)")
 MARKDOWN_LINK = re.compile(r"\[[^]]*\]\(([^)]+)\)")
-FENCED_CODE = re.compile(r"(?ms)^```[^\n]*\n.*?^```[ \t]*$")
+MARKDOWN_REFERENCE = re.compile(r"(?m)^ {0,3}\[[^]\n]+\]:[ \t]+(\S+)")
+CODE_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 INLINE_CODE = re.compile(r"`[^`\n]*`")
 MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
 MANAGED_END = b"<!-- agent-workflow:managed-end -->"
@@ -292,9 +293,35 @@ def parse_frontmatter(path: Path) -> list[str]:
     return text[4:end].splitlines()
 
 
+def markdown_prose(text: str) -> str:
+    """Exclude top-level fenced examples before the narrow link checks."""
+    lines: list[str] = []
+    fence = ""
+    for line in text.splitlines(keepends=True):
+        match = CODE_FENCE.match(line)
+        if fence:
+            if (
+                match
+                and match[1][0] == fence[0]
+                and len(match[1]) >= len(fence)
+                and not match[2].strip()
+            ):
+                fence = ""
+            continue
+        if match and (match[1][0] == "~" or "`" not in match[2]):
+            fence = match[1]
+        else:
+            lines.append(line)
+    return INLINE_CODE.sub("", "".join(lines))
+
+
 def markdown_destinations(path: Path) -> Iterable[str]:
-    text = INLINE_CODE.sub("", FENCED_CODE.sub("", path.read_text(encoding="utf-8")))
-    for destination in MARKDOWN_LINK.findall(text):
+    text = markdown_prose(path.read_text(encoding="utf-8"))
+    for destination in (
+        *MARKDOWN_LINK.findall(text),
+        *MARKDOWN_REFERENCE.findall(text),
+    ):
+        destination = destination.removeprefix("<").removesuffix(">")
         destination = destination.split("#", 1)[0]
         if (
             destination
@@ -350,7 +377,14 @@ def check_curated_skills() -> None:
 def check_local_links() -> None:
     roots = (
         REPOSITORY_ROOT / "README.md",
+        REPOSITORY_ROOT / "AGENTS.md",
+        REPOSITORY_ROOT / "CLAUDE.md",
         REPOSITORY_ROOT / "docs",
+        REPOSITORY_ROOT / "architecture-decisions",
+        REPOSITORY_ROOT / "tests/README.md",
+        REPOSITORY_ROOT / ".devcontainer/README.md",
+        REPOSITORY_ROOT / "evals/README.md",
+        *sorted((REPOSITORY_ROOT / "evals").glob("*/README.md")),
         FRAMEWORK_ROOT,
     )
     paths: list[Path] = []

@@ -254,8 +254,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             workspace = behavior.copy_fixture(scenario, Path(temporary))
             before = behavior.snapshot(workspace)
             stdout = (
-                "No durable Wayfinder state is needed.\n\n"
-                "[route: router → wayfinder → assessed-no-state]"
+                "No durable Wayfinder state is needed.\n\n[route: router → wayfinder]"
             )
             evidence = behavior.RunEvidence(
                 scenario=scenario,

@@ -68,6 +68,33 @@ class CodexParserTests(unittest.TestCase):
 
 
 class GenericAnalysisTests(unittest.TestCase):
+    def test_matching_skill_read_and_route_claim_do_not_establish_execution(self):
+        trace = NormalizedTrace(
+            source_path=Path("claims.jsonl"),
+            source_format="codex-exec-jsonl",
+            source_bytes=1,
+            agent_messages=["[route: router → research]"],
+            tool_invocations=[
+                ToolInvocation(
+                    "read",
+                    1,
+                    "command_execution",
+                    "command_execution",
+                    "cat .agents/skills/research/SKILL.md",
+                    "completed",
+                    0,
+                )
+            ],
+        )
+        summary = analyze_trace(trace)
+        self.assertEqual(
+            summary["heuristic"]["framework"]["skills_materially_invoked"], ["research"]
+        )
+        report = human_text(summary)
+        self.assertIn("Skills with matching read and route claims: research", report)
+        self.assertNotIn("Skills materially invoked:", report)
+        self.assertIn("cannot establish method execution", report)
+
     def test_only_supported_wayfinder_paths_become_current_state(
         self,
     ) -> None:

@@ -20,7 +20,6 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".project-efforts/wayfinder-runtime-projection/map.md",
   ".project-efforts/provider-projection/map.md",
   ".project-efforts/provider-runtime/map.md",
   ".project-efforts/established-provider-naming/map.md",
@@ -55,3 +54,8 @@ value = "# First-party Wayfinder runtime"
 [[assertions]]
 kind = "path_not_exists"
 path = ".project-efforts/first-party-wayfinder-runtime/map.md"
+
+[[assertions]]
+kind = "path_contains"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = "Current-knowledge settlement and safe-retirement rules."

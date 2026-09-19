@@ -7,6 +7,7 @@ import argparse
 from dataclasses import dataclass
 import json
 import hashlib
+import math
 import os
 from pathlib import Path
 import shutil
@@ -736,23 +737,20 @@ def claude_invoke(
                 "--permission-mode",
                 "plan",
             ]
-            try:
-                environment: dict[str, str] = {}
-                for key in ("HOME", "PATH", "TMPDIR", "LANG", "LC_ALL", "TERM"):
-                    if os.environ.get(key):
-                        environment[key] = os.environ[key]
-                result = subprocess.run(
-                    command,
-                    cwd=temporary,
-                    input=prompt,
-                    text=True,
-                    capture_output=True,
-                    errors="backslashreplace",
-                    timeout=timeout_seconds,
-                    env=environment,
-                )
-            except subprocess.TimeoutExpired:
-                raise
+            environment: dict[str, str] = {}
+            for key in ("HOME", "PATH", "TMPDIR", "LANG", "LC_ALL", "TERM"):
+                if os.environ.get(key):
+                    environment[key] = os.environ[key]
+            result = subprocess.run(
+                command,
+                cwd=temporary,
+                input=prompt,
+                text=True,
+                capture_output=True,
+                errors="backslashreplace",
+                timeout=timeout_seconds,
+                env=environment,
+            )
             public_evidence = {"stdout": result.stdout, "stderr": result.stderr}
             if result.returncode != 0:
                 detail = result.stderr.strip() or result.stdout.strip()
@@ -905,21 +903,22 @@ def run_command(args: argparse.Namespace) -> int:
     if args.max_prompt_bytes < 1 or args.max_prompt_bytes > DEFAULT_MAX_PROMPT_BYTES:
         raise SmokeError(f"max prompt bytes cannot exceed {DEFAULT_MAX_PROMPT_BYTES}")
     if (
-        args.max_estimated_cost_usd <= 0
+        not math.isfinite(args.max_estimated_cost_usd)
+        or args.max_estimated_cost_usd <= 0
         or args.max_estimated_cost_usd > HARD_MAX_COST_USD
     ):
         raise SmokeError(
-            f"estimated cost limit must be greater than zero and at most ${HARD_MAX_COST_USD:.2f}"
+            f"estimated cost limit must be finite, greater than zero and at most ${HARD_MAX_COST_USD:.2f}"
         )
-    if (
-        min(
+    if any(
+        not math.isfinite(price) or price < 0
+        for price in (
             args.input_price_per_million,
             args.cached_input_price_per_million,
             args.output_price_per_million,
         )
-        < 0
     ):
-        raise SmokeError("token prices must be non-negative")
+        raise SmokeError("token prices must be finite and non-negative")
     host = "claude" if args.adapter == "claude" else "codex"
     if args.adapter == "codex":
         invoke = codex_invoke(

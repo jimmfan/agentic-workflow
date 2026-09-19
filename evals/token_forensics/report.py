@@ -131,7 +131,7 @@ def human_text(summary: dict[str, Any], *, label: str | None = None) -> str:
         )
     if framework["skills_materially_invoked"]:
         lines.append(
-            "- Skills materially invoked: "
+            "- Skills with matching read and route claims: "
             + ", ".join(framework["skills_materially_invoked"])
         )
     if framework["route_markers"]:

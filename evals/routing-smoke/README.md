@@ -99,6 +99,7 @@ Declaring `--vary effort` does not supply that missing observation.
 
 The hard limits are four rounds and 120,000 prompt bytes per case; command-line values may lower but not raise them.
 Every live run also requires current input, cached-input, and output prices plus an estimated cost limit no greater than $2.
+Prices must be finite and nonnegative; the cost limit must also be finite and positive.
 The runner sums adapter-reported usage after every round and stops before starting another round once the limit is reached.
 Pricing examples above were current on 2026-08-19; verify vendor pricing before a later run.
 

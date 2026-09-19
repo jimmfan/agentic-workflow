@@ -142,6 +142,19 @@ class VerifyPackageTests(ProjectTestCase):
                 )
                 self.assert_verify_failure(source, expected)
 
+    def test_version_uses_canonical_ascii_components(self) -> None:
+        source = self.copy_source("canonical-version")
+        version = source / "VERSION"
+        for value in ("01.2.3", "1.02.3", "1.2.03", "١.2.3", "1.２.3"):
+            with self.subTest(rejected=value):
+                version.write_text(value + "\n", encoding="utf-8")
+                self.assert_verify_failure(source, "VERSION must use x.y.z")
+        for value in ("0.0.0", "1.20.300"):
+            with self.subTest(accepted=value):
+                version.write_text(value + "\n", encoding="utf-8")
+                result = self.verify(source)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_verifier_requires_non_active_root_policy_templates(self) -> None:
         cases = (
             ("literal-root-policy", "agent_workflow/install/AGENTS.md"),
@@ -346,6 +359,66 @@ If neither authorizes a commit, keep the changes uncommitted and report that sta
                     encoding="utf-8",
                 )
                 self.assert_verify_failure(source, expected)
+
+    def test_local_link_gate_covers_maintaining_documents(self) -> None:
+        for index, relative in enumerate(
+            (
+                "AGENTS.md",
+                "CLAUDE.md",
+                "architecture-decisions/README.md",
+                "tests/README.md",
+                "evals/README.md",
+                "evals/routing-smoke/README.md",
+                ".devcontainer/README.md",
+            )
+        ):
+            with self.subTest(relative=relative):
+                source = self.copy_source(f"missing-maintainer-link-{index}")
+                path = source / relative
+                path.write_text(
+                    path.read_text(encoding="utf-8")
+                    + "\n[Missing audit target](missing-audit-target.md).\n",
+                    encoding="utf-8",
+                )
+                self.assert_verify_failure(source, "broken local Markdown link")
+
+    def test_reference_link_targets_are_checked(self) -> None:
+        source = self.copy_source("reference-link-target")
+        path = source / "docs/audit-link-control.md"
+        path.write_text(
+            "See [the maintaining document][owner].\n\n[owner]: missing-owner.md\n",
+            encoding="utf-8",
+        )
+        self.assert_verify_failure(source, "broken local Markdown link")
+        path.write_text(
+            "See [the maintaining document][owner].\n\n[owner]: ../README.md#usage\n",
+            encoding="utf-8",
+        )
+        result = self.verify(source)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_link_examples_in_code_and_historical_fixtures_are_not_live_targets(
+        self,
+    ) -> None:
+        source = self.copy_source("literal-link-examples")
+        example = "[Example](intentionally-missing.md)"
+        (source / "docs/audit-link-control.md").write_text(
+            "Use `" + example + "` as an example.\n\n"
+            "~~~markdown\n" + example + "\n~~~\n\n"
+            "````markdown\n```\n" + example + "\n`````\n\n"
+            "[Online](https://example.invalid/guide).\n",
+            encoding="utf-8",
+        )
+        for relative in (
+            "tests/fixtures/audit-link-control/README.md",
+            "evals/routing-smoke/fixtures/audit-link-control/README.md",
+            "evals/routing-smoke/REPORT.md",
+        ):
+            path = source / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(example + "\n", encoding="utf-8")
+        result = self.verify(source)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_verifier_requires_complete_third_party_attribution(self) -> None:
         cases = (

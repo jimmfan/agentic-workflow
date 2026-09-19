@@ -165,6 +165,8 @@ Keep routine completion and audit narratives in Git or PRs rather than permanent
 Add instructions only when requested or needed to address a demonstrated problem or preserve an established boundary within the task's scope.
 Do not add defensive rules for hypothetical failures or duplicate existing rules.
 Keep wording and terminology consistent with the surrounding instructions.
+Before consolidating a rule, consult its owning source and check where affected agents load it, including standalone skills and installed consumers.
+For obligation edits, preserve the actor, trigger, scope, authority, exceptions, strength, and required outcome; update affected consumers together.
 
 ## Working practice
 
@@ -200,6 +202,8 @@ Keep experiments reversible and isolated until adoption is intentional.
   If a relevant test, platform, integration, workflow, or external behavior was not actually exercised, say so.
   Separate product behavior from harness, evaluator, fixture, authentication, quota, timeout, permission, host, and other infrastructure failures.
 - Do not regenerate or modify derived metadata merely to make an unexplained difference disappear.
+- Demonstrate new or materially changed maintenance checks with deliberate defects and legitimate acceptance cases in disposable copies.
+  Keep prose meaning and ambiguous terminology under contextual review rather than treating keyword matches as semantic proof.
 
 ## Versioning
 

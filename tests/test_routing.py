@@ -37,8 +37,8 @@ class RoutingContractTests(unittest.TestCase):
         terminology = (REPOSITORY_ROOT / ".agent-workflow/terminology.md").read_text(
             encoding="utf-8"
         )
-        self.assertEqual(
-            set(re.findall(r"^\*\*([^*]+)\*\*:", terminology, re.MULTILINE)),
+        self.assertCountEqual(
+            re.findall(r"^\*\*([^*]+)\*\*:", terminology, re.MULTILINE),
             EXPECTED_FRAMEWORK_LANGUAGE,
         )
 

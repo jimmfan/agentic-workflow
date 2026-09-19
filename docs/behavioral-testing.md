@@ -65,7 +65,9 @@ The final stdout response must end with exactly one truthful route marker, such 
 Neither the report nor the marker requests private reasoning.
 
 The aggregate `--output` JSON contains verdicts, execution status, checks, changed paths, route claims, the agent report, and any independent fixture-verification result.
-Kept workspaces retain changed files and `.behavior-evidence/` inputs/reports/logs; the aggregate report does not retain the agent's full stdout/stderr trace.
+It checkpoints each allocated attempt before fixture preparation and saves the result after each case, including preparation errors and interrupted attempts.
+An agent timeout, failed start, or nonzero exit stops later subjects and retains available partial stdout/stderr and file-change evidence; preparation errors remain `runner_error` outcomes.
+Kept workspaces retain changed files and `.behavior-evidence/` inputs/reports/logs; the aggregate report does not retain a completed agent's full stdout/stderr trace.
 Arrange wrapper-side trace capture separately if the evaluation needs it.
 `--keep-workspaces` creates a unique run directory beneath the supplied parent.
 Remove that specific run directory and output report after review when no longer needed; otherwise the default temporary workspace is cleaned automatically, while an explicit output report persists.
@@ -118,6 +120,7 @@ Optional controls are:
 - `forbid_created_globs` lists prohibited new paths.
   Activate that check with the `unnecessary_planning_artifacts`, `full_discovery_for_lookup`, or `repeat_resolved_discovery` prohibition.
   Declaring either path list alone does not enforce its constraint.
+  The deterministic scenario tests reject inactive path lists in the maintained scenario collection; the generic loader continues to accept them.
 - `route_must_include` and `route_must_not_include` constrain reported route components, not actual specialist execution.
 - `state_must_include` and `state_must_not_include` constrain the public `state_used` claim and must name regular files in the starting fixture.
   Matching claims still leave actual reads/reuse INCONCLUSIVE.
@@ -182,6 +185,9 @@ Each check has `passed: true`, `false`, or `null`:
 
 Exit codes are 0 for PASS, 1 for observed failure, and 2 for INCONCLUSIVE or runner error.
 Report authentication, quota, network, timeout, host, fixture, and harness failures separately; an unavailable run does not establish a product verdict.
+For an incomplete agent execution, missing final evidence is INCONCLUSIVE; observed violations of read-only scope, preserved paths, forbidden paths, or route exclusions remain failures.
+An independent verifier timeout or failed start retains the completed subject's evidence and records an unavailable exit code (`null`), rather than a failed product check.
+Historical results retain their original scenario and harness scope; changing a grader does not retroactively establish a different live result.
 
 A reported state path proves neither a read nor reuse; a URL proves neither research execution nor current factual accuracy.
 Changing facts require source adjudication, and route markers alone do not prove skill execution.

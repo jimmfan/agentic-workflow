@@ -8,6 +8,7 @@ starting_state = [
   "The first validation run must fail and records every exit code.",
 ]
 expect = [
+  "project_state_preserved",
   "task_completed",
   "meaningful_repository_change",
   "verification_failure_recovered",

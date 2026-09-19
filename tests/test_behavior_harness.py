@@ -7,11 +7,226 @@ import subprocess
 import tempfile
 import textwrap
 import unittest
+from unittest.mock import patch
 
 from _behavior_test_support import behavior
 
 
 class BehaviorHarnessTests(unittest.TestCase):
+    def test_failed_fixture_preparation_retains_allocated_attempt(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "report.json"
+            with patch.object(
+                behavior.subprocess,
+                "run",
+                return_value=subprocess.CompletedProcess(
+                    ["git"], 1, "", "fixture setup unavailable"
+                ),
+            ):
+                code = behavior.main(
+                    [
+                        "live",
+                        "--agent-command-json",
+                        '["unused-agent"]',
+                        "--scenario",
+                        "objective-clear-request",
+                        "--output",
+                        str(output),
+                    ]
+                )
+            self.assertEqual(code, 2)
+            runs = json.loads(output.read_text())["runs"]
+            self.assertEqual(len(runs), 1)
+            self.assertEqual(runs[0]["execution_status"], "runner_error")
+            self.assertEqual(runs[0]["verdict"], "INCONCLUSIVE")
+            self.assertIn("fixture setup unavailable", runs[0]["error"])
+
+    def test_interruption_does_not_erase_observed_preservation_or_read_only_failure(
+        self,
+    ):
+        scenario = next(
+            s for s in behavior.load_scenarios() if s.id == "objective-clear-request"
+        )
+        existing = next(
+            s for s in behavior.load_scenarios() if s.id == "existing-wayfinder-state"
+        )
+        resolution = next(
+            s for s in behavior.load_scenarios() if s.id == "audit-resolution"
+        )
+        cases = (
+            (
+                "preserved",
+                scenario,
+                "Path('README.md').write_text('lost original')",
+                "expect:project_state_preserved",
+            ),
+            (
+                "read-only",
+                replace(scenario, expect=("repository_unchanged",), write_report=False),
+                "Path('unexpected.txt').touch()",
+                "expect:repository_unchanged",
+            ),
+            (
+                "prohibited",
+                scenario,
+                "Path('.project-efforts/extra').mkdir(parents=True)",
+                "must-not:unnecessary_planning_artifacts",
+            ),
+            (
+                "repeat-discovery",
+                existing,
+                "Path('docs/decisions').mkdir(parents=True); Path('docs/decisions/unauthorized.md').touch()",
+                "must-not:repeat_resolved_discovery",
+            ),
+            (
+                "lookup-discovery",
+                replace(existing, must_not=("full_discovery_for_lookup",)),
+                "Path('docs/decisions').mkdir(parents=True); Path('docs/decisions/unauthorized.md').touch()",
+                "must-not:full_discovery_for_lookup",
+            ),
+            (
+                "preserved-section",
+                resolution,
+                "Path('.project-efforts/receipt-consumer/unknowns.md').write_text('lost neighboring U8')",
+                "assert:.project-efforts/receipt-consumer/unknowns.md#U8:section_preserved",
+            ),
+        )
+        for label, case, mutation, expected in cases:
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                agent = root / "agent.py"
+                agent.write_text(
+                    "from pathlib import Path\nimport time\n"
+                    + mutation
+                    + "\ntime.sleep(10)\n"
+                )
+                evidence, results = behavior.run_live_scenario(
+                    case, [behavior.sys.executable, str(agent)], root, 1
+                )
+                self.assertEqual(evidence.execution_status, "timeout")
+                self.assertEqual(behavior.verdict(results), "FAIL")
+                self.assertFalse(
+                    next(result.passed for result in results if result.name == expected)
+                )
+                self.assertIsNone(
+                    next(
+                        result.passed
+                        for result in results
+                        if result.name == "route-marker:exactly-one-valid-final"
+                    )
+                )
+
+    def test_independent_verifier_timeout_is_inconclusive_and_retains_agent_result(
+        self,
+    ):
+        scenario = next(
+            s for s in behavior.load_scenarios() if s.id == "objective-clear-request"
+        )
+        scenario = replace(scenario, assertions=())
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            agent = root / "agent.py"
+            agent.write_text(
+                textwrap.dedent("""
+                import json
+                from pathlib import Path
+                Path('app.py').write_text('def greeting():\\n    import time\\n    time.sleep(10)\\n    return "hello, world!"\\n')
+                Path('.behavior-evidence/report.json').write_text(json.dumps({'schema_version': 1, 'status': 'success'}))
+                Path('.behavior-evidence/verification.jsonl').write_text(json.dumps({'exit_code': 0}) + '\\n')
+                print('Finished. [route: router → direct]')
+                """)
+            )
+            evidence, results = behavior.run_live_scenario(
+                scenario, [behavior.sys.executable, str(agent)], root, 1
+            )
+            self.assertEqual(evidence.execution_status, "completed")
+            self.assertEqual(
+                evidence.outcome_verification["execution_status"], "timeout"
+            )
+            self.assertIsNone(evidence.outcome_verification["exit_code"])
+            self.assertEqual(behavior.verdict(results), "INCONCLUSIVE")
+            self.assertIn("Finished.", evidence.stdout)
+
+    def test_failed_agent_start_is_retained_as_inconclusive(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "report.json"
+            code = behavior.main(
+                [
+                    "live",
+                    "--agent-command-json",
+                    json.dumps([str(Path(temporary) / "missing-agent")]),
+                    "--scenario",
+                    "objective-clear-request",
+                    "--output",
+                    str(output),
+                ]
+            )
+            self.assertEqual(code, 2)
+            runs = json.loads(output.read_text())["runs"]
+            self.assertEqual(len(runs), 1)
+            self.assertEqual(runs[0]["execution_status"], "runner_error")
+            self.assertEqual(runs[0]["verdict"], "INCONCLUSIVE")
+            self.assertIn("missing-agent", runs[0]["error"])
+
+    def test_live_timeout_retains_completed_case_and_partial_attempt(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            agent = root / "agent.py"
+            agent.write_text(
+                textwrap.dedent("""
+                import json
+                from pathlib import Path
+                import subprocess
+                import sys
+                import time
+
+                if Path('.project-efforts/database-migration').exists():
+                    Path('progress.txt').write_text('started second case')
+                    print('partial response', flush=True)
+                    print('partial diagnostic', file=sys.stderr, flush=True)
+                    time.sleep(10)
+                else:
+                    Path('app.py').write_text('def greeting(): return "hello, world!"\\n')
+                    subprocess.run([sys.executable, 'verify.py'], check=True, capture_output=True)
+                    Path('.behavior-evidence/report.json').write_text(json.dumps({
+                        'schema_version': 1, 'status': 'success',
+                    }))
+                    print('Done. [route: router → direct]')
+                """)
+            )
+            output = root / "report.json"
+            code = behavior.main(
+                [
+                    "live",
+                    "--agent-command-json",
+                    json.dumps([behavior.sys.executable, str(agent)]),
+                    "--scenario",
+                    "objective-clear-request",
+                    "--scenario",
+                    "simple-bounded-task",
+                    "--timeout-seconds",
+                    "1",
+                    "--output",
+                    str(output),
+                ]
+            )
+            self.assertEqual(code, 2)
+            self.assertTrue(
+                output.is_file(),
+                "completed and interrupted evidence must survive timeout",
+            )
+            runs = json.loads(output.read_text())["runs"]
+            self.assertEqual(
+                [run["scenario"] for run in runs],
+                ["objective-clear-request", "simple-bounded-task"],
+            )
+            self.assertEqual(runs[0]["verdict"], "PASS")
+            self.assertEqual(runs[1]["execution_status"], "timeout")
+            self.assertEqual(runs[1]["verdict"], "INCONCLUSIVE")
+            self.assertIn("progress.txt", runs[1]["created"])
+            self.assertIn("partial response", runs[1]["partial_stdout"])
+            self.assertIn("partial diagnostic", runs[1]["partial_stderr"])
+
     def test_public_report_prompt_omits_retired_provider_selection_field(self) -> None:
         scenario = next(
             item
