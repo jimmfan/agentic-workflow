@@ -47,13 +47,15 @@ Its observations do not establish a fully isolated behavioral pass or a causal f
 On 2026-09-17, all seven subject raw trace paths recorded in its [results](../../evals/remaining-audit-behavior/results.json) were unavailable locally, as was `/tmp/persistence-quality-final-4`, the persistence report's recorded run root.
 Compact results remain usable within their stated limits; fresh trace analysis cannot currently reproduce loading sequences from those locations.
 This availability check does not establish that no copies exist elsewhere.
+The 2026-09-19 [follow-up evidence inventory](../../evals/wayfinder-persistence/preservation-followups.md#raw-evidence-availability) confirms those older run roots remain absent and identifies available raw evidence for distinct later comparisons, with verified retained hashes where inventories exist.
+That evidence makes a bounded offline loading investigation possible when separately scoped; it does not reconstruct the missing older traces or establish a current efficiency defect.
 
 ## Areas and relationships
 
 - **Policy and delivery:** [root policy](../../AGENTS.md), [consumer template](../../agent_workflow/install/AGENTS.md.template), routing, and selected skills own loading obligations; [architecture](../../docs/architecture.md#instruction-runtime) explains their interaction.
   Source inspection alone cannot quantify host context overhead.
 - **Continuity:** maps summarize the current route; supporting records and accepted artifacts preserve necessary detail under the state contract.
-  The [persistence effort](../wayfinder-persistence-quality/map.md) retains its specific reconciliation campaign; this effort interprets cost evidence without reopening its scope.
+  The [persistence report](../../evals/wayfinder-persistence/REPORT.md) retains the completed reconciliation campaign; this effort interprets cost evidence without reopening its scope.
 - **Measurement:** [token forensics](../../evals/token_forensics/README.md#evidence-boundaries) distinguishes exact counters and trace-embedded events, derived uncached input and repeated commands, and heuristic file-read/search/context-pressure indicators.
   File reads inferred from commands are not operating-system access observations; output bytes are not tokens, and later input cannot be assigned exactly to a particular tool result.
 - **Behavior:** [progressive-loading controls](../../tests/test_wayfinder_behavior.py) reject synthetic unrelated-state use; [test ownership](../../tests/README.md) explains their limits.
@@ -73,7 +75,8 @@ A cheaper result that loses required behavior is a regression.
 ## Blockers
 
 No unresolved dependency prevents completion of this initial audit.
-The recorded raw evidence is unavailable for deeper offline attribution, and current reports leave actual context occupancy, per-file causal cost, and stable current-framework efficiency unestablished.
+The older campaigns' recorded raw evidence is unavailable for deeper offline attribution; later comparison evidence is locally available as linked above.
+Current reports leave actual context occupancy, per-file causal cost, and stable current-framework efficiency unestablished.
 Whether any repeated read or broad output is avoidable remains an investigation question, not a confirmed defect.
 
 ## Key references

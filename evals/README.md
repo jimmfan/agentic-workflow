@@ -47,6 +47,12 @@ A retained run must identify the benchmark and conditions, dataset and product r
 Unknown observations stay unavailable rather than being inferred.
 Do not combine unlike campaigns into a synthetic score.
 
+## Historical findings
+
+[Preservation follow-ups](wayfinder-persistence/preservation-followups.md) retain completed inconclusive comparisons, concrete bounded failures, separate fixture and infrastructure stops, frozen sources, and the unfinished corrected preparation.
+The [representation experiment](wayfinder-yaml/README.md) explains why Markdown was retained and preserves its corrected adjudication and unexecuted YAML stages.
+These are historical evidence summaries, not new current-main evaluations or adopted experimental tooling.
+
 ## Open evaluation questions
 
 No current campaign resolves these questions:

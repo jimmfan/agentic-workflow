@@ -4,6 +4,13 @@ The bounded implementation starts from fresh `origin/main` `96ec2fbd` and change
 It makes no comparative quality or reliability claim.
 The frozen persistence and PR #33 protocols, manifests, reports, and outcomes remain unchanged; no baseline interaction or comparison campaign was run.
 
+## Delivery status
+
+The implementation and evaluator/reference follow-up merged in [PR #35](https://github.com/jimmfan/agentic-workflow/pull/35).
+No implementation work remains for that bounded scope, and its effort map is retired.
+The [testing guide](../../tests/README.md#wayfinder-coverage-and-evidence-limits) maintains current controls; the executed checks below describe the historical verification, not a fresh run.
+The optional live smoke remains unexecuted and requires its own authorization and both isolation gates; merge and effort closure establish no live behavioral acceptance.
+
 ## Evidence boundaries
 
 | Boundary | Evidence and limitation |
