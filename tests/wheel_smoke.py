@@ -1,3 +1,5 @@
+"""Build and install the wheel, then exercise its CLI in disposable consumers."""
+
 from __future__ import annotations
 
 import shutil
@@ -188,7 +190,6 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                         "agent_workflow/lifecycle.py",
                         "agent_workflow/verify_package.py",
                         "agent_workflow/install/AGENTS.md.template",
-                        "agent_workflow/install/CLAUDE.md.template",
                         "agent_workflow/install/manifest.json",
                     },
                 )
@@ -272,12 +273,12 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                     curated_skill_names(project),
                     curated_skill_names() | {"project-local"},
                 )
-                for name in ("AGENTS.md", "CLAUDE.md"):
-                    content = (project / name).read_bytes()
-                    self.assertEqual(
-                        content.count(b"<!-- agent-workflow:managed-begin -->"), 1
-                    )
-                    self.assertTrue(content.endswith(project_bytes))
+                content = (project / "AGENTS.md").read_bytes()
+                self.assertEqual(
+                    content.count(b"<!-- agent-workflow:managed-begin -->"), 1
+                )
+                self.assertTrue(content.endswith(project_bytes))
+                self.assertEqual((project / "CLAUDE.md").read_bytes(), project_bytes)
             run(cli, "remove", project, "--archive-url", archive.as_uri(), cwd=root)
             self.assertFalse((project / ".agent-workflow").exists())
             self.assertEqual(durable.read_bytes(), b"# Consumer-owned effort\r\n")

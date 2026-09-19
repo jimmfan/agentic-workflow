@@ -66,7 +66,10 @@ Ordinary framework updates do not require a CLI upgrade.
 
 Install and update replace all of `.agent-workflow/` and each [current curated skill directory](.agents/skills/), including local edits and extra files inside those directories.
 Keep project customizations outside those reserved surfaces.
-Unrelated skills, project-owned `.project-efforts/` state, and all content outside the managed regions in `AGENTS.md` and `CLAUDE.md` are preserved.
+Unrelated skills, project-owned `.project-efforts/` state, and all content outside the managed region in `AGENTS.md` are preserved.
+Install, update, and remove also strip the exact former Agent Workflow `CLAUDE.md` shim, preserving every byte after its project-instructions marker and deleting the file only when no bytes remain.
+Other `CLAUDE.md` content and symlinks are left untouched; the file is no longer a managed surface.
+If a retained project-authored Claude policy prevents `AGENTS.md` from loading, configure the host to meet the [supported boundary](#supported-hosts).
 Remove deletes the managed directories and regions; it refuses ambiguous ownership or curated-name collisions on an otherwise unrecognized installation.
 
 Unsafe managed paths or malformed policy markers stop mutation before writes.
@@ -90,12 +93,8 @@ Projects with Wayfinder state at the former `.agent-wayfinder/` path must explic
 
 - [Codex](https://developers.openai.com/codex/skills) and [GitHub Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) discover the installed skills under `.agents/skills/`.
 - A Claude model inside GitHub Copilot uses Copilot's skill support.
-- Native Claude Code 2.1.277 and later can read [`AGENTS.md` as project instructions](https://code.claude.com/docs/en/memory#agentsmd), but direct loading is conditional.
-  By default, an applicable `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` in the working directory or its ancestors takes precedence.
-  Direct loading is [unavailable in documented sessions](https://code.claude.com/docs/en/memory#when-agentsmd-support-is-unavailable), including third-party providers such as Amazon Bedrock, disabled telemetry, the first session after installing or upgrading to a supporting version, and configurations that disable the required hooks or built-in plugin.
-  Agent Workflow therefore retains its managed `CLAUDE.md` region containing the documented [`@AGENTS.md` import](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools).
-  `AGENTS.md` remains the policy source; the import supplies it to those sessions without requiring users to change host settings.
-  Removing the integration would narrow supported Claude Code configurations, rather than only remove redundant content.
+- Native Claude Code support requires a current version and configuration with [`AGENTS.md` project-instruction support](https://code.claude.com/docs/en/memory#agentsmd).
+  Agent Workflow distributes `AGENTS.md` as its only root policy and does not configure Claude Code on the project's behalf.
 - Claude Code's documented project-skill location is [`.claude/skills/`](https://code.claude.com/docs/en/skills#choose-where-skills-load).
   Agent Workflow does not copy skills there.
   Agents read the canonical `.agents/skills/<name>/SKILL.md` instructions directly.

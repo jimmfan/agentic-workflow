@@ -1,3 +1,5 @@
+"""Test snapshot transport, release selection, and CLI bootstrap boundaries."""
+
 from __future__ import annotations
 
 import io
@@ -160,14 +162,10 @@ target = Path(sys.argv[2])
                 curated_skill_names(target),
                 curated_skill_names(),
             )
-            for name in ("AGENTS.md", "CLAUDE.md"):
-                content = (target / name).read_bytes()
-                self.assertEqual(
-                    content.count(b"<!-- agent-workflow:managed-begin -->"), 1
-                )
-                self.assertEqual(
-                    content.count(b"<!-- agent-workflow:managed-end -->"), 1
-                )
+            self.assertFalse((target / "CLAUDE.md").exists())
+            content = (target / "AGENTS.md").read_bytes()
+            self.assertEqual(content.count(b"<!-- agent-workflow:managed-begin -->"), 1)
+            self.assertEqual(content.count(b"<!-- agent-workflow:managed-end -->"), 1)
 
     def test_snapshot_paths_and_entry_types_are_safe_across_all_source_trees(
         self,

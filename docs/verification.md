@@ -34,7 +34,7 @@ Review changed instructional prose in context against the [Markdown policy](../A
 For changed operational guidance, check command behavior, prerequisites, network requirements, and verification coverage against the implementation and the documentation designated to maintain those requirements.
 Package-test success alone does not establish prose conformance.
 
-The verifier's documentation-link check covers root policy files and `README.md`, `docs/`, `.agent-workflow/`, ADRs, the test and devcontainer READMEs, and evaluation READMEs at the root and one directory below it; skill-local links are checked separately.
+The verifier's documentation-link check covers `AGENTS.md` and `README.md`, `docs/`, `.agent-workflow/`, ADRs, the test and devcontainer READMEs, and evaluation READMEs at the root and one directory below it; skill-local links are checked separately.
 It recognizes inline links and single-line reference definitions while excluding top-level fenced examples and inline code.
 It checks local targets, not Markdown anchors, full CommonMark syntax, or every tracked document/reference form.
 Frozen reports, fixtures, and project-owned effort state remain outside this current-document check.

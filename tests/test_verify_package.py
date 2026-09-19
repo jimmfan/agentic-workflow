@@ -1,3 +1,5 @@
+"""Test package verification against valid sources and deliberate disposable defects."""
+
 from __future__ import annotations
 
 import json
@@ -349,7 +351,6 @@ class VerifyPackageTests(ProjectTestCase):
         for index, relative in enumerate(
             (
                 "AGENTS.md",
-                "CLAUDE.md",
                 "architecture-decisions/README.md",
                 "tests/README.md",
                 "evals/README.md",

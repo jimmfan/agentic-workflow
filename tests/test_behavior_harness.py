@@ -1,3 +1,5 @@
+"""Test behavioral grading, evidence handling, and isolated scenario execution."""
+
 from __future__ import annotations
 
 from dataclasses import replace
@@ -13,6 +15,37 @@ from _behavior_test_support import behavior
 
 
 class BehaviorHarnessTests(unittest.TestCase):
+    def test_claude_edits_count_as_project_changes(self):
+        scenario = next(
+            s for s in behavior.load_scenarios() if s.id == "simple-bounded-task"
+        )
+        for filename, expected in (("CLAUDE.md", True), ("AGENTS.md", False)):
+            with (
+                self.subTest(filename=filename),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                workspace = behavior.copy_fixture(scenario, Path(temporary))
+                before = behavior.snapshot(workspace)
+                (workspace / filename).write_text("Project instruction change\n")
+                evidence = behavior.RunEvidence(
+                    scenario=scenario,
+                    workspace=workspace,
+                    before=before,
+                    after=behavior.snapshot(workspace),
+                    stdout="",
+                    stderr="",
+                    returncode=0,
+                    report={},
+                    verification=(),
+                    route_components=(),
+                )
+                result = next(
+                    item
+                    for item in behavior.evaluate(evidence)
+                    if item.name == "expect:meaningful_repository_change"
+                )
+                self.assertIs(result.passed, expected)
+
     def test_timeout_retains_observed_decision_and_unknown_writes(self):
         scenario = next(
             s

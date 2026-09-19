@@ -111,10 +111,6 @@
     {
       "source": "agent_workflow/install/AGENTS.md.template",
       "target": "AGENTS.md"
-    },
-    {
-      "source": "agent_workflow/install/CLAUDE.md.template",
-      "target": "CLAUDE.md"
     }
   ],
   "schema_version": 8
