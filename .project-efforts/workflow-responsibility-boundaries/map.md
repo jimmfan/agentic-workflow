@@ -53,7 +53,7 @@ The [campaign effort](../remaining-behavior-evidence/map.md) and its linked prot
   Authorized durable specifications, tickets, research results, reviews, and architecture decisions remain in their designated maintaining artifacts; chat-only drafts remain session-local.
   Wayfinder links those results and does not mirror ticket readiness or specialist procedures, as required by [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md).
 - **Evidence and preservation:** [test ownership](../../tests/README.md) distinguishes actual filesystem/Git observations from structural guards and synthetic evaluator controls.
-  [Specialist reconciliation tests](../../tests/test_specialist_reconciliation.py) guard owning-layer instructions but do not prove agent ordering or execution.
+  The removed [specialist reconciliation tests](https://github.com/jimmfan/agentic-workflow/blob/92d3304473b0fbebdcb6ab08b41bbad1d9710a50/tests/test_specialist_reconciliation.py) remain historical evidence only; their substring checks did not prove instruction meaning, agent ordering or execution.
   [ADR-0010](../../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md) keeps effort state project-owned and outside lifecycle traversal and mutation; safe Wayfinder state changes remain governed by the state contract.
 
 ## Dependencies

@@ -82,6 +82,8 @@ def analyze_tokens(
             if item.semantics == "cumulative_snapshot"
         ]
     )
+    known_subtotals = None
+    turns_without_usage = None
 
     if per_turn and cumulative:
         warnings.append(
@@ -106,7 +108,34 @@ def analyze_tokens(
     else:
         selected = per_turn
         accounting = "sum of per-turn usage observations"
-        totals = {field: _sum_complete(selected, field) for field in _TOKEN_FIELDS}
+        turns_without_usage = max(0, trace.codex_turns_completed - len(selected))
+        known_subtotals = {}
+        for field in _TOKEN_FIELDS:
+            values = [
+                getattr(item, field)
+                for item in selected
+                if getattr(item, field) is not None
+            ]
+            known_subtotals[field.removesuffix("_tokens")] = (
+                sum(values) if values else None
+            )
+        totals = {
+            field: None if turns_without_usage else _sum_complete(selected, field)
+            for field in _TOKEN_FIELDS
+        }
+        if turns_without_usage or any(
+            totals[field] is None
+            and known_subtotals[field.removesuffix("_tokens")] is not None
+            for field in _TOKEN_FIELDS
+        ):
+            accounting = "incomplete per-turn usage; known subtotals are not totals"
+            warnings.append(
+                {
+                    "code": "incomplete_per_turn_usage",
+                    "category": "measured",
+                    "message": "Completed turns have missing usage counters; affected totals and ratios are unavailable. Known subtotals include only reported counters.",
+                }
+            )
 
     measured = {
         "input": totals["input_tokens"],
@@ -117,6 +146,8 @@ def analyze_tokens(
         "accounting": accounting,
         "usage_observations": len(selected),
         "raw_usage_observations": len(trace.usage_observations),
+        "completed_turns_without_usage": turns_without_usage,
+        "known_subtotals": known_subtotals,
     }
 
     input_tokens = totals["input_tokens"]
@@ -141,7 +172,9 @@ def analyze_tokens(
             )
 
     trajectory: list[dict[str, Any]] = []
-    running = {field: 0 for field in _TOKEN_FIELDS}
+    # Missing entire observations have no positions in the normalized series.
+    # Keep cumulative points unavailable rather than drawing a misleading subtotal.
+    running = {field: None if turns_without_usage else 0 for field in _TOKEN_FIELDS}
     for observation in selected:
         if observation.semantics == "per_turn":
             for field in _TOKEN_FIELDS:

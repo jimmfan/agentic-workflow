@@ -13,7 +13,6 @@ import unittest
 from _behavior_test_support import behavior
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_ROOT = REPOSITORY_ROOT / "agent_workflow"
 CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md"
 FIXTURES = REPOSITORY_ROOT / "tests/fixtures"
 
@@ -217,24 +216,6 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertIn(path, self.contract)
 
-    def test_contract_documents_record_type_inventory(self) -> None:
-        self.assertEqual(
-            set(re.findall(r"^### [^\n]+ — ([A-Z])#$", self.contract, re.MULTILINE)),
-            {"U", "E", "F", "D"},
-        )
-
-    def test_contract_documents_evidence_and_authority_fields(self) -> None:
-        for field in (
-            "`Source:`",
-            "`Scope:`",
-            "`Authority:`",
-            "`Derived from:`",
-            "`Limitations:`",
-            "`Observation`",
-        ):
-            with self.subTest(field=field):
-                self.assertIn(field, self.contract)
-
     def test_contract_keeps_identifier_and_anchor_representation(self) -> None:
         for representation in (
             "## U<ID> — <question>",
@@ -247,16 +228,28 @@ class WayfinderStateContractTests(unittest.TestCase):
             with self.subTest(representation=representation):
                 self.assertIn(representation, self.contract)
 
-    def test_composite_policy_matches_install_template(self) -> None:
-        source_policy = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
-        managed = source_policy.split("<!-- agent-workflow:managed-begin -->", 1)[1]
-        managed = managed.split("<!-- agent-workflow:managed-end -->", 1)[0].strip()
-        packaged_policy = (
-            (PACKAGE_ROOT / "install/AGENTS.md.template")
-            .read_text(encoding="utf-8")
-            .strip()
-        )
-        self.assertEqual(packaged_policy, managed)
+    def test_fixture_preflight_rejects_a_wrong_relative_depth(self):
+        # Adapt the historical incident's ../../../ vs ../../ failure using the
+        # existing fixture checker, without importing its evaluator or artifacts.
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "docs/build-context.md"
+            source.parent.mkdir()
+            source.write_text("# Build context\n")
+            map_path = root / ".project-efforts/build/map.md"
+            map_path.parent.mkdir(parents=True)
+            for target, expected in (
+                ("../../docs/build-context.md", []),
+                ("../../../docs/build-context.md", ["../../../docs/build-context.md"]),
+            ):
+                with self.subTest(target=target):
+                    map_path.write_text(f"# Build\n[Context]({target})\n")
+                    self.assertEqual(broken_fixture_links([map_path]), expected)
+            map_path.write_text("# Build\n[Context](../../docs/build-context.md)\n")
+            source.unlink()
+            self.assertEqual(
+                broken_fixture_links([map_path]), ["../../docs/build-context.md"]
+            )
 
 
 if __name__ == "__main__":

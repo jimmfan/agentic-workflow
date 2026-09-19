@@ -616,6 +616,36 @@ class RoutingReportEvidenceTests(unittest.TestCase):
         self.assertFalse(report["complete"])
         self.assertEqual(report["execution_status"], "interrupted")
 
+    def test_direct_case_rejects_intermediate_escalation_even_after_recovery(self):
+        for route, selected in (
+            ("wayfinder", True),
+            ("direct", True),
+            ("wayfinder", False),
+            ("discovery", False),
+        ):
+            for interrupted in (False, True):
+                with self.subTest(
+                    route=route, selected=selected, interrupted=interrupted
+                ):
+                    first = self.decision("note.txt", route=route)
+                    first["wayfinder_selected"] = selected
+                    responses = iter([first, self.decision()])
+
+                    def invoke(prompt):
+                        decision = next(responses)
+                        if interrupted and decision["status"] == "complete":
+                            raise subprocess.TimeoutExpired("fake", 1)
+                        return decision, {}
+
+                    report = routing_smoke.run_case(
+                        routing_smoke.load_cases()["direct"],
+                        host="fake",
+                        model="fake",
+                        invoke=invoke,
+                    )
+                    self.assertEqual(report["verdict"], "FAIL")
+                    self.assertEqual(report["complete"], not interrupted)
+
     def test_codex_timeout_preserves_received_response_and_usage(self):
         decision = self.decision("task.md", route="wayfinder")
         usage = {"input_tokens": 20, "output_tokens": 5}

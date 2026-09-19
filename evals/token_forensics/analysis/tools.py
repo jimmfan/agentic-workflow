@@ -104,26 +104,38 @@ def analyze_tools(
     trace: NormalizedTrace, thresholds: Thresholds
 ) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]]]:
     tools = trace.tool_invocations
+    complete = trace.tool_observations_complete
     failures = [tool for tool in tools if _is_failed(tool)]
     largest = sorted(tools, key=lambda item: item.output_bytes, reverse=True)[:10]
 
-    stdout_observable = bool(tools) and all(
-        tool.stdout_bytes is not None for tool in tools
+    stdout_observable = (
+        complete
+        and bool(tools)
+        and all(tool.stdout_bytes is not None for tool in tools)
     )
-    stderr_observable = bool(tools) and all(
-        tool.stderr_bytes is not None for tool in tools
+    stderr_observable = (
+        complete
+        and bool(tools)
+        and all(tool.stderr_bytes is not None for tool in tools)
     )
     measured = {
-        "calls": len(tools),
-        "type_counts": dict(sorted(Counter(tool.tool_type for tool in tools).items())),
-        "output_bytes": sum(tool.output_bytes for tool in tools),
+        "observations_complete": complete,
+        "observed_calls": len(tools),
+        "observed_output_bytes": sum(tool.output_bytes for tool in tools),
+        "calls": len(tools) if complete else None,
+        "type_counts": dict(sorted(Counter(tool.tool_type for tool in tools).items()))
+        if complete
+        else None,
+        "output_bytes": sum(tool.output_bytes for tool in tools) if complete else None,
         "stdout_bytes": sum(tool.stdout_bytes or 0 for tool in tools)
         if stdout_observable
         else None,
         "stderr_bytes": sum(tool.stderr_bytes or 0 for tool in tools)
         if stderr_observable
         else None,
-        "combined_output_bytes": sum(tool.combined_output_bytes or 0 for tool in tools),
+        "combined_output_bytes": sum(tool.combined_output_bytes or 0 for tool in tools)
+        if complete
+        else None,
         "output_channel_note": (
             "stdout and stderr reported separately"
             if stdout_observable and stderr_observable
@@ -157,7 +169,9 @@ def analyze_tools(
             "available_calls": sum(tool.duration_ms is not None for tool in tools),
             "total": (
                 sum(tool.duration_ms or 0 for tool in tools)
-                if tools and all(tool.duration_ms is not None for tool in tools)
+                if complete
+                and tools
+                and all(tool.duration_ms is not None for tool in tools)
                 else None
             ),
         },
@@ -175,6 +189,14 @@ def analyze_tools(
     }
 
     warnings: list[dict[str, Any]] = []
+    if not complete:
+        warnings.append(
+            {
+                "code": "incomplete_tool_observations",
+                "category": "measured",
+                "message": "Tool records are not fully supported for this trace format; tool totals are unavailable and lists contain only parsed observations.",
+            }
+        )
     for tool in tools:
         if tool.output_bytes >= thresholds.large_tool_output_bytes:
             warnings.append(
@@ -186,7 +208,10 @@ def analyze_tools(
                     "command": _clip(tool.command, 240),
                 }
             )
-    if measured["output_bytes"] >= thresholds.large_total_tool_output_bytes:
+    if (
+        measured["output_bytes"] is not None
+        and measured["output_bytes"] >= thresholds.large_total_tool_output_bytes
+    ):
         warnings.append(
             {
                 "code": "large_cumulative_tool_output",

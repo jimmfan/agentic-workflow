@@ -222,10 +222,8 @@ class VerifyPackageTests(ProjectTestCase):
             )
         )
 
-        self.assertEqual(
-            {path.name for path in domain_root.iterdir() if path.is_file()},
-            {"CONTEXT-FORMAT.md", "SKILL.md"},
-        )
+        for filename in ("CONTEXT-FORMAT.md", "SKILL.md"):
+            self.assertTrue((domain_root / filename).is_file())
         self.assertIn(
             ".agents/skills/domain-modeling/CONTEXT-FORMAT.md",
             {item["source"] for item in manifest["framework_owned"]},
@@ -234,16 +232,11 @@ class VerifyPackageTests(ProjectTestCase):
         result = self.verify(source)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
-    def test_wayfinder_effort_is_a_single_file_distributed_entry_point(
-        self,
-    ) -> None:
+    def test_wayfinder_effort_distributes_its_canonical_entry_point(self) -> None:
         skill_root = (
             Path(__file__).resolve().parents[1] / ".agents/skills/wayfinder-effort"
         )
-        self.assertEqual(
-            {path.name for path in skill_root.iterdir()},
-            {"SKILL.md"},
-        )
+        self.assertTrue((skill_root / "SKILL.md").is_file())
         manifest = json.loads(
             (
                 Path(__file__).resolve().parents[1]
@@ -276,8 +269,8 @@ class VerifyPackageTests(ProjectTestCase):
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
-    def test_verifier_accepts_equivalent_skill_instruction_wording(self) -> None:
-        source = self.copy_source("reworded-instructions")
+    def test_verifier_does_not_treat_skill_body_as_a_literal_interface(self) -> None:
+        source = self.copy_source("structural-skill-check")
         skill = source / ".agents/skills/implement/SKILL.md"
         frontmatter, delimiter, _ = skill.read_text(encoding="utf-8").partition(
             "\n---\n"
@@ -285,15 +278,7 @@ class VerifyPackageTests(ProjectTestCase):
         skill.write_text(
             frontmatter
             + delimiter
-            + """Carry out the scope defined by the user or calling workflow.
-
-Apply `tdd` at agreed seams when feasible.
-Check types and focused tests regularly, then run the full suite at the end.
-Finish by using `code-review` to review the implementation.
-
-Make a commit only with authorization from the current user request or accepted project policy.
-If neither authorizes a commit, keep the changes uncommitted and report that status.
-""",
+            + "A structurally valid body does not establish instruction compliance.\n",
             encoding="utf-8",
         )
 

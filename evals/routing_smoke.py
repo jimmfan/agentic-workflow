@@ -281,6 +281,19 @@ def evaluate_case(
             "detail": f"expected={case['expected_first_resources']!r}, actual={first_requested!r}",
         },
     ]
+    if case["id"] == "direct":
+        checks.append(
+            {
+                "name": "direct-throughout",
+                "passed": bool(decisions)
+                and all(
+                    decision.get("current_route") == "direct"
+                    and decision.get("wayfinder_selected") is False
+                    for decision in decisions
+                ),
+                "detail": f"routes and Wayfinder selections={[(decision.get('current_route'), decision.get('wayfinder_selected')) for decision in decisions]!r}",
+            }
+        )
     if case["id"] == "evolving":
         checks.append(
             {
@@ -513,6 +526,7 @@ def run_case(
                 "first-resources",
                 "forbidden-resources",
                 "direct-before-reconnaissance",
+                "direct-throughout",
             }
         ]
     verdict = (

@@ -20,6 +20,59 @@ FIXTURES = Path(__file__).parent / "fixtures" / "token_forensics"
 
 
 class CodexParserTests(unittest.TestCase):
+    def analyze_events(self, events):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "trace.jsonl"
+            path.write_text("".join(json.dumps(event) + "\n" for event in events))
+            return analyze_trace(parse_codex_trace(path))
+
+    def test_unparsed_rollout_tools_are_unavailable_including_mixed_traces(self):
+        rollout = [
+            {
+                "type": "response_item",
+                "payload": {
+                    "type": "function_call",
+                    "call_id": "call-1",
+                    "name": "exec_command",
+                    "arguments": '{"cmd":"pwd"}',
+                },
+            },
+            {
+                "type": "response_item",
+                "payload": {
+                    "type": "function_call_output",
+                    "call_id": "call-1",
+                    "output": "/project\n",
+                },
+            },
+        ]
+        exec_events = [
+            {
+                "type": "item.completed",
+                "item": {
+                    "id": "exec-1",
+                    "type": "command_execution",
+                    "command": "pwd",
+                    "status": "completed",
+                    "exit_code": 0,
+                    "aggregated_output": "abc",
+                },
+            },
+        ]
+        for mixed in (False, True):
+            with self.subTest(mixed=mixed):
+                summary = self.analyze_events((exec_events if mixed else []) + rollout)
+                tools = summary["measured"]["tools"]
+                for field in ("calls", "output_bytes", "combined_output_bytes"):
+                    self.assertIsNone(tools[field], field)
+                self.assertFalse(tools["observations_complete"])
+                self.assertEqual(tools["observed_calls"], 1 if mixed else 0)
+                self.assertEqual(tools["observed_output_bytes"], 3 if mixed else 0)
+                report = human_text(summary)
+                self.assertRegex(report, r"Tool calls\s+unknown / unavailable")
+                self.assertRegex(report, r"Total output\s+unknown / unavailable")
+                self.assertRegex(report, r"Failed calls\s+unknown / unavailable")
+
     def test_exec_usage_is_summed_per_turn_without_counting_item_updates(self) -> None:
         trace = parse_codex_trace(FIXTURES / "codex-exec.jsonl")
         summary = analyze_trace(trace)
@@ -32,6 +85,89 @@ class CodexParserTests(unittest.TestCase):
         self.assertEqual(summary["measured"]["tokens"]["output"], 30)
         self.assertEqual(summary["measured"]["trajectory"]["codex_turns_completed"], 2)
         self.assertEqual(summary["measured"]["tools"]["calls"], 3)
+
+    def test_missing_turn_usage_keeps_known_subtotal_separate_from_total(self):
+        known = {
+            "type": "turn.completed",
+            "usage": {
+                "input_tokens": 100,
+                "cached_input_tokens": 20,
+                "output_tokens": 10,
+            },
+        }
+        for missing in (
+            {"type": "turn.completed"},
+            {"type": "turn.completed", "usage": {}},
+        ):
+            for missing_first in (False, True):
+                with self.subTest(missing=missing, missing_first=missing_first):
+                    events = [missing, known] if missing_first else [known, missing]
+                    summary = self.analyze_events(events)
+                    tokens = summary["measured"]["tokens"]
+                    self.assertIsNone(tokens["input"])
+                    self.assertIsNone(tokens["output"])
+                    self.assertEqual(tokens["known_subtotals"]["input"], 100)
+                    self.assertEqual(tokens["known_subtotals"]["output"], 10)
+                    self.assertIsNone(summary["derived"]["tokens"]["uncached_input"])
+                    self.assertIsNone(
+                        summary["derived"]["tokens"]["cached_input_ratio"]
+                    )
+                    self.assertRegex(
+                        human_text(summary), r"Input\s+unknown / unavailable"
+                    )
+                    self.assertRegex(human_text(summary), r"Known input subtotal\s+100")
+
+    def test_missing_usage_between_known_turns_does_not_understate_trajectory(self):
+        summary = self.analyze_events(
+            [
+                {"type": "turn.completed", "usage": {"input_tokens": 100}},
+                {"type": "turn.completed"},
+                {"type": "turn.completed", "usage": {"input_tokens": 50}},
+            ]
+        )
+        self.assertIsNone(summary["measured"]["tokens"]["input"])
+        self.assertEqual(summary["measured"]["tokens"]["known_subtotals"]["input"], 150)
+        trajectory = summary["derived"]["tokens"]["token_trajectory"]
+        self.assertIsNone(trajectory[-1]["input_tokens"])
+
+    def test_missing_one_counter_keeps_other_complete_totals(self):
+        summary = self.analyze_events(
+            [
+                {
+                    "type": "turn.completed",
+                    "usage": {"input_tokens": 100, "output_tokens": 10},
+                },
+                {"type": "turn.completed", "usage": {"input_tokens": 50}},
+            ]
+        )
+        tokens = summary["measured"]["tokens"]
+        self.assertEqual(tokens["input"], 150)
+        self.assertIsNone(tokens["output"])
+        self.assertEqual(tokens["known_subtotals"]["output"], 10)
+        self.assertEqual(tokens["completed_turns_without_usage"], 0)
+
+    def test_measured_zero_remains_distinct_from_unavailable(self):
+        summary = self.analyze_events(
+            [
+                {"type": "turn.started"},
+                {
+                    "type": "turn.completed",
+                    "usage": {
+                        "input_tokens": 0,
+                        "cached_input_tokens": 0,
+                        "output_tokens": 0,
+                    },
+                },
+            ]
+        )
+        self.assertEqual(summary["measured"]["tokens"]["input"], 0)
+        self.assertEqual(summary["measured"]["tokens"]["output"], 0)
+        self.assertEqual(summary["measured"]["tools"]["calls"], 0)
+        self.assertEqual(summary["measured"]["tools"]["output_bytes"], 0)
+        self.assertTrue(summary["measured"]["tools"]["observations_complete"])
+        unknown = self.analyze_events([{"type": "unknown"}])
+        self.assertIsNone(unknown["measured"]["tools"]["calls"])
+        self.assertIsNone(unknown["measured"]["tools"]["output_bytes"])
 
     def test_rollout_cumulative_snapshots_are_not_summed_or_repeated(self) -> None:
         trace = parse_codex_trace(FIXTURES / "codex-rollout.jsonl")

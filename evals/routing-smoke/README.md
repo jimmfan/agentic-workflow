@@ -120,7 +120,9 @@ Missing observations remain unavailable; no version, usage, or read is inferred 
 
 Each case records execution status separately from PASS, FAIL, or INCONCLUSIVE.
 Reports retain completed cases, observed early failures, incomplete-case counts, received responses, usage, and available current-round prompts when a later adapter exception, timeout, or budget limit stops the run.
-Premature Wayfinder selection remains an observed failure even if the final transition is unobserved.
+The bounded Direct case checks every recorded decision for a Direct route and no Wayfinder selection.
+An inappropriate intermediate selection remains a failure after a return to Direct or an interrupted run.
+The evolving case must stay Direct before reconnaissance; a premature Wayfinder selection remains an observed failure even if the final transition is unobserved.
 The Codex adapter captures any available structured response file and usage before timeout cleanup; valid received decisions can be graded while execution remains interrupted.
 A received response is recorded before enforcing its resulting cost limit.
 Reports are written after each case using the existing outside-repository storage rule; there is no checkpoint store or database.

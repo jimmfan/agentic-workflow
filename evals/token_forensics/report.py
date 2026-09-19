@@ -58,6 +58,13 @@ def human_text(summary: dict[str, Any], *, label: str | None = None) -> str:
         ]
     )
 
+    if tokens["known_subtotals"] is not None:
+        for field, subtotal in tokens["known_subtotals"].items():
+            if tokens[field] is None and subtotal is not None:
+                lines.append(
+                    _line(f"Known {field.replace('_', ' ')} subtotal", _count(subtotal))
+                )
+
     lines.extend(["", "TRAJECTORY"])
     lines.extend(
         [
@@ -75,9 +82,25 @@ def human_text(summary: dict[str, Any], *, label: str | None = None) -> str:
             _line("Total output", _bytes(tools["output_bytes"])),
             _line("Stdout", _bytes(tools["stdout_bytes"])),
             _line("Stderr", _bytes(tools["stderr_bytes"])),
-            _line("Failed calls", _count(len(tools["failed_calls"]))),
+            _line(
+                "Failed calls",
+                _count(
+                    len(tools["failed_calls"])
+                    if tools["observations_complete"]
+                    else None
+                ),
+            ),
         ]
     )
+    if not tools["observations_complete"]:
+        lines.extend(
+            [
+                _line("Observed calls (partial)", _count(tools["observed_calls"])),
+                _line(
+                    "Observed output (partial)", _bytes(tools["observed_output_bytes"])
+                ),
+            ]
+        )
     if tools["largest_outputs"]:
         lines.extend(["", "Largest outputs"])
         for index, item in enumerate(tools["largest_outputs"][:5], start=1):
