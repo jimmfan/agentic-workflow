@@ -45,87 +45,16 @@ class LifecycleTests(ProjectTestCase):
         self.assertFalse((self.project / "AGENTS.md").exists())
         self.assertFalse((self.project / "CLAUDE.md").exists())
 
-    def test_old_claude_shim_is_removed_without_losing_project_bytes(self) -> None:
-        for command in ("install", "update", "remove"):
-            for newline in (b"\n", b"\r\n"):
-                for project_bytes in (
-                    b"",
-                    b"# Project Claude\r\nKeep \x00\xff bytes.\r\n",
-                ):
-                    with self.subTest(
-                        command=command, newline=newline, project=project_bytes
-                    ):
-                        self.assert_ok(self.lifecycle("install"))
-                        policy = self.project / "CLAUDE.md"
-                        old_shim = (
-                            b"<!-- agent-workflow:managed-begin -->\n@AGENTS.md\n"
-                            b"<!-- agent-workflow:managed-end -->\n\n"
-                            b"<!-- agent-workflow:project-instructions -->\n"
-                        )
-                        policy.write_bytes(
-                            old_shim.replace(b"\n", newline) + project_bytes
-                        )
-                        before = workspace_snapshot(self.project)
-                        status = self.lifecycle("status")
-                        self.assertEqual(status.returncode, 1)
-                        self.assertIn("obsolete CLAUDE.md shim", status.stdout)
-                        self.assertEqual(workspace_snapshot(self.project), before)
-                        self.assert_ok(self.lifecycle(command, "--dry-run"))
-                        self.assertEqual(workspace_snapshot(self.project), before)
-                        self.assert_ok(self.lifecycle(command))
-                        if project_bytes:
-                            self.assertEqual(policy.read_bytes(), project_bytes)
-                        else:
-                            self.assertFalse(policy.exists())
-                        self.assert_ok(self.lifecycle(command))
-                        if project_bytes:
-                            self.assertEqual(policy.read_bytes(), project_bytes)
-                        else:
-                            self.assertFalse(policy.exists())
-
-    def test_unowned_claude_content_is_not_managed(self) -> None:
-        for content in (
-            b"@AGENTS.md\n# Project-owned import\n",
-            b"<!-- agent-workflow:managed-begin -->\nUnrecognized content\n",
-            b"<!-- agent-workflow:managed-begin -->\nCustom instructions\n"
-            b"<!-- agent-workflow:managed-end -->\n\n"
-            b"<!-- agent-workflow:project-instructions -->\nKeep me\n",
-        ):
-            with self.subTest(content=content):
-                policy = self.project / "CLAUDE.md"
-                policy.write_bytes(content)
-                for command in ("install", "update", "status", "remove"):
-                    self.assert_ok(self.lifecycle(command))
-                    self.assertEqual(policy.read_bytes(), content)
-
-    def test_claude_symlink_is_left_untouched(self) -> None:
-        outside = Path(self.temporary.name) / "outside-policy.md"
-        content = (
-            b"<!-- agent-workflow:managed-begin -->\n@AGENTS.md\n"
-            b"<!-- agent-workflow:managed-end -->\n\n"
-            b"<!-- agent-workflow:project-instructions -->\n"
-        )
-        outside.write_bytes(content)
+    def test_existing_claude_content_is_unrelated_to_lifecycle(self) -> None:
         policy = self.project / "CLAUDE.md"
-        policy.symlink_to(outside)
+        content = b"# Project instructions\r\nKeep \x00\xff bytes.\r\n"
+        policy.write_bytes(content)
         for command in ("install", "update", "status", "remove"):
-            self.assert_ok(self.lifecycle(command))
-            self.assertTrue(policy.is_symlink())
-            self.assertEqual(outside.read_bytes(), content)
-
-    def test_old_claude_shim_can_identify_an_installation_for_removal(self) -> None:
-        self.assert_ok(self.lifecycle("install"))
-        (self.project / "AGENTS.md").unlink()
-        (self.project / ".agent-workflow/README.md").write_bytes(b"older release\n")
-        policy = self.project / "CLAUDE.md"
-        policy.write_bytes(
-            b"<!-- agent-workflow:managed-begin -->\n@AGENTS.md\n"
-            b"<!-- agent-workflow:managed-end -->\n\n"
-            b"<!-- agent-workflow:project-instructions -->\n# Project notes\n"
-        )
-        self.assert_ok(self.lifecycle("remove"))
-        self.assertEqual(policy.read_bytes(), b"# Project notes\n")
-        self.assertFalse((self.project / ".agent-workflow").exists())
+            with self.subTest(command=command):
+                result = self.lifecycle(command)
+                self.assert_ok(result)
+                self.assertNotIn("CLAUDE.md", result.stdout + result.stderr)
+                self.assertEqual(policy.read_bytes(), content)
 
     def test_repository_relative_sources_cannot_escape_declared_surfaces(self) -> None:
         source = self.copy_source("invalid-source")

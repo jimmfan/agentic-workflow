@@ -30,11 +30,8 @@ In consuming repositories, separate framework-owned reconstructable output from 
   When no region exists, installation adds one without changing existing project bytes.
   Prior reconstructable framework bytes may be normalized only when their framework ownership and the project-byte boundary are both unambiguous.
   Otherwise, ambiguous ownership stops destructive mutation rather than inviting guessed recovery.
-- `AGENTS.md` is the single distributed root policy; Agent Workflow does not install or actively manage `CLAUDE.md`.
+- `AGENTS.md` is the single distributed root policy; Agent Workflow does not manage `CLAUDE.md`.
   Native Claude Code support assumes a current version and configuration with documented `AGENTS.md` project-instruction support; other host configurations are outside this support boundary.
-  Install, update, and remove strip only the exact former marked `@AGENTS.md` shim at the start of a regular `CLAUDE.md` file (LF or CRLF), preserving every byte after the project-instructions marker and deleting the file only if empty.
-  Unrecognized content, layouts, and symlinks remain untouched.
-  This bounded cleanup reuses ordinary lifecycle writes without persistent migration state.
 - Every lifecycle command requires an existing non-root target directory.
   An explicit target is used directly.
   When the CLI target is omitted, Git may be used only to discover the containing worktree root; failed or unavailable discovery falls back to the current directory.
@@ -52,7 +49,7 @@ Agent Workflow maintains no installation history or migration subsystem: no inst
 Pre-1.0 historical layouts do not become permanent runtime migration policy.
 A partial filesystem failure is reported truthfully; after resolving the concrete error, rerunning the command converges the managed surfaces.
 
-For remove only, a valid managed `AGENTS.md` region, the recognized former Claude shim, or the exact current `.agent-workflow/` surface establishes an existing installation.
+For remove only, a valid managed `AGENTS.md` region or the exact current `.agent-workflow/` surface establishes an existing installation.
 Remove refuses current curated-name collisions on an otherwise unrecognized target rather than assuming they are framework-owned.
 This conservative removal guard does not participate in install or update.
 Ambiguous composite markers remain a hard preflight failure.

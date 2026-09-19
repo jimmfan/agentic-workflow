@@ -80,7 +80,7 @@ The Python wheel contains the CLI implementation and install resources; runtime 
 Lifecycle owns install, update, status, and remove.
 It converges declared managed surfaces while preserving project-owned bytes, with preflight checks for unsafe managed paths and ambiguous composite ownership.
 Remove additionally guards curated-name collisions on an unrecognized target.
-A narrow transition strips the former generated `CLAUDE.md` shim using the existing lifecycle write plan and preserves its project-authored suffix; it does not make `CLAUDE.md` a current managed surface.
+Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
 There is no installed provenance store, migration engine, backup, or rollback transaction.
 Exact checks belong in lifecycle/bootstrap source and tests; user recovery steps belong in the README.
 

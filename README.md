@@ -67,9 +67,7 @@ Ordinary framework updates do not require a CLI upgrade.
 Install and update replace all of `.agent-workflow/` and each [current curated skill directory](.agents/skills/), including local edits and extra files inside those directories.
 Keep project customizations outside those reserved surfaces.
 Unrelated skills, project-owned `.project-efforts/` state, and all content outside the managed region in `AGENTS.md` are preserved.
-Install, update, and remove also strip the exact former Agent Workflow `CLAUDE.md` shim, preserving every byte after its project-instructions marker and deleting the file only when no bytes remain.
-Other `CLAUDE.md` content and symlinks are left untouched; the file is no longer a managed surface.
-If a retained project-authored Claude policy prevents `AGENTS.md` from loading, configure the host to meet the [supported boundary](#supported-hosts).
+Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
 Remove deletes the managed directories and regions; it refuses ambiguous ownership or curated-name collisions on an otherwise unrecognized installation.
 
 Unsafe managed paths or malformed policy markers stop mutation before writes.

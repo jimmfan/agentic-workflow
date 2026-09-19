@@ -73,10 +73,8 @@ If a filesystem failure leaves partial changes, resolve the reported error and r
 Install and update converge to the same current package state.
 Remove deletes `.agent-workflow/` and the current curated skill directories, strips the managed region from `AGENTS.md`, and deletes that file only when no project-authored bytes remain.
 Unrelated skill directories and all project-authored composite bytes remain.
-Install, update, and remove strip only the exact former marked `@AGENTS.md` shim at the start of a regular `CLAUDE.md` file (LF or CRLF), preserving every byte after its project-instructions marker.
-The file is deleted only when nothing remains; other content, layouts, and symlinks are untouched.
-`status` reports a recognized obsolete shim without changing it.
-`CLAUDE.md` is not otherwise managed, and native Claude Code support requires a current version and configuration with `AGENTS.md` project-instruction support.
+Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
+Native Claude Code support requires a current version and configuration with `AGENTS.md` project-instruction support.
 
 If current curated-name directories exist but no Agent Workflow installation is recognizable, remove refuses before mutation rather than assuming those directories are framework-owned.
 

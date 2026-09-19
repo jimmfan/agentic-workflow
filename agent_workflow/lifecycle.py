@@ -383,34 +383,10 @@ def compose_policy(managed: bytes, before: bytes, after: bytes) -> bytes:
     )
 
 
-def retired_claude_plan(root: Path) -> dict[PurePosixPath, bytes | None]:
-    """Strip only the former generated shim; everything after it stays opaque."""
-    relative = PurePosixPath("CLAUDE.md")
-    path = root / relative
-    if not path_exists(path) or not stat.S_ISREG(path.lstat().st_mode):
-        return {}
-    data = read_composite(root, relative)
-    assert data is not None
-    for newline in (b"\n", b"\r\n"):
-        prefix = newline.join(
-            (
-                MANAGED_BEGIN,
-                b"@AGENTS.md",
-                MANAGED_END,
-                b"",
-                FORMER_PROJECT_MARKER,
-                b"",
-            )
-        )
-        if data.startswith(prefix):
-            return {relative: data[len(prefix) :] or None}
-    return {}
-
-
 def plan_composites(
     root: Path, distribution: Distribution, remove: bool
 ) -> dict[PurePosixPath, bytes | None]:
-    plan = retired_claude_plan(root)
+    plan: dict[PurePosixPath, bytes | None] = {}
     for relative, managed in distribution.composites.items():
         current = read_composite(root, relative)
         if current is None:
@@ -485,9 +461,7 @@ def unrecognized_remove_collisions(
         current = read_composite(root, relative)
         if current is not None and parse_composite(current, relative) is not None:
             return ()
-    if retired_claude_plan(root) or directory_matches(
-        root, FRAMEWORK_ROOT, distribution.framework
-    ):
+    if directory_matches(root, FRAMEWORK_ROOT, distribution.framework):
         return ()
     return tuple(
         SKILLS_ROOT / name
@@ -509,8 +483,6 @@ def require_recognized_skill_removal(root: Path, distribution: Distribution) -> 
 
 def drift_messages(root: Path, distribution: Distribution) -> list[str]:
     messages: list[str] = []
-    if retired_claude_plan(root):
-        messages.append("REPAIR: obsolete CLAUDE.md shim; run update to remove it")
     if not directory_matches(root, FRAMEWORK_ROOT, distribution.framework):
         messages.append("REPAIR: managed directory differs: .agent-workflow")
     for name, files in sorted(distribution.skills.items()):
@@ -615,8 +587,6 @@ def apply_composites(root: Path, plan: Mapping[PurePosixPath, bytes | None]) -> 
 
 def print_plan(command: str, root: Path, distribution: Distribution) -> None:
     print(f"{command.upper()} PLAN {root}")
-    if retired_claude_plan(root):
-        print("- remove obsolete CLAUDE.md shim, preserving project-authored bytes")
     if command == "remove":
         print("- remove .agent-workflow/")
         for name in distribution.skill_names:
