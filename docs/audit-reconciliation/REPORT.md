@@ -2,7 +2,7 @@
 
 Wayfinder was used, but continuity was not consistently maintained or demonstrated across the audit and follow-ups.
 The absence of a committed map was not proof of non-use: the execution record confirms two temporary maps and their eventual removal.
-The continuing work now uses `.project-efforts/repository-audit/map.md`, re-established at the original audit's path because no recognized current effort matches its objective and substantive scope.
+The continuing review used the [audit map preserved at cf4556f](https://github.com/jimmfan/agentic-workflow/blob/cf4556f44671c49689442a911e2f781697a61c57/.project-efforts/repository-audit/map.md), re-established at the original audit's path because no recognized current effort matched its objective and substantive scope.
 No existing effort is repurposed or combined.
 
 ## Evidence rather than retrospective justification
@@ -64,5 +64,7 @@ All seven existing maps remain unchanged; only the re-established audit map was 
 ## Repository location
 
 At the user's request, this report and its three supporting files now live in `docs/audit-reconciliation/`.
-The [continuing effort map](../../.project-efforts/repository-audit/map.md) links these repository files.
 The verification and review statements above describe the `4b65cb5` delivery; relocating the artifacts and repairing their links does not constitute a new implementation review or test run.
+The bounded closeout found no remaining required audit work; the six optional test-design improvements are deferred outside this audit at the user's direction.
+The delivered [preservation fixes](https://github.com/jimmfan/agentic-workflow/commit/92d3304473b0fbebdcb6ab08b41bbad1d9710a50) and [test cleanup and evaluator corrections](https://github.com/jimmfan/agentic-workflow/commit/33961b2ccdca4fdb1bdaba442c92b638d98a83e8) remain retrievable alongside the maintained [test coverage](../../tests/README.md), [routing evaluator](../../evals/routing-smoke/README.md), and [forensics semantics](../../evals/token_forensics/README.md).
+Live-agent improvement or equivalence remains unestablished: the audit's isolation preflights failed before model execution, and deterministic results do not clear that limitation.
