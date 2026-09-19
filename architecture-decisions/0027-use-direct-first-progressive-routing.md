@@ -6,14 +6,16 @@
 ## Context
 
 Loading maximum classification and workflow policy before gathering evidence charges the most context at the point of least understanding.
-Skill descriptions exposed in the current session provide a cheap first selection interface, while raw item counts are poor proxies for consequence or coordination risk.
+Skill descriptions exposed in the current session provide the cheapest first selection interface.
+When native exposure is absent, readable canonical Agent Workflow skill descriptions provide the fallback selection interface described by [ADR-0030](0030-use-canonical-skill-methods-without-native-discovery.md).
+Raw item counts remain poor proxies for consequence or coordination risk.
 
 Users also should not need to recognize that an initially bounded task has developed enough interacting state to warrant durable coordination.
 
 ## Decision
 
 Begin with the simplest reasonable route.
-Classify from user intent and skill descriptions, then perform only the smallest read-only reconnaissance within delegated scope when evidence is insufficient.
+Classify from user intent and available skill descriptions, then perform only the smallest read-only reconnaissance within delegated scope when evidence is insufficient.
 Choose Direct or one primary workflow, and add only supporting capabilities that materially help.
 Load specialist method, detailed routing policy, or durable coordination only when its boundary becomes relevant.
 

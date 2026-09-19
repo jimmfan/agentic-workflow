@@ -60,8 +60,10 @@ New causal uncertainty returns to Debugging; a material unresolved choice return
 
 ## Use selected skills
 
-Use a skill only when it is exposed in the current session.
-Read the selected skill's instructions and only the support files needed for the current request.
+Read the selected Agent Workflow skill's canonical instructions from `.agents/skills/<name>/SKILL.md`.
+Read only the support files needed for the request.
+Repository file access is not native skill discovery, loading, or invocation.
+
 Execution means using the skill's method; selecting it, reading instructions, checking availability, or giving invocation instructions does not count.
 Using a skill for focused work need not change the primary route, including Direct.
 Completion and verification require evidence beyond execution or a route marker.
@@ -69,7 +71,7 @@ Completion and verification require evidence beyond execution or a route marker.
 Research and factual lookup may run synchronously when their evidence requirements remain satisfied.
 Preserve a selected method's required independence or parallelism; if that capability is unavailable, report the execution gap under the availability conventions below rather than claiming independent work ran.
 
-If a selected skill is unavailable or requires explicit user invocation, continue Direct only when the user did not require that skill and available capabilities can satisfy the request.
+If a selected skill is unavailable or requires explicit user invocation, continue Direct only when the user did not require that skill and the available tools and host features can satisfy the request.
 Otherwise stop, explain what is needed, give the exact supported invocation instruction when applicable, and use the terminal suffix below.
 Also stop affected work when authorization, current state, a required input, or an integrity check prevents it from proceeding.
 Never present Direct work as execution of a skill that could not run.
@@ -99,8 +101,8 @@ Use `direct` when no named workflow or skill ran.
 Use a terminal suffix only when selection did not become equivalent execution:
 
 - `<skill>-handoff`: explicit user invocation remains required;
-- `<skill>-unavailable`: the required skill cannot run;
-- `<skill>-blocked`: action authorization, state, prerequisite, or integrity stopped it.
+- `<skill>-unavailable`: required instructions, tools, or host features are missing, unavailable, or cannot run;
+- `<skill>-blocked`: the method could otherwise run, but authorization, project state, a required input or prerequisite, or an integrity condition prevents progress.
 
 After a successful Direct fallback, omit the skill that could not run from the marker.
 TDD and Code Review run within `implement` remain represented by `implement` unless separately selected.

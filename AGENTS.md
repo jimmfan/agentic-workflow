@@ -4,6 +4,7 @@
 - MUST route every request.
   Direct is default.
   Make first-pass selection from the current user intent and skill descriptions exposed in the session.
+  When an applicable Agent Workflow skill is not exposed in the session, read its `.agents/skills/<name>/SKILL.md` description for selection.
   Topic overlap or skill availability alone does not select a specialist.
 - When evidence is insufficient to select or re-evaluate the route, perform only the smallest read-only reconnaissance within the scope delegated by the current user request or accepted project policy.
 - Choose Direct or one primary workflow; add only supporting capabilities that materially help.
@@ -161,13 +162,17 @@ Do not force one term across genuinely different bounded contexts.
 Update the existing topic owner and retain useful summaries and warnings with links to it.
 Keep routine completion and audit narratives in Git or PRs rather than permanent documentation.
 
+Add instructions only when requested or needed to address a demonstrated problem or preserve an established boundary within the task's scope.
+Do not add defensive rules for hypothetical failures or duplicate existing rules.
+Keep wording and terminology consistent with the surrounding instructions.
+
 ## Working practice
 
 For substantial changes:
 
 - Inspect the current implementation, repository status, exact worktree, branch, base, and relevant diff.
 - Read the applicable contracts and architectural decisions and determine which layer owns the behavior.
-- Check whether an existing host capability or skill exposed in the current session already provides the needed behavior.
+- Check whether an existing host capability or skill already provides the needed behavior.
 - Prefer the smallest coherent and reversible change that preserves accepted behavior.
 - Update tests and durable documentation when the resulting contract changes.
 
