@@ -90,8 +90,12 @@ Projects with Wayfinder state at the former `.agent-wayfinder/` path must explic
 
 - [Codex](https://developers.openai.com/codex/skills) and [GitHub Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) discover the installed skills under `.agents/skills/`.
 - A Claude model inside GitHub Copilot uses Copilot's skill support.
-- Native Claude Code 2.1.277 and later can read [`AGENTS.md` as project instructions](https://code.claude.com/docs/en/memory#agentsmd) when no applicable `CLAUDE.md` takes precedence.
-  Agent Workflow retains its existing `CLAUDE.md` integration for sessions and configurations that need it.
+- Native Claude Code 2.1.277 and later can read [`AGENTS.md` as project instructions](https://code.claude.com/docs/en/memory#agentsmd), but direct loading is conditional.
+  By default, an applicable `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` in the working directory or its ancestors takes precedence.
+  Direct loading is [unavailable in documented sessions](https://code.claude.com/docs/en/memory#when-agentsmd-support-is-unavailable), including third-party providers such as Amazon Bedrock, disabled telemetry, the first session after installing or upgrading to a supporting version, and configurations that disable the required hooks or built-in plugin.
+  Agent Workflow therefore retains its managed `CLAUDE.md` region containing the documented [`@AGENTS.md` import](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools).
+  `AGENTS.md` remains the policy source; the import supplies it to those sessions without requiring users to change host settings.
+  Removing the integration would narrow supported Claude Code configurations, rather than only remove redundant content.
 - Claude Code's documented project-skill location is [`.claude/skills/`](https://code.claude.com/docs/en/skills#choose-where-skills-load).
   Agent Workflow does not copy skills there.
   Agents read the canonical `.agents/skills/<name>/SKILL.md` instructions directly.
