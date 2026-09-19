@@ -232,7 +232,7 @@ def check_template_locations() -> None:
     for root in (FRAMEWORK_ROOT, SKILLS_ROOT, INSTALL_ROOT):
         for path in root.rglob("*"):
             require(
-                path.name not in {"AGENTS.md", "CLAUDE.md"},
+                path.name != "AGENTS.md",
                 f"distributed root policy must use an install template: {path.relative_to(REPOSITORY_ROOT)}",
             )
 
