@@ -60,7 +60,8 @@ New causal uncertainty returns to Debugging; a material unresolved choice return
 
 ## Use selected skills
 
-Read the selected skill's canonical instructions through the host's native mechanism when it exposes that skill, otherwise from `.agents/skills/<name>/SKILL.md`; read only the support files needed for the request.
+Read the selected Agent Workflow skill's canonical instructions from `.agents/skills/<name>/SKILL.md`.
+Read only the support files needed for the request.
 Repository file access is not native skill discovery, loading, or invocation.
 
 Execution means using the skill's method; selecting it, reading instructions, checking availability, or giving invocation instructions does not count.

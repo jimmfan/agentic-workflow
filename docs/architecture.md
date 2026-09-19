@@ -25,7 +25,7 @@ flowchart TD
 
 The host loads project policy and may expose available skills.
 The root policy starts with Direct work and selects one primary workflow plus useful supporting capabilities when warranted.
-The host may load a selected skill's canonical instructions through its native skill mechanism, or the agent may read the same canonical `.agents/skills/<name>/SKILL.md` directly when native exposure is absent and repository files are readable.
+The agent reads the selected Agent Workflow skill's canonical instructions from `.agents/skills/<name>/SKILL.md`.
 The [detailed routing policy](../.agent-workflow/routing.md#use-selected-skills) retains the method's execution requirements and governs availability, blockers, and Direct fallback.
 There is no daemon or host hook enforcing the route; reported execution still needs evidence.
 Host permission does not itself authorize an action or commit a project choice.

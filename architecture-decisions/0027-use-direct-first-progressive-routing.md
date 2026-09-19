@@ -15,7 +15,7 @@ Users also should not need to recognize that an initially bounded task has devel
 ## Decision
 
 Begin with the simplest reasonable route.
-Classify from user intent and available skill descriptions, preferring host-exposed descriptions and falling back to canonical descriptions when ADR-0030 permits it, then perform only the smallest read-only reconnaissance within delegated scope when evidence is insufficient.
+Classify from user intent and available skill descriptions, then perform only the smallest read-only reconnaissance within delegated scope when evidence is insufficient.
 Choose Direct or one primary workflow, and add only supporting capabilities that materially help.
 Load specialist method, detailed routing policy, or durable coordination only when its boundary becomes relevant.
 

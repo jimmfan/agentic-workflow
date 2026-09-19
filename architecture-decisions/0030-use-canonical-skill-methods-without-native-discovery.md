@@ -15,13 +15,12 @@ Many curated methods are ordinary model instructions over repository files and c
 
 ## Decision
 
-Allow routing to select and use the canonical `.agents/skills/<name>/SKILL.md` as repository instructions when the host does not expose that skill natively.
+Use the canonical `.agents/skills/<name>/SKILL.md` for Agent Workflow skill instructions, and its description for selection when the host does not expose it.
 Existing execution, availability, blocking, Direct-fallback, and reporting rules remain in the [routing policy](../.agent-workflow/routing.md#use-selected-skills).
 
 ## Consequences
 
 Hosts with repository-file access can use canonical Agent Workflow instructions without a duplicate skill tree.
-Native hosts keep their existing skill mechanics and canonical installed content.
 
 Deterministic tests check canonical references and distribution; instruction meaning also requires review.
 The [live protocol](../evals/portable-skill-routing/README.md) tests method compliance and reporting on Claude Code.

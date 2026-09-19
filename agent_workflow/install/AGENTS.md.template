@@ -3,7 +3,7 @@
 - MUST route every request.
   Direct is default.
   Make first-pass selection from the current user intent and skill descriptions exposed in the session.
-  When the host does not expose an applicable Agent Workflow skill natively but repository files are readable, use its canonical `.agents/skills/<name>/SKILL.md` description as selection input.
+  When an applicable Agent Workflow skill is not exposed in the session, read its `.agents/skills/<name>/SKILL.md` description for selection.
   Topic overlap or skill availability alone does not select a specialist.
 - When evidence is insufficient to select or re-evaluate the route, perform only the smallest read-only reconnaissance within the scope delegated by the current user request or accepted project policy.
 - Choose Direct or one primary workflow; add only supporting capabilities that materially help.
