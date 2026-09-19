@@ -24,6 +24,7 @@ Python caches are ignored and need no manual cleanup.
 | `test_wheel_inputs.py`, `wheel_smoke.py` | Faithful pending-source capture; separately, sdist/wheel build and CLI execution outside checkout imports. Build dependency resolution may need network access. |
 | `test_snapshots.py` | Preservation snapshots that exclude root Git metadata before reads while retaining project entries and read errors. |
 | `test_behavior_harness.py` | Scenario validation, blind grading, assertions, route markers, verification evidence, fixture isolation, and negative controls. |
+| `test_behavior_interruption.py` | Real SIGINT in disposable POSIX harness processes, evidence retention before default cleanup, and stopping after the interrupted attempt. |
 | `test_wayfinder_state.py`, `test_wayfinder_behavior.py`, `test_routing_boundaries.py` | Literal state fixtures and evaluator acceptance/rejection of routing, authority, reconciliation, and no-state outcomes. |
 | `test_specialist_reconciliation.py` | Structural specialist/Wayfinder trigger, ownership, timing, authorization, and selective-state guards; a broken-relative-link fixture control. These do not execute agent reconciliation. |
 | `test_review_handoff.py`, `test_instruction_coherence.py` | Disposable Git review-scope observations and synthetic-answer evaluator controls for review and skill boundaries. |

@@ -170,6 +170,10 @@ The harness copies each fixture into a fresh temporary directory, initializes a 
 Source fixtures remain unchanged.
 
 Evaluation combines file creation/modification/deletion and byte identities, declared preservation constraints, prohibited paths, scenario assertions, final stdout, the public report, and fixture events in `.behavior-evidence/verification.jsonl`.
+When interrupted while waiting for the subject or independent verifier, the harness stops that process before collecting available observations and saving the aggregate report, including observed violations, before default workspace cleanup.
+An interruption during observation or grading retries evidence collection once without rerunning the subject or verifier.
+Output capture uses temporary files; on POSIX, termination covers the process group, while other platforms terminate the direct child.
+An interruption before observations can be collected remains an interrupted attempt without checks; empty checks do not claim successful evidence capture.
 For verification/recovery cases with root `verify.py`, it captures the agent's events and then independently runs that unchanged verifier against the final result.
 Changing the verifier fails the check; forged success events cannot hide a broken final implementation.
 That proves the final fixture outcome, not the authenticity of earlier events or the agent's internal process.
@@ -185,7 +189,7 @@ Each check has `passed: true`, `false`, or `null`:
 
 Exit codes are 0 for PASS, 1 for observed failure, and 2 for INCONCLUSIVE or runner error.
 Report authentication, quota, network, timeout, host, fixture, and harness failures separately; an unavailable run does not establish a product verdict.
-For an incomplete agent execution, missing final evidence is INCONCLUSIVE; observed violations of read-only scope, preserved paths, forbidden paths, or route exclusions remain failures.
+For an incomplete execution, missing final evidence is INCONCLUSIVE; observed violations of read-only scope, preserved paths/sections, forbidden paths, route exclusions, and prohibited decision or unknown-record writes remain failures.
 An independent verifier timeout or failed start retains the completed subject's evidence and records an unavailable exit code (`null`), rather than a failed product check.
 Historical results retain their original scenario and harness scope; changing a grader does not retroactively establish a different live result.
 

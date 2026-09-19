@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 from dataclasses import dataclass, field
 import fnmatch
 import hashlib
@@ -12,6 +13,7 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -1253,6 +1255,8 @@ def evaluate(evidence: RunEvidence) -> tuple[CheckResult, ...]:
             "must-not:unnecessary_planning_artifacts",
             "must-not:full_discovery_for_lookup",
             "must-not:repeat_resolved_discovery",
+            "must-not:silent_decision_invention",
+            "must-not:manufacture_uncertainty",
             "route-marker:prohibited-components",
         }
         for assertion in evidence.scenario.assertions:
@@ -1484,6 +1488,70 @@ def route_components(stdout: str) -> tuple[str, ...]:
     return tuple(result)
 
 
+def run_captured_process(
+    command: Sequence[str],
+    workspace: Path,
+    environment: Mapping[str, str],
+    timeout_seconds: int,
+    input_path: Path | None = None,
+) -> tuple[subprocess.CompletedProcess[str], str, str | None]:
+    execution_status = "completed"
+    execution_error = None
+    try:
+        # File-backed capture survives an interrupted wait without pipe draining.
+        # A separate POSIX session lets cleanup stop descendants before snapshotting.
+        with (
+            input_path.open("rb") if input_path else nullcontext(None) as input_file,
+            tempfile.TemporaryFile(
+                mode="w+", encoding="utf-8", errors="backslashreplace"
+            ) as stdout,
+            tempfile.TemporaryFile(
+                mode="w+", encoding="utf-8", errors="backslashreplace"
+            ) as stderr,
+            subprocess.Popen(
+                command,
+                cwd=workspace,
+                stdin=input_file,
+                stdout=stdout,
+                stderr=stderr,
+                env=environment,
+                start_new_session=os.name == "posix",
+            ) as process,
+        ):
+            try:
+                returncode = process.wait(timeout=timeout_seconds)
+            except (subprocess.TimeoutExpired, KeyboardInterrupt) as exc:
+                execution_status = (
+                    "interrupted" if isinstance(exc, KeyboardInterrupt) else "timeout"
+                )
+                execution_error = (
+                    "run interrupted"
+                    if isinstance(exc, KeyboardInterrupt)
+                    else f"process exceeded {timeout_seconds} seconds"
+                )
+                try:
+                    if os.name == "posix":
+                        os.killpg(process.pid, signal.SIGKILL)
+                    else:
+                        process.kill()
+                except ProcessLookupError:
+                    pass
+                process.wait()
+                returncode = None
+            stdout.seek(0)
+            stderr.seek(0)
+            result = subprocess.CompletedProcess(
+                command, returncode, stdout.read(), stderr.read()
+            )
+    except OSError as exc:
+        execution_status = "runner_error"
+        execution_error = str(exc)
+        result = subprocess.CompletedProcess(command, None, "", "")
+    if result.returncode not in (None, 0):
+        execution_status = "agent_error"
+    return result, execution_status, execution_error
+
+
 def run_live_scenario(
     scenario: Scenario,
     command: Sequence[str],
@@ -1510,102 +1578,74 @@ def run_live_scenario(
     actual_command = substitute_command(command, workspace, prompt_file, report_file)
     environment = os.environ.copy()
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
-    execution_status = "completed"
-    execution_error = None
-    try:
-        result = subprocess.run(
-            actual_command,
-            cwd=workspace,
-            input=prompt,
-            text=True,
-            capture_output=True,
-            errors="backslashreplace",
-            env=environment,
-            timeout=timeout_seconds,
-        )
-    except subprocess.TimeoutExpired as exc:
-        execution_status = "timeout"
-        execution_error = f"agent exceeded {timeout_seconds} seconds"
-        result = subprocess.CompletedProcess(
-            actual_command,
-            None,
-            exc.stdout.decode("utf-8", errors="backslashreplace")
-            if isinstance(exc.stdout, bytes)
-            else exc.stdout or "",
-            exc.stderr.decode("utf-8", errors="backslashreplace")
-            if isinstance(exc.stderr, bytes)
-            else exc.stderr or "",
-        )
-    except OSError as exc:
-        execution_status = "runner_error"
-        execution_error = str(exc)
-        result = subprocess.CompletedProcess(actual_command, None, "", "")
-    if result.returncode not in (None, 0):
-        execution_status = "agent_error"
-    after = snapshot(workspace)
-    report = load_report(report_file)
-    verification = load_verification(workspace.joinpath(*VERIFICATION_LOG.parts))
-    outcome_verification = None
-    if (
-        execution_status == "completed"
-        and {"verification_performed", "verification_failure_recovered"}
-        & set(scenario.expect)
-        and "verify.py" in before
-    ):
-        if before.get("verify.py") != after.get("verify.py"):
-            outcome_verification = {
-                "exit_code": 1,
-                "detail": "fixture verifier was changed",
-            }
-        else:
-            try:
-                checked = subprocess.run(
-                    [sys.executable, "verify.py"],
-                    cwd=workspace,
-                    capture_output=True,
-                    text=True,
-                    errors="backslashreplace",
-                    timeout=timeout_seconds,
-                    env=environment,
-                )
-                outcome_verification = {
-                    "exit_code": checked.returncode,
-                    "stdout": checked.stdout,
-                    "stderr": checked.stderr,
-                }
-            except subprocess.TimeoutExpired as exc:
-                outcome_verification = {
-                    "exit_code": None,
-                    "execution_status": "timeout",
-                    "stdout": exc.stdout.decode("utf-8", errors="backslashreplace")
-                    if isinstance(exc.stdout, bytes)
-                    else exc.stdout or "",
-                    "stderr": exc.stderr.decode("utf-8", errors="backslashreplace")
-                    if isinstance(exc.stderr, bytes)
-                    else exc.stderr or "",
-                }
-            except OSError as exc:
-                outcome_verification = {
-                    "exit_code": None,
-                    "execution_status": "runner_error",
-                    "detail": str(exc),
-                }
-    evidence = RunEvidence(
-        scenario=scenario,
-        workspace=workspace,
-        before=before,
-        after=after,
-        stdout=result.stdout,
-        stderr=result.stderr,
-        returncode=result.returncode,
-        report=report,
-        verification=verification,
-        route_components=route_components(result.stdout),
-        outcome_verification=outcome_verification,
-        execution_status=execution_status,
-        execution_error=execution_error,
+    result, execution_status, execution_error = run_captured_process(
+        actual_command, workspace, environment, timeout_seconds, prompt_file
     )
-    return evidence, evaluate(evidence)
+    outcome_verification = None
+    while True:
+        try:
+            after = snapshot(workspace)
+            report = load_report(report_file)
+            verification = load_verification(
+                workspace.joinpath(*VERIFICATION_LOG.parts)
+            )
+            if (
+                execution_status == "completed"
+                and {"verification_performed", "verification_failure_recovered"}
+                & set(scenario.expect)
+                and "verify.py" in before
+            ):
+                if before.get("verify.py") != after.get("verify.py"):
+                    outcome_verification = {
+                        "exit_code": 1,
+                        "detail": "fixture verifier was changed",
+                    }
+                else:
+                    checked, verification_status, verification_error = (
+                        run_captured_process(
+                            [sys.executable, "verify.py"],
+                            workspace,
+                            environment,
+                            timeout_seconds,
+                        )
+                    )
+                    outcome_verification = {
+                        "exit_code": checked.returncode,
+                        "stdout": checked.stdout,
+                        "stderr": checked.stderr,
+                    }
+                    if checked.returncode is None:
+                        outcome_verification.update(
+                            execution_status=verification_status,
+                            detail=verification_error,
+                        )
+                    if verification_status == "interrupted":
+                        execution_status = "interrupted"
+                        execution_error = "independent verifier interrupted"
+                        continue
+            evidence = RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=before,
+                after=after,
+                stdout=result.stdout,
+                stderr=result.stderr,
+                returncode=result.returncode,
+                report=report,
+                verification=verification,
+                route_components=route_components(result.stdout),
+                outcome_verification=outcome_verification,
+                execution_status=execution_status,
+                execution_error=execution_error,
+            )
+            return evidence, evaluate(evidence)
+        except KeyboardInterrupt:
+            if execution_status == "interrupted":
+                raise
+            # Retry observation once after a collection-time interrupt. Marking
+            # execution incomplete prevents rerunning either subject or verifier.
+            execution_status = "interrupted"
+            execution_error = "run interrupted during evidence collection"
 
 
 def validate_command() -> int:
@@ -1681,7 +1721,10 @@ def live_command(args: argparse.Namespace) -> int:
                 print(f"INCONCLUSIVE: {scenario.id} (runner_error): {exc}")
                 break
             except KeyboardInterrupt:
-                attempt.update(execution_status="interrupted", error="run interrupted")
+                attempt.update(
+                    execution_status="interrupted",
+                    error="interrupted before evidence collection completed",
+                )
                 inconclusive += 1
                 save_report()
                 break

@@ -6,6 +6,7 @@ These controls exercise the grader, not live skill execution or prose equivalenc
 from pathlib import Path
 import shutil
 import tempfile
+import textwrap
 import unittest
 
 from _behavior_test_support import behavior
@@ -18,21 +19,27 @@ class ScenarioConstraintTests(unittest.TestCase):
     def checks(self, scenario, workspace, before):
         return {
             check.name: check.passed
-            for check in behavior.evaluate(
-                behavior.RunEvidence(
-                    scenario=scenario,
-                    workspace=workspace,
-                    before=before,
-                    after=behavior.snapshot(workspace),
-                    stdout="[route: router → wayfinder]",
-                    stderr="",
-                    returncode=0,
-                    report={"status": "success"},
-                    verification=(),
-                    route_components=("wayfinder",),
-                )
-            )
+            for check in self.results(scenario, workspace, before)
         }
+
+    def results(self, scenario, workspace, before):
+        return behavior.evaluate(
+            behavior.RunEvidence(
+                scenario=scenario,
+                workspace=workspace,
+                before=before,
+                after=behavior.snapshot(workspace),
+                stdout="[route: router → wayfinder]",
+                stderr="",
+                returncode=0,
+                report={
+                    "status": "success",
+                    "state_used": [str(path) for path in scenario.state_must_include],
+                },
+                verification=(),
+                route_components=("wayfinder",),
+            )
+        )
 
     def test_authored_path_constraints_have_an_active_check(self):
         for scenario in behavior.load_scenarios():
@@ -152,16 +159,6 @@ class ScenarioConstraintTests(unittest.TestCase):
                 ],
                 True,
             )
-            scope_check = (
-                "assert:.project-efforts/wayfinder-runtime-projection/map.md:contains"
-            )
-            self.assertIs(self.checks(scenario, workspace, before)[scope_check], True)
-            target.write_text(
-                target.read_text().replace(
-                    "Current-knowledge settlement and safe-retirement rules.", ""
-                )
-            )
-            self.assertIs(self.checks(scenario, workspace, before)[scope_check], False)
             other = workspace / ".project-efforts/provider-runtime/map.md"
             other.write_text("# Overwritten unrelated effort\n")
             self.assertIs(
@@ -170,6 +167,95 @@ class ScenarioConstraintTests(unittest.TestCase):
                 ],
                 False,
             )
+
+    def test_title_refinement_preserves_the_established_meaning(self):
+        scenario = self.scenario("wayfinder-resume-synonymous-wording")
+        with tempfile.TemporaryDirectory() as temp:
+            workspace = Path(temp) / "consumer"
+            shutil.copytree(behavior.FIXTURE_ROOT / scenario.fixture, workspace)
+            before = behavior.snapshot(workspace)
+            target = workspace / ".project-efforts/wayfinder-runtime-projection/map.md"
+            valid = target.read_text().replace(
+                "# Wayfinder runtime projection", "# First-party Wayfinder runtime", 1
+            )
+            formatted = [
+                "\n\n".join(
+                    textwrap.fill(
+                        paragraph,
+                        width=width,
+                        break_on_hyphens=False,
+                        break_long_words=False,
+                    )
+                    if not paragraph.startswith(("#", "-"))
+                    else paragraph.replace("- ", "* ")
+                    for paragraph in valid.split("\n\n")
+                )
+                for width in (38, 110)
+            ]
+            for content in (valid, *formatted):
+                with self.subTest(valid=content):
+                    target.write_text(content)
+                    results = self.results(scenario, workspace, before)
+                    self.assertEqual(behavior.verdict(results), "INCONCLUSIVE")
+                    self.assertTrue(
+                        all(
+                            result.passed
+                            for result in results
+                            if result.name.startswith("assert:")
+                        )
+                    )
+            # Expectations come from the requested stable boundary and starting
+            # fixture, independently of the scenario's assertion expressions.
+            corruptions = {
+                "hollow map": "# First-party Wayfinder runtime\n\n## Destination\nUnrelated project.\n\n## Out of scope\nCurrent-knowledge settlement and safe-retirement rules.\n",
+                "different objective": valid.replace(
+                    "replaces the conflicting prepend-plus-upstream specification",
+                    "adds a second competing instruction set",
+                ),
+                "lost runtime area": valid.replace(
+                    "- Runtime method — the concise agent-facing navigation guidance.\n",
+                    "",
+                ),
+                "lost state boundary": valid.replace(
+                    "detailed storage, identifier, and settlement mechanics",
+                    "unrelated bookkeeping",
+                ),
+                "reversed dependency": valid.replace(
+                    "provider projection depends on the runtime method",
+                    "runtime method depends on the provider projection",
+                ),
+                "duplicated mechanics": valid.replace(
+                    "instead of duplicating its mechanics",
+                    "and duplicates its mechanics",
+                ),
+                "changed choice": valid.replace(
+                    "The effective runtime is framework-owned.",
+                    "The effective runtime is provider-owned.",
+                ),
+                "lost selected mechanism": valid.replace(
+                    "The projection mechanism is selected and implementation is underway.",
+                    "The mechanism is undecided.",
+                ),
+                "lost next work": valid.replace(
+                    "Verify generated projection parity and provider repair.", ""
+                ),
+                "broadened scope": valid.replace("## Out of scope", "## In scope"),
+                "lost exclusion": valid.replace(
+                    "Current-knowledge settlement and safe-retirement rules.", ""
+                ),
+            }
+            for label, content in corruptions.items():
+                with self.subTest(corruption=label):
+                    target.write_text(content)
+                    results = self.results(scenario, workspace, before)
+                    self.assertTrue(
+                        any(
+                            result.passed is False
+                            for result in results
+                            if result.name.startswith("assert:")
+                        )
+                    )
+                    self.assertEqual(behavior.verdict(results), "FAIL")
 
 
 if __name__ == "__main__":

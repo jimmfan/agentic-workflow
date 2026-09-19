@@ -13,6 +13,49 @@ from _behavior_test_support import behavior
 
 
 class BehaviorHarnessTests(unittest.TestCase):
+    def test_timeout_retains_observed_decision_and_unknown_writes(self):
+        scenario = next(
+            s
+            for s in behavior.load_scenarios()
+            if s.id == "wayfinder-unordered-dependencies-no-critical-path"
+        )
+        for path, expected in (
+            (
+                "architecture-decisions/invented.md",
+                "must-not:silent_decision_invention",
+            ),
+            (".project-efforts/sdk/unknowns.md", "must-not:manufacture_uncertainty"),
+            (None, None),
+        ):
+            with self.subTest(path=path), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                subject = root / "subject.py"
+                mutation = (
+                    f"target = Path({path!r})\ntarget.parent.mkdir(parents=True)\ntarget.write_text('Invented record')\n"
+                    if path
+                    else ""
+                )
+                subject.write_text(
+                    "from pathlib import Path\nimport time\n"
+                    + mutation
+                    + "time.sleep(10)\n"
+                )
+                evidence, results = behavior.run_live_scenario(
+                    scenario, [behavior.sys.executable, str(subject)], root, 1
+                )
+                self.assertEqual(evidence.execution_status, "timeout")
+                self.assertEqual(
+                    behavior.verdict(results), "FAIL" if path else "INCONCLUSIVE"
+                )
+                checks = {result.name: result.passed for result in results}
+                if expected:
+                    self.assertIs(checks[expected], False)
+                else:
+                    self.assertIsNone(checks["must-not:silent_decision_invention"])
+                    self.assertIsNone(checks["must-not:manufacture_uncertainty"])
+                self.assertIsNone(checks["route-marker:exactly-one-valid-final"])
+                self.assertIsNone(checks["expect:meaningful_repository_change"])
+
     def test_failed_fixture_preparation_retains_allocated_attempt(self):
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary) / "report.json"
