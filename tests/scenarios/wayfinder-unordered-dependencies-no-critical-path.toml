@@ -11,6 +11,7 @@ expect = [
   "meaningful_repository_change",
 ]
 must_not = [
+  "unnecessary_planning_artifacts",
   "manufacture_uncertainty",
   "silent_decision_invention",
   "overwrite_project_owned_state",
@@ -36,6 +37,9 @@ path = ".project-efforts/*/map.md"
 value = "independent"
 
 [[assertions]]
-kind = "glob_none_contains"
+kind = "glob_none_matches"
 path = ".project-efforts/*/map.md"
-value = "critical path"
+# Reject representative affirmative declarations, not a truthful explanation that
+# no critical path is established. This is a fixture-specific guard, not a
+# semantic classifier for every possible dependency claim.
+value = '''(?m)^[ \t]*(?:[-*] |#{1,6} )?(?:the )?critical path(?:[ \t]*:|[ \t]+(?:is|runs|goes)\b)(?![ \t]*(?:not|unknown|undetermined|none|cannot|can't)\b)[ \t]*[^\n]+$'''

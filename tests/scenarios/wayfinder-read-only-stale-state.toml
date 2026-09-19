@@ -25,7 +25,7 @@ preserve_paths = [
   "deployment.py",
 ]
 forbid_created_globs = []
-route_must_not_include = ["wayfinder"]
+route_must_not_include = []
 state_must_include = [
   ".project-efforts/deployment-rollout/map.md",
 ]

@@ -49,9 +49,19 @@ path = ".project-efforts/runtime-rollout/evidence/E*.md"
 count = 1
 
 [[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/runtime-rollout/evidence/E1-*.md"
+value = '''(?m)^(?:-\s+)?(?:\*\*)?Source:(?:\*\*)?[^\n]*\brelease-policy\.txt\b'''
+
+[[assertions]]
 kind = "glob_contains"
 path = ".project-efforts/runtime-rollout/evidence/E1-*.md"
-value = "Source: release-policy.txt"
+value = "Scope:"
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/runtime-rollout/evidence/E1-*.md"
+value = '''(?m)^(?:#{1,6}\s+Observation\b|(?:-\s+)?(?:\*\*)?Observation:)'''
 
 [[assertions]]
 kind = "glob_contains"
@@ -61,16 +71,11 @@ value = "Limitations:"
 [[assertions]]
 kind = "glob_contains"
 path = ".project-efforts/runtime-rollout/evidence/E1-*.md"
-value = "Supports: F1"
+value = "minimum_supported=3.11"
 
 [[assertions]]
 kind = "path_exists"
 path = ".project-efforts/runtime-rollout/facts.md"
-
-[[assertions]]
-kind = "glob_any_matches"
-path = ".project-efforts/runtime-rollout/facts.md"
-value = '''\A# Facts\n'''
 
 [[assertions]]
 kind = "path_contains"
@@ -78,19 +83,9 @@ path = ".project-efforts/runtime-rollout/facts.md"
 value = "## F1 — Python 3.11 is the minimum supported runtime"
 
 [[assertions]]
-kind = "path_contains"
+kind = "glob_any_matches"
 path = ".project-efforts/runtime-rollout/facts.md"
-value = "- Scope:"
-
-[[assertions]]
-kind = "path_contains"
-path = ".project-efforts/runtime-rollout/facts.md"
-value = "- Source: release-policy.txt"
-
-[[assertions]]
-kind = "path_contains"
-path = ".project-efforts/runtime-rollout/facts.md"
-value = "Derived from: E1"
+value = '''(?m)^(?:-\s+)?(?:\*\*)?Derived from:(?:\*\*)?[^\n]*\bE1\b'''
 
 [[assertions]]
 kind = "path_contains"

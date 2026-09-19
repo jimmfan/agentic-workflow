@@ -20,7 +20,6 @@ must_not = [
 ]
 live = false
 preserve_paths = [
-  ".project-efforts/wayfinder-runtime-projection/map.md",
   ".project-efforts/provider-projection/map.md",
   ".project-efforts/provider-runtime/map.md",
   ".project-efforts/established-provider-naming/map.md",
@@ -55,3 +54,51 @@ value = "# First-party Wayfinder runtime"
 [[assertions]]
 kind = "path_not_exists"
 path = ".project-efforts/first-party-wayfinder-runtime/map.md"
+
+# Preserve the established statements in their scoped sections while allowing
+# whitespace reflow and either Markdown bullet marker. These fixture-specific
+# expressions do not claim to recognize arbitrary semantic paraphrases.
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Destination\s+One\s+concise\s+Agent\s+Workflow-owned\s+runtime\s+derived\s+from\s+the\s+pinned\s+upstream\s+method\s+replaces\s+the\s+conflicting\s+prepend-plus-upstream\s+specification\.\s*(?=^##\s+|\Z)'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Current\s+state\s+The\s+projection\s+mechanism\s+is\s+selected\s+and\s+implementation\s+is\s+underway\.\s*(?=^##\s+|\Z)'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Territory\s+[-*]\s+Runtime\s+method\s+—\s+the\s+concise\s+agent-facing\s+navigation\s+guidance\.\s+[-*]\s+State\s+contract\s+—\s+detailed\s+storage,\s+identifier,\s+and\s+settlement\s+mechanics\.\s+[-*]\s+Provider\s+projection\s+—\s+derives\s+the\s+installed\s+skill\s+from\s+the\s+owned\s+runtime\.\s+The\s+provider\s+projection\s+depends\s+on\s+the\s+runtime\s+method,\s+while\s+the\s+runtime\s+points\s+to\s+the\s+state\s+contract\s+instead\s+of\s+duplicating\s+its\s+mechanics\.\s*(?=^##\s+|\Z)'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Blockers\s+and\s+dependencies\s+None\.\s*(?=^##\s+|\Z)'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Next\s+work\s+Verify\s+generated\s+projection\s+parity\s+and\s+provider\s+repair\.\s*(?=^##\s+|\Z)'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Notes\s+Detailed\s+current-knowledge\s+settlement\s+and\s+safe\s+retirement\s+are\s+intentionally\s+separate\.\s*(?=^##\s+|\Z)'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Decisions\s+so\s+far\s+The\s+effective\s+runtime\s+is\s+framework-owned\.\s*(?=^##\s+|\Z)'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Not\s+yet\s+specified\s+None\.\s*(?=^##\s+|\Z)'
+
+[[assertions]]
+kind = "glob_any_matches"
+path = ".project-efforts/wayfinder-runtime-projection/map.md"
+value = '(?m)^##\s+Out\s+of\s+scope\s+Current-knowledge\s+settlement\s+and\s+safe-retirement\s+rules\.\s*(?=^##\s+|\Z)'

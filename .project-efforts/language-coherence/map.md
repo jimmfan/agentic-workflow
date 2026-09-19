@@ -54,8 +54,9 @@ Its attribution remains inconclusive; no independent language-defect record is w
   The [architecture overview](../../docs/architecture.md#instruction-runtime) explains why some obligations must remain available before detailed instructions load.
 - **Delivery:** the [manifest](../../agent_workflow/install/manifest.json) maps canonical framework and skill files to their same consumer paths and templates to root policy files.
   [Package verification](../../agent_workflow/verify_package.py) checks managed-root/template synchronization; [distribution tests](../../tests/test_direct_distribution.py) exercise byte-for-byte framework and skill delivery and preserve project domain files.
-- **Evidence:** [test ownership and limitations](../../tests/README.md) distinguish delivery observations, structural wording guards, synthetic evaluator controls, and live evidence.
-  [Term-inventory tests](../../tests/test_routing.py), [specialist reconciliation guards](../../tests/test_specialist_reconciliation.py), and [instruction-coherence controls](../../tests/test_instruction_coherence.py) protect narrower boundaries; their success does not establish semantic equivalence or agent compliance.
+- **Evidence:** [test ownership and limitations](../../tests/README.md) distinguish delivery observations, literal interfaces, evaluator controls, and live evidence.
+  [Term-inventory tests](../../tests/test_routing.py) protect canonical names; the removed [specialist reconciliation guards](https://github.com/jimmfan/agentic-workflow/blob/92d3304473b0fbebdcb6ab08b41bbad1d9710a50/tests/test_specialist_reconciliation.py) and [instruction-coherence controls](https://github.com/jimmfan/agentic-workflow/blob/92d3304473b0fbebdcb6ab08b41bbad1d9710a50/tests/test_instruction_coherence.py) remain historical evidence only.
+  Their earlier success did not establish semantic equivalence or agent compliance.
 
 ## Blockers
 

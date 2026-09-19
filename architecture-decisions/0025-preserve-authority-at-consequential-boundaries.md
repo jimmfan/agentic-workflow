@@ -36,7 +36,7 @@ Durable state may record the accepted project policy that determines a choice, t
 
 ## Consequences
 
-The always-loaded root policy carries a concise form of this invariant because violations can affect every route.
+The always-loaded root policy carries a concise form of these rules because violations can affect every route.
 Workflow contracts may define how to retain or handle an unresolved boundary, but they do not create separate action authorization or project decision authority models.
 
 Tests should observe the public question, allowed independent work, and prohibited downstream artifacts rather than require hidden reasoning or one exact workflow trace.

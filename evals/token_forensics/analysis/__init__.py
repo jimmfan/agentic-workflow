@@ -15,6 +15,7 @@ def _limitations(trace: NormalizedTrace) -> list[str]:
         "Tool-output bytes are bytes in trace payloads, not token counts.",
         "Individual tool outputs cannot be assigned exact later input-token costs from these events.",
         "Repository reads and framework activity are inferred from commands and file-change events, not a complete filesystem audit.",
+        "The existing skills_materially_invoked field matches inferred skill reads to route claims; those signals cannot establish method execution.",
     ]
     if trace.source_format == "codex-exec-jsonl":
         limitations.extend(

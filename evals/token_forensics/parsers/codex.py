@@ -283,6 +283,7 @@ def parse_codex_trace(path: str | Path) -> NormalizedTrace:
         codex_turns_completed=turns_completed,
         usage_observations=usage_observations,
         tool_invocations=[tool_items[identifier] for identifier in tool_order],
+        tool_observations_complete=saw_exec and not saw_rollout,
         compactions=compactions,
         agent_messages=messages,
         parse_warnings=warnings,

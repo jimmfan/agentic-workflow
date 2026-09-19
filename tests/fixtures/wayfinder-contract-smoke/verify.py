@@ -14,23 +14,27 @@ native_tickets = sorted(Path("docs/agents/runtime-rollout/issues").glob("*.md"))
 wayfinder_text = "\n".join(
     path.read_text(encoding="utf-8") for path in effort.rglob("*.md")
 )
+evidence_text = evidence[0].read_text(encoding="utf-8") if evidence else ""
 
 checks = [
     len(evidence) == 1,
     bool(facts),
-    "Source: release-policy.txt" in evidence[0].read_text(encoding="utf-8")
-    if evidence
-    else False,
-    "Limitations:" in evidence[0].read_text(encoding="utf-8") if evidence else False,
-    "minimum_supported=3.11" in evidence[0].read_text(encoding="utf-8")
-    if evidence
-    else False,
-    "Supports: F1" in evidence[0].read_text(encoding="utf-8") if evidence else False,
-    facts.startswith("# Facts\n"),
+    re.search(
+        r"(?m)^(?:-\s+)?(?:\*\*)?Source:(?:\*\*)?[^\n]*\brelease-policy\.txt\b",
+        evidence_text,
+    )
+    is not None,
+    "Scope:" in evidence_text,
+    re.search(
+        r"(?m)^(?:#{1,6}\s+Observation\b|(?:-\s+)?(?:\*\*)?Observation:)",
+        evidence_text,
+    )
+    is not None,
+    "Limitations:" in evidence_text,
+    "minimum_supported=3.11" in evidence_text,
     "## F1 — Python 3.11 is the minimum supported runtime" in facts,
-    "- Scope:" in facts,
-    "Derived from: E1" in facts,
-    "Source: release-policy.txt" in facts,
+    re.search(r"(?m)^(?:-\s+)?(?:\*\*)?Derived from:(?:\*\*)?[^\n]*\bE1\b", facts)
+    is not None,
     "](facts.md#f1--python-311-is-the-minimum-supported-runtime)" in mapping,
     not (effort / "unknowns.md").exists(),
     not (effort / "unknowns").exists(),
@@ -55,7 +59,7 @@ checks = [
         mapping,
     )
     is not None,
-    "## Next work" in mapping,
+    re.search(r"(?m)^## (?:Next work|Ready work)\s*$", mapping) is not None,
     re.search(
         r"(?im)^(?:[^\n]*\b(?:ticket\s*)?01\b[^\n]{0,80}\b(?:is|remains)\s+"
         r"(?:the\s+)?(?:single\s+)?(?:ready|unblocked)\b|[^\n]*\b"

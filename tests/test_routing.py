@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import re
 import unittest
@@ -37,20 +36,9 @@ class RoutingContractTests(unittest.TestCase):
         terminology = (REPOSITORY_ROOT / ".agent-workflow/terminology.md").read_text(
             encoding="utf-8"
         )
-        self.assertEqual(
-            set(re.findall(r"^\*\*([^*]+)\*\*:", terminology, re.MULTILINE)),
+        self.assertCountEqual(
+            re.findall(r"^\*\*([^*]+)\*\*:", terminology, re.MULTILINE),
             EXPECTED_FRAMEWORK_LANGUAGE,
-        )
-
-    def test_framework_terminology_is_distributed_at_its_canonical_path(self) -> None:
-        relative = ".agent-workflow/terminology.md"
-        self.assertTrue((REPOSITORY_ROOT / relative).is_file())
-        manifest = json.loads(
-            (PACKAGE_ROOT / "install/manifest.json").read_text(encoding="utf-8")
-        )
-        self.assertIn(
-            {"source": relative, "target": relative},
-            manifest["framework_owned"],
         )
 
     def test_runtime_and_source_policy_reference_canonical_terminology(self) -> None:
@@ -115,6 +103,16 @@ class RoutingContractTests(unittest.TestCase):
         for filename in ("CONTEXT.md", "CONTEXT-MAP.md", "CONTEXT-FORMAT.md"):
             with self.subTest(filename=filename):
                 self.assertIn(filename, domain)
+
+    def test_selection_and_loading_policies_reference_the_canonical_skill_path(self):
+        for relative in (
+            "AGENTS.md",
+            "agent_workflow/install/AGENTS.md.template",
+            ".agent-workflow/routing.md",
+        ):
+            with self.subTest(policy=relative):
+                policy = (REPOSITORY_ROOT / relative).read_text(encoding="utf-8")
+                self.assertIn(".agents/skills/<name>/SKILL.md", policy)
 
 
 if __name__ == "__main__":

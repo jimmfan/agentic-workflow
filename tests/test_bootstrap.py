@@ -169,20 +169,6 @@ target = Path(sys.argv[2])
                     content.count(b"<!-- agent-workflow:managed-end -->"), 1
                 )
 
-    def test_traversal_and_link_entries_are_rejected(self) -> None:
-        cases = [
-            [("root/agent_workflow/../escape", b"bad", "file")],
-            [("root/agent_workflow/lifecycle.py", b"", "symlink")],
-            [("root/agent_workflow/lifecycle.py", b"", "special")],
-        ]
-        for entries in cases:
-            with (
-                self.subTest(entries=entries),
-                tempfile.TemporaryDirectory() as temporary,
-                self.assertRaises(self.bootstrap.BootstrapError),
-            ):
-                self.bootstrap.extract_snapshot(self.archive(entries), Path(temporary))
-
     def test_snapshot_paths_and_entry_types_are_safe_across_all_source_trees(
         self,
     ) -> None:
@@ -534,6 +520,26 @@ target = Path(sys.argv[2])
             ),
         ):
             self.bootstrap.select_source(None, None)
+
+    def test_release_discovery_ignores_noncanonical_numeric_tags(self) -> None:
+        tags = [
+            "v01.2.3",
+            "v1.02.3",
+            "v1.2.03",
+            "v٩.2.3",
+            "v1.２.3",
+            "v1.2.3-rc.1",
+            "v1.2.3+build",
+            "v0.0.0",
+            "v0.10.0",
+            "v0.9.0",
+        ]
+        with mock.patch.object(
+            self.bootstrap,
+            "request_bytes",
+            return_value=json.dumps([{"name": name} for name in tags]).encode(),
+        ):
+            self.assertEqual(self.bootstrap.latest_stable_ref(), "v0.10.0")
 
     def test_cli_diagnostics_distinguish_installed_cli_selected_release_sha_and_target(
         self,

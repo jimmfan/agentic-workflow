@@ -26,14 +26,6 @@ class InteractiveInput(io.StringIO):
         return True
 
 
-def file_snapshot(root: Path) -> dict[str, bytes]:
-    return {
-        path.relative_to(root).as_posix(): path.read_bytes()
-        for path in sorted(root.rglob("*"))
-        if path.is_file() and not path.is_symlink()
-    }
-
-
 class DirectDistributionTests(ProjectTestCase):
     def setUp(self) -> None:
         super().setUp()
@@ -82,8 +74,8 @@ class DirectDistributionTests(ProjectTestCase):
         current_skills = curated_skill_names()
         framework = self.project / ".agent-workflow"
         self.assertEqual(
-            file_snapshot(framework),
-            file_snapshot(REPOSITORY_ROOT / ".agent-workflow"),
+            tree_snapshot(framework),
+            tree_snapshot(REPOSITORY_ROOT / ".agent-workflow"),
         )
         self.assertFalse((framework / "install-manifest.json").exists())
 

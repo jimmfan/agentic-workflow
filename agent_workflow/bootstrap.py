@@ -20,7 +20,7 @@ from urllib.request import Request, urlopen
 
 REPOSITORY = "jimmfan/agentic-workflow"
 SOURCE_ROOTS = frozenset({"agent_workflow", ".agent-workflow"})
-STABLE_RELEASE_TAG = re.compile(r"v(\d+)\.(\d+)\.(\d+)")
+STABLE_RELEASE_TAG = re.compile(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 MAX_ARCHIVE_BYTES = 20 * 1024 * 1024
 MAX_MEMBER_BYTES = 5 * 1024 * 1024
 MAX_PACKAGE_MEMBERS = 500

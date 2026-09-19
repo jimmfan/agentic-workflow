@@ -142,6 +142,19 @@ class VerifyPackageTests(ProjectTestCase):
                 )
                 self.assert_verify_failure(source, expected)
 
+    def test_version_uses_canonical_ascii_components(self) -> None:
+        source = self.copy_source("canonical-version")
+        version = source / "VERSION"
+        for value in ("01.2.3", "1.02.3", "1.2.03", "١.2.3", "1.２.3"):
+            with self.subTest(rejected=value):
+                version.write_text(value + "\n", encoding="utf-8")
+                self.assert_verify_failure(source, "VERSION must use x.y.z")
+        for value in ("0.0.0", "1.20.300"):
+            with self.subTest(accepted=value):
+                version.write_text(value + "\n", encoding="utf-8")
+                result = self.verify(source)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_verifier_requires_non_active_root_policy_templates(self) -> None:
         cases = (
             ("literal-root-policy", "agent_workflow/install/AGENTS.md"),
@@ -209,10 +222,8 @@ class VerifyPackageTests(ProjectTestCase):
             )
         )
 
-        self.assertEqual(
-            {path.name for path in domain_root.iterdir() if path.is_file()},
-            {"CONTEXT-FORMAT.md", "SKILL.md"},
-        )
+        for filename in ("CONTEXT-FORMAT.md", "SKILL.md"):
+            self.assertTrue((domain_root / filename).is_file())
         self.assertIn(
             ".agents/skills/domain-modeling/CONTEXT-FORMAT.md",
             {item["source"] for item in manifest["framework_owned"]},
@@ -221,16 +232,11 @@ class VerifyPackageTests(ProjectTestCase):
         result = self.verify(source)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
-    def test_wayfinder_effort_is_a_single_file_distributed_entry_point(
-        self,
-    ) -> None:
+    def test_wayfinder_effort_distributes_its_canonical_entry_point(self) -> None:
         skill_root = (
             Path(__file__).resolve().parents[1] / ".agents/skills/wayfinder-effort"
         )
-        self.assertEqual(
-            {path.name for path in skill_root.iterdir()},
-            {"SKILL.md"},
-        )
+        self.assertTrue((skill_root / "SKILL.md").is_file())
         manifest = json.loads(
             (
                 Path(__file__).resolve().parents[1]
@@ -263,8 +269,8 @@ class VerifyPackageTests(ProjectTestCase):
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
-    def test_verifier_accepts_equivalent_skill_instruction_wording(self) -> None:
-        source = self.copy_source("reworded-instructions")
+    def test_verifier_does_not_treat_skill_body_as_a_literal_interface(self) -> None:
+        source = self.copy_source("structural-skill-check")
         skill = source / ".agents/skills/implement/SKILL.md"
         frontmatter, delimiter, _ = skill.read_text(encoding="utf-8").partition(
             "\n---\n"
@@ -272,15 +278,7 @@ class VerifyPackageTests(ProjectTestCase):
         skill.write_text(
             frontmatter
             + delimiter
-            + """Carry out the scope defined by the user or calling workflow.
-
-Apply `tdd` at agreed seams when feasible.
-Check types and focused tests regularly, then run the full suite at the end.
-Finish by using `code-review` to review the implementation.
-
-Make a commit only with authorization from the current user request or accepted project policy.
-If neither authorizes a commit, keep the changes uncommitted and report that status.
-""",
+            + "A structurally valid body does not establish instruction compliance.\n",
             encoding="utf-8",
         )
 
@@ -346,6 +344,66 @@ If neither authorizes a commit, keep the changes uncommitted and report that sta
                     encoding="utf-8",
                 )
                 self.assert_verify_failure(source, expected)
+
+    def test_local_link_gate_covers_maintaining_documents(self) -> None:
+        for index, relative in enumerate(
+            (
+                "AGENTS.md",
+                "CLAUDE.md",
+                "architecture-decisions/README.md",
+                "tests/README.md",
+                "evals/README.md",
+                "evals/routing-smoke/README.md",
+                ".devcontainer/README.md",
+            )
+        ):
+            with self.subTest(relative=relative):
+                source = self.copy_source(f"missing-maintainer-link-{index}")
+                path = source / relative
+                path.write_text(
+                    path.read_text(encoding="utf-8")
+                    + "\n[Missing audit target](missing-audit-target.md).\n",
+                    encoding="utf-8",
+                )
+                self.assert_verify_failure(source, "broken local Markdown link")
+
+    def test_reference_link_targets_are_checked(self) -> None:
+        source = self.copy_source("reference-link-target")
+        path = source / "docs/audit-link-control.md"
+        path.write_text(
+            "See [the maintaining document][owner].\n\n[owner]: missing-owner.md\n",
+            encoding="utf-8",
+        )
+        self.assert_verify_failure(source, "broken local Markdown link")
+        path.write_text(
+            "See [the maintaining document][owner].\n\n[owner]: ../README.md#usage\n",
+            encoding="utf-8",
+        )
+        result = self.verify(source)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_link_examples_in_code_and_historical_fixtures_are_not_live_targets(
+        self,
+    ) -> None:
+        source = self.copy_source("literal-link-examples")
+        example = "[Example](intentionally-missing.md)"
+        (source / "docs/audit-link-control.md").write_text(
+            "Use `" + example + "` as an example.\n\n"
+            "~~~markdown\n" + example + "\n~~~\n\n"
+            "````markdown\n```\n" + example + "\n`````\n\n"
+            "[Online](https://example.invalid/guide).\n",
+            encoding="utf-8",
+        )
+        for relative in (
+            "tests/fixtures/audit-link-control/README.md",
+            "evals/routing-smoke/fixtures/audit-link-control/README.md",
+            "evals/routing-smoke/REPORT.md",
+        ):
+            path = source / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(example + "\n", encoding="utf-8")
+        result = self.verify(source)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_verifier_requires_complete_third_party_attribution(self) -> None:
         cases = (

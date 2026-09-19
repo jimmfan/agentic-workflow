@@ -9,6 +9,10 @@ raw trace -> format parser -> normalized trace -> generic analysis -> JSON/text 
 
 Codex is the first parser.
 The saved `codex exec --json` format reports usage on `turn.completed`; Codex defines those counters as usage **during that Codex turn**, so the analyzer sums completed-turn observations.
+If a completed turn has no usage observation, per-turn totals and cumulative trajectories are unavailable.
+If an observation lacks an individual counter, only that counter's total and dependent calculations are unavailable.
+`known_subtotals` retains reported per-turn counters separately from totals; it is unavailable for cumulative or mixed usage semantics.
+`completed_turns_without_usage` reports completed turns with no usage object for per-turn accounting, without counting objects that merely lack individual counters.
 Persisted Codex rollouts instead emit repeated `token_count.info.total_token_usage` cumulative snapshots; the parser deduplicates identical snapshots and takes the final monotonic value rather than summing them.
 This distinction prevents the most important double-counting failure.
 
@@ -34,8 +38,13 @@ The Codex exec stream currently aggregates internal model activity within a high
 
 The parser tolerates missing fields and incomplete older logs.
 Unavailable measurements remain `null` in JSON and `unknown / unavailable` in text.
+Tool normalization currently supports exec item records only.
+Rollout, mixed, and unrecognized formats therefore have unavailable tool totals, even when some exec items were parsed.
+`observations_complete` reports this normalization coverage; `observed_calls` and `observed_output_bytes` retain the parsed observations separately from totals.
+Tool lists and context heuristics use only those parsed observations and cannot establish the absence of activity in unsupported records.
 
 The current JSON shape is `token-forensics/v2`.
+Its existing `skills_materially_invoked` field contains matches between inferred skill reads and route claims; those signals do not establish method execution.
 Only current `<effort>/map.md`, optional `unknowns.md`, `facts.md`, and `decisions.md` ledgers, and canonical E# evidence-file paths are classified as current Wayfinder state.
 All other `.project-efforts/` paths remain visible in generic repository observations but are not classified as current state.
 

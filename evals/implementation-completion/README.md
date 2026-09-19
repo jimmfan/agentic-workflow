@@ -11,7 +11,7 @@ No new live evaluation is part of the evidence-compaction task.
 They cover implicit recovery purpose, ambiguous intent, unrelated work, read-only requests, exact-version preservation and symlink rejection.
 Blind requests exclude grading expectations; strict read-only evaluation also rejects writes to the harness evidence directory.
 
-[Export completion tests](../../tests/test_export_completion.py) create disposable historical Git repositories and exercise three distinct seams:
+The [historical export completion controls](https://github.com/jimmfan/agentic-workflow/blob/92d3304473b0fbebdcb6ab08b41bbad1d9710a50/tests/test_export_completion.py) created disposable Git repositories and checked three constructed response categories:
 
 | Boundary | Required observation |
 |---|---|
@@ -19,15 +19,18 @@ Blind requests exclude grading expectations; strict read-only evaluation also re
 | Handoff | Finding, maintaining reference, consequence and actual coverage returned to the coordinator. |
 | Completion | Adequate evidence reused, saved recovery information checked, authorized consequential state reconciled. |
 
-These tests combine actual Git/filesystem observations with constructed responses and verification records.
-Their text predicates distinguish the supplied examples; they are not general semantic graders or live model evidence.
+Those controls combined Git/filesystem observations with constructed responses and verification records.
+Their text predicates distinguished supplied examples but were local to the tests, so they have been removed from the current deterministic suite.
+They did not execute review or completion behavior and were not general semantic graders or live model evidence.
+The frozen campaign results and grading rules remain unchanged; the current export-continuity tests cover the maintained scenario evaluators.
 No specific route label, new effort or additional ledger is required.
 Unrelated artifacts and explicit comparison exclusions remain protected.
 Exact bytes establish local preservation, not successful photo export.
 
 ## Fixture preparation
 
-Use the historical Git fixture construction in `CompletionHandoffTests.setUp` as the content owner.
+Use the [historical Git fixture construction in `CompletionHandoffTests.setUp`](https://github.com/jimmfan/agentic-workflow/blob/92d3304473b0fbebdcb6ab08b41bbad1d9710a50/tests/test_export_completion.py) as the content owner.
+The frozen `results.json` field `fixture.owner` names that historical path; resolve it at this immutable revision, not against the current checkout.
 It links README → recovery context → existing recovery plan, with project policy requiring accurate recovery information when implementation changes fallback availability.
 The initial plan falsely says no usable fallback exists; the new export engine remains pending.
 Install each frozen framework revision only in a disposable subject project, never the authoring checkout.

@@ -16,6 +16,46 @@ from evals import routing_smoke
 
 
 class RoutingSmokeTests(unittest.TestCase):
+    def test_nonfinite_budget_and_prices_are_rejected_before_adapter_execution(self):
+        base = [
+            "run",
+            "--adapter",
+            "codex",
+            "--model",
+            "fixture",
+            "--executable",
+            sys.executable,
+            "--max-estimated-cost-usd",
+            "2",
+            "--input-price-per-million",
+            "1",
+            "--cached-input-price-per-million",
+            "1",
+            "--output-price-per-million",
+            "1",
+        ]
+        for option in (
+            "--max-estimated-cost-usd",
+            "--input-price-per-million",
+            "--cached-input-price-per-million",
+            "--output-price-per-million",
+        ):
+            for value in ("nan", "inf", "-inf"):
+                with (
+                    self.subTest(option=option, value=value),
+                    patch.object(
+                        routing_smoke.subprocess,
+                        "run",
+                        side_effect=AssertionError(
+                            "invalid limits must not reach external execution"
+                        ),
+                    ),
+                    redirect_stderr(io.StringIO()),
+                ):
+                    self.assertEqual(
+                        routing_smoke.main([*base, f"{option}={value}"]), 2
+                    )
+
     def test_policy_is_the_disposable_consumer_policy_not_maintainer_instructions(self):
         case = routing_smoke.load_cases()["direct"]
         with tempfile.TemporaryDirectory() as temporary:
@@ -575,6 +615,36 @@ class RoutingReportEvidenceTests(unittest.TestCase):
         self.assertEqual(report["verdict"], "FAIL")
         self.assertFalse(report["complete"])
         self.assertEqual(report["execution_status"], "interrupted")
+
+    def test_direct_case_rejects_intermediate_escalation_even_after_recovery(self):
+        for route, selected in (
+            ("wayfinder", True),
+            ("direct", True),
+            ("wayfinder", False),
+            ("discovery", False),
+        ):
+            for interrupted in (False, True):
+                with self.subTest(
+                    route=route, selected=selected, interrupted=interrupted
+                ):
+                    first = self.decision("note.txt", route=route)
+                    first["wayfinder_selected"] = selected
+                    responses = iter([first, self.decision()])
+
+                    def invoke(prompt):
+                        decision = next(responses)
+                        if interrupted and decision["status"] == "complete":
+                            raise subprocess.TimeoutExpired("fake", 1)
+                        return decision, {}
+
+                    report = routing_smoke.run_case(
+                        routing_smoke.load_cases()["direct"],
+                        host="fake",
+                        model="fake",
+                        invoke=invoke,
+                    )
+                    self.assertEqual(report["verdict"], "FAIL")
+                    self.assertEqual(report["complete"], not interrupted)
 
     def test_codex_timeout_preserves_received_response_and_usage(self):
         decision = self.decision("task.md", route="wayfinder")

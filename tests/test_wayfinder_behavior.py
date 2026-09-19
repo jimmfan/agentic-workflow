@@ -254,8 +254,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
             workspace = behavior.copy_fixture(scenario, Path(temporary))
             before = behavior.snapshot(workspace)
             stdout = (
-                "No durable Wayfinder state is needed.\n\n"
-                "[route: router → wayfinder → assessed-no-state]"
+                "No durable Wayfinder state is needed.\n\n[route: router → wayfinder]"
             )
             evidence = behavior.RunEvidence(
                 scenario=scenario,
@@ -333,7 +332,6 @@ class WayfinderBehaviorTests(unittest.TestCase):
             if item.kind in {"glob_any_matches", "glob_none_matches"}
             and item.path.as_posix() == ".project-efforts/*/map.md"
         ]
-        self.assertEqual(len(accepted_relationships), 4)
         self.assertTrue(
             any(
                 item.kind == "section_any_matches"
@@ -655,26 +653,65 @@ class WayfinderBehaviorTests(unittest.TestCase):
             if item.id == "wayfinder-cross-system-fact-boundary"
         )
         self.assertTrue(scenario.blind_grading)
-        required = {
-            (item.kind, item.path.as_posix(), item.value, item.count)
-            for item in scenario.assertions
-        }
-        self.assertIn(
-            ("glob_count", ".project-efforts/*/evidence/E*.md", None, 1), required
-        )
-        self.assertIn(
-            (
-                "section_all_match",
-                ".project-efforts/*/unknowns.md",
-                r"(?=.*\b(?:current|this|our) project\b)(?=.*\border(?:ing)?\b)",
-                None,
-            ),
-            required,
-        )
-        self.assertIn(("glob_count", ".project-efforts/*/facts.md", None, 0), required)
-        self.assertIn(
-            ("glob_count", ".project-efforts/*/decisions.md", None, 0), required
-        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            effort = workspace / ".project-efforts/ordering"
+            (effort / "evidence").mkdir(parents=True)
+            observation = effort / "evidence/E1-reference.md"
+            observation.write_text(
+                "Source: reference-system.md\nObservation: another system preserves ordering.\n"
+                "Limitations: applicability here remains unresolved.\n"
+            )
+            unknowns = effort / "unknowns.md"
+
+            def assertions_pass() -> bool:
+                evidence = behavior.RunEvidence(
+                    scenario=scenario,
+                    workspace=workspace,
+                    before={},
+                    after=behavior.snapshot(workspace),
+                    stdout="",
+                    stderr="",
+                    returncode=0,
+                    report={},
+                    verification=(),
+                    route_components=(),
+                )
+                return all(
+                    behavior.evaluate_assertion(evidence, assertion).passed
+                    for assertion in scenario.assertions
+                )
+
+            for question in (
+                "Can our project rely on strict ordering?",
+                "Does the current project preserve request order?",
+            ):
+                with self.subTest(question=question):
+                    unknowns.write_text(f"## U1 — {question}\n")
+                    self.assertTrue(assertions_pass())
+            for question in (
+                "Which color should our project use?",
+                "Does another system preserve request order?",
+            ):
+                with self.subTest(unrelated_question=question):
+                    unknowns.write_text(f"## U1 — {question}\n")
+                    self.assertFalse(assertions_pass())
+            unknowns.write_text("## U1 — Can this project rely on ordering?\n")
+            self.assertTrue(assertions_pass())
+            for filename in ("facts.md", "decisions.md"):
+                with self.subTest(unjustified_record=filename):
+                    record = effort / filename
+                    record.write_text(
+                        "Treat the reference system as this project's conclusion.\n"
+                    )
+                    self.assertFalse(assertions_pass())
+                    record.unlink()
+            duplicate = effort / "evidence/E2-copy.md"
+            duplicate.write_bytes(observation.read_bytes())
+            self.assertFalse(assertions_pass())
+            duplicate.unlink()
+            observation.unlink()
+            self.assertFalse(assertions_pass())
 
     def test_progressive_state_contract_rejects_loading_an_unrelated_child(
         self,

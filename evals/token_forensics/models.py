@@ -63,6 +63,7 @@ class NormalizedTrace:
     codex_turns_completed: int = 0
     usage_observations: list[UsageObservation] = field(default_factory=list)
     tool_invocations: list[ToolInvocation] = field(default_factory=list)
+    tool_observations_complete: bool = True
     compactions: list[CompactionEvent] = field(default_factory=list)
     agent_messages: list[str] = field(default_factory=list)
     parse_warnings: list[str] = field(default_factory=list)

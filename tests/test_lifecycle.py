@@ -300,113 +300,78 @@ class LifecycleTests(ProjectTestCase):
         self.assert_ok(self.lifecycle("remove"))
         self.assertEqual(policy.read_bytes(), project_prefix + project_suffix)
 
-    def test_former_standard_agents_layout_converges_without_project_loss(self) -> None:
-        project_bytes = b"# Original project policy\nKeep exactly.\n"
-        policy = self.project / "AGENTS.md"
-        policy.write_bytes(
-            MANAGED_BEGIN
-            + b"\nstale managed bytes\n"
-            + MANAGED_END
-            + b"\n\n"
-            + FORMER_PROJECT_MARKER
-            + b"\n"
-            + project_bytes
-        )
-        commit_all(self.project, "add former standard composite")
+    def test_former_standard_layouts_converge_without_project_loss(self) -> None:
+        for name, newline, project_bytes, former_markers in (
+            ("AGENTS.md", b"\n", b"# Original project policy\nKeep exactly.\n", 0),
+            ("CLAUDE.md", b"\r\n", b"# Original Claude policy\r\nKeep exactly.\r\n", 1),
+        ):
+            with self.subTest(composite=name):
+                project = Path(self.temporary.name) / name
+                project.mkdir()
+                initialize_repository(project)
+                policy = project / name
+                policy.write_bytes(
+                    MANAGED_BEGIN
+                    + newline
+                    + b"stale managed bytes"
+                    + newline
+                    + MANAGED_END
+                    + newline * 2
+                    + FORMER_PROJECT_MARKER
+                    + newline
+                    + project_bytes
+                )
+                commit_all(project, "add former standard composite")
 
-        self.assert_ok(self.lifecycle("update"))
+                self.assert_ok(run_script(LIFECYCLE, "update", project))
 
-        updated = policy.read_bytes()
-        self.assertEqual(updated.count(MANAGED_BEGIN), 1)
-        self.assertEqual(updated.count(MANAGED_END), 1)
-        self.assertNotIn(FORMER_PROJECT_MARKER, updated)
-        self.assertNotIn(b"stale managed bytes", updated)
-        self.assertTrue(updated.endswith(project_bytes))
+                updated = policy.read_bytes()
+                self.assertEqual(updated.count(MANAGED_BEGIN), 1)
+                self.assertEqual(updated.count(MANAGED_END), 1)
+                self.assertEqual(updated.count(FORMER_PROJECT_MARKER), former_markers)
+                self.assertNotIn(b"stale managed bytes", updated)
+                self.assertTrue(updated.endswith(project_bytes))
 
-    def test_former_standard_claude_layout_accepts_crlf(self) -> None:
-        project_bytes = b"# Original Claude policy\r\nKeep exactly.\r\n"
-        policy = self.project / "CLAUDE.md"
-        policy.write_bytes(
-            MANAGED_BEGIN
-            + b"\r\nstale managed bytes\r\n"
-            + MANAGED_END
-            + b"\r\n\r\n"
-            + FORMER_PROJECT_MARKER
-            + b"\r\n"
-            + project_bytes
-        )
-        commit_all(self.project, "add CRLF Claude composite")
+    def test_known_nested_crlf_duplicates_preserve_project_bytes(self) -> None:
+        for name, project_bytes, former_markers in (
+            (
+                "AGENTS.md",
+                b"# Original project policy\r\nKeep \x00\xff exactly.\r\n",
+                0,
+            ),
+            ("CLAUDE.md", b"# Original Claude policy\r\nKeep \x00\xff exactly.\r\n", 1),
+        ):
+            with self.subTest(composite=name):
+                project = Path(self.temporary.name) / name
+                project.mkdir()
+                initialize_repository(project)
+                policy = project / name
+                policy.write_bytes(
+                    MANAGED_BEGIN
+                    + b"\nouter managed bytes\n"
+                    + MANAGED_END
+                    + b"\n\n"
+                    + FORMER_PROJECT_MARKER
+                    + b"\n"
+                    + MANAGED_BEGIN
+                    + b"\r\ninner managed bytes\r\n"
+                    + MANAGED_END
+                    + b"\r\n\r\n"
+                    + FORMER_PROJECT_MARKER
+                    + b"\r\n"
+                    + project_bytes
+                )
+                commit_all(project, "add historical nested duplicate")
 
-        self.assert_ok(self.lifecycle("update"))
+                self.assert_ok(run_script(LIFECYCLE, "install", project))
 
-        updated = policy.read_bytes()
-        self.assertEqual(updated.count(MANAGED_BEGIN), 1)
-        self.assertEqual(updated.count(MANAGED_END), 1)
-        self.assertEqual(updated.count(FORMER_PROJECT_MARKER), 1)
-        self.assertNotIn(b"stale managed bytes", updated)
-        self.assertTrue(updated.endswith(project_bytes))
-
-    def test_known_nested_crlf_duplicate_is_normalized_without_project_loss(
-        self,
-    ) -> None:
-        project_bytes = b"# Original project policy\r\nKeep \x00\xff exactly.\r\n"
-        policy = self.project / "AGENTS.md"
-        policy.write_bytes(
-            MANAGED_BEGIN
-            + b"\nouter managed bytes\n"
-            + MANAGED_END
-            + b"\n\n"
-            + FORMER_PROJECT_MARKER
-            + b"\n"
-            + MANAGED_BEGIN
-            + b"\r\ninner managed bytes\r\n"
-            + MANAGED_END
-            + b"\r\n\r\n"
-            + FORMER_PROJECT_MARKER
-            + b"\r\n"
-            + project_bytes
-        )
-        commit_all(self.project, "add historical nested duplicate")
-
-        self.assert_ok(self.lifecycle("install"))
-
-        updated = policy.read_bytes()
-        self.assertEqual(updated.count(MANAGED_BEGIN), 1)
-        self.assertEqual(updated.count(MANAGED_END), 1)
-        self.assertNotIn(FORMER_PROJECT_MARKER, updated)
-        self.assertNotIn(b"outer managed bytes", updated)
-        self.assertNotIn(b"inner managed bytes", updated)
-        self.assertTrue(updated.endswith(project_bytes))
-
-    def test_known_nested_crlf_claude_duplicate_is_normalized(self) -> None:
-        project_bytes = b"# Original Claude policy\r\nKeep \x00\xff exactly.\r\n"
-        policy = self.project / "CLAUDE.md"
-        policy.write_bytes(
-            MANAGED_BEGIN
-            + b"\nouter managed bytes\n"
-            + MANAGED_END
-            + b"\n\n"
-            + FORMER_PROJECT_MARKER
-            + b"\n"
-            + MANAGED_BEGIN
-            + b"\r\ninner managed bytes\r\n"
-            + MANAGED_END
-            + b"\r\n\r\n"
-            + FORMER_PROJECT_MARKER
-            + b"\r\n"
-            + project_bytes
-        )
-        commit_all(self.project, "add historical Claude duplicate")
-
-        self.assert_ok(self.lifecycle("install"))
-
-        updated = policy.read_bytes()
-        self.assertEqual(updated.count(MANAGED_BEGIN), 1)
-        self.assertEqual(updated.count(MANAGED_END), 1)
-        self.assertEqual(updated.count(FORMER_PROJECT_MARKER), 1)
-        self.assertNotIn(b"outer managed bytes", updated)
-        self.assertNotIn(b"inner managed bytes", updated)
-        self.assertTrue(updated.endswith(project_bytes))
+                updated = policy.read_bytes()
+                self.assertEqual(updated.count(MANAGED_BEGIN), 1)
+                self.assertEqual(updated.count(MANAGED_END), 1)
+                self.assertEqual(updated.count(FORMER_PROJECT_MARKER), former_markers)
+                self.assertNotIn(b"outer managed bytes", updated)
+                self.assertNotIn(b"inner managed bytes", updated)
+                self.assertTrue(updated.endswith(project_bytes))
 
     def test_nested_duplicate_recovery_requires_the_evidenced_newline_shape(
         self,

@@ -19,16 +19,17 @@ Python caches are ignored and need no manual cleanup.
 |---|---|
 | `test_lifecycle.py`, `test_direct_distribution.py` | Real install/update/status/remove, managed-path safety, complete reserved-skill replacement, unrelated-byte preservation, and partial failures. |
 | `test_bootstrap.py` | Release selection, immutable refs, coherent snapshots, optional Git target discovery, archive safety, and CLI delegation. |
-| `test_verify_package.py`, `test_routing.py`, `test_portable_skill_routing.py` | Package/distribution structure, attribution, machine-readable interfaces, canonical names, and framework references, including the canonical path for repository-read skill instructions. |
+| `test_verify_package.py`, `test_routing.py` | Package/distribution structure, attribution, machine-readable interfaces, canonical names, and framework references, including the canonical path for repository-read skill instructions. |
 | `test_release_tag.py` | Release validation and immutable publication/retry using disposable repositories and remotes. |
 | `test_wheel_inputs.py`, `wheel_smoke.py` | Faithful pending-source capture; separately, sdist/wheel build and CLI execution outside checkout imports. Build dependency resolution may need network access. |
 | `test_snapshots.py` | Preservation snapshots that exclude root Git metadata before reads while retaining project entries and read errors. |
 | `test_behavior_harness.py` | Scenario validation, blind grading, assertions, route markers, verification evidence, fixture isolation, and negative controls. |
+| `test_behavior_interruption.py` | Real SIGINT in disposable POSIX harness processes, evidence retention before default cleanup, and stopping after the interrupted attempt. |
 | `test_wayfinder_state.py`, `test_wayfinder_behavior.py`, `test_routing_boundaries.py` | Literal state fixtures and evaluator acceptance/rejection of routing, authority, reconciliation, and no-state outcomes. |
-| `test_specialist_reconciliation.py` | Structural specialist/Wayfinder trigger, ownership, timing, authorization, and selective-state guards; a broken-relative-link fixture control. These do not execute agent reconciliation. |
-| `test_review_handoff.py`, `test_instruction_coherence.py` | Disposable Git review-scope observations and synthetic-answer evaluator controls for review and skill boundaries. |
-| `test_export_completion.py`, `test_export_continuity.py` | Fictional photo-export recovery, exact configuration bytes, unchanged maintaining artifacts, review handoff and completion controls, including ambiguous, sufficient, unrelated and read-only cases. |
-| `test_question_review_controls.py`, `test_map_authoring_controls.py` | Question-section preservation, incoming references, scoped review outcomes, and map-authoring evaluator controls. |
+| `test_export_continuity.py` | Maintained photo-export scenarios covering exact configuration bytes, unchanged source artifacts, ambiguous intent, unrelated work, read-only requests and unsafe paths. |
+| `test_question_review_controls.py`, `test_map_authoring_controls.py` | Question-section preservation, incoming references, stale-state rejection, and map-authoring evaluator controls. |
+| `test_scenario_constraints.py` | Active preservation/forbidden-path declarations and acceptance/rejection of authorized title changes, relevant resumption, read-only review, and forbidden tickets. |
+| `test_smoke_expectations.py` | Smoke evaluator rejection of missing required evidence and invented critical paths, with supported layout and truthful uncertainty controls. |
 | `evals/tests/` | Separate network-free tests of evaluation tooling. |
 
 `scenarios/*.toml` define human-authored requests and observable outcomes; `fixtures/*` supply small starting repositories without copied framework payload.
@@ -36,9 +37,13 @@ The [behavioral guide](../docs/behavioral-testing.md) owns scenario syntax, wrap
 Live runs are opt-in and do not belong to ordinary PR gates.
 
 Synthetic-answer tests validate evaluators, not actual agent reads, independent Standards/Spec review, research, TDD cycles, or compliance with instructions.
-The Git controls separately observe staged/unstaged/untracked review scope and preservation of project bytes, index, and HEAD in disposable repositories.
-Their response predicates are fixture-specific, not proof of semantic completeness for arbitrary answers.
+Retained response controls exercise maintained scenario rubrics or the harness's assertion operators.
+Their predicates are fixture-specific, not proof of semantic completeness for arbitrary answers.
+Static checks protect literal paths, canonical names, record syntax and protocol fields; instruction meaning requires review and applicable live evidence.
+When changing a scenario's grading rules, retain historical results under their original rules and compare future subjects using the same revised harness and scenario version.
+Blind prompts must remain unchanged when only hidden grading requirements change; guided rubric changes must be disclosed.
 Historical obligation-preservation rationale and review evidence remain retrievable in the [instruction-coherence review at its immutable revision](https://github.com/jimmfan/agentic-workflow/blob/727e9c9299c980e29dee5589b4638e779bf49209/docs/reviews/instruction-coherence.md); it is not the current test contract.
+The [implementation-completion protocol](../evals/implementation-completion/README.md#fixture-preparation) retains the historical fixture recipe and frozen evaluation interpretation separately from the current suite.
 
 ## Wayfinder coverage and evidence limits
 

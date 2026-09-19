@@ -12,6 +12,7 @@ expect = [
   "meaningful_repository_change",
 ]
 must_not = [
+  "unnecessary_planning_artifacts",
   "silent_decision_invention",
   "overwrite_project_owned_state",
 ]
