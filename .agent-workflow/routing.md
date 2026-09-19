@@ -60,32 +60,31 @@ New causal uncertainty returns to Debugging; a material unresolved choice return
 
 ## Use selected skills
 
-Prefer native skill execution when the host exposes the selected skill.
-When the host exposes the selected skill natively, use its native skill mechanism to load and execute the installed canonical instructions.
+One selected skill supplies one method.
+Obtain its canonical instructions through the host's native skill mechanism when the host exposes that skill.
+Otherwise, when repository files are readable, read the canonical `.agents/skills/<name>/SKILL.md` directly and only the support files needed for the current request.
+Both instruction-loading paths lead to the same selected method.
+The method may run only when every tool or host feature it requires for this request can run.
+Repository file access is not native skill discovery, loading, or invocation.
+Do not claim that a native invocation, unavailable tool, independent reviewer, parallel worker, interactive surface, or other host feature ran merely because the instructions were readable.
 
-When the host does not expose the selected skill natively, the method may still run when its canonical `.agents/skills/<name>/SKILL.md` is readable and every capability required for the current method is available in the session.
-Read that file and only the support files needed for the current request, then execute the portable parts of its method directly as repository instructions.
-This is portable method execution, not native host skill invocation.
-Do not claim a native invocation, native discovery, unavailable tool, independent reviewer, parallel worker, interactive surface, or other host-specific feature ran merely because its instructions were readable.
-
-<!-- portable-skill-routing-matrix -->
-| Native exposure | Canonical instructions | Required capabilities | Contract result |
-|---|---|---|---|
-| exposed | host-loaded | available | native skill execution |
-| not exposed | readable | available | portable method execution |
-| not exposed | missing or unreadable | any | unavailable |
-| not exposed | readable | required capability unavailable | unavailable or blocked |
-<!-- /portable-skill-routing-matrix -->
+<!-- skill-availability-matrix -->
+| Situation | Outcome |
+|---|---|
+| Canonical instructions are missing or unreadable | unavailable |
+| A required tool or host feature does not exist or cannot run | unavailable |
+| Required support exists and could run, but authorization, project state, a required input or prerequisite, or an integrity condition prevents progress | blocked |
+<!-- /skill-availability-matrix -->
 
 Execution means using the skill's method; selecting it, reading instructions, checking availability, or giving invocation instructions does not count.
 Using a skill for focused work need not change the primary route, including Direct.
 Completion and verification require evidence beyond execution or a route marker.
 
 Research and factual lookup may run synchronously when their evidence requirements remain satisfied.
-Preserve a selected method's required independence or parallelism; if that capability is unavailable, report the execution gap under the availability conventions below rather than claiming independent work ran.
+Preserve a selected method's required independence or parallelism.
+If the required reviewer or worker support does not exist or cannot run, report the method as unavailable rather than claiming independent work ran.
 
-If the canonical instructions are missing or unreadable, or a capability required by the method is unavailable, apply the existing unavailable or blocked outcome rather than claiming partial steps as the full method.
-If a selected skill is unavailable or requires explicit user invocation, continue Direct only when the user did not require that skill and available capabilities can satisfy the request.
+If a selected skill is unavailable or requires explicit user invocation, continue Direct only when the user did not require that skill and the available tools and host features can satisfy the request.
 Otherwise stop, explain what is needed, give the exact supported invocation instruction when applicable, and use the terminal suffix below.
 Also stop affected work when authorization, current state, a required input, or an integrity check prevents it from proceeding.
 Never present Direct work as execution of a skill that could not run.
@@ -111,14 +110,14 @@ Every user-facing final response ends with exactly one truthful marker listing o
 
 Use compact labels: `workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and `workflow-verification` become `discovery`, `debugging`, `implement`, and `verification`.
 Use `direct` when no named workflow or skill ran.
-The marker names the method that executed and does not encode which instruction-loading path ran.
-For portable method execution, surrounding prose must not imply native skill invocation or unavailable host features.
+The marker names the method that executed and does not encode how its instructions were loaded.
+After repository-read instruction loading, surrounding prose must not imply native skill discovery, loading, or invocation, or claim that unavailable host features ran.
 
 Use a terminal suffix only when selection did not become equivalent execution:
 
 - `<skill>-handoff`: explicit user invocation remains required;
-- `<skill>-unavailable`: the required skill cannot run;
-- `<skill>-blocked`: action authorization, state, prerequisite, or integrity stopped it.
+- `<skill>-unavailable`: required instructions, tools, or host features are missing, unavailable, or cannot run;
+- `<skill>-blocked`: the method could otherwise run, but authorization, project state, a required input or prerequisite, or an integrity condition prevents progress.
 
 After a successful Direct fallback, omit the skill that could not run from the marker.
 TDD and Code Review run within `implement` remain represented by `implement` unless separately selected.

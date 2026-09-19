@@ -1,4 +1,4 @@
-"""Contract guards for native and repository-read skill execution paths.
+"""Contract guards for two instruction-loading paths and one skill method.
 
 These tests inspect distributed instructions and synthetic host outcomes. They do
 not claim that a live model followed the instructions or that a host discovered
@@ -20,16 +20,16 @@ def read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def routing_matrix() -> dict[tuple[str, str, str], str]:
+def routing_matrix() -> dict[str, str]:
     routing = read(".agent-workflow/routing.md")
-    start = routing.index("<!-- portable-skill-routing-matrix -->")
-    end = routing.index("<!-- /portable-skill-routing-matrix -->", start)
-    rows: dict[tuple[str, str, str], str] = {}
+    start = routing.index("<!-- skill-availability-matrix -->")
+    end = routing.index("<!-- /skill-availability-matrix -->", start)
+    rows: dict[str, str] = {}
     for line in routing[start:end].splitlines():
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if len(cells) != 4 or cells[0] in {"Native exposure", "---"}:
+        if len(cells) != 2 or cells[0] in {"Situation", "---"}:
             continue
-        rows[tuple(cells[:3])] = cells[3]
+        rows[cells[0]] = cells[1]
     return rows
 
 
@@ -39,7 +39,7 @@ class SyntheticHost:
 
     root: Path
     native_skills: set[str] = field(default_factory=set)
-    capabilities: set[str] = field(default_factory=lambda: {"repository-read"})
+    host_features: set[str] = field(default_factory=lambda: {"repository-read"})
     events: list[str] = field(default_factory=list)
 
     def instruction_path(self, name: str) -> Path:
@@ -49,49 +49,69 @@ class SyntheticHost:
         path = self.instruction_path(name)
         if name in self.native_skills:
             self.events.append(f"native-load:{name}")
-            return "native", path.read_text(encoding="utf-8")
-        if "repository-read" not in self.capabilities or not path.is_file():
+            return "host-native", path.read_text(encoding="utf-8")
+        if "repository-read" not in self.host_features or not path.is_file():
             return None
         self.events.append(f"repository-read:{name}")
-        return "portable", path.read_text(encoding="utf-8")
+        return "repository-read", path.read_text(encoding="utf-8")
 
     def run_method(
         self,
         name: str,
         *,
-        required_capabilities: set[str],
+        required_host_features: set[str],
+        blocking_condition: str | None = None,
         required: bool = True,
     ) -> dict[str, str | bool]:
         loaded = self.read_method(name)
         if loaded is None:
-            return self._fallback(name, required, "unavailable")
+            return self._fallback(name, required, "unavailable", "none")
         instruction_source, instructions = loaded
-        missing = required_capabilities - self.capabilities
+        missing = required_host_features - self.host_features
         if missing:
-            return self._fallback(name, required, "blocked")
+            return self._fallback(name, required, "unavailable", instruction_source)
+        if blocking_condition is not None:
+            if blocking_condition not in {
+                "authorization",
+                "project-state",
+                "required-input",
+                "prerequisite",
+                "integrity",
+            }:
+                raise ValueError(f"unsupported synthetic blocker: {blocking_condition}")
+            return self._fallback(name, required, "blocked", instruction_source)
         if "PERFORM_SYNTHETIC_METHOD" not in instructions:
-            return self._fallback(name, required, "unavailable")
+            return self._fallback(name, required, "unavailable", instruction_source)
         self.events.append(f"method-executed:{name}")
         return {
             "selected": name,
             "instruction_source": instruction_source,
             "executed": True,
+            "method_result": "performed",
+            "native_invocation": instruction_source == "host-native",
             "route": name,
         }
 
     @staticmethod
-    def _fallback(name: str, required: bool, outcome: str) -> dict[str, str | bool]:
+    def _fallback(
+        name: str,
+        required: bool,
+        outcome: str,
+        instruction_source: str,
+    ) -> dict[str, str | bool]:
         if not required:
             return {
                 "selected": name,
-                "instruction_source": "none",
+                "instruction_source": instruction_source,
                 "executed": False,
+                "native_invocation": instruction_source == "host-native",
                 "route": "direct",
             }
         return {
             "selected": name,
-            "instruction_source": "none",
+            "instruction_source": instruction_source,
             "executed": False,
+            "native_invocation": instruction_source == "host-native",
             "route": f"{name}-{outcome}",
         }
 
@@ -111,67 +131,80 @@ def make_synthetic_project(root: Path, *, include_skill: bool = True) -> None:
 
 
 class PortableSkillRoutingTests(unittest.TestCase):
-    def test_synthetic_host_outcomes_cover_both_execution_paths_and_failures(self):
+    def test_routing_matrix_distinguishes_unavailable_from_blocked(self):
         matrix = routing_matrix()
 
         self.assertEqual(
-            matrix[("exposed", "host-loaded", "available")],
-            "native skill execution",
-        )
-        self.assertEqual(
-            matrix[("not exposed", "readable", "available")],
-            "portable method execution",
-        )
-        self.assertEqual(
-            matrix[("not exposed", "missing or unreadable", "any")],
+            matrix["Canonical instructions are missing or unreadable"],
             "unavailable",
         )
         self.assertEqual(
-            matrix[("not exposed", "readable", "required capability unavailable")],
-            "unavailable or blocked",
+            matrix["A required tool or host feature does not exist or cannot run"],
+            "unavailable",
+        )
+        self.assertEqual(
+            matrix[
+                "Required support exists and could run, but authorization, project state, a required input or prerequisite, or an integrity condition prevents progress"
+            ],
+            "blocked",
         )
 
-    def test_native_exposed_skill_uses_host_load_and_executes_canonical_method(self):
+    def test_both_instruction_loading_paths_converge_on_the_same_method(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             make_synthetic_project(root)
-            host = SyntheticHost(
+            native_host = SyntheticHost(
                 root,
                 native_skills={"synthetic"},
-                capabilities={"repository-read", "method-action"},
+                host_features={"repository-read", "method-action"},
+            )
+            repository_host = SyntheticHost(
+                root,
+                host_features={"repository-read", "method-action"},
             )
 
-            result = host.run_method(
-                "synthetic", required_capabilities={"method-action"}
+            native_result = native_host.run_method(
+                "synthetic", required_host_features={"method-action"}
+            )
+            repository_result = repository_host.run_method(
+                "synthetic", required_host_features={"method-action"}
             )
 
-            self.assertEqual(result["instruction_source"], "native")
-            self.assertTrue(result["executed"])
+            self.assertEqual(native_result["instruction_source"], "host-native")
+            self.assertEqual(repository_result["instruction_source"], "repository-read")
+            for field_name in ("selected", "executed", "method_result", "route"):
+                self.assertEqual(
+                    native_result[field_name], repository_result[field_name]
+                )
             self.assertEqual(
-                host.events,
+                native_host.events,
                 ["native-load:synthetic", "method-executed:synthetic"],
             )
+            self.assertEqual(
+                repository_host.events,
+                ["repository-read:synthetic", "method-executed:synthetic"],
+            )
+            self.assertTrue(native_result["native_invocation"])
+            self.assertFalse(repository_result["native_invocation"])
 
-    def test_claude_like_host_reads_and_executes_portable_method_without_native_claim(
-        self,
-    ):
+    def test_claude_like_host_uses_agents_policy_and_repository_read(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             make_synthetic_project(root)
             host = SyntheticHost(
                 root,
-                capabilities={"repository-read", "method-action"},
+                host_features={"repository-read", "method-action"},
             )
-
             self.assertTrue((root / "AGENTS.md").is_file())
             self.assertFalse(host.native_skills)
             result = host.run_method(
-                "synthetic", required_capabilities={"method-action"}
+                "synthetic", required_host_features={"method-action"}
             )
 
-            self.assertEqual(result["instruction_source"], "portable")
+            self.assertEqual(result["instruction_source"], "repository-read")
             self.assertTrue(result["executed"])
             self.assertEqual(result["route"], "synthetic")
+            self.assertFalse(result["native_invocation"])
             self.assertEqual(
                 host.events,
                 ["repository-read:synthetic", "method-executed:synthetic"],
@@ -186,20 +219,39 @@ class PortableSkillRoutingTests(unittest.TestCase):
             make_synthetic_project(root, include_skill=False)
             host = SyntheticHost(root)
 
-            result = host.run_method("synthetic", required_capabilities=set())
+            result = host.run_method("synthetic", required_host_features=set())
 
             self.assertFalse(result["executed"])
             self.assertEqual(result["route"], "synthetic-unavailable")
             self.assertEqual(host.events, [])
 
-    def test_missing_required_capability_blocks_after_read_without_execution(self):
+    def test_missing_parallel_reviewer_support_is_unavailable(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             make_synthetic_project(root)
             host = SyntheticHost(root)
 
             result = host.run_method(
-                "synthetic", required_capabilities={"parallel-reviewers"}
+                "synthetic", required_host_features={"parallel-reviewers"}
+            )
+
+            self.assertFalse(result["executed"])
+            self.assertEqual(result["route"], "synthetic-unavailable")
+            self.assertEqual(host.events, ["repository-read:synthetic"])
+
+    def test_existing_authorization_condition_blocks_supported_method(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            make_synthetic_project(root)
+            host = SyntheticHost(
+                root,
+                host_features={"repository-read", "parallel-reviewers"},
+            )
+
+            result = host.run_method(
+                "synthetic",
+                required_host_features={"parallel-reviewers"},
+                blocking_condition="authorization",
             )
 
             self.assertFalse(result["executed"])
@@ -227,18 +279,18 @@ class PortableSkillRoutingTests(unittest.TestCase):
             host = SyntheticHost(root)
 
             result = host.run_method(
-                "synthetic", required_capabilities=set(), required=False
+                "synthetic", required_host_features=set(), required=False
             )
 
             self.assertFalse(result["executed"])
             self.assertEqual(result["route"], "direct")
 
-    def test_native_path_remains_preferred_and_uses_canonical_instructions(self):
+    def test_host_native_path_loads_canonical_instructions(self):
         routing = read(".agent-workflow/routing.md")
 
-        self.assertIn("When the host exposes the selected skill natively", routing)
-        self.assertIn("use its native skill mechanism", routing)
-        self.assertIn("installed canonical instructions", routing)
+        self.assertIn("through the host's native skill mechanism", routing)
+        self.assertIn("Both instruction-loading paths", routing)
+        self.assertIn("same selected method", routing)
 
     def test_repository_read_path_is_selection_input_and_not_native_invocation(self):
         routing = read(".agent-workflow/routing.md")
@@ -252,9 +304,14 @@ class PortableSkillRoutingTests(unittest.TestCase):
                 "does not expose an applicable Agent Workflow skill natively",
                 policy,
             )
-        self.assertIn("execute the portable parts of its method directly", routing)
-        self.assertIn("not native host skill invocation", routing)
-        self.assertIn("readable canonical `.agents/skills/<name>/SKILL.md`", wayfinder)
+        self.assertIn(
+            "read the canonical `.agents/skills/<name>/SKILL.md` directly", routing
+        )
+        self.assertIn("is not native skill discovery, loading, or invocation", routing)
+        self.assertIn(
+            "skill descriptions available under the root routing policy", wayfinder
+        )
+        self.assertNotIn(".agents/skills/<name>/SKILL.md", wayfinder)
 
     def test_reading_instructions_is_not_execution_and_route_reports_method_only(self):
         routing = read(".agent-workflow/routing.md")
@@ -262,8 +319,27 @@ class PortableSkillRoutingTests(unittest.TestCase):
         self.assertIn(
             "selecting it, reading instructions, checking availability", routing
         )
-        self.assertIn("does not encode which instruction-loading path ran", routing)
-        self.assertIn("must not imply native skill invocation", routing)
+        self.assertIn("does not encode how its instructions were loaded", routing)
+        self.assertIn(
+            "must not imply native skill discovery, loading, or invocation", routing
+        )
+
+    def test_execution_categories_are_not_canonical_terms(self):
+        terminology = read(".agent-workflow/terminology.md")
+        affected = "\n".join(
+            read(path)
+            for path in (
+                ".agent-workflow/routing.md",
+                "docs/architecture.md",
+                "README.md",
+                "architecture-decisions/0030-use-canonical-skill-methods-without-native-discovery.md",
+                "evals/portable-skill-routing/README.md",
+            )
+        )
+
+        for phrase in ("Native skill execution", "Portable method execution"):
+            self.assertNotIn(phrase, terminology)
+            self.assertNotIn(phrase.lower(), affected.lower())
 
     def test_optional_skill_can_still_fall_back_to_direct(self):
         routing = read(".agent-workflow/routing.md")
@@ -281,7 +357,9 @@ class PortableSkillRoutingTests(unittest.TestCase):
         manifest = read("agent_workflow/install/manifest.json")
 
         self.assertIn("Claude Code", readme)
-        self.assertIn("reads the canonical `.agents/skills/<name>/SKILL.md`", readme)
+        self.assertIn(
+            "read the canonical `.agents/skills/<name>/SKILL.md` directly", readme
+        )
         self.assertIn("does not make `.agents/skills/` a Claude-native", readme)
         self.assertNotIn('"target": ".claude/skills/', manifest)
 

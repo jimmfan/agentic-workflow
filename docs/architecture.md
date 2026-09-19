@@ -12,13 +12,19 @@ It is not a general agent runtime, package manager, hook framework, analytics sy
 flowchart TD
     request["User request + available skill descriptions"] --> root["AGENTS.md / CLAUDE.md managed policy"]
     root --> direct["Direct work"]
-    root --> exposure{"Skill exposed natively?"}
-    exposure -->|yes| native["Host-native skill execution"]
-    exposure -->|no| readable{"Canonical SKILL.md readable and required capabilities available?"}
-    readable -->|yes| portable["Portable method execution"]
-    readable -->|no| unavailable["Unavailable / blocked / authorized Direct fallback"]
-    native --> method["Selected .agents/skills/name/SKILL.md method"]
-    portable --> method
+    root --> selected["Selected skill method"]
+    selected --> exposure{"Skill exposed natively?"}
+    exposure -->|yes| native["Host loads canonical instructions"]
+    exposure -->|no| readable{"Canonical SKILL.md readable?"}
+    readable -->|yes| repository["Agent reads canonical instructions"]
+    readable -->|no| unavailable["Unavailable / authorized Direct fallback"]
+    native --> instructions["Canonical instructions obtained"]
+    repository --> instructions
+    instructions --> support{"Every required tool or host feature can run?"}
+    support -->|no| unavailable
+    support -->|yes| progress{"Authorization, state, input, prerequisites, and integrity permit progress?"}
+    progress -->|no| blocked["Blocked"]
+    progress -->|yes| method["Execute the selected method"]
     direct -. focused method when useful .-> method
     root -. composition or resumption detail .-> routing[".agent-workflow/routing.md"]
     root -. framework meanings when needed .-> terms[".agent-workflow/terminology.md"]
@@ -31,9 +37,11 @@ flowchart TD
 
 The host loads project policy and may expose available skills.
 The root policy starts with Direct work and selects one primary workflow plus useful supporting capabilities when warranted.
-Native exposure remains the preferred instruction-loading path.
-If native exposure is absent but repository files are readable, the router may use a canonical `.agents/skills/<name>/SKILL.md` description for selection and execute its method directly when every required capability is available.
-Reading instructions is not execution, the repository-read path is not native host skill invocation, and missing required capabilities retain the existing unavailable or blocked semantics.
+The host may load a selected skill's canonical instructions through its native skill mechanism, or the agent may read the same canonical `.agents/skills/<name>/SKILL.md` directly when native exposure is absent and repository files are readable.
+Both instruction-loading paths converge before the selected method executes.
+Reading instructions is not execution, and repository file access is not native skill discovery, loading, or invocation.
+A missing instruction, tool, or required host feature makes the method unavailable.
+When required support exists and could run, authorization, project state, a required input or prerequisite, or an integrity condition may block progress.
 There is no daemon or host hook enforcing the route; reported execution still needs evidence.
 Host permission does not itself authorize an action or commit a project choice.
 

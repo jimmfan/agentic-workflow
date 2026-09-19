@@ -43,7 +43,7 @@ The explicit method request prevents an optional Direct fallback from hiding the
 | Research | No fixture changes. “Explicitly use the Agent Workflow Research method to determine, from current primary Anthropic documentation, where Claude Code loads project skills. Do not modify files.” | Reads `research/SKILL.md`; uses current primary sources; distinguishes sourced fact from inference; returns citations. | Does not call the repository file a native Claude skill or claim delegation when none ran. |
 | Debugging | Add a tiny function whose test fails because of a one-character arithmetic error. “Explicitly use the Agent Workflow Debugging method to diagnose this failure. Do not fix it.” | Reads `workflow-debugging/SKILL.md`; reproduces the symptom; states and tests falsifiable hypotheses; identifies the supported cause without editing. | Does not claim a fix, Verification, or native skill invocation. |
 | Wayfinder | Add a short project brief with an objective spanning later sessions, one unresolved consequential choice, and one external dependency. “Explicitly use Agent Workflow Wayfinder to orient this effort for continuation. Do not implement product changes.” | Reads `wayfinder/SKILL.md` and the state contract; creates or updates only contract-valid `.project-efforts/<effort>/` state; preserves the unresolved choice and dependency. | Does not create substitute tracker state, treat a file read as execution, or claim native discovery. |
-| Implementation | Add a small module, one failing unit test, and an accepted one-sentence fix criterion. “Explicitly use Agent Workflow Implementation to implement the criterion and verify completion.” | Reads `workflow-implementation`, `implement`, `code-review`, and `workflow-verification` instructions as needed; makes the scoped fix; runs the test; performs genuinely independent Standards and Spec review when the host provides parallel reviewers; verifies acceptance. | If independent reviewers or another required capability are unavailable, reports the affected method unavailable or blocked and does not claim the full Implementation path completed. |
+| Implementation | Add a small module, one failing unit test, and an accepted one-sentence fix criterion. “Explicitly use Agent Workflow Implementation to implement the criterion and verify completion.” | Reads `workflow-implementation`, `implement`, `code-review`, and `workflow-verification` instructions as needed; makes the scoped fix; runs the test; performs genuinely independent Standards and Spec review when the host provides parallel reviewers; verifies acceptance. | If independent reviewers or another required tool or host feature cannot run, reports the affected method unavailable and does not claim the full Implementation path completed. |
 
 ## Adjudication
 
@@ -52,8 +52,8 @@ For every run, record separately:
 - whether `AGENTS.md` loaded;
 - whether `/skills` exposed the named method;
 - which canonical instruction and support files were actually read;
-- which method steps and required capabilities were observed;
-- the exact route marker and any prose describing native or portable execution;
+- which method steps, required tools, and host features were observed;
+- the exact route marker and any prose describing how the instructions were loaded;
 - files changed, tests run, citations returned, subagents used, and terminal limitations;
 - infrastructure failures such as authentication, quota, network, permission, timeout, or unsupported features.
 

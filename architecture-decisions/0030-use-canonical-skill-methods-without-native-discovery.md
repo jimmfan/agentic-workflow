@@ -12,27 +12,28 @@ Claude Code illustrates the gap without defining it: current Claude Code can loa
 Copying the curated tree into each provider-specific location would create duplicate maintained instructions and provider lifecycle surface.
 
 Many curated methods are ordinary model instructions over repository files and common tools.
-Some methods also require capabilities such as independent parallel reviewers or an interactive surface that a particular session may not provide.
+Some methods also require tools or host features such as independent parallel reviewers or an interactive surface that a particular session may not provide.
 Instruction readability therefore does not by itself establish method availability or execution.
 
 ## Decision
 
-Keep host-native skill execution as the preferred path when the host exposes a selected skill.
-When native exposure is absent, allow routing to use the canonical `.agents/skills/<name>/SKILL.md` description for selection and to read that file as repository instructions.
-The agent may execute the method directly only when the canonical instructions are readable and every capability required for the current method is available.
+Use one selected skill method regardless of how its canonical instructions are obtained.
+When the host exposes the selected skill, the host loads those instructions through its native skill mechanism.
+When the host does not expose the selected skill, allow routing to use the canonical `.agents/skills/<name>/SKILL.md` description for selection and to read that file directly as repository instructions.
+The selected method may run only when every tool or host feature it requires for the request can run.
 
-Call the second path portable method execution in routing explanations.
-This phrase distinguishes how instructions were loaded; it does not create a new framework state type or provider abstraction.
-The ordinary route label continues to name the method that actually executed, while surrounding reporting must not imply native discovery, native invocation, or unavailable host features.
+The ordinary route label continues to name the method that actually executed, not how its instructions were loaded.
+Reporting after a repository read must not imply native discovery, loading, or invocation, or claim that unavailable host features ran.
 
-Selecting a method, reading its instructions, or checking capabilities is not execution.
+Selecting a method or reading its instructions is not execution.
 Missing canonical instructions use the existing unavailable outcome.
-A missing capability required by the method uses the existing unavailable or blocked outcome according to whether the capability cannot run or a prerequisite prevents it.
+A required tool or host feature that does not exist or cannot run makes the method unavailable.
+When required support exists and could run, authorization, project state, a required input or prerequisite, or an integrity condition may instead block progress.
 An optional skill may still fall back to Direct when Direct can truthfully satisfy the request.
 
 ## Consequences
 
-Hosts with repository-file access can apply portable Agent Workflow methods without a duplicate skill tree.
+Hosts with repository-file access can use canonical Agent Workflow instructions without a duplicate skill tree.
 Native hosts keep their existing skill mechanics and canonical installed content.
 Authorization, project decision authority, evidence, durable-state ownership, composition, and route-reporting rules are unchanged.
 
@@ -42,10 +43,10 @@ Live host evaluation remains separate evidence and must distinguish method execu
 ## Alternatives considered
 
 - Copy curated skills into `.claude/skills/`: rejected because it duplicates canonical instructions and adds provider-specific lifecycle ownership.
-- Add a general host/provider compatibility layer: rejected because current behavior needs only an instruction-source and capability distinction.
+- Add a general host/provider compatibility layer: rejected because current behavior needs only two literal ways to obtain the same canonical instructions.
 - Keep native exposure as the only availability test: rejected because it makes readable, executable methods unnecessarily unavailable.
-- Treat every readable method as executable: rejected because it would falsely claim required native or session capabilities.
+- Treat every readable method as executable: rejected because a required tool or host feature may not exist or may be unable to run.
 
 ## Reconsideration trigger
 
-Reconsider if supported hosts converge on one native skill location, repository-read execution proves unreliable in live evaluations, or a required host feature cannot be represented truthfully by the existing unavailable and blocked semantics.
+Reconsider if supported hosts converge on one native skill location, repository-read instruction loading proves unreliable in live evaluations, or a required host feature cannot be represented truthfully by the existing unavailable and blocked semantics.

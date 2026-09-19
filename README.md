@@ -94,11 +94,13 @@ Projects with Wayfinder state at the former `.agent-wayfinder/` path must explic
   Agent Workflow retains its existing `CLAUDE.md` integration for sessions and configurations that need it.
 - Claude Code's documented project-skill location is [`.claude/skills/`](https://code.claude.com/docs/en/skills#choose-where-skills-load).
   Agent Workflow does not copy skills there.
-  Instead, when repository files are available, the routing policy reads the canonical `.agents/skills/<name>/SKILL.md` and applies the portable parts of that method directly.
+  Instead, when repository files are available, the routing policy may read the canonical `.agents/skills/<name>/SKILL.md` directly and then use the same selected method.
   This does not make `.agents/skills/` a Claude-native skill location.
 
 Native skill mechanics remain available only when the host exposes them.
-A method that requires an unavailable capability remains unavailable or blocked; an optional skill may have an authorized Direct fallback.
+A method is unavailable when required instructions, tools, or host features are missing or cannot run.
+When that support exists and could run, authorization, project state, a required input or prerequisite, or an integrity condition may block progress.
+An optional skill may have an authorized Direct fallback.
 
 ## Skills for ordinary work
 
