@@ -32,9 +32,8 @@ Infer the shape from the request and code when supported, and state any material
    A logic demo is a single HTML file the user double-clicks.
    Either way, no thinking required to start it.
 3. **No persistence by default.**
-   State lives in memory.
-   Persistence is the thing the prototype is _checking_, not something it should depend on.
-   If the question explicitly involves a database, hit a scratch DB or a local file with a clear "PROTOTYPE — wipe me" name.
+   Keep state in memory unless persistence is part of the question being tested.
+   When it is, use a scratch database or local file clearly named "PROTOTYPE — wipe me".
    Keep mutations isolated from real systems and data; UI actions use stubs, and any real-data reads remain within the authorized scope.
 4. **Skip the polish.**
    No tests, no error handling beyond what makes the prototype _runnable_, no abstractions.

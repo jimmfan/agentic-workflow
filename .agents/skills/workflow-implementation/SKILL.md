@@ -5,8 +5,8 @@ description: Coordinate the outer transition from one ready implementation scope
 
 # Implementation integration
 
-Implementation defines the workflow transition into execution, not build methodology or durable state.
-`implement` defines its build loop, TDD, and closing Code Review.
+Implementation coordinates execution and acceptance verification.
+`implement` owns the build loop, TDD, and closing Code Review; Wayfinder owns any durable coordination state.
 
 ## Establish the boundary
 
@@ -20,7 +20,7 @@ Implementation defines the workflow transition into execution, not build methodo
 ## Execute once
 
 Invoke `implement` once.
-Never simulate its execution or claim it ran.
+Report that it ran only after actually executing its method; do not simulate execution.
 
 Pass the governing authorized request or specification, existing project rules that govern this work, accepted scope, observable acceptance criteria, relevant baseline, and any references to artifacts or records that maintain the scope.
 `implement` establishes pre-edit context and carries those inputs and the actual changed scope into its closing Code Review.
