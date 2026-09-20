@@ -7,7 +7,9 @@ Keep consequential terminology and instruction-language questions understandable
 ## Scope
 
 Framework term meanings, normative wording, and authored-to-consumer language consistency where differences could change behavior or create competing maintenance obligations.
-The initial task authorizes a bounded source audit and effort state; framework, glossary, documentation, test, and evaluator corrections and live evaluations remain outside that task.
+The initial task authorized a bounded source audit and effort state, excluding corrections and live evaluations.
+The current request authorizes repository-wide instruction-language corrections and contextual editorial cleanup through [PR #54](https://github.com/jimmfan/agentic-workflow/pull/54), preserving intended behavior, loading boundaries, exact state formats, and historical evidence.
+Architecture, runtime behavior, interfaces, data formats, ownership, evaluation design, and live evaluations remain outside this cleanup.
 
 The completed domain-language normalization work is maintained in canonical terminology, the state contract, and the [map-authoring report](../../evals/map-authoring/REPORT.md).
 Its bounded changes merged through PRs #13, #14, and #31; its former map no longer has unfinished implementation to coordinate.
@@ -18,17 +20,21 @@ Consult that effort's current map for continuation, retaining one detailed quest
 
 Resume only during relevant authorized work that materially changes a represented meaning, instruction, or evidence claim.
 This map is not self-updating, a second glossary, a normative instruction source, or a requirement to audit unrelated work.
-Style-only rewrites, ordinary repetition, generic code deduplication, and speculative cleanup are excluded.
+Style-only work and ordinary repetition do not independently require this effort; the current authorized cleanup includes editorial changes alongside concrete instruction defects.
+Generic code deduplication and speculative cleanup remain excluded.
 
 ## Ready work
 
-The initial audit is complete.
-No new language correction or live evaluation is proposed as ready work: the inspected sources did not establish a consequential terminology defect or harmful instruction duplication.
-Future findings may justify a bounded proposal; a proposal does not authorize its implementation.
+The scoped language cleanup is complete; PR #54 maintains its changes, contextual review, and deterministic verification.
+No additional correction or live evaluation is proposed as ready work.
 
 ## Current state
 
-The current glossary, root policy and templates, routing, state contract, distributed skill instructions, architecture decisions, documentation, and relevant coverage distinguish term definitions from required behavior and project decision authority from action authorization.
+The current cleanup corrects Implementation's literal prohibition on reporting actual execution and Prototype's unconditional claim about persistence, while preserving their execution and isolation requirements.
+Current instructions and the PR maintain the changes and review evidence; no separate audit report or question ledger is needed.
+The token-forensics `skills_materially_invoked` schema concern and the Debugging-to-Implementation handoff question are explicitly deferred from this cleanup.
+
+The initial audit found that the glossary, root policy and templates, routing, state contract, distributed skill instructions, architecture decisions, documentation, and relevant coverage distinguish term definitions from required behavior and project decision authority from action authorization.
 No second authoritative framework glossary, active use of the former state path, or authored-to-consumer wording divergence was established in the inspected current surfaces.
 This is a source-audit conclusion, not proof of reliable agent interpretation.
 
@@ -62,7 +68,7 @@ Its attribution remains inconclusive; no independent language-defect record is w
 
 ## Blockers
 
-No unresolved dependency prevents completion of this bounded audit.
+No unresolved dependency blocks this cleanup.
 Reliable agent interpretation remains unproven by source inspection and deterministic controls; no live evaluation was performed.
 Existing campaign limitations remain with their maintaining reports and efforts and do not block this source-level conclusion.
 

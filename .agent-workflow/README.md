@@ -15,7 +15,7 @@ Lifecycle commands do not directly traverse, interpret, or change it.
 - `contracts/wayfinder-state.md`: lazily loaded map-first Wayfinder semantics for current maps, optional U#/F#/D# ledgers, independently useful E# files, identifiers, reconciliation, pruning, effort ending, and progressive loading.
 
 The root policy loads routing, terminology, and specialized contracts progressively.
-No hook, daemon, lifecycle controller, or telemetry analyzer is installed.
+Agents follow these files as instructions; no installed process enforces the route.
 
 ## Third-party license
 
@@ -36,7 +36,7 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMA
 ## Ownership
 
 In consuming repositories, `.agent-workflow/` is framework-owned, reconstructable, and replaceable from current snapshot content.
-The ordinary distribution manifest is the current source-to-target map; no installed manifest, content hashes, provenance record, created-state bits, or history is written to a consuming repository.
+The distribution manifest maps current sources to targets; consuming repositories receive framework content without installation metadata or history.
 
 `AGENTS.md` is the single distributed root policy and lives outside this directory.
 In `AGENTS.md`, one framework-owned region is bounded by the logical managed-begin and managed-end lines; every byte outside it is preserved as opaque project content.
@@ -66,8 +66,8 @@ An explicit ref such as `--ref main` is an opt-in development or testing overrid
 
 Before mutation, the lifecycle checks composite ownership and managed roots and parents for malformed markers, symlink or unsupported entries, and escapes from the target.
 Nested entries inside a replaceable managed directory are removed through ordinary convergence.
-`status` reports managed drift or conflicts without a repository-wide Git safety concept.
-There is no cross-surface transaction, backup, rollback journal, migration engine, or automatic skill retirement.
+`status` reports differences or conflicts in managed files relative to the selected snapshot.
+Lifecycle changes have no automatic backup or rollback.
 If a filesystem failure leaves partial changes, resolve the reported error and rerun the command to converge.
 
 Install and update converge to the same current package state.
@@ -81,7 +81,6 @@ A Claude model inside GitHub Copilot uses Copilot's skill support.
 
 If current curated-name directories exist but no Agent Workflow installation is recognizable, remove refuses before mutation rather than assuming those directories are framework-owned.
 
-There is no migration subsystem.
 Install and update replace this complete directory, so obsolete framework files disappear through ordinary convergence.
 Skill directories outside the current curated inventory remain untouched.
 

@@ -5,9 +5,8 @@ description: Resolve one bounded consequential project choice when explicit alte
 
 # Bounded decision discovery
 
-Discovery defines decision analysis, not durable continuity.
+Discovery analyzes one bounded project choice.
 Use it only when its method materially improves a choice.
-The specialist creates no Agent Workflow durable coordination state.
 
 ## Establish the boundary
 
@@ -36,5 +35,5 @@ The specialist creates no Agent Workflow durable coordination state.
 
 Report status, rationale, consequences, rejected alternatives, remaining uncertainty, project decision authority, and next workflow transition or ready work.
 For Wayfinder, return only results worth reconciling into the map or independently useful U/E/F/D records.
-Discovery does not maintain architecture decision records or durable coordination state.
+Discovery does not maintain architecture decision records.
 A lasting architecture decision belongs in the project record designated to maintain architecture decisions.

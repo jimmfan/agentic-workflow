@@ -108,10 +108,11 @@ Unknown ownership blocks only work that actually requires it; do not invent assi
 
 ### Dependencies and readiness
 
-Dependencies are required inputs; blockers are conditions currently preventing particular work, not a separate record type.
+Assess required inputs and blocking conditions separately for each scope.
+Dependencies are required inputs; blockers are conditions that currently prevent particular work.
 Do not create separate blocker records, identifiers, statuses, or storage.
 Represent ready, paused, or waiting work through map content, without a map status or historical label.
-Planned tests, verification, commit or push steps, and other unfinished work are not automatically blockers or dependencies merely because they remain.
+Planned tests, verification, commits, pushes, and other unfinished work count as dependencies only when they supply required inputs.
 Identify the condition preventing particular work: for example, an unsatisfied dependency, unresolved consequential uncertainty, an uncommitted required project choice, or missing action authorization.
 An unresolved U# records a question; only its unresolved condition may block affected work.
 Delay, inconvenience, risk, or unfinished work alone does not make a condition a blocker.
@@ -182,7 +183,7 @@ Changed factual evidence also requires reviewing dependent decisions and ready w
 ### Decisions — D#
 
 Decision records are H2 sections in `decisions.md`; each holds one current consequential choice committed for its boundary under the root policy's evidence and project-choice gate.
-`Authority:` identifies the person, role, or valid delegate whose choice binds that boundary, or references accepted project policy that determines the choice directly; policy is not an entity holding authority.
+Use `Authority:` to identify the person, role, or valid delegate whose choice binds that boundary, or to cite accepted project policy that directly determines the choice.
 Record the choice, decisive basis or constraints, material consequences, and a revisit condition only when one genuinely applies.
 Reference the project artifact recording the choice when one exists.
 Wayfinder can record authority; it cannot create it.
@@ -198,8 +199,7 @@ Prune a D# that no longer records the current binding choice through the common 
 When the person, role, or valid delegate with project decision authority explicitly accepts unresolved uncertainty for a named boundary, record that authority and boundary in the project artifact recording the committed choice.
 Keep the question and any U# current and unresolved; unblock only the named boundary.
 Acceptance neither answers the question nor commits a broader project choice, authorizes an unrelated action, or satisfies another dependency.
-It alone establishes neither a new dependency for other work nor its readiness.
-Preserve independently established restrictions and require relevant evidence or authority for an additional dependency.
+Assess other work's dependencies and readiness separately: preserve independently established restrictions and require relevant evidence or authority for any additional dependency.
 
 ### Identifiers and references
 

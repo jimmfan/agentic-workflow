@@ -30,11 +30,12 @@ Clarify consequential unknown responsibility or decision authority when affected
 The effort's view is provisional and adaptive, while established assignments and authority remain grounded in their sources.
 Use this view to challenge incomplete framing as evidence develops without silently broadening the user's goal, delegated authority, or implementation scope.
 
-Domain Modeling applies when clarifying or reorganizing domain concepts, terminology and ubiquitous language, domain or context boundaries, or domain responsibilities and relationships would materially improve the work; progress need not already be blocked.
-It does not own generic implementation or module architecture, all project structure, or Wayfinder's effort view merely because the map contains areas and relationships.
-When it would help, resolve enough domain-model ambiguity before substantial U/E/F/D accumulates.
-On resumption, do not reload Domain Modeling merely because Wayfinder resumed.
-If the effort view no longer fits current truth, revise the same map or select the specialist appropriate to the actual uncertainty; load Domain Modeling again only for domain-model ambiguity.
+Use Domain Modeling when clarifying or reorganizing domain concepts, terminology and ubiquitous language, domain or context boundaries, or domain responsibilities and relationships would materially improve the work, even before progress is blocked.
+When it would help, resolve enough domain-model ambiguity before accumulating substantial U/E/F/D state.
+Wayfinder maintains the effort view.
+Use Domain Modeling for domain-model questions; it does not take ownership of general implementation, module architecture, or all project structure.
+On resumption, if the effort view no longer fits current truth, revise the same map or select a specialist suited to the actual uncertainty.
+Reload Domain Modeling only when domain-model ambiguity warrants it.
 
 ## Chart the visible route
 
