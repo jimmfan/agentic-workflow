@@ -42,7 +42,7 @@ The ordinary distribution manifest is the current source-to-target map; no insta
 In `AGENTS.md`, one framework-owned region is bounded by the logical managed-begin and managed-end lines; every byte outside it is preserved as opaque project content.
 Repeated install and update keep exactly one such region.
 The current curated skills live directly under `.agents/skills`.
-The [routing policy](routing.md#use-selected-skills) uses these canonical skill instructions without requiring native discovery.
+The [routing policy](routing.md#use-selected-skills) requires a skill to be exposed in the current session before use.
 Their current directory names are reserved for Agent Workflow.
 Install and update replace each complete current curated skill directory, including extra files, while preserving unrelated skill directories.
 Remove deletes those current curated directories.
@@ -74,7 +74,10 @@ Install and update converge to the same current package state.
 Remove deletes `.agent-workflow/` and the current curated skill directories, strips the managed region from `AGENTS.md`, and deletes that file only when no project-authored bytes remain.
 Unrelated skill directories and all project-authored composite bytes remain.
 Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
-Native Claude Code support requires a current version and configuration with `AGENTS.md` project-instruction support.
+Native Claude Code can load the root policy for routing and Direct work in a version and configuration with [`AGENTS.md` project-instruction support](https://code.claude.com/docs/en/memory#agentsmd).
+Its documented project-skill location is [`.claude/skills/`](https://code.claude.com/docs/en/skills#choose-where-skills-load); the current installation does not expose Agent Workflow skills there.
+Loading the root policy does not expose skills.
+A Claude model inside GitHub Copilot uses Copilot's skill support.
 
 If current curated-name directories exist but no Agent Workflow installation is recognizable, remove refuses before mutation rather than assuming those directories are framework-owned.
 

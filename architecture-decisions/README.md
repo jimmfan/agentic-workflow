@@ -8,4 +8,3 @@ This directory contains only current, independently reconsiderable architecture 
 - [ADR-0027 — Use Direct-first progressive routing](0027-use-direct-first-progressive-routing.md)
 - [ADR-0028 — Use Wayfinder as the sole durable coordinator](0028-use-wayfinder-as-sole-durable-coordinator.md)
 - [ADR-0029 — Distribute canonical framework terminology](0029-distribute-canonical-framework-terminology.md)
-- [ADR-0030 — Use canonical skill methods without native discovery](0030-use-canonical-skill-methods-without-native-discovery.md)

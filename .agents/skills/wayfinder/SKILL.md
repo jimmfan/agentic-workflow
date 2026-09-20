@@ -50,7 +50,7 @@ Stop expanding the route when the work that may proceed is sufficiently clear.
 ## Choose the minimum resolution method
 
 Continue directly when no additional method is needed.
-Otherwise use the skill descriptions available under the root routing policy to select the smallest specialist that can resolve or accurately frame the question.
+Otherwise use the exposed skill descriptions to select the smallest specialist that can resolve or accurately frame the question.
 Use detailed routing when composition or selected-skill availability materially matters.
 
 Research, Prototype, and Debugging operate on uncertainties and questions within established areas and relationships; they do not replace Domain Modeling when the uncertainty concerns the domain model.

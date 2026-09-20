@@ -9,9 +9,6 @@ The [routing interpretation smoke test](routing-smoke/README.md) checks whether 
 It is opt-in, contacts the selected model service, and must write reports outside the repository.
 Every adapter receives the same routing-only cases; the harness does not simulate host discovery, skill availability, or invocation behavior.
 
-The [portable skill-routing protocol](portable-skill-routing/README.md) is a manual, opt-in Claude Code comparison of the released native-exposure-only contract with the candidate contract allowing repository reads.
-It checks instruction reads and method execution for Research, Debugging, Wayfinder, and Implementation.
-
 The [bounded Wayfinder preservation pilot](wayfinder-persistence/README.md) tests authorized reconciliation and four-stage fresh-session continuation with synthetic cases.
 It performs the narrow evidence-precedence investigation below and compares frozen/candidate instructions with a strong ordinary handoff baseline; it does not replace the larger protocol or evaluate default routing.
 
@@ -61,7 +58,6 @@ No current campaign resolves these questions:
 2. Can the default router select Wayfinder at a useful threshold without adding net ceremony or false positives?
 3. Does Agent Workflow provide repeatable net value after accounting for boundary safety, useful progress, correctness, verification, rework, artifacts, elapsed time, and model usage?
 4. Can ordinary scoped reconciliation keep a multi-file Wayfinder effort coherent at acceptable reconstruction cost?
-5. Does repository-read instruction loading produce meaningful method compliance on hosts that do not natively expose `.agents/skills/`, without false native-invocation claims?
 
 Prior experiments supply hypotheses and risk observations, not current-product answers.
 Their exact bundles remain available from Git history.
