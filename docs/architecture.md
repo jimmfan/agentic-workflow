@@ -10,7 +10,7 @@ It is not a general agent runtime, package manager, hook framework, analytics sy
 
 ```mermaid
 flowchart TD
-    request["User request + available skill descriptions"] --> root["AGENTS.md managed policy"]
+    request["User request + exposed skill descriptions"] --> root["AGENTS.md managed policy"]
     root --> direct["Direct work"]
     root --> method["Selected .agents/skills/name/SKILL.md"]
     direct -. focused method when useful .-> method
@@ -23,12 +23,14 @@ flowchart TD
     map -. relevant detail .-> artifacts["Supporting state + designated project artifacts"]
 ```
 
-The host loads project policy and may expose available skills.
+Project-instruction loading and skill discovery are separate host capabilities.
 The root policy starts with Direct work and selects one primary workflow plus useful supporting capabilities when warranted.
-The agent reads the selected Agent Workflow skill's canonical instructions from `.agents/skills/<name>/SKILL.md`.
+Only skills exposed in the current session can be used; Agent Workflow's canonical skill sources remain under `.agents/skills/`.
 The [detailed routing policy](../.agent-workflow/routing.md#use-selected-skills) retains the method's execution requirements and governs availability, blockers, and Direct fallback.
 There is no daemon or host hook enforcing the route; reported execution still needs evidence.
 Host permission does not itself authorize an action or commit a project choice.
+
+See [Supported hosts](../README.md#supported-hosts) for host-specific discovery and project-instruction requirements.
 
 | Instruction layer | Responsibility |
 |---|---|
@@ -98,4 +100,3 @@ The independently reconsiderable decisions are:
 - [ADR-0027: Direct-first progressive routing](../architecture-decisions/0027-use-direct-first-progressive-routing.md).
 - [ADR-0028: Wayfinder as sole durable coordinator](../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md).
 - [ADR-0029: Canonical framework terminology](../architecture-decisions/0029-distribute-canonical-framework-terminology.md).
-- [ADR-0030: Canonical skill methods without native discovery](../architecture-decisions/0030-use-canonical-skill-methods-without-native-discovery.md).

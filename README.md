@@ -89,16 +89,15 @@ Projects with Wayfinder state at the former `.agent-wayfinder/` path must explic
 
 ## Supported hosts
 
-- [Codex](https://developers.openai.com/codex/skills) and [GitHub Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) discover the installed skills under `.agents/skills/`.
-- A Claude model inside GitHub Copilot uses Copilot's skill support.
-- Native Claude Code support requires a current version and configuration with [`AGENTS.md` project-instruction support](https://code.claude.com/docs/en/memory#agentsmd).
-  Agent Workflow distributes `AGENTS.md` as its only root policy and does not configure Claude Code on the project's behalf.
-- Claude Code's documented project-skill location is [`.claude/skills/`](https://code.claude.com/docs/en/skills#choose-where-skills-load).
-  Agent Workflow does not copy skills there.
-  Agents read the canonical `.agents/skills/<name>/SKILL.md` instructions directly.
-  This does not make `.agents/skills/` a Claude-native skill location.
+Loading project instructions does not expose skills.
 
-The existing [availability and Direct-fallback rules](.agent-workflow/routing.md#use-selected-skills) still apply.
+- [Codex](https://developers.openai.com/codex/skills) and [GitHub Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) discover the installed skills under `.agents/skills/`.
+  A Claude model inside GitHub Copilot uses Copilot's discovery support.
+- Native Claude Code can load `AGENTS.md` for routing and Direct work only in a [supported version and configuration](https://code.claude.com/docs/en/memory#agentsmd).
+- Agent Workflow keeps canonical skills under `.agents/skills/`; it does not install them in Claude Code's documented [`.claude/skills/` location](https://code.claude.com/docs/en/skills#choose-where-skills-load).
+
+Only skills exposed in the current session can run.
+An unavailable required skill remains an explicit limitation; an optional skill may have an authorized Direct fallback under the [availability rules](.agent-workflow/routing.md#use-selected-skills).
 
 ## Skills for ordinary work
 

@@ -7,7 +7,9 @@ Keep consequential terminology and instruction-language questions understandable
 ## Scope
 
 Framework term meanings, normative wording, and authored-to-consumer language consistency where differences could change behavior or create competing maintenance obligations.
-The initial task authorizes a bounded source audit and effort state; framework, glossary, documentation, test, and evaluator corrections and live evaluations remain outside that task.
+The initial task authorized a bounded source audit and effort state; framework, glossary, documentation, test, and evaluator corrections and live evaluations were outside that task.
+The current request authorizes the substantive instruction-meaning corrections in [PR #54](https://github.com/jimmfan/agentic-workflow/pull/54); this effort tracks those corrections within its existing scope.
+Architecture, runtime behavior, interfaces, data formats, ownership, evaluation design, and live evaluations remain outside this cleanup.
 
 The completed domain-language normalization work is maintained in canonical terminology, the state contract, and the [map-authoring report](../../evals/map-authoring/REPORT.md).
 Its bounded changes merged through PRs #13, #14, and #31; its former map no longer has unfinished implementation to coordinate.
@@ -19,18 +21,28 @@ Consult that effort's current map for continuation, retaining one detailed quest
 Resume only during relevant authorized work that materially changes a represented meaning, instruction, or evidence claim.
 This map is not self-updating, a second glossary, a normative instruction source, or a requirement to audit unrelated work.
 Style-only rewrites, ordinary repetition, generic code deduplication, and speculative cleanup are excluded.
+The PR's style-only edits remain outside this effort.
 
 ## Ready work
 
-The initial audit is complete.
-No new language correction or live evaluation is proposed as ready work: the inspected sources did not establish a consequential terminology defect or harmful instruction duplication.
-Future findings may justify a bounded proposal; a proposal does not authorize its implementation.
+The substantive instruction corrections are implemented and verified in PR #54.
+No additional correction or live evaluation is proposed as ready work.
 
 ## Current state
 
-The current glossary, root policy and templates, routing, state contract, distributed skill instructions, architecture decisions, documentation, and relevant coverage distinguish term definitions from required behavior and project decision authority from action authorization.
-No second authoritative framework glossary, active use of the former state path, or authored-to-consumer wording divergence was established in the inspected current surfaces.
-This is a source-audit conclusion, not proof of reliable agent interpretation.
+The cleanup addressed two sentences that contradicted established intent: Implementation literally prohibited reporting actual execution, and Prototype's blanket statement about persistence conflicted with its scratch-database exception.
+Implementation now permits reporting execution only after actually executing the method; Prototype states the in-memory default and allows scratch persistence when persistence is part of the question.
+These corrections preserve invocation, closing review, and independent Verification, along with isolation from real systems and data.
+The snippet rule in `to-spec` and `to-tickets` requires both prototype origin and greater precision in the snippet itself, preserving attribution, inline placement, decision-focused trimming, and file-path restrictions.
+Across the cleanup, canonical meanings, requirement strength, authorization, loading boundaries, exact state formats, and historical evidence remain intact.
+Independent Standards and Spec reviews and the required deterministic, package, and delivery checks passed for the cleanup at `25626ef`; PR #54 maintains the detailed changes and verification evidence.
+No live evaluation was performed, and clearer wording does not establish improved agent behavior.
+No new consequential language question remains from this cleanup.
+The token-forensics `skills_materially_invoked` schema concern remains deferred in the PR; the Debugging-to-Implementation handoff question remains with the responsibility-boundary effort and investigation linked below.
+
+The initial audit found that the glossary, root policy and templates, routing, state contract, distributed skill instructions, architecture decisions, documentation, and relevant coverage distinguish term definitions from required behavior and project decision authority from action authorization.
+That audit established no consequential terminology defect, harmful instruction duplication, second authoritative framework glossary, active use of the former state path, or authored-to-consumer wording divergence in the surfaces it inspected.
+These conclusions retain that audit's scope and evidence limits; they are not an exhaustive absence-of-defects finding or proof of reliable agent interpretation.
 
 The following repetitions have supported purposes and do not currently justify consolidation:
 
@@ -62,7 +74,7 @@ Its attribution remains inconclusive; no independent language-defect record is w
 
 ## Blockers
 
-No unresolved dependency prevents completion of this bounded audit.
+No unresolved dependency blocks this cleanup.
 Reliable agent interpretation remains unproven by source inspection and deterministic controls; no live evaluation was performed.
 Existing campaign limitations remain with their maintaining reports and efforts and do not block this source-level conclusion.
 

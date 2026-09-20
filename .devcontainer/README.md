@@ -34,7 +34,6 @@ OK: development container is ready (Python 3.14.x; uv 0.11.32; git version ...; 
 ```
 
 The Dev Container selects `python3` as the default interpreter and Pylance as the language server.
-This prevents its VS Code window from falling back to Jedi with a stale, deleted `.venv` interpreter.
 
 ## Verify and develop
 
@@ -109,7 +108,7 @@ After confirming that no remaining container needs it, remove that persistent lo
 docker volume rm agent-workflow-instructions-codex-home
 ```
 
-This permanently deletes only this project's copied or newly created Codex login and local state.
+This permanently deletes this project's Codex login and local state stored in that volume.
 Verify removal from the **same macOS host Terminal** with:
 
 ```bash

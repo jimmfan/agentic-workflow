@@ -4,10 +4,9 @@ name: domain-modeling
 ---
 # Domain Modeling
 
-Actively build and sharpen the project's domain model as you design.
-This is the *active* discipline—challenging domain concepts and terminology, making ubiquitous language precise, testing domain or context boundaries, clarifying domain responsibilities and relationships, and maintaining the applicable domain or context model through `CONTEXT.md` and, for multiple contexts, `CONTEXT-MAP.md`.
-(Merely *reading* `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill can do.
-This skill is for when you're changing the model, not just consuming it.)
+Build and sharpen the project's domain model as you design: challenge concepts and terminology, make ubiquitous language precise, test domain or context boundaries, and clarify domain responsibilities and relationships.
+Maintain the model through `CONTEXT.md` and, for multiple contexts, `CONTEXT-MAP.md`.
+Use this skill when changing the model; ordinary vocabulary lookup only requires reading the relevant glossary.
 
 Domain Modeling does not own generic implementation or module architecture, all project structure, Wayfinder's effort-specific areas and relationships, or a generic architecture-decision store.
 
@@ -66,6 +65,5 @@ When a term is resolved, update `CONTEXT.md` right there.
 Don't batch these up — capture them as they happen.
 Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
 
-`CONTEXT.md` should be totally devoid of implementation details.
-Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions.
-It is a glossary and nothing else.
+Keep `CONTEXT.md` focused on domain terms and their meanings.
+Keep implementation details, specifications, working notes, and implementation decisions in their own designated artifacts.

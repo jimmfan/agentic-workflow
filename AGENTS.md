@@ -4,7 +4,6 @@
 - MUST route every request.
   Direct is default.
   Make first-pass selection from the current user intent and skill descriptions exposed in the session.
-  When an applicable Agent Workflow skill is not exposed in the session, read its `.agents/skills/<name>/SKILL.md` description for selection.
   Topic overlap or skill availability alone does not select a specialist.
 - When evidence is insufficient to select or re-evaluate the route, perform only the smallest read-only reconnaissance within the scope delegated by the current user request or accepted project policy.
 - Choose Direct or one primary workflow; add only supporting capabilities that materially help.
@@ -12,7 +11,7 @@
 - Read `.agent-workflow/routing.md` only when detailed composition, selected-skill availability or invocation, artifact or record responsibility, handoff, or durable resumption guidance materially matters.
 - When an Agent Workflow-specific term materially affects interpretation or behavior, read `.agent-workflow/terminology.md` and use its definitions.
 - Treat a consequential project choice as committed only when required evidence is sufficient and either accepted project policy determines the choice for its boundary or the person, role, or valid delegate with project decision authority commits it.
-  Evidence-backed technical judgment already delegated by the user or accepted project policy remains valid.
+  Agents may still make evidence-backed technical judgments within the scope delegated by the user or accepted project policy.
   Responsibility alone does not establish project decision authority.
   Dependent work stops while a required project choice remains uncommitted; independent work may continue.
   If accepted project policy does not determine a required choice, obtain it from the person, role, or valid delegate with that authority.
@@ -23,8 +22,7 @@
   When both the required project choice is committed and the action is authorized, affected work may proceed only within the authorized scope.
   Action authorization does not commit a project choice.
   A committed project choice does not authorize an unrelated action.
-  Host permission supplies neither.
-  Workflows, skills and their instructions, tests, specifications, tickets, and Wayfinder records supply neither.
+  Host permission, workflows, skills and their instructions, tests, specifications, tickets, and Wayfinder records supply neither action authorization nor a committed project choice.
 - The person, role, or valid delegate with project decision authority may explicitly accept unresolved uncertainty for one named boundary.
   The question remains unresolved; only that boundary becomes unblocked, no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
 - Prioritize factual accuracy over completing the requested output.
@@ -41,7 +39,10 @@
 
 ## When to use Wayfinder
 
-An objective cues assessment, not selection, of Wayfinder; select or resume it only when the objective and scope sufficiently identify the effort and the existing durable-coordination threshold is met; use semantic judgment, not phrase matching, and do not materially invent ambiguous intent.
+When an objective is established, assess whether it needs Wayfinder.
+Select or resume Wayfinder only when the objective and scope identify the effort clearly enough and the durable-coordination threshold below is met.
+Use context to interpret intent rather than matching phrases.
+Do not guess when materially different interpretations would identify different efforts.
 Unless the user opts out, MUST select or resume Wayfinder when either condition is met:
 
 - Hard — at least one signal applies:
@@ -165,8 +166,10 @@ Keep routine completion and audit narratives in Git or PRs rather than permanent
 Add instructions only when requested or needed to address a demonstrated problem or preserve an established boundary within the task's scope.
 Do not add defensive rules for hypothetical failures or duplicate existing rules.
 Keep wording and terminology consistent with the surrounding instructions.
+Rewrite a mistaken passage to state the intended rule directly, preserving necessary safeguards and useful explanations.
 Before consolidating a rule, consult its owning source and check where affected agents load it, including standalone skills and installed consumers.
-For obligation edits, preserve the actor, trigger, scope, authority, exceptions, strength, and required outcome; update affected consumers together.
+When editing a requirement, preserve who must act, when and where it applies, who has authority, any exceptions, whether the action is required, recommended, or optional, and the required result.
+Update affected consumers together.
 
 ## Working practice
 

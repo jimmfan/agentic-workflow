@@ -6,21 +6,21 @@ description: Independently verify the overall result against acceptance criteria
 # Integration and acceptance verification
 
 Verification asks whether the requested outcome and orchestration contract are actually complete.
-Implementation tests and Code Review are inputs, not automatic proof and not work to repeat without a gap.
+Assess what Implementation tests and Code Review establish, then check only the remaining gaps.
 
 ## Select the uncovered evidence
 
 1. Read the governing request and existing project rules that govern this work, acceptance criteria, expected artifacts and relevant maintaining references, the accepted scope Implementation actually consumed, changed scope, risks, and evidence already produced by `implement`, `tdd`, or `code-review`.
 2. Match each criterion to the available evidence before selecting additional checks.
    Establish what the evidence covers, whether it is accepted for this scope, and whether subsequent changes or other concrete facts invalidate it.
-   Accepted, sufficient evidence satisfies the covered criterion; independently assessing completion does not require independently repeating its checks.
+   Accept sufficient, valid evidence without repeating its checks.
+   For required lasting results, assess obligations against the artifacts that maintain them, including relevant unchanged artifacts.
 3. Select the smallest additional checks for the remaining gaps in acceptance behavior, integration boundaries, expected artifacts, and workflow completion.
    Before running a check, identify the uncovered criterion or the concrete reason existing evidence is stale, incomplete, or invalid.
    Apply this to individual checks as well as TDD, Code Review, and full suites.
 
-For required lasting results, reuse adequate review evidence and check only uncovered obligations against their relevant maintaining artifacts, including unchanged ones within the accepted scope.
 Report unmet requirements and consequential coordination findings to the coordinating workflow; it owns route reassessment and authorized reconciliation before completion.
-Existing sufficient content or references satisfy the obligation without another rewrite or review.
+Existing content or references that satisfy an obligation need no rewrite or further review.
 
 ## Apply the safety gate
 
