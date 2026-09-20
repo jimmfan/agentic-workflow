@@ -30,9 +30,10 @@ No additional correction or live evaluation is proposed as ready work.
 
 ## Current state
 
-The cleanup addressed two sentences that contradicted established intent: Implementation literally prohibited reporting actual execution, and Prototype described persistence as unconditionally unsuitable.
+The cleanup addressed two sentences that contradicted established intent: Implementation literally prohibited reporting actual execution, and Prototype's blanket statement about persistence conflicted with its scratch-database exception.
 Implementation now permits reporting execution only after actually executing the method; Prototype states the in-memory default and allows scratch persistence when persistence is part of the question.
 These corrections preserve invocation, closing review, and independent Verification, along with isolation from real systems and data.
+The snippet rule in `to-spec` and `to-tickets` requires both prototype origin and greater precision in the snippet itself, preserving attribution, inline placement, decision-focused trimming, and file-path restrictions.
 Across the cleanup, canonical meanings, requirement strength, authorization, loading boundaries, exact state formats, and historical evidence remain intact.
 Independent Standards and Spec reviews and the required deterministic, package, and delivery checks passed for the cleanup at `25626ef`; PR #54 maintains the detailed changes and verification evidence.
 No live evaluation was performed, and clearer wording does not establish improved agent behavior.

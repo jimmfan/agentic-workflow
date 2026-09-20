@@ -126,5 +126,5 @@ Known external requirements and material unassessed conditions, or "None identif
 </issue-template>
 
 In either form, avoid specific file paths, which can quickly become outdated.
-Include a code snippet only when a prototype expresses a decision more precisely than prose can, such as a state machine, reducer, schema, or type shape.
+Include a code snippet only when a prototype produced it and the snippet expresses a decision more precisely than prose can.
 Inline it, identify it as prototype output, and keep only the parts that express the decision rather than the working demo.
