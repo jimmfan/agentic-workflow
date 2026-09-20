@@ -165,7 +165,8 @@ Add instructions only when requested or needed to address a demonstrated problem
 Do not add defensive rules for hypothetical failures or duplicate existing rules.
 Keep wording and terminology consistent with the surrounding instructions.
 Before consolidating a rule, consult its owning source and check where affected agents load it, including standalone skills and installed consumers.
-For obligation edits, preserve the actor, trigger, scope, authority, exceptions, strength, and required outcome; update affected consumers together.
+When editing a requirement, preserve who must act, when and where it applies, who has authority, any exceptions, whether the action is required, recommended, or optional, and the required result.
+Update affected consumers together.
 
 ## Working practice
 

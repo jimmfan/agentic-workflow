@@ -74,8 +74,8 @@ Install and update converge to the same current package state.
 Remove deletes `.agent-workflow/` and the current curated skill directories, strips the managed region from `AGENTS.md`, and deletes that file only when no project-authored bytes remain.
 Unrelated skill directories and all project-authored composite bytes remain.
 Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
-Native Claude Code can load the root policy for routing and Direct work in a version and configuration with [`AGENTS.md` project-instruction support](https://code.claude.com/docs/en/memory#agentsmd).
-Its documented project-skill location is [`.claude/skills/`](https://code.claude.com/docs/en/skills#choose-where-skills-load); the current installation does not expose Agent Workflow skills there.
+Native Claude Code can load `AGENTS.md` for routing and Direct work only in a [supported version and configuration](https://code.claude.com/docs/en/memory#agentsmd).
+Agent Workflow installs skills under `.agents/skills/`, not Claude Code's documented [`.claude/skills/` location](https://code.claude.com/docs/en/skills#choose-where-skills-load).
 Loading the root policy does not expose skills.
 A Claude model inside GitHub Copilot uses Copilot's skill support.
 

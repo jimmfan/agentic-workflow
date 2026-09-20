@@ -30,9 +30,7 @@ The [detailed routing policy](../.agent-workflow/routing.md#use-selected-skills)
 There is no daemon or host hook enforcing the route; reported execution still needs evidence.
 Host permission does not itself authorize an action or commit a project choice.
 
-Native Claude Code may load `AGENTS.md` for routing and Direct work in a supported configuration, but the current installation does not expose Agent Workflow skills in Claude Code's documented `.claude/skills/` location.
-A Claude model inside GitHub Copilot uses Copilot's skill support.
-See the [host support boundary](../README.md#supported-hosts) for the official documentation and project-instruction prerequisites.
+See [Supported hosts](../README.md#supported-hosts) for host-specific discovery and project-instruction requirements.
 
 | Instruction layer | Responsibility |
 |---|---|

@@ -89,13 +89,12 @@ Projects with Wayfinder state at the former `.agent-wayfinder/` path must explic
 
 ## Supported hosts
 
+Loading project instructions does not expose skills.
+
 - [Codex](https://developers.openai.com/codex/skills) and [GitHub Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) discover the installed skills under `.agents/skills/`.
-- A Claude model inside GitHub Copilot uses Copilot's skill support.
-- Native Claude Code can load the root policy for routing and Direct work in a version and configuration with [`AGENTS.md` project-instruction support](https://code.claude.com/docs/en/memory#agentsmd).
-  Agent Workflow distributes `AGENTS.md` as its only root policy and does not configure Claude Code on the project's behalf.
-- Claude Code's documented project-skill location is [`.claude/skills/`](https://code.claude.com/docs/en/skills#choose-where-skills-load).
-  Agent Workflow does not copy skills there.
-  The current installation therefore does not expose Agent Workflow skills natively in Claude Code; loading `AGENTS.md` does not make those skills available.
+  A Claude model inside GitHub Copilot uses Copilot's discovery support.
+- Native Claude Code can load `AGENTS.md` for routing and Direct work only in a [supported version and configuration](https://code.claude.com/docs/en/memory#agentsmd).
+- Agent Workflow keeps canonical skills under `.agents/skills/`; it does not install them in Claude Code's documented [`.claude/skills/` location](https://code.claude.com/docs/en/skills#choose-where-skills-load).
 
 Only skills exposed in the current session can run.
 An unavailable required skill remains an explicit limitation; an optional skill may have an authorized Direct fallback under the [availability rules](.agent-workflow/routing.md#use-selected-skills).
