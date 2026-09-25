@@ -47,7 +47,7 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
 
 - Hard — at least one signal applies:
   - The current work continues a relevant Wayfinder effort.
-  - The work is intended to continue across sessions or agents, including when the current request creates or updates an external dependency whose result later in-scope work is expected to await or consume.
+  - Completing the requested objective requires or is intended to involve continuation across sessions or agents, including required evidence, decisions, or external results that later in-scope work must await or consume.
   - A consequential objective and scope can be established, but the route remains materially unclear and cannot responsibly be resolved within one useful agent session.
   - Conflicting sources establish the same scoped claim.
   - A required project choice remains uncommitted while independent work proceeds.
@@ -59,6 +59,8 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
   - Evidence-driven plan change.
   - A meaningful dependency graph.
   - Material fresh-agent reconstruction risk.
+
+When Wayfinder is selected, establish or resume any required effort map before substantive implementation.
 
 A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
 

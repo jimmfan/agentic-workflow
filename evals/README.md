@@ -5,6 +5,9 @@ It is not a general coding-agent benchmark, and no live model evaluation is part
 
 ## Current tooling
 
+The [objective-scope routing campaign](objective-scope-routing/README.md) prepares matched implementation and plan-only controls for an objective that includes later operator evidence.
+Its [current result](objective-scope-routing/REPORT.md) separates trace-reviewed coordination, local progress, structural grading limits, and retained infrastructure failures.
+
 The [routing interpretation smoke test](routing-smoke/README.md) checks whether Direct and evidence-triggered Wayfinder routing are interpreted consistently while revealing only requested policy.
 It is opt-in, contacts the selected model service, and must write reports outside the repository.
 Every adapter receives the same routing-only cases; the harness does not simulate host discovery, skill availability, or invocation behavior.
