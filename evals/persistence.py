@@ -454,8 +454,9 @@ def prepare_policy(workspace: Path, arm: str, manifest: dict) -> None:
         )
 
 
-def bounded_process(command, *, cwd, env, prompt, raw, monitor=None):
+def bounded_process(command, *, cwd, env, prompt, raw, monitor=None, limits=None):
     """Bound capture and stop the owned process when an optional monitor reports failure."""
+    limits = LIMITS if limits is None else limits
     start = time.monotonic()
     status, captured = "completed", 0
     with (
@@ -484,7 +485,7 @@ def bounded_process(command, *, cwd, env, prompt, raw, monitor=None):
                     if monitor is not None and (failure := monitor()):
                         status = failure
                         break
-                    if time.monotonic() - start > LIMITS["seconds"]:
+                    if time.monotonic() - start > limits["seconds"]:
                         status = "timeout"
                         break
                     for key, _ in selector.select(timeout=0.1):
@@ -492,7 +493,7 @@ def bounded_process(command, *, cwd, env, prompt, raw, monitor=None):
                         if not chunk:
                             selector.unregister(key.fileobj)
                             continue
-                        remaining = LIMITS["output_bytes"] - captured
+                        remaining = limits["output_bytes"] - captured
                         key.data.write(chunk[:remaining])
                         key.data.flush()
                         captured += min(len(chunk), remaining)

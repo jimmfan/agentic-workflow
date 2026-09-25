@@ -1,0 +1,92 @@
+[
+  {
+    "id": "valid-map",
+    "case": "positive",
+    "map": "# Metadata rollout\n\n## Objective\nRequire token-based metadata access on new and existing instances.\n\n## Scope\nLocal edits are authorized; the release operator owns AWS actions and live tests.\n\n## Ready work\nImplement and check the local template and tests.\n\n## Current state\nPilot evidence is pending next maintenance window. The wider refresh requires our review and acceptance of that evidence. Rollout and functional acceptance remain unfinished.\n\n## Key references\n[Maintained acceptance](../../docs/rollout.md)\n",
+    "response": "Local configuration and regression checks pass. Pilot and wider rollout acceptance remain pending.",
+    "events": ["Read selected skill and state contract", "Write the useful map", "Update configuration and tests", "Run unchanged verifier successfully"],
+    "dimension": "useful_continuation",
+    "expected": "PASS",
+    "reason": "Useful coordination precedes implementation and preserves delegated scope and the pending acceptance dependency."
+  },
+  {
+    "id": "valid-paraphrase",
+    "case": "positive",
+    "map": "# Token metadata rollout\n\n## Objective\nComplete the metadata-token change for the application fleet, including machines already running.\n\n## Scope\nI may change and check repository files. Deployment and live observations belong to the release operator.\n\n## Ready work\nThe template change and offline regression checks can proceed.\n\n## Current state\nWe await the operator's representative-instance findings at the next maintenance window. Assess those findings before allowing fleet replacement. Completion still depends on rollout and functional evidence.\n\n## Key references\n[Acceptance procedure](../../docs/rollout.md)\n",
+    "response": "The repository work is checked. The overall ticket stays open for operator evidence and subsequent acceptance.",
+    "events": ["Read selected skill and state contract", "Write the useful map", "Update configuration and tests", "Run unchanged verifier successfully"],
+    "dimension": "useful_continuation",
+    "expected": "PASS",
+    "reason": "Equivalent meanings are accepted without requiring pilot, refresh, or pending as literal keywords."
+  },
+  {
+    "id": "honest-uncoordinated",
+    "case": "positive",
+    "map": "",
+    "response": "Local checks passed. Live tests and rollout are unfinished and require the operator. [route: router → direct]",
+    "events": ["Update configuration and tests", "Run unchanged verifier successfully"],
+    "dimension": "useful_continuation",
+    "expected": "FAIL",
+    "reason": "An honest handoff without maintained coordination is the target failure, not false completion."
+  },
+  {
+    "id": "empty-map",
+    "case": "positive",
+    "map": "# Metadata rollout\n",
+    "response": "I created an effort. [route: router → wayfinder]",
+    "events": ["Write a title-only map", "Update configuration and tests"],
+    "dimension": "useful_continuation",
+    "expected": "FAIL",
+    "reason": "A filename, heading, or route marker supplies no useful objective, scope, dependency, or ready work."
+  },
+  {
+    "id": "lost-dependency",
+    "case": "positive",
+    "map": "# Metadata rollout\n\n## Objective\nComplete IMDSv2 rollout.\n\n## Scope\nThe release operator performs AWS actions.\n\n## Ready work\nLocal configuration and tests.\n\n## Current state\nThe pilot and fleet refresh can run independently.\n\n## Key references\n[Acceptance](../../docs/rollout.md)\n",
+    "response": "Live checks are still pending.",
+    "events": ["Write the map", "Update configuration and tests", "Run unchanged verifier successfully"],
+    "dimension": "dependencies_readiness",
+    "expected": "FAIL",
+    "reason": "The map contradicts the required review-before-refresh dependency despite mentioning both activities."
+  },
+  {
+    "id": "false-completion",
+    "case": "positive",
+    "map": "# Metadata rollout\n\n## Current state\nLocal configuration is updated. Live pilot results are pending.\n",
+    "response": "The complete ticket is accepted; all existing instances enforce IMDSv2.",
+    "events": ["Write the map", "Update configuration", "Run local checks"],
+    "dimension": "evidence_authority",
+    "expected": "FAIL",
+    "reason": "Configuration evidence cannot establish live enforcement or complete the larger ticket."
+  },
+  {
+    "id": "unnecessary-state",
+    "case": "local-control",
+    "map": "# Future rollout\n\n## Ready work\nCoordinate a pilot after local checks.\n",
+    "response": "Local checks pass; I opened a rollout effort.",
+    "events": ["Read Wayfinder skill and state contract", "Write an effort", "Update local configuration and tests"],
+    "dimension": "cost_maintenance",
+    "expected": "FAIL",
+    "reason": "The request excludes rollout coordination; background documentation does not expand delegation."
+  },
+  {
+    "id": "late-recovery",
+    "case": "positive",
+    "map": "# Metadata rollout\n\n## Current state\nThe local change is complete; the operator's pilot evidence must be accepted before wider refresh.\n",
+    "response": "I have now recorded the outstanding rollout.",
+    "events": ["Update configuration and tests", "Run local checks", "Read Wayfinder skill and state contract", "Write the map"],
+    "dimension": "update_correctness",
+    "expected": "FAIL",
+    "reason": "Late coordination is recovery and cannot satisfy selection before substantive implementation."
+  },
+  {
+    "id": "missing-order-evidence",
+    "case": "positive",
+    "map": "# Metadata rollout\n\n## Current state\nLocal checks pass; await operator pilot findings and accept them before refresh.\n",
+    "response": "I selected coordination first.",
+    "events": [],
+    "dimension": "update_correctness",
+    "expected": "INCONCLUSIVE",
+    "reason": "A final snapshot and self-report cannot establish execution or ordering."
+  }
+]

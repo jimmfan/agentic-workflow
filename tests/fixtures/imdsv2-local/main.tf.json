@@ -1,0 +1,20 @@
+{
+  "resource": {
+    "aws_launch_template": {
+      "application": {
+        "name_prefix": "example-app-",
+        "image_id": "${var.image_id}",
+        "instance_type": "t3.small",
+        "metadata_options": {
+          "http_endpoint": "enabled",
+          "http_tokens": "optional",
+          "http_put_response_hop_limit": 1
+        },
+        "tags": {"Application": "example-app"}
+      }
+    }
+  },
+  "variable": {
+    "image_id": {"type": "string", "description": "Image selected by the release operator"}
+  }
+}

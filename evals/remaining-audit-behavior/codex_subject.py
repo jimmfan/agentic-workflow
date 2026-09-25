@@ -36,7 +36,12 @@ def verify_isolation(binary, config, workspace, env, run, scratch):
         f"if test -r {shlex.quote(str(credential))}; then "
         "echo credential-canary-readable; exit 12; fi; "
         f"printf probe > {shlex.quote(str(probe))} && "
-        f"test -r {shlex.quote(str(probe))} && rm {shlex.quote(str(probe))}"
+        f"test -r {shlex.quote(str(probe))} && rm {shlex.quote(str(probe))} && "
+        "python -c "
+        + shlex.quote(
+            "import subprocess, sys; "
+            "subprocess.run([sys.executable, '-c', 'pass'], check=True)"
+        )
     )
     checked = subprocess.run(
         [
@@ -70,16 +75,84 @@ def verify_isolation(binary, config, workspace, env, run, scratch):
     return result
 
 
+def check_prompt_context(
+    actual, *, workspace, home, output_root, scratch, launcher_tmp, runtime_root=None
+):
+    # Ignored task roots can be inside the authoring repository. Allow only
+    # the subject and bundled-system-skill locations before checking leakage.
+    audited = actual.replace(str(workspace), "<subject>").replace(
+        str(home / "skills/.system"), "<system-skills>"
+    )
+    if runtime_root is not None:
+        audited = audited.replace(str(runtime_root) + "/", "<cli-runtime>/")
+    # Permission metadata names denied controller containers and writable
+    # scratch. Match whole paths, not arbitrary descendants in those roots.
+    for location in sorted(
+        [
+            str(output_root.parent),
+            str(output_root),
+            str(home),
+            str(scratch),
+            str(launcher_tmp),
+        ],
+        key=len,
+        reverse=True,
+    ):
+        audited = re.sub(
+            re.escape(location) + r'(?=[`"<>\\\s]|$)', "<permission-path>", audited
+        )
+    audited = re.sub(
+        re.escape(str(home / "tmp/arg0")) + r"/[A-Za-z0-9_-]+",
+        "<runtime-alias>",
+        audited,
+    )
+    for forbidden in (
+        str(ROOT),
+        "remaining-audit-behavior/README.md",
+        "source-repository instructions",
+        "prior_conversation",
+        "<memory",
+    ):
+        if forbidden in audited:
+            raise ValueError(f"Prompt isolation failed: {forbidden}")
+    allowed_roots = (workspace.resolve(), (home / "skills/.system").resolve())
+    aliases = {}
+    for alias, root in re.findall(r"- `(r\d+)` = `([^`]+)`", actual):
+        resolved = Path(root).resolve()
+        if not any(resolved.is_relative_to(parent) for parent in allowed_roots):
+            raise ValueError("Unexpected skill root in prompt")
+        if alias in aliases and aliases[alias] != resolved:
+            raise ValueError("Conflicting skill roots in prompt")
+        aliases[alias] = resolved
+    for location in re.findall(r"\(file: ([^)]+)\)", actual):
+        path = Path(location)
+        if not path.is_absolute():
+            if not path.parts or path.parts[0] not in aliases:
+                raise ValueError("Unknown skill root in prompt")
+            path = aliases[path.parts[0]].joinpath(*path.parts[1:])
+        if not any(path.resolve().is_relative_to(parent) for parent in allowed_roots):
+            raise ValueError("Unexpected skill location in prompt")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--web", action="store_true")
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--model", default="gpt-5.6-sol")
+    parser.add_argument("--timeout-seconds", type=int, default=360)
     args = parser.parse_args()
+    if not 1 <= args.timeout_seconds <= 900:
+        parser.error("--timeout-seconds must be between 1 and 900")
     workspace = Path.cwd().resolve()
     output_root = args.output_root.resolve()
-    if output_root.is_relative_to(ROOT) or output_root.is_relative_to(workspace):
-        raise ValueError("Keep raw evidence outside the repository and subject tree")
+    if (
+        output_root.is_relative_to(ROOT)
+        and not output_root.is_relative_to(ROOT / "evals/artifacts")
+    ) or output_root.is_relative_to(workspace):
+        raise ValueError(
+            "Keep raw evidence outside the subject and in ignored artifacts or outside the repository"
+        )
     output_root.mkdir(parents=True, exist_ok=True)
     run = Path(tempfile.mkdtemp(prefix="subject-", dir=output_root))
     raw = run / "raw"
@@ -88,6 +161,8 @@ def main():
     home.mkdir(mode=0o700)
     scratch = run / "scratch"
     scratch.mkdir()
+    launcher_tmp = run / "launcher-tmp"
+    launcher_tmp.mkdir()
     prompt = sys.stdin.read()
     binary = Path(codex_binary())
     python = Path(sys.executable).resolve()
@@ -130,15 +205,19 @@ def main():
     )
     child_environment = {
         "PATH": path,
+        # macOS framework Python otherwise reports a Homebrew alias outside
+        # its allowed runtime directory when a fixture starts subprocesses.
+        "PYTHONEXECUTABLE": str(python),
         "UV_PYTHON": str(python),
         "UV_CACHE_DIR": str(scratch / "uv-cache"),
         "UV_OFFLINE": "1",
         "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": str(scratch),
         "GIT_CONFIG_GLOBAL": "/dev/null",
         "GIT_CONFIG_NOSYSTEM": "1",
     }
     settings = [
-        'model="gpt-5.6-sol"',
+        f"model={json.dumps(args.model)}",
         'model_reasoning_effort="medium"',
         'approval_policy="never"',
         'default_permissions="audit"',
@@ -162,10 +241,16 @@ def main():
         "project_doc_max_bytes=65536",
     ]
     config = [item for setting in settings for item in ("-c", setting)]
-    env = {"CODEX_HOME": str(home), "PATH": path, "LANG": "en_US.UTF-8"}
+    env = {
+        "CODEX_HOME": str(home),
+        "PATH": path,
+        "LANG": "en_US.UTF-8",
+        # :tmpdir is denied to subject tools; do not alias it to allowed scratch.
+        "TMPDIR": str(launcher_tmp),
+    }
     record = {
         "workspace": str(workspace),
-        "model": "gpt-5.6-sol",
+        "model": args.model,
         "reasoning_effort": "medium",
         "settings": settings,
         "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
@@ -174,7 +259,7 @@ def main():
         "cli_version": subprocess.check_output(
             [binary, "--version"], text=True
         ).strip(),
-        "limits": {"seconds": 360, "output_bytes": 2_000_000},
+        "limits": {"seconds": args.timeout_seconds, "output_bytes": 2_000_000},
     }
     code = 2
     try:
@@ -198,21 +283,15 @@ def main():
         )
         (raw / "prompt-input.json").write_text(audit.stdout)
         actual = json.dumps(json.loads(audit.stdout))
-        for forbidden in (
-            str(ROOT),
-            "remaining-audit-behavior/README.md",
-            "source-repository instructions",
-            "prior_conversation",
-            "<memory",
-        ):
-            if forbidden in actual:
-                raise ValueError(f"Prompt isolation failed: {forbidden}")
-        for location in re.findall(r"\(file: ([^)]+)\)", actual):
-            if not any(
-                Path(location).is_relative_to(parent)
-                for parent in (workspace, home / "skills/.system")
-            ):
-                raise ValueError("Unexpected skill location in prompt")
+        check_prompt_context(
+            actual,
+            workspace=workspace,
+            home=home,
+            output_root=output_root,
+            scratch=scratch,
+            launcher_tmp=launcher_tmp,
+            runtime_root=binary.parent.parent,
+        )
         record["prompt_input_sha256"] = hashlib.sha256(
             audit.stdout.encode()
         ).hexdigest()
@@ -232,7 +311,12 @@ def main():
         ]
         record["command"] = command
         status, code, elapsed = bounded_process(
-            command, cwd=workspace, env=env, prompt=prompt, raw=raw
+            command,
+            cwd=workspace,
+            env=env,
+            prompt=prompt,
+            raw=raw,
+            limits=record["limits"],
         )
         record.update(execution=status, returncode=code, elapsed_seconds=elapsed)
         if (raw / "response.txt").exists():
