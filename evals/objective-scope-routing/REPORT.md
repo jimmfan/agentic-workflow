@@ -1,5 +1,8 @@
 # Objective-scope routing results
 
+The campaign results below describe the delivered baseline work at `88107c46c749f1a9d7646e2885d4e77ba6fb6e9a`.
+Subsequent authorized instruction changes are recorded separately in [the follow-up section](#authorized-root-policy-clarification).
+
 The reported honest-but-uncoordinated handoff was not observed in the three revised positive trials.
 Two trials instead established useful coordination after implementation; one established it beforehand and passed the full positive rubric.
 Both bounded-work controls passed without unnecessary Wayfinder loading or state.
@@ -114,3 +117,27 @@ They are evidence, not the task's working branch or durable project checkout.
 Reconstructable downloads, caches, temporary verification copies, and temporary credentials are removed before delivery.
 Retain the evidence until the user has reviewed or exported it; it may then be deleted.
 The [effort map](../../.project-efforts/wayfinder-objective-scope-routing/map.md) preserves the resulting continuation boundary without treating push as acceptance of a runtime correction.
+
+## Authorized root-policy clarification
+
+On 2026-09-24, the user explicitly authorized two root-policy clarifications despite the earlier reproduction gate, superseding that gate only for this scope.
+The user identified the original incident host as GitHub Copilot’s VS Code chat panel.
+The completed Codex CLI campaign did not test that host, and its trials, frozen inputs, outcomes, and raw evidence remain unchanged.
+
+The root continuation signal now assesses completing the requested objective, including required evidence, decisions, and external results consumed by later in-scope work.
+It retains intended continuation as well as required continuation, so intentionally planned work across sessions or agents remains covered.
+The root policy also requires establishing or resuming any required effort map before substantive implementation after Wayfinder selection.
+Focused Standards review identified a conflict between an unconditional map requirement and existing no-map creation exceptions; “any required effort map” preserves those conditions while retaining the requested ordering.
+Existing authorization, skill availability, read-only scope, selection/opt-out, bounded-plan, threshold, and progressive-loading rules remain applicable.
+Only the root template and its managed root copy change; detailed routing and skills receive no duplicated instruction.
+
+This is an explicitly authorized clarification, not a demonstrated fix.
+Copilot effectiveness and comparative improvement remain unverified; no further live campaign was run.
+Version advances from `0.35.1` to `0.35.2` against freshly observed main and release tags.
+The always-loaded root-policy body grows from 6,559 to 6,682 UTF-8 bytes (+123), and from 930 to 942 whitespace-delimited words (+12); these are text measurements, not token or runtime-efficiency measurements.
+Verification passed on a disposable byte-preserving current-source snapshot: 211 package tests (including the existing routing controls), 88 evaluation-tooling tests, two wheel smoke tests, Ruff formatting/lint, and whitespace checks.
+Using the snapshot keeps temporary build metadata and evaluation output within the follow-up task directory and satisfies the existing outside-source evaluation-output requirement.
+The managed root region matches its template, and unmanaged root content remains byte-identical.
+Independent Standards and Spec review covered the changed passages and relevant unchanged rules; the no-map conflict above was resolved and both targeted reinspections found no remaining findings.
+Prior review was reused for unchanged campaign work, and the historical report body remains verbatim.
+Temporary follow-up verification files are removed after checks; the earlier retained campaign evidence is not modified.
