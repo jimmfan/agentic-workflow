@@ -35,15 +35,89 @@ class LifecycleTests(ProjectTestCase):
     def lifecycle(self, command: str, *extra: object):
         return run_script(LIFECYCLE, command, self.project, *extra)
 
-    def test_fresh_install_manages_only_agents_policy(self) -> None:
+    def test_fresh_install_exposes_claude_skills_without_claude_policy(self) -> None:
         for command in ("install", "update", "status"):
             self.assert_ok(self.lifecycle(command))
             self.assertTrue((self.project / "AGENTS.md").is_file())
             self.assertFalse((self.project / "CLAUDE.md").exists())
-            self.assertFalse((self.project / ".claude").exists())
+            link = self.project / ".claude/skills/wayfinder-effort"
+            self.assertTrue(link.is_symlink())
+            self.assertEqual(os.readlink(link), "../../.agents/skills/wayfinder-effort")
+            self.assertTrue((link / "SKILL.md").is_file())
         self.assert_ok(self.lifecycle("remove"))
         self.assertFalse((self.project / "AGENTS.md").exists())
         self.assertFalse((self.project / "CLAUDE.md").exists())
+        self.assertFalse(
+            (self.project / ".claude/skills/wayfinder-effort").is_symlink()
+        )
+
+    def test_update_adds_claude_links_to_an_existing_installation(self) -> None:
+        self.assert_ok(self.lifecycle("install"))
+        skills = self.project / ".claude/skills"
+        for link in skills.iterdir():
+            link.unlink()
+        skills.rmdir()
+        settings = self.project / ".claude/settings.json"
+        settings.write_bytes(b'{"project": true}\n')
+
+        status = self.lifecycle("status")
+        self.assertEqual(status.returncode, 1)
+        self.assertIn(".claude/skills/wayfinder-effort", status.stdout)
+        self.assert_ok(self.lifecycle("update"))
+        for name in ("wayfinder-effort", "code-review"):
+            link = self.project / ".claude/skills" / name
+            self.assertTrue(link.is_symlink())
+            self.assertEqual(os.readlink(link), f"../../.agents/skills/{name}")
+        self.assertEqual(settings.read_bytes(), b'{"project": true}\n')
+
+        project_skill = self.project / ".claude/skills/project-local/SKILL.md"
+        project_skill.parent.mkdir()
+        project_skill.write_bytes(b"# Project skill\n")
+        self.assert_ok(self.lifecycle("update"))
+        self.assertEqual(project_skill.read_bytes(), b"# Project skill\n")
+        self.assert_ok(self.lifecycle("status"))
+
+        self.assert_ok(self.lifecycle("remove"))
+        self.assertEqual(settings.read_bytes(), b'{"project": true}\n')
+        self.assertEqual(project_skill.read_bytes(), b"# Project skill\n")
+        self.assertFalse(
+            (self.project / ".claude/skills/wayfinder-effort").is_symlink()
+        )
+
+    def test_claude_skill_name_collision_blocks_update_before_mutation(self) -> None:
+        self.assert_ok(self.lifecycle("install"))
+        link = self.project / ".claude/skills/research"
+        link.parent.mkdir(parents=True, exist_ok=True)
+        if link.is_symlink():
+            link.unlink()
+        link.mkdir()
+        (link / "SKILL.md").write_bytes(b"# Project research skill\n")
+        before = workspace_snapshot(self.project)
+
+        result = self.lifecycle("update")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn(".claude/skills/research", result.stderr)
+        self.assertEqual(workspace_snapshot(self.project), before)
+
+        self.assert_ok(self.lifecycle("remove"))
+        self.assertEqual(
+            (link / "SKILL.md").read_bytes(), b"# Project research skill\n"
+        )
+        self.assertFalse(
+            (self.project / ".claude/skills/wayfinder-effort").is_symlink()
+        )
+
+    def test_claude_parent_symlink_blocks_install_before_mutation(self) -> None:
+        outside = Path(self.temporary.name) / "outside"
+        outside.mkdir()
+        (self.project / ".claude").symlink_to(outside, target_is_directory=True)
+        before = workspace_snapshot(self.project)
+
+        result = self.lifecycle("install")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("managed path contains a symlink: .claude", result.stderr)
+        self.assertEqual(workspace_snapshot(self.project), before)
+        self.assertEqual(list(outside.iterdir()), [])
 
     def test_existing_claude_content_is_unrelated_to_lifecycle(self) -> None:
         policy = self.project / "CLAUDE.md"

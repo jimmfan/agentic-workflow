@@ -66,9 +66,11 @@ Ordinary framework updates do not require a CLI upgrade.
 
 Install and update replace all of `.agent-workflow/` and each [current curated skill directory](.agents/skills/), including local edits and extra files inside those directories.
 Keep project customizations outside those reserved surfaces.
+They also link each curated skill into `.claude/skills/` so native Claude Code can discover the same content.
+Existing Claude Code files and unrelated skill names are preserved; a different entry at a curated name blocks install or update before mutation.
 Unrelated skills, project-owned `.project-efforts/` state, and all content outside the managed region in `AGENTS.md` are preserved.
 Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
-Remove deletes the managed directories and regions; it refuses ambiguous ownership or curated-name collisions on an otherwise unrecognized installation.
+Remove deletes the managed directories and regions and unlinks matching Claude Code skill links; it refuses ambiguous ownership or curated-name collisions on an otherwise unrecognized installation.
 
 Unsafe managed paths or malformed policy markers stop mutation before writes.
 A later filesystem failure can leave partial changes: resolve the reported error and rerun the command to converge.
@@ -95,9 +97,8 @@ Loading project instructions does not expose skills.
 - [Codex](https://developers.openai.com/codex/skills) and [GitHub Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) discover the installed skills under `.agents/skills/`.
   A Claude model inside GitHub Copilot uses Copilot's discovery support.
 - Native Claude Code can load `AGENTS.md` for routing and Direct work only in a [supported version and configuration](https://code.claude.com/docs/en/memory#agentsmd).
-- Agent Workflow keeps canonical skills under `.agents/skills/`; it does not install them in Claude Code's documented [`.claude/skills/` location](https://code.claude.com/docs/en/skills#choose-where-skills-load).
-  For a source-checkout experiment, this repository links each curated skill into `.claude/skills/` so native Claude Code can discover it here.
-  These links are not part of Agent Workflow installation in consuming projects.
+- Agent Workflow keeps canonical skills under `.agents/skills/` and links them into Claude Code's documented [`.claude/skills/` location](https://code.claude.com/docs/en/skills#choose-where-skills-load) on install and update.
+  The same links are present in this source checkout.
 
 Only skills exposed in the current session can run.
 An unavailable required skill remains an explicit limitation; an optional skill may have an authorized Direct fallback under the [availability rules](.agent-workflow/routing.md#use-selected-skills).

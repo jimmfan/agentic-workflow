@@ -17,7 +17,7 @@ Python caches are ignored and need no manual cleanup.
 
 | Tests | Boundary |
 |---|---|
-| `test_lifecycle.py`, `test_direct_distribution.py` | Real install/update/status/remove, managed-path safety, complete reserved-skill replacement, unrelated-byte preservation, and partial failures. |
+| `test_lifecycle.py`, `test_direct_distribution.py` | Real install/update/status/remove, managed-path safety, complete reserved-skill replacement, Claude Code skill links, unrelated-byte preservation, and partial failures. |
 | `test_bootstrap.py` | Release selection, immutable refs, coherent snapshots, optional Git target discovery, archive safety, and CLI delegation. |
 | `test_verify_package.py`, `test_routing.py` | Package/distribution structure, attribution, machine-readable interfaces, canonical names, and framework references. |
 | `test_source_documents.py` | Word ceilings for the always-loaded distributed and source-only root policy, and rejection of authored prose lines that obviously hold more than one sentence. |

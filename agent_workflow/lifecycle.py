@@ -19,6 +19,7 @@ SOURCE_ROOT = PACKAGE_ROOT.parent
 DISTRIBUTION_MANIFEST = PACKAGE_ROOT / "install" / "manifest.json"
 FRAMEWORK_ROOT = PurePosixPath(".agent-workflow")
 SKILLS_ROOT = PurePosixPath(".agents/skills")
+CLAUDE_SKILLS_ROOT = PurePosixPath(".claude/skills")
 AGENTS_PATH = PurePosixPath("AGENTS.md")
 MANAGED_BEGIN = b"<!-- agent-workflow:managed-begin -->"
 MANAGED_END = b"<!-- agent-workflow:managed-end -->"
@@ -196,6 +197,18 @@ def path_exists(path: Path) -> bool:
     return os.path.lexists(path)
 
 
+def claude_skill_link(root: Path, name: str) -> Path:
+    return root.joinpath(*(CLAUDE_SKILLS_ROOT / name).parts)
+
+
+def claude_skill_target(name: str) -> str:
+    return f"../../.agents/skills/{name}"
+
+
+def is_managed_claude_link(path: Path, name: str) -> bool:
+    return path.is_symlink() and os.readlink(path) == claude_skill_target(name)
+
+
 def require_path_kind(root: Path, relative: PurePosixPath, final_kind: str) -> None:
     current = root
     for index, part in enumerate(relative.parts):
@@ -225,12 +238,21 @@ def require_path_kind(root: Path, relative: PurePosixPath, final_kind: str) -> N
                 )
 
 
-def require_managed_roots_safe(root: Path, distribution: Distribution) -> None:
+def require_managed_roots_safe(
+    root: Path, distribution: Distribution, *, remove: bool = False
+) -> None:
     require_path_kind(root, FRAMEWORK_ROOT, "directory")
     require_path_kind(root, PurePosixPath(".agents"), "directory")
     require_path_kind(root, SKILLS_ROOT, "directory")
+    require_path_kind(root, PurePosixPath(".claude"), "directory")
+    require_path_kind(root, CLAUDE_SKILLS_ROOT, "directory")
     for name in distribution.skill_names:
         require_path_kind(root, SKILLS_ROOT / name, "directory")
+        link = claude_skill_link(root, name)
+        if not remove and path_exists(link) and not is_managed_claude_link(link, name):
+            raise LifecycleError(
+                f"Claude skill path conflicts with managed link: {CLAUDE_SKILLS_ROOT / name}"
+            )
     for relative in distribution.composites:
         require_path_kind(root, relative, "file")
 
@@ -405,8 +427,10 @@ def plan_composites(
     return plan
 
 
-def inspect_managed_structure(root: Path, distribution: Distribution) -> None:
-    require_managed_roots_safe(root, distribution)
+def inspect_managed_structure(
+    root: Path, distribution: Distribution, *, remove: bool = False
+) -> None:
+    require_managed_roots_safe(root, distribution, remove=remove)
     plan_composites(root, distribution, remove=False)
 
 
@@ -489,6 +513,10 @@ def drift_messages(root: Path, distribution: Distribution) -> list[str]:
         relative = SKILLS_ROOT / name
         if not directory_matches(root, relative, files):
             messages.append(f"REPAIR: managed skill directory differs: {relative}")
+        if not is_managed_claude_link(claude_skill_link(root, name), name):
+            messages.append(
+                f"REPAIR: managed Claude skill link differs: {CLAUDE_SKILLS_ROOT / name}"
+            )
     for relative, desired in distribution.composites.items():
         current = read_composite(root, relative)
         if current is None:
@@ -572,6 +600,21 @@ def replace_directory(
         atomic_write(target.joinpath(*child.parts), data, root)
 
 
+def create_claude_skill_links(root: Path, distribution: Distribution) -> None:
+    for name in distribution.skill_names:
+        link = claude_skill_link(root, name)
+        ensure_parent_directories(link, root)
+        if not path_exists(link):
+            link.symlink_to(claude_skill_target(name), target_is_directory=True)
+
+
+def remove_claude_skill_links(root: Path, distribution: Distribution) -> None:
+    for name in distribution.skill_names:
+        link = claude_skill_link(root, name)
+        if is_managed_claude_link(link, name):
+            link.unlink()
+
+
 def apply_composites(root: Path, plan: Mapping[PurePosixPath, bytes | None]) -> None:
     for relative, desired in sorted(plan.items(), key=lambda item: item[0].as_posix()):
         target = root.joinpath(*relative.parts)
@@ -591,11 +634,13 @@ def print_plan(command: str, root: Path, distribution: Distribution) -> None:
         print("- remove .agent-workflow/")
         for name in distribution.skill_names:
             print(f"- remove .agents/skills/{name}/")
+            print(f"- remove matching .claude/skills/{name} link")
         print("- remove managed region from AGENTS.md")
     else:
         print("- replace .agent-workflow/ with current package bytes")
         for name in distribution.skill_names:
             print(f"- replace .agents/skills/{name}/ with current package bytes")
+            print(f"- create .claude/skills/{name} link")
         print("- converge managed region in AGENTS.md")
 
 
@@ -611,6 +656,7 @@ def converge(
         replace_directory(root, FRAMEWORK_ROOT, distribution.framework)
         for name, files in sorted(distribution.skills.items()):
             replace_directory(root, SKILLS_ROOT / name, files)
+        create_claude_skill_links(root, distribution)
         apply_composites(root, composite_plan)
     except (LifecycleError, OSError) as exc:
         raise PartialMutationError(str(exc)) from exc
@@ -618,13 +664,14 @@ def converge(
 
 
 def remove(root: Path, distribution: Distribution, dry_run: bool) -> None:
-    inspect_managed_structure(root, distribution)
+    inspect_managed_structure(root, distribution, remove=True)
     require_recognized_skill_removal(root, distribution)
     composite_plan = plan_composites(root, distribution, remove=True)
     if dry_run:
         print_plan("remove", root, distribution)
         return
     try:
+        remove_claude_skill_links(root, distribution)
         framework = root.joinpath(*FRAMEWORK_ROOT.parts)
         if path_exists(framework):
             shutil.rmtree(framework)

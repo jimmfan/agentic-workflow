@@ -61,6 +61,7 @@ See the [README examples](../README.md#wayfinder) for starting and resuming work
 |---|---|---|
 | `.agent-workflow/` | Authored routing, terminology, contract, and third-party notice. | Reconstructable framework content, replaced as a unit. |
 | Current `.agents/skills/<name>/` directories | Canonical maintained skill sources. | Reserved framework directories, replaced completely. |
+| Current `.claude/skills/<name>` links | Source-checkout links to canonical skills. | Links to `.agents/skills/<name>/`; conflicting entries are preserved and block install or update. |
 | `AGENTS.md` managed region | Authored through `agent_workflow/install/AGENTS.md.template`. | Only the marked region is managed; project-authored bytes outside it are preserved. |
 | `.project-efforts/` | Project-owned effort state. | Project-owned effort state; lifecycle commands do not traverse, interpret, or change it. |
 | Unrelated skill directories and project artifacts | Project-owned. | Project-owned. |
@@ -80,6 +81,7 @@ Code, install metadata, framework content, and skills come from the same snapsho
 The Python wheel contains the CLI implementation and install resources; runtime framework and skill bodies come from the downloaded snapshot.
 
 Lifecycle owns install, update, status, and remove.
+It projects curated skills into native Claude Code's project skill location using relative links and removes only matching links.
 It converges declared managed surfaces while preserving project-owned bytes, with preflight checks for unsafe managed paths and ambiguous composite ownership.
 Remove additionally guards curated-name collisions on an unrecognized target.
 Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.

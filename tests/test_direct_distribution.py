@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import os
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
@@ -92,6 +93,10 @@ class DirectDistributionTests(ProjectTestCase):
                     tree_snapshot(installed / name),
                     tree_snapshot(REPOSITORY_ROOT / ".agents/skills" / name),
                 )
+                link = self.project / ".claude/skills" / name
+                self.assertTrue(link.is_symlink())
+                self.assertEqual(os.readlink(link), f"../../.agents/skills/{name}")
+                self.assertTrue((link / "SKILL.md").is_file())
 
     def assert_wayfinder_untouched(self) -> None:
         self.assertEqual(
