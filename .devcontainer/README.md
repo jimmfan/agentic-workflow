@@ -27,24 +27,12 @@ This is required when the workspace is a linked Git worktree: its `.git` file po
 Preserving that path makes the metadata reachable without depending on either checkout's directory name.
 VS Code always opens the explicit short path `/workspace`, avoiding the secondary host-path alias.
 
-After the workspace opens, the post-create check runs automatically.
-Success ends with output resembling:
-
-```text
-OK: development container is ready (Python 3.14.x; uv 0.11.32; git version ...; GitHub CLI 2.98.0; Codex extension openai.chatgpt configured; Claude Code extension anthropic.claude-code configured).
-```
+After the workspace opens, the post-create command prepares the Codex and Claude Code state volumes and sets their directory and credential permissions.
 
 The Dev Container selects `python3` as the default interpreter and Pylance as the language server.
 It requests `openai.chatgpt` and `anthropic.claude-code` without versions, so VS Code can install and update each extension according to its extension update settings.
 
 ## Verify and develop
-
-Run the environment check from a **VS Code terminal inside this Dev Container**.
-It is read-only and confirms the exact interpreter, required command-line interfaces, repository metadata access, Codex and Claude Code credential-store configuration, state permissions, extension configuration, and Linux sandbox namespace support:
-
-```bash
-python3 .devcontainer/check_environment.py
-```
 
 Run every command in the [maintainer and CI gate](../docs/verification.md#maintainer-and-ci-gate) from the **same Dev Container terminal at the repository root**.
 The gate checks Python formatting and lint, package contracts, evaluation tooling, wheel installation, and diff whitespace.
