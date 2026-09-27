@@ -30,7 +30,7 @@ The intended loading sequence is:
 
 - **Entry:** root policy and exposed skill descriptions support initial selection from intent, with the smallest delegated read-only reconnaissance when evidence is insufficient.
 - **Composition:** [detailed routing](../../.agent-workflow/routing.md) loads when composition, availability, artifact ownership, handoff, or resumption guidance materially matters; selected skill instructions load when needed.
-- **Coordination:** [Wayfinder](../../.agents/skills/wayfinder/SKILL.md) loads its [state contract](../../.agent-workflow/contracts/wayfinder-state.md), resumes from the matching map, and follows only relevant supporting state and maintaining artifacts.
+- **Coordination:** [Wayfinder](../../.agents/skills/wayfinder/SKILL.md) loads its [state contract](../../.agent-workflow/contracts/effort-state.md), resumes from the matching map, and follows only relevant supporting state and maintaining artifacts.
   An unrelated effort or a skill's availability does not justify loading it.
 
 These are intended boundaries, not a measurement of host-injected instructions or actual reads in every session.

@@ -1,4 +1,4 @@
-# ADR-0011: Use map-first Wayfinder state
+# ADR-0011: Use map-first effort state
 
 - Status: accepted
 - Date: 2026-08-14

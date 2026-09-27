@@ -24,7 +24,7 @@ The existing bounded process allows 360 seconds and 2,000,000 captured bytes per
 
 Inspect actual files, reference targets and actions, including bounded readback, instead of trusting the subject's report.
 Check source, scope, identity and status distinctions; a source link must actually supply the detail it is used to establish.
-An ordinary artifact remains an ordinary artifact; linkage alone neither creates a Wayfinder record nor grants write authorization.
+An ordinary artifact remains an ordinary artifact; linkage alone neither creates an effort record nor grants write authorization.
 No new record is required merely to categorize ownership, and no complete model is required before independent work.
 Keep every stage's original error even if the authorized Correct stage later repairs it.
 

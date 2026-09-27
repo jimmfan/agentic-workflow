@@ -247,7 +247,6 @@ A read-only request may report stale or conflicting state but does not change it
 Work only within current action authorization, including edits to linked artifacts.
 A link neither makes its target an effort record nor authorizes editing it.
 Do not copy maintaining-artifact bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
-Updating another effort's reference to a path that authorized work renamed or removed is not reconciling that effort.
 Apply root policy's cross-artifact rule: a useful summary or detail held elsewhere is not itself an inconsistency.
 
 If affected state changed or conflicts, evidence is insufficient, or a required edit, preservation check, or reference repair is unauthorized or blocked, stop that operation and report the limitation.

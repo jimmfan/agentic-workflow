@@ -15,7 +15,7 @@ Resolution: user decision.
 
 ## U2 — Should other earlier authorization carry forward across turns?
 
-Why it matters: [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) now carries earlier authorization forward only for effort maintenance, and [terminology](../../.agent-workflow/terminology.md#requests-and-authorization) states that it does not decide other cases, so "current user request" stays ambiguous for other writes.
+Why it matters: [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) now carries earlier authorization forward only for effort maintenance, and "current user request" remains undefined for other writes, such as a commit authorized in an earlier turn.
 Resolution: user decision; broadening affects authorization boundaries, which the project treats as a pre-1.0 priority.
 
 ## U3 — Should long-running efforts without an achievable objective remain efforts?

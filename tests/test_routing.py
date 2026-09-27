@@ -25,7 +25,6 @@ EXPECTED_FRAMEWORK_LANGUAGE = {
     "Reconciliation",
     "Effort maintenance",
     "Pruning",
-    "Current user request",
     "Read-only request",
     "Framework-owned",
     "Project-owned",
@@ -92,13 +91,13 @@ class RoutingContractTests(unittest.TestCase):
         routing = (REPOSITORY_ROOT / ".agent-workflow/routing.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("contracts/wayfinder-state.md", routing)
-        contract = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md"
+        self.assertIn("contracts/effort-state.md", routing)
+        contract = REPOSITORY_ROOT / ".agent-workflow/contracts/effort-state.md"
         self.assertTrue(contract.is_file())
         wayfinder = (REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn(".agent-workflow/contracts/wayfinder-state.md", wayfinder)
+        self.assertIn(".agent-workflow/contracts/effort-state.md", wayfinder)
         self.assertIn("map.md", wayfinder)
 
     def test_domain_modeling_references_its_project_context_interfaces(self) -> None:

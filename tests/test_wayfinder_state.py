@@ -13,7 +13,7 @@ import unittest
 from _behavior_test_support import behavior
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/wayfinder-state.md"
+CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/effort-state.md"
 FIXTURES = REPOSITORY_ROOT / "tests/fixtures"
 
 

@@ -18,7 +18,7 @@ flowchart TD
     root -. framework meanings when needed .-> terms[".agent-workflow/terminology.md"]
     method --> result["Result + verification evidence"]
     direct --> result
-    method -. Wayfinder selected .-> contract[".agent-workflow/contracts/wayfinder-state.md"]
+    method -. Wayfinder selected .-> contract[".agent-workflow/contracts/effort-state.md"]
     contract --> map[".project-efforts/effort/map.md"]
     map -. relevant detail .-> artifacts["Supporting state + designated project artifacts"]
 ```
@@ -38,7 +38,7 @@ See [Supported hosts](../README.md#supported-hosts) for host-specific discovery 
 | [Detailed routing](../.agent-workflow/routing.md) | Composition, transitions, relevant resumption, unavailable-skill handling, and route reporting. |
 | [Terminology](../.agent-workflow/terminology.md) | Shared framework meanings when they materially affect interpretation. |
 | [Selected skills](../.agents/skills/) | The method and its supporting instructions. |
-| [Effort state contract](../.agent-workflow/contracts/wayfinder-state.md) | State representation, recognition, preservation, reconciliation, and map-first resumption after Wayfinder selection. |
+| [Effort state contract](../.agent-workflow/contracts/effort-state.md) | State representation, recognition, preservation, reconciliation, and map-first resumption after Wayfinder selection. |
 
 Detailed instructions load when their responsibility becomes relevant.
 Root obligations therefore remain effective before optional skills or contracts load.
@@ -95,7 +95,7 @@ Current source and accepted project artifacts outrank summaries and chat recolle
 The independently reconsiderable decisions are:
 
 - [ADR-0010: Framework output and project-owned state](../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md).
-- [ADR-0011: Map-first Wayfinder state](../architecture-decisions/0011-use-map-first-wayfinder-state.md).
+- [ADR-0011: Map-first effort state](../architecture-decisions/0011-use-map-first-wayfinder-state.md).
 - [ADR-0025: Project decision authority at consequential boundaries](../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md).
 - [ADR-0027: Direct-first progressive routing](../architecture-decisions/0027-use-direct-first-progressive-routing.md).
 - [ADR-0028: Wayfinder as sole durable coordinator](../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md).

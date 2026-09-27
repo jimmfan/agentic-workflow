@@ -1,6 +1,6 @@
 """Bounded continuation pilot: snapshots, blind packets and explicit adjudication.
 
-This is evaluation tooling, not a Wayfinder state engine or semantic prose parser.
+This is evaluation tooling, not an effort state engine or semantic prose parser.
 """
 
 from __future__ import annotations

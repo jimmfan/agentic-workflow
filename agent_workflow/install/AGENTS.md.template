@@ -75,12 +75,11 @@ When Wayfinder is selected, establish or resume any required effort map before s
 
 Once an effort is selected or resumed in a conversation, later turns within its objective continue it, including turns that need no other method.
 An explicit request to establish, continue, or update an effort authorizes effort maintenance for it unless the user asks for no changes.
-That authorization remains part of the current user request for later turns of the same conversation, including questions and guidance, until the user narrows or withdraws it or asks to discuss first or make no changes.
+When routing selects or resumes an effort without such a request, a current user request or accepted project policy that authorizes repository changes for the effort's objective also authorizes its effort maintenance; without that authorization, report what needs preserving instead of writing it.
+Effort maintenance authorization remains part of the current user request for later turns of the same conversation, including questions and guidance, until the user narrows or withdraws it or asks to discuss first or make no changes.
 While it applies, reconcile the effort's state under its state contract before the final response of any turn that changes what the effort represents.
 A read-only request changes no state.
 A limit that allows only reads on one target, such as an external system, does not make the request read-only for effort maintenance.
-Before completing work that renames or removes a repository path, search `.project-efforts/` for references to it; update affected references within that work's authorization, otherwise report them.
-A match is a reference to update or report, not a reason to select Wayfinder.
 
 ## Report the route
 
