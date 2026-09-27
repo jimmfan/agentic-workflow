@@ -10,6 +10,7 @@ Lower token usage is a possible benefit, not a substitute for a correct result.
 Agent Workflow instruction loading, relevant-state reconstruction, tool-output pressure, and evidence-supported opportunities to avoid unnecessary context.
 The initial authorization covers source and existing-evidence investigation and this effort's coordination state; it excludes framework, runtime, test, and evaluator changes and new model runs.
 Generic performance work, prose shortening, arbitrary token targets, and speculative cleanup are excluded.
+On 2026-09-27 the user authorized the work delivered in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57): relocating task-specific source-only root instructions behind pointers, a deterministic one-sentence-per-line check, word ceilings that guard always-loaded root-policy growth, and removing root rules that every supported host already states; rewriting dense distributed routing or authority rules and new model runs were not authorized.
 
 Resume during relevant authorized work; this map neither schedules monitoring nor makes unrelated tasks relevant.
 The [language effort](../language-coherence/map.md) owns consequential wording consistency, and the [responsibility effort](../workflow-responsibility-boundaries/map.md) owns method and handoff boundaries.
@@ -21,10 +22,20 @@ The initial source and evidence audit is complete; no supported framework optimi
 The next proposed investigation is to recover a campaign's original traces, verify their recorded hashes, and inspect loading and output patterns alongside stage outcomes using the existing offline analyzer.
 That follow-up needs available matching evidence and authorization for its scope; a new controlled model comparison would require separate authorization and a defined hypothesis.
 
+Two further proposals from 2026-09-27 are not authorized:
+
+- Expand the [routing smoke cases](../../evals/routing-smoke/cases.json), currently one Direct and one Wayfinder case, to cover each Wayfinder signal, opt-out, and authorization boundary, and record a repeated baseline; this needs live model runs.
+- Only if that baseline or trace evidence shows a defect, condense the distributed authorization and Wayfinder-signal rules; [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) and [ADR-0027](../../architecture-decisions/0027-use-direct-first-progressive-routing.md) require concise forms of those rules to stay always loaded.
+
 ## Current state
 
 The accepted [Direct-first architecture](../../architecture-decisions/0027-use-direct-first-progressive-routing.md) remains the baseline.
 No actionable efficiency defect was established in the inspected sources and existing reports; this does not demonstrate that current behavior is efficient.
+
+The 2026-09-27 change in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57) reduced the source-only part of the root `AGENTS.md` from 1,534 to 1,194 words by moving terminology, checkout, ADR-authoring, and release details to [maintainer procedures](../../docs/maintenance.md), the [decision index](../../architecture-decisions/README.md#maintaining-decision-records), and [release tags](../../docs/verification.md#release-tags).
+The distributed template stayed at 1,141 words: its only generic candidate, the factual-accuracy rule, is absent from Codex's `gpt_5_codex_prompt.md` on `openai/codex` `main` as fetched that day, so it is not a duplicate of every supported host.
+[Source-document tests](../../tests/test_source_documents.py) now enforce word ceilings for both parts and reject obvious multi-sentence prose lines.
+This is a growth guard, not evidence of a behavioral or cost improvement.
 
 The intended loading sequence is:
 

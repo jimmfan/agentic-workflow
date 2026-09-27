@@ -153,6 +153,7 @@ The [effort state contract](.agent-workflow/contracts/effort-state.md) owns exac
 
 - [Architecture and ownership](docs/architecture.md) explains the system and its instruction-loading boundaries.
 - [Verification](docs/verification.md) gives the maintainer and CI gate.
+- [Maintainer procedures](docs/maintenance.md) holds on-demand source-repository procedures for terminology and checkout changes.
 - [Behavioral testing](docs/behavioral-testing.md) explains scenario authoring and opt-in live runs.
 - [Tests](tests/README.md) and [evaluations](evals/README.md) distinguish coverage from remaining evidence gaps.
 

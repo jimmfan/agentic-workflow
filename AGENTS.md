@@ -115,19 +115,8 @@ This maintainer rule is documentation policy, not an installer guard, and must s
 ## Project language
 
 Read `.agent-workflow/terminology.md` before changing routing, Wayfinder, direct skill distribution, ownership, or framework-lifecycle concepts in a way that uses or changes canonical Agent Workflow language.
-
-Before introducing, renaming, or materially redefining a canonical term:
-
-- Determine the actual concept from current source, behavior, tests, and accepted decisions.
-- Identify the bounded technical or domain context that owns it.
-- Research established terminology using applicable primary standards, official technical documentation, strong engineering evidence, and peer-reviewed evidence when available.
-- Compare alternatives by exact semantics and applicability.
-- Prefer established or literal language only when its semantic precision earns its cognitive cost.
-- State evidence strength and uncertainty honestly.
-
+Before introducing, renaming, or materially redefining a canonical term, follow the [terminology change procedure](docs/maintenance.md#changing-canonical-terminology).
 Update `.agent-workflow/terminology.md` only after the terminology decision is accepted.
-Keep behavior, architecture, authority, and terminology in their respective owning layers.
-Do not force one term across genuinely different bounded contexts.
 
 ## Pre-1.0 engineering priority
 
@@ -147,11 +136,7 @@ Do not force one term across genuinely different bounded contexts.
   For substantial changes, read the applicable decisions rather than the entire decision history.
 - If an ADR and current repository behavior appear inconsistent, investigate the discrepancy.
   If new evidence changes an accepted decision, update the ADR and affected contracts, implementation, documentation, and tests explicitly.
-- Keep ADRs for architecturally significant choices that can reasonably be reconsidered independently and whose rationale would otherwise be lost.
-  Before adding one, check whether an existing ADR already owns the boundary.
-  Put current system shape in `docs/architecture.md` and exact required behavior in contracts, source, and tests.
-- Do not use ADRs merely to record experiments, bug fixes, dependency or version updates, numeric limits, path cleanup, benchmark results, or routine implementation mechanics.
-  During explicit ADR maintenance, consolidate or remove obsolete pre-1.0 records rather than keeping them as a changelog; Git preserves historical evolution.
+- Before adding, changing, consolidating, or removing an ADR, follow [maintaining decision records](architecture-decisions/README.md#maintaining-decision-records).
 
 ## Architecture boundary
 
@@ -198,12 +183,9 @@ Keep experiments reversible and isolated until adoption is intentional.
 
 ## Markdown prose line breaks
 
-- Do not hard-wrap Markdown prose to a fixed column width.
-- Put each sentence on its own physical line by default.
+- Put each sentence on its own physical line by default; do not hard-wrap prose to a fixed column width or collapse multi-sentence paragraphs onto one physical line.
 - Break unusually long sentences or list items at stable clause boundaries when that improves reviewability.
-- Do not collapse multi-sentence paragraphs onto one physical line.
 - Do not reflow unchanged prose solely to satisfy a visual width.
-- Use editor soft wrapping to control displayed line length.
 - Preserve intentional hard breaks, indentation, and syntax in tables, code blocks, URLs, embedded formats, and generated content.
 
 ## Testing and verification
@@ -222,23 +204,16 @@ Keep experiments reversible and isolated until adoption is intentional.
 ## Versioning
 
 - A change intended to merge to `main` that modifies distributed framework behavior or installed framework content MUST update the root `VERSION` in the same PR unless the user explicitly says the change is not being released.
-- Before declaring such a change complete, verify the current remote PR base and semantic release tags rather than assuming local remote-tracking refs are current, then choose a valid higher version under the [release policy](docs/verification.md#release-tags).
+- Before declaring such a change complete, choose and verify the version under the [release policy](docs/verification.md#release-tags).
   A version decision is part of delivery verification, not optional cleanup.
-  If the checkout is behind the remote base, explain any apparent skipped version using the intervening release; a version bump does not establish that the changes are integrated with the current base.
-  Retain an existing unreleased version bump when it remains valid for the combined PR scope; do not increment again merely because another task, follow-up edit, or verification pass occurs.
-- Do not confuse a VERSION bump with publication: feature branches update `VERSION`, while the verified `main` workflow owns release-tag creation.
 
 ## Checkout state
 
 Treat the user's checkout state as working state that must be preserved.
 
-- Prefer read-only Git commands and existing refs for inspection; do not detach or switch the user's primary checkout merely to inspect another commit or branch.
-- Before changing branch, HEAD, or worktree checkout state, record the starting state.
-- Leave the task's working branch checked out when finished so the completed work remains available for code review.
-- Restore the original checkout only when the user explicitly requests it.
-- Never leave the user's primary checkout detached as an inspection side effect.
+- Prefer read-only Git commands and existing refs for inspection; do not detach or switch the user's primary checkout merely to inspect another commit or branch, and never leave it detached as an inspection side effect.
 - Preserve staged, unstaged, and untracked work.
   Never reset, discard changes, or force a checkout to satisfy this checkout preference.
-- If the task uses a separate worktree, identify its absolute path and branch clearly; switch the primary checkout only when safe.
-- If a requested checkout change is unsafe, leave the work in place and report the blocker.
-- Before handing back, report the final branch, worktree path, and whether the changes are committed.
+- Before changing branch, HEAD, or worktree checkout state, follow the [checkout procedure](docs/maintenance.md#checkout-state).
+- Leave the task's working branch checked out when finished so the completed work remains available for code review.
+  Before handing back, report the final branch, worktree path, and whether the changes are committed.
