@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-14
-- Amended: 2026-09-05
+- Amended: 2026-09-05; 2026-09-27
 
 ## Context
 
@@ -32,9 +32,9 @@ A blocker is a condition that currently prevents particular work from proceeding
 An unsatisfied dependency, unresolved consequential uncertainty, or missing required authority can be a blocker for affected work.
 Ready work is work to which no blocker currently applies; independent ready work may proceed while other work remains blocked.
 
-Work authorized within the current scope that changes represented reality must reconcile affected map content, recognized records, and references before claiming completion.
+Work authorized within the current scope that changes represented reality must reconcile affected map content, recognized records, and references as that reality changes, at the timing the state contract defines, and before claiming completion.
 Designated project artifacts continue to maintain their lasting results.
-Read-only work may report staleness but does not repair project-owned state.
+Read-only work may report staleness but does not repair project-owned state; a read-only limit on external systems does not make authorized effort maintenance read-only.
 
 The effective Wayfinder instructions present one coherent operational model rather than prepend local state rules to a contradictory tracker specification.
 Matt Pocock's `v1.2.3` skill remains the attributed methodological source.
