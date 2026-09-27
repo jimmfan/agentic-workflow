@@ -136,7 +136,7 @@ Update `.agent-workflow/terminology.md` only after the terminology decision is a
   For substantial changes, read the applicable decisions rather than the entire decision history.
 - If an ADR and current repository behavior appear inconsistent, investigate the discrepancy.
   If new evidence changes an accepted decision, update the ADR and affected contracts, implementation, documentation, and tests explicitly.
-- Before adding, consolidating, or removing an ADR, follow [maintaining decision records](architecture-decisions/README.md#maintaining-decision-records).
+- Before adding, changing, consolidating, or removing an ADR, follow [maintaining decision records](architecture-decisions/README.md#maintaining-decision-records).
 
 ## Architecture boundary
 

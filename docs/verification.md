@@ -84,7 +84,7 @@ The manifest maps current snapshot sources to targets; it is neither installed s
 
 The root `VERSION` is the human-controlled `x.y.z` release switch and the source for Python distribution metadata.
 Changes to distributed behavior or installed content require a version increase in the same PR unless explicitly excluded from release; source-only documentation leaves it unchanged.
-Before delivery, verify the current remote PR base and semantic release tags rather than assuming local remote-tracking refs are current, then choose a valid higher version.
+When a change requires a release, verify the current remote PR base and semantic release tags before delivery rather than assuming local remote-tracking refs are current, then choose a valid higher version.
 If the checkout is behind the remote base, explain any apparent skipped version using the intervening release; a version bump does not establish that the changes are integrated with the current base.
 Retain an existing unreleased version bump when it remains valid for the combined PR scope; do not increment again merely because another task, follow-up edit, or verification pass occurs.
 

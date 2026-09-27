@@ -10,7 +10,7 @@ Lower token usage is a possible benefit, not a substitute for a correct result.
 Agent Workflow instruction loading, relevant-state reconstruction, tool-output pressure, and evidence-supported opportunities to avoid unnecessary context.
 The initial authorization covers source and existing-evidence investigation and this effort's coordination state; it excludes framework, runtime, test, and evaluator changes and new model runs.
 Generic performance work, prose shortening, arbitrary token targets, and speculative cleanup are excluded.
-On 2026-09-27 the user authorized, in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57), relocating task-specific source-only root instructions behind pointers, a deterministic one-sentence-per-line check, word ceilings that guard always-loaded root-policy growth, and removing root rules that every supported host already states; rewriting dense distributed routing or authority rules and new model runs were not authorized.
+On 2026-09-27 the user authorized the work delivered in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57): relocating task-specific source-only root instructions behind pointers, a deterministic one-sentence-per-line check, word ceilings that guard always-loaded root-policy growth, and removing root rules that every supported host already states; rewriting dense distributed routing or authority rules and new model runs were not authorized.
 
 Resume during relevant authorized work; this map neither schedules monitoring nor makes unrelated tasks relevant.
 The [language effort](../language-coherence/map.md) owns consequential wording consistency, and the [responsibility effort](../workflow-responsibility-boundaries/map.md) owns method and handoff boundaries.

@@ -27,9 +27,11 @@ PROSE_ROOTS = (
 )
 FROZEN_DOCUMENTS = (REPOSITORY_ROOT / "docs/audit-reconciliation",)
 FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
-SKIPPED_LINE = re.compile(r"^\s*(?:#|\||>|<!--)")
+SKIPPED_LINE = re.compile(r"^\s*(?:#|\||>)")
+COMMENT_START = re.compile(r"^\s*<!--")
+INDENTED_CODE = re.compile(r"^(?: {4}|\t)")
 LINE_PREFIX = re.compile(r"^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:\*\*\d+\.)?")
-INLINE_CODE = re.compile(r"`[^`]*`")
+INLINE_CODE = re.compile(r"(`+)(?!`).*?(?<!`)\1(?!`)")
 LINK_DESTINATION = re.compile(r"\]\([^)]*\)")
 QUOTED = re.compile(r"“[^”]*”|\"[^\"]*\"")
 ABBREVIATION = re.compile(r"\b(?:e\.g|i\.e|etc|vs|No)\.")
@@ -48,7 +50,13 @@ def multi_sentence_lines(text: str) -> list[int]:
     if lines and lines[0] == "---" and "---" in lines[1:]:
         start = lines.index("---", 1) + 1
     fence = ""
+    in_comment = False
+    # Indented code cannot interrupt a paragraph, so an indented line continuing prose is still checked.
+    in_paragraph = False
     for number, line in enumerate(lines[start:], start + 1):
+        if in_comment:
+            in_comment = "-->" not in line
+            continue
         match = FENCE.match(line)
         if fence:
             if match and match[1][0] == fence[0] and len(match[1]) >= len(fence):
@@ -56,9 +64,22 @@ def multi_sentence_lines(text: str) -> list[int]:
             continue
         if match:
             fence = match[1]
+            in_paragraph = False
+            continue
+        if not line.strip():
+            in_paragraph = False
+            continue
+        if not in_paragraph and INDENTED_CODE.match(line):
+            continue
+        comment = COMMENT_START.match(line)
+        if comment:
+            in_comment = "-->" not in line[comment.end() :]
+            in_paragraph = False
             continue
         if SKIPPED_LINE.match(line):
+            in_paragraph = False
             continue
+        in_paragraph = True
         prose = LINE_PREFIX.sub("", line)
         prose = INLINE_CODE.sub("code", prose)
         prose = LINK_DESTINATION.sub("]", prose)
@@ -117,9 +138,20 @@ class SourceDocumentTests(unittest.TestCase):
             "- A list item. Another sentence.",
             "Ends with code `x`. Then [a link](y.md) follows.",
             "Question? Answer.",
+            "``code`` ends. Next sentence.",
         ):
             with self.subTest(text=text):
                 self.assertEqual(multi_sentence_lines(text), [1])
+
+    def test_sentence_check_resumes_after_skipped_blocks(self) -> None:
+        for text, expected in (
+            ("Paragraph line\n    continues here. Next sentence.", [2]),
+            ("    code = 1. Code = 2\n\nAfter one. After two.", [3]),
+            ("<!-- note -->\nAfter one. After two.", [2]),
+            ("<!--\nhidden\n-->\nAfter one. After two.", [4]),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(multi_sentence_lines(text), expected)
 
     def test_sentence_check_accepts_legitimate_lines(self) -> None:
         for text in (
@@ -134,6 +166,10 @@ class SourceDocumentTests(unittest.TestCase):
             "```text\nFirst. Second.\n```",
             "---\ndescription: One. Two.\n---\nBody.",
             "> Quoted one. Quoted two.",
+            "Intro sentence.\n\n    first = 1. Second = 2",
+            "- Item.\n\n        nested = 1. Code = 2",
+            "<!--\nHidden one. Hidden two.\n-->",
+            "Use ``a `b`. C`` here.",
         ):
             with self.subTest(text=text):
                 self.assertEqual(multi_sentence_lines(text), [])
