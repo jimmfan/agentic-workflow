@@ -8,13 +8,12 @@ Make agents keep Wayfinder efforts current during and after work without the use
 
 Framework instructions, terminology, and ADRs that govern when effort state is maintained, who authorizes it, and how remaining work after delivery gets resumed.
 Includes live validation of those instructions and the open decisions below.
-Excludes consuming projects' own effort content, general routing changes unrelated to effort maintenance, and new runtime machinery unless a decision here adopts it.
+Excludes consuming projects' own effort content and their policy on sensitive data in effort state (the user decided on 2026-09-27 that consumers own it, and removed the framework rule from PR #56), general routing changes unrelated to effort maintenance, and new runtime machinery unless a decision here adopts it.
 On 2026-09-27 the user authorized creating this effort and the framework edits in [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56); live model runs and external tracker or scheduler changes were not authorized.
 
 ## Ready work
 
 - Review and merge [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56) (user).
-  Before merge, decide whether its sensitive-data rule in the [state contract](../../.agent-workflow/contracts/wayfinder-state.md#state-model-and-boundaries) stays in that PR or moves to a separate one.
 - Decide [U1](unknowns.md#u1--how-should-required-work-after-delivery-get-resumed) when ready; it needs user input, not more evidence.
 - Live validation is required by the objective but not yet authorized.
   Plan: one synthetic conversation of about ten turns in an unrelated domain, with maintenance authorized in turn 1, then a committed choice inside a question, pasted operator output, an agent-run read-only check that contradicts the map, a correction, and small talk.

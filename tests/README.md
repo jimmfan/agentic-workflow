@@ -57,7 +57,7 @@ There is no shipped Wayfinder initializer; fixture validation does not execute t
 | Reconciliation, scoped ambiguity, and preservation | Assertions inspect final state, neighboring question sections, external/hidden backlinks, and unrelated bytes. They do not prove reference discovery, preservation before pruning, or concurrent-change checks. |
 | Effort ending and continuation | Blocked/ending scenarios retain final-state controls; map-last removal, temporal ordering, and safe agent deletion remain unverified. |
 | Progressive loading and existing-state reuse | `state_used` records a public claim. Actual reads and reuse remain INCONCLUSIVE without separate evidence. |
-| Multi-turn maintenance and continuation authorization | No deterministic control or live scenario covers per-turn reconciliation, maintenance authorization across later turns, turns answered without another method, sensitive-value exclusion, or the reference search after renames and removals. These rules remain live-unverified. |
+| Multi-turn maintenance and continuation authorization | No deterministic control or live scenario covers per-turn reconciliation, maintenance authorization across later turns, turns answered without another method, or the reference search after renames and removals. These rules remain live-unverified. |
 | Human question review and map meaning | Controls reject supplied stale-state, authority, and content errors. Actual questioning, interruption recovery, fresh-session continuation, and map-only question meaning need separate adjudication. |
 | Filesystem safety | Real lifecycle/bootstrap tests establish framework delivery boundaries, including no direct traversal or mutation of `.project-efforts/`; they do not prove Wayfinder mutation safety. |
 

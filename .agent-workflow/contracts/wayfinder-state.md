@@ -19,7 +19,6 @@ Wayfinder retains consequential coordination and references across sessions and 
 Lasting results remain in their designated maintaining artifacts; Git retains committed history.
 
 All content below `.project-efforts/` is project-owned durable data.
-Never save credentials, tokens, or secret values in effort state; include account identifiers, personal data, or other sensitive details only when continuation needs them and project policy permits, otherwise describe them without their values.
 Wayfinder interprets or changes only the recognized current paths described below.
 All other entries are unrecognized project-owned content: their bytes remain unchanged, and they are not interpreted as effort state.
 
