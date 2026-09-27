@@ -44,7 +44,8 @@ If no reliable signal exists, stop with the evidence needed next.
 For diagnosis-only work, report the evidence chain, root cause or bounded uncertainty, rejected hypotheses, cleanup, and next action without editing or implying fix approval.
 
 When action authorization covers a fix, turn the minimized reproducer into a regression check at the real failure seam when possible.
-Apply the smallest causal fix, remove temporary diagnostics, and invoke Verification on the original symptom or honest proxy plus proportionate regressions.
+For a trivial low-risk causal fix, apply it, remove temporary diagnostics, and invoke Verification on the original symptom or honest proxy plus proportionate regressions.
+Otherwise remove temporary diagnostics and hand the smallest causal fix to `workflow-implementation` as one ready scope, with the diagnosed cause, regression seam, and original symptom or honest proxy as acceptance; it owns `implement`, closing Code Review, and Verification.
 A vanished symptom without causal evidence is a mitigation, not a proven root cause.
 Do not duplicate Code Review already performed by `implement`.
 

@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-14
-- Amended: 2026-08-31; 2026-09-05; 2026-09-19
+- Amended: 2026-08-31; 2026-09-05; 2026-09-19; 2026-09-27
 
 ## Context
 
@@ -23,6 +23,9 @@ In consuming repositories, separate framework-owned reconstructable output from 
   Install and update replace each complete named surface; remove deletes it.
   Unrelated skill directories remain independent and are not deleted or interpreted through historical skill inventories.
   Current curated names are reserved framework surfaces, and existing content at those names is ordinary install/update convergence input.
+- Each current curated `.claude/skills/<name>` link is a projection to `../../.agents/skills/<name>` for native Claude Code.
+  Install and update create missing links and retain matching ones, while a different entry at a curated name stops mutation without replacing project content.
+  Remove deletes only matching links and preserves other `.claude/` content and parent directories.
 - `.project-efforts/` is project-owned durable state.
   Lifecycle operations do not directly traverse, interpret, or change it.
 - `AGENTS.md` is a composite project file.
@@ -36,7 +39,7 @@ In consuming repositories, separate framework-owned reconstructable output from 
   An explicit target is used directly.
   When the CLI target is omitted, Git may be used only to discover the containing worktree root; failed or unavailable discovery falls back to the current directory.
   Repository state, `HEAD`, tracked changes, untracked files, and ignore rules are not prerequisites or recovery boundaries.
-  Managed roots and their parents must not themselves be symlinks, unsupported entry types, or escapes from the target, and ambiguous composite ownership stops mutation before project-authored bytes can be lost.
+  Managed directory roots and their parents must not themselves be symlinks, unsupported entry types, or escapes from the target, and ambiguous composite ownership stops mutation before project-authored bytes can be lost.
   Nested entries inside a replaceable managed directory are ordinary convergence input.
 - The source repository authors `.agent-workflow/` and the current curated `.agents/skills/<name>/` trees directly at their distribution target paths.
   Those source trees are not generated output.
@@ -58,6 +61,7 @@ Ambiguous composite markers remain a hard preflight failure.
 
 Missing, modified, obsolete, or extra files inside a managed surface are replaced from current package bytes.
 Project-owned bytes outside a composite managed region, unrelated skill directories, and `.project-efforts/` remain hard preservation boundaries.
+Unrelated `.claude/` content and nonmatching entries at curated names are preserved.
 
 An existing installation normally converges with one install or update despite ordinary repository state.
 An obsolete file inside `.agent-workflow/` disappears through complete replacement; no preliminary deletion or cleanup commit is required.

@@ -16,23 +16,42 @@ This effort does not maintain a second routing specification, skill catalog, eva
 
 ## Ready work
 
-The initial source audit is complete; no further framework change or live evaluation is authorized by that task.
-Proposed follow-up is to resolve the meaningful Debugging-to-build transition question below, reusing the existing campaign's evidence and obtaining an authorized scope before changing instructions or running evaluations.
-The proposal is not an implementation-ready assignment.
+No further framework change is ready.
+On 2026-09-27 jimmfan approved the recommended Debugging handoff below, and it was applied to [Debugging's fix guidance](../../.agents/skills/workflow-debugging/SKILL.md#fix-and-verify) as an uncommitted working-tree change on `main`.
+jimmfan chose to ship it in one release with concurrent uncommitted Claude Code skill-link lifecycle work in the same checkout, which already set `VERSION` to 0.36.0; that shared bump covers this change.
+Delivery (commit and PR) was not authorized in that request.
 
 ## Current state
 
 The inspected root policy, routing, state contract, distributed skill instructions, and accepted ADRs establish the ownership relationships summarized below.
-This audit did not establish a new contradictory ownership assignment or justify a framework correction.
-One consequential transition remains worth investigating:
+The initial audit (2026-09-17) found no contradictory ownership assignment.
 
-**When does an authorized meaningful repair leave Debugging for Implementation, and how is closing review ensured?**
-[Debugging's fix guidance](../../.agents/skills/workflow-debugging/SKILL.md#fix-and-verify) says to apply the smallest causal fix and invoke Verification, while [detailed routing](../../.agent-workflow/routing.md#decide-and-compose) routes a ready implementation scope through Implementation and `implement`, with a Direct exception for trivial edits.
-The explicit Debugging guidance does not name that handoff.
-Whether general routing re-evaluation sufficiently resolves this transition is an interpretation to investigate, not an established contract defect or a requirement that every fix invoke `implement`.
+**Debugging-to-build transition (source analysis, 2026-09-27).**
+The sources show a coverage gap for authorized fixes that aren't trivial, not a contradiction:
 
-The [existing meaningful-fix investigation](../../evals/remaining-audit-behavior/REPORT.md#h2--debuggings-transition-may-omit-meaningful-closing-review) already records a correct repair without observed independent closing review.
-Its infrastructure and reviewer-capability limitations leave attribution inconclusive; this audit did not rerun it or establish present-day agent behavior.
+- [Debugging's fix guidance](../../.agents/skills/workflow-debugging/SKILL.md#fix-and-verify) sent every authorized fix directly to Verification and, before the 2026-09-27 change, had never named an Implementation handoff; its "do not duplicate Code Review already performed by `implement`" clause originated as a reference to an upstream `implement` run.
+- [Detailed routing](../../.agent-workflow/routing.md#decide-and-compose) routes a ready implementation scope through Implementation and `implement` and keeps trivial low-risk edits Direct, but names only the reverse transition ("new causal uncertainty returns to Debugging").
+- [Verification](../../.agents/skills/workflow-verification/SKILL.md) assesses existing TDD and Code Review evidence and adds only uncovered checks; it does not supply a closing review when none ran.
+- [ADR-0027](../../architecture-decisions/0027-use-direct-first-progressive-routing.md) treats route sequences as entry-conditioned default transitions, and detailed routing loads only when needed, so Debugging's explicit step is the instruction most likely in context at the fix.
+
+On the Debugging path, closing review of an authorized fix that isn't trivial therefore depends on the agent re-classifying the fix as an implementation scope without an instruction that says to.
+The [existing investigation](../../evals/remaining-audit-behavior/REPORT.md#h2--debuggings-transition-may-omit-meaningful-closing-review) observed exactly that omission, but its attribution remains inconclusive; source analysis cannot establish present agent behavior or that the recommended change would alter it.
+
+**Resolution (approved and applied 2026-09-27, not yet delivered).**
+Debugging's fix guidance now has a conditional handoff.
+A trivial low-risk causal fix keeps the current path: apply it and invoke Verification.
+A fix that isn't trivial hands the smallest causal fix to Implementation as one ready scope, with the diagnosed cause, regression seam, and original symptom or honest proxy as acceptance; Implementation then owns `implement` (TDD and closing Code Review) and Verification.
+This reuses routing's existing trivial/meaningful boundary and adds no new pipeline, record, or test.
+Rejected alternatives:
+
+- **No change:** relies on a routing re-evaluation that no instruction on the Debugging path triggers, that Debugging's explicit Verification step likely preempts, and that the investigation did not observe.
+- **Routing-only transition row:** routing may not be loaded at the fix, and the investigated subject read routing and still went Debugging → Verification.
+- **Debugging invokes `code-review` itself:** bypasses `implement`'s pre-edit baseline and TDD and creates a parallel build path, contrary to `implement` owning closing review.
+- **Verification requires a missing review:** moves review into the acceptance layer for every Verification use.
+
+The package gate passed on the applied change; its closing Code Review ran inline in the implementing session rather than through independent reviewers.
+Revisit if a clean rerun of the investigation shows agents already reach Implementation from Debugging, or shows the handoff adds ceremony to fixes that are actually trivial.
+
 The [campaign effort](../remaining-behavior-evidence/map.md) and its linked protocol/report retain execution prerequisites, observations, and follow-up details; do not mirror their campaign state here.
 
 ## Areas and relationships
@@ -58,16 +77,14 @@ The [campaign effort](../remaining-behavior-evidence/map.md) and its linked prot
 
 ## Dependencies
 
-Any proposed transition clarification needs a bounded authorized scope, current source comparison, and evidence sufficient for the claimed change.
-Reusing campaign observations requires retaining their original scope and limitations; new behavioral claims require actual execution evidence under the [existing protocol](../../evals/remaining-audit-behavior/README.md).
-The protocol's isolation and reviewer-capability prerequisites apply to its live work, not to independent source analysis or this map's completion.
+Delivering the applied change needs authorization to commit and open a PR; because it shares `VERSION` 0.36.0 with the concurrent skill-link work, the two are delivered together unless jimmfan separates them.
+Any effectiveness claim for the handoff needs actual execution evidence under the [existing protocol](../../evals/remaining-audit-behavior/README.md); the map must not claim it.
+Reusing campaign observations requires retaining their original scope and limitations.
 
 ## Blockers
 
-No unresolved source or authority question prevents completing this initial audit and effort state.
-Framework changes and live evaluations remain outside its authorization.
-The existing campaign documents unresolved execution-isolation limitations; consult its current maintaining artifacts before proposing a live continuation rather than assuming that environment is now usable.
-That limitation does not establish a framework defect or block independent documentation analysis.
+Delivery is blocked only by the missing commit/PR authorization.
+Live evaluation remains blocked by the campaign's unresolved execution-isolation limitations; consult its current maintaining artifacts before proposing a live continuation.
 
 ## Key references
 

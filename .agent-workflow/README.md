@@ -44,9 +44,12 @@ Repeated install and update keep exactly one such region.
 The current curated skills live directly under `.agents/skills`.
 The [routing policy](routing.md#use-selected-skills) requires a skill to be exposed in the current session before use.
 Their current directory names are reserved for Agent Workflow.
+Existing content at those `.agents/skills/` names is ordinary install/update convergence input.
 Install and update replace each complete current curated skill directory, including extra files, while preserving unrelated skill directories.
+They create matching `.claude/skills/<name>` links to those directories for native Claude Code.
+Existing Claude Code content at other names is preserved; a conflicting entry at a curated name stops install or update before mutation.
 Remove deletes those current curated directories.
-Existing content at those reserved names is ordinary install/update convergence input.
+It removes only matching Claude Code links and leaves the `.claude/` directories and unrelated content in place.
 Wayfinder and Research are directly distributed maintained versions.
 
 Wayfinder keeps project-owned durable coordination under `.project-efforts/`, outside framework lifecycle ownership.
@@ -71,11 +74,11 @@ Lifecycle changes have no automatic backup or rollback.
 If a filesystem failure leaves partial changes, resolve the reported error and rerun the command to converge.
 
 Install and update converge to the same current package state.
-Remove deletes `.agent-workflow/` and the current curated skill directories, strips the managed region from `AGENTS.md`, and deletes that file only when no project-authored bytes remain.
+Remove deletes `.agent-workflow/` and the current curated skill directories, unlinks matching Claude Code skill links, strips the managed region from `AGENTS.md`, and deletes that file only when no project-authored bytes remain.
 Unrelated skill directories and all project-authored composite bytes remain.
 Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
 Native Claude Code can load `AGENTS.md` for routing and Direct work only in a [supported version and configuration](https://code.claude.com/docs/en/memory#agentsmd).
-Agent Workflow installs skills under `.agents/skills/`, not Claude Code's documented [`.claude/skills/` location](https://code.claude.com/docs/en/skills#choose-where-skills-load).
+Agent Workflow installs canonical skills under `.agents/skills/` and links them into Claude Code's documented [`.claude/skills/` location](https://code.claude.com/docs/en/skills#choose-where-skills-load).
 Loading the root policy does not expose skills.
 A Claude model inside GitHub Copilot uses Copilot's skill support.
 
