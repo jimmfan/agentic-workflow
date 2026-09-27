@@ -96,6 +96,8 @@ Loading project instructions does not expose skills.
   A Claude model inside GitHub Copilot uses Copilot's discovery support.
 - Native Claude Code can load `AGENTS.md` for routing and Direct work only in a [supported version and configuration](https://code.claude.com/docs/en/memory#agentsmd).
 - Agent Workflow keeps canonical skills under `.agents/skills/`; it does not install them in Claude Code's documented [`.claude/skills/` location](https://code.claude.com/docs/en/skills#choose-where-skills-load).
+  For a source-checkout experiment, this repository links each curated skill into `.claude/skills/` so native Claude Code can discover it here.
+  These links are not part of Agent Workflow installation in consuming projects.
 
 Only skills exposed in the current session can run.
 An unavailable required skill remains an explicit limitation; an optional skill may have an authorized Direct fallback under the [availability rules](.agent-workflow/routing.md#use-selected-skills).
