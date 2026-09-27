@@ -32,6 +32,8 @@ For focused commands and ownership, see [tests](../tests/README.md).
 
 Review changed instructional prose in context against the [Markdown policy](../AGENTS.md#markdown-prose-line-breaks) and [canonical terminology](../.agent-workflow/terminology.md), including affected sentence meaning and rendered Markdown structure.
 For changed operational guidance, check command behavior, prerequisites, network requirements, and verification coverage against the implementation and the documentation designated to maintain those requirements.
+The [source-document tests](../tests/test_source_documents.py) reject authored current-document lines that obviously hold more than one sentence and fail when the always-loaded root policy grows past its word ceilings; they cannot detect hard wrapping or judge clause breaks.
+Raise a ceiling only deliberately, after removing or consolidating what the new text replaces.
 Package-test success alone does not establish prose conformance.
 
 The verifier's documentation-link check covers `AGENTS.md` and `README.md`, `docs/`, `.agent-workflow/`, ADRs, the test and devcontainer READMEs, and evaluation READMEs at the root and one directory below it; skill-local links are checked separately.
@@ -82,12 +84,14 @@ The manifest maps current snapshot sources to targets; it is neither installed s
 
 The root `VERSION` is the human-controlled `x.y.z` release switch and the source for Python distribution metadata.
 Changes to distributed behavior or installed content require a version increase in the same PR unless explicitly excluded from release; source-only documentation leaves it unchanged.
-Compare against both the PR base and existing semantic release tags before delivery.
+Before delivery, verify the current remote PR base and semantic release tags rather than assuming local remote-tracking refs are current, then choose a valid higher version.
+If the checkout is behind the remote base, explain any apparent skipped version using the intervening release; a version bump does not establish that the changes are integrated with the current base.
+Retain an existing unreleased version bump when it remains valid for the combined PR scope; do not increment again merely because another task, follow-up edit, or verification pass occurs.
 
 PR CI validates explicit base/head revisions using fetched tags and read-only remote tag observation.
 The [release script](../.github/scripts/release_tag.py) accepts canonical `x.y.z`, requires a changed version to exceed both the base version and existing semantic release tags, and treats unchanged `VERSION` as no release.
 After all three jobs pass on a push to `main`, it revalidates and creates one annotated tag on that exact verified commit.
-Do not create release tags while preparing a branch.
+Do not confuse a `VERSION` bump with publication: feature branches update `VERSION`, while the verified `main` workflow owns release-tag creation, so do not create release tags while preparing a branch.
 
 A retry succeeds only when an already-published annotated remote tag resolves to that same commit.
 Conflicting tag types or commits fail; a matching local-only tag remains pending and may be pushed again after a failed push.
