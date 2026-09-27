@@ -30,7 +30,7 @@ A limit that allows only reads on one target, such as an external system, does n
 Authorization to perform an action does not commit a project choice.
 A committed project choice does not authorize an unrelated action.
 Host permission supplies neither action authorization nor a committed project choice.
-A workflow or skill, its instructions, a test, specification, ticket, or Wayfinder record grants neither.
+A workflow or skill, its instructions, a test, specification, ticket, or effort record grants neither.
 
 The person, role, or valid delegate with project decision authority may explicitly accept unresolved uncertainty for one named boundary.
 The underlying question remains unresolved; any U# recording it remains current and unresolved.

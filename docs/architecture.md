@@ -38,7 +38,7 @@ See [Supported hosts](../README.md#supported-hosts) for host-specific discovery 
 | [Detailed routing](../.agent-workflow/routing.md) | Composition, transitions, relevant resumption, unavailable-skill handling, and route reporting. |
 | [Terminology](../.agent-workflow/terminology.md) | Shared framework meanings when they materially affect interpretation. |
 | [Selected skills](../.agents/skills/) | The method and its supporting instructions. |
-| [Wayfinder state contract](../.agent-workflow/contracts/wayfinder-state.md) | State representation, recognition, preservation, reconciliation, and map-first resumption after Wayfinder selection. |
+| [Effort state contract](../.agent-workflow/contracts/wayfinder-state.md) | State representation, recognition, preservation, reconciliation, and map-first resumption after Wayfinder selection. |
 
 Detailed instructions load when their responsibility becomes relevant.
 Root obligations therefore remain effective before optional skills or contracts load.

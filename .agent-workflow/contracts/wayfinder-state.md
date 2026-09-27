@@ -1,4 +1,4 @@
-# Local Wayfinder state contract
+# Effort state contract
 
 Use this contract only after routing selects Wayfinder or a request explicitly continues a relevant effort.
 An existing map is a candidate to check against the current objective, never a routing signal on its own.
@@ -21,7 +21,7 @@ Lasting results remain in their designated maintaining artifacts; Git retains co
 All content below `.project-efforts/` is project-owned durable data.
 Never save credentials, tokens, or secret values in effort state; include account identifiers, personal data, or other sensitive details only when continuation needs them and project policy permits, otherwise describe them without their values.
 Wayfinder interprets or changes only the recognized current paths described below.
-All other entries are unrecognized project-owned content: their bytes remain unchanged, and they are not interpreted as Wayfinder state.
+All other entries are unrecognized project-owned content: their bytes remain unchanged, and they are not interpreted as effort state.
 
 Only `map.md` is required:
 
@@ -246,7 +246,7 @@ Do not defer recording a committed choice or verified result because related imp
 A read-only request may report stale or conflicting state but does not change it; root policy determines when effort maintenance authorization continues across turns.
 
 Work only within current action authorization, including edits to linked artifacts.
-A link neither makes its target a Wayfinder record nor authorizes editing it.
+A link neither makes its target an effort record nor authorizes editing it.
 Do not copy maintaining-artifact bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
 Updating another effort's reference to a path that authorized work renamed or removed is not reconciling that effort.
 Apply root policy's cross-artifact rule: a useful summary or detail held elsewhere is not itself an inconsistency.

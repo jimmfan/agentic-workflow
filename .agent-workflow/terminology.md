@@ -2,9 +2,16 @@
 
 ## Wayfinder coordination
 
+**Wayfinder**:
+Agent Workflow's durable coordination method: selecting, resuming, maintaining, and ending efforts through its skill and state contract.
+Reading an effort's files for context is not using Wayfinder.
+
 **Wayfinder effort**:
 One resumable body of coordination with one objective and scope.
-Its local project-owned durable Wayfinder state lives under `.project-efforts/<effort>/`; the filesystem name describes ownership without introducing another domain concept.
+Its effort state lives under `.project-efforts/<effort>/`; the filesystem name describes ownership without introducing another domain concept.
+
+**Effort state**:
+The project-owned files under `.project-efforts/<effort>/` that store a Wayfinder effort's current coordination state: its map and any U/E/F/D records.
 
 **Map**:
 The brief coordination summary for a Wayfinder effort and the first effort file read when resuming it.
@@ -31,9 +38,9 @@ Something particular work requires from an action, artifact, decision, person, s
 **Blocker**:
 A condition that currently prevents particular work from proceeding.
 An unsatisfied dependency, unresolved consequential uncertainty, or missing required authority can be a blocker for affected work.
-Blocking is scoped to that work and is not a separate Wayfinder record type.
+Blocking is scoped to that work and is not a separate effort record type.
 
-## Wayfinder records and project decisions
+## Effort records and project decisions
 
 **U# (unresolved question record)**:
 A durable record of one current consequential question that remains unanswered and is independently useful to preserve.
@@ -57,7 +64,7 @@ Creating, updating, pruning, or ending a selected Wayfinder effort's state under
 It writes project-owned files and requires action authorization like any other write; reconciliation is the procedure it follows.
 
 **Pruning**:
-Pruning removes a recognized Wayfinder record from current coordination after useful results are preserved and affected references are reconciled.
+Pruning removes a recognized effort record from current coordination after useful results are preserved and affected references are reconciled.
 File or ledger-section removal carries out pruning; ending an effort is separate.
 
 ## Requests and authorization

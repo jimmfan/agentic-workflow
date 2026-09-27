@@ -8,7 +8,9 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = REPOSITORY_ROOT / "agent_workflow"
 
 EXPECTED_FRAMEWORK_LANGUAGE = {
+    "Wayfinder",
     "Wayfinder effort",
+    "Effort state",
     "Map",
     "Objective",
     "Scope",

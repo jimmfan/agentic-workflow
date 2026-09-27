@@ -5,7 +5,7 @@ In consuming repositories, the same paths hold reconstructable framework output.
 It supplies the progressively loaded routing policy, terminology, state contract, and attribution used by the compact root policy.
 Install and update replace the complete consuming-project directory with current snapshot bytes.
 
-Durable project-owned Wayfinder state may live under sibling `.project-efforts/`, but that tree is outside the lifecycle boundary.
+Project-owned effort state may live under sibling `.project-efforts/`, but that tree is outside the lifecycle boundary.
 Lifecycle commands do not directly traverse, interpret, or change it.
 
 ## Contents

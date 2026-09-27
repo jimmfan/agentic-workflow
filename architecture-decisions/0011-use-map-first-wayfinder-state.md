@@ -16,7 +16,7 @@ Presenting both operational models at once would force each agent to reconcile c
 
 ## Decision
 
-When durable coordination is warranted, use project-owned, map-first Wayfinder state.
+When durable coordination is warranted, use project-owned, map-first effort state.
 The current local representation lives under `.project-efforts/<effort>/`.
 When resuming an effort, read `map.md` first.
 
