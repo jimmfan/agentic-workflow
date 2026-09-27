@@ -15,9 +15,11 @@ from typing import Sequence
 
 
 MINIMUM_GH_VERSION = (2, 98, 0)
-EXPECTED_CODEX_EXTENSION = "openai.chatgpt@26.715.31925"
+EXPECTED_CODEX_EXTENSION = "openai.chatgpt"
 EXPECTED_CODEX_HOME = Path("/home/vscode/.codex")
 CODEX_SYSTEM_CONFIG = Path("/etc/codex/config.toml")
+EXPECTED_CLAUDE_EXTENSION = "anthropic.claude-code"
+EXPECTED_CLAUDE_HOME = Path("/home/vscode/.claude")
 DEVCONTAINER_CONFIG = Path(".devcontainer/devcontainer.json")
 
 
@@ -78,13 +80,42 @@ def require_codex_configuration() -> None:
     extensions = devcontainer["customizations"]["vscode"]["extensions"]
     if EXPECTED_CODEX_EXTENSION not in extensions:
         raise RuntimeError(
-            f"Dev Container must pin the Codex extension to {EXPECTED_CODEX_EXTENSION}"
+            f"Dev Container must configure the Codex extension {EXPECTED_CODEX_EXTENSION}"
         )
 
     bubblewrap = require_command("bwrap")
     run([bubblewrap, "--version"])
     unshare = require_command("unshare")
     run([unshare, "--user", "--map-root-user", "true"])
+
+
+def require_claude_configuration() -> None:
+    if not EXPECTED_CLAUDE_HOME.is_dir() or not os.access(EXPECTED_CLAUDE_HOME, os.W_OK):
+        raise RuntimeError(
+            f"Claude Code state directory is missing or not writable: {EXPECTED_CLAUDE_HOME}"
+        )
+    home_mode = stat.S_IMODE(EXPECTED_CLAUDE_HOME.stat().st_mode)
+    if home_mode != 0o700:
+        raise RuntimeError(
+            f"Claude Code state directory must have mode 700; found {home_mode:03o}"
+        )
+
+    credentials_file = EXPECTED_CLAUDE_HOME / ".credentials.json"
+    if credentials_file.exists():
+        credentials_mode = stat.S_IMODE(credentials_file.stat().st_mode)
+        if credentials_mode != 0o600:
+            raise RuntimeError(
+                f"Claude Code .credentials.json must have mode 600; "
+                f"found {credentials_mode:03o}"
+            )
+
+    devcontainer = json.loads(DEVCONTAINER_CONFIG.read_text(encoding="utf-8"))
+    extensions = devcontainer["customizations"]["vscode"]["extensions"]
+    if EXPECTED_CLAUDE_EXTENSION not in extensions:
+        raise RuntimeError(
+            f"Dev Container must configure the Claude Code extension "
+            f"{EXPECTED_CLAUDE_EXTENSION}"
+        )
 
 
 def require_container_editor_configuration() -> None:
@@ -129,6 +160,7 @@ def main() -> int:
         raise RuntimeError(f"GitHub CLI {required} or newer is required; found {found}")
 
     require_codex_configuration()
+    require_claude_configuration()
     require_container_editor_configuration()
 
     python_version = ".".join(str(part) for part in sys.version_info[:3])
@@ -136,7 +168,8 @@ def main() -> int:
         "OK: development container is ready "
         f"(Python {python_version}; {uv_version}; {git_version}; "
         f"GitHub CLI {'.'.join(str(part) for part in gh_version)}; "
-        f"Codex {EXPECTED_CODEX_EXTENSION.removeprefix('openai.chatgpt@')})."
+        f"Codex extension {EXPECTED_CODEX_EXTENSION} configured; "
+        f"Claude Code extension {EXPECTED_CLAUDE_EXTENSION} configured)."
     )
     return 0
 
