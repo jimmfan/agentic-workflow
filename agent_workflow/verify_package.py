@@ -46,7 +46,7 @@ EXPECTED_FRAMEWORK_FILES = frozenset(
         "README.md",
         "routing.md",
         "terminology.md",
-        "contracts/wayfinder-state.md",
+        "contracts/effort-state.md",
     }
 )
 EXPECTED_INSTALL_FILES = frozenset(

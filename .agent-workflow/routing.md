@@ -50,7 +50,7 @@ Scope refinement need not preserve the original wording when the objective and s
 A safe regular map identifies current resumable coordination; a mapless directory is not a candidate.
 An unrelated map never captures the route.
 
-After selecting Wayfinder, read the [state contract](contracts/wayfinder-state.md) before effort state; it owns full recognition, creation, map-first resumption, and preservation mechanics.
+After selecting Wayfinder, read the [state contract](contracts/effort-state.md) before effort state; it owns full recognition, creation, map-first resumption, and preservation mechanics.
 Implementation may consume ready work from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses the Wayfinder threshold.
@@ -63,7 +63,7 @@ New causal uncertainty returns to Debugging; a material unresolved choice return
 Use a skill only when it is exposed in the current session.
 Read the selected skill's instructions and only the support files needed for the current request.
 
-Execution means using the skill's method; selecting it, reading instructions, checking availability, or giving invocation instructions does not count.
+Execution means using the skill's method; selecting it, reading instructions or existing state for context, checking availability, or giving invocation instructions does not count.
 Using a skill for focused work need not change the primary route, including Direct.
 Completion and verification require evidence beyond execution or a route marker.
 

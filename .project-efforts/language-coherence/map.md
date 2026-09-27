@@ -52,7 +52,7 @@ The following repetitions have supported purposes and do not currently justify c
 - **Authority at different loading boundaries:** [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) explains why the always-loaded root policy carries authority rules.
   [Discovery](../../.agents/skills/workflow-discovery/SKILL.md#resolve-the-decision) applies them to project choices; [Debugging](../../.agents/skills/workflow-debugging/SKILL.md#fix-and-verify) applies authorization and reconciliation timing to causal work.
   Removing the root obligation would leave work before specialist loading without that instruction; removing contextual clauses could lose the specific trigger or timing.
-- **Meaning versus operation:** [terminology](../../.agent-workflow/terminology.md) defines dependencies and blockers; the [state contract](../../.agent-workflow/contracts/wayfinder-state.md#dependencies-and-readiness) applies those meanings to scoped readiness and persistence.
+- **Meaning versus operation:** [terminology](../../.agent-workflow/terminology.md) defines dependencies and blockers; the [state contract](../../.agent-workflow/contracts/effort-state.md#dependencies-and-readiness) applies those meanings to scoped readiness and persistence.
   The latter supplies operational detail rather than another glossary.
 - **Different contexts and history:** [Domain Modeling](../../.agents/skills/domain-modeling/SKILL.md) maintains project domain language, while [Codebase Design](../../.agents/skills/codebase-design/SKILL.md#glossary) supplies module-design vocabulary and preserves project meanings.
   These are distinct contexts under [ADR-0029](../../architecture-decisions/0029-distribute-canonical-framework-terminology.md).
@@ -64,7 +64,7 @@ Its attribution remains inconclusive; no independent language-defect record is w
 ## Areas and relationships
 
 - **Definitions:** [canonical terminology](../../.agent-workflow/terminology.md) maintains shared framework meanings; [ADR-0029](../../architecture-decisions/0029-distribute-canonical-framework-terminology.md) separates these from specialized behavior and project-owned domain models.
-- **Obligations and context:** the [root-policy template](../../agent_workflow/install/AGENTS.md.template), [routing](../../.agent-workflow/routing.md), [state contract](../../.agent-workflow/contracts/wayfinder-state.md), and [selected skills](../../.agents/skills/) maintain their respective rules.
+- **Obligations and context:** the [root-policy template](../../agent_workflow/install/AGENTS.md.template), [routing](../../.agent-workflow/routing.md), [state contract](../../.agent-workflow/contracts/effort-state.md), and [selected skills](../../.agents/skills/) maintain their respective rules.
   The [architecture overview](../../docs/architecture.md#instruction-runtime) explains why some obligations must remain available before detailed instructions load.
 - **Delivery:** the [manifest](../../agent_workflow/install/manifest.json) maps canonical framework and skill files to their same consumer paths and templates to root policy files.
   [Package verification](../../agent_workflow/verify_package.py) checks managed-root/template synchronization; [distribution tests](../../tests/test_direct_distribution.py) exercise byte-for-byte framework and skill delivery and preserve project domain files.
@@ -86,4 +86,4 @@ Existing campaign limitations remain with their maintaining reports and efforts 
 - [Completed map-authoring work and unresolved live acceptance](../../evals/map-authoring/REPORT.md).
 
 For a future consequential finding, preserve the relevant passages and sources, the competing interpretations, the affected behavior or maintenance obligation, and the strength and limits of the evidence.
-Keep its detail in one maintaining location under the [Wayfinder state contract](../../.agent-workflow/contracts/wayfinder-state.md#current-knowledge); do not create a record merely because wording differs.
+Keep its detail in one maintaining location under the [effort state contract](../../.agent-workflow/contracts/effort-state.md#current-knowledge); do not create a record merely because wording differs.

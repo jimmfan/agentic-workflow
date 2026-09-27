@@ -116,7 +116,7 @@ Raw traces, disposable consumers, original freezes, and frozen tooling are retai
 They are evidence, not the task's working branch or durable project checkout.
 Reconstructable downloads, caches, temporary verification copies, and temporary credentials are removed before delivery.
 Retain the evidence until the user has reviewed or exported it; it may then be deleted.
-The [effort map](../../.project-efforts/wayfinder-objective-scope-routing/map.md) preserves the resulting continuation boundary without treating push as acceptance of a runtime correction.
+The [effort map, retained at the merge revision](https://github.com/jimmfan/agentic-workflow/blob/97058a23f229657494747d461ab69021f31a1d97/.project-efforts/wayfinder-objective-scope-routing/map.md), preserved the resulting continuation boundary without treating push as acceptance of a runtime correction.
 
 ## Authorized root-policy clarification
 

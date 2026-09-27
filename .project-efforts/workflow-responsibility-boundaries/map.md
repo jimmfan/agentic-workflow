@@ -40,13 +40,13 @@ The [campaign effort](../remaining-behavior-evidence/map.md) and its linked prot
 - **Selection and composition:** the [root policy](../../agent_workflow/install/AGENTS.md.template) owns first-pass routing, Direct defaults, Wayfinder selection, and the rules for authorization and project decision authority.
   [Detailed routing](../../.agent-workflow/routing.md) owns composition, transitions, relevant resumption, and selected-skill availability; specialists supply their methods rather than an alternative router.
 - **Coordination and representation:** [Wayfinder](../../.agents/skills/wayfinder/SKILL.md) owns effort orientation, question navigation, method selection within the effort, and consequential handoffs.
-  Its [state contract](../../.agent-workflow/contracts/wayfinder-state.md) owns recognition, map authoring, selective records, reconciliation, preservation, pruning, and ending.
+  Its [state contract](../../.agent-workflow/contracts/effort-state.md) owns recognition, map authoring, selective records, reconciliation, preservation, pruning, and ending.
   The [Wayfinder Effort entry point](../../.agents/skills/wayfinder-effort/SKILL.md) establishes or updates effort state without product implementation.
 - **Investigation and choices:** [Debugging](../../.agents/skills/workflow-debugging/SKILL.md) establishes causes; [Research](../../.agents/skills/research/SKILL.md) supplies primary-source evidence; [Discovery](../../.agents/skills/workflow-discovery/SKILL.md) analyzes bounded choices; [Grilling](../../.agents/skills/grilling/SKILL.md) sequences interdependent human choices; [Prototype](../../.agents/skills/prototype/SKILL.md) answers questions through throwaway interactive exploration.
   Their results inform authorized next work without granting project decision authority, production adoption, or execution authorization.
 - **Model and design boundaries:** [Domain Modeling](../../.agents/skills/domain-modeling/SKILL.md) maintains the project's domain/context model, while [Codebase Design](../../.agents/skills/codebase-design/SKILL.md) supplies module-interface and test-seam vocabulary.
   Neither owns all project structure or Wayfinder's effort view; [canonical framework terminology](../../.agent-workflow/terminology.md) separately maintains Agent Workflow meanings under [ADR-0029](../../architecture-decisions/0029-distribute-canonical-framework-terminology.md).
-- **Build and acceptance:** [Implementation](../../.agents/skills/workflow-implementation/SKILL.md) consumes one ready authorized scope, invokes [implement](../../.agents/skills/implement/SKILL.md), then [Verification](../../.agents/skills/workflow-verification/SKILL.md), and reconciles consequential outcomes into selected Wayfinder state when authorized.
+- **Build and acceptance:** [Implementation](../../.agents/skills/workflow-implementation/SKILL.md) consumes one ready authorized scope, invokes [implement](../../.agents/skills/implement/SKILL.md), then [Verification](../../.agents/skills/workflow-verification/SKILL.md), and reconciles consequential outcomes into the selected effort state when authorized.
   `implement` owns the build loop, agreed-seam [TDD](../../.agents/skills/tdd/SKILL.md) where possible, and closing [Code Review](../../.agents/skills/code-review/SKILL.md); Code Review independently assesses Standards and Spec.
   Verification adds uncovered acceptance and integration evidence, reuses existing checks, and owns the completion gate rather than repeating the build or review.
 - **Lasting results:** [to-spec](../../.agents/skills/to-spec/SKILL.md) synthesizes accepted scope; [to-tickets](../../.agents/skills/to-tickets/SKILL.md) produces dependency-aware work slices.
@@ -54,7 +54,7 @@ The [campaign effort](../remaining-behavior-evidence/map.md) and its linked prot
   Wayfinder links those results and does not mirror ticket readiness or specialist procedures, as required by [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md).
 - **Evidence and preservation:** [test ownership](../../tests/README.md) distinguishes actual filesystem/Git observations from structural guards and synthetic evaluator controls.
   The removed [specialist reconciliation tests](https://github.com/jimmfan/agentic-workflow/blob/92d3304473b0fbebdcb6ab08b41bbad1d9710a50/tests/test_specialist_reconciliation.py) remain historical evidence only; their substring checks did not prove instruction meaning, agent ordering or execution.
-  [ADR-0010](../../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md) keeps effort state project-owned and outside lifecycle traversal and mutation; safe Wayfinder state changes remain governed by the state contract.
+  [ADR-0010](../../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md) keeps effort state project-owned and outside lifecycle traversal and mutation; safe effort state changes remain governed by the state contract.
 
 ## Dependencies
 
@@ -73,6 +73,6 @@ That limitation does not establish a framework defect or block independent docum
 
 - [Architecture and ownership](../../docs/architecture.md) — lasting system overview and applicable ADRs.
 - [Detailed routing](../../.agent-workflow/routing.md) — current selection overlaps and transitions.
-- [Wayfinder state contract](../../.agent-workflow/contracts/wayfinder-state.md) — map and supporting-state mechanics.
+- [Effort state contract](../../.agent-workflow/contracts/effort-state.md) — map and supporting-state mechanics.
 - [Coverage and evidence limits](../../tests/README.md#wayfinder-coverage-and-evidence-limits) — what existing controls do and do not establish.
 - [Remaining behavior evidence effort](../remaining-behavior-evidence/map.md) — existing campaign continuation and its maintaining report.

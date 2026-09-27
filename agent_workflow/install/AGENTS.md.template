@@ -21,7 +21,7 @@
   When both the required project choice is committed and the action is authorized, affected work may proceed only within the authorized scope.
   Action authorization does not commit a project choice.
   A committed project choice does not authorize an unrelated action.
-  Host permission, workflows, skills and their instructions, tests, specifications, tickets, and Wayfinder records supply neither action authorization nor a committed project choice.
+  Host permission, workflows, skills and their instructions, tests, specifications, tickets, and effort records supply neither action authorization nor a committed project choice.
 - The person, role, or valid delegate with project decision authority may explicitly accept unresolved uncertainty for one named boundary.
   The question remains unresolved; only that boundary becomes unblocked, no broader project choice is committed, no unrelated action is authorized, and no other dependency is satisfied.
 - Prioritize factual accuracy over completing the requested output.
@@ -37,6 +37,8 @@
   When materially ambiguous, preserve the existing content and clarify or investigate rather than inventing detail or process merely to make artifacts agree.
 
 ## When to use Wayfinder
+
+### Select or resume an effort
 
 When an objective is established, assess whether it needs Wayfinder.
 Select or resume Wayfinder only when the objective and scope identify the effort clearly enough and the durable-coordination threshold below is met.
@@ -59,18 +61,25 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
   - A meaningful dependency graph.
   - Material fresh-agent reconstruction risk.
 
-When Wayfinder is selected, establish or resume any required effort map before substantive implementation.
-
 A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
-
-A material update to an existing durable planning artifact for unfinished work may indicate continuation of an existing Wayfinder effort.
-Use detailed routing for the bounded read-only check needed to determine whether one relevant effort clearly matches.
 
 One isolated unresolved question and routine work use Direct or an applicable workflow.
 Honor explicit Wayfinder use and opt-out.
-Read-only work changes no state.
-Existing Wayfinder state alone never selects Wayfinder.
+Select Wayfinder from the current work's objective; an existing map is a candidate to check against that objective, not a reason to select Wayfinder.
+A material update to an existing durable planning artifact for unfinished work may indicate continuation of an existing Wayfinder effort.
+Use detailed routing for the bounded read-only check needed to determine whether one relevant effort clearly matches.
 A bounded read-only check may establish that the current work clearly continues a relevant effort; unrelated efforts never change the route.
+When Wayfinder is selected, establish or resume any required effort map before substantive implementation.
+
+### Maintain a selected effort
+
+Once an effort is selected or resumed in a conversation, later turns within its objective continue it, including turns that need no other method.
+An explicit request to establish, continue, or update an effort authorizes effort maintenance for it unless the user asks for no changes.
+When routing selects or resumes an effort without such a request, a current user request or accepted project policy that authorizes repository changes for the effort's objective also authorizes its effort maintenance; without that authorization, report what needs preserving instead of writing it.
+Effort maintenance authorization remains part of the current user request for later turns of the same conversation, including questions and guidance, until the user narrows or withdraws it or asks to discuss first or make no changes.
+While it applies, reconcile the effort's state under its state contract before the final response of any turn that changes what the effort represents.
+A read-only request changes no state.
+A limit that allows only reads on one target, such as an external system, does not make the request read-only for effort maintenance.
 
 ## Report the route
 

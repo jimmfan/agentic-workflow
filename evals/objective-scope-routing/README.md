@@ -3,7 +3,7 @@
 Investigate whether an agent narrows a delegated implementation objective to its immediate source change and omits required durable coordination.
 Honest acknowledgement of unfinished acceptance is distinct from false completion.
 The motivating screenshots are neither fixtures nor causal evidence.
-The [report](REPORT.md) maintains observations and limitations; the [effort map](../../.project-efforts/wayfinder-objective-scope-routing/map.md) maintains continuation.
+The [report](REPORT.md) maintains observations, limitations, and the delivered follow-up; the effort ended with that delivery, and its [final map](https://github.com/jimmfan/agentic-workflow/blob/97058a23f229657494747d461ab69021f31a1d97/.project-efforts/wayfinder-objective-scope-routing/map.md) remains retrievable at the merge revision.
 
 ## Cases and scope
 

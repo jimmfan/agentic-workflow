@@ -45,7 +45,7 @@ Tool lists and context heuristics use only those parsed observations and cannot 
 
 The current JSON shape is `token-forensics/v2`.
 Its existing `skills_materially_invoked` field contains matches between inferred skill reads and route claims; those signals do not establish method execution.
-Only current `<effort>/map.md`, optional `unknowns.md`, `facts.md`, and `decisions.md` ledgers, and canonical E# evidence-file paths are classified as current Wayfinder state.
+Only current `<effort>/map.md`, optional `unknowns.md`, `facts.md`, and `decisions.md` ledgers, and canonical E# evidence-file paths are classified as current effort state.
 All other `.project-efforts/` paths remain visible in generic repository observations but are not classified as current state.
 
 Primary schema references:

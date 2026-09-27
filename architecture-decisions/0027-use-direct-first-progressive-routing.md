@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-19
+- Amended: 2026-09-27
 
 ## Context
 
@@ -22,8 +23,11 @@ Routing is not frozen at the first prompt.
 Re-evaluate when evidence changes.
 The router may select or transition to Wayfinder implicitly when durable coordination materially reduces the chance of losing or conflating consequential state; users need not diagnose that transition themselves.
 Explicit user selection or opt-out controls the route, and read-only scope does not grant action authorization for writes.
+Per-turn method routing is separate from effort continuity: once an effort is selected or resumed in a conversation, later turns within its objective continue it even when they need no other method.
+Existing effort state still never selects Wayfinder by itself.
 
 Keep always-loaded classification context small and load a selected skill's instructions or a state contract only when needed.
+The always-loaded root policy nevertheless carries the short effort-continuity, maintenance-authorization, and per-turn reconciliation rules, because they must hold on turns where no contract is loaded or it is no longer in context.
 Route sequences are default transitions with entry conditions, not mandatory pipelines.
 
 ## Consequences
