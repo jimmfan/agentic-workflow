@@ -14,6 +14,7 @@ from _behavior_test_support import behavior
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/effort-state.md"
+RECORDS_CONTRACT = REPOSITORY_ROOT / ".agent-workflow/contracts/effort-records.md"
 FIXTURES = REPOSITORY_ROOT / "tests/fixtures"
 
 
@@ -94,6 +95,7 @@ def broken_fixture_links(paths: list[Path]) -> list[str]:
 class WayfinderStateContractTests(unittest.TestCase):
     def setUp(self):
         self.contract = CONTRACT.read_text()
+        self.records_contract = RECORDS_CONTRACT.read_text()
 
     def test_settlement_fixtures_keep_identifiers_support_and_project_bytes(self):
         before = (
@@ -226,7 +228,7 @@ class WayfinderStateContractTests(unittest.TestCase):
             "d<ID>--<slug>",
         ):
             with self.subTest(representation=representation):
-                self.assertIn(representation, self.contract)
+                self.assertIn(representation, self.records_contract)
 
     def test_fixture_preflight_rejects_a_wrong_relative_depth(self):
         # Adapt the historical incident's ../../../ vs ../../ failure using the

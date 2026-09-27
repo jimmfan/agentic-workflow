@@ -29,6 +29,7 @@ This table resolves overlaps:
 | Explicit bounded test-first work | `tdd` | The skill defines its loop |
 | Completion audit or meaningful finished change | Verification | Add only uncovered acceptance or integration evidence |
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
+| A curated Agent Workflow skill and another exposed skill cover the same need | Curated skill | Use the other skill only when the user names it; it never relaxes these authorization, evidence, or preservation rules |
 | Clear bounded low-risk request | Direct | Skip workflow ceremony |
 
 A bounded architectural choice remains Direct or uses Discovery when alternative and tradeoff analysis materially helps.
@@ -50,13 +51,15 @@ Scope refinement need not preserve the original wording when the objective and s
 A safe regular map identifies current resumable coordination; a mapless directory is not a candidate.
 An unrelated map never captures the route.
 
-After selecting Wayfinder, read the [state contract](contracts/effort-state.md) before effort state; it owns full recognition, creation, map-first resumption, and preservation mechanics.
+After selecting Wayfinder, read the [state contract](contracts/effort-state.md) before effort state; it owns full recognition, creation, map-first resumption, and preservation mechanics and says when to load the [records contract](contracts/effort-records.md).
 Implementation may consume ready work from the current authorized request, selected Wayfinder map, current decision record, accepted specification, or approved durable ticket or ticket set without rerunning Wayfinder.
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses the Wayfinder threshold.
 Inside selected Wayfinder, use each needed specialist once for the relevant question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity without creating another Agent Workflow durable coordination model.
 Meaningful Implementation runs Verification once.
 New causal uncertainty returns to Debugging; a material unresolved choice returns to Discovery or Wayfinder according to the coordination threshold.
+Without new evidence, re-enter a workflow for the same question or symptom at most once.
+On the next return, stop affected work and report the evidence or decision needed to continue.
 
 ## Use selected skills
 
@@ -102,6 +105,7 @@ Use a terminal suffix only when selection did not become equivalent execution:
 - `<skill>-handoff`: explicit user invocation remains required;
 - `<skill>-unavailable`: the skill is not exposed, or required instructions, tools, or host features are missing or unusable in the current session;
 - `<skill>-blocked`: authorization, project state, a prerequisite, or an integrity check prevents execution.
+- `<skill>-incomplete`: the skill started but did not finish its method, for example because a sub-agent or tool failed; report what completed and what did not.
 
 After a successful Direct fallback, omit the skill that could not run from the marker.
 TDD and Code Review run within `implement` remain represented by `implement` unless separately selected.

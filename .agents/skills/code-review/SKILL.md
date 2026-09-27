@@ -108,6 +108,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 Give both independent reviewers the shared review-input set from step 1, including the specification contents or usable references from step 2.
 Use existing host controls to restrict reviewers to read-only access when available; inherited write capability does not broaden the supplied review boundary.
 Each reviewer must inspect that scope and report actual coverage, not merely echo a supplied diff command or success claim.
+When the host lets you choose a sub-agent's model, the Standards reviewer may use a smaller model because it checks the diff against supplied rules; keep the Spec reviewer on a model at least as capable as yours.
 
 **Standards sub-agent prompt** — include:
 
@@ -125,6 +126,7 @@ Each reviewer must inspect that scope and report actual coverage, not merely ech
 
 If required Spec inputs are missing, report that axis as incomplete.
 If an independent reviewer is unavailable, report the unavailable axis and any separately performed checks honestly; do not substitute a fabricated review execution or PASS.
+If a reviewer starts but fails or returns without its report, treat that axis as incomplete rather than passed.
 
 ### 5. Aggregate
 

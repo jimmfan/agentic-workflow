@@ -11,6 +11,7 @@ Agent Workflow instruction loading, relevant-state reconstruction, tool-output p
 The initial authorization covers source and existing-evidence investigation and this effort's coordination state; it excludes framework, runtime, test, and evaluator changes and new model runs.
 Generic performance work, prose shortening, arbitrary token targets, and speculative cleanup are excluded.
 On 2026-09-27 the user authorized the work delivered in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57): relocating task-specific source-only root instructions behind pointers, a deterministic one-sentence-per-line check, word ceilings that guard always-loaded root-policy growth, and removing root rules that every supported host already states; rewriting dense distributed routing or authority rules and new model runs were not authorized.
+Later on 2026-09-27 jimmfan authorized the routing-audit changes on branch `codex/routing-audit-improvements` (`VERSION` 0.37.0): Wayfinder-signal precedence, a lazily loaded records contract, and more routing smoke cases; condensing the root policy stays gated on a live baseline.
 
 Resume during relevant authorized work; this map neither schedules monitoring nor makes unrelated tasks relevant.
 The [language effort](../language-coherence/map.md) owns consequential wording consistency, and the [responsibility effort](../workflow-responsibility-boundaries/map.md) owns method and handoff boundaries.
@@ -22,14 +23,21 @@ The initial source and evidence audit is complete; no supported framework optimi
 The next proposed investigation is to recover a campaign's original traces, verify their recorded hashes, and inspect loading and output patterns alongside stage outcomes using the existing offline analyzer.
 That follow-up needs available matching evidence and authorization for its scope; a new controlled model comparison would require separate authorization and a defined hypothesis.
 
-Two further proposals from 2026-09-27 are not authorized:
+Two follow-ups from the 2026-09-27 routing audit remain:
 
-- Expand the [routing smoke cases](../../evals/routing-smoke/cases.json), currently one Direct and one Wayfinder case, to cover each Wayfinder signal, opt-out, and authorization boundary, and record a repeated baseline; this needs live model runs.
-- Only if that baseline or trace evidence shows a defect, condense the distributed authorization and Wayfinder-signal rules; [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) and [ADR-0027](../../architecture-decisions/0027-use-direct-first-progressive-routing.md) require concise forms of those rules to stay always loaded.
+- Record a repeated live baseline on one large and one small model using the [routing smoke cases](../../evals/routing-smoke/README.md), which now cover each hard signal, opt-out, explicit use, provenance alone, and a choice committable in-session (at most two cases per run).
+  jimmfan authorized it on 2026-09-27, but it could not run in that session's dev container because neither a `claude` nor a `codex` CLI was installed.
+  Authorization boundaries and ambiguous unnamed-effort resumption remain outside this routing-only harness.
+- Only if that baseline shows no regression, condense the root policy.
+  A 2026-09-27 draft reached about 828 words from 1,144 while keeping every [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) authority rule and the [ADR-0027](../../architecture-decisions/0027-use-direct-first-progressive-routing.md) always-loaded signals; the draft was not retained, and its precedence rule was adopted separately.
 
 ## Current state
 
 The accepted [Direct-first architecture](../../architecture-decisions/0027-use-direct-first-progressive-routing.md) remains the baseline.
+
+The 2026-09-27 routing audit measured the Wayfinder selection path at about 7,100 words of instructions before any effort file: Wayfinder skill, full state contract, detailed routing, and terminology.
+Splitting out the [records contract](../../.agent-workflow/contracts/effort-records.md) reduces the state contract loaded for map-only efforts from 3,834 to 2,852 words; record work adds the 1,072-word records contract.
+These are word counts, not token, cache, or runtime measurements.
 No actionable efficiency defect was established in the inspected sources and existing reports; this does not demonstrate that current behavior is efficient.
 
 The 2026-09-27 change in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57) reduced the source-only part of the root `AGENTS.md` from 1,534 to 1,194 words by moving terminology, checkout, ADR-authoring, and release details to [maintainer procedures](../../docs/maintenance.md), the [decision index](../../architecture-decisions/README.md#maintaining-decision-records), and [release tags](../../docs/verification.md#release-tags).

@@ -247,6 +247,46 @@ class RoutingSmokeTests(unittest.TestCase):
         self.assertEqual(evolving["expected_initial_route"], "direct")
         self.assertEqual(evolving["expected_final_route"], "wayfinder")
 
+    def test_run_rejects_more_cases_than_the_cost_bound_allows(self) -> None:
+        cases = list(routing_smoke.load_cases())[: routing_smoke.MAX_CASES_PER_RUN + 1]
+        arguments = ["run", "--adapter", "claude", "--model", "fake"]
+        for case_id in cases:
+            arguments += ["--case", case_id]
+        arguments += [
+            "--max-estimated-cost-usd",
+            "1",
+            "--input-price-per-million",
+            "1",
+            "--cached-input-price-per-million",
+            "1",
+            "--output-price-per-million",
+            "1",
+        ]
+        with patch.object(routing_smoke, "claude_invoke") as invoke:
+            self.assertEqual(routing_smoke.main(arguments), 2)
+        invoke.assert_not_called()
+
+    def test_every_case_resolves_resources_and_uses_known_routes(self) -> None:
+        cases = routing_smoke.load_cases()
+        self.assertGreaterEqual(len(cases), 8)
+        for case_id, case in cases.items():
+            with self.subTest(case=case_id):
+                available = case["available_resources"]
+                for name in available:
+                    self.assertTrue(routing_smoke.resource_path(case, name).is_file())
+                for field in (
+                    "required_resources",
+                    "forbidden_resources",
+                    "expected_first_resources",
+                ):
+                    self.assertTrue(set(case[field]) <= set(available), field)
+                self.assertIn(case["expected_initial_route"], routing_smoke.ROUTES)
+                self.assertIn(case["expected_final_route"], routing_smoke.ROUTES)
+                self.assertIs(
+                    case["expected_wayfinder_selected"],
+                    case["expected_final_route"] == "wayfinder",
+                )
+
     def test_prompt_budget_stops_before_contacting_adapter(self) -> None:
         contacted = False
 

@@ -3,7 +3,7 @@
 Use this contract only after routing selects Wayfinder or a request explicitly continues a relevant effort.
 An existing map is a candidate to check against the current objective, never a routing signal on its own.
 
-This contract owns recognition, representation, map authoring, identifiers, reconciliation, preservation, pruning, and effort ending.
+This contract owns recognition, representation, map authoring, reconciliation, preservation, pruning safeguards, and effort ending; the [records contract](effort-records.md) owns U/E/F/D formats, identifiers, and single-record pruning.
 The Wayfinder skill owns navigation and specialist handoffs; specialists own their methods, and detailed routing owns selection and composition.
 The already-loaded root policy's authority, authorization, preservation, and truthfulness rules remain binding.
 Use [Agent Workflow terminology](../terminology.md) for cross-cutting meanings when they materially affect interpretation or behavior.
@@ -136,65 +136,15 @@ Keep a separate record only when it has independently useful coordination, evalu
 This gate applies to all four record types; using one does not require creating the others, and the map may remain the entire result.
 Do not create records from ceremony, templates, counts, or category fit.
 
-U/E/F/D are Wayfinder's only durable record types, described below.
+U/E/F/D are Wayfinder's only durable record types.
+[Effort records](effort-records.md) owns their formats, lifecycles, identifiers, references, and single-record pruning; read it before creating, changing, renaming, pruning, or relying on a record.
+A map-only effort needs only this contract.
 A recognized record's presence carries only its type's meaning; U# and E# do not automatically become established project truth.
-Apply [Reconcile affected state](#reconcile-affected-state) to every record change; the following rules describe each type's lifecycle.
+Apply [Reconcile affected state](#reconcile-affected-state) to every record change.
 
-### Unresolved questions — U#
-
-Represent a U# as an H2 section in `unknowns.md` stating one current consequential question and why it matters.
-Create, reopen, or retain it only while unanswered, when its answer could change direction or next work and retaining it helps later decisions within the effort's objective and scope.
-Surface it in the map only when it affects the route.
-Precision, external uncertainty, or an unexplained condition alone does not satisfy this gate, even for a temporary U#.
-Keep incidental or intentionally deferred detail under `Not yet specified` in the map.
-Include dependencies, sources, human input or authority, and a sufficiently known resolution method only when useful for continuation.
-Preserve consequential uncertainty when its resolution method or authority is unknown; clarify vague concerns without inventing answers or precision.
-Short records are valid; `Why it matters:` is a recommended authoring aid, not a required field or recognition criterion.
-Map-only questions need no Open questions heading or promotion into U#.
-Do not create empty ledgers, split records by size, or maintain dual U# formats.
-
-When a U# is answered, preserve its independently useful result through reconciliation, then prune it; do not retain answered questions as history.
-For [scoped uncertainty acceptance](#scoped-uncertainty-acceptance), keep the U# unresolved.
-
-### Evidence — E#
-
-An E# file states evidence using `Source:`, `Scope:`, the existing `Observation` heading or field language, and `Limitations:`.
-Record when it was observed only when timing changes meaning, applicability, or validity.
-Prefer a direct source link on a fact record when a separate evidence record adds no independent value.
 Treat consequential evidence supplied by a user or observed from an external system as independently useful when it materially supports a diagnosis or implementation choice and a future agent cannot reliably reconstruct the needed source, scope, observation, and limitations from durable project sources.
 Preserve it before dependent work relies on it or before final response or handoff; use a separate E# when its source, method, limitations, or reuse value justify independent preservation.
 Otherwise do not create or retain an E# merely as a transition step.
-
-### Facts — F#
-
-Fact records are H2 sections in `facts.md`.
-Presence means the conclusion is sufficiently supported and current, not immutable; no separate status field is required.
-State the relation directly: `Source:` identifies a source that establishes the conclusion for its stated scope, `Derived from:` identifies evidence or another record from which it was derived, and `Authority:` may name a source that establishes a policy claim.
-Each fact record contains one scoped descriptive conclusion and its material limitations.
-Repeated agent summaries are not independent evidence.
-
-A conclusion about another system remains scoped to that system; it does not establish a conclusion about the current project.
-Record a project-specific F# only when project evidence or current source sufficiently supports the claim for that scope.
-Otherwise preserve independently useful external evidence as E#, a consequential unresolved project question as U#, or a working proposal in the map or specialist artifact, only when that representation independently earns preservation.
-
-When evidence strengthens or narrows a fact, update the same F# with its current conclusion, sources, scope, and material limitations.
-When support is invalidated, narrow or remove the unsupported conclusion and reconcile references that treated it as supported.
-Prune the F# when no supported conclusion with independent current value remains; do not create a second fact record to preserve history.
-Changed factual evidence also requires reviewing dependent decisions and ready work under the authority rules below.
-
-### Decisions — D#
-
-Decision records are H2 sections in `decisions.md`; each holds one current consequential choice committed for its boundary under the root policy's evidence and project-choice gate.
-Use `Authority:` to identify the person, role, or valid delegate whose choice binds that boundary, or to cite accepted project policy that directly determines the choice.
-Record the choice, decisive basis or constraints, material consequences, and a revisit condition only when one genuinely applies.
-Reference the project artifact recording the choice when one exists.
-Wayfinder can record authority; it cannot create it.
-Alternatives, research findings, hypotheses, recommendations, inferred preferences, and routine implementation judgment within delegated scope do not independently justify a D# or replace a binding choice.
-Neither persistence nor agent inference turns a proposal into a committed choice or an assumption into a supported conclusion.
-
-When accepted project policy determines a different choice, or the person, role, or valid delegate with project decision authority commits one, update the same D# and its authority, basis, consequences, revisit condition, and affected references.
-Allocate another D# only for a distinct current decision.
-Prune a D# that no longer records the current binding choice through the common reconciliation sequence; Git retains the prior choice.
 
 ### Scoped uncertainty acceptance
 
@@ -202,33 +152,6 @@ When the person, role, or valid delegate with project decision authority explici
 Keep the question and any U# current and unresolved; unblock only the named boundary.
 Acceptance neither answers the question nor commits a broader project choice, authorizes an unrelated action, or satisfies another dependency.
 Assess other work's dependencies and readiness separately: preserve independently established restrictions and require relevant evidence or authority for any additional dependency.
-
-### Identifiers and references
-
-Identifiers are effort-local, positive, and unique within their type.
-E# files retain readable slugs.
-U/F/D records retain these exact H2 representations:
-
-- `## U<ID> — <question>`
-- `## F<ID> — <title>`
-- `## D<ID> — <title>`
-
-Never renumber or duplicate a current same-type number.
-Allocate one greater than the highest current same-type identifier, or 1 when none exists.
-Do not deliberately recycle interior gaps; a pruned highest number is not reserved.
-
-Immediately before assigning an identifier, reread all recognized same-type identifiers and reject malformed or duplicate identifiers in current coordination state.
-Append a U/F/D section only if its ledger still matches the content used to plan the append; for all record creation apply the no-overwrite and current-state checks in [Reconcile affected state](#reconcile-affected-state).
-Before creating an E# file, recheck the same-type identifiers.
-
-An identity-like ledger section or E# entry that cannot be interpreted safely blocks only operations whose correctness depends on identifying records in that affected ledger or evidence container.
-It does not automatically block unrelated work elsewhere; ambiguous content remains unchanged.
-
-A bare identifier is local shorthand only.
-Durable references outside the selected effort use a readable repository-relative Markdown link to the exact E# file, U/F/D heading, or longer-lived artifact that maintains the referenced result.
-Inside the effort, prefer navigable links when a path or heading matters.
-
-U/F/D anchors must retain the established lowercase `u<ID>--<slug>`, `f<ID>--<slug>`, and `d<ID>--<slug>` forms derived from those headings' em-dash representation.
 
 ## Reconciliation and pruning
 
@@ -299,16 +222,6 @@ Clarify materially ambiguous scope, conditions, or authority; do not reconfirm a
 Reuse the existing decision for the same boundary and respect specification, ticket, and decision ownership.
 Recording a choice does not authorize implementation or publication; runtime-contract and skill Markdown edits are implementation too.
 A completed review round does not itself justify tickets, ADRs, U/E/F/D records, archives, or ending the effort.
-
-### Prune one record
-
-Pruning removes a recognized record from current coordination after the common sequence's preservation and reference checks; it does not require committing a transient record first.
-
-Pruning an E# removes only that E# file.
-Pruning U/F/D removes only the selected H2 section, stopping at the next H2 or end of file.
-Remove an empty ledger only when no useful or unrelated content remains.
-Unrelated ledger content remains byte-for-byte unchanged where practical, and unrecognized project-owned content remains unchanged and uninterpreted by Wayfinder.
-Never recursively delete an effort or `evidence/` directory.
 
 ### Keep or end the effort
 

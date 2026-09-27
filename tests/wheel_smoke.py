@@ -264,6 +264,7 @@ class BuiltWheelSmokeTests(unittest.TestCase):
                     "routing.md",
                     "terminology.md",
                     "contracts/effort-state.md",
+                    "contracts/effort-records.md",
                 ):
                     self.assertEqual(
                         (project / ".agent-workflow" / name).read_bytes(),

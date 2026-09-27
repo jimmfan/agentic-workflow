@@ -150,6 +150,7 @@ target = Path(sys.argv[2])
                 "routing.md",
                 "terminology.md",
                 "contracts/effort-state.md",
+                "contracts/effort-records.md",
             ):
                 self.assertEqual(
                     (target / ".agent-workflow" / relative).read_bytes(),
