@@ -10,7 +10,7 @@ This is a source-checkout experiment, not a change to what Agent Workflow instal
 Includes:
 
 - `.claude/skills/*` symlinks into `.agents/skills/*`, added in [commit 386584e](https://github.com/jimmfan/agentic-workflow/commit/386584ec91397cd2bb7d890aaa1077c2ad0ea1e9) on branch `codex/claude-skill-symlinks`, and the accompanying note added to [README.md](../../README.md) under the ownership section stating these links are a source-checkout experiment excluded from consuming-project installation.
-- `.devcontainer/` changes (currently uncommitted in the working tree) that add the `anthropic.claude-code` extension, a persistent `/home/vscode/.claude` volume, directory/credential permission checks in `check_environment.py`, and provisioning steps in `post-create.sh`, mirroring the existing Codex devcontainer pattern.
+- `.devcontainer/` changes, committed in [8c40bff](https://github.com/jimmfan/agentic-workflow/commit/8c40bff802f676a586f620ed5d85ef132a1218cf), that add the `anthropic.claude-code` extension, a persistent `/home/vscode/.claude` volume, directory/credential permission checks in `check_environment.py`, and provisioning steps in `post-create.sh`, mirroring the existing Codex devcontainer pattern.
 
 Excludes:
 
@@ -19,14 +19,16 @@ Excludes:
 
 ## Ready work
 
-Reviewing and, if the person with commit authority on this branch wants it, committing the five currently-unstaged `.devcontainer/` files (`Dockerfile`, `README.md`, `check_environment.py`, `devcontainer.json`, `post-create.sh`) is ready; no technical blocker was found in them.
-Exercising the devcontainer change (an actual container rebuild) to confirm the Claude Code extension, volume, and permission checks behave as intended is ready but not yet done in any session.
+Both items previously listed here are done; see Current state.
+No further work is ready within this effort's objective and scope.
+Merging `codex/claude-skill-symlinks` to `main` is not itself ready work: it needs a committed choice from the person with project decision authority (see Dependencies).
 
 ## Current state
 
-Branch `codex/claude-skill-symlinks` carries one relevant commit, 386584e, which added the 16 `.claude/skills/*` symlinks and the README note (both committed).
-On 2026-09-27, verification in this session confirmed every one of the 16 symlinks resolves to an existing directory under `.agents/skills/` (`readlink` plus an existence check on each, all passing).
-The working tree separately carries unstaged, uncommitted changes to five `.devcontainer/` files implementing Claude Code devcontainer support; these have not been committed or exercised in any session.
+Branch `codex/claude-skill-symlinks` carries two relevant commits, already pushed to `origin/codex/claude-skill-symlinks`: [386584e](https://github.com/jimmfan/agentic-workflow/commit/386584ec91397cd2bb7d890aaa1077c2ad0ea1e9) (the 16 `.claude/skills/*` symlinks and the README note) and [8c40bff](https://github.com/jimmfan/agentic-workflow/commit/8c40bff802f676a586f620ed5d85ef132a1218cf) (the `.devcontainer/` changes and this map).
+The working tree is clean; no uncommitted changes remain in this effort's scope.
+On 2026-09-27, this session verified live, post-rebuild: `/home/vscode/.claude` exists (mode `700`, owned `vscode:vscode`) and `.claude/.credentials.json` exists (mode `600`); `python3 .devcontainer/check_environment.py` exits 0 and reports the Claude Code extension configured; and the user confirmed `/wayfinder-effort` runs as a slash command in Claude Code, which also confirms the `.claude/skills/*` symlinks resolve and are discovered by the extension.
+Not yet specified: whether Claude Code's OAuth sign-in specifically survived this rebuild without re-prompting — the checks above confirm the volume, permissions, and extension configuration, not that a prior login carried forward.
 
 ## Areas and relationships
 
@@ -35,17 +37,19 @@ The working tree separately carries unstaged, uncommitted changes to five `.devc
 
 ## Dependencies
 
-Committing or amending the uncommitted `.devcontainer/` changes needs the person with project decision authority on this branch to ask for that commit; per [AGENTS.md](../../AGENTS.md) and the repository's git-safety instructions, commits are made only when explicitly requested.
-Confirming the devcontainer changes work as intended needs an actual container rebuild, which no session has performed yet.
+Merging `codex/claude-skill-symlinks` to `main` needs the person with project decision authority to commit that choice; per [AGENTS.md](../../AGENTS.md), responsibility for verifying the branch does not by itself establish that authority.
+Confirming the OAuth-persistence claim specifically (README's "should not require another login") needs a further observation of whether sign-in was re-prompted after a rebuild where credentials already existed; optional, not required by this effort's stated objective.
 
 ## Blockers
 
-No technical defect was found in either the symlinks or the uncommitted devcontainer diff during this session's review.
-The devcontainer changes remain unverified by an actual rebuild, and their effectiveness is a genuinely open question, not an assumed-passing one.
+No technical defect was found in the symlinks or the devcontainer diff.
+The devcontainer changes are no longer unverified: this session's live rebuild check passed (see Current state).
+No blocker currently prevents merging other than the pending project decision noted under Dependencies.
 
 ## Key references
 
 - [Commit 386584e](https://github.com/jimmfan/agentic-workflow/commit/386584ec91397cd2bb7d890aaa1077c2ad0ea1e9) — adds the symlinks and README note.
+- [Commit 8c40bff](https://github.com/jimmfan/agentic-workflow/commit/8c40bff802f676a586f620ed5d85ef132a1218cf) — adds the `.devcontainer/` Claude Code support and this map.
 - [.agent-workflow/README.md](../../.agent-workflow/README.md) — states Agent Workflow installs skills under `.agents/skills/`, not `.claude/skills/`.
 - [README.md](../../README.md) ownership section — documents the symlink experiment and its exclusion from consumer installation.
-- `.devcontainer/devcontainer.json`, `.devcontainer/post-create.sh`, `.devcontainer/check_environment.py` — uncommitted Claude Code devcontainer support.
+- `.devcontainer/devcontainer.json`, `.devcontainer/post-create.sh`, `.devcontainer/check_environment.py` — committed Claude Code devcontainer support, verified live in this session.
