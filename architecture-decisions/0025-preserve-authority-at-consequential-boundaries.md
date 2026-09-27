@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-18
+- Amended: 2026-09-27
 
 ## Context
 
@@ -23,6 +24,8 @@ Obtain a required project choice from the person, role, or valid delegate with p
 State the concrete question, why the evidence or choice is required, and what its answer will unblock.
 
 Perform only actions authorized by the current user request or accepted project policy and only within that scope.
+Authorization the user gives to maintain a selected Wayfinder effort's state remains part of the current user request for later turns of the same conversation until the user narrows or withdraws it or asks to discuss first or make no changes.
+A read-only limit on external systems does not narrow that authorization.
 Authorization to perform an action does not commit a project choice.
 A committed project choice does not authorize an unrelated action.
 Host permission supplies neither action authorization nor a committed project choice.
@@ -45,6 +48,8 @@ Tests should observe the public question, allowed independent work, and prohibit
 
 - Require a new project decision for every technical judgment: rejected because it would block ordinary delegated engineering work.
 - Apply the rule only inside Wayfinder: rejected because assumptions can enter any project artifact without Wayfinder being selected.
+- Re-derive effort-maintenance authorization from each conversational turn: rejected because question- and guidance-shaped turns then silently stop maintaining an effort the user already authorized, while stricter external read-only limits were misapplied to local effort state.
+  Extending the same persistence to other actions was not adopted; their authorization remains unchanged.
 - Treat accepted unresolved uncertainty as a resolved fact: rejected because it would erase its direct source-and-scope relationship and broaden one scoped acceptance beyond its named boundary.
 
 ## Reconsideration trigger

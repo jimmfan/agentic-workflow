@@ -235,8 +235,11 @@ The common sequence below applies to every record-specific change, pruning opera
 
 ### Reconcile affected state
 
-Reconcile before renaming or pruning recognized state, and before claiming completion when authorized work changes what the selected effort represents.
-Read-only work may report stale or conflicting state but does not change it.
+Reconcile before renaming or pruning recognized state.
+When recording is authorized, also reconcile before the final response of each turn in which work, verification, user-supplied information, or a committed project choice changes what the selected effort represents, and before claiming completion.
+Review answers follow [Interpret review answers before recording](#interpret-review-answers-before-recording) instead.
+Do not defer recording a committed choice or verified result because related implementation, approval, or external action remains pending.
+Read-only work may report stale or conflicting state but does not change it; root policy determines when authorization to maintain effort state continues across turns.
 
 Work only within current action authorization, including edits to linked artifacts.
 A link neither makes its target a Wayfinder record nor authorizes editing it.
@@ -312,6 +315,8 @@ Do not remove `map.md` while consequential unresolved coordination still needs c
 Retain the effort, transfer that coordination to a recognized current successor, or preserve the consequential result or constraint in the artifact designated to maintain it before ending the effort.
 
 An effort ends only when it has no legitimate continuation because its objective was achieved, a committed project choice ended it, or continuing coordination belongs to a different objective or substantive scope.
+Residual uncertainty, unverified effectiveness, or an optional follow-up that no current request or committed project choice schedules does not by itself keep an effort; preserve it in the artifact that maintains the result.
+When delivering a branch or pull request is an effort's last remaining work and the delivered artifacts maintain its lasting result, end the effort in that delivery so that accepting the delivery ends the effort.
 Apply the common sequence across affected records to preserve lasting outcomes and continuing relationships or constraints in their designated maintaining artifacts, then remove `map.md` last.
 Never recursively delete the effort directory; the absence of `map.md` ends Wayfinder recognition, and any unrecognized project-owned bytes and their containing directories remain unchanged and uninterpreted by Wayfinder.
 
