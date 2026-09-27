@@ -69,15 +69,15 @@ Use detailed routing for the bounded read-only check needed to determine whether
 
 One isolated unresolved question and routine work use Direct or an applicable workflow.
 Honor explicit Wayfinder use and opt-out.
-Read-only work changes no state.
-A read-only limit on external systems does not make maintenance of a selected effort's Wayfinder state read-only.
+A read-only request changes no state.
+A limit that allows only reads on one target, such as an external system, does not make the request read-only for effort maintenance.
 Once an effort is selected or resumed in a conversation, later turns within its objective continue it, including turns that need no other method.
-An explicit request to establish, continue, or update an effort authorizes maintaining its Wayfinder state unless the user asks for no changes.
+An explicit request to establish, continue, or update an effort authorizes effort maintenance for it unless the user asks for no changes.
 That authorization remains part of the current user request for later turns of the same conversation, including questions and guidance, until the user narrows or withdraws it or asks to discuss first or make no changes.
 While it applies, reconcile the effort's state under its state contract before the final response of any turn that changes what the effort represents.
-Existing Wayfinder state alone never selects Wayfinder.
+Select Wayfinder from the current work's objective; an existing map is a candidate to check against that objective, not a reason to select Wayfinder.
 Before completing work that renames or removes a repository path, search `.project-efforts/` for references to it; update affected references within that work's authorization, otherwise report them.
-A match does not by itself select Wayfinder.
+A match is a reference to update or report, not a reason to select Wayfinder.
 A bounded read-only check may establish that the current work clearly continues a relevant effort; unrelated efforts never change the route.
 
 ## Report the route

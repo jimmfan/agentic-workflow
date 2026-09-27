@@ -56,7 +56,7 @@ Use detailed routing when composition or selected-skill availability materially 
 
 Research, Prototype, and Debugging operate on uncertainties and questions within established areas and relationships; they do not replace Domain Modeling when the uncertainty concerns the domain model.
 Each specialist retains its method and creates no separate Agent Workflow durable coordination state.
-When a composed specialist produces a consequential result affecting the selected effort, and recording is authorized, reconcile affected Wayfinder state through the state contract before dependent work relies on the result or before final response or handoff.
+When a composed specialist produces a consequential result affecting the selected effort, and effort maintenance is authorized, reconcile affected Wayfinder state through the state contract before dependent work relies on the result or before final response or handoff.
 
 A resolution method determines the evidence or authority needed, not merely an artifact label:
 
@@ -89,7 +89,7 @@ Do not expand a plan around assumed upstream answers; preserve useful discoverie
 Keep this attention within the current task.
 Do not introduce a mandatory interview, global sweep, scoring system, backlog threshold, escalation state, scheduler, or background notification.
 
-At meaningful review-round boundaries, when recording is authorized, apply the contract's “Interpret user answers before recording” rules and the common sequence in “Reconcile affected state” to the answered subset.
+At meaningful review-round boundaries, when effort maintenance is authorized, apply the contract's “Interpret user answers before recording” rules and the common sequence in “Reconcile affected state” to the answered subset.
 On interruption, retain only authorized consequential continuation state; resume from saved affected state rather than assuming the last response was fully recorded.
 Explain actual saved outcomes and their consequences, remaining limitations, and the next relevant questions.
 Distinguish potential next work from authorized ready work.

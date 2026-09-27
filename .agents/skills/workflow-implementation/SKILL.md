@@ -40,5 +40,5 @@ Before completion, use review and Verification findings and relevant maintaining
 Use the bounded resumption check in detailed routing when needed; do not scan all efforts or select Wayfinder merely because an artifact exists.
 
 Claim completion only when the scope is finished and the required `workflow-verification` completion gate is satisfied.
-If the implementation scope came from or remains part of a selected Wayfinder effort, and recording is authorized, reconcile consequential Verification results that change completion, blockers, dependencies, verification boundaries, or remaining ready work through `.agent-workflow/contracts/wayfinder-state.md` before claiming completion or handing off remaining work.
+If the implementation scope came from or remains part of a selected Wayfinder effort, and effort maintenance is authorized, reconcile consequential Verification results that change completion, blockers, dependencies, verification boundaries, or remaining ready work through `.agent-workflow/contracts/wayfinder-state.md` before claiming completion or handing off remaining work.
 Remaining durable next work must be maintained in the selected Wayfinder map, accepted specification, or approved durable ticket or ticket set.

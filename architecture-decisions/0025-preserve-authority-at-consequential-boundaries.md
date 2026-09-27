@@ -24,9 +24,9 @@ Obtain a required project choice from the person, role, or valid delegate with p
 State the concrete question, why the evidence or choice is required, and what its answer will unblock.
 
 Perform only actions authorized by the current user request or accepted project policy and only within that scope.
-An explicit user request to establish, continue, or update a Wayfinder effort authorizes maintaining that effort's state unless the user asks for no changes.
+An explicit user request to establish, continue, or update a Wayfinder effort authorizes effort maintenance for that effort unless the user asks for no changes.
 That authorization remains part of the current user request for later turns of the same conversation until the user narrows or withdraws it or asks to discuss first or make no changes.
-A read-only limit on external systems does not narrow that authorization.
+A limit that allows only reads on one target, such as an external system, does not narrow that authorization.
 Authorization to perform an action does not commit a project choice.
 A committed project choice does not authorize an unrelated action.
 Host permission supplies neither action authorization nor a committed project choice.

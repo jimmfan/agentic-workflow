@@ -34,7 +34,7 @@ Ready work is work to which no blocker currently applies; independent ready work
 
 Work authorized within the current scope that changes represented reality must reconcile affected map content, recognized records, and references as that reality changes, at the timing the state contract defines, and before claiming completion.
 Designated project artifacts continue to maintain their lasting results.
-Read-only work may report staleness but does not repair project-owned state; a read-only limit on external systems does not make authorized effort maintenance read-only.
+A read-only request may report staleness but does not repair project-owned state; a limit that allows only reads on one target, such as an external system, does not make authorized effort maintenance read-only.
 
 The effective Wayfinder instructions present one coherent operational model rather than prepend local state rules to a contradictory tracker specification.
 Matt Pocock's `v1.2.3` skill remains the attributed methodological source.

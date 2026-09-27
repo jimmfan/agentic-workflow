@@ -52,9 +52,24 @@ Accepted project policy may determine the choice for that boundary directly or e
 **Reconciliation**:
 Updating affected current coordination state so it agrees with current truth, project choices determined by accepted project policy or committed by project decision authority, and the designated artifacts that maintain lasting results.
 
+**Effort maintenance**:
+Creating, updating, pruning, or ending a selected Wayfinder effort's state under the state contract.
+It writes project-owned files and requires action authorization like any other write; reconciliation is the procedure it follows.
+
 **Pruning**:
 Pruning removes a recognized Wayfinder record from current coordination after useful results are preserved and affected references are reconciled.
 File or ledger-section removal carries out pruning; ending an effort is separate.
+
+## Requests and authorization
+
+**Current user request**:
+The user's latest request in the conversation.
+Effort maintenance authorization given earlier in the same conversation remains part of it until the user narrows or withdraws it or asks to discuss first or make no changes.
+This definition does not decide whether other authorization given earlier carries forward.
+
+**Read-only request**:
+A request in which the user asks for no changes.
+A limit that allows only reads on one target, such as an external system, does not make a request read-only for other targets.
 
 ## Ownership and persistence
 

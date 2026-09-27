@@ -1,7 +1,7 @@
 # Local Wayfinder state contract
 
 Use this contract only after routing selects Wayfinder or a request explicitly continues a relevant effort.
-Existing Wayfinder state alone is never a routing signal.
+An existing map is a candidate to check against the current objective, never a routing signal on its own.
 
 This contract owns recognition, representation, map authoring, identifiers, reconciliation, preservation, pruning, and effort ending.
 The Wayfinder skill owns navigation and specialist handoffs; specialists own their methods, and detailed routing owns selection and composition.
@@ -60,7 +60,7 @@ Without an exact path, inspect only the smallest plausible candidate set.
 Compare safe maps semantically by objective, scope, and name, and resume only one clear match.
 If selection remains ambiguous, do not guess, merge efforts, create a synonymous duplicate, or change affected state.
 
-Create a new effort only when its identity is established, the current user request or accepted project policy authorizes the durable writes, consequential coordination needs preservation across continuations, and no recognized effort represents the same objective and substantive scope.
+Create a new effort only when its identity is established, the current user request or accepted project policy authorizes effort maintenance, consequential coordination needs preservation across continuations, and no recognized effort represents the same objective and substantive scope.
 Selection alone requires no effort, map, or supporting record.
 Immediately before creation, reread the parent and any newly plausible map.
 A storage-key collision resumes only the same effort; otherwise use the shortest meaningful disambiguator.
@@ -90,6 +90,7 @@ These are authoring conventions, never effort-recognition or parser requirements
 Existing maps with alternate layouts remain valid and resumable; do not rewrite them merely to match this default.
 
 Keep the map brief, preserve enough information to resume safely, and link detailed roadmaps, specifications, ADRs, tickets, project artifacts, and sources that establish relevant claims instead of copying their bodies or detailed backlogs.
+Write map content so it remains true after the session: name dates, revisions, pull requests, and who authorized what instead of relative phrases such as “the current request” or “this follow-up”.
 If a fresh session must read most supporting records to recover the current route, reconcile the map instead of adding more supporting detail.
 
 Represent areas, relationships, and ownership or operating boundaries in the single `map.md`.
@@ -238,10 +239,11 @@ The common sequence below applies to every record-specific change, pruning opera
 ### Reconcile affected state
 
 Reconcile before renaming or pruning recognized state.
-When recording is authorized, also reconcile before the final response of each turn in which work, verification, user-supplied information, or a committed project choice changes what the selected effort represents, and before claiming completion.
-Interpret user answers under [Interpret user answers before recording](#interpret-user-answers-before-recording); during a requested review, its round-boundary timing applies instead.
+When effort maintenance is authorized, also reconcile before the final response of each turn in which work, verification, user-supplied information, or a committed project choice changes what the selected effort represents, and before claiming completion.
+During a requested review, reconcile answered subsets at meaningful round boundaries instead, not per sentence or through a journal.
+Interpret user answers under [Interpret user answers before recording](#interpret-user-answers-before-recording).
 Do not defer recording a committed choice or verified result because related implementation, approval, or external action remains pending.
-Read-only work may report stale or conflicting state but does not change it; root policy determines when authorization to maintain effort state continues across turns.
+A read-only request may report stale or conflicting state but does not change it; root policy determines when effort maintenance authorization continues across turns.
 
 Work only within current action authorization, including edits to linked artifacts.
 A link neither makes its target a Wayfinder record nor authorizes editing it.
@@ -288,7 +290,7 @@ Report material limits: repository search cannot establish the absence of extern
 ### Interpret user answers before recording
 
 A review request alone grants no blanket write permission.
-When recording is authorized, interpret answers under [Current knowledge](#current-knowledge) without adding statuses:
+When effort maintenance is authorized, interpret answers under [Current knowledge](#current-knowledge) without adding statuses:
 
 - Distinguish committed choices from preferences, factual reports, and corrections; apply the evidence and authority gates rather than inferring assignments or approval.
 - Preserve conditions and the remaining consequential question in partial answers.
@@ -296,7 +298,6 @@ When recording is authorized, interpret answers under [Current knowledge](#curre
 - Respect deferrals and preserve qualifications, scope, sources, and authority in the artifact that maintains the result.
 
 Clarify materially ambiguous scope, conditions, or authority; do not reconfirm a clear authorized answer.
-During a requested review, apply the common reconciliation sequence to answered subsets at meaningful round boundaries, not per sentence or through a journal; outside a review, apply it under [Reconcile affected state](#reconcile-affected-state).
 Reuse the existing decision for the same boundary and respect specification, ticket, and decision ownership.
 Recording a choice does not authorize implementation or publication; runtime-contract and skill Markdown edits are implementation too.
 A completed review round does not itself justify tickets, ADRs, U/E/F/D records, archives, or ending the effort.
@@ -318,8 +319,10 @@ Do not remove `map.md` while consequential unresolved coordination still needs c
 Retain the effort, transfer that coordination to a recognized current successor, or preserve the consequential result or constraint in the artifact designated to maintain it before ending the effort.
 
 An effort ends only when it has no legitimate continuation because its objective was achieved, a committed project choice ended it, or continuing coordination belongs to a different objective or substantive scope.
-Residual uncertainty, unverified effectiveness, or an optional follow-up that no current request or committed project choice schedules does not by itself keep an effort; preserve it in the artifact that maintains the result.
-When delivering a branch or pull request is an effort's last remaining work and the delivered artifacts maintain its lasting result, end the effort in that delivery so that accepting the delivery ends the effort.
+Verification or other work that the objective or its acceptance criteria require is remaining work, not residual uncertainty.
+Residual uncertainty, unverified effectiveness beyond those requirements, or an optional follow-up that no current request or committed project choice schedules does not by itself keep an effort; preserve it in the artifact that maintains the result.
+When delivering a branch or pull request completes an effort's remaining work, including required verification, and the delivered artifacts maintain its lasting result, end the effort in that delivery so that accepting the delivery ends the effort.
+When required verification can happen only after delivery, keep the effort and record that verification as remaining work.
 Apply the common sequence across affected records to preserve lasting outcomes and continuing relationships or constraints in their designated maintaining artifacts, then remove `map.md` last.
 Never recursively delete the effort directory; the absence of `map.md` ends Wayfinder recognition, and any unrecognized project-owned bytes and their containing directories remain unchanged and uninterpreted by Wayfinder.
 
