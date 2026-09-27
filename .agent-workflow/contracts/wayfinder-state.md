@@ -13,11 +13,13 @@ Use [Agent Workflow terminology](../terminology.md) for cross-cutting meanings w
 Wayfinder is Agent Workflow's sole durable coordination model.
 Load this state contract before effort state.
 When resuming, read the selected effort's `map.md` first, then only the ledger sections or E# files relevant to the work.
+Before describing saved effort state or relying on it for dependent work, reread the affected state; an earlier read in the conversation is not evidence of current content.
 Specialists retain their methods and create no Agent Workflow durable coordination state.
 Wayfinder retains consequential coordination and references across sessions and workflow transitions, not procedures, bookkeeping, or a permanent journal.
 Lasting results remain in their designated maintaining artifacts; Git retains committed history.
 
 All content below `.project-efforts/` is project-owned durable data.
+Never save credentials, tokens, or secret values in effort state; include account identifiers, personal data, or other sensitive details only when continuation needs them and project policy permits, otherwise describe them without their values.
 Wayfinder interprets or changes only the recognized current paths described below.
 All other entries are unrecognized project-owned content: their bytes remain unchanged, and they are not interpreted as Wayfinder state.
 
@@ -237,13 +239,14 @@ The common sequence below applies to every record-specific change, pruning opera
 
 Reconcile before renaming or pruning recognized state.
 When recording is authorized, also reconcile before the final response of each turn in which work, verification, user-supplied information, or a committed project choice changes what the selected effort represents, and before claiming completion.
-Review answers follow [Interpret review answers before recording](#interpret-review-answers-before-recording) instead.
+Interpret user answers under [Interpret user answers before recording](#interpret-user-answers-before-recording); during a requested review, its round-boundary timing applies instead.
 Do not defer recording a committed choice or verified result because related implementation, approval, or external action remains pending.
 Read-only work may report stale or conflicting state but does not change it; root policy determines when authorization to maintain effort state continues across turns.
 
 Work only within current action authorization, including edits to linked artifacts.
 A link neither makes its target a Wayfinder record nor authorizes editing it.
 Do not copy maintaining-artifact bodies, normalize unchanged files, resolve unrelated questions, or reconcile unrelated efforts.
+Updating another effort's reference to a path that authorized work renamed or removed is not reconciling that effort.
 Apply root policy's cross-artifact rule: a useful summary or detail held elsewhere is not itself an inconsistency.
 
 If affected state changed or conflicts, evidence is insufficient, or a required edit, preservation check, or reference repair is unauthorized or blocked, stop that operation and report the limitation.
@@ -282,7 +285,7 @@ A bare ID outside the effort is not by itself a reference to its record.
 This search applies only to the operation, not ordinary resumption or every message; it authorizes no broad document reads, unrelated-effort discovery or reconciliation, or Git-history search.
 Report material limits: repository search cannot establish the absence of external or dynamically constructed references.
 
-### Interpret review answers before recording
+### Interpret user answers before recording
 
 A review request alone grants no blanket write permission.
 When recording is authorized, interpret answers under [Current knowledge](#current-knowledge) without adding statuses:
@@ -293,7 +296,7 @@ When recording is authorized, interpret answers under [Current knowledge](#curre
 - Respect deferrals and preserve qualifications, scope, sources, and authority in the artifact that maintains the result.
 
 Clarify materially ambiguous scope, conditions, or authority; do not reconfirm a clear authorized answer.
-Apply the common reconciliation sequence to answered subsets at meaningful round boundaries, not per sentence or through a journal.
+During a requested review, apply the common reconciliation sequence to answered subsets at meaningful round boundaries, not per sentence or through a journal; outside a review, apply it under [Reconcile affected state](#reconcile-affected-state).
 Reuse the existing decision for the same boundary and respect specification, ticket, and decision ownership.
 Recording a choice does not authorize implementation or publication; runtime-contract and skill Markdown edits are implementation too.
 A completed review round does not itself justify tickets, ADRs, U/E/F/D records, archives, or ending the effort.

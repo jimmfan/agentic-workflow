@@ -70,8 +70,12 @@ One isolated unresolved question and routine work use Direct or an applicable wo
 Honor explicit Wayfinder use and opt-out.
 Read-only work changes no state.
 A read-only limit on external systems does not make maintenance of a selected effort's Wayfinder state read-only.
-When the user authorizes maintaining that state, the authorization remains part of the current user request for later turns of the same conversation, including questions and guidance, until the user narrows or withdraws it or asks to discuss first or make no changes.
+Once an effort is selected or resumed in a conversation, later turns within its objective continue it, including turns that need no other method.
+An explicit request to establish, continue, or update an effort authorizes maintaining its Wayfinder state unless the user asks for no changes.
+That authorization remains part of the current user request for later turns of the same conversation, including questions and guidance, until the user narrows or withdraws it or asks to discuss first or make no changes.
 Existing Wayfinder state alone never selects Wayfinder.
+Before completing work that renames or removes a repository path, search `.project-efforts/` for references to it; update affected references within that work's authorization, otherwise report them.
+A match does not by itself select Wayfinder.
 A bounded read-only check may establish that the current work clearly continues a relevant effort; unrelated efforts never change the route.
 
 ## Report the route

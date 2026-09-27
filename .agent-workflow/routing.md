@@ -63,7 +63,7 @@ New causal uncertainty returns to Debugging; a material unresolved choice return
 Use a skill only when it is exposed in the current session.
 Read the selected skill's instructions and only the support files needed for the current request.
 
-Execution means using the skill's method; selecting it, reading instructions, checking availability, or giving invocation instructions does not count.
+Execution means using the skill's method; selecting it, reading instructions or existing state for context, checking availability, or giving invocation instructions does not count.
 Using a skill for focused work need not change the primary route, including Direct.
 Completion and verification require evidence beyond execution or a route marker.
 

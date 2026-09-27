@@ -89,7 +89,7 @@ Do not expand a plan around assumed upstream answers; preserve useful discoverie
 Keep this attention within the current task.
 Do not introduce a mandatory interview, global sweep, scoring system, backlog threshold, escalation state, scheduler, or background notification.
 
-At meaningful review-round boundaries, when recording is authorized, apply the contract's “Interpret review answers before recording” rules and the common sequence in “Reconcile affected state” to the answered subset.
+At meaningful review-round boundaries, when recording is authorized, apply the contract's “Interpret user answers before recording” rules and the common sequence in “Reconcile affected state” to the answered subset.
 On interruption, retain only authorized consequential continuation state; resume from saved affected state rather than assuming the last response was fully recorded.
 Explain actual saved outcomes and their consequences, remaining limitations, and the next relevant questions.
 Distinguish potential next work from authorized ready work.
