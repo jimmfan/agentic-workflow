@@ -24,3 +24,9 @@ Resolution: user decision; broadening affects authorization boundaries, which th
 Why it matters: the [language-coherence](../language-coherence/map.md), [workflow-responsibility-boundaries](../workflow-responsibility-boundaries/map.md), and [context-efficiency](../context-efficiency/map.md) objectives describe ongoing upkeep, so the ending rule never applies and their maps go stale unless someone asks.
 Options: keep them with explicit resume conditions, or move their open questions and findings into their owning documents and end them.
 Resolution: user decision.
+
+## U4 — Should selecting Wayfinder authorize effort maintenance by default?
+
+Why it matters: under the root policy, when routing selects an effort in a conversation that authorizes no repository changes, such as diagnosis, discussion, or strategy, the agent reports what needs preserving and waits, so jimmfan must still act (incidents 5 and 6 in [E2](evidence/E2-historical-incident-summary.md)).
+A default that authorizes effort maintenance on selection unless the user asks for no changes or to discuss first would remove that step but widen an authorization boundary that [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) governs; it is related to but narrower than [U2](#u2--should-other-earlier-authorization-carry-forward-across-turns).
+Resolution: user decision.

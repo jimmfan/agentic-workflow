@@ -51,11 +51,12 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
   - Completing the requested objective requires or is intended to involve continuation across sessions or agents, including required evidence, decisions, or external results that later in-scope work must await or consume.
   - A consequential objective and scope can be established, but the route remains materially unclear and cannot responsibly be resolved within one useful agent session.
   - Conflicting sources establish the same scoped claim.
-  - Participants or areas with separate responsibilities require coordination.
+  - A required project choice remains uncommitted while independent work proceeds.
+  - Responsible participants or areas require coordination.
+  - Source and scope are needed to distinguish assumption from fact.
 - Soft — at least two signals apply:
   - Interacting consequential unresolved questions.
   - Durable distinctions across record or state categories.
-  - Source and scope must be retained to keep assumptions distinct from facts.
   - Evidence-driven plan change.
   - A meaningful dependency graph.
   - Material fresh-agent reconstruction risk.

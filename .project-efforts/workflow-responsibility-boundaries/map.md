@@ -53,10 +53,10 @@ The package gate passed on the applied change; its closing Code Review ran inlin
 Revisit if a clean rerun of the investigation shows agents already reach Implementation from Debugging, or shows the handoff adds ceremony to fixes that are actually trivial.
 
 **Routing-audit changes (authorized by jimmfan 2026-09-27, branch `codex/routing-audit-improvements`).**
-[Detailed routing](../../.agent-workflow/routing.md#re-evaluate-and-resume) now allows at most one re-entry into the same workflow for the same question or symptom without new evidence, then stops.
-Debugging's fix step restates that limit because, as with the handoff above, routing may not be loaded at the fix.
-Routing also prefers a curated skill over an overlapping host skill unless the user names the other one, and adds a `<skill>-incomplete` route outcome for a skill that started but did not finish; Code Review treats a failed reviewer as an incomplete axis.
-The root policy's Wayfinder hard signals no longer include an uncommitted choice (covered by the cross-session signal) or assumption-versus-fact provenance (now a soft signal), and a hard signal explicitly overrides the isolated-question default.
+[Detailed routing](../../.agent-workflow/routing.md#decide-and-compose) prefers a curated skill over an overlapping host skill unless the user names the other one, and [route reporting](../../.agent-workflow/routing.md#report-the-executed-route) adds a `<skill>-incomplete` outcome for a skill that started but did not finish; Code Review treats a failed reviewer as an incomplete axis.
+The root policy keeps all its Wayfinder signals and now states that explicit use or opt-out overrides them and that a hard signal overrides the isolated-question default.
+jimmfan chose this on 2026-09-27 over removing two hard signals, because the recorded incidents are mostly missed coordination and the [cited research](../context-efficiency/map.md#current-state) identifies ambiguous decision points and uncorrected early decisions as common failures.
+A proposed limit on re-entering the same workflow was dropped the same day because no such loop has been observed.
 No live run has checked whether agents follow these rules.
 
 The [campaign effort](../remaining-behavior-evidence/map.md) and its linked protocol/report retain execution prerequisites, observations, and follow-up details; do not mirror their campaign state here.

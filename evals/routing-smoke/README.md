@@ -10,9 +10,9 @@ Signal cases run only when selected with `--case`:
 
 | Case | Expected final route | Question |
 |---|---|---|
-| `uncommitted-choice` | `discovery` | Does a tradeoff choice the decider can commit in this conversation stay out of Wayfinder? |
+| `uncommitted-choice` | `wayfinder` | Does an uncommitted choice with independent work proceeding select Wayfinder even when the decider could answer in this conversation? |
 | `cross-session-choice` | `wayfinder` | Does a choice that later sessions must await select Wayfinder? |
-| `provenance-only` | `direct` | Does keeping assumptions distinct from facts, alone, stay Direct? |
+| `provenance-only` | `wayfinder` | Does needing source and scope to keep assumptions distinct from facts select Wayfinder on its own? |
 | `conflicting-sources` | `wayfinder` | Do conflicting sources for the same scoped claim select Wayfinder? |
 | `participants` | `wayfinder` | Do participants with separate responsibilities that must coordinate select Wayfinder? |
 | `opt-out` | `direct` | Does an explicit opt-out override Wayfinder signals? |

@@ -47,7 +47,6 @@ When action authorization covers a fix, turn the minimized reproducer into a reg
 For a trivial low-risk causal fix, apply it, remove temporary diagnostics, and invoke Verification on the original symptom or honest proxy plus proportionate regressions.
 Otherwise remove temporary diagnostics and hand the smallest causal fix to `workflow-implementation` as one ready scope, with the diagnosed cause, regression seam, and original symptom or honest proxy as acceptance; it owns `implement`, closing Code Review, and Verification.
 A vanished symptom without causal evidence is a mitigation, not a proven root cause.
-When a fix returns here for the same symptom, re-enter diagnosis at most once without new evidence; then stop and report the evidence or decision needed to continue.
 Do not duplicate Code Review already performed by `implement`.
 
 Inside Wayfinder, reconcile state only when effort maintenance is authorized and only for consequential evidence, conclusions, conditions blocking particular work, and next work; the selected map remains the durable coordination summary.

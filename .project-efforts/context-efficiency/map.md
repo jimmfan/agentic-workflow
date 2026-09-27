@@ -25,9 +25,11 @@ That follow-up needs available matching evidence and authorization for its scope
 
 Two follow-ups from the 2026-09-27 routing audit remain:
 
-- Record a repeated live baseline on one large and one small model using the [routing smoke cases](../../evals/routing-smoke/README.md), which now cover each hard signal, opt-out, explicit use, provenance alone, and a choice committable in-session (at most two cases per run).
+- Record a repeated live baseline on one large and one small model using the [routing smoke cases](../../evals/routing-smoke/README.md), which now cover each hard signal, opt-out, and explicit use (at most two cases per run).
   jimmfan authorized it on 2026-09-27, but it could not run in that session's dev container because neither a `claude` nor a `codex` CLI was installed.
   Authorization boundaries and ambiguous unnamed-effort resumption remain outside this routing-only harness.
+- The live multi-turn comparison planned in the [effort maintenance map](../effort-maintenance-reliability/map.md#ready-work) is the main test of the context tradeoff, because the cited research locates the largest degradation in multi-turn and long conversations rather than single requests.
+  On 2026-09-27 jimmfan chose to include one variant that moves Wayfinder selection ahead of the authority rules in the root policy, since earlier instructions are followed more reliably.
 - Only if that baseline shows no regression, condense the root policy.
   A 2026-09-27 draft reached about 828 words from 1,144 while keeping every [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) authority rule and the [ADR-0027](../../architecture-decisions/0027-use-direct-first-progressive-routing.md) always-loaded signals; the draft was not retained, and its precedence rule was adopted separately.
 
@@ -38,6 +40,17 @@ The accepted [Direct-first architecture](../../architecture-decisions/0027-use-d
 The 2026-09-27 routing audit measured the Wayfinder selection path at about 7,100 words of instructions before any effort file: Wayfinder skill, full state contract, detailed routing, and terminology.
 Splitting out the [records contract](../../.agent-workflow/contracts/effort-records.md) reduces the state contract loaded for map-only efforts from 3,834 to 2,852 words; record work adds the 1,072-word records contract.
 These are word counts, not token, cache, or runtime measurements.
+
+Research reviewed on 2026-09-27 bears on the trade between context load and Wayfinder selection:
+
+- Longer input lowers reasoning accuracy well below context limits ([Levy et al., ACL 2024](https://arxiv.org/abs/2402.14848): 0.92 to 0.68 on average by 3,000 tokens).
+- Accuracy falls as the number of instructions grows, and earlier instructions are followed more reliably ([Harada et al., EMNLP 2025](https://arxiv.org/abs/2509.21051); [IFScale preprint](https://arxiv.org/abs/2507.11538)).
+- Multi-turn conversations lose 39% on average against single-turn, and early assumptions persist uncorrected; consolidating state into a fresh start recovers most of it ([Laban et al., 2025](https://arxiv.org/abs/2505.06120)).
+- Ambiguous choices between options are a common selection failure, and on-demand loading improves selection ([Anthropic context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents); [Anthropic tool search](https://www.anthropic.com/engineering/advanced-tool-use), vendor claims).
+- Prompt caching lowers cost and latency but does not change outputs, so cached instruction text still carries the quality cost ([Claude prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)).
+
+No reviewed study measures a workflow router's trigger count against selection precision, so applying these results here is inference.
+From that review jimmfan decided on 2026-09-27 to keep the full Wayfinder signal list with explicit precedence, drop the proposed workflow re-entry limit, and keep the root policy lean.
 No actionable efficiency defect was established in the inspected sources and existing reports; this does not demonstrate that current behavior is efficient.
 
 The 2026-09-27 change in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57) reduced the source-only part of the root `AGENTS.md` from 1,534 to 1,194 words by moving terminology, checkout, ADR-authoring, and release details to [maintainer procedures](../../docs/maintenance.md), the [decision index](../../architecture-decisions/README.md#maintaining-decision-records), and [release tags](../../docs/verification.md#release-tags).

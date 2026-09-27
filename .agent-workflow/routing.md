@@ -58,8 +58,6 @@ Avoid routing loops: a bounded decision remains in Discovery unless it crosses t
 Inside selected Wayfinder, use each needed specialist once for the relevant question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity without creating another Agent Workflow durable coordination model.
 Meaningful Implementation runs Verification once.
 New causal uncertainty returns to Debugging; a material unresolved choice returns to Discovery or Wayfinder according to the coordination threshold.
-Without new evidence, re-enter a workflow for the same question or symptom at most once.
-On the next return, stop affected work and report the evidence or decision needed to continue.
 
 ## Use selected skills
 

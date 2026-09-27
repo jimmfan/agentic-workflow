@@ -31,8 +31,8 @@
       "forbidden_resources": [],
       "expected_first_resources": ["choice.md"],
       "expected_initial_route": "direct",
-      "expected_final_route": "discovery",
-      "expected_wayfinder_selected": false
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
     },
     {
       "id": "cross-session-choice",
@@ -50,11 +50,11 @@
       "request": "Inspect notes.md and summarize which statements are verified and which are assumed. Do not modify files.",
       "available_resources": ["notes.md", ".agent-workflow/routing.md"],
       "required_resources": ["notes.md"],
-      "forbidden_resources": [".agent-workflow/routing.md"],
+      "forbidden_resources": [],
       "expected_first_resources": ["notes.md"],
       "expected_initial_route": "direct",
-      "expected_final_route": "direct",
-      "expected_wayfinder_selected": false
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
     },
     {
       "id": "conflicting-sources",
