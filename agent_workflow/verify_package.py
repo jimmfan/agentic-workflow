@@ -46,6 +46,7 @@ EXPECTED_FRAMEWORK_FILES = frozenset(
         "README.md",
         "routing.md",
         "terminology.md",
+        "contracts/effort-records.md",
         "contracts/effort-state.md",
     }
 )

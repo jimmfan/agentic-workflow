@@ -5,6 +5,10 @@
       "target": ".agent-workflow/README.md"
     },
     {
+      "source": ".agent-workflow/contracts/effort-records.md",
+      "target": ".agent-workflow/contracts/effort-records.md"
+    },
+    {
       "source": ".agent-workflow/contracts/effort-state.md",
       "target": ".agent-workflow/contracts/effort-state.md"
     },

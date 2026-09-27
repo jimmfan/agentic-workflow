@@ -89,6 +89,7 @@ agent-workflow update
 For `pip`, replace the first command with `python3 -m pip install --force-reinstall "git+https://github.com/jimmfan/agentic-workflow.git"`.
 Projects with effort state at the former `.agent-wayfinder/` path must explicitly move it to `.project-efforts/` and repair their references; lifecycle commands never migrate project-owned state.
 Version 0.35.3 renames the state contract from `.agent-workflow/contracts/wayfinder-state.md` to `.agent-workflow/contracts/effort-state.md`; update replaces the framework file, but links to the former path in project-owned files must be repaired manually.
+Version 0.37.0 moves U/E/F/D record formats, identifiers, and single-record pruning to `.agent-workflow/contracts/effort-records.md`; repair project-owned links to those former `effort-state.md` headings manually.
 
 ## Supported hosts
 

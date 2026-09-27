@@ -11,7 +11,8 @@ Root policy determines when Wayfinder is selected; an objective or existing stat
 ## Load the state boundary
 
 Once Wayfinder is selected, read `.agent-workflow/contracts/effort-state.md` before inspecting or changing effort state.
-The contract owns recognition, creation and resumption identity, map authoring, selective record preservation, identifiers, reconciliation, pruning, and ending.
+The contract owns recognition, creation and resumption identity, map authoring, selective record preservation, reconciliation, pruning, and ending.
+Read `.agent-workflow/contracts/effort-records.md` only when the contract requires it for U/E/F/D record work, including relying on an existing record; a map-only effort does not need it.
 Resume from `map.md`, following the contract's progressive detail loading; do not substitute a specialist notebook or parallel coordination record.
 If the contract is unavailable, stop affected Wayfinder work: do not inspect or change a map, invent substitute persistence, or create tracker, specialist-record, or scratch state.
 Report the incomplete installation.

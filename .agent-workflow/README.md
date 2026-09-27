@@ -12,7 +12,8 @@ Lifecycle commands do not directly traverse, interpret, or change it.
 
 - `routing.md`: detailed minimum-workflow selection, composition, handling of unavailable selected skills, action authorization, evidence, and required route-marker rules.
 - `terminology.md`: the single canonical source for Agent Workflow term meanings, consulted when a framework-specific term materially affects interpretation or behavior.
-- `contracts/effort-state.md`: lazily loaded map-first Wayfinder semantics for current maps, optional U#/F#/D# ledgers, independently useful E# files, identifiers, reconciliation, pruning, effort ending, and progressive loading.
+- `contracts/effort-state.md`: lazily loaded map-first Wayfinder semantics for current maps, when to keep separate records, reconciliation, effort ending, and progressive loading.
+- `contracts/effort-records.md`: U#/E#/F#/D# record formats, lifecycles, identifiers, references, and single-record pruning, loaded only when a record is created, changed, renamed, pruned, or relied on.
 
 The root policy loads routing, terminology, and specialized contracts progressively.
 Agents follow these files as instructions; no installed process enforces the route.
@@ -54,7 +55,7 @@ Wayfinder and Research are directly distributed maintained versions.
 
 Wayfinder keeps project-owned durable coordination under `.project-efforts/`, outside framework lifecycle ownership.
 A map can stand alone and links supporting records and lasting artifacts when needed.
-The [state contract](contracts/effort-state.md) owns record formats, selective preservation, resumption, map authoring, and map-versus-ticket responsibilities.
+The [state contract](contracts/effort-state.md) owns selective preservation, resumption, map authoring, and map-versus-ticket responsibilities; [effort records](contracts/effort-records.md) owns record formats.
 Specialist methods and their handoffs follow [detailed routing](routing.md); specialists create no separate Agent Workflow durable coordination state.
 
 ## Status and recovery

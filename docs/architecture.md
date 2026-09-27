@@ -19,6 +19,7 @@ flowchart TD
     method --> result["Result + verification evidence"]
     direct --> result
     method -. Wayfinder selected .-> contract[".agent-workflow/contracts/effort-state.md"]
+    contract -. record work only .-> records[".agent-workflow/contracts/effort-records.md"]
     contract --> map[".project-efforts/effort/map.md"]
     map -. relevant detail .-> artifacts["Supporting state + designated project artifacts"]
 ```
@@ -39,6 +40,7 @@ See [Supported hosts](../README.md#supported-hosts) for host-specific discovery 
 | [Terminology](../.agent-workflow/terminology.md) | Shared framework meanings when they materially affect interpretation. |
 | [Selected skills](../.agents/skills/) | The method and its supporting instructions. |
 | [Effort state contract](../.agent-workflow/contracts/effort-state.md) | State representation, recognition, preservation, reconciliation, and map-first resumption after Wayfinder selection. |
+| [Effort records contract](../.agent-workflow/contracts/effort-records.md) | U/E/F/D formats, identifiers, references, and single-record pruning, loaded only for record work. |
 
 Detailed instructions load when their responsibility becomes relevant.
 Root obligations therefore remain effective before optional skills or contracts load.

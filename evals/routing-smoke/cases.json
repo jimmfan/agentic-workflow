@@ -22,6 +22,105 @@
       "expected_initial_route": "direct",
       "expected_final_route": "wayfinder",
       "expected_wayfinder_selected": true
+    },
+    {
+      "id": "uncommitted-choice",
+      "request": "Inspect choice.md, compare the alternatives and their tradeoffs, and recommend a cache backend. Do not modify files.",
+      "available_resources": ["choice.md", ".agent-workflow/routing.md"],
+      "required_resources": ["choice.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["choice.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
+    },
+    {
+      "id": "cross-session-choice",
+      "request": "Inspect choice.md and recommend what can proceed now. Do not modify files.",
+      "available_resources": ["choice.md", ".agent-workflow/routing.md"],
+      "required_resources": ["choice.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["choice.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
+    },
+    {
+      "id": "provenance-only",
+      "request": "Inspect notes.md and summarize which statements are verified and which are assumed. Do not modify files.",
+      "available_resources": ["notes.md", ".agent-workflow/routing.md"],
+      "required_resources": ["notes.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["notes.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
+    },
+    {
+      "id": "conflicting-sources",
+      "request": "Inspect task.md and recommend the next planning step. Do not modify files.",
+      "available_resources": ["task.md", ".agent-workflow/routing.md"],
+      "required_resources": ["task.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["task.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
+    },
+    {
+      "id": "participants",
+      "request": "Inspect task.md and recommend the next planning step. Do not modify files.",
+      "available_resources": ["task.md", ".agent-workflow/routing.md"],
+      "required_resources": ["task.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["task.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
+    },
+    {
+      "id": "opt-out",
+      "request": "Inspect task.md and recommend the next planning step. Do not modify files and do not use Wayfinder.",
+      "available_resources": ["task.md", ".agent-workflow/routing.md"],
+      "required_resources": ["task.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["task.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "direct",
+      "expected_wayfinder_selected": false
+    },
+    {
+      "id": "explicit-wayfinder",
+      "request": "Use Wayfinder to orient the refresh described in task.md and identify what can proceed now. Do not modify files.",
+      "available_resources": ["task.md", ".agent-workflow/routing.md"],
+      "required_resources": ["task.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["task.md"],
+      "expected_initial_route": "wayfinder",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
+    },
+    {
+      "id": "continues-effort",
+      "request": "Inspect task.md and recommend the next step. Do not modify files.",
+      "available_resources": ["task.md", "map.md", ".agent-workflow/routing.md"],
+      "required_resources": ["task.md", "map.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["task.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
+    },
+    {
+      "id": "unclear-route",
+      "request": "Inspect task.md and recommend the next planning step. Do not modify files.",
+      "available_resources": ["task.md", ".agent-workflow/routing.md"],
+      "required_resources": ["task.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["task.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "wayfinder",
+      "expected_wayfinder_selected": true
     }
   ]
 }

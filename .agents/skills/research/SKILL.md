@@ -16,7 +16,13 @@ Its job:
 
 1. Investigate the question against **primary sources** — official docs, source code, specifications, and first-party APIs — rather than secondary summaries.
    Follow each material claim back to the source that establishes it for the applicable scope.
-2. Return concise, cited findings to the caller so the default user-facing result can be delivered in chat.
-3. Do not create a standalone research file unless the user explicitly requests a durable research artifact.
-4. When cited findings are adopted into a lasting project result and repository writes have action authorization, write the necessary evidence directly into the ADR or product documentation designated to maintain that result instead of creating a parallel research report.
-5. Do not create raw or temporary research files inside the repository.
+   Use a secondary source only when no primary source exists, and label it as secondary.
+2. Split a broad question into independent sub-questions; when delegation is available, investigate independent sub-questions in parallel under the same evidence requirements.
+3. For evolving external systems, prefer current sources over remembered knowledge and record the version, revision, or retrieval date that establishes each claim.
+4. When sources conflict, cite each side and state the conflict instead of silently choosing one.
+5. Stop when each material claim is established or further searching stops producing new relevant evidence; report what remains unestablished instead of continuing indefinitely.
+6. Return concise findings to the caller so the default user-facing result can be delivered in chat, separating cited findings, labeled inferences, and gaps.
+   A claim without a source is a gap, not a finding.
+7. Do not create a standalone research file unless the user explicitly requests a durable research artifact.
+8. When cited findings are adopted into a lasting project result and repository writes have action authorization, write the necessary evidence directly into the ADR or product documentation designated to maintain that result instead of creating a parallel research report.
+9. Do not create raw or temporary research files inside the repository.

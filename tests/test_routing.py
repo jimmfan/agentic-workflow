@@ -78,6 +78,7 @@ class RoutingContractTests(unittest.TestCase):
             "<skill>-handoff",
             "<skill>-unavailable",
             "<skill>-blocked",
+            "<skill>-incomplete",
             "->",
         ):
             with self.subTest(token=token):
@@ -94,6 +95,9 @@ class RoutingContractTests(unittest.TestCase):
         self.assertIn("contracts/effort-state.md", routing)
         contract = REPOSITORY_ROOT / ".agent-workflow/contracts/effort-state.md"
         self.assertTrue(contract.is_file())
+        self.assertIn("effort-records.md", contract.read_text(encoding="utf-8"))
+        records = REPOSITORY_ROOT / ".agent-workflow/contracts/effort-records.md"
+        self.assertTrue(records.is_file())
         wayfinder = (REPOSITORY_ROOT / ".agents/skills/wayfinder/SKILL.md").read_text(
             encoding="utf-8"
         )

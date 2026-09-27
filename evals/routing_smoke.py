@@ -30,6 +30,9 @@ RESOURCE_PATHS = {
 }
 
 ROUTES = ["direct", "discovery", "debugging", "wayfinder", "other"]
+# Two cases keep the Claude per-call maximum below the $2 run limit; select others with --case.
+DEFAULT_CASES = ("direct", "evolving")
+MAX_CASES_PER_RUN = 2
 
 DECISION_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -281,7 +284,7 @@ def evaluate_case(
             "detail": f"expected={case['expected_first_resources']!r}, actual={first_requested!r}",
         },
     ]
-    if case["id"] == "direct":
+    if case["expected_initial_route"] == case["expected_final_route"] == "direct":
         checks.append(
             {
                 "name": "direct-throughout",
@@ -294,7 +297,10 @@ def evaluate_case(
                 "detail": f"routes and Wayfinder selections={[(decision.get('current_route'), decision.get('wayfinder_selected')) for decision in decisions]!r}",
             }
         )
-    if case["id"] == "evolving":
+    if (
+        case["expected_initial_route"] == "direct"
+        and case["expected_final_route"] == "wayfinder"
+    ):
         checks.append(
             {
                 "name": "direct-before-reconnaissance",
@@ -908,10 +914,12 @@ def run_command(args: argparse.Namespace) -> int:
     if args.output:
         validated_output_path(args.output)
     cases = load_cases()
-    selected = args.case or list(cases)
+    selected = args.case or list(DEFAULT_CASES)
     unknown = set(selected) - set(cases)
     if unknown:
         raise SmokeError("unknown cases: " + ", ".join(sorted(unknown)))
+    if len(selected) > MAX_CASES_PER_RUN:
+        raise SmokeError(f"select at most {MAX_CASES_PER_RUN} cases per run")
     if args.max_rounds < 1 or args.max_rounds > DEFAULT_MAX_ROUNDS:
         raise SmokeError(f"max rounds must be between 1 and {DEFAULT_MAX_ROUNDS}")
     if args.max_prompt_bytes < 1 or args.max_prompt_bytes > DEFAULT_MAX_PROMPT_BYTES:

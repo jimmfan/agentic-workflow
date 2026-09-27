@@ -1,9 +1,26 @@
 # Routing interpretation smoke test
 
-This opt-in evaluation asks two deliberately small questions of multiple models:
+This opt-in evaluation asks deliberately small routing questions of multiple models.
+By default a run uses the two original cases:
 
 1. Does a bounded read remain Direct without loading the detailed router?
 2. Does a request that begins bounded select Wayfinder after reconnaissance reveals consequential coordination signals?
+
+Signal cases run only when selected with `--case`:
+
+| Case | Expected final route | Question |
+|---|---|---|
+| `uncommitted-choice` | `wayfinder` | Does an uncommitted choice with independent work proceeding select Wayfinder even when the decider could answer in this conversation? |
+| `cross-session-choice` | `wayfinder` | Does a choice that later sessions must await select Wayfinder? |
+| `provenance-only` | `wayfinder` | Does needing source and scope to keep assumptions distinct from facts select Wayfinder on its own? |
+| `conflicting-sources` | `wayfinder` | Do conflicting sources for the same scoped claim select Wayfinder? |
+| `participants` | `wayfinder` | Do participants with separate responsibilities that must coordinate select Wayfinder? |
+| `opt-out` | `direct` | Does an explicit opt-out override Wayfinder signals? |
+| `continues-effort` | `wayfinder` | Does work that continues an existing effort's map select Wayfinder? |
+| `unclear-route` | `wayfinder` | Does a consequential objective whose route cannot be settled in one session select Wayfinder? |
+| `explicit-wayfinder` | `wayfinder` | Does explicit Wayfinder use select it without other signals? |
+
+The harness grades routing decisions only; it cannot observe writes, so authorization boundaries remain covered by [behavior scenarios](../../tests/scenarios/).
 
 The runner sends root `AGENTS.md` rendered from the canonical consumer template (tested against a disposable installation) and only the named synthetic case evidence or detailed routing policy that the model explicitly requests from a names-and-size catalog.
 It does not send project source, project documentation, durable state, Git history, credentials, or arbitrary repository files.
@@ -42,6 +59,8 @@ python3 -m evals.routing_smoke run \
 ```
 
 Use `--executable /absolute/path/to/codex` when the CLI is not on `PATH`.
+
+To run signal cases, select at most two per run with repeated `--case`, for example `--case uncommitted-choice --case cross-session-choice`.
 
 ## Run Claude
 
@@ -97,7 +116,7 @@ Declaring `--vary effort` does not supply that missing observation.
 
 ## Cost and safety limits
 
-The hard limits are four rounds and 120,000 prompt bytes per case; command-line values may lower but not raise them.
+The hard limits are two cases per run and four rounds and 120,000 prompt bytes per case; command-line values may lower but not raise them.
 Every live run also requires current input, cached-input, and output prices plus an estimated cost limit no greater than $2.
 Prices must be finite and nonnegative; the cost limit must also be finite and positive.
 The runner sums adapter-reported usage after every round and stops before starting another round once the limit is reached.
@@ -120,9 +139,9 @@ Missing observations remain unavailable; no version, usage, or read is inferred 
 
 Each case records execution status separately from PASS, FAIL, or INCONCLUSIVE.
 Reports retain completed cases, observed early failures, incomplete-case counts, received responses, usage, and available current-round prompts when a later adapter exception, timeout, or budget limit stops the run.
-The bounded Direct case checks every recorded decision for a Direct route and no Wayfinder selection.
+Every case expected to stay Direct checks every recorded decision for a Direct route and no Wayfinder selection.
 An inappropriate intermediate selection remains a failure after a return to Direct or an interrupted run.
-The evolving case must stay Direct before reconnaissance; a premature Wayfinder selection remains an observed failure even if the final transition is unobserved.
+Every case expected to move from Direct to Wayfinder must stay Direct before reconnaissance; a premature Wayfinder selection remains an observed failure even if the final transition is unobserved.
 The Codex adapter captures any available structured response file and usage before timeout cleanup; valid received decisions can be graded while execution remains interrupted.
 A received response is recorded before enforcing its resulting cost limit.
 Reports are written after each case using the existing outside-repository storage rule; there is no checkpoint store or database.

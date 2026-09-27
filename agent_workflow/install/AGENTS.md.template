@@ -63,8 +63,8 @@ Unless the user opts out, MUST select or resume Wayfinder when either condition 
 
 A clear bounded plan does not select Wayfinder merely because later work will execute or depend on it.
 
-One isolated unresolved question and routine work use Direct or an applicable workflow.
-Honor explicit Wayfinder use and opt-out.
+Explicit Wayfinder use or opt-out overrides these signals.
+Otherwise a hard signal overrides the default that one isolated unresolved question and routine work use Direct or an applicable workflow.
 Select Wayfinder from the current work's objective; an existing map is a candidate to check against that objective, not a reason to select Wayfinder.
 A material update to an existing durable planning artifact for unfinished work may indicate continuation of an existing Wayfinder effort.
 Use detailed routing for the bounded read-only check needed to determine whether one relevant effort clearly matches.
