@@ -19,8 +19,8 @@ Later on 2026-09-27 the user authorized applying the PR #56 audit recommendation
 - Live validation is required by the objective but not yet authorized.
   Plan: one synthetic conversation of about ten turns in an unrelated domain, with maintenance authorized in turn 1, then a committed choice inside a question, pasted operator output, an agent-run read-only check that contradicts the map, a correction, and small talk.
   Controls: "discuss first", "no changes", already-saved information, a conversation with no earlier authorization, and one where routing selects the effort during authorized implementation; then a fresh reader session.
-  Run the pre-PR #56 baseline once first and stop if it saves everything, because the scenario would not discriminate.
-  Then run baseline and PR #56 twice each and grade saved meaning after every turn.
+  Fix a small, matched number of baseline (pre-PR #56) and candidate runs before the first run, and grade saved meaning after every turn; one baseline success cannot show that the scenario fails to discriminate an intermittent failure.
+  A roughly ten-turn conversation tests continuation across turns, not long accumulated context or compaction like the week-long E1 conversation.
   The incident host was Codex with a GPT model; results from another host apply only partially.
 
 ## Current state
