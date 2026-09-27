@@ -1,4 +1,5 @@
 # Purpose: Build the Python development image and provide Codex's Linux sandbox prerequisites.
+# Also provisions the persistent home directory Claude Code's OAuth login uses.
 ARG PYTHON_VARIANT="3.14-bookworm"
 ARG UV_VERSION="0.11.32"
 
@@ -15,7 +16,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends bubblewrap \
     && rm -rf /var/lib/apt/lists/* \
     && install -d -m 0700 -o vscode -g vscode /home/vscode/.codex \
-    && install -d -m 0755 /etc/codex
+    && install -d -m 0755 /etc/codex \
+    && install -d -m 0700 -o vscode -g vscode /home/vscode/.claude
 
 COPY --chmod=0644 codex-system-config.toml /etc/codex/config.toml
 

@@ -17,7 +17,8 @@
   },
   "mounts": [
     "source=${localWorkspaceFolder}/..,target=${localWorkspaceFolder}/..,type=bind,consistency=cached",
-    "source=agent-workflow-instructions-codex-home,target=/home/vscode/.codex,type=volume"
+    "source=agent-workflow-instructions-codex-home,target=/home/vscode/.codex,type=volume",
+    "source=agent-workflow-instructions-claude-home,target=/home/vscode/.claude,type=volume"
   ],
   "remoteEnv": {
     "CODEX_HOME": "/home/vscode/.codex"
@@ -34,7 +35,8 @@
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "openai.chatgpt@26.715.31925"
+        "openai.chatgpt",
+        "anthropic.claude-code"
       ],
       "settings": {
         "extensions.supportNodeGlobalNavigator": true,

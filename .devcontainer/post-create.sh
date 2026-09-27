@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prepare the persistent Codex state volume, then verify the complete development toolchain.
+# Prepare the persistent Codex and Claude Code state volumes.
 
 set -euo pipefail
 
@@ -11,4 +11,10 @@ if [[ -f /home/vscode/.codex/auth.json ]]; then
   chmod 0600 /home/vscode/.codex/auth.json
 fi
 
-python3 .devcontainer/check_environment.py
+sudo install -d -m 0700 -o vscode -g vscode /home/vscode/.claude
+sudo chown -R vscode:vscode /home/vscode/.claude
+chmod 0700 /home/vscode/.claude
+
+if [[ -f /home/vscode/.claude/.credentials.json ]]; then
+  chmod 0600 /home/vscode/.claude/.credentials.json
+fi
