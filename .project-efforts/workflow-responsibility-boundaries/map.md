@@ -8,7 +8,8 @@ Keep consequential questions and follow-up work concerning Agent Workflow's rout
 
 Responsibility selection, method composition, handoffs, artifact and persistence ownership, and the authority and evidence boundaries that affect them.
 The initial task authorized a source-grounded audit and this effort state, with no framework, architecture-documentation, test, evaluator, or runtime changes and no live evaluation.
-jimmfan later authorized the framework changes delivered in [PR #59](https://github.com/jimmfan/agentic-workflow/pull/59) (0.36.0) and [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0), both on 2026-09-27, and on 2026-09-29 the selection-focused skill descriptions on branch `claude/project-thread-mhsmmd` (0.38.0).
+jimmfan later authorized the framework changes delivered in [PR #59](https://github.com/jimmfan/agentic-workflow/pull/59) (0.36.0) and [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0), both on 2026-09-27.
+On 2026-09-29 jimmfan authorized committing and pushing the selection-focused skill descriptions in 0.38.0 to a branch.
 
 Resume when an authorized request materially affects a represented boundary, question, or evidence claim.
 Inspect changed sources and reconcile only affected coordination within that request's scope; this map is not self-updating and its existence does not select Wayfinder or require an audit of unrelated work.
@@ -35,32 +36,43 @@ Rejected alternatives:
 - **Debugging invokes `code-review` itself:** bypasses `implement`'s pre-edit baseline and TDD and creates a parallel build path, contrary to `implement` owning closing review.
 - **Verification requires a missing review:** moves review into the acceptance layer for every Verification use.
 
-The package gate passed; that change's closing Code Review ran inline rather than through independent reviewers.
+That change's closing Code Review ran inline rather than through independent reviewers.
 Revisit if a clean rerun of the investigation shows agents already reach Implementation from Debugging, or shows the handoff adds ceremony to fixes that are actually trivial.
 
 **Routing audit (shipped in PR #60).**
-[Detailed routing](../../.agent-workflow/routing.md#decide-and-compose) prefers a curated skill over an overlapping host skill unless the user names the other one, and [route reporting](../../.agent-workflow/routing.md#report-the-executed-route) has a `<skill>-incomplete` outcome for a skill that started but did not finish; Code Review treats a failed reviewer as an incomplete axis.
+[Detailed routing](../../.agent-workflow/routing.md#decide-and-compose) prefers a curated skill over an overlapping host skill unless the user names the other one, and [route reporting](../../.agent-workflow/routing.md#report-the-executed-route) has a `<skill>-incomplete` outcome for a skill that started but did not finish.
+Code Review treats a failed reviewer as an incomplete axis.
 The root policy keeps all its Wayfinder signals and states that explicit use or opt-out overrides them and that a hard signal overrides the isolated-question default.
-jimmfan chose this on 2026-09-27 over removing two hard signals, because the recorded incidents are mostly missed coordination and the [cited research](../context-efficiency/map.md#current-state) identifies ambiguous decision points and uncorrected early decisions as common failures; a proposed limit on re-entering the same workflow was dropped the same day because no such loop has been observed.
+jimmfan chose this on 2026-09-27 over removing two hard signals, because the recorded incidents are mostly missed coordination and the [cited research](../context-efficiency/map.md#current-state) identifies ambiguous decision points and uncorrected early decisions as common failures.
+A proposed limit on re-entering the same workflow was dropped the same day because no such loop has been observed.
 
-**Selection descriptions (2026-09-29, branch `claude/project-thread-mhsmmd`).**
+**Selection descriptions (0.38.0).**
 The `implement`, `workflow-implementation`, `workflow-discovery`, and `wayfinder-effort` descriptions now say when to use each skill and name the nearest alternative, leaving ownership detail to the skill bodies.
-Routing now states that the `implement` route label covers the Implementation integration, a direct `implement` invocation, or both.
+Routing states that the `implement` route label covers the Implementation integration, an `implement` run on its own, or both.
 
 No live run has checked whether agents follow any of these changes.
 The [campaign effort](../remaining-behavior-evidence/map.md) and its linked protocol and report keep execution prerequisites, observations, and follow-up details; do not mirror their campaign state here.
 
 ## Areas and relationships
 
-- **Selection and composition:** the [root policy](../../agent_workflow/install/AGENTS.md.template) owns first-pass routing, Direct defaults, Wayfinder selection, and the authorization and decision-authority rules; [detailed routing](../../.agent-workflow/routing.md) owns composition, transitions, relevant resumption, and selected-skill availability.
-- **Coordination and representation:** [Wayfinder](../../.agents/skills/wayfinder/SKILL.md) owns effort orientation, question navigation, and method selection within an effort; its [state contract](../../.agent-workflow/contracts/effort-state.md) and [records contract](../../.agent-workflow/contracts/effort-records.md) own state mechanics, and [Wayfinder Effort](../../.agents/skills/wayfinder-effort/SKILL.md) is an orientation entry point without product implementation.
-- **Investigation and choices:** [Debugging](../../.agents/skills/workflow-debugging/SKILL.md), [Research](../../.agents/skills/research/SKILL.md), [Discovery](../../.agents/skills/workflow-discovery/SKILL.md), [Grilling](../../.agents/skills/grilling/SKILL.md), and [Prototype](../../.agents/skills/prototype/SKILL.md) inform authorized next work without granting decision authority, production adoption, or execution authorization.
-- **Model and design:** [Domain Modeling](../../.agents/skills/domain-modeling/SKILL.md) maintains the project's domain model and [Codebase Design](../../.agents/skills/codebase-design/SKILL.md) supplies module and seam vocabulary; [framework terminology](../../.agent-workflow/terminology.md) is separate under [ADR-0029](../../architecture-decisions/0029-distribute-canonical-framework-terminology.md).
-- **Build and acceptance:** [Implementation](../../.agents/skills/workflow-implementation/SKILL.md) consumes one ready authorized scope, runs [implement](../../.agents/skills/implement/SKILL.md) (build, [TDD](../../.agents/skills/tdd/SKILL.md) where possible, closing [Code Review](../../.agents/skills/code-review/SKILL.md)), then [Verification](../../.agents/skills/workflow-verification/SKILL.md), which reuses existing evidence and owns the completion gate.
-- **Lasting results:** [to-spec](../../.agents/skills/to-spec/SKILL.md) synthesizes accepted scope and [to-tickets](../../.agents/skills/to-tickets/SKILL.md) produces dependency-aware work slices.
-  Authorized specifications, tickets, research results, reviews, and architecture decisions remain in their maintaining artifacts, and chat-only drafts remain session-local; Wayfinder links them without mirroring ticket readiness, as [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md) requires.
-- **Evidence and preservation:** [test ownership](../../tests/README.md) distinguishes filesystem and Git observations from structural guards and synthetic evaluator controls; the removed [specialist reconciliation tests](https://github.com/jimmfan/agentic-workflow/blob/92d3304473b0fbebdcb6ab08b41bbad1d9710a50/tests/test_specialist_reconciliation.py) remain historical evidence only, since their substring checks did not prove instruction meaning, agent ordering, or execution.
-  [ADR-0010](../../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md) keeps effort state project-owned and outside lifecycle traversal; the state contract governs safe effort-state changes.
+- **Selection and composition:** the [root policy](../../agent_workflow/install/AGENTS.md.template) owns first-pass routing, Direct defaults, Wayfinder selection, and the rules for authorization and project decision authority.
+  [Detailed routing](../../.agent-workflow/routing.md) owns composition, transitions, relevant resumption, and selected-skill availability; specialists supply their methods rather than an alternative router.
+- **Coordination and representation:** [Wayfinder](../../.agents/skills/wayfinder/SKILL.md) owns effort orientation, question navigation, method selection within the effort, and consequential handoffs.
+  Its [state contract](../../.agent-workflow/contracts/effort-state.md) owns recognition, map authoring, selective records, reconciliation, preservation, pruning safeguards, and ending; the [records contract](../../.agent-workflow/contracts/effort-records.md) owns U/E/F/D formats, identifiers, and single-record pruning.
+  The [Wayfinder Effort entry point](../../.agents/skills/wayfinder-effort/SKILL.md) establishes or updates effort state without product implementation.
+- **Investigation and choices:** [Debugging](../../.agents/skills/workflow-debugging/SKILL.md) establishes causes; [Research](../../.agents/skills/research/SKILL.md) supplies primary-source evidence; [Discovery](../../.agents/skills/workflow-discovery/SKILL.md) analyzes bounded choices; [Grilling](../../.agents/skills/grilling/SKILL.md) sequences interdependent human choices; [Prototype](../../.agents/skills/prototype/SKILL.md) answers questions through throwaway interactive exploration.
+  Their results inform authorized next work without granting project decision authority, production adoption, or execution authorization.
+- **Model and design boundaries:** [Domain Modeling](../../.agents/skills/domain-modeling/SKILL.md) maintains the project's domain/context model, while [Codebase Design](../../.agents/skills/codebase-design/SKILL.md) supplies module-interface and test-seam vocabulary.
+  Neither owns all project structure or Wayfinder's effort view; [canonical framework terminology](../../.agent-workflow/terminology.md) separately maintains Agent Workflow meanings under [ADR-0029](../../architecture-decisions/0029-distribute-canonical-framework-terminology.md).
+- **Build and acceptance:** [Implementation](../../.agents/skills/workflow-implementation/SKILL.md) consumes one ready authorized scope, invokes [implement](../../.agents/skills/implement/SKILL.md), then [Verification](../../.agents/skills/workflow-verification/SKILL.md), and reconciles consequential outcomes into the selected effort state when authorized.
+  `implement` owns the build loop, agreed-seam [TDD](../../.agents/skills/tdd/SKILL.md) where possible, and closing [Code Review](../../.agents/skills/code-review/SKILL.md); Code Review independently assesses Standards and Spec.
+  Verification adds uncovered acceptance and integration evidence, reuses existing checks, and owns the completion gate rather than repeating the build or review.
+- **Lasting results:** [to-spec](../../.agents/skills/to-spec/SKILL.md) synthesizes accepted scope; [to-tickets](../../.agents/skills/to-tickets/SKILL.md) produces dependency-aware work slices.
+  Authorized durable specifications, tickets, research results, reviews, and architecture decisions remain in their designated maintaining artifacts; chat-only drafts remain session-local.
+  Wayfinder links those results and does not mirror ticket readiness or specialist procedures, as required by [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md).
+- **Evidence and preservation:** [test ownership](../../tests/README.md) distinguishes actual filesystem/Git observations from structural guards and synthetic evaluator controls.
+  The removed [specialist reconciliation tests](https://github.com/jimmfan/agentic-workflow/blob/92d3304473b0fbebdcb6ab08b41bbad1d9710a50/tests/test_specialist_reconciliation.py) remain historical evidence only; their substring checks did not prove instruction meaning, agent ordering or execution.
+  [ADR-0010](../../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md) keeps effort state project-owned and outside lifecycle traversal and mutation; safe effort state changes remain governed by the state contract.
 
 ## Dependencies
 

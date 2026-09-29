@@ -3,8 +3,8 @@
 ## Routing
 
 **Direct**:
-The default route, in which the agent handles a request with its own reasoning and tools instead of a primary workflow.
-Direct work may still use a skill for focused work.
+The default route, in which the agent handles a request with its own reasoning and tools rather than a primary workflow.
+It may still add supporting capabilities, such as a skill, that materially help.
 
 ## Wayfinder coordination
 
@@ -53,7 +53,7 @@ A durable record of one current consequential question that remains unanswered a
 The record is not itself a blocker; the unresolved condition may block particular work.
 
 **E# (evidence record)**:
-A durable record of one consequential observation with its source, scope, and limitations, kept when durable project sources could not reliably reconstruct it.
+A durable record of one consequential observation, with its source, scope, and limitations, that is independently useful to preserve.
 Recording it does not make the observation established project truth.
 
 **F# (fact record)**:
@@ -62,7 +62,7 @@ It remains revisable as evidence changes.
 
 **D# (decision record)**:
 A durable record of one current consequential project choice committed for its boundary, with the authority or accepted project policy that makes it binding.
-Wayfinder can record that authority but cannot create it.
+Recording the choice does not create that authority.
 
 **Project decision authority**:
 The person, role, or valid delegate whose choice the project treats as binding within a defined decision boundary.
@@ -70,12 +70,12 @@ Accepted project policy may determine the choice for that boundary directly or e
 
 **Committed project choice**:
 A consequential project choice becomes committed when required evidence is sufficient and either accepted project policy determines it for its boundary or the person, role, or valid delegate with project decision authority for that boundary commits it.
-Assumptions, defaults, proposals, precedents, and recommendations do not commit a choice, and commitment does not by itself authorize acting on it.
+Assumptions, defaults, proposals, precedents, and model preferences do not commit a choice, and commitment does not by itself authorize acting on it.
 
 ## Current-state operations
 
 **Reconciliation**:
-Updating affected current coordination state so it agrees with current truth, committed project choices, and maintaining artifacts.
+Updating affected current coordination state so it agrees with current truth, project choices determined by accepted project policy or committed by project decision authority, and the designated artifacts that maintain lasting results.
 
 **Effort maintenance**:
 Creating, updating, pruning, or ending a selected Wayfinder effort's state under the state contract.
@@ -118,4 +118,3 @@ Reproducible from current declared source or package content without losing uniq
 
 **Maintaining artifact**:
 The project artifact or record designated to keep a lasting result current, such as a specification, architecture decision record, ticket set, or product documentation.
-Maps and specialists link to it instead of copying it.

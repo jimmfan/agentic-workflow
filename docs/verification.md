@@ -41,6 +41,7 @@ It recognizes inline links and single-line reference definitions while excluding
 It checks local targets, not Markdown anchors, full CommonMark syntax, or every tracked document/reference form.
 Frozen reports, fixtures, and project-owned effort state remain outside this current-document check.
 For documentation moves or deletions, search all tracked files, including dot-directories, and manually check incoming links, reference-style links, anchors, and code-formatted paths.
+The root `.ignore` hides frozen evaluation results from ripgrep-based search, so use `git grep` or `rg --no-ignore` for that search.
 Keep frozen historical references tied to their original revision.
 
 The canonical-term inventory test rejects missing, renamed, and duplicate glossary entries without fixing their definitions to exact prose.

@@ -89,7 +89,7 @@ These are authoring conventions, never effort-recognition or parser requirements
 Existing maps with alternate layouts remain valid and resumable; do not rewrite them merely to match this default.
 
 Keep the map brief, preserve enough information to resume safely, and link detailed roadmaps, specifications, ADRs, tickets, project artifacts, and sources that establish relevant claims instead of copying their bodies or detailed backlogs.
-Write map content so it remains true after the session: where a statement depends on a time, revision, or authorization, name it (a date, commit, pull request, or person) instead of a relative phrase such as “the current request” or “this follow-up”.
+Write map content so it remains true after the session: name dates, revisions, pull requests, and who authorized what instead of relative phrases such as “the current request” or “this follow-up”.
 Update the map in place: replace superseded statements instead of appending dated updates, and leave the effort's history to Git and the pull requests or commits that delivered its work.
 If a fresh session must read most supporting records to recover the current route, reconcile the map instead of adding more supporting detail.
 

@@ -2,4 +2,3 @@
 # Keep them out of ripgrep-based searches; read them by path or pass --no-ignore to search them.
 /evals/*/results/
 /evals/*/results.json
-/docs/audit-reconciliation/execution-evidence.json
