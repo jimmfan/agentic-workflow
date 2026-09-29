@@ -1,5 +1,11 @@
 # Agent Workflow Language
 
+## Routing
+
+**Direct**:
+The default route, in which the agent handles a request with its own reasoning and tools rather than a primary workflow.
+It may still add supporting capabilities, such as a skill, that materially help.
+
 ## Wayfinder coordination
 
 **Wayfinder**:
@@ -46,13 +52,25 @@ Blocking is scoped to that work and is not a separate effort record type.
 A durable record of one current consequential question that remains unanswered and is independently useful to preserve.
 The record is not itself a blocker; the unresolved condition may block particular work.
 
+**E# (evidence record)**:
+A durable record of one consequential observation, with its source, scope, and limitations, that is independently useful to preserve.
+Recording it does not make the observation established project truth.
+
 **F# (fact record)**:
 A durable record of one current scoped descriptive conclusion judged sufficiently supported.
 It remains revisable as evidence changes.
 
+**D# (decision record)**:
+A durable record of one current consequential project choice committed for its boundary, with the authority or accepted project policy that makes it binding.
+Recording the choice does not create that authority.
+
 **Project decision authority**:
 The person, role, or valid delegate whose choice the project treats as binding within a defined decision boundary.
 Accepted project policy may determine the choice for that boundary directly or establish who holds that authority; this does not restrict technical judgment already delegated by the user or policy.
+
+**Committed project choice**:
+A consequential project choice becomes committed when required evidence is sufficient and either accepted project policy determines it for its boundary or the person, role, or valid delegate with project decision authority for that boundary commits it.
+Assumptions, defaults, proposals, precedents, and model preferences do not commit a choice, and commitment does not by itself authorize acting on it.
 
 ## Current-state operations
 
@@ -68,6 +86,14 @@ Pruning removes a recognized effort record from current coordination after usefu
 File or ledger-section removal carries out pruning; ending an effort is separate.
 
 ## Requests and authorization
+
+**Action authorization**:
+Permission to perform a specific action within a stated scope, supplied only by the current user request or accepted project policy.
+It is separate from project decision authority: authorizing an action does not commit a project choice.
+
+**Accepted project policy**:
+Rules the project has accepted as binding for a stated boundary, such as project-authored agent instructions or accepted architecture decision records.
+A rule that appears only in a skill, specification, ticket, or effort record is not accepted project policy.
 
 **Read-only request**:
 A request in which the user asks for no changes.
@@ -89,3 +115,6 @@ Durability is separate from lifecycle ownership and reconstructability.
 
 **Reconstructable**:
 Reproducible from current declared source or package content without losing unique project information.
+
+**Maintaining artifact**:
+The project artifact or record designated to keep a lasting result current, such as a specification, architecture decision record, ticket set, or product documentation.

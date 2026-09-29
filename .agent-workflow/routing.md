@@ -106,6 +106,7 @@ Use a terminal suffix only when selection did not become equivalent execution:
 - `<skill>-incomplete`: the skill started but did not finish its method, for example because a sub-agent or tool failed; report what completed and what did not.
 
 After a successful Direct fallback, omit the skill that could not run from the marker.
+The `implement` label covers the Implementation integration, an `implement` run on its own, or both.
 TDD and Code Review run within `implement` remain represented by `implement` unless separately selected.
 The ASCII `->` separator is valid when Unicode is unavailable.
 

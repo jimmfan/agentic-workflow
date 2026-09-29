@@ -35,6 +35,17 @@
       "expected_wayfinder_selected": true
     },
     {
+      "id": "choice-without-parallel-work",
+      "request": "Inspect choice.md and say what is needed before the cache backend can be configured. Do not modify files.",
+      "available_resources": ["choice.md", ".agent-workflow/routing.md"],
+      "required_resources": ["choice.md"],
+      "forbidden_resources": [],
+      "expected_first_resources": ["choice.md"],
+      "expected_initial_route": "direct",
+      "expected_final_route": "direct",
+      "expected_wayfinder_selected": false
+    },
+    {
       "id": "cross-session-choice",
       "request": "Inspect choice.md and recommend what can proceed now. Do not modify files.",
       "available_resources": ["choice.md", ".agent-workflow/routing.md"],

@@ -37,7 +37,9 @@ A 2026-09-27 review of nine historical incidents ([E2](evidence/E2-historical-in
 Only the native skill exposure failure is verified fixed, for Claude Code on this source checkout: that session loaded Wayfinder from the `.claude/skills/` link.
 Most incidents are missed coordination rather than excess persistence.
 When a conversation authorizes no repository changes, current rules still have the agent propose rather than save ([U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default)).
-The resulting routing changes are on branch `codex/routing-audit-improvements` and described in the [responsibility map](../workflow-responsibility-boundaries/map.md#current-state).
+The resulting routing changes shipped in [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0) and are described in the [responsibility map](../workflow-responsibility-boundaries/map.md#current-state).
+Since 0.38.0 the [state contract](../../.agent-workflow/contracts/effort-state.md#map-authoring) tells authors to replace superseded map statements in place and leave history to Git, because dated narration had grown three maps to between 1,091 and 1,543 words.
+The [Claude Code exposure map](../claude-code-source-exposure/map.md) still describes PR #59's delivered change as uncommitted, another map that outlived its delivery ([U1](unknowns.md#u1--how-should-required-work-after-delivery-get-resumed)).
 
 Not yet specified: whether other authorization given earlier in a conversation should carry forward the way effort maintenance now does ([U2](unknowns.md#u2--should-other-earlier-authorization-carry-forward-across-turns)), and what to do with long-running efforts whose objectives never complete ([U3](unknowns.md#u3--should-long-running-efforts-without-an-achievable-objective-remain-efforts)).
 
