@@ -10,7 +10,7 @@ Lifecycle commands do not directly traverse, interpret, or change it.
 
 ## Contents
 
-- `routing.md`: detailed minimum-workflow selection, composition, handling of unavailable selected skills, action authorization, evidence, and required route-marker rules.
+- `routing.md`: detailed minimum-workflow selection and composition, re-evaluation and resumption, handling of unavailable selected skills, artifact responsibilities, and required route-marker rules.
 - `terminology.md`: the single canonical source for Agent Workflow term meanings, consulted when a framework-specific term materially affects interpretation or behavior.
 - `contracts/effort-state.md`: lazily loaded map-first Wayfinder semantics for current maps, when to keep separate records, reconciliation, effort ending, and progressive loading.
 - `contracts/effort-records.md`: U#/E#/F#/D# record formats, lifecycles, identifiers, references, and single-record pruning, loaded only when a record is created, changed, renamed, pruned, or relied on.

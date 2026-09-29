@@ -1,6 +1,6 @@
 ---
 name: workflow-discovery
-description: Resolve one bounded consequential project choice when explicit alternative and tradeoff analysis materially helps; operate standalone or inside Wayfinder without creating Agent Workflow durable coordination state.
+description: Compare alternatives, tradeoffs, and evidence for one bounded consequential project choice and report the recommended or committed choice. Use when that analysis materially helps; interdependent human choices use grilling.
 ---
 
 # Bounded decision discovery

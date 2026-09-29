@@ -1,6 +1,6 @@
 ---
 name: wayfinder-effort
-description: Establish or update a Wayfinder effort from a description, plan, or referenced material without implementing product changes.
+description: Establish or update a Wayfinder effort from a description, plan, or referenced material without implementing product changes. Use when the user asks to orient an effort before work continues.
 ---
 
 # Wayfinder Effort

@@ -1,5 +1,5 @@
 ---
-description: Execute a supplied implementation scope with agreed test seams and closing Code Review. This is the inner build method; workflow-implementation owns the outer transition through readiness and independent acceptance verification.
+description: Build one supplied implementation scope test-first where possible, then close with Code Review. Use when workflow-implementation invokes it or the user names it; otherwise start with workflow-implementation.
 name: implement
 ---
 Implement the defined work supplied by the current user request or invoking workflow.
