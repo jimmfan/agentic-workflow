@@ -38,7 +38,7 @@ The accepted [Direct-first architecture](../../architecture-decisions/0027-use-d
 Word counts, not token, cache, or runtime measurements:
 
 - As of 0.38.0 the Wayfinder selection path (skill, state contract, detailed routing, and terminology) is about 6,500 words before any effort file; record work adds the 1,072-word [records contract](../../.agent-workflow/contracts/effort-records.md).
-- Splitting out that records contract in PR #60 removed about 1,000 words from map-only resumption; the 0.38.0 glossary entries added about 260 words to terminology, which loads only when a framework term matters.
+- Splitting out that records contract in PR #60 removed about 1,000 words from map-only resumption; the 0.38.0 glossary entries added about 270 words to terminology, which loads only when a framework term matters.
 - [Source-document tests](../../tests/test_source_documents.py) cap the distributed root policy at 1,200 words and the source-only part at 1,250 as a growth guard, not as evidence of improvement; PR #57 added these caps after moving source-only details to [maintainer procedures](../../docs/maintenance.md) and other owners.
   The distributed factual-accuracy rule stayed because Codex's `gpt_5_codex_prompt.md` on `openai/codex` `main`, fetched 2026-09-27, lacks it.
 - The 2026-09-29 review found the state contract's rare-operation sections (reference search before renaming or pruning, answer interpretation, ending, scoped acceptance) total about 620 words.
