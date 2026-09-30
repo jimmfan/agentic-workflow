@@ -67,15 +67,13 @@ U/F/D records retain these exact H2 representations:
 - `## F<ID> — <title>`
 - `## D<ID> — <title>`
 
-Never duplicate a current same-type number.
-Ordinary maintenance does not renumber.
 Allocate one greater than the highest current same-type identifier, or 1 when none exists.
 Do not deliberately recycle interior gaps when allocating; a pruned highest number is not reserved.
 
-Renumber only when the current user request explicitly asks for it for a specified effort and record type; that request authorizes the identifier change.
-Assign 1 through N in ascending order of the current numbers and change nothing else in the records.
-Renumbering renames records, so the common [reconciliation sequence](effort-state.md#reconcile-affected-state) applies, including the incoming-reference search.
-Update every affected anchor link and same-effort mention, then read back that each reference still names the record it named before.
+Renumber only on an explicit current user request specifying the effort and record type.
+Assign 1 through N in ascending order of current numbers, changing only identifiers and affected references.
+Follow the [reconciliation sequence for renames](effort-state.md#reconcile-affected-state), including incoming-reference discovery.
+Update all affected links and same-effort mentions, then read back that each still identifies the same record.
 
 Immediately before assigning an identifier, reread all recognized same-type identifiers and reject malformed or duplicate identifiers in current coordination state.
 Append a U/F/D section only if its ledger still matches the content used to plan the append; for all record creation apply the no-overwrite and current-state checks in [Reconcile affected state](effort-state.md#reconcile-affected-state).

@@ -6,11 +6,12 @@ By default a run uses the two original cases:
 1. Does a bounded read remain Direct without loading the detailed router?
 2. Does a request that begins bounded select Wayfinder after reconnaissance reveals consequential coordination signals?
 
-Signal cases run only when selected with `--case`:
+Signal cases and their near misses run only when selected with `--case`:
 
 | Case | Expected final route | Question |
 |---|---|---|
 | `uncommitted-choice` | `wayfinder` | Does an uncommitted choice with independent work proceeding select Wayfinder even when the decider could answer in this conversation? |
+| `choice-without-parallel-work` | `direct` | Does the same kind of uncommitted choice stay Direct when no independent work proceeds and nothing continues beyond this conversation? |
 | `cross-session-choice` | `wayfinder` | Does a choice that later sessions must await select Wayfinder? |
 | `provenance-only` | `wayfinder` | Does needing source and scope to keep assumptions distinct from facts select Wayfinder on its own? |
 | `conflicting-sources` | `wayfinder` | Do conflicting sources for the same scoped claim select Wayfinder? |
@@ -19,6 +20,8 @@ Signal cases run only when selected with `--case`:
 | `continues-effort` | `wayfinder` | Does work that continues an existing effort's map select Wayfinder? |
 | `unclear-route` | `wayfinder` | Does a consequential objective whose route cannot be settled in one session select Wayfinder? |
 | `explicit-wayfinder` | `wayfinder` | Does explicit Wayfinder use select it without other signals? |
+
+Besides its fixture, `choice-without-parallel-work` asks what configuring the backend needs rather than for a tradeoff comparison, so Discovery does not compete with Direct as a correct route; its result therefore reflects both differences.
 
 The harness grades routing decisions only; it cannot observe writes, so authorization boundaries remain covered by [behavior scenarios](../../tests/scenarios/).
 

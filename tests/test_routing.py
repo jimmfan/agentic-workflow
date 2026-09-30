@@ -8,6 +8,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = REPOSITORY_ROOT / "agent_workflow"
 
 EXPECTED_FRAMEWORK_LANGUAGE = {
+    "Direct",
     "Wayfinder",
     "Wayfinder effort",
     "Effort state",
@@ -20,16 +21,22 @@ EXPECTED_FRAMEWORK_LANGUAGE = {
     "Dependency",
     "Blocker",
     "U# (unresolved question record)",
+    "E# (evidence record)",
     "F# (fact record)",
+    "D# (decision record)",
     "Project decision authority",
+    "Committed project choice",
     "Reconciliation",
     "Effort maintenance",
     "Pruning",
     "Read-only request",
+    "Action authorization",
+    "Accepted project policy",
     "Framework-owned",
     "Project-owned",
     "Durable",
     "Reconstructable",
+    "Maintaining artifact",
 }
 
 

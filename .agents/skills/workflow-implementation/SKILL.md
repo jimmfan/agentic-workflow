@@ -1,6 +1,6 @@
 ---
 name: workflow-implementation
-description: Coordinate the outer transition from one ready implementation scope into `implement`, then independent framework verification. Use after material consequential choices are resolved; the inner skill owns building and Code Review. Skip trivial direct edits and unexplained failures.
+description: Deliver one ready implementation scope by running `implement`, then independent Verification. Use once the scope's consequential choices are settled; keep trivial low-risk edits Direct and send unexplained failures to workflow-debugging.
 ---
 
 # Implementation integration

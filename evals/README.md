@@ -39,6 +39,7 @@ These tests are standard-library-only, network-free, and separate from the distr
 ## Storage contract
 
 Git stores only the material needed to understand and reproduce a current evaluation: harnesses, frozen inputs and prompts, scenario fixtures, protocol/rubric, compact results, adjudication, token summaries, and reports.
+The root [`.ignore`](../.ignore) keeps compact result files out of ripgrep-based searches because they are large and frozen; read them by path, or pass `--no-ignore` to search them.
 
 Raw execution exhaust belongs under [`evals/artifacts/`](artifacts/README.md) or another suite-specific ignored directory.
 Full model traces, process logs, copied workspaces, temporary homes, grader transcripts, caches, and other reconstructable intermediates must not enter compact result directories.
