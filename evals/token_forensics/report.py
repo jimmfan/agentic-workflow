@@ -107,6 +107,43 @@ def human_text(summary: dict[str, Any], *, label: str | None = None) -> str:
             command = (item.get("command") or item["tool_type"]).replace("\n", " ")
             lines.append(f"{index}. {_bytes(item['output_bytes']):>10}  {command}")
 
+    subagents = measured["subagents"]
+    if subagents["observed_calls"]:
+        spawns = subagents["spawns"]
+        waits = subagents["waits"]
+        lines.extend(["", "SUBAGENTS"])
+        lines.extend(
+            [
+                _line("Agent tool calls", _count(subagents["observed_calls"])),
+                _line("Spawns", _count(spawns["count"])),
+                _line("Spawn prompt bytes", _bytes(spawns["prompt_bytes_total"])),
+                _line("Largest spawn prompt", _bytes(spawns["prompt_bytes_max"])),
+                _line("Explicit model", _count(spawns["explicit_model"])),
+                _line("Explicit effort", _count(spawns["explicit_reasoning_effort"])),
+                _line(
+                    "Spawned by other threads",
+                    _count(spawns["spawned_by_other_threads"]),
+                ),
+                _line("Waits", _count(waits["count"])),
+                _line("Waits timed out", _count(waits["timed_out"])),
+            ]
+        )
+        if spawns["fork_modes"]:
+            lines.append(
+                "- Fork modes: "
+                + ", ".join(
+                    f"{mode} {count}" for mode, count in spawns["fork_modes"].items()
+                )
+            )
+        if subagents["other_agent_tools"]:
+            lines.append(
+                "- Other agent tools: "
+                + ", ".join(
+                    f"{tool} {count}"
+                    for tool, count in subagents["other_agent_tools"].items()
+                )
+            )
+
     lines.extend(["", "REPOSITORY / CONTEXT (HEURISTIC)"])
     lines.extend(
         [

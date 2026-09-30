@@ -43,12 +43,33 @@ Rollout, mixed, and unrecognized formats therefore have unavailable tool totals,
 `observations_complete` reports this normalization coverage; `observed_calls` and `observed_output_bytes` retain the parsed observations separately from totals.
 Tool lists and context heuristics use only those parsed observations and cannot establish the absence of activity in unsupported records.
 
-The current JSON shape is `token-forensics/v2`.
+The current JSON shape is `token-forensics/v3`, which adds `measured.subagents` to v2.
 Its existing `skills_materially_invoked` field contains matches between inferred skill reads and route claims; those signals do not establish method execution.
 Only current `<effort>/map.md`, optional `unknowns.md`, `facts.md`, and `decisions.md` ledgers, and canonical E# evidence-file paths are classified as current effort state.
 All other `.project-efforts/` paths remain visible in generic repository observations but are not classified as current state.
+
+## Subagent calls
+
+`measured.subagents` summarizes multi-agent tool calls: spawns, waits, and other agent tools such as `followup_task` or `close_agent`.
+Two sources record different fields, and the analyzer reports only what each records:
+
+| Field | Exec `collab_tool_call` items | Rollout `function_call` records |
+|---|---|---|
+| Spawn count and prompt bytes | Yes | Yes |
+| Spawns issued by a non-root thread | Yes, when `thread.started` names the root | No |
+| Explicit model and reasoning effort | No | Yes |
+| Fork mode | No | Yes |
+| Requested wait timeout and timed-out result | No | Yes |
+| `followup_task`, `send_message`, `interrupt_agent`, `list_agents` | Not emitted by Codex | Yes |
+
+Fork modes are `none`, `full_history`, `last_n_turns`, `full_history_default`, `invalid`, or `unavailable`.
+`full_history_default` is an unnamespaced (V2) spawn without `fork_turns`, which Codex treats as the full parent history; a `multi_agent_v1` spawn without `fork_context` starts fresh.
+An unset model or effort means only that the call did not set one; host configuration may still have supplied it.
+These defaults and event shapes were read from Codex source at [`60947e2`](https://github.com/openai/codex/tree/60947e234156ac12bdb7fba2477d3965f166bd34/codex-rs); later Codex releases may differ.
+The analyzer has not yet been run against a real trace containing agent calls.
 
 Primary schema references:
 
 - [Codex non-interactive JSONL documentation](https://learn.chatgpt.com/docs/non-interactive-mode.md#make-output-machine-readable)
 - [Codex exec event types and per-turn usage semantics](https://github.com/openai/codex/blob/main/codex-rs/exec/src/exec_events.rs)
+- [Codex multi-agent V2 tool arguments](https://github.com/openai/codex/tree/main/codex-rs/core/src/tools/handlers/multi_agents_v2)

@@ -3,11 +3,18 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import replace
 import json
 from pathlib import Path
 from typing import Any
 
-from ..models import CompactionEvent, NormalizedTrace, ToolInvocation, UsageObservation
+from ..models import (
+    AgentToolCall,
+    CompactionEvent,
+    NormalizedTrace,
+    ToolInvocation,
+    UsageObservation,
+)
 
 
 _EXEC_EVENT_TYPES = {
@@ -27,6 +34,21 @@ _TOOL_ITEM_TYPES = {
     "mcp_tool_call",
     "plan_update",
     "web_search",
+}
+
+
+# Multi-agent tool names registered by Codex (V1 under the `multi_agent_v1`
+# namespace, V2 unnamespaced); see codex-rs/core/src/tools/handlers.
+_AGENT_TOOL_NAMES = {
+    "close_agent",
+    "followup_task",
+    "interrupt_agent",
+    "list_agents",
+    "resume_agent",
+    "send_input",
+    "send_message",
+    "spawn_agent",
+    "wait_agent",
 }
 
 
@@ -143,6 +165,106 @@ def _tool_invocation(item: dict[str, Any], *, sequence: int) -> ToolInvocation |
     )
 
 
+def _exec_agent_call(
+    item: dict[str, Any], *, sequence: int, line_number: int
+) -> AgentToolCall | None:
+    if item.get("type") != "collab_tool_call":
+        return None
+    receivers = item.get("receiver_thread_ids")
+    states = item.get("agents_states")
+    statuses: list[str] = []
+    if isinstance(states, dict):
+        for state in states.values():
+            if isinstance(state, dict) and isinstance(state.get("status"), str):
+                statuses.append(state["status"])
+    return AgentToolCall(
+        sequence=sequence,
+        line_number=line_number,
+        source="exec_collab_item",
+        tool=str(item.get("tool") or "collab_tool_call"),
+        call_id=str(item["id"]) if item.get("id") is not None else None,
+        status=str(item["status"]) if item.get("status") is not None else None,
+        sender_thread_id=item.get("sender_thread_id")
+        if isinstance(item.get("sender_thread_id"), str)
+        else None,
+        receiver_thread_ids=tuple(
+            str(receiver) for receiver in receivers if isinstance(receiver, str)
+        )
+        if isinstance(receivers, list)
+        else (),
+        agent_statuses=tuple(sorted(statuses)),
+        prompt_bytes=_byte_length(item.get("prompt")),
+    )
+
+
+def _rollout_agent_call(
+    payload: dict[str, Any], *, sequence: int, line_number: int
+) -> AgentToolCall | None:
+    name = payload.get("name")
+    if payload.get("type") != "function_call" or name not in _AGENT_TOOL_NAMES:
+        return None
+    arguments: Any = None
+    parsed = False
+    raw_arguments = payload.get("arguments")
+    if isinstance(raw_arguments, str):
+        try:
+            arguments = json.loads(raw_arguments)
+            parsed = isinstance(arguments, dict)
+        except json.JSONDecodeError:
+            parsed = False
+    if not parsed:
+        arguments = {}
+    prompt = arguments.get("message")
+    if prompt is None and arguments.get("items") is not None:
+        prompt = arguments.get("items")
+    fork_turns = arguments.get("fork_turns")
+    fork_context = arguments.get("fork_context")
+    model = arguments.get("model")
+    effort = arguments.get("reasoning_effort")
+    namespace = payload.get("namespace")
+    return AgentToolCall(
+        sequence=sequence,
+        line_number=line_number,
+        source="rollout_function_call",
+        tool=str(name),
+        call_id=str(payload["call_id"]) if payload.get("call_id") is not None else None,
+        namespace=namespace if isinstance(namespace, str) else None,
+        prompt_bytes=_byte_length(prompt),
+        arguments_parsed=parsed,
+        model=model if isinstance(model, str) and model else None,
+        reasoning_effort=effort if isinstance(effort, str) and effort else None,
+        fork_turns=fork_turns if isinstance(fork_turns, str) else None,
+        fork_context=fork_context if isinstance(fork_context, bool) else None,
+        timeout_ms=_nonnegative_int(arguments.get("timeout_ms")),
+    )
+
+
+def _output_text(output: Any) -> str | None:
+    if isinstance(output, str):
+        return output
+    if isinstance(output, list):
+        parts = [
+            part["text"]
+            for part in output
+            if isinstance(part, dict) and isinstance(part.get("text"), str)
+        ]
+        return "".join(parts) if parts else None
+    return None
+
+
+def _timed_out(output: Any) -> bool | None:
+    text = _output_text(output)
+    if text is None:
+        return None
+    try:
+        value = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if isinstance(value, dict) and isinstance(value.get("timed_out"), bool):
+        return value["timed_out"]
+    return None
+
+
 def _event_type(event: dict[str, Any]) -> str:
     top_level = event.get("type")
     payload = event.get("payload")
@@ -162,6 +284,8 @@ def parse_codex_trace(path: str | Path) -> NormalizedTrace:
     warnings: list[str] = []
     tool_items: dict[str, ToolInvocation] = {}
     tool_order: list[str] = []
+    agent_calls: dict[str, AgentToolCall] = {}
+    agent_order: list[str] = []
     saw_exec = False
     saw_rollout = False
     thread_id: str | None = None
@@ -223,6 +347,20 @@ def parse_codex_trace(path: str | Path) -> NormalizedTrace:
                         if invocation.invocation_id not in tool_items:
                             tool_order.append(invocation.invocation_id)
                         tool_items[invocation.invocation_id] = invocation
+                    agent_call = _exec_agent_call(
+                        item, sequence=sequence, line_number=line_number
+                    )
+                    if agent_call is not None:
+                        key = f"exec:{agent_call.call_id or f'line-{line_number}'}"
+                        if key not in agent_calls:
+                            agent_order.append(key)
+                        else:
+                            agent_call = replace(
+                                agent_call,
+                                sequence=agent_calls[key].sequence,
+                                line_number=agent_calls[key].line_number,
+                            )
+                        agent_calls[key] = agent_call
                     if (
                         top_type == "item.completed"
                         and item.get("type") == "agent_message"
@@ -232,6 +370,22 @@ def parse_codex_trace(path: str | Path) -> NormalizedTrace:
 
             payload = event.get("payload")
             payload_type = payload.get("type") if isinstance(payload, dict) else None
+            if top_type == "response_item" and isinstance(payload, dict):
+                rollout_call = _rollout_agent_call(
+                    payload, sequence=sequence, line_number=line_number
+                )
+                if rollout_call is not None:
+                    key = f"rollout:{rollout_call.call_id or f'line-{line_number}'}"
+                    if key not in agent_calls:
+                        agent_order.append(key)
+                    agent_calls[key] = rollout_call
+                elif payload_type == "function_call_output":
+                    key = f"rollout:{payload.get('call_id')}"
+                    existing = agent_calls.get(key)
+                    if existing is not None and existing.tool == "wait_agent":
+                        agent_calls[key] = replace(
+                            existing, timed_out=_timed_out(payload.get("output"))
+                        )
             if top_type == "event_msg" and payload_type == "token_count":
                 info = payload.get("info")
                 if isinstance(info, dict):
@@ -285,6 +439,7 @@ def parse_codex_trace(path: str | Path) -> NormalizedTrace:
         tool_invocations=[tool_items[identifier] for identifier in tool_order],
         tool_observations_complete=saw_exec and not saw_rollout,
         compactions=compactions,
+        agent_tool_calls=[agent_calls[key] for key in agent_order],
         agent_messages=messages,
         parse_warnings=warnings,
     )
