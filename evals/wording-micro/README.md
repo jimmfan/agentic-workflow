@@ -57,7 +57,7 @@ python3 -m evals.wording_micro run \
 ```
 
 Verify current token prices before a run; the example prices are the routing smoke's from 2026-08-19.
-The Codex adapter runs each call ephemeral and read-only with low reasoning effort and ignored user configuration.
+The Codex adapter runs each call ephemeral and read-only with ignored user configuration and low reasoning effort unless `--effort` sets `medium` or `high`; the report records the effort.
 `--adapter claude` uses the Claude CLI instead.
 The cost limit may not exceed $5; the run stops before a sample that would start past it and keeps the completed samples.
 

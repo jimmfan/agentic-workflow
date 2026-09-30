@@ -336,6 +336,7 @@ def build_parser() -> argparse.ArgumentParser:
     live.add_argument("--adapter", choices=["codex", "claude"], default="codex")
     live.add_argument("--model", required=True)
     live.add_argument("--executable")
+    live.add_argument("--effort", choices=["low", "medium", "high"])
     live.add_argument("--reps", type=int, default=MIN_REPS)
     live.add_argument("--timeout-seconds", type=int, default=300)
     live.add_argument("--max-estimated-cost-usd", type=float, required=True)
@@ -377,20 +378,33 @@ def main(argv: Iterable[str] | None = None) -> int:
             raise smoke.SmokeError(
                 f"the cost limit must be positive and at most ${HARD_MAX_COST_USD:.2f}"
             )
+        if args.effort is not None and args.adapter != "codex":
+            raise smoke.SmokeError("--effort applies only to the codex adapter")
         output = smoke.validated_output_path(args.output)
         schema = response_schema(case["answer_schema"])
-        factory = smoke.codex_invoke if args.adapter == "codex" else smoke.claude_invoke
-        invoke = factory(
-            model=args.model,
-            executable=args.executable,
-            timeout_seconds=args.timeout_seconds,
-            schema=schema,
-        )
+        effort = None
+        if args.adapter == "codex":
+            effort = args.effort or "low"
+            invoke = smoke.codex_invoke(
+                model=args.model,
+                executable=args.executable,
+                timeout_seconds=args.timeout_seconds,
+                schema=schema,
+                effort=effort,
+            )
+        else:
+            invoke = smoke.claude_invoke(
+                model=args.model,
+                executable=args.executable,
+                timeout_seconds=args.timeout_seconds,
+                schema=schema,
+            )
         budget = smoke.CostBudget(args.max_estimated_cost_usd, *prices)
         report = run(case, invoke, budget, reps=args.reps)
         report["conditions"] = {
             "adapter": args.adapter,
             "model": args.model,
+            "effort": effort,
             "revision": smoke.revision("rev-parse", "HEAD"),
             "case_sha256": smoke.fingerprint(case),
         }

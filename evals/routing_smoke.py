@@ -627,6 +627,7 @@ def codex_invoke(
     executable: str | None,
     timeout_seconds: int,
     schema: Mapping[str, Any] | None = None,
+    effort: str = "low",
 ) -> Invoke:
     binary = executable_path(executable, "codex")
     output_schema = DECISION_SCHEMA if schema is None else schema
@@ -659,7 +660,7 @@ def codex_invoke(
                 "-m",
                 model,
                 "-c",
-                'model_reasoning_effort="low"',
+                f'model_reasoning_effort="{effort}"',
                 "-c",
                 'approval_policy="never"',
                 "-c",

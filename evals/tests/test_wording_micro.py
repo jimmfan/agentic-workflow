@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from evals import routing_smoke as smoke
 from evals import wording_micro as micro
@@ -196,6 +197,49 @@ class WordingMicroTests(unittest.TestCase):
                     "--output",
                     str(Path(temporary) / "r.json"),
                 ]
+            )
+        self.assertEqual(code, 2)
+
+    def run_args(self, directory, *extra):
+        return [
+            "run",
+            "--case",
+            "implement-named-handoff",
+            "--model",
+            "m",
+            "--executable",
+            "/nonexistent",
+            "--max-estimated-cost-usd",
+            "1",
+            "--input-price-per-million",
+            "1",
+            "--cached-input-price-per-million",
+            "0.1",
+            "--output-price-per-million",
+            "1",
+            "--output",
+            str(Path(directory) / "r.json"),
+            *extra,
+        ]
+
+    def test_run_command_passes_codex_effort_and_records_it(self):
+        for extra, expected in (((), "low"), (("--effort", "medium"), "medium")):
+            with (
+                self.subTest(effort=expected),
+                tempfile.TemporaryDirectory() as temporary,
+                patch.object(smoke, "codex_invoke") as factory,
+                patch.object(micro, "run", return_value={"summary": {}}),
+            ):
+                code = micro.main(self.run_args(temporary, *extra))
+                report = json.loads((Path(temporary) / "r.json").read_text())
+            self.assertEqual(code, 0)
+            self.assertEqual(factory.call_args.kwargs["effort"], expected)
+            self.assertEqual(report["conditions"]["effort"], expected)
+
+    def test_run_command_rejects_effort_for_the_claude_adapter(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            code = micro.main(
+                self.run_args(temporary, "--adapter", "claude", "--effort", "medium")
             )
         self.assertEqual(code, 2)
 
