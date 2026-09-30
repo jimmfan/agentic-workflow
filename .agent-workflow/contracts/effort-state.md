@@ -235,6 +235,8 @@ Verification or other work that the objective or its acceptance criteria require
 Residual uncertainty, unverified effectiveness beyond those requirements, or an optional follow-up that no current request or committed project choice schedules does not by itself keep an effort; preserve it in the artifact that maintains the result.
 When delivering a branch or pull request completes an effort's remaining work, including required verification, and the delivered artifacts maintain its lasting result, end the effort in that delivery so that accepting the delivery ends the effort.
 When required verification can happen only after delivery, keep the effort and record that verification as remaining work.
+When a delivery keeps the effort open with required remaining work, state that work and the exact prompt that resumes it in the final response and in the pull request description when you write one.
+Offer to link a tracker issue or scheduled reminder from the map, and create one only when the current user request or accepted project policy authorizes it.
 Apply the common sequence across affected records to preserve lasting outcomes and continuing relationships or constraints in their designated maintaining artifacts, then remove `map.md` last.
 Never recursively delete the effort directory; the absence of `map.md` ends Wayfinder recognition, and any unrecognized project-owned bytes and their containing directories remain unchanged and uninterpreted by Wayfinder.
 

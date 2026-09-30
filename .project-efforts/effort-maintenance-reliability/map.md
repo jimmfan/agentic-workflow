@@ -11,17 +11,19 @@ Includes live validation of those instructions and the open decisions below.
 Excludes consuming projects' own effort content and their policy on sensitive data in effort state (the user decided on 2026-09-27 that consumers own it, and removed the framework rule from PR #56), general routing changes unrelated to effort maintenance, and new runtime machinery unless a decision here adopts it.
 On 2026-09-27 the user authorized creating this effort and the framework edits in [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56); live model runs and external tracker or scheduler changes were not authorized.
 Later on 2026-09-27 the user authorized applying the PR #56 audit recommendations and completing the terminology rename in the same PR.
+On 2026-09-30 jimmfan chose how required work after delivery gets resumed (see Current state) and authorized delivering that rule on a branch with the 0.39.0 findings-loop changes; live model runs remain unauthorized.
 
 ## Ready work
 
 - [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56) merged on 2026-09-27 as `d82771e`; the items below remain.
-- Decide [U1](unknowns.md#u1--how-should-required-work-after-delivery-get-resumed) and [U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default) when ready; both need user input, not more evidence.
+- Decide [U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default) when ready; it needs user input, not more evidence.
 - Live validation is required by the objective but running it is not yet authorized.
   On 2026-09-27 jimmfan chose to treat it as the main test of routing reliability and to include one variant that moves Wayfinder selection ahead of the authority rules in the root policy ([context-efficiency map](../context-efficiency/map.md#ready-work)).
   Plan: one synthetic conversation of about ten turns in an unrelated domain, with maintenance authorized in turn 1, then a committed choice inside a question, pasted operator output, an agent-run read-only check that contradicts the map, a correction, and small talk.
   Controls: "discuss first", "no changes", already-saved information, a conversation with no earlier authorization, and one where routing selects the effort during authorized implementation; then a fresh reader session.
   Fix a small, matched number of baseline (pre-PR #56) and candidate runs before the first run, and grade saved meaning after every turn; one baseline success cannot show that the scenario fails to discriminate an intermittent failure.
-  A roughly ten-turn conversation tests continuation across turns, not long accumulated context or compaction like the week-long E1 conversation.
+  A roughly ten-turn conversation tests continuation across turns, not long accumulated context or compaction like the week-long E1 conversation; [U5](unknowns.md#u5--does-host-context-compaction-count-as-a-continuation-boundary) asks whether compaction needs its own arm.
+  Include a delivery that leaves required work, to check the delivery-ending rule below.
   The incident host was Codex with a GPT model; results from another host apply only partially.
 
 ## Current state
@@ -39,7 +41,9 @@ Most incidents are missed coordination rather than excess persistence.
 When a conversation authorizes no repository changes, current rules still have the agent propose rather than save ([U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default)).
 The resulting routing changes shipped in [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0) and are described in the [responsibility map](../workflow-responsibility-boundaries/map.md#current-state).
 Since 0.38.0 the [state contract](../../.agent-workflow/contracts/effort-state.md#map-authoring) tells authors to replace superseded map statements in place and leave history to Git, because dated narration had grown three maps to between 1,091 and 1,543 words.
-The [Claude Code exposure map](../claude-code-source-exposure/map.md) still describes PR #59's delivered change as uncommitted, another map that outlived its delivery ([U1](unknowns.md#u1--how-should-required-work-after-delivery-get-resumed)).
+The [Claude Code exposure map](../claude-code-source-exposure/map.md) still describes PR #59's delivered change as uncommitted, another map that outlived its delivery.
+Since 0.39.0 the [state contract](../../.agent-workflow/contracts/effort-state.md#keep-or-end-the-effort) has a delivery that keeps an effort open state its remaining work and exact resume prompt in the final response and pull request description, and offer a tracker issue or reminder that is created only when authorized.
+That rule was the recommended answer to how required work after delivery gets resumed; like the other instruction-only fixes, its effect is unverified live.
 
 Not yet specified: whether other authorization given earlier in a conversation should carry forward the way effort maintenance now does ([U2](unknowns.md#u2--should-other-earlier-authorization-carry-forward-across-turns)), and what to do with long-running efforts whose objectives never complete ([U3](unknowns.md#u3--should-long-running-efforts-without-an-achievable-objective-remain-efforts)).
 
@@ -47,17 +51,15 @@ Not yet specified: whether other authorization given earlier in a conversation s
 
 - The [root policy template](../../agent_workflow/install/AGENTS.md.template) carries the always-loaded continuity, authorization, and per-turn rules; the [state contract](../../.agent-workflow/contracts/effort-state.md) carries the procedure and ending rules; [terminology](../../.agent-workflow/terminology.md) defines effort maintenance and read-only request.
 - The [language-coherence effort](../language-coherence/map.md) owns general terminology questions; this effort owns only terms that decide when effort state is maintained.
-- The user decides U1–U4 and authorizes live runs, trackers, or schedulers.
+- The user decides U2–U5 and authorizes live runs, trackers, or schedulers.
 
 ## Dependencies
 
 - Live validation needs authorization, a model host, and quota.
-- Adopting a trigger mechanism under U1 needs U1's decision.
 
 ## Blockers
 
 - Live validation: not authorized.
-- Trigger mechanism: U1 unresolved.
 - Saving without a separate go-ahead in conversations that authorize no repository changes: U4 unresolved.
 
 ## Key references

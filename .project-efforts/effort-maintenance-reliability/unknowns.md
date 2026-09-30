@@ -1,19 +1,3 @@
-## U1 — How should required work after delivery get resumed?
-
-Why it matters: an effort kept open after its PR merges records the remaining work, but nothing prompts an agent to return, because existing effort state never selects Wayfinder by design ([ADR-0027](../../architecture-decisions/0027-use-direct-first-progressive-routing.md)).
-Maps that outlived their merged PRs before 2026-09-19 sat unread until a manual cleanup.
-
-Options identified on 2026-09-27, smallest first:
-
-1. State remaining work and the exact next prompt in the delivering PR description and final response; the person merging sees it.
-2. Hand the trigger to something that already notifies people: a tracker issue or a host scheduler, linked from the map, when authorized.
-3. Let agents discover efforts on their own, for example by listing effort names at session start; reverses ADR-0027's rule and adds per-request cost.
-4. Deterministic tooling such as a CI check for maps that mention merged PRs; not adopted, and it would need a concrete justification under the thin-layer boundary; it can only notify.
-   [ADR-0010](../../architecture-decisions/0010-separate-framework-output-from-project-owned-state.md) bars lifecycle operations from traversing effort state but does not by itself rule out a separate, authorized read-only checker.
-
-Recommendation recorded 2026-09-27: options 1 and 2 together as one contract change.
-Resolution: user decision.
-
 ## U2 — Should other earlier authorization carry forward across turns?
 
 Why it matters: [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) now carries earlier authorization forward only for effort maintenance, and "current user request" remains undefined for other writes, such as a commit authorized in an earlier turn.
@@ -30,3 +14,17 @@ Resolution: user decision.
 Why it matters: under the root policy, when routing selects an effort in a conversation that authorizes no repository changes, such as diagnosis, discussion, or strategy, the agent reports what needs preserving and waits, so jimmfan must still act (incidents 5 and 6 in [E2](evidence/E2-historical-incident-summary.md)).
 A default that authorizes effort maintenance on selection unless the user asks for no changes or to discuss first would remove that step but widen an authorization boundary that [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) governs; it is related to but narrower than [U2](#u2--should-other-earlier-authorization-carry-forward-across-turns).
 Resolution: user decision.
+
+## U5 — Does host context compaction count as a continuation boundary?
+
+Why it matters: hosts such as Codex and Claude Code replace older turns with a summary near the context limit, and the Wayfinder hard signal names only continuation across sessions or agents.
+The root policy ranks live source and accepted artifacts above summaries, but no evidence shows agents rereading the map or repository after compaction instead of trusting the summary.
+Superpowers reports controllers re-running completed tasks after compaction as its most expensive observed failure ([subagent-driven-development](https://github.com/obra/superpowers/blob/main/skills/subagent-driven-development/SKILL.md), 2026-09-30); no incident here involves compaction.
+
+Options:
+
+1. Treat compaction as a session boundary for the hard signal; long sessions would select Wayfinder more often.
+2. Keep the current rule and verify that agents apply it after compaction.
+3. Let an enabled log support resumption; this requires reconsidering [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md) with evidence.
+
+Resolution: live evidence from a compaction arm in the planned multi-turn test, then user decision.

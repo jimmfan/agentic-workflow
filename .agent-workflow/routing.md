@@ -56,7 +56,7 @@ Implementation may consume ready work from the current authorized request, selec
 
 Avoid routing loops: a bounded decision remains in Discovery unless it crosses the Wayfinder threshold.
 Inside selected Wayfinder, use each needed specialist once for the relevant question, uncertainty, unexplained cause, consequential choice, or domain-model ambiguity without creating another Agent Workflow durable coordination model.
-Meaningful Implementation runs Verification once.
+Meaningful Implementation runs Verification once; after defects it returned are fixed, it re-checks only the criteria those defects affected.
 New causal uncertainty returns to Debugging; a material unresolved choice returns to Discovery or Wayfinder according to the coordination threshold.
 
 ## Use selected skills
