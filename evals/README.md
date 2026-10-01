@@ -18,9 +18,6 @@ It performs the narrow evidence-precedence investigation below and compares froz
 The [implementation completion controls](implementation-completion/README.md) use a fictional photo editor to check exact recovery and review-to-completion boundaries.
 Deterministic evaluator controls are separate from live behavioral evidence.
 
-[Wording micro-tests](wording-micro/README.md) compare how a wording change alters a model's single-turn plan against a no-guidance control and the current wording, with at least five repetitions per variant.
-They are opt-in, contact the selected model service, and do not show host discovery or executed behavior.
-
 Token forensics analyzes an existing Codex trace without running a model:
 
 ```bash

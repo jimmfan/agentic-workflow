@@ -621,16 +621,8 @@ def executable_path(explicit: str | None, default: str) -> str:
     raise SmokeError(f"adapter executable is unavailable: {default}")
 
 
-def codex_invoke(
-    *,
-    model: str,
-    executable: str | None,
-    timeout_seconds: int,
-    schema: Mapping[str, Any] | None = None,
-    effort: str = "low",
-) -> Invoke:
+def codex_invoke(*, model: str, executable: str | None, timeout_seconds: int) -> Invoke:
     binary = executable_path(executable, "codex")
-    output_schema = DECISION_SCHEMA if schema is None else schema
 
     def invoke(prompt: str) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
         with tempfile.TemporaryDirectory(prefix="routing-smoke-codex-") as temporary:
@@ -648,9 +640,9 @@ def codex_invoke(
             isolated_auth = isolated_home / "auth.json"
             shutil.copyfile(source_auth, isolated_auth)
             isolated_auth.chmod(0o600)
-            schema_path = root / "decision-schema.json"
+            schema = root / "decision-schema.json"
             output = root / "decision.json"
-            schema_path.write_text(json.dumps(output_schema), encoding="utf-8")
+            schema.write_text(json.dumps(DECISION_SCHEMA), encoding="utf-8")
             command = [
                 binary,
                 "exec",
@@ -660,7 +652,7 @@ def codex_invoke(
                 "-m",
                 model,
                 "-c",
-                f'model_reasoning_effort="{effort}"',
+                'model_reasoning_effort="low"',
                 "-c",
                 'approval_policy="never"',
                 "-c",
@@ -671,7 +663,7 @@ def codex_invoke(
                 str(root),
                 "--skip-git-repo-check",
                 "--output-schema",
-                str(schema_path),
+                str(schema),
                 "--output-last-message",
                 str(output),
                 "--json",
@@ -739,16 +731,10 @@ def codex_invoke(
 
 
 def claude_invoke(
-    *,
-    model: str,
-    executable: str | None,
-    timeout_seconds: int,
-    schema: Mapping[str, Any] | None = None,
+    *, model: str, executable: str | None, timeout_seconds: int
 ) -> Invoke:
     binary = executable_path(executable, "claude")
-    schema_text = json.dumps(
-        DECISION_SCHEMA if schema is None else schema, separators=(",", ":")
-    )
+    schema = json.dumps(DECISION_SCHEMA, separators=(",", ":"))
 
     def invoke(prompt: str) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
         with tempfile.TemporaryDirectory(prefix="routing-smoke-claude-") as temporary:
@@ -765,7 +751,7 @@ def claude_invoke(
                 "--output-format",
                 "json",
                 "--json-schema",
-                schema_text,
+                schema,
                 "--model",
                 model,
                 "--permission-mode",
