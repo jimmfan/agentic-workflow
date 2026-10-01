@@ -150,6 +150,44 @@ class WordingMicroTests(unittest.TestCase):
         self.assertFalse(report["summary"]["baseline_failure_observed"])
         self.assertIn("supports no wording change", report["summary"]["interpretation"])
 
+    def test_adapter_errors_are_reported_instead_of_crashing_the_summary(self):
+        def failing(prompt):
+            raise smoke.SmokeError("codex exited with status 1: model not found")
+
+        report = micro.run(
+            CASE, failing, budget(), reps=5, policy="POLICY", skills=SKILLS
+        )
+        summary = report["summary"]
+        self.assertEqual(
+            summary["errors"], {"codex exited with status 1: model not found": 15}
+        )
+        self.assertIsNone(summary["baseline_failure_observed"])
+        for variant in summary["variants"].values():
+            self.assertEqual(variant["samples"], 5)
+            self.assertEqual(variant["scored"], 0)
+            self.assertEqual(variant["errors"], 5)
+            self.assertGreater(variant["first_prompt_bytes"], 0)
+
+    def test_baseline_errors_block_the_no_change_conclusion(self):
+        model = FakeModel({"control": True, "current": True, "candidate": True})
+        calls = 0
+
+        def flaky(prompt):
+            nonlocal calls
+            calls += 1
+            if calls == 3:
+                raise smoke.SmokeError("timeout")
+            return model(prompt)
+
+        report = micro.run(
+            CASE, flaky, budget(), reps=5, policy="POLICY", skills=SKILLS
+        )
+        self.assertEqual(report["summary"]["variants"]["current"]["errors"], 1)
+        self.assertIsNone(report["summary"]["baseline_failure_observed"])
+        self.assertNotIn(
+            "supports no wording change", report["summary"]["interpretation"]
+        )
+
     def test_fewer_than_five_reps_is_rejected(self):
         with self.assertRaisesRegex(smoke.SmokeError, "at least 5"):
             micro.run(

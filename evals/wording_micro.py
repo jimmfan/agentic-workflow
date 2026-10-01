@@ -191,7 +191,18 @@ def run_sample(
         )
         if first_prompt_bytes is None:
             first_prompt_bytes = len(prompt.encode("utf-8"))
-        response, usage = invoke(prompt)
+        try:
+            response, usage = invoke(prompt)
+        except smoke.SmokeError as exc:
+            return {
+                "variant": variant,
+                "rounds": round_number,
+                "requested_skills": requested,
+                "answer": None,
+                "predicates": None,
+                "first_prompt_bytes": first_prompt_bytes,
+                "error": str(exc),
+            }
         budget.add(usage)
         history.append(response)
         names = [
@@ -254,18 +265,29 @@ def summarize(
                 for pid in predicate_ids
             },
             "distinct_outcome_patterns": len(patterns),
-            "first_prompt_bytes": own[0]["first_prompt_bytes"] if own else None,
+            "errors": sum(1 for sample in own if sample.get("error")),
+            "first_prompt_bytes": next(
+                (
+                    sample["first_prompt_bytes"]
+                    for sample in own
+                    if sample.get("first_prompt_bytes") is not None
+                ),
+                None,
+            ),
         }
     baseline_scored = [
         sample
         for sample in samples
         if sample["variant"] == baseline and sample.get("predicates") is not None
     ]
-    failure_observed = (
-        any(not all(sample["predicates"].values()) for sample in baseline_scored)
-        if baseline_scored
-        else None
+    baseline_errors = any(
+        sample.get("error") for sample in samples if sample["variant"] == baseline
     )
+    failure_observed: bool | None = any(
+        not all(sample["predicates"].values()) for sample in baseline_scored
+    )
+    if not failure_observed and (baseline_errors or not baseline_scored):
+        failure_observed = None
     return {
         "control": control,
         "baseline": baseline,
@@ -274,6 +296,9 @@ def summarize(
             f"The {baseline} variant showed no failure; this run supports no wording change."
             if failure_observed is False
             else "Compare pass counts and spread by hand; read every sample before deciding."
+        ),
+        "errors": dict(
+            Counter(sample["error"] for sample in samples if sample.get("error"))
         ),
         "variants": variants,
     }
