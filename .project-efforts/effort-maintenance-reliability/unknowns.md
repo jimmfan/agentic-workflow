@@ -25,6 +25,6 @@ Options:
 
 1. Treat compaction as a session boundary for the hard signal; long sessions would select Wayfinder more often.
 2. Keep the current rule and verify that agents apply it after compaction.
-3. Let an enabled log support resumption; this requires reconsidering [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md) with evidence.
+3. Add a record that supports resumption after compaction; this requires reconsidering [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md) with evidence.
 
 Resolution: live evidence from a compaction arm in the planned multi-turn test, then user decision.

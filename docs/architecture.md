@@ -52,7 +52,6 @@ Wayfinder is Agent Workflow's sole durable coordinator.
 Its map orients one effort and links the current coordination detail needed for continuation.
 A map-only effort is valid.
 Specifications, tickets, research, architecture decisions, and other lasting results remain with their designated maintaining artifacts; specialists do not create parallel Agent Workflow coordination systems.
-A log that a request or accepted project policy turns on, such as `implement`'s findings log, is a record rather than coordination state and is never used to resume work.
 
 The [Wayfinder skill](../.agents/skills/wayfinder/SKILL.md) owns navigation and method selection, while the state contract owns exact mechanics.
 The [Wayfinder Effort skill](../.agents/skills/wayfinder-effort/SKILL.md) is a convenience entry point for orientation without product implementation.

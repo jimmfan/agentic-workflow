@@ -116,21 +116,6 @@ These links describe the available capabilities; they are not a sequence you mus
 | Define and deliver work | [To Spec](.agents/skills/to-spec/SKILL.md), [To Tickets](.agents/skills/to-tickets/SKILL.md), [Implementation](.agents/skills/workflow-implementation/SKILL.md) and its [build method](.agents/skills/implement/SKILL.md), [TDD](.agents/skills/tdd/SKILL.md), [Code Review](.agents/skills/code-review/SKILL.md), [Verification](.agents/skills/workflow-verification/SKILL.md) |
 | Continue an effort | [Wayfinder](.agents/skills/wayfinder/SKILL.md), [Wayfinder Effort](.agents/skills/wayfinder-effort/SKILL.md) |
 
-### Optional findings log
-
-`implement` fixes blocking review findings for up to three rounds and reports the rest, and any finding it judged not to hold, in its final response.
-To also keep those results in a file, ask for a findings log in a request, or turn it on for every request in your project's `AGENTS.md` outside the managed region:
-
-```markdown
-## Agent Workflow options
-
-- Findings log: on, at .agent-logs/findings.md
-```
-
-The log is off by default.
-It is a record only and is never used to resume work.
-Add its path to `.gitignore` if you do not want it committed.
-
 ## Wayfinder
 
 Wayfinder keeps the current objective, scope, dependencies, blockers, and ready work in `.project-efforts/<effort>/map.md`.

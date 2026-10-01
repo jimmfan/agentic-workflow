@@ -2,7 +2,6 @@
 
 - Status: accepted
 - Date: 2026-08-20
-- Amended: 2026-09-30
 
 ## Context
 
@@ -26,9 +25,6 @@ A ticket draft returned only in chat remains session-local and is not a durable 
 When interrupted work lacks an artifact sufficient for continuation, Wayfinder records only consequential coordination needed for resumption—such as a current question, a condition blocking particular work, a dependency, or ready work—and references.
 Unrecognized project-owned content is not current coordination state or an automatic resumption source.
 
-A log that the current user request or accepted project policy explicitly turns on, such as `implement`'s findings log, is a record rather than coordination state.
-Such a log is off unless turned on, is never required, and is never a resumption source; the map, accepted artifacts, and the repository outrank it.
-
 ## Consequences
 
 Fresh sessions have one Agent Workflow resumption model.
@@ -48,4 +44,3 @@ Exact specialist integrations, implementation mechanics and workflow transitions
 ## Reconsideration trigger
 
 Reconsider if a specialist demonstrates a durable coordination need that cannot be represented safely as an artifact or record designated to maintain the result plus a concise Wayfinder reference.
-Using an enabled log to resume work, for example after host context compaction, requires that reconsideration with evidence first.
