@@ -18,7 +18,7 @@ The supplied request can define the work without a separate spec file or tracker
 Follow Code Review's coverage and read-only rules; do not commit or otherwise rearrange work merely to make review possible.
 
 Then fix each hard Standards violation and each Spec requirement that Code Review reports as missing, partial, or implemented wrongly; each fix round reruns the tests covering the changed code and runs `code-review` again on only the open findings and the fix's own changes.
-After three fix rounds, stop and report any finding still open with the evidence from each attempt.
+After three fix rounds, stop: a finding still open by then usually needs a decision rather than another fix, so report it with the evidence from each attempt.
 Report judgement calls such as baseline smells, and observations outside the reviewed scope, without fixing them; leave scope creep in place for a decision by the person, role, or valid delegate with project decision authority.
 When evidence shows that a finding does not hold, leave the code unchanged and state the finding and that evidence.
 
