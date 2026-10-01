@@ -52,6 +52,33 @@ class CompactionEvent:
     event_type: str
 
 
+AgentToolSource = Literal["exec_collab_item", "rollout_function_call"]
+
+
+@dataclass(frozen=True)
+class AgentToolCall:
+    """One multi-agent tool call, with only the fields its source records."""
+
+    sequence: int
+    line_number: int
+    source: AgentToolSource
+    tool: str
+    call_id: str | None = None
+    namespace: str | None = None
+    status: str | None = None
+    sender_thread_id: str | None = None
+    receiver_thread_ids: tuple[str, ...] = ()
+    agent_statuses: tuple[str, ...] = ()
+    prompt_bytes: int | None = None
+    arguments_parsed: bool | None = None
+    model: str | None = None
+    reasoning_effort: str | None = None
+    fork_turns: str | None = None
+    fork_context: bool | None = None
+    timeout_ms: int | None = None
+    timed_out: bool | None = None
+
+
 @dataclass
 class NormalizedTrace:
     source_path: Path
@@ -65,6 +92,7 @@ class NormalizedTrace:
     tool_invocations: list[ToolInvocation] = field(default_factory=list)
     tool_observations_complete: bool = True
     compactions: list[CompactionEvent] = field(default_factory=list)
+    agent_tool_calls: list[AgentToolCall] = field(default_factory=list)
     agent_messages: list[str] = field(default_factory=list)
     parse_warnings: list[str] = field(default_factory=list)
 

@@ -6,6 +6,7 @@ from typing import Any
 
 from ..models import NormalizedTrace, Thresholds
 from .context import analyze_context
+from .subagents import analyze_subagents
 from .tokens import analyze_tokens
 from .tools import analyze_tools
 
@@ -23,11 +24,16 @@ def _limitations(trace: NormalizedTrace) -> list[str]:
                 "turn.completed usage is per Codex turn and aggregates internal model calls; internal model-call count is unavailable.",
                 "command_execution exposes aggregated_output, so tool stdout and stderr cannot be separated.",
                 "context compaction is not exposed by this exec event stream unless an explicit compaction event appears.",
+                "collab_tool_call items omit spawn model, reasoning effort, fork mode, and wait timeouts, and Codex does not emit followup_task, send_message, interrupt_agent, or list_agents calls to this stream.",
             ]
         )
     if trace.source_format == "codex-rollout-jsonl":
         limitations.append(
             "Rollout token_count events are cumulative snapshots and may be repeated; only monotonic distinct snapshots are used."
+        )
+    if trace.agent_tool_calls:
+        limitations.append(
+            "Subagent settings come only from recorded call arguments; an unset model or effort may still be supplied by host configuration, and fork defaults follow Codex source at 60947e2."
         )
     return limitations
 
@@ -39,6 +45,7 @@ def analyze_trace(
     measured_tokens, derived_tokens, token_warnings = analyze_tokens(trace)
     measured_tools, derived_tools, tool_warnings = analyze_tools(trace, configured)
     _repository, heuristic, context_warnings = analyze_context(trace, configured)
+    subagents, subagent_warnings = analyze_subagents(trace)
 
     compaction_observable = trace.source_format in {
         "codex-rollout-jsonl",
@@ -65,7 +72,7 @@ def analyze_trace(
             for item in trace.compactions
         ],
     }
-    warnings = token_warnings + tool_warnings + context_warnings
+    warnings = token_warnings + tool_warnings + context_warnings + subagent_warnings
     if trace.codex_turns_completed >= configured.long_codex_turn_count:
         warnings.append(
             {
@@ -88,7 +95,7 @@ def analyze_trace(
         )
 
     return {
-        "schema_version": "token-forensics/v2",
+        "schema_version": "token-forensics/v3",
         "source": {
             "format": trace.source_format,
             "path": str(trace.source_path),
@@ -101,6 +108,7 @@ def analyze_trace(
             "tokens": measured_tokens,
             "trajectory": trajectory,
             "tools": measured_tools,
+            "subagents": subagents,
         },
         "derived": {
             "tokens": derived_tokens,
