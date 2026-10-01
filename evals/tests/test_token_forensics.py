@@ -362,7 +362,7 @@ class GenericAnalysisTests(unittest.TestCase):
         summary = analyze_trace(parse_codex_trace(FIXTURES / "codex-exec.jsonl"))
 
         self.assertEqual(
-            json.loads(json_text(summary))["schema_version"], "token-forensics/v2"
+            json.loads(json_text(summary))["schema_version"], "token-forensics/v3"
         )
         report = human_text(summary, label="Fixture")
         self.assertIn("Fixture", report)
@@ -394,9 +394,207 @@ class GenericAnalysisTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertEqual(
                 json.loads(json_path.read_text())["schema_version"],
-                "token-forensics/v2",
+                "token-forensics/v3",
             )
             self.assertIn("TOKENS", text_path.read_text())
+
+
+def _rollout_call(call_id, name, arguments, namespace=None):
+    payload = {
+        "type": "function_call",
+        "call_id": call_id,
+        "name": name,
+        "arguments": arguments if isinstance(arguments, str) else json.dumps(arguments),
+    }
+    if namespace is not None:
+        payload["namespace"] = namespace
+    return {"type": "response_item", "payload": payload}
+
+
+def _rollout_output(call_id, output):
+    return {
+        "type": "response_item",
+        "payload": {
+            "type": "function_call_output",
+            "call_id": call_id,
+            "output": output,
+        },
+    }
+
+
+class SubagentAnalysisTests(unittest.TestCase):
+    """Event shapes follow openai/codex 60947e2 exec_events.rs and multi_agents_v2."""
+
+    def analyze_events(self, events):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "trace.jsonl"
+            path.write_text("".join(json.dumps(event) + "\n" for event in events))
+            return analyze_trace(parse_codex_trace(path))
+
+    def test_exec_collab_items_report_counts_and_leave_settings_unavailable(self):
+        spawn = {
+            "id": "item-1",
+            "type": "collab_tool_call",
+            "tool": "spawn_agent",
+            "sender_thread_id": "root",
+            "receiver_thread_ids": ["child-1"],
+            "prompt": "Review the diff.",
+            "agents_states": {},
+            "status": "in_progress",
+        }
+        summary = self.analyze_events(
+            [
+                {"type": "thread.started", "thread_id": "root"},
+                {"type": "item.started", "item": spawn},
+                {"type": "item.completed", "item": {**spawn, "status": "completed"}},
+                {
+                    "type": "item.completed",
+                    "item": {
+                        **spawn,
+                        "id": "item-2",
+                        "sender_thread_id": "child-1",
+                        "receiver_thread_ids": ["child-2"],
+                        "status": "completed",
+                    },
+                },
+                {
+                    "type": "item.completed",
+                    "item": {
+                        "id": "item-3",
+                        "type": "collab_tool_call",
+                        "tool": "wait",
+                        "sender_thread_id": "root",
+                        "receiver_thread_ids": ["child-1"],
+                        "prompt": None,
+                        "agents_states": {
+                            "child-1": {"status": "running", "message": None}
+                        },
+                        "status": "completed",
+                    },
+                },
+            ]
+        )
+        subagents = summary["measured"]["subagents"]
+        self.assertEqual(subagents["observed_calls"], 3)
+        self.assertEqual(subagents["spawns"]["count"], 2)
+        self.assertEqual(subagents["spawns"]["prompt_bytes_total"], 32)
+        self.assertEqual(subagents["spawns"]["spawned_by_other_threads"], 1)
+        self.assertIsNone(subagents["spawns"]["explicit_model"])
+        self.assertEqual(subagents["spawns"]["fork_modes"], {"unavailable": 2})
+        self.assertEqual(subagents["waits"]["count"], 1)
+        self.assertIsNone(subagents["waits"]["timed_out"])
+        self.assertIsNone(subagents["waits"]["requested_timeout_ms"])
+        codes = {item["code"] for item in summary["warnings"]}
+        self.assertIn("nested_spawn", codes)
+        self.assertNotIn("full_history_spawn", codes)
+        self.assertTrue(
+            any(
+                "collab_tool_call items omit" in item
+                for item in summary["source"]["limitations"]
+            )
+        )
+
+    def test_rollout_v2_arguments_expose_fork_model_and_wait_outcomes(self):
+        summary = self.analyze_events(
+            [
+                {"type": "session_meta", "payload": {"id": "rollout"}},
+                _rollout_call(
+                    "c1", "spawn_agent", {"message": "abcd", "task_name": "review"}
+                ),
+                _rollout_call(
+                    "c2",
+                    "spawn_agent",
+                    {
+                        "message": "ab",
+                        "task_name": "spec",
+                        "model": "gpt-mini",
+                        "reasoning_effort": "medium",
+                        "fork_turns": "none",
+                    },
+                ),
+                _rollout_call(
+                    "c3",
+                    "spawn_agent",
+                    {"message": "x", "task_name": "t", "fork_turns": "3"},
+                ),
+                _rollout_call("w1", "wait_agent", {"timeout_ms": 10000}),
+                _rollout_output(
+                    "w1", json.dumps({"message": "Wait timed out.", "timed_out": True})
+                ),
+                _rollout_call("w2", "wait_agent", {}),
+                _rollout_output(
+                    "w2",
+                    [
+                        {
+                            "type": "input_text",
+                            "text": json.dumps(
+                                {"message": "Wait completed.", "timed_out": False}
+                            ),
+                        }
+                    ],
+                ),
+                _rollout_call(
+                    "f1", "followup_task", {"target": "review", "message": "fix it"}
+                ),
+            ]
+        )
+        subagents = summary["measured"]["subagents"]
+        spawns = subagents["spawns"]
+        self.assertEqual(spawns["count"], 3)
+        self.assertEqual(spawns["prompt_bytes_total"], 7)
+        self.assertEqual(spawns["prompt_bytes_max"], 4)
+        self.assertEqual(spawns["explicit_model"], 1)
+        self.assertEqual(spawns["explicit_reasoning_effort"], 1)
+        self.assertEqual(
+            spawns["fork_modes"],
+            {"full_history_default": 1, "last_n_turns": 1, "none": 1},
+        )
+        self.assertIsNone(spawns["spawned_by_other_threads"])
+        waits = subagents["waits"]
+        self.assertEqual(waits["count"], 2)
+        self.assertEqual(waits["timed_out"], 1)
+        self.assertEqual(
+            waits["requested_timeout_ms"],
+            {"unset": 1, "min": 10000, "median": 10000, "max": 10000},
+        )
+        self.assertEqual(subagents["other_agent_tools"], {"followup_task": 1})
+        codes = {item["code"] for item in summary["warnings"]}
+        self.assertTrue(
+            {"full_history_spawn", "spawn_without_model", "wait_timeouts"} <= codes
+        )
+
+        report = human_text(summary)
+        self.assertIn("SUBAGENTS", report)
+        self.assertIn("full_history_default 1", report)
+
+    def test_v1_namespace_defaults_to_no_fork_and_bad_arguments_stay_unavailable(self):
+        summary = self.analyze_events(
+            [
+                _rollout_call(
+                    "a", "spawn_agent", {"message": "m"}, namespace="multi_agent_v1"
+                ),
+                _rollout_call(
+                    "b",
+                    "spawn_agent",
+                    {"message": "m", "fork_context": True},
+                    namespace="multi_agent_v1",
+                ),
+                _rollout_call("c", "spawn_agent", "{not json"),
+            ]
+        )
+        spawns = summary["measured"]["subagents"]["spawns"]
+        self.assertEqual(
+            spawns["fork_modes"], {"full_history": 1, "none": 1, "unavailable": 1}
+        )
+        self.assertIsNone(spawns["explicit_model"])
+        self.assertIsNone(spawns["prompt_bytes_total"])
+
+    def test_traces_without_agent_tools_report_zero_and_omit_the_text_section(self):
+        summary = analyze_trace(parse_codex_trace(FIXTURES / "codex-exec.jsonl"))
+        subagents = summary["measured"]["subagents"]
+        self.assertEqual(subagents["observed_calls"], 0)
+        self.assertEqual(subagents["spawns"]["explicit_model"], 0)
+        self.assertNotIn("SUBAGENTS", human_text(summary))
 
 
 if __name__ == "__main__":
