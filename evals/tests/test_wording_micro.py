@@ -188,6 +188,71 @@ class WordingMicroTests(unittest.TestCase):
             "supports no wording change", report["summary"]["interpretation"]
         )
 
+    def sample_with(self, respond):
+        prompts = []
+
+        def invoke(prompt):
+            prompts.append(prompt)
+            return respond(prompt, len(prompts)), {"input_tokens": 1}
+
+        sample = micro.run_sample(
+            CASE, "current", invoke, budget(), policy="POLICY", skills=SKILLS
+        )
+        return sample, prompts
+
+    def test_the_final_round_asks_for_a_complete_answer(self):
+        def respond(prompt, number):
+            if micro.FINAL_ROUND_NOTE in prompt:
+                return {
+                    "status": "complete",
+                    "requested_skills": [],
+                    "answer": {"verifies": True},
+                }
+            wanted = ["implement", "workflow-implementation"][number - 1]
+            return {
+                "status": "request_resources",
+                "requested_skills": [wanted],
+                "answer": {"verifies": False},
+            }
+
+        sample, prompts = self.sample_with(respond)
+        self.assertEqual(
+            [micro.FINAL_ROUND_NOTE in prompt for prompt in prompts],
+            [False, False, True],
+        )
+        self.assertEqual(sample["rounds"], 3)
+        self.assertEqual(sample["predicates"], {"reads": True, "verifies": True})
+        self.assertNotIn("error", sample)
+        self.assertEqual(len(sample["responses"]), 3)
+
+    def test_incomplete_samples_keep_responses_and_name_the_stop_reason(self):
+        def keeps_asking(prompt, number):
+            wanted = ["implement", "workflow-implementation", "implement"][number - 1]
+            return {
+                "status": "request_resources",
+                "requested_skills": [wanted],
+                "answer": {"verifies": True},
+            }
+
+        sample, _ = self.sample_with(keeps_asking)
+        self.assertIsNone(sample["predicates"])
+        self.assertIn("final round", sample["error"])
+        self.assertEqual(len(sample["responses"]), 3)
+        self.assertEqual(sample["responses"][-1]["answer"], {"verifies": True})
+
+        def asks_for_unexposed(prompt, number):
+            return {
+                "status": "request_resources",
+                "requested_skills": ["routing.md"],
+                "answer": {"verifies": True},
+            }
+
+        sample, _ = self.sample_with(asks_for_unexposed)
+        self.assertEqual(sample["rounds"], 1)
+        self.assertIn("routing.md", sample["error"])
+        self.assertNotIn("round limit", sample["error"])
+        self.assertEqual(len(sample["responses"]), 1)
+
     def test_fewer_than_five_reps_is_rejected(self):
         with self.assertRaisesRegex(smoke.SmokeError, "at least 5"):
             micro.run(

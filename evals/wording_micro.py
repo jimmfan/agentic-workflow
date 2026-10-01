@@ -19,6 +19,10 @@ CASES_ROOT = MICRO_ROOT / "cases"
 SKILLS_ROOT = smoke.REPOSITORY_ROOT / ".agents" / "skills"
 MIN_REPS = 5
 MAX_ROUNDS = 3
+FINAL_ROUND_NOTE = (
+    "This is the final round: further skill requests will not be answered. "
+    'Return status="complete" with your best plan.'
+)
 HARD_MAX_COST_USD = 5.0
 PREDICATE_KINDS = {"resource_requested", "answer_equals", "answer_list_contains"}
 
@@ -112,6 +116,7 @@ def build_prompt(
     skills: Mapping[str, tuple[str, str]],
     loaded: Sequence[str],
     history: Sequence[Mapping[str, Any]],
+    final: bool = False,
 ) -> str:
     overrides = case["variants"][variant].get("descriptions", {})
     lines = []
@@ -150,6 +155,7 @@ Skill instructions loaded so far:
 Your prior responses:
 {json.dumps(list(history), indent=2)}
 
+{FINAL_ROUND_NOTE if final else ""}
 Return only the JSON object required by the supplied output schema.
 """
 
@@ -184,25 +190,36 @@ def run_sample(
     requested: list[str] = []
     history: list[Mapping[str, Any]] = []
     first_prompt_bytes: int | None = None
+
+    def incomplete(error: str) -> dict[str, Any]:
+        return {
+            "variant": variant,
+            "rounds": len(history),
+            "requested_skills": requested,
+            "answer": None,
+            "predicates": None,
+            "first_prompt_bytes": first_prompt_bytes,
+            "responses": history,
+            "error": error,
+        }
+
     for round_number in range(1, MAX_ROUNDS + 1):
         budget.check()
         prompt = build_prompt(
-            case, variant, policy=policy, skills=skills, loaded=loaded, history=history
+            case,
+            variant,
+            policy=policy,
+            skills=skills,
+            loaded=loaded,
+            history=history,
+            final=round_number == MAX_ROUNDS,
         )
         if first_prompt_bytes is None:
             first_prompt_bytes = len(prompt.encode("utf-8"))
         try:
             response, usage = invoke(prompt)
         except smoke.SmokeError as exc:
-            return {
-                "variant": variant,
-                "rounds": round_number,
-                "requested_skills": requested,
-                "answer": None,
-                "predicates": None,
-                "first_prompt_bytes": first_prompt_bytes,
-                "error": str(exc),
-            }
+            return incomplete(str(exc))
         budget.add(usage)
         history.append(response)
         names = [
@@ -213,7 +230,7 @@ def run_sample(
         if response.get("status") == "complete":
             answer = response.get("answer")
             if not isinstance(answer, dict):
-                raise smoke.SmokeError("completed response lacks an answer object")
+                return incomplete("completed response lacks an answer object")
             return {
                 "variant": variant,
                 "rounds": round_number,
@@ -221,21 +238,18 @@ def run_sample(
                 "answer": answer,
                 "predicates": score(case, requested, answer),
                 "first_prompt_bytes": first_prompt_bytes,
+                "responses": history,
             }
         new = [name for name in names if name in skills and name not in loaded]
         requested.extend(name for name in names if name not in requested)
+        if round_number == MAX_ROUNDS:
+            return incomplete(f"still requesting skills after the final round: {names}")
         if not new:
-            break
+            return incomplete(
+                f"requested no exposed skill that was not already loaded: {names}"
+            )
         loaded.extend(new)
-    return {
-        "variant": variant,
-        "rounds": len(history),
-        "requested_skills": requested,
-        "answer": None,
-        "predicates": None,
-        "first_prompt_bytes": first_prompt_bytes,
-        "error": "no complete answer within the round limit",
-    }
+    raise AssertionError("unreachable")
 
 
 def summarize(

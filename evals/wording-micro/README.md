@@ -4,6 +4,7 @@ This opt-in harness checks whether a wording change alters what a model plans to
 It adapts the method in obra/superpowers' [writing-skills guidance](https://github.com/obra/superpowers/blob/main/skills/writing-skills/SKILL.md) to Agent Workflow's evidence rules.
 
 Each sample is one fresh model conversation of at most three rounds.
+The third round tells the model it is final and must return a complete answer.
 The prompt holds the rendered consumer `AGENTS.md`, a catalog of exposed skill names and descriptions, and one user request.
 The model may request a skill's full instructions by name before it returns a structured plan.
 The harness reuses the [routing smoke](../routing-smoke/README.md) Codex and Claude adapters, cost guard, and outside-repository report rule.
@@ -13,8 +14,9 @@ The harness reuses the [routing smoke](../routing-smoke/README.md) Codex and Cla
 - Every case has exactly one control variant with the guidance removed, and may name one baseline variant holding the current wording.
 - Every variant runs at least five repetitions, interleaved so that each repetition runs all variants in order.
 - If every sample of the baseline, or of the control when no baseline is named, passes every predicate, the report says the run supports no wording change.
-  A baseline sample that failed to run blocks that conclusion.
-- A sample whose adapter call fails keeps its error message instead of a score; the summary counts errors per variant and lists each distinct message.
+  A baseline sample that ended without a complete answer blocks that conclusion.
+- A sample that ends without a complete answer keeps its error message instead of a score; the summary counts errors per variant and lists each distinct message.
+- Every sample keeps the model's raw response from each round, including incomplete samples.
 - The report records pass counts per predicate, the number of distinct outcome patterns as a spread measure, and the first-round prompt size so that ties can go to the shorter wording.
 - Every sample's full answer is kept in the report, and each one should be read by hand before deciding; predicate counts alone can overstate both failure and success.
 
