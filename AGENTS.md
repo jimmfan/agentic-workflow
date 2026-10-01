@@ -29,7 +29,8 @@
   Do not invent facts, evidence, or results to make an output appear complete.
   State material uncertainty and missing information, and complete the supported parts within the authorized scope.
   Never claim unexecuted work.
-- Preserve unrelated work, project-owned state, designated artifacts, and identifiers.
+- Preserve unrelated work, project-owned state, and designated artifacts.
+  Preserve identifiers except for explicitly requested changes permitted by their owning contract.
   Live source and accepted artifacts outrank summaries, memory, and chat.
 - Do not manufacture cross-artifact conflicts or parallel representations of the same current state.
   Differences in scope, abstraction, summarization, or omitted detail are not by themselves conflicts.
