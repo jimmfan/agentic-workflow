@@ -17,9 +17,10 @@ Implementation coordinates execution and acceptance verification.
    Resume from the accepted scope and verification evidence.
    If interruption would lose consequential coordination, preserve only relevant questions, uncertainties, conditions blocking particular work, unexplained causes, choices, structural ambiguity, artifact references, dependencies, and ready work in Wayfinder.
 
-## Execute once
+## Execute the build
 
-Invoke `implement` once.
+Invoke `implement` once for the scope.
+Invoke it again only for defects that Verification returns; that run fixes and re-reviews only those defects under `implement`'s review-finding rules, including their three-round limit.
 Report that it ran only after actually executing its method; do not simulate execution.
 
 Pass the governing authorized request or specification, existing project rules that govern this work, accepted scope, observable acceptance criteria, relevant baseline, and any references to artifacts or records that maintain the scope.
@@ -32,9 +33,10 @@ Do not rerun `tdd` or `code-review` work already completed by `implement` unless
 ## Verify the result
 
 This step owns completion after meaningful implementation, including direct or explicit `implement` invocation.
-Resume here with the completed build and Code Review evidence rather than restarting Execute once for the handoff.
+Resume here with the completed build and Code Review evidence rather than restarting Execute the build for the handoff.
 Invoke `workflow-verification` once with the governing request and existing project rules that govern this work, accepted scope and its acceptance criteria, relevant maintaining-artifact references, expected artifacts, changed scope, existing test and review evidence including actual coverage and limitations, and remaining integration risks.
 Verification reuses covered evidence and adds only missing acceptance, artifact, or boundary checks.
+After returned defects are fixed, rerun Verification only for the criteria they affected and any evidence the fix invalidated.
 
 Before completion, use review and Verification findings and relevant maintaining references to reassess the route under the existing Wayfinder threshold, including a clearly relevant effort that was not selected earlier.
 Use the bounded resumption check in detailed routing when needed; do not scan all efforts or select Wayfinder merely because an artifact exists.
