@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "id": "ordinary-implementation-selection",
+  "question": "Without a named skill, does description wording change whether meaningful implementation selects workflow-implementation and plans Verification?",
+  "request": "In this Python project, add an optional minimum_cents argument to summarize() that filters final account totals below that threshold after aggregation. Omitting it must preserve current behavior. You may edit files and run tests; do not commit.",
+  "skills": [
+    "implement",
+    "workflow-implementation",
+    "code-review",
+    "workflow-verification",
+    "tdd",
+    "workflow-debugging",
+    "workflow-discovery"
+  ],
+  "variants": {
+    "control": {
+      "control": true,
+      "note": "Both descriptions removed: no description guidance.",
+      "descriptions": {
+        "implement": "",
+        "workflow-implementation": ""
+      }
+    },
+    "current": {
+      "note": "Descriptions as on the checked-out revision.",
+      "descriptions": {},
+      "baseline": true
+    },
+    "candidate": {
+      "note": "Triggering conditions and nearest alternative only; no process sequence.",
+      "descriptions": {
+        "implement": "Use when workflow-implementation invokes it or the user names it for one supplied, ready implementation scope; otherwise start with workflow-implementation.",
+        "workflow-implementation": "Use when one implementation scope is ready and its consequential choices are settled. Trivial low-risk edits stay Direct; unexplained failures go to workflow-debugging."
+      }
+    }
+  },
+  "answer_schema": {
+    "type": "object",
+    "properties": {
+      "skills_to_run": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "steps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "runs_verification_before_completion": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "skills_to_run",
+      "steps",
+      "runs_verification_before_completion"
+    ],
+    "additionalProperties": false
+  },
+  "predicates": [
+    {
+      "id": "selects_workflow_implementation",
+      "kind": "answer_list_contains",
+      "field": "skills_to_run",
+      "value": "workflow-implementation"
+    },
+    {
+      "id": "plans_verification",
+      "kind": "answer_equals",
+      "field": "runs_verification_before_completion",
+      "value": true
+    }
+  ]
+}
