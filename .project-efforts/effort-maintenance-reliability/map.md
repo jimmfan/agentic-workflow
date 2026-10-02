@@ -41,7 +41,7 @@ Most incidents are missed coordination rather than excess persistence.
 When a conversation authorizes no repository changes, current rules still have the agent propose rather than save ([U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default)).
 The resulting routing changes shipped in [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0) and are described in the [responsibility map](../workflow-responsibility-boundaries/map.md#current-state).
 Since 0.38.0 the [state contract](../../.agent-workflow/contracts/effort-state.md#map-authoring) tells authors to replace superseded map statements in place and leave history to Git, because dated narration had grown three maps to between 1,091 and 1,543 words.
-The [Claude Code exposure map](../claude-code-source-exposure/map.md) still describes PR #59's delivered change as uncommitted, another map that outlived its delivery.
+The Claude Code exposure map also outlived its delivery: it described PR #59's merged change as uncommitted until jimmfan had that effort ended on 2026-10-01.
 Since 0.39.0 the [state contract](../../.agent-workflow/contracts/effort-state.md#keep-or-end-the-effort) has a delivery that keeps an effort open state its remaining work and exact resume prompt in the final response and pull request description, so the person merging sees it; like the other instruction-only fixes, its effect is unverified live.
 On 2026-10-01 jimmfan dropped the agent-offered tracker issue or reminder because nothing in a session triggers it; if maps keep outliving their deliveries, a separate host or GitHub job triggered by the merge is the candidate, not more agent instructions.
 

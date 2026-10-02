@@ -42,4 +42,4 @@ Confirm as applicable that:
 - every skill named in the route marker actually ran.
 
 Completion requires every required acceptance criterion to pass, unless accepted project policy determines that a limitation is acceptable for the named completion boundary or the person, role, or valid delegate with project decision authority explicitly accepts it.
-Return implementation defects to `workflow-implementation`, decision defects to `workflow-discovery`, and an unexplained symptom to `workflow-debugging` with the most useful next check.
+Return implementation defects to `workflow-implementation`, a material unresolved choice to Discovery or Wayfinder according to the coordination threshold, and an unexplained symptom to `workflow-debugging` with the most useful next check.

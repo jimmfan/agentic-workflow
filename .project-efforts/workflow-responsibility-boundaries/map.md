@@ -18,8 +18,8 @@ This effort does not maintain a second routing specification, skill catalog, eva
 
 ## Ready work
 
-No framework change is ready.
-Checking whether agents follow the boundaries below needs live evidence, which is blocked as described under Blockers.
+- Independently audit the 0.40.0 route-conflict fixes on branch `claude/route-conflict-fixes` (described under Current state) before merge; jimmfan requested that audit on 2026-10-01.
+- Checking whether agents follow the boundaries below needs live evidence, which is blocked as described under Blockers.
 
 ## Current state
 
@@ -40,7 +40,8 @@ That change's closing Code Review ran inline rather than through independent rev
 Revisit if a clean rerun of the investigation shows agents already reach Implementation from Debugging, or shows the handoff adds ceremony to fixes that are actually trivial.
 
 **Routing audit (shipped in PR #60).**
-[Detailed routing](../../.agent-workflow/routing.md#decide-and-compose) prefers a curated skill over an overlapping host skill unless the user names the other one, and [route reporting](../../.agent-workflow/routing.md#report-the-executed-route) has a `<skill>-incomplete` outcome for a skill that started but did not finish.
+A curated skill is preferred over an overlapping host skill unless the user names the other one; since 0.40.0 the [root policy](../../agent_workflow/install/AGENTS.md.template) carries that rule instead of detailed routing.
+[Route reporting](../../.agent-workflow/routing.md#report-the-executed-route) has a `<skill>-incomplete` outcome for a skill that started but did not finish.
 Code Review treats a failed reviewer as an incomplete axis.
 The root policy keeps all its Wayfinder signals and states that explicit use or opt-out overrides them and that a hard signal overrides the isolated-question default.
 jimmfan chose this on 2026-09-27 over removing two hard signals, because the recorded incidents are mostly missed coordination and the [cited research](../context-efficiency/map.md#current-state) identifies ambiguous decision points and uncorrected early decisions as common failures.
@@ -50,12 +51,25 @@ A proposed limit on re-entering the same workflow was dropped the same day becau
 The `implement`, `workflow-implementation`, `workflow-discovery`, and `wayfinder-effort` descriptions now say when to use each skill and name the nearest alternative, leaving ownership detail to the skill bodies.
 Routing states that the `implement` route label covers the Implementation integration, an `implement` run on its own, or both.
 
+**Route-conflict fixes (0.40.0, branch `claude/route-conflict-fixes`, unmerged on 2026-10-01).**
+A 2026-10-01 review of competing directions found selection and handoff rules that pointed nowhere or loaded too late; jimmfan authorized these drafts on that date:
+
+- The curated-skill precedence rule moved into the root policy, because first-pass selection happens before detailed routing loads.
+- Routing has a `wayfinder-effort` row, the `wayfinder` route label covers it, and the skill defers effort creation to the state contract instead of always creating state.
+- Verification returns a material unresolved choice to Discovery or Wayfinder by the coordination threshold, matching Implementation and routing.
+- Code Review asks the user once before spawning when the host starts sub-agents only on request, and treats a decline as unavailable reviewers.
+- Source-only `AGENTS.md` keeps Domain Modeling work on framework terms in `terminology.md` under the change procedure, not a new `CONTEXT.md`.
+
+Not yet specified: no step owns refactoring.
+[TDD](../../.agents/skills/tdd/SKILL.md#rules-of-the-loop) defers it to review, [Code Review](../../.agents/skills/code-review/SKILL.md) is read-only and labels smells as judgement calls, and [`implement`](../../.agents/skills/implement/SKILL.md) reports judgement calls without fixing them.
+jimmfan has not chosen where refactoring belongs.
+
 No live run has checked whether agents follow any of these changes.
 The [campaign effort](../remaining-behavior-evidence/map.md) and its linked protocol and report keep execution prerequisites, observations, and follow-up details; do not mirror their campaign state here.
 
 ## Areas and relationships
 
-- **Selection and composition:** the [root policy](../../agent_workflow/install/AGENTS.md.template) owns first-pass routing, Direct defaults, Wayfinder selection, and the rules for authorization and project decision authority.
+- **Selection and composition:** the [root policy](../../agent_workflow/install/AGENTS.md.template) owns first-pass routing, curated-skill precedence, Direct defaults, Wayfinder selection, and the rules for authorization and project decision authority.
   [Detailed routing](../../.agent-workflow/routing.md) owns composition, transitions, relevant resumption, and selected-skill availability; specialists supply their methods rather than an alternative router.
 - **Coordination and representation:** [Wayfinder](../../.agents/skills/wayfinder/SKILL.md) owns effort orientation, question navigation, method selection within the effort, and consequential handoffs.
   Its [state contract](../../.agent-workflow/contracts/effort-state.md) owns recognition, map authoring, selective records, reconciliation, preservation, pruning safeguards, and ending; the [records contract](../../.agent-workflow/contracts/effort-records.md) owns U/E/F/D formats, identifiers, and single-record pruning.
