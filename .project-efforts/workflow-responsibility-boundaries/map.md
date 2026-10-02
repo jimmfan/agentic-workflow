@@ -18,7 +18,7 @@ This effort does not maintain a second routing specification, skill catalog, eva
 
 ## Ready work
 
-No framework change is ready; the refactoring question under Current state awaits jimmfan.
+No framework change is ready.
 Checking whether agents follow the boundaries below needs live evidence, which is blocked as described under Blockers.
 
 ## Current state
@@ -57,8 +57,8 @@ After an independent audit, jimmfan also chose on 2026-10-01 to keep `wayfinder-
 On hosts that start sub-agents only on request, `implement` now asks before editing so one answer covers its whole scope, and a declined Code Review is reported as blocked.
 Git history for 0.40.0 maintains the full change list.
 
-Open question for jimmfan from that review: no step owns refactoring.
-[TDD](../../.agents/skills/tdd/SKILL.md#rules-of-the-loop) defers refactoring to review, but [Code Review](../../.agents/skills/code-review/SKILL.md) is read-only and labels smells as judgement calls, and [`implement`](../../.agents/skills/implement/SKILL.md) reports judgement calls without fixing them.
+On 2026-10-01 jimmfan also closed the review's finding that no step owned refactoring: [TDD](../../.agents/skills/tdd/SKILL.md#rules-of-the-loop) may refactor the code a cycle touched once tests pass, and [`implement`](../../.agents/skills/implement/SKILL.md) fixes plain defects that [Code Review](../../.agents/skills/code-review/SKILL.md) now reports and applies justified judgement calls in the code its scope changed, while Code Review stays read-only.
+Checking this live needs two contrasting cases: a warranted local cleanup the agent should make, and a tempting broader rewrite it should defer.
 
 No live run has checked whether agents follow any of these changes.
 The [campaign effort](../remaining-behavior-evidence/map.md) and its linked protocol and report keep execution prerequisites, observations, and follow-up details; do not mirror their campaign state here.

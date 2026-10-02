@@ -122,8 +122,8 @@ When the host lets you choose a sub-agent's model, the Standards reviewer may us
 
 **Spec sub-agent prompt** — include:
 
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong.
-  Quote the spec line for each finding.
+- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong; (d) changed code that is plainly wrong even where no requirement covers it, such as a crash, a wrong result, or a resource leak.
+  Quote the spec line for each finding, or the hunk for (d).
   Under 400 words."
 
 If required Spec inputs are missing, report that axis as incomplete.
