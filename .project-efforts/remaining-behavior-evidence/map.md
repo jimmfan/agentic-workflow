@@ -7,13 +7,13 @@ Evaluate the four remaining pre-existing Agent Workflow behavior hypotheses afte
 ## Scope
 
 The user's four-hypothesis campaign on `eval/remaining-audit-behavior`, based on fetched main `1510e74540e3ebdb7c07966274fae7aeeac09386`.
-Evaluation fixtures, controls, scripts and reporting only; commit and non-force push are authorized, with no merge, release, VERSION change or real consumer mutation.
+The campaign covered evaluation fixtures, controls, scripts and reporting only; for its delivery in [PR #33](https://github.com/jimmfan/agentic-workflow/pull/33), jimmfan authorized commit and non-force push but not merge, release, a VERSION change or real consumer mutation.
 
 ## Ready work
 
 The evaluation delivery merged in [PR #33](https://github.com/jimmfan/agentic-workflow/pull/33); independent reviews and historical deterministic gates are complete.
 The unfinished four-hypothesis campaign remains distinct continuation work.
-The current cleanup authorizes no new live evaluations; future execution requires an authorized scope, a successful current adapter preflight and a native-tool denial probe before any frozen case resumes.
+The 2026-09-19 effort consolidation ([PR #52](https://github.com/jimmfan/agentic-workflow/pull/52)) authorized no new live evaluations; future execution requires an authorized scope, a successful current adapter preflight and a native-tool denial probe before any frozen case resumes.
 
 ## Current state
 

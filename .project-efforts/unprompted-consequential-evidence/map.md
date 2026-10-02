@@ -8,12 +8,12 @@ Determine whether the prepared corrected comparison can establish a repeated ben
 
 Preserve the unfinished corrected-rerun scope from the archived preservation branch, separately from the three completed comparisons and the stopped fixture-defective attempt.
 The previous branch map records authorization for one unchanged 34-call schedule under a fresh 36-call ceiling; no unused capacity from older campaigns carries forward.
-The current cleanup explicitly excludes new live evaluations, candidate adoption, and runtime changes.
+The 2026-09-19 effort consolidation ([PR #52](https://github.com/jimmfan/agentic-workflow/pull/52)) excluded new live evaluations, candidate adoption, and runtime changes.
 Continuation is deferred to a subsequent request that authorizes execution; this map grants none.
 
 ## Ready work
 
-No live execution is ready in this cleanup.
+No live execution is ready.
 On an authorized resumption, recover the frozen preparation, check current execution prerequisites and the scope of authorization, and obtain the protocol's targeted pre-freeze review before any subject.
 Do not treat the preparation as a completed run or replace the frozen baseline with current main silently.
 
