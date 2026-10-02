@@ -7,6 +7,7 @@ Implement the defined work supplied by the current user request or invoking work
 Before editing, retain the governing request or specification, existing project rules that govern this work, acceptance criteria, references to relevant maintaining artifacts, relevant baseline, and intended change scope.
 Inspect HEAD, status, staged and unstaged diffs, and relevant untracked files; retain enough pre-edit content to distinguish existing user work from this implementation, including separate hunks in shared files.
 Keep this as execution context, not a new required repository artifact.
+If the host starts sub-agents only at the user's request and the user has not already asked for or approved Code Review's reviewers for this scope, ask before editing; that answer covers every Code Review in this implementation scope, including re-reviews after Verification returns defects.
 
 Use `tdd` where possible, at pre-agreed seams.
 

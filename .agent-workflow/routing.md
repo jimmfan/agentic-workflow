@@ -16,7 +16,7 @@ This table resolves overlaps:
 |---|---|---|
 | Explicit skill request | Named skill | Honor when available unless action authorization or safety blocks execution; otherwise apply the unavailable-skill rule |
 | Durable coordination threshold crossed | `wayfinder` | Structured project state must materially improve continuity |
-| Request to orient or update an effort without product implementation | `wayfinder-effort` | Runs Wayfinder's method; the state contract still decides whether anything earns an effort |
+| Request to orient, resume, or refresh an effort without product implementation | `wayfinder-effort` | Runs Wayfinder's method; creates a new effort only when the state contract's creation rules allow; carrying out ready work stays with `wayfinder` |
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
 | Interdependent choices requiring human input or project decision authority materially shape downstream work | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual questions and one straightforward clarification use the minimum sufficient method |
 | Domain concepts, terminology or ubiquitous language, domain or context boundaries, or domain responsibilities and relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the domain model materially helps; ordinary vocabulary lookup stays Direct |

@@ -18,8 +18,8 @@ This effort does not maintain a second routing specification, skill catalog, eva
 
 ## Ready work
 
-- Independently audit the 0.40.0 route-conflict fixes on branch `claude/route-conflict-fixes` (described under Current state) before merge; jimmfan requested that audit on 2026-10-01.
-- Checking whether agents follow the boundaries below needs live evidence, which is blocked as described under Blockers.
+No framework change is ready; the refactoring question under Current state awaits jimmfan.
+Checking whether agents follow the boundaries below needs live evidence, which is blocked as described under Blockers.
 
 ## Current state
 
@@ -51,18 +51,14 @@ A proposed limit on re-entering the same workflow was dropped the same day becau
 The `implement`, `workflow-implementation`, `workflow-discovery`, and `wayfinder-effort` descriptions now say when to use each skill and name the nearest alternative, leaving ownership detail to the skill bodies.
 Routing states that the `implement` route label covers the Implementation integration, an `implement` run on its own, or both.
 
-**Route-conflict fixes (0.40.0, branch `claude/route-conflict-fixes`, unmerged on 2026-10-01).**
-A 2026-10-01 review of competing directions found selection and handoff rules that pointed nowhere or loaded too late; jimmfan authorized these drafts on that date:
+**Route-conflict fixes (0.40.0).**
+After a 2026-10-01 review of selection and handoff rules that pointed nowhere or loaded too late, jimmfan approved moving curated-skill precedence into the root policy so it applies at first-pass selection.
+After an independent audit, jimmfan also chose on 2026-10-01 to keep `wayfinder-effort` the easy prompt for creating, resuming, or refreshing an effort without product changes, while carrying out ready work stays with `wayfinder`.
+On hosts that start sub-agents only on request, `implement` now asks before editing so one answer covers its whole scope, and a declined Code Review is reported as blocked.
+Git history for 0.40.0 maintains the full change list.
 
-- The curated-skill precedence rule moved into the root policy, because first-pass selection happens before detailed routing loads.
-- Routing has a `wayfinder-effort` row, the `wayfinder` route label covers it, and the skill defers effort creation to the state contract instead of always creating state.
-- Verification returns a material unresolved choice to Discovery or Wayfinder by the coordination threshold, matching Implementation and routing.
-- Code Review asks the user once before spawning when the host starts sub-agents only on request, and treats a decline as unavailable reviewers.
-- Source-only `AGENTS.md` keeps Domain Modeling work on framework terms in `terminology.md` under the change procedure, not a new `CONTEXT.md`.
-
-Not yet specified: no step owns refactoring.
-[TDD](../../.agents/skills/tdd/SKILL.md#rules-of-the-loop) defers it to review, [Code Review](../../.agents/skills/code-review/SKILL.md) is read-only and labels smells as judgement calls, and [`implement`](../../.agents/skills/implement/SKILL.md) reports judgement calls without fixing them.
-jimmfan has not chosen where refactoring belongs.
+Open question for jimmfan from that review: no step owns refactoring.
+[TDD](../../.agents/skills/tdd/SKILL.md#rules-of-the-loop) defers refactoring to review, but [Code Review](../../.agents/skills/code-review/SKILL.md) is read-only and labels smells as judgement calls, and [`implement`](../../.agents/skills/implement/SKILL.md) reports judgement calls without fixing them.
 
 No live run has checked whether agents follow any of these changes.
 The [campaign effort](../remaining-behavior-evidence/map.md) and its linked protocol and report keep execution prerequisites, observations, and follow-up details; do not mirror their campaign state here.

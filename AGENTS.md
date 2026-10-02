@@ -119,7 +119,7 @@ This maintainer rule is documentation policy, not an installer guard, and must s
 Read `.agent-workflow/terminology.md` before changing routing, Wayfinder, direct skill distribution, ownership, or framework-lifecycle concepts in a way that uses or changes canonical Agent Workflow language.
 Before introducing, renaming, or materially redefining a canonical term, follow the [terminology change procedure](docs/maintenance.md#changing-canonical-terminology).
 Update `.agent-workflow/terminology.md` only after the terminology decision is accepted.
-In this repository, framework terminology is the project's domain language: Domain Modeling work on it follows that procedure and updates `.agent-workflow/terminology.md`, not a `CONTEXT.md` or `CONTEXT-MAP.md`.
+In this repository, framework terminology is the project's domain language: Domain Modeling work on it follows that procedure when it applies and updates `.agent-workflow/terminology.md`, not a `CONTEXT.md` or `CONTEXT-MAP.md`.
 
 ## Pre-1.0 engineering priority
 
