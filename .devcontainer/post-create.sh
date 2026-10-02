@@ -3,6 +3,9 @@
 
 set -euo pipefail
 
+export NVM_DIR="${NVM_DIR:-/usr/local/share/nvm}"
+. "$NVM_DIR/nvm.sh"
+
 sudo install -d -m 0700 -o vscode -g vscode /home/vscode/.codex
 sudo chown -R vscode:vscode /home/vscode/.codex
 chmod 0700 /home/vscode/.codex
@@ -18,3 +21,5 @@ chmod 0700 /home/vscode/.claude
 if [[ -f /home/vscode/.claude/.credentials.json ]]; then
   chmod 0600 /home/vscode/.claude/.credentials.json
 fi
+
+npm install --global @openai/codex@latest

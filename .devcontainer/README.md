@@ -1,7 +1,7 @@
 # Development container
 
 This development container supplies the complete toolchain needed to develop and verify Agent Workflow without changing the macOS host's Python setup.
-It uses Python 3.14 on Debian Bookworm, `uv`, Git, the GitHub CLI for authorized GitHub work, and unpinned Codex and Claude Code extensions, each with a persistent project-specific login volume.
+It uses Python 3.14 on Debian Bookworm, `uv`, Git, the GitHub CLI for authorized GitHub work, the latest Codex CLI from npm when the container is created, and unpinned Codex and Claude Code extensions, each with a persistent project-specific login volume.
 
 The runtime uses only the Python standard library; development verification also uses Ruff and isolated package-build tooling.
 Opening this container does not create a virtual environment or run a package sync.
@@ -19,7 +19,7 @@ This weakens syscall filtering for the entire development container, although th
 On the **macOS host in VS Code**, install and enable the Microsoft **Dev Containers** extension if it is not already available.
 Then open the Command Palette and select **Dev Containers: Reopen in Container**.
 This builds the image and persistently caches it in Docker; it does not change the host Python installation.
-The first build downloads the base image, the pinned `uv` image, the GitHub CLI feature, `bubblewrap`, and the configured VS Code extensions.
+The first build downloads the base image, the pinned `uv` image, the Node.js and GitHub CLI features, `bubblewrap`, and the configured VS Code extensions.
 It also creates the project-specific Codex and Claude Code volumes, but it does not authenticate either.
 
 For this repository's sibling-checkout layout, the container adds a secondary mount of the workspace's parent directory at the same absolute path used on the macOS host.
@@ -28,6 +28,7 @@ Preserving that path makes the metadata reachable without depending on either ch
 VS Code always opens the explicit short path `/workspace`, avoiding the secondary host-path alias.
 
 After the workspace opens, the post-create command prepares the Codex and Claude Code state volumes and sets their directory and credential permissions.
+It then installs the latest published Codex CLI with npm.
 
 The Dev Container selects `python3` as the default interpreter and Pylance as the language server.
 It requests `openai.chatgpt` and `anthropic.claude-code` without versions, so VS Code can install and update each extension according to its extension update settings.
@@ -64,6 +65,14 @@ gh auth logout --hostname github.com
 Open Codex in the **VS Code window attached to this Dev Container** and sign in when prompted.
 That login persistently writes only to the `agent-workflow-instructions-codex-home` Docker volume.
 A container rebuild remounts the same volume, so it should not require another login.
+
+Verify the Codex CLI from a VS Code terminal inside this Dev Container:
+
+```bash
+codex --version
+```
+
+The CLI is installed during container creation and updated to the latest npm release when the container is rebuilt.
 
 Verify the extension from a **VS Code terminal inside this Dev Container**:
 
