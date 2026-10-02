@@ -7,6 +7,7 @@ Implement the defined work supplied by the current user request or invoking work
 Before editing, retain the governing request or specification, existing project rules that govern this work, acceptance criteria, references to relevant maintaining artifacts, relevant baseline, and intended change scope.
 Inspect HEAD, status, staged and unstaged diffs, and relevant untracked files; retain enough pre-edit content to distinguish existing user work from this implementation, including separate hunks in shared files.
 Keep this as execution context, not a new required repository artifact.
+If the host starts sub-agents only at the user's request and the user has not already asked for or approved Code Review's reviewers for this scope, ask before editing; that answer covers every Code Review in this implementation scope, including re-reviews after Verification returns defects.
 
 Use `tdd` where possible, at pre-agreed seams.
 
@@ -17,9 +18,11 @@ Pass those governing inputs and maintaining-artifact references along with the b
 The supplied request can define the work without a separate spec file or tracker.
 Follow Code Review's coverage and read-only rules; do not commit or otherwise rearrange work merely to make review possible.
 
-Then fix each hard Standards violation and each Spec requirement that Code Review reports as missing, partial, or implemented wrongly; each fix round reruns the tests covering the changed code and runs `code-review` again on only the open findings and the fix's own changes.
+Then fix each hard Standards violation, each Spec requirement that Code Review reports as missing, partial, or implemented wrongly, and each plain defect it reports in the changed code; each fix round reruns the tests covering the changed code and runs `code-review` again on only the open findings and the fix's own changes.
+In the same rounds, weigh each judgement call, such as a baseline smell, and apply it only when it improves code this scope changed or added, preserves behavior, and keeps the covering tests passing.
+Fix required findings first; if an applied judgement call draws a new finding, revert it and report the suggestion instead of spending another round on it.
 After three fix rounds, stop: a finding still open by then usually needs a decision rather than another fix, so report it with the evidence from each attempt.
-Report judgement calls such as baseline smells, and observations outside the reviewed scope, without fixing them; leave scope creep in place for a decision by the person, role, or valid delegate with project decision authority.
+Report judgement calls you did not apply, suggestions that need a consequential decision, and observations outside the reviewed scope with a suggested fix when one is clear, without acting on them; leave scope creep in place for a decision by the person, role, or valid delegate with project decision authority.
 When evidence shows that a finding does not hold, leave the code unchanged and state the finding and that evidence.
 
 For meaningful work, continue at `workflow-implementation`'s Verify the result step with the result, actual review coverage, findings and remaining evidence gaps.

@@ -17,6 +17,7 @@ On 2026-09-30 jimmfan chose how required work after delivery gets resumed (see C
 
 - [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56) merged on 2026-09-27 as `d82771e`; the items below remain.
 - Decide [U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default) when ready; it needs user input, not more evidence.
+- After the 0.40.0 route-conflict fixes merge, restructure the standing efforts to jimmfan's U3 decision (see Current state) on a separate branch: move their lasting decisions into ADRs, slim their maps, separate their lanes, and keep the multi-turn live test owned only by this effort.
 - Live validation is required by the objective but running it is not yet authorized.
   On 2026-09-27 jimmfan chose to treat it as the main test of routing reliability and to include one variant that moves Wayfinder selection ahead of the authority rules in the root policy ([context-efficiency map](../context-efficiency/map.md#ready-work)).
   Plan: one synthetic conversation of about ten turns in an unrelated domain, with maintenance authorized in turn 1, then a committed choice inside a question, pasted operator output, an agent-run read-only check that contradicts the map, a correction, and small talk.
@@ -41,17 +42,22 @@ Most incidents are missed coordination rather than excess persistence.
 When a conversation authorizes no repository changes, current rules still have the agent propose rather than save ([U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default)).
 The resulting routing changes shipped in [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0) and are described in the [responsibility map](../workflow-responsibility-boundaries/map.md#current-state).
 Since 0.38.0 the [state contract](../../.agent-workflow/contracts/effort-state.md#map-authoring) tells authors to replace superseded map statements in place and leave history to Git, because dated narration had grown three maps to between 1,091 and 1,543 words.
-The [Claude Code exposure map](../claude-code-source-exposure/map.md) still describes PR #59's delivered change as uncommitted, another map that outlived its delivery.
+The Claude Code exposure map also outlived its delivery: it described PR #59's merged change as uncommitted until jimmfan had that effort ended on 2026-10-01.
 Since 0.39.0 the [state contract](../../.agent-workflow/contracts/effort-state.md#keep-or-end-the-effort) has a delivery that keeps an effort open state its remaining work and exact resume prompt in the final response and pull request description, so the person merging sees it; like the other instruction-only fixes, its effect is unverified live.
 On 2026-10-01 jimmfan dropped the agent-offered tracker issue or reminder because nothing in a session triggers it; if maps keep outliving their deliveries, a separate host or GitHub job triggered by the merge is the candidate, not more agent instructions.
 
-Not yet specified: whether other authorization given earlier in a conversation should carry forward the way effort maintenance now does ([U2](unknowns.md#u2--should-other-earlier-authorization-carry-forward-across-turns)), and what to do with long-running efforts whose objectives never complete ([U3](unknowns.md#u3--should-long-running-efforts-without-an-achievable-objective-remain-efforts)).
+On 2026-10-01 jimmfan decided that the standing [language-coherence](../language-coherence/map.md), [workflow-responsibility-boundaries](../workflow-responsibility-boundaries/map.md), and [context-efficiency](../context-efficiency/map.md) efforts stay open, because models keep changing and the project must remember what it decided and what it tunes toward.
+Lasting decisions belong in ADRs whose reconsideration triggers name the check to rerun after a model or host change.
+Each standing map keeps only its open questions, tuning targets, links to per-model results, and a resume condition for model or host changes, in a lane distinct from the other efforts.
+Nothing in a session detects a model change, so jimmfan starts that resumption.
+
+Not yet specified: whether other authorization given earlier in a conversation should carry forward the way effort maintenance now does ([U2](unknowns.md#u2--should-other-earlier-authorization-carry-forward-across-turns)).
 
 ## Areas and relationships
 
 - The [root policy template](../../agent_workflow/install/AGENTS.md.template) carries the always-loaded continuity, authorization, and per-turn rules; the [state contract](../../.agent-workflow/contracts/effort-state.md) carries the procedure and ending rules; [terminology](../../.agent-workflow/terminology.md) defines effort maintenance and read-only request.
 - The [language-coherence effort](../language-coherence/map.md) owns general terminology questions; this effort owns only terms that decide when effort state is maintained.
-- The user decides U2–U5 and authorizes live runs, trackers, or schedulers.
+- The user decides U2, U4, and U5 and authorizes live runs, trackers, or schedulers.
 
 ## Dependencies
 

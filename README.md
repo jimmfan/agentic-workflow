@@ -140,7 +140,8 @@ Alternatively, use `wayfinder-effort`, which performs the same orientation witho
 | GitHub Copilot | `/wayfinder-effort docs/implementation-plan.md` |
 
 The effort or plan can also be pasted or attached.
-To continue afterward, ask: “Resume the runner-migration effort from `.project-efforts/runner-migration/map.md` and carry out its ready work.”
+To refresh an existing effort's map without carrying out its work, name the effort, for example `/wayfinder-effort runner-migration` (`$wayfinder-effort runner-migration` in Codex).
+To continue with the effort's ready work, ask: “Resume the runner-migration effort from `.project-efforts/runner-migration/map.md` and carry out its ready work.”
 Use your actual effort name and authorize the scope you want performed.
 
 To review unresolved questions together:

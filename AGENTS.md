@@ -5,6 +5,7 @@
   Direct is default.
   Make first-pass selection from the current user intent and skill descriptions exposed in the session.
   Topic overlap or skill availability alone does not select a specialist.
+  When a curated Agent Workflow skill and another exposed skill cover the same need, use the curated skill unless the user names the other.
 - When evidence is insufficient to select or re-evaluate the route, perform only the smallest read-only reconnaissance within the scope delegated by the current user request or accepted project policy.
 - Choose Direct or one primary workflow; add only supporting capabilities that materially help.
   Re-evaluate the route when evidence changes.
@@ -118,6 +119,7 @@ This maintainer rule is documentation policy, not an installer guard, and must s
 Read `.agent-workflow/terminology.md` before changing routing, Wayfinder, direct skill distribution, ownership, or framework-lifecycle concepts in a way that uses or changes canonical Agent Workflow language.
 Before introducing, renaming, or materially redefining a canonical term, follow the [terminology change procedure](docs/maintenance.md#changing-canonical-terminology).
 Update `.agent-workflow/terminology.md` only after the terminology decision is accepted.
+In this repository, framework terminology is the project's domain language: Domain Modeling work on it follows that procedure when it applies and updates `.agent-workflow/terminology.md`, not a `CONTEXT.md` or `CONTEXT-MAP.md`.
 
 ## Pre-1.0 engineering priority
 

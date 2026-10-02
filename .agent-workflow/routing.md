@@ -16,6 +16,7 @@ This table resolves overlaps:
 |---|---|---|
 | Explicit skill request | Named skill | Honor when available unless action authorization or safety blocks execution; otherwise apply the unavailable-skill rule |
 | Durable coordination threshold crossed | `wayfinder` | Structured project state must materially improve continuity |
+| Request to orient, resume, or refresh an effort without product implementation | `wayfinder-effort` | Runs Wayfinder's method without product changes; carrying out ready work stays with `wayfinder` |
 | Consequential bounded choice | Direct or Discovery | Load Discovery only when alternative and tradeoff analysis helps |
 | Interdependent choices requiring human input or project decision authority materially shape downstream work | Direct or `grilling` | Use Grilling to resolve their unresolved prerequisites; factual questions and one straightforward clarification use the minimum sufficient method |
 | Domain concepts, terminology or ubiquitous language, domain or context boundaries, or domain responsibilities and relationships need active clarification | Direct or Domain Modeling | Load Domain Modeling only when changing or reorganizing the domain model materially helps; ordinary vocabulary lookup stays Direct |
@@ -29,7 +30,6 @@ This table resolves overlaps:
 | Explicit bounded test-first work | `tdd` | The skill defines its loop |
 | Completion audit or meaningful finished change | Verification | Add only uncovered acceptance or integration evidence |
 | Standalone fixed-point review | `code-review` | Do not repeat a review completed by `implement` |
-| A curated Agent Workflow skill and another exposed skill cover the same need | Curated skill | Use the other skill only when the user names it; it never relaxes these authorization, evidence, or preservation rules |
 | Clear bounded low-risk request | Direct | Skip workflow ceremony |
 
 A bounded architectural choice remains Direct or uses Discovery when alternative and tradeoff analysis materially helps.
@@ -107,6 +107,7 @@ Use a terminal suffix only when selection did not become equivalent execution:
 
 After a successful Direct fallback, omit the skill that could not run from the marker.
 The `implement` label covers the Implementation integration, an `implement` run on its own, or both.
+The `wayfinder` label likewise covers a `wayfinder-effort` run, which is an entry point to Wayfinder's method.
 TDD and Code Review run within `implement` remain represented by `implement` unless separately selected.
 The ASCII `->` separator is valid when Unicode is unavailable.
 

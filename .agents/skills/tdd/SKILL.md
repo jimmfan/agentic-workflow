@@ -1,10 +1,10 @@
 ---
-description: Build features or fix bugs test-first through a red-to-green loop at agreed seams. Use for test-first work; integration tests alone do not imply TDD. Refactoring belongs to the later review stage.
+description: Build features or fix bugs test-first through a red-to-green loop at agreed seams, with an optional refactor once tests pass. Use for test-first work; integration tests alone do not imply TDD.
 name: tdd
 ---
 # Test-Driven Development
 
-TDD is the red → green loop.
+TDD is the red → green loop, followed by an optional refactor while the tests stay green.
 Apply these test-quality, seam, and loop rules before and during each cycle.
 
 When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and interface vocabulary match the project's domain language, and respect ADRs in the area you're touching.
@@ -47,5 +47,6 @@ It is the shared source of the module, interface, depth, seam, adapter, leverage
   Don't anticipate future tests or add speculative features.
 - **One slice at a time.**
   One seam, one test, one minimal implementation per cycle.
-- **Refactoring is not part of the loop.**
-  It belongs to the review stage (see the `code-review` skill), not the red → green implementation cycle.
+- **Refactor only on green, and only when useful.**
+  With the tests passing, improve the structure of the code this cycle touched when a concrete problem justifies it, preserve its behavior, and rerun the relevant tests.
+  Skip it when the code is already suitable; do not reach beyond this cycle's code or abstract for tests you have not written yet.

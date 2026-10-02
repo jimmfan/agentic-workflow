@@ -33,6 +33,10 @@ The root policy and contracts rely on Direct, action authorization, accepted pro
 [Terminology](../../.agent-workflow/terminology.md) has an entry for each, restating meanings already set by [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md), [ADR-0027](../../architecture-decisions/0027-use-direct-first-progressive-routing.md), [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md), routing, and the [records contract](../../.agent-workflow/contracts/effort-records.md) without renaming anything; before 0.38.0 none of them had one.
 Shorter replacement names for the authority phrases, such as "decision owner", were considered and not introduced, because renaming a canonical term needs the [terminology change procedure](../../docs/maintenance.md#changing-canonical-terminology) and would change the gated root policy.
 
+**Framework terms in this repository (0.40.0).**
+Since 0.40.0, source-only [AGENTS.md](../../AGENTS.md#project-language) sends Domain Modeling work on framework terms to [terminology](../../.agent-workflow/terminology.md) under the change procedure when it applies, so that work cannot recreate the root `CONTEXT.md` that [ADR-0029](../../architecture-decisions/0029-distribute-canonical-framework-terminology.md) retired.
+Consuming projects' own `CONTEXT.md` files are unaffected.
+
 **PR #54 corrections.**
 Implementation permits reporting execution only after actually executing the method, and Prototype states its in-memory default and allows scratch persistence when persistence is part of the question.
 The `to-spec` and `to-tickets` snippet rule requires both prototype origin and greater precision in the snippet itself.

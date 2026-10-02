@@ -40,7 +40,8 @@ That change's closing Code Review ran inline rather than through independent rev
 Revisit if a clean rerun of the investigation shows agents already reach Implementation from Debugging, or shows the handoff adds ceremony to fixes that are actually trivial.
 
 **Routing audit (shipped in PR #60).**
-[Detailed routing](../../.agent-workflow/routing.md#decide-and-compose) prefers a curated skill over an overlapping host skill unless the user names the other one, and [route reporting](../../.agent-workflow/routing.md#report-the-executed-route) has a `<skill>-incomplete` outcome for a skill that started but did not finish.
+A curated skill is preferred over an overlapping host skill unless the user names the other one; since 0.40.0 the [root policy](../../agent_workflow/install/AGENTS.md.template) carries that rule instead of detailed routing.
+[Route reporting](../../.agent-workflow/routing.md#report-the-executed-route) has a `<skill>-incomplete` outcome for a skill that started but did not finish.
 Code Review treats a failed reviewer as an incomplete axis.
 The root policy keeps all its Wayfinder signals and states that explicit use or opt-out overrides them and that a hard signal overrides the isolated-question default.
 jimmfan chose this on 2026-09-27 over removing two hard signals, because the recorded incidents are mostly missed coordination and the [cited research](../context-efficiency/map.md#current-state) identifies ambiguous decision points and uncorrected early decisions as common failures.
@@ -50,12 +51,21 @@ A proposed limit on re-entering the same workflow was dropped the same day becau
 The `implement`, `workflow-implementation`, `workflow-discovery`, and `wayfinder-effort` descriptions now say when to use each skill and name the nearest alternative, leaving ownership detail to the skill bodies.
 Routing states that the `implement` route label covers the Implementation integration, an `implement` run on its own, or both.
 
+**Route-conflict fixes (0.40.0).**
+After a 2026-10-01 review of selection and handoff rules that pointed nowhere or loaded too late, jimmfan approved moving curated-skill precedence into the root policy so it applies at first-pass selection.
+After an independent audit, jimmfan also chose on 2026-10-01 to keep `wayfinder-effort` the easy prompt for creating, resuming, or refreshing an effort without product changes, while carrying out ready work stays with `wayfinder`.
+On hosts that start sub-agents only on request, `implement` now asks before editing so one answer covers its whole scope, and a declined Code Review is reported as blocked.
+Git history for 0.40.0 maintains the full change list.
+
+On 2026-10-01 jimmfan also closed the review's finding that no step owned refactoring: [TDD](../../.agents/skills/tdd/SKILL.md#rules-of-the-loop) may refactor the code a cycle touched once tests pass, and [`implement`](../../.agents/skills/implement/SKILL.md) fixes plain defects that [Code Review](../../.agents/skills/code-review/SKILL.md) now reports and applies justified judgement calls in the code its scope changed, while Code Review stays read-only.
+Checking this live needs two contrasting cases: a warranted local cleanup the agent should make, and a tempting broader rewrite it should defer.
+
 No live run has checked whether agents follow any of these changes.
 The [campaign effort](../remaining-behavior-evidence/map.md) and its linked protocol and report keep execution prerequisites, observations, and follow-up details; do not mirror their campaign state here.
 
 ## Areas and relationships
 
-- **Selection and composition:** the [root policy](../../agent_workflow/install/AGENTS.md.template) owns first-pass routing, Direct defaults, Wayfinder selection, and the rules for authorization and project decision authority.
+- **Selection and composition:** the [root policy](../../agent_workflow/install/AGENTS.md.template) owns first-pass routing, curated-skill precedence, Direct defaults, Wayfinder selection, and the rules for authorization and project decision authority.
   [Detailed routing](../../.agent-workflow/routing.md) owns composition, transitions, relevant resumption, and selected-skill availability; specialists supply their methods rather than an alternative router.
 - **Coordination and representation:** [Wayfinder](../../.agents/skills/wayfinder/SKILL.md) owns effort orientation, question navigation, method selection within the effort, and consequential handoffs.
   Its [state contract](../../.agent-workflow/contracts/effort-state.md) owns recognition, map authoring, selective records, reconciliation, preservation, pruning safeguards, and ending; the [records contract](../../.agent-workflow/contracts/effort-records.md) owns U/E/F/D formats, identifiers, and single-record pruning.
