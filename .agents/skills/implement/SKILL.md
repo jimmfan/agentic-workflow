@@ -11,7 +11,7 @@ If the host starts sub-agents only at the user's request and the user has not al
 
 Use `tdd` where possible, at pre-agreed seams.
 
-Run the checks covering the changed behavior as it changes, and the full test suite once at the end.
+Run the tests covering changed code and applicable static checks, such as typechecking, as the code changes, and the full test suite once at the end.
 
 Once done, use `code-review` in implementation-scope mode to review the actual work, including relevant committed, staged, unstaged, and new-file changes.
 Pass those governing inputs and maintaining-artifact references along with the baseline, pre-edit context, and attributed change scope, with any exclusions or attribution uncertainty.
