@@ -12,6 +12,7 @@ Generic performance work, prose shortening, arbitrary token targets, and specula
 The initial authorization covered source and existing-evidence investigation and this effort's state, not framework, runtime, test, or evaluator changes or new model runs.
 On 2026-09-27 jimmfan authorized the changes delivered in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57), excluding rewrites of dense distributed routing or authority rules and new model runs, and later that day the routing-audit changes delivered in [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60).
 On 2026-09-29 jimmfan authorized committing and pushing the agent-clarity changes in 0.38.0 to a branch.
+On 2026-09-30 jimmfan authorized recording a per-route loading breakdown here, alongside the [route coverage inventory](../workflow-responsibility-boundaries/evidence/E1-route-coverage-inventory.md), with no framework, test, or evaluator changes.
 
 Resume during relevant authorized work; this map neither schedules monitoring nor makes unrelated tasks relevant.
 The [language effort](../language-coherence/map.md) owns consequential wording consistency, and the [responsibility effort](../workflow-responsibility-boundaries/map.md) owns method and handoff boundaries; link shared concerns to them instead of duplicating questions here.
@@ -43,6 +44,10 @@ Word counts, not token, cache, or runtime measurements:
   The distributed factual-accuracy rule stayed because Codex's `gpt_5_codex_prompt.md` on `openai/codex` `main`, fetched 2026-09-27, lacks it.
 - The state contract's rare-operation sections (reference search before renaming or pruning, answer interpretation, ending, scoped acceptance) total about 620 words.
   They stay in the contract because the ending rules guard the delivery-ending behavior the effort-maintenance effort is fixing.
+- Words each route loads beyond the 1,151-word distributed root policy and about 490 words of skill descriptions, at `64be830`, before conditional support files, detailed routing (1,348), or terminology (872):
+  Direct 0; Decide 354 to 861 per specialist (Discovery 354, Grilling 373, Domain Modeling 375, Research 377, Prototype 532, Codebase Design 861); Shape 110 to 928; Audit 471 (Verification) or 1,727 (standalone Code Review); Diagnose 562, plus 471 for a trivial fix or the Build route otherwise; Build 3,472 (Implementation, `implement`, TDD, Code Review, Verification) plus the Code Review sub-agents' own prompts; Coordinate 4,321 before any effort file (Wayfinder and the state contract).
+  Code Review, at 1,727 words the largest skill, runs in every meaningful build, which makes Build the heaviest route after Coordinate.
+  These are file sizes, not measured reads or tokens, and establish no defect.
 - Maps are the first effort file read on resume, and dated history had grown the three largest to between 1,091 and 1,543 words, so since 0.38.0 the state contract tells authors to update maps in place and leave history to Git.
 
 Apart from that map growth, no actionable efficiency defect has been established in the inspected sources and existing reports; this does not demonstrate that current behavior is efficient.
