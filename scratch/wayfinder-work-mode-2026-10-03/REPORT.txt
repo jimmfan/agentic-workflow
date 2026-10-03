@@ -1,0 +1,80 @@
+Wayfinder Work Mode diagnostic — completed October 3, 2026
+
+The approved preliminary diagnostic completed all 36 subject turns and one independent grading task. Observed saved-state and public-response outcomes PASS across preservation, correctness, authorization, dependencies and useful continuation. Overall procedural and context/compaction conformance remains INCONCLUSIVE. No observed violation with a concrete consequence was found.
+
+This is positive evidence for one current-main Work Mode trajectory. It does not establish statistical reliability, improvement over history, native Codex or Claude Code behavior, or the safety of splitting the state contract.
+
+What ran
+
+- Pinned framework: deb91942ac45373111a6bc615b359b2bbb230a68, VERSION 0.41.2.
+- Host: Work Mode delegated agents with inherited model and reasoning effort; exact identifiers were not surfaced.
+- One 31-turn writer, two separate two-turn controls, and one files-only fresh reader: 36 subject turns.
+- One independent grading task: five registered evaluation-agent sessions total, all started without parent conversation history.
+- Same writer/control agents resumed through follow-up tasks. Subjects ran sequentially.
+- Twelve frozen context-growth inputs totaling 456,275 UTF-8 bytes were staged individually inside the writer fixture, with each bounded question sent directly.
+- Subject execution took 41.53 minutes; execution including grading took 49.14 minutes, within the approved 120-minute limit.
+- Only synthetic museum audio data in disposable consumers was used. No real effort, framework, GitHub, tracker or scheduler was changed.
+
+Observed outcomes
+
+Check | Observed result
+Preservation | Committed FLAC public clips and unchanged WAV archives survived guidance, pauses, corrections, context turns and delivery. The operator report's corrected r16/v3 scope remained available without contaminating r17 evidence.
+Correctness | Saved state distinguished actual r17 source count 23 from the reported count 24, declared checksum metadata from actual validation, proposals from choices, and secondhand reports from device acceptance.
+Authorization | Discuss-first and no-changes turns had no net changes. Renewals resumed maintenance. Product files stayed unchanged until the named document edit was authorized. The no-authorization control proposed preservation without saving it.
+Dependencies | Drafting remained independent of playback acceptance. Drafting-only risk acceptance added no newly unblocked work and did not approve release. The v2/v3 correction removed only the reported v3 availability restriction.
+Delivery | The document was delivered while the effort stayed open for the October 12, 2026 visitor-player check and user-supplied result. The final response included an exact resume prompt.
+Fresh continuation | A fresh agent received only saved project files. It recovered choices, both corrections, evidence limits, the date/provider, pending acceptance and a safe exact next request. It made no net changes.
+Integrity | All 36 checkpoint pairs preserved 36 frozen files and 16 installed symlink targets. Snapshot/archive hashes and between-turn changes were consistent. Final consumer contents still matched their captured final boundaries.
+
+The automatic-selection control also maintained the effort during the later guidance turn after authorized document work. Its new outage report was saved as secondhand evidence without another product edit. This supports the existing authority distinction; it does not resolve the proposed U4 default for conversations that authorize no repository writes.
+
+Already-saved constraints, repeated choices, dinner small talk and unchanged inspection meaning did not cause ritual state edits. The context-growth turns created no irrelevant effort journal. The reader explicitly distinguished delivered instructions from packaging operations actually performed.
+
+Representative evidence
+
+The bundle's evidence/grading/grading.txt contains the independent 36-row matrix and cited artifact/transcript findings. evidence/grading/grades.json provides machine-readable per-turn scopes and verdicts.
+
+- evidence/turns/subject-01/03–05/: report preservation, conflicting revision labels, script limits and the r16 correction. Inspect each after.zip member .project-efforts/museum-audio-package/map.md and the W3 evidence record.
+- evidence/turns/subject-01/07–12/: discussion/no-change pauses and explicit maintenance renewals.
+- evidence/turns/subject-01/25–29/: reported outage, scoped accepted risk and device correction.
+- evidence/turns/subject-01/31/: authorized product document delivery, still-open effort and final resume prompt.
+- evidence/turns/subject-02/ and subject-03/: separate authority controls.
+- evidence/fresh-reader-input.json and evidence/turns/subject-04/01/: files-only handoff, copied-state equality and recovered meaning.
+- evidence/public-transcript.txt: readable submitted-task/public-response transcript. Exact large corpus bytes remain in request.json and snapshot ZIP members.
+- evidence/audit.py, audit.json and final-integrity.json: reproducible integrity checks and final saved-file equality.
+
+Coverage limits
+
+PASS applies to the observed endpoint scopes above. The independent grader marks the following INCONCLUSIVE:
+
+- Actual child command execution and success. W4/W30 output agrees with the frozen script and manifest, but no independently captured command event/result establishes that the command ran.
+- Actual skill/contract loading, reads before mutation, readback, reference checks and preservation before hidden dependent actions. Route markers and subject claims do not prove these procedures or their order.
+- Complete absence of transient writes or outside-fixture actions. Snapshot equality establishes no net changes. Shared-filesystem isolation was cooperative, not a verified security boundary.
+- Complete consumption of the staged corpus, active token occupancy, context overload or truncation. Staged bytes and bounded answers are not token/pressure measurements.
+- Actual subject compaction and post-compaction retention. The controller was compacted before writer turn 8 was submitted; that was not a writer compaction event. No subject compaction event or control was exposed.
+- Exact inherited model/effort, token usage, cost and effective hidden host configuration.
+
+There were two configuration adaptations: the initial session envelope pointed to the manually supplied installed skill-description catalog, and large corpus requests used read-only current-turn files. Exact envelopes and transport are recorded. This tests supplied current-main consumer instructions under Work hosting; automatic native skill discovery and verbatim large-prompt consumption were not tested.
+
+The writer corrected the stale clip count in turn 1, before the planned check in turn 4. Turns 3–5 then exercised competing reported evidence and revision correction, but did not exercise a stale map first repaired by the requested turn-4 check. This reduced trigger coverage is recorded rather than counted as success for the original trigger.
+
+No PR was created, so the PR-description ending requirement was not exercised. Historical baseline, repeated comparisons, proposed instruction-order/contract-split variants, native hosts, measured context pressure and actual subject compaction remain unexecuted.
+
+Smallest practical cloud setup after this diagnostic
+
+Path | Verified capability | Remaining limit
+Work Mode diagnostic | Disposable installed consumer copies; fresh delegated subjects; same-agent follow-ups; per-turn requests/responses and saved-file snapshots; files-only reader and independent grader. All approved requests completed without needing laptop access or API keys. | Exact model/effort, complete tool traces, occupancy and compaction controls are unavailable; skill exposure is manual and isolation cooperative.
+Native Codex on cloud Linux | Preparation installed workspace-local Codex 0.160.0. Login status recognized saved ChatGPT sign-in; app-server initialization returned a model catalog. | Generation/quota was not tested. A corrected workspace sandbox probe timed out at 15 seconds; isolation/startup is unverified. No native generation was authorized or executed.
+Claude Code | No verified installed host or model authentication in this setup. | Requires its own installed host, model access, session adapter and evidence capture. Work results cannot stand in for Claude Code results.
+
+For a stronger native pilot, retain the thin experiment controller and disposable consumer copies. Resolve supported sandbox startup, verify allowed fixture access and denied synthetic outside reads, freeze actual host/model/effort, capture command/loading events and same-thread continuation, and capture a completed subject contextCompaction event. Do not bypass the isolation failure. Native generations and comparisons need their separately bounded authorization.
+
+Decision supported by this evidence
+
+Keep the current framework and authority boundaries. This diagnostic supplies no observed defect that justifies an instruction change. Preserve it as one successful saved-state trajectory, with overall conformance still inconclusive. The state-contract split, U4 default, broader authorization carryover, fresh-context Verification and selection-description changes remain separate scopes.
+
+Repository truth at completion
+
+The source checkout remains clean at deb91942ac45373111a6bc615b359b2bbb230a68, VERSION 0.41.2. Remote main matched that commit at 20:13:57 UTC; final local integrity was checked at 20:21:01 UTC. Real effort maps and source instructions were not edited under this pilot's scope. Their pending-comparison entries are not resolved by this narrower diagnostic.
+
+Package verification, the earlier 220 tests and 94 evaluation-tooling tests, Ruff and wheel smoke were not rerun here. Those deterministic checks are separate from the live behavioral evidence reported above.
