@@ -23,7 +23,10 @@ def in_default_order(text):
     head, *sections = text.split("\n## ")
     by_name = {section.split("\n", 1)[0]: section for section in sections}
     ordered = [by_name[name] for name in DEFAULT_ORDER if name in by_name]
-    return "\n## ".join([head, *(s.rstrip("\n") + "\n" for s in ordered)]).rstrip("\n") + "\n"
+    return (
+        "\n## ".join([head, *(s.rstrip("\n") + "\n" for s in ordered)]).rstrip("\n")
+        + "\n"
+    )
 
 
 class MapAuthoringControls(unittest.TestCase):
