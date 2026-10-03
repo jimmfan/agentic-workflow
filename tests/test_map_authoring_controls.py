@@ -7,15 +7,36 @@ import unittest
 from _behavior_test_support import behavior
 
 
+DEFAULT_ORDER = (
+    "Objective",
+    "Blockers",
+    "Dependencies",
+    "Ready work",
+    "Current state",
+    "Scope",
+    "Areas and relationships",
+    "Key references",
+)
+
+
+def in_default_order(text):
+    head, *sections = text.split("\n## ")
+    by_name = {section.split("\n", 1)[0]: section for section in sections}
+    ordered = [by_name[name] for name in DEFAULT_ORDER if name in by_name]
+    return "\n## ".join([head, *(s.rstrip("\n") + "\n" for s in ordered)]).rstrip("\n") + "\n"
+
+
 class MapAuthoringControls(unittest.TestCase):
     def test_new_default_map_controls(self):
         scenario = next(
             s for s in behavior.load_scenarios() if s.id == "wayfinder-map-authoring"
         )
-        good = (
-            behavior.FIXTURE_ROOT
-            / "wayfinder-map-correction/.project-efforts/consumer-handoff/map.md"
-        ).read_text()
+        good = in_default_order(
+            (
+                behavior.FIXTURE_ROOT
+                / "wayfinder-map-correction/.project-efforts/consumer-handoff/map.md"
+            ).read_text()
+        )
         cases = {
             "source-linked": (good, True),
             "invented-authority": (
@@ -41,7 +62,16 @@ class MapAuthoringControls(unittest.TestCase):
                 False,
             ),
             "false-absence": (
-                good[: good.index("## Blockers")] + "## Blockers\nNone.\n",
+                good[: good.index("## Blockers")]
+                + "## Blockers\nNone.\n\n"
+                + good[good.index("## Dependencies") :],
+                False,
+            ),
+            "old-default-order": (
+                (
+                    behavior.FIXTURE_ROOT
+                    / "wayfinder-map-correction/.project-efforts/consumer-handoff/map.md"
+                ).read_text(),
                 False,
             ),
             "missing-assessment": (good.replace("## Blockers", "## Notes"), False),

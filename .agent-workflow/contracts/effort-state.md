@@ -66,22 +66,26 @@ A storage-key collision resumes only the same effort; otherwise use the shortest
 
 ## Map authoring
 
+The map serves both a resuming agent and people who need a quick status, such as a team checking where the work stands.
+Write the opening sections so a reader without the effort's history can learn the goal, what is blocked or waiting and on whom, and what can happen next in under a minute.
+
 Use this default H2 order beneath the human-readable effort-name H1:
 
 1. **Objective** — the result the effort is intended to achieve.
-2. **Scope** — what the effort includes and excludes, including relevant project or authority limits.
-3. **Ready work** — concrete authorized scopes that may proceed now.
+2. **Blockers** — conditions currently preventing particular work, an assessed absence of blockers, or a material limitation in the blocker assessment.
+   Never automatically write `None.` or represent unknown or unassessed conditions as absent.
+3. **Dependencies** — required inputs for particular work.
+4. **Ready work** — concrete authorized scopes that may proceed now.
    Placement never bypasses authority or dependencies.
    When no work is ready, explain why truthfully rather than inventing work.
-4. **Current state** — the smallest truthful durable coordination summary needed for safe resumption.
+5. **Current state** — the smallest truthful durable coordination summary needed for safe resumption.
    Transient Git or session observations, such as a clean working tree, current HEAD, or branch position, remain execution context unless they are genuinely a continuing action authorization constraint, baseline, or dependency.
-5. **Areas and relationships** — major areas, their interactions, and consequential participant responsibilities and operating boundaries, not just component names.
-6. **Dependencies** — required inputs for particular work.
-7. **Blockers** — conditions currently preventing particular work, an assessed absence of blockers, or a material limitation in the blocker assessment.
-   Never automatically write `None.` or represent unknown or unassessed conditions as absent.
+6. **Scope** — what the effort includes and excludes, including relevant project or authority limits.
+7. **Areas and relationships** — major areas, their interactions, and consequential participant responsibilities and operating boundaries, not just component names.
 8. **Key references** — a few readable, navigable sources needed for continuation.
 
-For newly authored default maps, keep Objective, Scope, Ready work, and Blockers visible.
+For newly authored default maps, keep Objective, Blockers, Ready work, and Scope visible.
+Keep Objective and Blockers short; link detailed procedures, such as operator steps, instead of placing them ahead of the status.
 Omit other sections only when genuinely inapplicable, preserving their relative order when present; avoid filler.
 A missing answer is not an inapplicable topic.
 Preserve uncertainty and **Not yet specified** content without requiring a complete model before independent work proceeds.
@@ -120,6 +124,8 @@ Identify the condition preventing particular work: for example, an unsatisfied d
 An unresolved U# records a question; only its unresolved condition may block affected work.
 Delay, inconvenience, risk, or unfinished work alone does not make a condition a blocker.
 Assess readiness per scope; independent ready work may proceed while unrelated work remains blocked.
+When a dependency or blocker waits on another team or person, name who it waits on when known, when it was requested or first observed, and a follow-up date when one was agreed or the user gives one.
+Do not invent names or dates; write that they are unknown when that matters.
 
 Satisfy dependencies by obtaining their required inputs.
 Questions and uncertainties are resolved through appropriate evidence or their resolution method.
@@ -146,6 +152,10 @@ Apply [Reconcile affected state](#reconcile-affected-state) to every record chan
 Treat consequential evidence supplied by a user or observed from an external system as independently useful when it materially supports a diagnosis or implementation choice and a future agent cannot reliably reconstruct the needed source, scope, observation, and limitations from durable project sources.
 Preserve it before dependent work relies on it or before final response or handoff; use a separate E# when its source, method, limitations, or reuse value justify independent preservation.
 Otherwise do not create or retain an E# merely as a transition step.
+
+When effort maintenance is authorized and the user mentions an environment fact, a constraint, or a change by another team that could affect the effort's work, such as an updated egress policy, preserve it in the same turn; such information meets the separate-record gate above without a further judgment about whether it is consequential enough.
+Record it as an F# when its source supports the conclusion for its scope, otherwise as an E#, with the source and the date it was reported.
+A report from the user about another team's system remains scoped to that report until confirmed.
 
 ### Scoped uncertainty acceptance
 

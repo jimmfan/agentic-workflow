@@ -26,13 +26,21 @@ Record when it was observed only when timing changes meaning, applicability, or 
 Prefer a direct source link on a fact record when a separate evidence record adds no independent value.
 Preserve evidence under the state contract's [evidence preservation rule](effort-state.md#current-knowledge).
 
+A failed attempt is evidence.
+Record what was tried, what was observed, and the known or suspected cause, and add `Retry only if:` when a condition would make another attempt worthwhile.
+Retain a failed-attempt E# while a later agent could plausibly repeat the attempt; resolving the failure or reaching a later decision does not by itself remove its value.
+
 ## Facts — F#
 
 Fact records are H2 sections in `facts.md`.
-Presence means the conclusion is sufficiently supported and current, not immutable; no separate status field is required.
+Presence means the conclusion is sufficiently supported and current, or current as of its stated `As of:` date, not immutable; no separate status field is required.
 State the relation directly: `Source:` identifies a source that establishes the conclusion for its stated scope, `Derived from:` identifies evidence or another record from which it was derived, and `Authority:` may name a source that establishes a policy claim.
 Each fact record contains one scoped descriptive conclusion and its material limitations.
 Repeated agent summaries are not independent evidence.
+
+When an F# describes a system, policy, or configuration that another team or person controls, add `Owner:` when known and `As of:` with the date it was observed or confirmed.
+Such a fact is current only as of that date.
+Before dependent work relies on it, reconfirm it when it may have changed since then and the current authorization permits the check; otherwise state that it is unconfirmed since that date.
 
 A conclusion about another system remains scoped to that system; it does not establish a conclusion about the current project.
 Record a project-specific F# only when project evidence or current source sufficiently supports the claim for that scope.
