@@ -92,7 +92,7 @@ Using a skill for specialist work does not create separate Agent Workflow durabl
 Every user-facing final response ends with exactly one truthful marker listing only workflows and composed capabilities that executed, in effective-use order:
 
 ```text
-[route: router → implement → verification]
+[route: implement → verification]
 ```
 
 Use compact labels: `workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and `workflow-verification` become `discovery`, `debugging`, `implement`, and `verification`.

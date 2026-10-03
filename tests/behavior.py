@@ -33,7 +33,7 @@ MINIMUM_PYTHON = (3, 11)
 ID_PATTERN = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 ROUTE_CANDIDATE_PATTERN = re.compile(r"\[route:", re.IGNORECASE)
 ROUTE_PATTERN = re.compile(
-    r"\[route:\s*router\s*(?:→|->)\s*"
+    r"\[route:\s*"
     r"([a-z0-9]+(?:-[a-z0-9]+)*(?:\s*(?:→|->)\s*[a-z0-9]+(?:-[a-z0-9]+)*)*)\s*\]",
     re.IGNORECASE,
 )

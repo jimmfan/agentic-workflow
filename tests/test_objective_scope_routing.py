@@ -77,7 +77,7 @@ class ObjectiveScopeRoutingTests(unittest.TestCase):
                         workspace=workspace,
                         before=before,
                         after=behavior.snapshot(workspace),
-                        stdout="Live acceptance remains pending. [route: router → wayfinder]",
+                        stdout="Live acceptance remains pending. [route: wayfinder]",
                         stderr="",
                         returncode=0,
                         report={"status": "blocked"},

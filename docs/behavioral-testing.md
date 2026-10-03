@@ -61,7 +61,7 @@ The prompt asks the agent to write `.behavior-evidence/report.json` with schema 
 ```
 
 Use the actual status (`success`, `blocked`, or `failed`), commands, exit codes, source URLs, state paths, and blockers; empty arrays mean not applicable.
-The final stdout response must end with exactly one truthful route marker, such as `[route: router → direct]`.
+The final stdout response must end with exactly one truthful route marker, such as `[route: direct]`.
 Neither the report nor the marker requests private reasoning.
 
 The aggregate `--output` JSON contains verdicts, execution status, checks, changed paths, route claims, the agent report, and any independent fixture-verification result.

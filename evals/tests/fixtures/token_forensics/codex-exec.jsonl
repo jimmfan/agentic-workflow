@@ -8,5 +8,5 @@
 {"type":"turn.completed","usage":{"input_tokens":100,"cached_input_tokens":80,"output_tokens":10,"reasoning_output_tokens":4}}
 {"type":"turn.started"}
 {"type":"item.completed","item":{"id":"change-1","type":"file_change","changes":[{"path":"diagnosis.json","kind":"add"}],"status":"completed"}}
-{"type":"item.completed","item":{"id":"message-2","type":"agent_message","text":"Done. [route: router → debugging]"}}
+{"type":"item.completed","item":{"id":"message-2","type":"agent_message","text":"Done. [route: debugging]"}}
 {"type":"turn.completed","usage":{"input_tokens":150,"cached_input_tokens":120,"output_tokens":20,"reasoning_output_tokens":5}}

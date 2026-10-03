@@ -36,7 +36,7 @@ class RemainingAuditControls(unittest.TestCase):
                 workspace=self.workspace,
                 before=before,
                 after=behavior.snapshot(self.workspace),
-                stdout=response + f"\n[route: router → {route}]",
+                stdout=response + f"\n[route: {route}]",
                 stderr="",
                 returncode=0,
                 report={"status": "success", "summary": "Complete."},

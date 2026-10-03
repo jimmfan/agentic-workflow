@@ -209,7 +209,7 @@ class GenericAnalysisTests(unittest.TestCase):
             source_path=Path("claims.jsonl"),
             source_format="codex-exec-jsonl",
             source_bytes=1,
-            agent_messages=["[route: router → research]"],
+            agent_messages=["[route: research]"],
             tool_invocations=[
                 ToolInvocation(
                     "read",
