@@ -9,11 +9,11 @@ from _behavior_test_support import behavior
 
 DEFAULT_ORDER = (
     "Objective",
+    "Scope",
+    "Ready work",
     "Blockers",
     "Dependencies",
-    "Ready work",
     "Current state",
-    "Scope",
     "Areas and relationships",
     "Key references",
 )
