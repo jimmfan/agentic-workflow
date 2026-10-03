@@ -10,7 +10,7 @@ Responsibility selection, method composition, handoffs, artifact and persistence
 The initial task authorized a source-grounded audit and this effort state, with no framework, architecture-documentation, test, evaluator, or runtime changes and no live evaluation.
 jimmfan later authorized the framework changes delivered in [PR #59](https://github.com/jimmfan/agentic-workflow/pull/59) (0.36.0) and [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0), both on 2026-09-27.
 On 2026-09-29 jimmfan authorized committing and pushing the selection-focused skill descriptions in 0.38.0 to a branch.
-On 2026-09-30 the user authorized a read-only route coverage inventory recorded in this effort and the [context-efficiency effort](../context-efficiency/map.md), with no framework, test, or evaluator changes.
+On 2026-09-30 jimmfan authorized a read-only route coverage inventory recorded in this effort and the [context-efficiency effort](../context-efficiency/map.md), with no framework, test, or evaluator changes.
 
 Resume when an authorized request materially affects a represented boundary, question, or evidence claim.
 Inspect changed sources and reconcile only affected coordination within that request's scope; this map is not self-updating and its existence does not select Wayfinder or require an audit of unrelated work.

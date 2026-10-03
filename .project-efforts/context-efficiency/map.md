@@ -12,7 +12,7 @@ Generic performance work, prose shortening, arbitrary token targets, and specula
 The initial authorization covered source and existing-evidence investigation and this effort's state, not framework, runtime, test, or evaluator changes or new model runs.
 On 2026-09-27 jimmfan authorized the changes delivered in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57), excluding rewrites of dense distributed routing or authority rules and new model runs, and later that day the routing-audit changes delivered in [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60).
 On 2026-09-29 jimmfan authorized committing and pushing the agent-clarity changes in 0.38.0 to a branch.
-On 2026-09-30 the user authorized recording a per-route loading breakdown here, alongside the [route coverage inventory](../workflow-responsibility-boundaries/evidence/E1-route-coverage-inventory.md), with no framework, test, or evaluator changes.
+On 2026-09-30 jimmfan authorized recording a per-route loading breakdown here, alongside the [route coverage inventory](../workflow-responsibility-boundaries/evidence/E1-route-coverage-inventory.md), with no framework, test, or evaluator changes.
 
 Resume during relevant authorized work; this map neither schedules monitoring nor makes unrelated tasks relevant.
 The [language effort](../language-coherence/map.md) owns consequential wording consistency, and the [responsibility effort](../workflow-responsibility-boundaries/map.md) owns method and handoff boundaries; link shared concerns to them instead of duplicating questions here.
