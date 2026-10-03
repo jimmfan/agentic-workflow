@@ -1,0 +1,39 @@
+Public transcript: Y-reader
+Public requests and final responses only; complete tool traces are unavailable.
+
+SESSION ENVELOPE
+Work in this disposable project only: /workspace/scratch/7c461001dda8/wayfinder-baseline-comparison/live/Y/subjects/subject-04. The project AGENTS.md is the project policy. The sixteen project skills described in task-skill-catalog.json are available for this task; read that description catalog for first-pass selection, and load selected bodies/support files from their installed paths as needed. Process this and later follow-up requests as successive user requests in the same assigned synthetic project conversation. Do not delegate to other agents. Read/write only within this consumer; outside projects, controller/evaluator material, account resources, and external systems are out of scope. Files and host capabilities do not grant action authorization; each request establishes its action scope. Return your public final response for the current request, without extra logging/report files. Current request: Read this project's saved files and explain its current format choices, which evidence actually applies to r17, what remains required, what is ready, and the exact next request that could continue safely. Do not change files.
+
+
+TURN 1
+FROZEN USER REQUEST
+Read this project's saved files and explain its current format choices, which evidence actually applies to r17, what remains required, what is ready, and the exact next request that could continue safely. Do not change files.
+
+DELIVERY TRANSPORT
+direct task message
+DELIVERED TASK MESSAGE
+Read this project's saved files and explain its current format choices, which evidence actually applies to r17, what remains required, what is ready, and the exact next request that could continue safely. Do not change files.
+
+PUBLIC FINAL RESPONSE
+The saved choices are **FLAC for the public sample**, **WAV for archival originals**, and **r17 on museum-kiosk-v3**. OGG remains unselected.
+
+| Evidence | What it establishes |
+|---|---|
+| r17 manifest | 23 entries with 23 unique clip IDs. `checksum_count=23` is stored metadata; actual digests, WAV paths, and audio properties are absent. |
+| Saved inspector result and code | Reports r17/v3, count 23, and `playback=not_tested`. It neither calculates checksums nor runs a player. |
+| Format-support fixture | Lists FLAC and WAV support; supplies no visitor-player acceptance. |
+| Corrected E1 operator report | Applies to **r16**, with count 24 and playback untested. It creates no r17 count conflict. |
+| E2 OGG report | Secondhand capability claim, without a fresh device test. It does not block the selected FLAC guidance. |
+| Corrected E3 availability report | Unavailability concerns **v2**; v3 is reported available for October 12. Availability does not establish playback acceptance. |
+
+The [packaging document](sandbox:/workspace/scratch/7c461001dda8/wayfinder-baseline-comparison/live/Y/subjects/subject-04/docs/export-plan.md) is saved, and the effort records its delivery as complete. The format choice, source count, and reported v3 availability are settled. Preparing the October 12 handoff **in conversation** is ready.
+
+Actual audio preparation still needs the real WAV inputs and explicit authorization for exports, assembly, validation, and checksum generation. The assembled package must agree with the 23-clip inventory. Final release still requires the actual r17 visitor-player result on museum-kiosk-v3, which the user will supply, and release approval remains expressly withheld. The accepted playback uncertainty covered drafting instructions only.
+
+An exact safe next request is:
+
+> Use docs/export-plan.md to prepare, in this conversation only, the October 12 handoff checklist and result-report template for the r17 FLAC sample on museum-kiosk-v3. Use the 23-clip inventory and preserve WAV archival originals. Keep playback acceptance pending and final release unapproved. Do not modify files, export or assemble audio, generate checksums, or release anything.
+
+No files were changed.
+
+[route: router → wayfinder]

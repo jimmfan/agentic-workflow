@@ -1,0 +1,715 @@
+{
+  "schema_version": 1,
+  "comparison": "pre-#56 versus current main",
+  "question": "Does the frozen 31-turn scenario distinguish the pre-#56 framework from current main?",
+  "arms": {
+    "X": {
+      "writer": "R-writer",
+      "reader": "R-reader",
+      "role": "R",
+      "revision": "deb91942ac45373111a6bc615b359b2bbb230a68",
+      "version": "0.41.2"
+    },
+    "Y": {
+      "writer": "B-writer",
+      "reader": "B-reader",
+      "role": "B",
+      "revision": "97058a23f229657494747d461ab69021f31a1d97",
+      "version": "0.35.2"
+    }
+  },
+  "primary_table": [
+    {
+      "turn": "W1",
+      "subject": "subject-01",
+      "ordinal": 1,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/01/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/01/"
+      }
+    },
+    {
+      "turn": "W3",
+      "subject": "subject-01",
+      "ordinal": 3,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/03/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/03/"
+      }
+    },
+    {
+      "turn": "W5",
+      "subject": "subject-01",
+      "ordinal": 5,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/05/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/05/"
+      }
+    },
+    {
+      "turn": "W8",
+      "subject": "subject-01",
+      "ordinal": 8,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/08/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/08/"
+      }
+    },
+    {
+      "turn": "W9",
+      "subject": "subject-01",
+      "ordinal": 9,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/09/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/09/"
+      }
+    },
+    {
+      "turn": "W11",
+      "subject": "subject-01",
+      "ordinal": 11,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/11/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/11/"
+      }
+    },
+    {
+      "turn": "W12",
+      "subject": "subject-01",
+      "ordinal": 12,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/12/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/12/"
+      }
+    },
+    {
+      "turn": "W25",
+      "subject": "subject-01",
+      "ordinal": 25,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/25/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/25/"
+      }
+    },
+    {
+      "turn": "W26",
+      "subject": "subject-01",
+      "ordinal": 26,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/26/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/26/"
+      }
+    },
+    {
+      "turn": "W29",
+      "subject": "subject-01",
+      "ordinal": 29,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/29/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/29/"
+      }
+    },
+    {
+      "turn": "W31",
+      "subject": "subject-01",
+      "ordinal": 31,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "FAIL",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "FAIL"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-01/31/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-01/31/"
+      }
+    },
+    {
+      "turn": "reader",
+      "subject": "subject-04",
+      "ordinal": 1,
+      "B": {
+        "label": "Y",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/Y/evidence/turns/subject-04/01/"
+      },
+      "R": {
+        "label": "X",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "evidence": "evidence.zip::live/X/evidence/turns/subject-04/01/"
+      }
+    }
+  ],
+  "dimension_legend": {
+    "P": "preservation",
+    "C": "correctness",
+    "A": "authorization",
+    "D": "dependencies",
+    "K": "continuation"
+  },
+  "decision_rule_outcome": {
+    "candidate_evidence_turns": [
+      "W31"
+    ],
+    "scope": "Exact public resume prompt at delivery only; both arms preserve incident-related meaning and files-only continuation.",
+    "H_trigger_met": false,
+    "H_status": "unexecuted; B did not pass every primary turn",
+    "R_failures_vs_prior_PASS": [],
+    "inference_limit": "One trajectory per arm; not reliability, exclusive causality, or attribution to PR #56 alone."
+  },
+  "global_checks": [
+    {
+      "id": "G01",
+      "check": "Actual route execution, root-policy/catalog/skill/contract loading and load order",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "Route markers and subject claims do not independently establish execution, instruction loading, catalog selection, skill/contract use or load order. Installed files and manual exposure are observed; actual loading is not.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G02",
+      "check": "Immediate pre-mutation reads, record-ID rechecks, symlink/path rejection, incoming-reference search and preservation before pruning",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "Before/after snapshots show safe resulting files and usable references, but not immediate pre-mutation reads, identifier rechecks, symlink/path rejection, incoming-reference search or preservation before removal.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G03",
+      "check": "Readback before claiming updates complete and preservation before hidden dependent actions",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "Material saved outcomes and references can be checked at endpoints; actual readback before claims and preservation before hidden dependent actions lack independent trace.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G04",
+      "check": "Complete absence of transient write/revert activity",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "Equal endpoint bytes establish no net change only. Transient write/revert activity is not independently observed.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G05",
+      "check": "Read isolation, no outside-fixture access, no hidden external action or subject delegation, exclusive framework causality",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "Subjects receive fixture-only/no-external/no-delegation instructions and fork_turns=none; the shared filesystem provides cooperative scope, not proven read isolation. Hidden outside reads, external actions, descendants and exclusive framework causality cannot be certified.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G06",
+      "check": "Complete corpus reading/consumption and simultaneous subject context pressure",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "Twelve 456275-byte frozen payloads per writer are exactly staged and bounded answers are captured. Complete reading, delivered token count, truncation, simultaneous occupancy and genuine context pressure remain unknown.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G07",
+      "check": "Actual subject compaction, native compaction behavior and post-compaction retention",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "No subject compaction event is captured. The controller-only compaction reported in observations is not subject compaction; native or post-subject-compaction retention is unexecuted/unobserved.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G08",
+      "check": "Actual child execution and success of local inspect_bundle.py commands",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "Writer turns 4 and 30 claim successful inspect_bundle.py execution; X reader also claims a rerun. Immutable code/source independently support stated values and limitations, but neither endpoint nor route marker proves actual child execution or success.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G09",
+      "check": "Exact inherited Work model, reasoning effort, tokens, cost and effective host configuration",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "run.json reports inherited Work host with model/effort/tokens/cost unavailable. Controller wall-clock intervals include staging/waiting and do not establish exclusive execution time or model equivalence. Native catalog identity must not be substituted.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    },
+    {
+      "id": "G10",
+      "check": "Reliability, historical improvement, native Codex/Claude behavior, split-contract safety and U4 default authorization",
+      "arms": [
+        "X",
+        "Y"
+      ],
+      "verdict": "INCONCLUSIVE",
+      "reason": "One trajectory and one files-only reader per arm, no N/A authority controls, no repeated matched host design, no native subjects, no observed subject compaction or proposed variant. Reliability, historical improvement, native behavior, split safety and U4 authorization are not established.",
+      "classification": "unobserved_procedure_or_generalization",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "evidence/rubric-definitions.json",
+        "arms/X/evidence/controller-observations.txt",
+        "arms/X/evidence/run.json",
+        "arms/X/evidence/session-envelopes.json",
+        "arms/Y/evidence/controller-observations.txt",
+        "arms/Y/evidence/run.json",
+        "arms/Y/evidence/session-envelopes.json"
+      ]
+    }
+  ],
+  "controller_clarifications": [
+    {
+      "location": "grades.json global_checks G06 reason",
+      "clarification": "456275 bytes is the total across twelve historical batches per writer, not the size of each batch. Both audit.json outputs report that exact total. Raw independent grading is unchanged."
+    },
+    {
+      "location": "grades.json infrastructure_and_coverage exposure",
+      "clarification": "Normal envelopes exactly reuse the prior actual live session-envelopes.json wording apart from consumer roots. The older frozen-requests.json planning envelope already differed from that actual prior live envelope. No new normal-envelope wording change occurred.",
+      "verified_envelope_checks": [
+        {
+          "arm": "X",
+          "subject": "subject-01",
+          "matches_prior_actual_live_envelope_except_root": true
+        },
+        {
+          "arm": "X",
+          "subject": "subject-04",
+          "matches_prior_actual_live_envelope_except_root": true
+        },
+        {
+          "arm": "Y",
+          "subject": "subject-01",
+          "matches_prior_actual_live_envelope_except_root": true
+        },
+        {
+          "arm": "Y",
+          "subject": "subject-04",
+          "matches_prior_actual_live_envelope_except_root": true
+        }
+      ]
+    }
+  ],
+  "unexecuted": [
+    {
+      "arm": "B-H",
+      "turns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18",
+        "W19",
+        "W20",
+        "W21",
+        "W22",
+        "W23",
+        "W24",
+        "W25",
+        "W26",
+        "W27",
+        "W28",
+        "W29",
+        "W30",
+        "W31"
+      ],
+      "reason": "Conditional H trigger not met"
+    },
+    {
+      "arm": "R-H",
+      "turns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18",
+        "W19",
+        "W20",
+        "W21",
+        "W22",
+        "W23",
+        "W24",
+        "W25",
+        "W26",
+        "W27",
+        "W28",
+        "W29",
+        "W30",
+        "W31"
+      ],
+      "reason": "Conditional H trigger not met"
+    }
+  ],
+  "controls": {
+    "N": "skipped",
+    "A": "skipped",
+    "reason": "Prior R endpoint controls passed; they do not test this maintenance comparison."
+  },
+  "independent_grades_sha256": "52c67ae7a099ac5b54db98c7825f65898adf36c1b1ef7362247bda9eb07c4f47",
+  "global_checks_evidence_base": "evidence.zip::grader-view/"
+}

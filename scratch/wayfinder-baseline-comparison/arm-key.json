@@ -1,0 +1,26 @@
+{
+  "revealed_at": "2026-10-03T22:39:56.711908+00:00",
+  "independent_grader_returned_at": "2026-10-03T22:39:56.711908+00:00",
+  "written_only_after_grader_returned": true,
+  "arms": {
+    "X": {
+      "writer": "R-writer",
+      "reader": "R-reader",
+      "role": "R",
+      "revision": "deb91942ac45373111a6bc615b359b2bbb230a68",
+      "version": "0.41.2"
+    },
+    "Y": {
+      "writer": "B-writer",
+      "reader": "B-reader",
+      "role": "B",
+      "revision": "97058a23f229657494747d461ab69021f31a1d97",
+      "version": "0.35.2"
+    }
+  },
+  "conditional_unexecuted_arms": {
+    "X-H": "R-H",
+    "Y-H": "B-H"
+  },
+  "H_mapping_not_used_for_grading": "No H subject ran because fixed trigger was not met."
+}
