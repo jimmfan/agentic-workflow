@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "name": "implement-verification-cadence-screen",
+  "question": "On matched coding tasks, does the prior fixed verification cadence change meaningful checking or tool work relative to checks tied to affected behavior? This small screen does not establish broad regression coverage.",
+  "scenarios": [
+    "../scenarios/objective-acceptance-short.json"
+  ],
+  "conditions": [
+    {
+      "id": "current",
+      "ref": "deb91942ac45373111a6bc615b359b2bbb230a68",
+      "overlays": []
+    },
+    {
+      "id": "prior-implement-cadence",
+      "ref": "deb91942ac45373111a6bc615b359b2bbb230a68",
+      "overlays": [
+        {
+          "skill": "implement",
+          "ref": "c05a8ea416b8ac28a6f850fbe8ec9756ea72fe37"
+        }
+      ]
+    }
+  ],
+  "repetitions": 1,
+  "seed": 42,
+  "limits": {
+    "max_turns": 16,
+    "turn_seconds": 300,
+    "campaign_seconds": 7200
+  },
+  "host": {
+    "kind": "command",
+    "command": [
+      "python",
+      "-m",
+      "evals.campaign.codex"
+    ],
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "high"
+  }
+}

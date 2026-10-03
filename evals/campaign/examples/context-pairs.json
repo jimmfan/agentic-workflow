@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "name": "matched-context-screen",
+  "question": "Do the same core checks differ after two additional meaningful exchanges? This does not assert context pressure or actual compaction.",
+  "scenarios": [
+    "../scenarios/guidance-continuity-short.json",
+    "../scenarios/guidance-continuity-accumulated.json",
+    "../scenarios/objective-acceptance-short.json",
+    "../scenarios/objective-acceptance-accumulated.json"
+  ],
+  "conditions": [
+    {
+      "id": "current",
+      "ref": "v0.41.2",
+      "overlays": []
+    }
+  ],
+  "repetitions": 1,
+  "seed": 42,
+  "limits": {
+    "max_turns": 36,
+    "turn_seconds": 300,
+    "campaign_seconds": 14400
+  },
+  "host": {
+    "kind": "command",
+    "command": [
+      "python",
+      "-m",
+      "evals.campaign.codex"
+    ],
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "high"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "execution_status": "infrastructure-blocked",
+  "behavioral_verdict": "INCONCLUSIVE",
+  "model_launched": false,
+  "credentials_copied": false,
+  "cli_version": "codex-cli 0.160.0",
+  "binary_sha256": "12eb3e81114588aca3b7998f4f19e8997b056aca08e57a7ca7c8a3ec8c652aad",
+  "config_sha256": "63853f0e383763e53485cedc0bd9078fb8651e90249bdd3f7b44617baee51eb6",
+  "explicit_config": [
+    "model=\"preflight-only\"",
+    "model_reasoning_effort=\"high\"",
+    "approval_policy=\"never\"",
+    "default_permissions=\"campaign\"",
+    "permissions.campaign.filesystem={\":root\"=\"deny\",\":minimal\"=\"read\",\":tmpdir\"=\"deny\",\":slash_tmp\"=\"deny\",\"/tmp/campaign-native-preflight-subagents\"=\"deny\",\"/tmp/campaign-preflight-tcxh4fdi/session\"=\"deny\",\"/tmp/campaign-preflight-tcxh4fdi/session/codex-home/skills/.system\"=\"read\",\"/tmp/campaign-preflight-tcxh4fdi/consumer\"=\"write\",\"/tmp/campaign-preflight-tcxh4fdi/session/scratch\"=\"write\",\"/workspace/scratch/7c461001dda8/pilot-runtime/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex\"=\"read\",\"/opt/codex/runtimes/codex-primary-runtime/dependencies/python\"=\"read\",\"/tmp/campaign-preflight-tcxh4fdi/consumer/.codex\"=\"deny\"}",
+    "permissions.campaign.network.enabled=false",
+    "web_search=\"disabled\"",
+    "features.apps=false",
+    "features.plugins=false",
+    "features.memories=false",
+    "agents.enabled=true",
+    "agents.max_concurrent_threads_per_session=2",
+    "features.shell_snapshot=false",
+    "shell_environment_policy.inherit=\"none\"",
+    "shell_environment_policy.set={\"PATH\"=\"/tmp/campaign-preflight-tcxh4fdi/session/scratch/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/usr/local/bin:/usr/bin:/bin\",\"HOME\"=\"/tmp/campaign-preflight-tcxh4fdi/session/user-home\",\"TMPDIR\"=\"/tmp/campaign-preflight-tcxh4fdi/session/scratch\",\"PYTHONDONTWRITEBYTECODE\"=\"1\",\"GIT_CONFIG_GLOBAL\"=\"/dev/null\",\"GIT_CONFIG_NOSYSTEM\"=\"1\",\"UV_OFFLINE\"=\"1\",\"UV_CACHE_DIR\"=\"/tmp/campaign-preflight-tcxh4fdi/session/scratch/uv-cache\"}",
+    "allow_login_shell=false",
+    "model_provider=\"openai\"",
+    "project_doc_max_bytes=65536"
+  ],
+  "host_capabilities": {
+    "child_sandbox_inheritance": "documented; not empirically probed by this adapter",
+    "max_concurrent_subagents_requested": 2,
+    "model_scope": "parent fixed; children inherit unless an explicit spawn override applies",
+    "sandbox_probe_scope": "parent command only",
+    "subagent_model_calls_observed": null,
+    "subagent_models_observed": null,
+    "subagents_enabled_requested": true,
+    "subagents_observed": null
+  },
+  "probe": {
+    "elapsed_seconds": 30.064540135001153,
+    "returncode": -9,
+    "status": "timeout",
+    "stderr": "",
+    "stdout": ""
+  },
+  "interpretation": "Parent sandbox probe timed out without diagnostics; root cause unobserved. No native model or historical comparison executed."
+}

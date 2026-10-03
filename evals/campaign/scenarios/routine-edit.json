@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "id": "routine-edit",
+  "title": "Routine wording control",
+  "question": "Can a bounded typo correction finish without unrelated coordination or edits?",
+  "fixture": "../fixtures/routine-edit",
+  "provenance": [
+    ".project-efforts/effort-maintenance-reliability/evidence/E2-historical-incident-summary.md"
+  ],
+  "applicability": "common-outcome",
+  "family": "bounded-control",
+  "context_condition": "short",
+  "turns": [
+    {
+      "id": "T1",
+      "session": "writer",
+      "request": "Correct the spelling of recieve to receive in README.md. This is a complete one-file wording task; change only that file.",
+      "allowed_writes": [
+        "README.md"
+      ],
+      "checks": [
+        {
+          "id": "exact-wording",
+          "kind": "file_equals",
+          "path": "README.md",
+          "value": "# Pocket library\n\nReaders receive one bookmark with each book.\n"
+        },
+        {
+          "id": "proportionate-response",
+          "kind": "semantic",
+          "requirement": "Complete the bounded edit without inventing consequential choices, demanding unnecessary planning, or claiming unrelated work."
+        }
+      ]
+    }
+  ]
+}

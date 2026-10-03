@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "name": "historical-milestone-screen",
+  "question": "Which common outcomes differ across the shorter state-contract era, pre-routing/maintenance fixes, guidance-maintenance fix, and the pinned current policy? Candidate rationale is in VERSIONS.md; no performance ranking is assumed.",
+  "scenarios": [
+    "../scenarios/guidance-continuity-short.json",
+    "../scenarios/objective-acceptance-short.json"
+  ],
+  "conditions": [
+    {
+      "id": "shorter-state-contract",
+      "ref": "v0.33.2",
+      "overlays": []
+    },
+    {
+      "id": "before-routing-maintenance-fixes",
+      "ref": "v0.35.1",
+      "overlays": []
+    },
+    {
+      "id": "guidance-maintenance-fix",
+      "ref": "v0.35.3",
+      "overlays": []
+    },
+    {
+      "id": "current",
+      "ref": "deb91942ac45373111a6bc615b359b2bbb230a68",
+      "overlays": []
+    }
+  ],
+  "repetitions": 1,
+  "seed": 42,
+  "limits": {
+    "max_turns": 64,
+    "turn_seconds": 300,
+    "campaign_seconds": 18000
+  },
+  "host": {
+    "kind": "command",
+    "command": [
+      "python",
+      "-m",
+      "evals.campaign.codex"
+    ],
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "high"
+  }
+}

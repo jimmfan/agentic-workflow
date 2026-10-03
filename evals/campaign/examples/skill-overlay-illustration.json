@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "name": "wayfinder-overlay-compatibility-illustration",
+  "question": "Can an older complete Wayfinder skill fit current contracts, and if preparation permits it, which outcomes change? Incompatibility stops preparation; this is not an adopted combination.",
+  "scenarios": [
+    "../scenarios/guidance-continuity-short.json"
+  ],
+  "conditions": [
+    {
+      "id": "current",
+      "ref": "v0.41.2",
+      "overlays": []
+    },
+    {
+      "id": "current-with-shorter-era-wayfinder",
+      "ref": "v0.41.2",
+      "overlays": [
+        {
+          "skill": "wayfinder",
+          "ref": "v0.33.2"
+        }
+      ]
+    }
+  ],
+  "repetitions": 1,
+  "seed": 42,
+  "limits": {
+    "max_turns": 16,
+    "turn_seconds": 300,
+    "campaign_seconds": 7200
+  },
+  "host": {
+    "kind": "command",
+    "command": [
+      "python",
+      "-m",
+      "evals.campaign.codex"
+    ],
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "high"
+  }
+}

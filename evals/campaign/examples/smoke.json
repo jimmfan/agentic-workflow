@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "name": "repeatable-behavior-smoke",
+  "question": "Can this fixed host produce reviewable outcomes for two core stories and two boundary controls?",
+  "scenarios": [
+    "../scenarios/routine-edit.json",
+    "../scenarios/no-authorization.json",
+    "../scenarios/guidance-continuity-short.json",
+    "../scenarios/objective-acceptance-short.json"
+  ],
+  "conditions": [
+    {
+      "id": "current",
+      "ref": "v0.41.2",
+      "overlays": []
+    }
+  ],
+  "repetitions": 1,
+  "seed": 42,
+  "limits": {
+    "max_turns": 18,
+    "turn_seconds": 300,
+    "campaign_seconds": 7200
+  },
+  "host": {
+    "kind": "command",
+    "command": [
+      "python",
+      "-m",
+      "evals.campaign.codex"
+    ],
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "high"
+  }
+}

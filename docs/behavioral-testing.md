@@ -4,6 +4,9 @@ The behavioral suite checks observable engineering outcomes: requested changes, 
 It does not treat one exact route or a success claim as proof of correct behavior.
 Deterministic tests exercise the harness and its evaluators; live agent runs supply separate, opt-in evidence.
 
+For repeated conversations, fresh-reader handoffs, historical versions, and skill substitutions, use the [campaign runbook](../evals/campaign/README.md) and its [explicit case catalog](../evals/campaign/CATALOG.md).
+That source-only process complements the single-request harness below and keeps semantic grader calibration separate from subject results.
+
 ## Commands and prerequisites
 
 Run from the **source repository root** with Python 3.11+, Git, and `uv` in a POSIX-style shell.

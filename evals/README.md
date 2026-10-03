@@ -5,6 +5,9 @@ It is not a general coding-agent benchmark, and no live model evaluation is part
 
 ## Current tooling
 
+The [repeatable behavioral campaign runbook](campaign/README.md) provides frozen multi-turn cases, exact historical releases and skill substitutions, independent grader calibration, and per-turn evidence reports.
+Its [case catalog](campaign/CATALOG.md) maps recurring concerns to observable requirements, and its [version rationale](campaign/VERSIONS.md) selects comparisons from actual behavior changes.
+
 The [objective-scope routing campaign](objective-scope-routing/README.md) prepares matched implementation and plan-only controls for an objective that includes later operator evidence.
 Its [current result](objective-scope-routing/REPORT.md) separates trace-reviewed coordination, local progress, structural grading limits, and retained infrastructure failures.
 
