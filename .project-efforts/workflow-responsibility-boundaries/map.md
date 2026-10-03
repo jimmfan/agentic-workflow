@@ -11,6 +11,7 @@ The initial task authorized a source-grounded audit and this effort state, with 
 jimmfan later authorized the framework changes delivered in [PR #59](https://github.com/jimmfan/agentic-workflow/pull/59) (0.36.0) and [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0), both on 2026-09-27.
 On 2026-09-29 jimmfan authorized committing and pushing the selection-focused skill descriptions in 0.38.0 to a branch.
 On 2026-09-30 jimmfan authorized a read-only route coverage inventory recorded in this effort and the [context-efficiency effort](../context-efficiency/map.md), with no framework, test, or evaluator changes.
+On 2026-10-03 jimmfan approved a design pass on the Build handoff, recorded here, without framework changes.
 
 Resume when an authorized request materially affects a represented boundary, question, or evidence claim.
 Inspect changed sources and reconcile only affected coordination within that request's scope; this map is not self-updating and its existence does not select Wayfinder or require an audit of unrelated work.
@@ -71,6 +72,13 @@ Git history for 0.40.0 maintains the full change list.
 On 2026-10-01 jimmfan also closed the review's finding that no step owned refactoring: [TDD](../../.agents/skills/tdd/SKILL.md#rules-of-the-loop) may refactor the code a cycle touched once tests pass, and [`implement`](../../.agents/skills/implement/SKILL.md) fixes plain defects that [Code Review](../../.agents/skills/code-review/SKILL.md) now reports and applies justified judgement calls in the code its scope changed, while Code Review stays read-only.
 Checking this live needs two contrasting cases: a warranted local cleanup the agent should make, and a tempting broader rewrite it should defer.
 
+**Build handoff and fresh-context Verification (design pass, 2026-10-03).**
+The [context-efficiency review](../context-efficiency/map.md#current-state) found about 290 words of overlapping handoff lists in four Build skills.
+A shared definition would save almost nothing: `implement` and Code Review must keep their own lists to work standalone, and the lists differ by edge for real reasons.
+The design pass instead recommends changing only the Implementation-to-Verification handoff, adding how to inspect the changed scope and the checks already run with their results, so that Verification can run in a fresh sub-agent with only that handoff.
+It would run there when the host allows sub-agents and the user approved them for the scope through `implement`'s existing question, and inline otherwise.
+The handoff stays in the prompt, adds no record or canonical term, and conflicts with no ADR; its benefit to Verification's context and independence is inferred, not measured.
+
 No live run has checked whether agents follow any of these changes.
 The [campaign effort](../remaining-behavior-evidence/map.md) and its linked protocol and report keep execution prerequisites, observations, and follow-up details; do not mirror their campaign state here.
 
@@ -103,6 +111,8 @@ Reusing campaign observations requires retaining their original scope and limita
 ## Blockers
 
 Live evaluation remains blocked by the campaign's unresolved execution-isolation limitations; consult its current maintaining artifacts before proposing a live continuation.
+
+Fresh-context Verification waits on jimmfan's choices: whether to adopt it, whether to limit it to the Verification handoff, and whether to record it in a new ADR or only in the [architecture overview](../../docs/architecture.md#instruction-runtime).
 
 ## Key references
 

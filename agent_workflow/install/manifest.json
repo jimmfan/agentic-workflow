@@ -25,6 +25,10 @@
       "target": ".agents/skills/code-review/SKILL.md"
     },
     {
+      "source": ".agents/skills/code-review/SMELL-BASELINE.md",
+      "target": ".agents/skills/code-review/SMELL-BASELINE.md"
+    },
+    {
       "source": ".agents/skills/codebase-design/DEEPENING.md",
       "target": ".agents/skills/codebase-design/DEEPENING.md"
     },

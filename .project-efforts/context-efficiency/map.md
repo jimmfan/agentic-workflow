@@ -13,13 +13,15 @@ The initial authorization covered source and existing-evidence investigation and
 On 2026-09-27 jimmfan authorized the changes delivered in [PR #57](https://github.com/jimmfan/agentic-workflow/pull/57), excluding rewrites of dense distributed routing or authority rules and new model runs, and later that day the routing-audit changes delivered in [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60).
 On 2026-09-29 jimmfan authorized committing and pushing the agent-clarity changes in 0.38.0 to a branch.
 On 2026-09-30 jimmfan authorized recording a per-route loading breakdown here, alongside the [route coverage inventory](../workflow-responsibility-boundaries/evidence/E1-route-coverage-inventory.md), with no framework, test, or evaluator changes.
+On 2026-10-03 jimmfan allowed ADRs to be updated as part of reviewing which processes could load as their own contracts, and asked that ADRs not constrain possible improvements anywhere in the project.
+The same day jimmfan approved delivering the Code Review smell-baseline split as its own pull request with a version bump, a design pass on the Build handoff, and adding the state-contract split to the multi-turn comparison.
 
 Resume during relevant authorized work; this map neither schedules monitoring nor makes unrelated tasks relevant.
 The [language effort](../language-coherence/map.md) owns consequential wording consistency, and the [responsibility effort](../workflow-responsibility-boundaries/map.md) owns method and handoff boundaries; link shared concerns to them instead of duplicating questions here.
 
 ## Ready work
 
-No framework optimization is ready without new evidence.
+No framework optimization is ready: the remaining 2026-10-03 candidates wait on the conditions under Blockers, and other optimizations need new evidence.
 The next steps:
 
 - Record a repeated live baseline on one large and one small model using the [routing smoke cases](../../evals/routing-smoke/README.md), which cover each hard signal, opt-out, explicit use, and one near miss (at most two cases per run).
@@ -27,6 +29,7 @@ The next steps:
   Authorization boundaries and ambiguous unnamed-effort resumption remain outside this routing-only harness.
 - Once authorized, run the live multi-turn comparison planned in the [effort maintenance map](../effort-maintenance-reliability/map.md#ready-work), the main test of the context tradeoff because the cited research locates the largest degradation in multi-turn conversations.
   On 2026-09-27 jimmfan chose to include one variant that moves Wayfinder selection ahead of the authority rules in the root policy, since earlier instructions are followed more reliably.
+  On 2026-10-03 jimmfan added a variant that splits the state contract into resume and maintain parts.
 - Only if that baseline shows no regression, condense the root policy.
   A 2026-09-27 draft reached about 828 words from 1,144 while keeping every [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) authority rule and the [ADR-0027](../../architecture-decisions/0027-use-direct-first-progressive-routing.md) always-loaded signals; it was not retained, but its signal-precedence rule shipped separately in PR #60.
   Wording candidates for that pass, from the 2026-09-29 review: the unqualified "commands" in the action-authorization rule, the soft signal "Durable distinctions across record or state categories", and "selection did not become equivalent execution".
@@ -51,6 +54,17 @@ Word counts, not token, cache, or runtime measurements:
 - Maps are the first effort file read on resume, and dated history had grown the three largest to between 1,091 and 1,543 words, so since 0.38.0 the state contract tells authors to update maps in place and leave history to Git.
 
 Apart from that map growth, no actionable efficiency defect has been established in the inspected sources and existing reports; this does not demonstrate that current behavior is efficient.
+
+A 2026-10-03 source review at `73e87c4` (0.41.0), using file word counts and treating ADRs as revisable, ranked these candidates for loading as their own contract:
+
+- Code Review's 403-word smell baseline, of 1,855 words, was used only by the Standards reviewer, yet the coordinating agent loaded it and pasted it into every Standards reviewer prompt, re-reviews included.
+  Since 0.41.1 it lives in a [support file](../../.agents/skills/code-review/SMELL-BASELINE.md) that the reviewer reads by path, with a paste fallback; the effect on review quality is unmeasured.
+- One Build handoff definition could replace about 290 words of overlapping handoff lists in four skills and let Verification run in a fresh context with only its skill and the handoff.
+  A 2026-10-03 design pass narrowed this to the Verification handoff; the [responsibility effort](../workflow-responsibility-boundaries/map.md#current-state), which owns that boundary, keeps the proposal and its pending choices.
+- Splitting the state contract into a read path of about 570 words and a write path of about 2,490 would let read-only resumes skip the write path, while authorized work still loads both.
+  It adds a load step in front of maintenance, and most recorded incidents are [missed coordination](../effort-maintenance-reliability/map.md#current-state), so jimmfan added it on 2026-10-03 as a variant in the multi-turn comparison before any decision to ship it.
+
+Splitting the reconciliation sequence, renumbering, reference search, effort creation, or the ending trigger would save little or hide rules an agent needs before it recognizes the operation.
 
 Research reviewed on 2026-09-27 bears on the trade between context load and Wayfinder selection:
 
@@ -97,6 +111,8 @@ Judge any optimization jointly on correctness, required-context preservation, re
 - Live baseline: needs a host with a `claude` or `codex` CLI and model access.
 - Multi-turn comparison: needs the same host access and an authorization the effort maintenance map records as not yet given.
 - Root-policy condensing: waits on that baseline, as jimmfan decided on 2026-09-27.
+- State-contract split: waits on the multi-turn comparison, as jimmfan chose on 2026-10-03.
+- Build handoff: waits on jimmfan's choices recorded in the [responsibility map](../workflow-responsibility-boundaries/map.md#blockers).
 - Deeper cost attribution: actual context occupancy, per-file causal cost, and stable current-framework efficiency remain unestablished, and the older campaigns' raw evidence is unavailable.
   Whether any repeated read or broad output is avoidable remains an investigation question, not a confirmed defect.
 
