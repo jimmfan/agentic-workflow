@@ -20,7 +20,7 @@ count = 1
 [[assertions]]
 kind = "glob_any_matches"
 path = ".project-efforts/*/map.md"
-value = '''(?m)\A# [^\n]+\n(?:(?!^## ).)*^## Objective\n(?:(?!^## ).)*^## Scope\n(?:(?!^## ).)*^## Ready work\n(?:(?!^## ).)*(?:^## Current state\n(?:(?!^## ).)*)?(?:^## Areas and relationships\n(?:(?!^## ).)*)?(?:^## Dependencies\n(?:(?!^## ).)*)?^## Blockers\n(?:(?!^## ).)*(?:^## Key references\n(?:(?!^## ).)*)?\Z'''
+value = '''(?m)\A# [^\n]+\n(?:(?!^## ).)*^## Objective\n(?:(?!^## ).)*^## Scope\n(?:(?!^## ).)*^## Ready work\n(?:(?!^## ).)*^## Blockers\n(?:(?!^## ).)*(?:^## Dependencies\n(?:(?!^## ).)*)?(?:^## Current state\n(?:(?!^## ).)*)?(?:^## Areas and relationships\n(?:(?!^## ).)*)?(?:^## Key references\n(?:(?!^## ).)*)?\Z'''
 
 [[assertions]]
 kind = "glob_any_matches"

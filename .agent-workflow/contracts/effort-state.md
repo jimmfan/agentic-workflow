@@ -66,6 +66,8 @@ A storage-key collision resumes only the same effort; otherwise use the shortest
 
 ## Map authoring
 
+The map also serves people who need a quick status: a reader without the effort's history should learn the goal, what is next, and what is blocked and on whom within a minute.
+
 Use this default H2 order beneath the human-readable effort-name H1:
 
 1. **Objective** — the result the effort is intended to achieve.
@@ -73,12 +75,12 @@ Use this default H2 order beneath the human-readable effort-name H1:
 3. **Ready work** — concrete authorized scopes that may proceed now.
    Placement never bypasses authority or dependencies.
    When no work is ready, explain why truthfully rather than inventing work.
-4. **Current state** — the smallest truthful durable coordination summary needed for safe resumption.
-   Transient Git or session observations, such as a clean working tree, current HEAD, or branch position, remain execution context unless they are genuinely a continuing action authorization constraint, baseline, or dependency.
-5. **Areas and relationships** — major areas, their interactions, and consequential participant responsibilities and operating boundaries, not just component names.
-6. **Dependencies** — required inputs for particular work.
-7. **Blockers** — conditions currently preventing particular work, an assessed absence of blockers, or a material limitation in the blocker assessment.
+4. **Blockers** — conditions currently preventing particular work, an assessed absence of blockers, or a material limitation in the blocker assessment.
    Never automatically write `None.` or represent unknown or unassessed conditions as absent.
+5. **Dependencies** — required inputs for particular work.
+6. **Current state** — the smallest truthful durable coordination summary needed for safe resumption.
+   Transient Git or session observations, such as a clean working tree, current HEAD, or branch position, remain execution context unless they are genuinely a continuing action authorization constraint, baseline, or dependency.
+7. **Areas and relationships** — major areas, their interactions, and consequential participant responsibilities and operating boundaries, not just component names.
 8. **Key references** — a few readable, navigable sources needed for continuation.
 
 For newly authored default maps, keep Objective, Scope, Ready work, and Blockers visible.
@@ -88,7 +90,7 @@ Preserve uncertainty and **Not yet specified** content without requiring a compl
 These are authoring conventions, never effort-recognition or parser requirements.
 Existing maps with alternate layouts remain valid and resumable; do not rewrite them merely to match this default.
 
-Keep the map brief, preserve enough information to resume safely, and link detailed roadmaps, specifications, ADRs, tickets, project artifacts, and sources that establish relevant claims instead of copying their bodies or detailed backlogs.
+Keep the map brief, preserve enough information to resume safely, and link detailed roadmaps, specifications, ADRs, tickets, operator procedures, project artifacts, and sources that establish relevant claims instead of copying their bodies or detailed backlogs.
 Write map content so it remains true after the session: name dates, revisions, pull requests, and who authorized what instead of relative phrases such as “the current request” or “this follow-up”.
 Update the map in place: replace superseded statements instead of appending dated updates, and leave the effort's history to Git and the pull requests or commits that delivered its work.
 If a fresh session must read most supporting records to recover the current route, reconcile the map instead of adding more supporting detail.
@@ -120,6 +122,7 @@ Identify the condition preventing particular work: for example, an unsatisfied d
 An unresolved U# records a question; only its unresolved condition may block affected work.
 Delay, inconvenience, risk, or unfinished work alone does not make a condition a blocker.
 Assess readiness per scope; independent ready work may proceed while unrelated work remains blocked.
+When a dependency or blocker waits on another team or person, name who it waits on when known, when it was requested or else when it was first recorded, and any agreed follow-up date.
 
 Satisfy dependencies by obtaining their required inputs.
 Questions and uncertainties are resolved through appropriate evidence or their resolution method.
@@ -146,6 +149,8 @@ Apply [Reconcile affected state](#reconcile-affected-state) to every record chan
 Treat consequential evidence supplied by a user or observed from an external system as independently useful when it materially supports a diagnosis or implementation choice and a future agent cannot reliably reconstruct the needed source, scope, observation, and limitations from durable project sources.
 Preserve it before dependent work relies on it or before final response or handoff; use a separate E# when its source, method, limitations, or reuse value justify independent preservation.
 Otherwise do not create or retain an E# merely as a transition step.
+
+When effort maintenance is authorized and the user mentions an environment fact, a constraint, or another team's change that could affect the effort's work, such as revised egress rules or a new access requirement, preserve it in the same turn as an F# or E# with its source, even if secondhand, and the date it was recorded; it needs no further consequentiality judgment.
 
 ### Scoped uncertainty acceptance
 
