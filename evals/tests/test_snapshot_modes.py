@@ -1,6 +1,7 @@
 """Permission-only changes must reach the real preservation/boundary verdicts."""
 
 from pathlib import Path
+import stat
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -83,7 +84,7 @@ class CampaignModeTests(unittest.TestCase):
         (fixture / "docs").chmod(0o755)
         (fixture / "docs/note.txt").chmod(0o644)
 
-    def begin(self, allowed_writes):
+    def freeze(self, allowed_writes):
         core.dump(
             self.root / "scenario.json",
             {
@@ -134,6 +135,7 @@ class CampaignModeTests(unittest.TestCase):
             destination.mkdir()
             (destination / "AGENTS.md").write_text("Synthetic framework\n")
             (destination / "AGENTS.md").chmod(0o644)
+            (destination / ".agent-workflow").mkdir(mode=0o755)
             return {
                 "ref": ref,
                 "commit": "a" * 40,
@@ -145,7 +147,10 @@ class CampaignModeTests(unittest.TestCase):
             }
 
         with patch.object(core, "prepare_revision", side_effect=prepare):
-            core.freeze_campaign(self.root / "spec.json", self.campaign)
+            return core.freeze_campaign(self.root / "spec.json", self.campaign)
+
+    def begin(self, allowed_writes):
+        self.freeze(allowed_writes)
         return Path(core.begin_turn(self.campaign, "run-0001")["workspace"])
 
     def finish(self):
@@ -162,6 +167,50 @@ class CampaignModeTests(unittest.TestCase):
         )
         report = core.report_campaign(self.campaign)
         return {check["id"]: check for check in checkpoint["checks"]}, report
+
+    def test_frozen_file_chmod_is_rejected_before_first_turn(self):
+        self.freeze([])
+        for name in (
+            "inputs/modes/fixture/docs/note.txt",
+            "payloads/candidate/AGENTS.md",
+        ):
+            with self.subTest(path=name):
+                path = self.campaign / name
+                before = path.read_bytes()
+                path.chmod(0o755)
+                try:
+                    with self.assertRaisesRegex(ValueError, "payload drift"):
+                        core.verify_campaign(self.campaign)
+                    with self.assertRaisesRegex(ValueError, "payload drift"):
+                        core.begin_turn(self.campaign, "run-0001")
+                    self.assertFalse((self.campaign / "workspaces").exists())
+                    self.assertEqual(path.read_bytes(), before)
+                finally:
+                    path.chmod(0o644)
+                core.verify_campaign(self.campaign)
+
+    def test_frozen_directory_and_root_chmod_is_rejected_before_first_turn(self):
+        self.freeze([])
+        for name in (
+            "inputs",
+            "inputs/modes/fixture",
+            "inputs/modes/fixture/docs",
+            "payloads/candidate",
+            "payloads/candidate/.agent-workflow",
+        ):
+            with self.subTest(path=name):
+                path = self.campaign / name
+                before = stat.S_IMODE(path.lstat().st_mode)
+                path.chmod(0o700 if before != 0o700 else 0o755)
+                try:
+                    with self.assertRaisesRegex(ValueError, "payload drift"):
+                        core.verify_campaign(self.campaign)
+                    with self.assertRaisesRegex(ValueError, "payload drift"):
+                        core.begin_turn(self.campaign, "run-0001")
+                    self.assertFalse((self.campaign / "workspaces").exists())
+                finally:
+                    path.chmod(before)
+                core.verify_campaign(self.campaign)
 
     def test_protected_file_chmod_fails_even_when_all_ordinary_writes_allowed(self):
         workspace = self.begin(["*"])

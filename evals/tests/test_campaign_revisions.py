@@ -257,5 +257,44 @@ class HistoricalSourceSmokeTests(unittest.TestCase):
                         )
 
 
+class FrozenInventoryTests(unittest.TestCase):
+    def test_copy_preserves_complete_inventory_including_empty_directories(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "original"
+            root.mkdir()
+            root.chmod(0o750)
+            (root / "empty").mkdir()
+            (root / "empty").chmod(0o700)
+            (root / "script").write_text("pass\n")
+            (root / "script").chmod(0o755)
+            (root / "alias").symlink_to("script")
+            expected = revisions.snapshot_files(root)
+            self.assertEqual(expected["."], {"kind": "directory", "mode": 0o750})
+            self.assertEqual(expected["empty"], {"kind": "directory", "mode": 0o700})
+            self.assertEqual(expected["script"]["mode"], 0o755)
+            self.assertEqual(expected["alias"], {"kind": "symlink", "target": "script"})
+            copied = Path(temporary) / "copy"
+            shutil.copytree(root, copied, symlinks=True)
+            revisions.verify_files(copied, expected)
+            (copied / "empty").rmdir()
+            with self.assertRaisesRegex(ValueError, "payload drift: empty"):
+                revisions.verify_files(copied, expected)
+
+    def test_content_only_inventory_is_rejected_without_rewriting_it(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "note.txt").write_bytes(b"")
+            expected = {
+                "note.txt": {
+                    "kind": "file",
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                }
+            }
+            original = json.dumps(expected)
+            with self.assertRaisesRegex(ValueError, "payload drift"):
+                revisions.verify_files(root, expected)
+            self.assertEqual(json.dumps(expected), original)
+
+
 if __name__ == "__main__":
     unittest.main()

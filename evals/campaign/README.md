@@ -230,10 +230,12 @@ A hard-killed coordinator can leave `.campaign-lock`; inspect the recorded PID a
 Never remove a live lock or repair a run by editing its manifest/checkpoints.
 
 Snapshots compare file content, entry type, symlink target, and POSIX permission bits for files and directories.
+Frozen input and installed-payload inventories include those permission bits, empty directories, and each inventory root, so permission drift is rejected before starting a turn.
 Campaign captures also retain the workspace root and `.git` root permission bits; read-only turns compare Git metadata permissions as well.
 A permission-only change counts as a write, including a change to a protected path or an existing parent directory whose child is writable.
 Snapshots establish net effects between turns, not every transient filesystem action or an absence of external actions; they do not capture ownership, ACLs, or extended attributes.
-Older snapshots without permission bits do not establish that permissions were preserved; retain their original tooling and evidence, and freeze a new campaign for the stronger check.
+Older snapshots and frozen inventories without permission bits do not establish that permissions were preserved; retain their original tooling and evidence, and freeze a new campaign for the stronger check.
+Current inventory verification rejects older content-only inventories rather than inferring their missing permissions or rewriting their hashes.
 Unauthorized saved changes remain failures even when execution times out.
 Observed native commands establish invocation/result metadata and retained public output; final prose is not a tool trace.
 For `command_observed`, the existing `argv_contains` field names the exact executable or Python script path to observe; it no longer matches arbitrary command text.

@@ -9,6 +9,7 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
@@ -38,9 +39,9 @@ def resolve_revision(repo: Path, ref: str) -> str:
 
 
 def snapshot_files(root: Path) -> dict:
-    """Hash every file and record internal symlinks without following them."""
+    """Record content, file/directory modes, and internal symlinks, including root."""
     root = root.resolve()
-    files = {}
+    files = {".": {"kind": "directory", "mode": stat.S_IMODE(root.lstat().st_mode)}}
     for parent, directories, names in os.walk(root, followlinks=False):
         for name in sorted(directories + names):
             path = Path(parent) / name
@@ -59,9 +60,15 @@ def snapshot_files(root: Path) -> dict:
             elif path.is_file():
                 files[relative] = {
                     "kind": "file",
+                    "mode": stat.S_IMODE(path.lstat().st_mode),
                     "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
                 }
-            elif not path.is_dir():
+            elif path.is_dir():
+                files[relative] = {
+                    "kind": "directory",
+                    "mode": stat.S_IMODE(path.lstat().st_mode),
+                }
+            else:
                 raise ValueError(f"unsupported installed file type: {relative}")
     return dict(sorted(files.items()))
 
