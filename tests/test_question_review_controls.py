@@ -54,7 +54,7 @@ class QuestionReviewControls(unittest.TestCase):
             workspace=self.workspace,
             before=self.before if before is None else before,
             after=behavior.snapshot(self.workspace),
-            stdout=response + "\n[route: router → wayfinder]",
+            stdout=response + "\n[route: wayfinder]",
             stderr="",
             returncode=0,
             report={"status": "success"},

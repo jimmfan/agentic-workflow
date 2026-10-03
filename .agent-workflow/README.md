@@ -91,7 +91,7 @@ Skill directories outside the current curated inventory remain untouched.
 Every user-facing final response ends with one compact route marker such as:
 
 ```text
-[route: router -> debugging]
+[route: debugging]
 ```
 
 It is instruction-level observability, not telemetry or proof of execution, and must not trigger additional workflow work.

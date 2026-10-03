@@ -71,7 +71,7 @@ class RoutingContractTests(unittest.TestCase):
         routing = (REPOSITORY_ROOT / ".agent-workflow/routing.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("[route: router →", root_policy)
+        self.assertIn("[route: <executed path or terminal outcome>]", root_policy)
         for token in (
             "workflow-discovery",
             "workflow-debugging",

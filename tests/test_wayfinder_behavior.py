@@ -85,7 +85,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                         workspace=workspace,
                         before=before,
                         after=behavior.snapshot(workspace),
-                        stdout="[route: router → wayfinder]",
+                        stdout="[route: wayfinder]",
                         stderr="",
                         returncode=0,
                         report={"status": "success"},
@@ -186,7 +186,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                         workspace=workspace,
                         before=before,
                         after=behavior.snapshot(workspace),
-                        stdout="[route: router → wayfinder]",
+                        stdout="[route: wayfinder]",
                         stderr="",
                         returncode=0,
                         report={"status": "success", "state_used": [relative]},
@@ -224,7 +224,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
                             workspace=workspace,
                             before=before,
                             after=behavior.snapshot(workspace),
-                            stdout="[route: router → direct]",
+                            stdout="[route: direct]",
                             stderr="",
                             returncode=0,
                             report={"status": "success"},
@@ -253,9 +253,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
             before = behavior.snapshot(workspace)
-            stdout = (
-                "No durable Wayfinder state is needed.\n\n[route: router → wayfinder]"
-            )
+            stdout = "No durable Wayfinder state is needed.\n\n[route: wayfinder]"
             evidence = behavior.RunEvidence(
                 scenario=scenario,
                 workspace=workspace,
@@ -546,7 +544,7 @@ class WayfinderBehaviorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
             before = behavior.snapshot(workspace)
-            stdout = "Blocked on provider checksum.\n\n[route: router → wayfinder]"
+            stdout = "Blocked on provider checksum.\n\n[route: wayfinder]"
             report = {
                 "status": "blocked",
                 "summary": "The effort remains current and resumable.",

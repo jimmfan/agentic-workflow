@@ -209,7 +209,7 @@ class BehaviorHarnessTests(unittest.TestCase):
                 Path('app.py').write_text('def greeting():\\n    import time\\n    time.sleep(10)\\n    return "hello, world!"\\n')
                 Path('.behavior-evidence/report.json').write_text(json.dumps({'schema_version': 1, 'status': 'success'}))
                 Path('.behavior-evidence/verification.jsonl').write_text(json.dumps({'exit_code': 0}) + '\\n')
-                print('Finished. [route: router → direct]')
+                print('Finished. [route: direct]')
                 """)
             )
             evidence, results = behavior.run_live_scenario(
@@ -267,7 +267,7 @@ class BehaviorHarnessTests(unittest.TestCase):
                     Path('.behavior-evidence/report.json').write_text(json.dumps({
                         'schema_version': 1, 'status': 'success',
                     }))
-                    print('Done. [route: router → direct]')
+                    print('Done. [route: direct]')
                 """)
             )
             output = root / "report.json"
@@ -420,7 +420,7 @@ class BehaviorHarnessTests(unittest.TestCase):
                 "blockers": [],
             }
             Path(".behavior-evidence/report.json").write_text(json.dumps(report), encoding="utf-8")
-            print("Implemented and verified.\\n\\n[route: router → direct]")
+            print("Implemented and verified.\\n\\n[route: direct]")
             raise SystemExit(check.returncode)
             """
         )
@@ -438,6 +438,44 @@ class BehaviorHarnessTests(unittest.TestCase):
         self.assertTrue(all(result.passed is not False for result in results), results)
         self.assertEqual(behavior.verdict(results), "INCONCLUSIVE")
 
+    def test_route_marker_accepts_executed_paths_and_terminal_outcomes(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "simple-bounded-task"
+        )
+        paths = (
+            ("direct",),
+            ("implement", "verification"),
+            ("wayfinder", "discovery", "research"),
+            ("research-handoff",),
+            ("research-unavailable",),
+            ("research-blocked",),
+            ("implement-incomplete",),
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            snapshot = behavior.snapshot(workspace)
+            for separator in (" → ", " -> "):
+                for path in paths:
+                    with self.subTest(separator=separator, path=path):
+                        stdout = "Done.\n\n[route: " + separator.join(path) + "]"
+                        components = behavior.route_components(stdout)
+                        self.assertEqual(components, path)
+                        evidence = behavior.RunEvidence(
+                            scenario=scenario,
+                            workspace=workspace,
+                            before=snapshot,
+                            after=snapshot,
+                            stdout=stdout,
+                            stderr="",
+                            returncode=0,
+                            report={},
+                            verification=(),
+                            route_components=components,
+                        )
+                        self.assertTrue(behavior.route_visible(evidence)[0])
+
     def test_route_visibility_rejects_missing_duplicate_malformed_and_nonfinal_markers(
         self,
     ) -> None:
@@ -448,9 +486,10 @@ class BehaviorHarnessTests(unittest.TestCase):
         )
         cases = {
             "missing": "done",
-            "duplicate": "[route: router → direct]\n[route: router → direct]",
-            "malformed": "[route: direct]",
-            "nonfinal": "[route: router → direct]\nmore text",
+            "duplicate": "[route: direct]\n[route: direct]",
+            "malformed": "[route: ]",
+            "trailing-separator": "[route: implement → ]",
+            "nonfinal": "[route: direct]\nmore text",
         }
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
@@ -463,9 +502,9 @@ class BehaviorHarnessTests(unittest.TestCase):
                         before=snapshot,
                         after=snapshot,
                         stdout=stdout,
-                        stderr="[route: router → direct]",
+                        stderr="[route: direct]",
                         returncode=0,
-                        report={"route_marker": "[route: router → direct]"},
+                        report={"route_marker": "[route: direct]"},
                         verification=(),
                         route_components=behavior.route_components(stdout),
                     )
@@ -496,7 +535,7 @@ class BehaviorHarnessTests(unittest.TestCase):
                 workspace=workspace,
                 before=snapshot,
                 after=snapshot,
-                stdout="[route: router → direct]",
+                stdout="[route: direct]",
                 stderr="",
                 returncode=0,
                 report={"status": "success", "summary": "read-only comparison"},
@@ -510,7 +549,7 @@ class BehaviorHarnessTests(unittest.TestCase):
             )
             prohibited_evidence = replace(
                 evidence,
-                stdout="[route: router → discovery → domain-modeling]",
+                stdout="[route: discovery → domain-modeling]",
                 route_components=("discovery", "domain-modeling"),
             )
             prohibited_result = next(
@@ -578,7 +617,7 @@ class BehaviorHarnessTests(unittest.TestCase):
                 "scenario": scenario,
                 "workspace": workspace,
                 "before": before,
-                "stdout": "[route: router → wayfinder]",
+                "stdout": "[route: wayfinder]",
                 "stderr": "",
                 "returncode": 0,
                 "report": {"status": "success"},
@@ -665,7 +704,7 @@ import json
 from pathlib import Path
 Path('.behavior-evidence/report.json').write_text(json.dumps({'schema_version': 1, 'status': 'success', 'research_sources': ['https://www.python.org/'], 'state_used': ['README.md'], 'verification': [{'exit_code': 0}]}))
 Path('.behavior-evidence/verification.jsonl').write_text(json.dumps({'exit_code': 0}) + '\\n')
-print('Success. I read the source, researched it and verified the change. [route: router → direct]')
+print('Success. I read the source, researched it and verified the change. [route: direct]')
 """
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -692,7 +731,7 @@ from pathlib import Path
 Path('slug.py').write_text('def slugify(value): return "incorrect"\\n')
 Path('.behavior-evidence/report.json').write_text(json.dumps({'schema_version': 1, 'status': 'success', 'verification': [{'exit_code': 1}, {'exit_code': 0}]}))
 Path('.behavior-evidence/verification.jsonl').write_text(''.join(json.dumps({'exit_code': code}) + '\\n' for code in [1, 0]))
-print('Fixed and verified. [route: router → direct]')
+print('Fixed and verified. [route: direct]')
 """
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -730,7 +769,7 @@ print('Fixed and verified. [route: router → direct]')
                 workspace,
                 before,
                 before,
-                "[route: router → discovery → research]",
+                "[route: discovery → research]",
                 "",
                 0,
                 {

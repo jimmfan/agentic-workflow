@@ -25,7 +25,7 @@ class ExportContinuityTests(unittest.TestCase):
             workspace=workspace,
             before=before,
             after=behavior.snapshot(workspace),
-            stdout="[route: router → direct]",
+            stdout="[route: direct]",
             stderr="",
             returncode=0,
             report={"status": "success", "state_used": [MAP]},
@@ -75,7 +75,7 @@ class ExportContinuityTests(unittest.TestCase):
                     self.failures(
                         replace(
                             evidence,
-                            stdout=f"[route: router → {route}]",
+                            stdout=f"[route: {route}]",
                             route_components=(route,),
                         )
                     ),

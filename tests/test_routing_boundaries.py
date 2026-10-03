@@ -39,7 +39,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                 workspace=workspace,
                 before=before,
                 after=behavior.snapshot(workspace),
-                stdout="[route: router → research]",
+                stdout="[route: research]",
                 stderr="",
                 returncode=0,
                 report={
@@ -61,7 +61,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                 self.failures(
                     replace(
                         evidence,
-                        stdout="[route: router → discovery → research]",
+                        stdout="[route: discovery → research]",
                         route_components=("discovery", "research"),
                     )
                 ),
@@ -84,7 +84,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                 workspace=workspace,
                 before=before,
                 after=before,
-                stdout="[route: router → discovery → research]",
+                stdout="[route: discovery → research]",
                 stderr="",
                 returncode=0,
                 report={
@@ -102,7 +102,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                         self.failures(
                             replace(
                                 evidence,
-                                stdout=f"[route: router → {route[0]}]",
+                                stdout=f"[route: {route[0]}]",
                                 route_components=route,
                             )
                         ),
@@ -167,7 +167,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                         workspace=workspace,
                         before=before,
                         after=behavior.snapshot(workspace),
-                        stdout="[route: router → implement → verification]",
+                        stdout="[route: implement → verification]",
                         stderr="",
                         returncode=0,
                         report={"status": "success"},
@@ -198,7 +198,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                     "Specification: greeting() returns 'hello, world!' with its "
                     "existing signature.\n"
                     "Ticket: update app.py and run python verify.py.\n"
-                    "[route: router → to-spec → to-tickets]"
+                    "[route: to-spec → to-tickets]"
                 ),
                 stderr="",
                 returncode=0,
@@ -257,7 +257,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                     workspace=workspace,
                     before=before,
                     after=before,
-                    stdout="[route: router → wayfinder]",
+                    stdout="[route: wayfinder]",
                     stderr="",
                     returncode=0,
                     report={"status": "success"},
@@ -296,7 +296,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                         workspace=workspace,
                         before=before,
                         after=behavior.snapshot(workspace),
-                        stdout="[route: router → wayfinder]",
+                        stdout="[route: wayfinder]",
                         stderr="",
                         returncode=0,
                         report={"status": "success"},
@@ -413,7 +413,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                         workspace=workspace,
                         before=before,
                         after=behavior.snapshot(workspace),
-                        stdout="[route: router → wayfinder]",
+                        stdout="[route: wayfinder]",
                         stderr="",
                         returncode=0,
                         report={"status": "success"},
@@ -441,7 +441,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                 workspace=workspace,
                 before=before,
                 after=behavior.snapshot(workspace),
-                stdout="Updated greeting and verified it.\n[route: router → implement → verification]",
+                stdout="Updated greeting and verified it.\n[route: implement → verification]",
                 stderr="",
                 returncode=0,
                 report={"status": "success"},
@@ -460,7 +460,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                 self.failures(
                     replace(
                         evidence,
-                        stdout="[route: router → wayfinder → implement]",
+                        stdout="[route: wayfinder → implement]",
                         route_components=("wayfinder", "implement"),
                     )
                 ),
@@ -475,7 +475,7 @@ class RoutingBoundaryTests(unittest.TestCase):
             "from arc-runner-set to arc-runner-set-local.\n"
             "2. Update the matching runs-on reference in README.md.\n"
             "3. Run python part-03-arc-runners/verify.py to check the local configuration.\n"
-            "[route: router → direct]"
+            "[route: direct]"
         )
         with tempfile.TemporaryDirectory() as temporary:
             workspace = behavior.copy_fixture(scenario, Path(temporary))
@@ -514,7 +514,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                 "   Update the documented runs-on reference.\n\n"
                 "3. For verification:\n"
                 "   Run python part-03-arc-runners/verify.py.\n"
-                "[route: router → direct]"
+                "[route: direct]"
             )
             self.assertEqual(self.failures(replace(evidence, stdout=multiline)), [])
             self.assertEqual(
@@ -527,9 +527,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                 ),
                 [],
             )
-            self.assertTrue(
-                self.failures(replace(evidence, stdout="[route: router → direct]"))
-            )
+            self.assertTrue(self.failures(replace(evidence, stdout="[route: direct]")))
             (workspace / "docs").mkdir()
             (workspace / "docs/plan.md").write_text(response)
             self.assertEqual(

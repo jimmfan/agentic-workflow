@@ -61,7 +61,7 @@ class BehaviorInterruptionTests(unittest.TestCase):
                         Path('.behavior-evidence/report.json').write_text(json.dumps({
                             'schema_version': 1, 'status': 'success',
                         }))
-                        print('Done. [route: router → direct]')
+                        print('Done. [route: direct]')
                     """)
                 )
                 harness = behavior.TEST_ROOT / "behavior.py"

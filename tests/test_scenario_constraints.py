@@ -29,7 +29,7 @@ class ScenarioConstraintTests(unittest.TestCase):
                 workspace=workspace,
                 before=before,
                 after=behavior.snapshot(workspace),
-                stdout="[route: router → wayfinder]",
+                stdout="[route: wayfinder]",
                 stderr="",
                 returncode=0,
                 report={
