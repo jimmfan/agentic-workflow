@@ -566,13 +566,19 @@ def _checks(
             detail = {"changed_paths": changes}
         elif kind == "path_exists":
             passed = after["entries"].get(path, {}).get("kind") == "file"
+            detail = {
+                "path": path,
+                "observed_kind": after["entries"].get(path, {}).get("kind"),
+            }
         elif kind == "path_absent":
             passed = path not in after["entries"]
+            detail = {"path": path, "present": path in after["entries"]}
         elif kind == "file_equals":
             passed = (
                 after["entries"].get(path, {}).get("kind") == "file"
                 and after["files"].get(path) == check["value"]
             )
+            detail = {"path": path, "matches_expected_text": passed}
         elif kind == "command_observed":
             commands = [
                 c
@@ -1107,6 +1113,7 @@ def report_campaign(campaign: Path) -> dict:
                         check = {
                             **check,
                             "verdict": judgments[check["id"]]["verdict"],
+                            "detail": "Cited semantic judgment attached",
                             "review": judgments[check["id"]],
                         }
                     checks.append(check)

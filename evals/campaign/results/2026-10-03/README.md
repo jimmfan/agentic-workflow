@@ -3,6 +3,8 @@
 The reusable campaign framework passed deterministic verification, blind grader calibration, and two actual manual-host boundary controls.
 Native Codex execution remains infrastructure-blocked in this Work Mode host.
 No historical release ranking, multi-turn native persistence result, or skill-combination improvement is established by this delivery.
+The retained manual run used the exact tooling tree published in commit `cf076605bedad2d5daa5aabe3fc1c373197b59ae`, whose files match the manifest's tooling hashes.
+Later report-description improvements do not alter or rescore this frozen evidence.
 
 ## What actually ran
 
@@ -49,7 +51,8 @@ Those temporary locations are not durable storage guarantees; the compact materi
 
 ## Repeat or extend
 
-Use the [runbook](../../README.md) from the exact delivered tooling revision.
+Use the [runbook](../../README.md) from the exact chosen tooling revision.
+To regenerate the retained manual report from its original external campaign directory, use commit `cf076605bedad2d5daa5aabe3fc1c373197b59ae` in a separate checkout; current tooling deliberately rejects drift.
 Recreate calibration with `calibration-packet` and compare a fresh independently supplied review with `calibration-assess`.
 To repeat these controls, freeze `evals/campaign/results/2026-10-03/manual-spec.json` into a new external directory and follow the manual `begin`/`record` protocol.
 Never replace the observations in this retained run.
