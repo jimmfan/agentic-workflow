@@ -101,9 +101,13 @@ def texts(root: Path) -> dict[str, str]:
 
 
 def policy_path(name: str) -> bool:
-    return name in {"AGENTS.md", "CLAUDE.md"} or name.startswith(
-        (".agent-workflow/", ".agents/", ".codex/")
-    )
+    return name in {
+        "AGENTS.md",
+        "CLAUDE.md",
+        ".agent-workflow",
+        ".agents",
+        ".codex",
+    } or name.startswith((".agent-workflow/", ".agents/", ".codex/"))
 
 
 def checkpoint(root, before, response, stage, arm, prior_text):
@@ -123,7 +127,7 @@ def checkpoint(root, before, response, stage, arm, prior_text):
     if stage == 4 and changes:
         record_fault("Read-only stage mutated project files")
     for name in changes:
-        if policy_path(name) or name.startswith("protected/"):
+        if policy_path(name) or name == "protected" or name.startswith("protected/"):
             record_fault(f"Protected content changed: {name}")
     for name in deleted:
         if name in {
@@ -455,7 +459,7 @@ def prepare_policy(workspace: Path, arm: str, manifest: dict) -> None:
 
 
 def bounded_process(command, *, cwd, env, prompt, raw, monitor=None, limits=None):
-    """Bound capture and stop the owned process when an optional monitor reports failure."""
+    """Supervise prompt delivery, capture, and optional monitor under one deadline."""
     limits = LIMITS if limits is None else limits
     start = time.monotonic()
     status, captured = "completed", 0
@@ -473,14 +477,16 @@ def bounded_process(command, *, cwd, env, prompt, raw, monitor=None, limits=None
             start_new_session=True,
         )
         try:
-            try:
-                process.stdin.write(prompt.encode())
-                process.stdin.close()
-            except BrokenPipeError:
-                pass
+            pending = memoryview(prompt.encode())
+            sent = 0
             with selectors.DefaultSelector() as selector:
                 selector.register(process.stdout, selectors.EVENT_READ, out)
                 selector.register(process.stderr, selectors.EVENT_READ, err)
+                if pending:
+                    os.set_blocking(process.stdin.fileno(), False)
+                    selector.register(process.stdin, selectors.EVENT_WRITE)
+                else:
+                    process.stdin.close()
                 while selector.get_map() or process.poll() is None:
                     if monitor is not None and (failure := monitor()):
                         status = failure
@@ -489,6 +495,21 @@ def bounded_process(command, *, cwd, env, prompt, raw, monitor=None, limits=None
                         status = "timeout"
                         break
                     for key, _ in selector.select(timeout=0.1):
+                        if key.fileobj is process.stdin:
+                            try:
+                                sent += os.write(
+                                    process.stdin.fileno(), pending[sent : sent + 16384]
+                                )
+                            except BlockingIOError:
+                                continue
+                            except BrokenPipeError:
+                                selector.unregister(process.stdin)
+                                process.stdin.close()
+                                continue
+                            if sent == len(pending):
+                                selector.unregister(process.stdin)
+                                process.stdin.close()
+                            continue
                         chunk = os.read(key.fileobj.fileno(), 16384)
                         if not chunk:
                             selector.unregister(key.fileobj)
@@ -512,6 +533,7 @@ def bounded_process(command, *, cwd, env, prompt, raw, monitor=None, limits=None
             except ProcessLookupError:
                 pass
             process.wait()
+            process.stdin.close()
             process.stdout.close()
             process.stderr.close()
     if process.returncode and status == "completed":

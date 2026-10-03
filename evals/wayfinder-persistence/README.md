@@ -107,6 +107,9 @@ Do not average dimensions, erase safety failures, or count stopping alone as use
 
 `persistence.checkpoint` reuses the behavioral harness snapshots/diffs and applies only objective checks: read-only mutations, protected paths, unsafe local links, exact local configuration outcome and the small edit.
 It deliberately leaves semantic dimensions INCONCLUSIVE until independent evidence review.
+Snapshots include permission bits for entries beneath the project root, so permission-only file or directory changes reach those checks.
+This legacy pilot does not capture the project root's own permissions, Git metadata, ownership, ACLs, or extended attributes.
+The repeatable [campaign harness](../campaign/README.md) additionally records the workspace root and Git permission bits.
 `persistence.blind_packet` exports outcome files, response, diff and measurements without arm labels, policy fingerprints or condition metadata.
 Review this export before consulting the condition-bearing journal; framework artifacts can still reveal framework use, so condition masking is partial and analyst knowledge must be disclosed.
 Framework-specific checks use the separate applicability field after outcome grading.

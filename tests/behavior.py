@@ -14,6 +14,7 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import tempfile
@@ -156,6 +157,7 @@ class Scenario:
 class Entry:
     kind: str
     identity: str
+    mode: int
     sections: dict[str, str] | None = field(default_factory=dict)
 
 
@@ -570,17 +572,19 @@ def snapshot(root: Path) -> dict[str, Entry]:
         relative = path.relative_to(root).as_posix()
         if relative == ".git" or relative.startswith(".git/"):
             continue
+        mode = stat.S_IMODE(path.lstat().st_mode)
         if path.is_symlink():
-            result[relative] = Entry("symlink", os.readlink(path))
+            result[relative] = Entry("symlink", os.readlink(path), mode)
         elif path.is_file():
             content = path.read_bytes()
             result[relative] = Entry(
                 "file",
                 hashlib.sha256(content).hexdigest(),
+                mode,
                 ledger_section_hashes(content) if path.name == "unknowns.md" else {},
             )
         elif path.is_dir():
-            result[relative] = Entry("directory", "")
+            result[relative] = Entry("directory", "", mode)
     return result
 
 

@@ -14,7 +14,10 @@ import json
 import os
 from pathlib import Path
 import random
+import re
+import shlex
 import shutil
+import stat
 import subprocess
 import tempfile
 import time
@@ -262,7 +265,16 @@ def _capture(workspace: Path, directory: Path, name: str) -> dict:
             archive.writestr(key, content)
             if not _framework(key):
                 files[key] = content.decode("utf-8", errors="replace")
-    data = {"entries": entries, "git": git, "files": files}
+    git_root = workspace / ".git"
+    data = {
+        "entries": entries,
+        "git": git,
+        "files": files,
+        "root_mode": stat.S_IMODE(workspace.lstat().st_mode),
+        "git_root_mode": stat.S_IMODE(git_root.lstat().st_mode)
+        if git_root.exists()
+        else None,
+    }
     dump(directory / f"{name}.json", data)
     return data
 
@@ -502,6 +514,57 @@ def _trace_evidence(response: dict, directory: Path) -> dict:
     return json.loads(json.dumps(observed))
 
 
+def _command_executes(command: str | None, target: str) -> bool:
+    """Recognize a literal executable or Python script, not an argument mention.
+
+    Native command strings are shell syntax, not an argv array. Only a simple
+    invocation (optionally wrapped by a shell -c/-lc) establishes this check;
+    compound commands, expansion, and unknown launcher modes remain unproven.
+    """
+    if not isinstance(command, str):
+        return False
+
+    def simple_argv(value: str) -> list[str]:
+        if any(character in value for character in "\r\n\0`$;&|<>(){}*?[#"):
+            return []
+        try:
+            return shlex.split(value)
+        except ValueError:
+            return []
+
+    argv = simple_argv(command)
+    if not argv:
+        return False
+    if Path(argv[0]).name in {"sh", "bash", "zsh", "dash"}:
+        if len(argv) != 3 or argv[1] not in {"-c", "-lc"}:
+            return False
+        argv = simple_argv(argv[2])
+        if not argv:
+            return False
+    executable = argv[0]
+    if re.fullmatch(r"python(?:3(?:\.\d+)?)?", Path(executable).name):
+        arguments = iter(argv[1:])
+        for argument in arguments:
+            if argument == "--":
+                executable = next(arguments, "")
+                break
+            if re.fullmatch(r"-[bBdEIOPqsSu]+", argument):
+                continue
+            if argument.startswith("-"):
+                return False
+            executable = argument
+            break
+        else:
+            return False
+    # Strip only harmless leading ./ segments, not trailing slashes or internal
+    # path components whose meaning may depend on symlinks. Keep .// relative.
+    while executable.startswith("./") and not executable.startswith(".//"):
+        executable = executable[2:]
+    while target.startswith("./") and not target.startswith(".//"):
+        target = target[2:]
+    return bool(executable) and executable == target
+
+
 def _checks(
     turn: dict,
     before: dict,
@@ -512,18 +575,22 @@ def _checks(
     protected: set[str],
 ) -> list[dict]:
     changes = _changes(before["entries"], after["entries"])
+    if before.get("root_mode") != after.get("root_mode"):
+        changes.insert(0, ".")
+    git_unchanged = before["git"] == after["git"] and before.get(
+        "git_root_mode"
+    ) == after.get("git_root_mode")
     forbidden = [
         path
         for path in changes
-        if _framework(path)
+        if path == "."
+        or _framework(path)
         or path in protected
         or not _allowed(
             path,
             turn["allowed_writes"],
-            directory=(after["entries"].get(path) or before["entries"].get(path))[
-                "kind"
-            ]
-            == "directory",
+            directory=path not in before["entries"]
+            and after["entries"][path]["kind"] == "directory",
         )
     ]
     unsafe_links = [
@@ -547,7 +614,7 @@ def _checks(
             {
                 "id": "boundary-git",
                 "kind": "mechanical",
-                "verdict": "PASS" if before["git"] == after["git"] else "FAIL",
+                "verdict": "PASS" if git_unchanged else "FAIL",
                 "detail": "No net Git metadata changes",
             }
         )
@@ -562,7 +629,7 @@ def _checks(
         )
         path = check.get("path")
         if kind == "unchanged":
-            passed = not changes and before["git"] == after["git"]
+            passed = not changes and git_unchanged
             detail = {"changed_paths": changes}
         elif kind == "path_exists":
             passed = after["entries"].get(path, {}).get("kind") == "file"
@@ -583,7 +650,7 @@ def _checks(
             commands = [
                 c
                 for c in traces["commands"]
-                if check["argv_contains"] in (c.get("command") or "")
+                if _command_executes(c.get("command"), check["argv_contains"])
                 and c.get("status") == "completed"
                 and c.get("exit_code") is not None
             ]
