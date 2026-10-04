@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import asdict
+from datetime import datetime
 import difflib
 import fnmatch
 import hashlib
@@ -130,6 +131,27 @@ def freeze_campaign(spec_path: Path, destination: Path, *, repo: Path = ROOT) ->
         conditions = {}
         for condition in spec["conditions"]:
             key = condition["id"]
+            if condition["ref"] == "vanilla":
+                if condition.get("overlays"):
+                    raise ValueError("Vanilla cannot have workflow overlays")
+                payload = destination / "payloads" / key
+                payload.mkdir()
+                files = snapshot_files(payload)
+                conditions[key] = {
+                    "ref": "vanilla",
+                    "commit": None,
+                    "version": None,
+                    "distribution_version": None,
+                    "layout": "vanilla-empty-project-payload",
+                    "files": files,
+                    "payload_sha256": fingerprint(files),
+                    "overlays": [],
+                    "installer": [],
+                    "warnings": [
+                        "Native host instructions and bundled system skills retained."
+                    ],
+                }
+                continue
             conditions[key] = prepare_revision(
                 repo,
                 condition["ref"],
@@ -299,12 +321,12 @@ def _initialize_consumer_git(workspace: Path) -> None:
         "-c",
         f"core.hooksPath={os.devnull}",
         "-c",
-        "user.name=Campaign fixture",
+        "user.name=Project Maintainer",
         "-c",
-        "user.email=campaign@example.invalid",
+        "user.email=project@example.invalid",
     ]
     for arguments in (
-        ["init", "-q", "-b", "eval-consumer"],
+        ["init", "-q", "-b", "project-work"],
         ["add", "--all"],
         [
             "-c",
@@ -312,7 +334,7 @@ def _initialize_consumer_git(workspace: Path) -> None:
             "commit",
             "-q",
             "-m",
-            "Frozen evaluation fixture",
+            "Initial project state",
         ],
     ):
         result = subprocess.run(
@@ -325,6 +347,33 @@ def _initialize_consumer_git(workspace: Path) -> None:
         )
         if result.returncode:
             raise ValueError(f"Disposable Git baseline failed: {result.stderr.strip()}")
+
+
+def apply_transition(workspace: Path, directory: Path, transition: dict) -> dict:
+    """Retain controller changes separately; refuse collisions with subject state."""
+    creates, deletes = transition.get("create", {}), transition.get("delete", [])
+    targets = {}
+    for name in [*creates, *deletes]:
+        target = workspace / name
+        if not target.resolve().is_relative_to(workspace.resolve()) or any(
+            p.is_symlink()
+            for p in (target, *target.parents)
+            if p.is_relative_to(workspace)
+        ):
+            raise ValueError("Transition path escapes consumer")
+        if name in creates and target.exists():
+            raise ValueError("Transition would overwrite subject content: " + name)
+        if name in deletes and not target.is_file():
+            raise ValueError("Transition source is absent: " + name)
+        targets[name] = target
+    _capture(workspace, directory, "before-transition")
+    for name in deletes:
+        targets[name].unlink()
+    for name, content in creates.items():
+        targets[name].parent.mkdir(parents=True, exist_ok=True)
+        targets[name].write_text(content, encoding="utf-8")
+    dump(directory / "transition.json", transition)
+    return _capture(workspace, directory, "before")
 
 
 def begin_turn(campaign: Path, run_id: str) -> dict:
@@ -346,6 +395,13 @@ def begin_turn(campaign: Path, run_id: str) -> dict:
             )
         now = time.time()
         limits = manifest["spec"]["limits"]
+        if (
+            limits.get("launch_before_utc")
+            and now >= datetime.fromisoformat(limits["launch_before_utc"]).timestamp()
+        ):
+            raise ValueError(
+                "Authorized launch window ended; active turns may finish, new turns require renewed authorization"
+            )
         if (
             state["started_at"] is not None
             and now - state["started_at"] >= limits["campaign_seconds"]
@@ -385,6 +441,9 @@ def begin_turn(campaign: Path, run_id: str) -> dict:
                 if before != previous:
                     raise ValueError("Consumer changed between recorded turns")
             turn = turns[run["next"]]
+            transition = turn.get("before_turn")
+            if transition:
+                before = apply_transition(workspace, directory, transition)
             home = campaign / "sessions" / run_id / turn["session"]
             home.mkdir(parents=True, exist_ok=True)
             raw = directory / "raw"
@@ -427,6 +486,15 @@ def begin_turn(campaign: Path, run_id: str) -> dict:
             "inputs_sha256": {
                 name: hashlib.sha256((directory / name).read_bytes()).hexdigest()
                 for name in ("request.json", "before.json", "before.zip")
+                + (
+                    (
+                        "before-transition.json",
+                        "before-transition.zip",
+                        "transition.json",
+                    )
+                    if turn.get("before_turn")
+                    else ()
+                )
             },
         }
         dump(campaign / "state.json", state)
@@ -545,6 +613,9 @@ def _command_executes(command: str | None, target: str) -> bool:
     if re.fullmatch(r"python(?:3(?:\.\d+)?)?", Path(executable).name):
         arguments = iter(argv[1:])
         for argument in arguments:
+            if argument == "-m":
+                executable = next(arguments, "")
+                break
             if argument == "--":
                 executable = next(arguments, "")
                 break
@@ -586,6 +657,7 @@ def _checks(
         if path == "."
         or _framework(path)
         or path in protected
+        or _allowed(path, turn.get("preserve_paths", []))
         or not _allowed(
             path,
             turn["allowed_writes"],
@@ -749,6 +821,15 @@ def finish_turn(campaign: Path, run_id: str, response: dict) -> dict:
                     "before.zip",
                     "after.zip",
                 )
+                + (
+                    (
+                        "before-transition.json",
+                        "before-transition.zip",
+                        "transition.json",
+                    )
+                    if turn.get("before_turn")
+                    else ()
+                )
             },
         }
         dump(directory / "checkpoint.json", checkpoint)
@@ -863,6 +944,9 @@ def run_campaign(campaign: Path, *, allow_live=False, run_id=None) -> dict:
                 raise ValueError(
                     "Interrupted attempt remains pending; record it before resuming"
                 )
+            cutoff = manifest["spec"]["limits"].get("launch_before_utc")
+            if cutoff and time.time() >= datetime.fromisoformat(cutoff).timestamp():
+                return report_campaign(campaign)
             request = begin_turn(campaign, row["id"])
             request["settings"] = {**request["settings"], "allow_live": True}
             raw = Path(request["artifact_dir"])
@@ -933,6 +1017,12 @@ def _verified_checkpoint(
         "before.zip",
         "after.zip",
     }
+    if turn.get("before_turn"):
+        required.update(
+            {"before-transition.json", "before-transition.zip", "transition.json"}
+        )
+        if read_json(directory / "transition.json") != turn["before_turn"]:
+            raise ValueError("Recorded transition differs from frozen input")
     if set(checkpoint["evidence_sha256"]) != required:
         raise ValueError("Checkpoint lacks the required evidence hashes")
     for path, expected in checkpoint["evidence_sha256"].items():
@@ -1257,7 +1347,7 @@ def render_report(report: dict) -> str:
     for applicability, conditions in report["by_applicability"].items():
         for name, total in conditions.items():
             lines.append(
-                f"| {applicability} | {name} | {report['conditions'][name]['commit'][:12]} | {total['PASS']} | {total['FAIL']} | {total['INCONCLUSIVE']} |"
+                f"| {applicability} | {name} | {(report['conditions'][name]['commit'] or 'none')[:12]} | {total['PASS']} | {total['FAIL']} | {total['INCONCLUSIVE']} |"
             )
     lines.extend(
         [

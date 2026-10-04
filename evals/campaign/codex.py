@@ -23,7 +23,15 @@ from typing import Any
 from evals.persistence import bounded_process
 
 PROFILE = "campaign"
-SETTINGS = {"binary", "auth_file", "allow_live", "preflight_only", "allow_subagents"}
+SETTINGS = {
+    "binary",
+    "auth_file",
+    "allow_live",
+    "preflight_only",
+    "allow_subagents",
+    "subscription_only",
+    "fast_mode",
+}
 
 
 def _write(path: Path, value: Any) -> None:
@@ -124,6 +132,10 @@ def _settings(
         'model_provider="openai"',
         "project_doc_max_bytes=65536",
     ]
+    if request.get("settings", {}).get("subscription_only", False):
+        config += ['forced_login_method="chatgpt"', 'cli_auth_credentials_store="file"']
+    if request.get("settings", {}).get("fast_mode", False):
+        config += ['service_tier="fast"', "features.fast_mode=true"]
     env = {
         "CODEX_HOME": str(home / "codex-home"),
         "HOME": str(home / "user-home"),
@@ -370,6 +382,9 @@ def run(request: dict) -> dict:
         settings = request.get("settings", {})
         if not isinstance(settings, dict) or set(settings) - SETTINGS:
             raise ValueError("Unsupported adapter settings")
+        for flag in ("subscription_only", "fast_mode"):
+            if not isinstance(settings.get(flag, False), bool):
+                raise ValueError(flag + " must be a boolean")
         dry = settings.get("preflight_only", False)
         if not isinstance(dry, bool) or not isinstance(
             settings.get("allow_live", False), bool
@@ -460,6 +475,8 @@ def run(request: dict) -> dict:
             "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
             "cli_version": version,
             "allow_subagents": settings.get("allow_subagents", True),
+            "subscription_only": settings.get("subscription_only", False),
+            "fast_mode": settings.get("fast_mode", False),
         }
         if previous and previous["identity"] != identity:
             raise ValueError(
@@ -596,6 +613,14 @@ def run(request: dict) -> dict:
                 path = str(artifact / name)
                 if Path(path).is_file() and path not in result["traces"]:
                     result["traces"].append(path)
+            system_root = home / "codex-home/skills/.system"
+            record["bundled_system_skills"] = {
+                p.relative_to(system_root).as_posix(): hashlib.sha256(
+                    p.read_bytes()
+                ).hexdigest()
+                for p in sorted(system_root.rglob("*"))
+                if p.is_file() and not p.is_symlink()
+            }
             record.update(
                 result=result,
                 credential_copy_removed=credential is None or not credential.exists(),

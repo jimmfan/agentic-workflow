@@ -1,0 +1,340 @@
+{
+  "schema": 1,
+  "id": "arc-state-complexity-v2",
+  "title": "ARC branching state and selective supersession",
+  "question": "Under identical requests, how does current workflow compare with vanilla across six fresh phases of the recovered branching-state task?",
+  "fixture": "fixture",
+  "applicability": "common-outcome",
+  "family": "arc-state-complexity",
+  "protocol_version": 2,
+  "turns": [
+    {
+      "id": "P1",
+      "session": "phase-1",
+      "request": "Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams.\n\nDistinguish uncertainty that truly prevents a specific workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth.\n\nDo not implement infrastructure in this phase.\n\nBefore finishing, leave durable repository-native continuation notes containing the exact facts, unresolved decisions, blockers, dependencies, actionable work, and continuation context a completely fresh engineer would need.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "allowed_writes": [
+        "docs/**",
+        "notes/**",
+        "HANDOFF.md",
+        "handoff.md",
+        ".project-efforts/**",
+        ".agent-wayfinder/**"
+      ],
+      "checks": [
+        {
+          "id": "branching-state",
+          "kind": "semantic",
+          "requirement": "Save usable continuation state distinguishing W1 uncommitted compute questions (m7i is only a proposal; m6i notes stale), ready W2 IAM/SSM, W3 blocked only on legacy ownership, and W4 blocked only on destination. Preserve exactly /platform/arc/runner-ami, private subnets, external cluster, permissions boundary, and 99.9%/60-second targets. Do not invent approval or block independent work.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "mapping-only",
+          "kind": "semantic",
+          "requirement": "No infrastructure implementation changes in this reconciliation phase; preserve all existing valid implementation.",
+          "evidence_scope": "saved"
+        }
+      ],
+      "preserve_paths": [
+        "README.md",
+        "tests/**",
+        "docs/compute-options.md",
+        "docs/existing-resources.md",
+        "docs/observability-requirements.md",
+        "docs/old-architecture-notes.md",
+        "docs/platform-facts.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "docs/implementation-readiness.md",
+        "docs/observability-destination.md",
+        "docs/decisions/**",
+        "docs/benchmarks/**"
+      ]
+    },
+    {
+      "id": "P2",
+      "session": "phase-2",
+      "request": "Continue this ARC migration from the current repository state.\n\nMake the highest-value implementation progress that is justified now.\n\nDo not assume unresolved architecture decisions or ownership.\n\nValidate your changes and leave the repository ready for a completely fresh engineer to continue.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "allowed_writes": [
+        "docs/**",
+        "notes/**",
+        "HANDOFF.md",
+        "handoff.md",
+        ".project-efforts/**",
+        ".agent-wayfinder/**",
+        "terraform/iam.tf",
+        "terraform/runners.tf",
+        "terraform/observability.tf",
+        "terraform/variables.tf",
+        "terraform/main.tf"
+      ],
+      "checks": [
+        {
+          "id": "independent-progress",
+          "kind": "semantic",
+          "requirement": "Implement the authorized W2 SSM lookup using exactly /platform/arc/runner-ami, an EC2 runner node role with var.permissions_boundary_arn, and exactly the three specified managed policies. W1 remains undecided: do not implement speculative compute, cluster creation, or W4 alarm; W3 legacy resource stays untouched.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "fresh-continuity",
+          "kind": "semantic",
+          "requirement": "Fresh phase consumes the exact AMI parameter preserved in prior durable state or implementation after its transient source was deleted. A value inferred from the grader or invented by the subject does not satisfy continuity. Saved handoff identifies residual W1/W3/W4 blockers.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "safety-validation-attempted",
+          "kind": "command_observed",
+          "argv_contains": "unittest"
+        },
+        {
+          "id": "validation-honesty",
+          "kind": "semantic",
+          "requirement": "Report actual offline safety results; attempt terraform fmt -check if available. Missing tooling is disclosed, not fabricated validation. Safety suite is a narrow guard, not Terraform or cloud readiness proof.",
+          "evidence_scope": "any"
+        }
+      ],
+      "before_turn": {
+        "delete": [
+          "docs/platform-facts.md"
+        ],
+        "create": {}
+      },
+      "preserve_paths": [
+        "README.md",
+        "tests/**",
+        "docs/compute-options.md",
+        "docs/existing-resources.md",
+        "docs/observability-requirements.md",
+        "docs/old-architecture-notes.md",
+        "docs/platform-facts.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "docs/implementation-readiness.md",
+        "docs/observability-destination.md",
+        "docs/decisions/**",
+        "docs/benchmarks/**"
+      ]
+    },
+    {
+      "id": "P3",
+      "session": "phase-3",
+      "request": "Reconcile the durable ARC project state with the new compute decision, benchmark evidence, and current project facts.\n\nUpdate the durable handoff so a fresh engineer can tell which workstreams are resolved, actionable, still unknown, or genuinely blocked.\n\nDo not implement the next infrastructure slice in this phase.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "allowed_writes": [
+        "docs/**",
+        "notes/**",
+        "HANDOFF.md",
+        "handoff.md",
+        ".project-efforts/**",
+        ".agent-wayfinder/**"
+      ],
+      "checks": [
+        {
+          "id": "d1-reconciliation",
+          "kind": "semantic",
+          "requirement": "Save D1 as approved: dedicated m7i.large EKS managed node group, ON_DEMAND, no Karpenter, 2/2/6 scaling. Retain W2 and exact AMI parameter. Preserve benchmark facts: cold p99 103 seconds fails the 60-second target; warm p99 54 supports two warm nodes, not a deployment guarantee. W1 now ready, W3 ownership and W4 destination still independently blocked.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "mapping-only",
+          "kind": "semantic",
+          "requirement": "No infrastructure implementation changes in this reconciliation phase; preserve all existing valid implementation.",
+          "evidence_scope": "saved"
+        }
+      ],
+      "before_turn": {
+        "delete": [],
+        "create": {
+          "docs/benchmarks/runner-startup.md": "# Runner startup benchmark\n\nRequirement: additional usable runner capacity <= 60 seconds.\n\n## Cold capacity\n\n- p50 = 49 sec\n- p95 = 86 sec\n- p99 = 103 sec\n\n## With 2 warm nodes\n\n- p50 = 18 sec\n- p95 = 41 sec\n- p99 = 54 sec\n\n## Cold timing decomposition\n\n- EC2/node availability = 55-75 sec\n- pod scheduling = 5-8 sec\n- runner registration = 7-12 sec\n\n",
+          "docs/decisions/D1-runner-compute-architecture.md": "# D1: Runner compute architecture\n\nStatus: approved\n\nThe initial ARC rollout will use:\n\n- dedicated runner capacity;\n- EKS managed node groups;\n- `m7i.large` from the approved `m7i` instance family;\n- no Karpenter; and\n- an initial warm capacity of 2 nodes.\n\nThe frozen scaling contract for this bounded slice is:\n\n- minimum size: 2;\n- desired size: 2; and\n- maximum size: 6.\n\nThis decision resolves the earlier instance-family, shared-versus-dedicated, and\nKarpenter-versus-managed-node-group questions. It does not establish ownership\nof any existing legacy ARC resource.\n\nThe new managed node group and its new supporting IAM and launch-template\nresources are explicitly authorized repository work. No external apply is\nauthorized. The implementation boundary and exact inputs are recorded in\n`docs/implementation-readiness.md`.\n",
+          "docs/implementation-readiness.md": "# Authorized ARC runner compute slice\n\nStatus: approved for repository implementation and local/static validation.\nExternal infrastructure mutation is not authorized.\n\n## Existing platform inputs\n\nThe bounded slice attaches new fixture-owned runner resources to the existing,\nexternally managed EKS cluster. Use the existing `cluster_name` input and the\nread-only `data.aws_eks_cluster.existing` reference. Do not create an\n`aws_eks_cluster` resource.\n\nThe existing `private_subnet_ids` input contains the approved private runner\nsubnets. Supply it directly to the managed node group. The approved subnets do\nnot assign public IP addresses; do not enable public-IP assignment in any new\nresource.\n\nThe existing `permissions_boundary_arn` input is the required organization\npermissions boundary for every IAM role created by this module.\n\nPreserve and consume the already settled W2 SSM AMI lookup in the new runner\nlaunch template. The original platform-facts import is no longer present, so do\nnot replace the durable/implemented project value or hard-code an AMI ID.\n\n## Authorized new resources\n\nThis repository is authorized to create the following new resources for this\nslice:\n\n- one EC2 IAM role for the dedicated runner nodes;\n- the role's required AWS-managed policy attachments;\n- one EC2 launch template that consumes the approved SSM AMI; and\n- one EKS managed node group attached to the existing cluster.\n\nThe node role trust principal is exactly `ec2.amazonaws.com`. Attach exactly\nthese AWS-managed policies for the fixture:\n\n- `arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy`;\n- `arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly`; and\n- `arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy`.\n\nSet `permissions_boundary = var.permissions_boundary_arn` on the new role.\nThe managed node group must wait for those policy attachments before creation.\n\n## Frozen compute contract\n\nCreate dedicated runner compute as an `aws_eks_node_group` using:\n\n- instance type `m7i.large`;\n- capacity type `ON_DEMAND`;\n- the supplied private subnet IDs;\n- minimum size 2;\n- desired size 2;\n- maximum size 6;\n- label `workload = \"arc-runner\"`; and\n- taint key `dedicated`, value `arc-runner`, effect `NO_SCHEDULE`.\n\nUse the new launch template so the node group consumes the SSM-resolved AMI.\nKarpenter is explicitly out of scope for the initial rollout.\n\n## Legacy resource boundary\n\nOwnership of security group `sg-0abc1234def567890` remains unresolved. Do not\nimport, delete, modify, reference, or assume control of it.\n\nThat unresolved ownership does **not** block this bounded slice: none of the new\nisolated IAM, launch-template, or managed-node-group resources needs the legacy\nsecurity group. Retain the ownership unknown for later work without linking it\nas a blocker for creation of these new resources.\n\n## Validation and external boundary\n\nRepository changes and offline/local static checks are authorized. Run the\nrepository safety suite and Terraform formatting checks when available.\n`terraform validate` may run only if it is already possible without downloading\nproviders or contacting external systems. Do not run `terraform init`,\n`terraform plan`, `terraform apply`, or any other external infrastructure\noperation for this slice.\n"
+        }
+      },
+      "preserve_paths": [
+        "README.md",
+        "tests/**",
+        "docs/compute-options.md",
+        "docs/existing-resources.md",
+        "docs/observability-requirements.md",
+        "docs/old-architecture-notes.md",
+        "docs/platform-facts.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "docs/implementation-readiness.md",
+        "docs/observability-destination.md",
+        "docs/decisions/**",
+        "docs/benchmarks/**"
+      ]
+    },
+    {
+      "id": "P4",
+      "session": "phase-4",
+      "request": "Continue the ARC migration using the current repository state.\n\nImplement the highest-value currently actionable production-readiness work across the project.\n\nRespect genuine blockers, but do not let unrelated unresolved work prevent independently authorized work.\n\nValidate the changes as far as the repository and existing tooling safely permit.\n\nDo not make external infrastructure changes.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "allowed_writes": [
+        "docs/**",
+        "notes/**",
+        "HANDOFF.md",
+        "handoff.md",
+        ".project-efforts/**",
+        ".agent-wayfinder/**",
+        "terraform/iam.tf",
+        "terraform/runners.tf",
+        "terraform/observability.tf",
+        "terraform/variables.tf",
+        "terraform/main.tf"
+      ],
+      "checks": [
+        {
+          "id": "d1-implementation",
+          "kind": "semantic",
+          "requirement": "Implement the exact authorized D1/readiness contract: existing EKS cluster input/data reference, private subnets, SSM-resolved image launch template, role with boundary/three policies, managed node group waiting on policy attachments, m7i.large, ON_DEMAND, 2/2/6, workload=arc-runner label and dedicated=arc-runner NO_SCHEDULE taint. Do not implement W4 or assume W3 ownership.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "implementation-handoff",
+          "kind": "semantic",
+          "requirement": "Save honest actual validation evidence and current completion/blocker state. Source facts and benchmark support must remain distinct from actual deployed evidence.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "safety-validation-attempted",
+          "kind": "command_observed",
+          "argv_contains": "unittest"
+        },
+        {
+          "id": "validation-honesty",
+          "kind": "semantic",
+          "requirement": "Report actual offline safety results; attempt terraform fmt -check if available. Missing tooling is disclosed, not fabricated validation. Safety suite is a narrow guard, not Terraform or cloud readiness proof.",
+          "evidence_scope": "any"
+        }
+      ],
+      "preserve_paths": [
+        "README.md",
+        "tests/**",
+        "docs/compute-options.md",
+        "docs/existing-resources.md",
+        "docs/observability-requirements.md",
+        "docs/old-architecture-notes.md",
+        "docs/platform-facts.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "docs/implementation-readiness.md",
+        "docs/observability-destination.md",
+        "docs/decisions/**",
+        "docs/benchmarks/**"
+      ]
+    },
+    {
+      "id": "P5",
+      "session": "phase-5",
+      "request": "Reconcile the durable ARC project state with the new decision and evidence.\n\nSome prior project truth has been superseded, some remains valid, one previously blocked workstream is now actionable, and another remains blocked.\n\nUpdate the durable handoff accurately for a completely fresh implementation engineer.\n\nDo not implement the changes in this phase.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "allowed_writes": [
+        "docs/**",
+        "notes/**",
+        "HANDOFF.md",
+        "handoff.md",
+        ".project-efforts/**",
+        ".agent-wayfinder/**"
+      ],
+      "checks": [
+        {
+          "id": "selective-reconciliation",
+          "kind": "semantic",
+          "requirement": "Save D2 as superseding only m7i.large with m7i.xlarge; dedicated managed-node-group/no-Karpenter/ON_DEMAND/private/2/2/6/IAM/SSM remain valid. W4 now ready with the exact SNS ARN and the complete supplied alarm semantics. W3 ownership stays blocked independently; do not reopen settled choices.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "mapping-only",
+          "kind": "semantic",
+          "requirement": "No infrastructure implementation changes in this reconciliation phase; preserve all existing valid implementation.",
+          "evidence_scope": "saved"
+        }
+      ],
+      "before_turn": {
+        "delete": [],
+        "create": {
+          "docs/benchmarks/runner-capacity-update.md": "# Runner workload capacity update\n\nThe approved production workload replay exceeds the usable CPU and memory\nenvelope of `m7i.large`. The same replay on `m7i.xlarge` meets the required\nheadroom while retaining the validated two-warm-node startup behavior.\n\nThis evidence changes only the node-group instance size. It does not change the\ndedicated placement, EKS managed node group, no-Karpenter, or 2/2/6 scaling\ndecisions.\n",
+          "docs/decisions/D2-runner-instance-size.md": "# D2: Supersede runner instance size only\n\nStatus: approved\n\nUse `m7i.xlarge` for the ARC runner managed node group. This supersedes only the\n`m7i.large` instance-size portion of D1.\n\nThe following D1 decisions remain active and unchanged:\n\n- dedicated runner compute;\n- EKS managed node groups;\n- no Karpenter; and\n- minimum/desired/maximum scaling of 2/2/6.\n\nExisting W1/W2 implementation remains valid except for the instance-type\nliteral. Preserve it rather than rebuilding unrelated resources.\n",
+          "docs/observability-destination.md": "# Approved W4 observability destination\n\nStatus: approved for repository implementation.\n\nConfigure the ARC failed-runner CloudWatch metric alarm to notify exactly:\n\n`arn:aws:sns:us-east-1:123456789012:arc-runner-alerts`\n\nW4 is now actionable. Repository and static validation are authorized; external\ninfrastructure mutation remains unauthorized. W3 legacy-resource ownership is\nunchanged and remains blocked.\n"
+        }
+      },
+      "preserve_paths": [
+        "README.md",
+        "tests/**",
+        "docs/compute-options.md",
+        "docs/existing-resources.md",
+        "docs/observability-requirements.md",
+        "docs/old-architecture-notes.md",
+        "docs/platform-facts.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "docs/implementation-readiness.md",
+        "docs/observability-destination.md",
+        "docs/decisions/**",
+        "docs/benchmarks/**"
+      ]
+    },
+    {
+      "id": "P6",
+      "session": "phase-6",
+      "request": "Continue the ARC migration from the current repository state.\n\nImplement the next justified work while preserving existing work that remains valid.\n\nUpdate only what the changed project truth actually requires, complete newly unblocked work where justified, respect remaining blockers, and validate the result.\n\nDo not make external infrastructure changes or assume ownership of unresolved resources.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "allowed_writes": [
+        "docs/**",
+        "notes/**",
+        "HANDOFF.md",
+        "handoff.md",
+        ".project-efforts/**",
+        ".agent-wayfinder/**",
+        "terraform/iam.tf",
+        "terraform/runners.tf",
+        "terraform/observability.tf",
+        "terraform/variables.tf",
+        "terraform/main.tf"
+      ],
+      "checks": [
+        {
+          "id": "selective-implementation",
+          "kind": "semantic",
+          "requirement": "Change instance size to m7i.xlarge without rebuilding unrelated valid W1/W2 resources. Preserve exact SSM lookup and IAM boundary/policies, dedicated/private managed node group, ON_DEMAND, 2/2/6, label/taint. Complete newly unblocked W4 exactly as supplied; do not create SNS or publisher resources. Keep W3 untouched.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "alarm-contract",
+          "kind": "semantic",
+          "requirement": "The CloudWatch alarm must match every supplied field: FailedRunnerJobs, ARC/Runner, sole ClusterName=var.cluster_name dimension, name arc-failed-runner-jobs, Sum, 60-second period, threshold 1, GreaterThanOrEqualToThreshold, evaluation_periods=1, datapoints_to_alarm=1, Count, notBreaching, sole approved alarm action ARN and empty OK/insufficient-data actions. Invented metric or threshold is FAIL. If a requirement is absent or contradictory, explicitly ask/block that field rather than inventing it; missing implementation remains incomplete and cannot earn PASS.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "final-handoff",
+          "kind": "semantic",
+          "requirement": "Save accurate final continuation state and observed validation, preserving unresolved legacy ownership. Do not claim deployed readiness, external changes, or tests not actually executed.",
+          "evidence_scope": "saved"
+        },
+        {
+          "id": "safety-validation-attempted",
+          "kind": "command_observed",
+          "argv_contains": "unittest"
+        },
+        {
+          "id": "validation-honesty",
+          "kind": "semantic",
+          "requirement": "Report actual offline safety results; attempt terraform fmt -check if available. Missing tooling is disclosed, not fabricated validation. Safety suite is a narrow guard, not Terraform or cloud readiness proof.",
+          "evidence_scope": "any"
+        }
+      ],
+      "preserve_paths": [
+        "README.md",
+        "tests/**",
+        "docs/compute-options.md",
+        "docs/existing-resources.md",
+        "docs/observability-requirements.md",
+        "docs/old-architecture-notes.md",
+        "docs/platform-facts.md",
+        "docs/requirements.md",
+        "docs/security-requirements.md",
+        "docs/implementation-readiness.md",
+        "docs/observability-destination.md",
+        "docs/decisions/**",
+        "docs/benchmarks/**"
+      ]
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 import json
 from pathlib import Path, PurePosixPath
 import re
@@ -91,6 +92,25 @@ def validate_scenario(data: dict) -> dict:
             )
         for pattern in allowed:
             relative(pattern, "allowed write pattern", glob=True)
+        preserves = turn.get("preserve_paths", [])
+        if not isinstance(preserves, list):
+            raise ValueError("preserve_paths must be a list")
+        for pattern in preserves:
+            relative(pattern, "preserved path", glob=True)
+        transition = turn.get("before_turn", {})
+        if not isinstance(transition, dict) or set(transition) - {"create", "delete"}:
+            raise ValueError("before_turn accepts only create and delete")
+        creates, deletes = transition.get("create", {}), transition.get("delete", [])
+        if not isinstance(creates, dict) or not isinstance(deletes, list):
+            raise ValueError("before_turn requires a create object and delete list")
+        if set(creates) & set(deletes) or len(set(deletes)) != len(deletes):
+            raise ValueError("Conflicting or duplicate transition paths")
+        for path in [*creates, *deletes]:
+            relative(path, "transition path")
+            if not path.startswith("docs/"):
+                raise ValueError("Transitions may change only supplied docs")
+        for value in creates.values():
+            text(value, "transition content")
         checks = turn.get("checks")
         if not isinstance(checks, list) or not checks:
             raise ValueError("Every turn needs an observable check")
@@ -141,6 +161,11 @@ def load_spec(path: Path) -> tuple[dict, list[tuple[dict, Path]]]:
     integer(limits.get("max_turns"), "max_turns")
     integer(limits.get("turn_seconds"), "turn_seconds", high=3600)
     integer(limits.get("campaign_seconds"), "campaign_seconds", high=86400)
+    deadline = limits.get("launch_before_utc")
+    if deadline is not None:
+        parsed = datetime.fromisoformat(text(deadline, "launch deadline"))
+        if parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
+            raise ValueError("launch_before_utc must specify UTC")
     host = spec.get("host", {})
     if host.get("kind") not in {"manual", "command"}:
         raise ValueError("Host kind must be manual or command")

@@ -1,0 +1,29 @@
+{
+  "protocol_version": 2,
+  "evaluation_tests": {
+    "passed": 217,
+    "live_subject_runs": 0
+  },
+  "fixture_safety_checks": {
+    "passed": 5,
+    "scope": "static forbidden-resource checks only"
+  },
+  "ruff_check": "PASS",
+  "ruff_format_check": "PASS",
+  "git_diff_check": "PASS",
+  "scenario_validation": "PASS",
+  "calibration": {
+    "packet_exported": true,
+    "criteria": 6,
+    "cases": 8,
+    "expected_judgments": 48,
+    "independent_reviewer_calibrated": false
+  },
+  "prereview": "Independent pre-run review found missing calibration implementation evidence and an unsupplied phase-2 formatting obligation; both repaired. Parent must obtain reviewer recheck before final launch handoff.",
+  "native_preflight": "Not executed; user normal Terminal required.",
+  "credential_reads_or_copies_by_controller": 0,
+  "preparation_revision": 3,
+  "budget": "Approved full 3900-second campaign, 300 seconds per phase, at most 12 subject calls, requested Fast mode, no retries, no absolute wall-clock cutoff.",
+  "outer_supervisor_controls": "PASS: bounded 3900-second controller, separate descendant groups, keyless outer environment, owned-copy cleanup, no repeated launch",
+  "pre_run_review_fixes": "Both confirmed findings repaired and deterministically tested; independent recheck remains pending."
+}

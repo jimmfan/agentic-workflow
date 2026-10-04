@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "name": "arc-state-complexity-v2",
+  "question": "Under identical requests, how does current workflow compare with vanilla across six fresh phases of the recovered branching-state task?",
+  "scenarios": [
+    "scenario.json"
+  ],
+  "conditions": [
+    {
+      "id": "current",
+      "ref": "deb91942ac45373111a6bc615b359b2bbb230a68",
+      "overlays": []
+    },
+    {
+      "id": "vanilla",
+      "ref": "vanilla",
+      "overlays": []
+    }
+  ],
+  "repetitions": 1,
+  "seed": 42,
+  "limits": {
+    "max_turns": 12,
+    "turn_seconds": 300,
+    "campaign_seconds": 3900
+  },
+  "host": {
+    "kind": "command",
+    "command": [
+      "python3",
+      "-m",
+      "evals.campaign.codex"
+    ],
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "medium",
+    "settings": {
+      "allow_subagents": false,
+      "subscription_only": true,
+      "fast_mode": true
+    }
+  },
+  "preparation_revision": 3
+}

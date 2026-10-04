@@ -1,0 +1,22 @@
+{
+  "protocol_version": 2,
+  "historical_commit": "37e35b0be95b1b835f460af15187c91d915ca4dc",
+  "removed_by": "3cc1e10",
+  "source_sha256": {
+    "evals/reports/2026-08-15-arc-wayfinder-state-complexity-v1.md": "39b85f4e6aa61fb961a2269d683a0461fa2e264d6c6abaf394f3213d5b7825bf",
+    "evals/campaigns/arc-wayfinder-state-complexity-v1.json": "d32473f003e2787068fb49dabe3bb4a1b866449245728dda4fd367640d14e473",
+    "evals/arc_wayfinder_state_complexity.py": "0f887f53ce30f509f603679399dd3bc9adb8ab11bbd731d85e62105c8fe44e91"
+  },
+  "runner_base_commit": "0bf8d3526236842e473d542175ded566f513eda5",
+  "canonical_preflight_fix": "4a2b5be",
+  "product_commit": "deb91942ac45373111a6bc615b359b2bbb230a68",
+  "historical_outcomes_reused": false,
+  "historical_files_changed": false,
+  "preparation_revision": 3,
+  "budget_authorization": "Full 3900-second campaign budget with requested Fast mode; prior 03:30 UTC cutoff superseded for new unstarted preparation.",
+  "pre_run_review_repairs": [
+    "Actual alarm Terraform evidence in all calibration controls; wrong-metric defect changes the implementation.",
+    "Formatting-check requirement supplied in the common initial fixture.",
+    "Calibration approval explicitly satisfies the conditional destination blocker."
+  ]
+}

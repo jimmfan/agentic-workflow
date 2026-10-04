@@ -252,3 +252,14 @@ File hashes detect drift and bind reviews to retained evidence; this is a cooper
 Follow the [evaluation storage contract](../README.md#storage-contract): commit frozen inputs, compact reports, relevant quotations, and adjudication; keep raw traces, copied workspaces, and temporary homes out of Git.
 Retain the complete external campaign directory securely when a later reviewer needs raw evidence.
 Synthetic control tests verify the harness and evaluator; they never count as live Agent Workflow passes.
+
+## Recovered ARC state-complexity comparison
+
+[ARC protocol v2](../arc-state-complexity-v2/README.md) adapts the historical six-stage branching-state task for a current-workflow versus vanilla comparison.
+Its common-outcome rubric and complete synthetic alarm requirements replace the original condition-specific prompts and incomplete alarm heuristic.
+The scenario uses six fresh session labels and frozen document transitions before phases 2, 3 and 5.
+A turn may declare `before_turn.create` (path-to-text mapping), `before_turn.delete` (path list), and `preserve_paths` (protected path patterns).
+Transitions are limited to supplied `docs/` content, refuse overwrites and escapes, and retain hashed controller-change evidence separately from subject writes.
+The special `vanilla` ref freezes an empty project payload with no product commit or overlay; native host instructions and bundled system skills remain.
+Native settings `subscription_only=true` request ChatGPT/file authentication, and `fast_mode=true` request the Fast service tier explicitly.
+These are opt-in controls; no preparation command or successful deterministic test authorizes model use.
