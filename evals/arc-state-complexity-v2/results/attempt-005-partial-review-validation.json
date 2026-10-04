@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "status": "Partial-source evidence and citation validation passed; no formal campaign review applied",
+  "attempt_outcome": "INCONCLUSIVE",
+  "comparison_complete": false,
+  "partial": true,
+  "semantic_counts": {
+    "PASS": 6,
+    "FAIL": 0,
+    "INCONCLUSIVE": 1,
+    "declared_in_supplied_partial_packet": 7
+  },
+  "criterion_coverage": [
+    {
+      "item": "run-0001/P1",
+      "criterion": "branching-state",
+      "verdict": "PASS"
+    },
+    {
+      "item": "run-0001/P1",
+      "criterion": "mapping-only",
+      "verdict": "PASS"
+    },
+    {
+      "item": "run-0001/P2",
+      "criterion": "independent-progress",
+      "verdict": "PASS"
+    },
+    {
+      "item": "run-0001/P2",
+      "criterion": "fresh-continuity",
+      "verdict": "PASS"
+    },
+    {
+      "item": "run-0001/P2",
+      "criterion": "validation-honesty",
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "item": "run-0001/P3",
+      "criterion": "d1-reconciliation",
+      "verdict": "PASS"
+    },
+    {
+      "item": "run-0001/P3",
+      "criterion": "mapping-only",
+      "verdict": "PASS"
+    }
+  ],
+  "literal_citations_verified_original": 39,
+  "literal_citations_verified_publication": 39,
+  "source_packet_payload_sha256": "e76ccf47bb4228934edc1d665474e1cb3b2c7f09e69669282b9a7dd2e2cb44b9",
+  "source_packet_file_byte_sha256": "5db4cd016a1c32d376dc7ee5e9cc6cbed03e87d3ed0dd198022f956e330fec28",
+  "source_review_file_byte_sha256": "0798482f6a7422ceb19e98f7a5ac5c57af1b94217288846f81b88aefb8e4feb5",
+  "publication_packet_payload_sha256": "1a5f99bab4722bcf9d9f1789d9efcb93c8e93034473c5940a0176b25469ba0d9",
+  "cross_item_citations": [
+    {
+      "judgment_item": "run-0001/P2",
+      "criterion": "fresh-continuity",
+      "source_item": "run-0001/P1",
+      "path": "continuation/ARC-MIGRATION.md",
+      "citation_index": 0
+    },
+    {
+      "judgment_item": "run-0001/P2",
+      "criterion": "validation-honesty",
+      "source_item": "run-0001/P1",
+      "path": "@observations",
+      "citation_index": 4
+    }
+  ],
+  "format_and_application_limits": [
+    "Required reviewer field absent; supplied report uses judgment lists instead of the runner checks mapping.",
+    "Two literal citations correctly reference P1 while judging P2; the current runner accepts only citations in the current item. These quotes validate against their explicitly identified source items, but direct runner application is unsupported."
+  ],
+  "verdicts_rationales_requirements_and_quotes_preserved": true,
+  "reviewer_identity_or_calibration_bridge": "No reviewer identity/calibration binding is supplied in this partial report; no calibrated formal grade claim is made.",
+  "execution_limits": [
+    "P3 timed out; two saved-artifact PASS judgments do not establish completed P3 execution.",
+    "Nine phases unexecuted, including every current-arm phase; no comparison or complete trajectory grade.",
+    "P2 formatting availability remains INCONCLUSIVE; actual successful test command is separately supported, despite assignment-prefix recognition gap.",
+    "Snapshots and parser warnings limit transient-action and transcript-coverage claims."
+  ],
+  "originals_unchanged": true,
+  "no_score_application_regrading_code_changes_or_rerun": true
+}

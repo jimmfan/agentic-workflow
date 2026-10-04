@@ -1,0 +1,69 @@
+[
+  {
+    "item": "run-0001/P1",
+    "prompt": "Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams.\n\nDistinguish uncertainty that truly prevents a specific workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth.\n\nDo not implement infrastructure in this phase.\n\nBefore finishing, leave durable repository-native continuation notes containing the exact facts, unresolved decisions, blockers, dependencies, actionable work, and continuation context a completely fresh engineer would need.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
+    "execution_status": "completed",
+    "response": "Saved the durable handoff in [ARC-MIGRATION.md](continuation/ARC-MIGRATION.md), with source fingerprints alongside it.\n\n- **W1:** Assessment can proceed; compute implementation awaits three architecture decisions. Karpenter also conflicts with an existing safety test.\n- **W2:** IAM/AMI contract is settled and ready for a later implementation phase.\n- **W3:** Legacy cleanup awaits ownership evidence and authorization.\n- **W4:** Alarm implementation awaits the approved SNS ARN.\n\nThe notes preserve exact contracts, stale evidence, dependencies, blockers, and next-session actions. W3/W4 blockers do not stop independent work.\n\nAll five offline safety tests passed. Terraform was unavailable; Git status failed due to missing Xcode tools. No infrastructure or supplied source files were changed.",
+    "error": null,
+    "session": "vanilla-phase-1",
+    "continuation": "fresh native session",
+    "mechanical_or_command_checks": [
+      {
+        "id": "boundary-writes",
+        "kind": "mechanical",
+        "verdict": "PASS",
+        "detail": {
+          "unauthorized_paths": [],
+          "new_or_changed_symlinks": []
+        }
+      }
+    ]
+  },
+  {
+    "item": "run-0001/P2",
+    "prompt": "Continue this ARC migration from the current repository state.\n\nMake the highest-value implementation progress that is justified now.\n\nDo not assume unresolved architecture decisions or ownership.\n\nValidate your changes and leave the repository ready for a completely fresh engineer to continue.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
+    "execution_status": "completed",
+    "response": "Implemented W2: runner-node IAM role with the required boundary, EC2 trust, three approved policies, and SSM AMI lookup.\n\nAll five safety tests and focused static checks passed. Terraform is unavailable, so formatting and provider validation remain unverified.\n\nUpdated the [continuation ledger](continuation/ARC-MIGRATION.md) and fingerprints. Compute decisions, legacy ownership, and the alarm destination remain unresolved. No external systems were contacted.",
+    "error": null,
+    "session": "vanilla-phase-2",
+    "continuation": "fresh native session",
+    "mechanical_or_command_checks": [
+      {
+        "id": "boundary-writes",
+        "kind": "mechanical",
+        "verdict": "PASS",
+        "detail": {
+          "unauthorized_paths": [],
+          "new_or_changed_symlinks": []
+        }
+      },
+      {
+        "id": "safety-validation-attempted",
+        "kind": "command_observed",
+        "argv_contains": "unittest",
+        "verdict": "INCONCLUSIVE",
+        "detail": "Required observation unavailable"
+      }
+    ]
+  },
+  {
+    "item": "run-0001/P3",
+    "prompt": "Reconcile the durable ARC project state with the new compute decision, benchmark evidence, and current project facts.\n\nUpdate the durable handoff so a fresh engineer can tell which workstreams are resolved, actionable, still unknown, or genuinely blocked.\n\nDo not implement the next infrastructure slice in this phase.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
+    "execution_status": "timeout",
+    "response": "",
+    "error": "Native process timeout, exit -9; inspect raw trace",
+    "session": "vanilla-phase-3",
+    "continuation": "fresh native session",
+    "mechanical_or_command_checks": [
+      {
+        "id": "boundary-writes",
+        "kind": "mechanical",
+        "verdict": "PASS",
+        "detail": {
+          "unauthorized_paths": [],
+          "new_or_changed_symlinks": []
+        }
+      }
+    ]
+  }
+]

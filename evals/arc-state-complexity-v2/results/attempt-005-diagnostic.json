@@ -1,0 +1,259 @@
+{
+  "schema": 1,
+  "attempt": "005",
+  "protocol": "arc-state-complexity-v2",
+  "preparation_revision": 5,
+  "product_commit": "deb91942ac45373111a6bc615b359b2bbb230a68",
+  "runner_commit": "6a9ea00e9057a5df2a822b3692fc0954ed31a01b",
+  "manifest_sha256": "a32c5b5c759fd76b3b60a17a458086e3d9a4ca4af17ff04e0fa9e761d971874c",
+  "outcome": "INCONCLUSIVE",
+  "comparison_complete": false,
+  "controller_elapsed_seconds": 651.3015840421431,
+  "launched_phases": 3,
+  "successful_phases": 2,
+  "timeout_phases": 1,
+  "unexecuted": {
+    "vanilla": [
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "current": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "total": 9
+  },
+  "configuration": {
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "medium",
+    "subscription_only": true,
+    "fast_mode": false,
+    "features.fast_mode": false,
+    "service_tier_override": null,
+    "actual_response_tier": "not recorded",
+    "turn_seconds": 300,
+    "campaign_seconds": 3900,
+    "max_calls": 12,
+    "automatic_retries": false
+  },
+  "phases": [
+    {
+      "condition": "vanilla",
+      "phase": 1,
+      "execution_status": "completed",
+      "checkpoint_seconds": 182.193043,
+      "native_process_seconds": 181.674212,
+      "outside_native_process_seconds": 0.518831,
+      "preflight_seconds": 0.075339,
+      "observed_public_tool_roundtrip_seconds": 1.036,
+      "public_tool_roundtrips": 6,
+      "max_public_tool_roundtrip_seconds": 0.347,
+      "native_context_model": "gpt-6.1-sol",
+      "native_context_effort": "medium",
+      "last_recorded_tokens": {
+        "at_utc": "2026-10-04T04:07:44.559Z",
+        "counts": {
+          "input_tokens": 97302,
+          "cached_input_tokens": 78720,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 4553,
+          "reasoning_output_tokens": 147,
+          "total_tokens": 101855
+        }
+      },
+      "usage_final": true,
+      "boundary_writes": "PASS"
+    },
+    {
+      "condition": "vanilla",
+      "phase": 2,
+      "execution_status": "completed",
+      "checkpoint_seconds": 168.667168,
+      "native_process_seconds": 168.176283,
+      "outside_native_process_seconds": 0.490885,
+      "preflight_seconds": 0.071236,
+      "observed_public_tool_roundtrip_seconds": 1.176,
+      "public_tool_roundtrips": 8,
+      "max_public_tool_roundtrip_seconds": 0.253,
+      "native_context_model": "gpt-6.1-sol",
+      "native_context_effort": "medium",
+      "last_recorded_tokens": {
+        "at_utc": "2026-10-04T04:10:33.308Z",
+        "counts": {
+          "input_tokens": 151783,
+          "cached_input_tokens": 128512,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 4568,
+          "reasoning_output_tokens": 206,
+          "total_tokens": 156351
+        }
+      },
+      "usage_final": true,
+      "boundary_writes": "PASS"
+    },
+    {
+      "condition": "vanilla",
+      "phase": 3,
+      "execution_status": "timeout",
+      "checkpoint_seconds": 300.284928,
+      "native_process_seconds": 299.71264,
+      "outside_native_process_seconds": 0.572288,
+      "preflight_seconds": 0.088655,
+      "observed_public_tool_roundtrip_seconds": 0.729,
+      "public_tool_roundtrips": 6,
+      "max_public_tool_roundtrip_seconds": 0.148,
+      "native_context_model": "gpt-6.1-sol",
+      "native_context_effort": "medium",
+      "last_recorded_tokens": {
+        "at_utc": "2026-10-04T04:15:28.544Z",
+        "counts": {
+          "input_tokens": 101993,
+          "cached_input_tokens": 76928,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 9175,
+          "reasoning_output_tokens": 463,
+          "total_tokens": 111168
+        }
+      },
+      "usage_final": false,
+      "boundary_writes": "PASS"
+    }
+  ],
+  "timeout_diagnostic": {
+    "classification": "Phase deadline after large edit generation, rejected patch and one successful fallback; not an observed tool hang or retry loop.",
+    "native_task_started_utc": "2026-10-04T04:10:35.185Z",
+    "fingerprint_command_completed_utc": "2026-10-04T04:11:23.944Z",
+    "rejected_patch_at_utc": "2026-10-04T04:13:28.170Z",
+    "rejected_patch_payload_bytes": 17696,
+    "rejected_patch_tool_roundtrip_seconds": 0.062,
+    "rejected_patch_reason": "apply_patch verification failed: invalid patch: multiple operations target <workspace>/continuation/ARC-MIGRATION.md",
+    "fallback_write_at_utc": "2026-10-04T04:15:28.544Z",
+    "fallback_payload_bytes": 17374,
+    "fallback_tool_roundtrip_seconds": 0.125,
+    "retry_turn_output_tokens": 3922,
+    "last_public_message_at_utc": "2026-10-04T04:15:33.233Z",
+    "last_public_message": "The handoff now separates approved architecture, completed code, acceptance gaps, and genuine blockers. It records the frozen compute contract and removes the obsolete Karpenter conflict. All five safety tests passed; I\u2019m checking that protected files remain unchanged. Terraform is unavailable, so formatting and provider validation remain unverified.",
+    "ledger_before_bytes": 15865,
+    "ledger_after_bytes": 16971,
+    "net_changes": [
+      "continuation/ARC-MIGRATION.md",
+      "continuation/reconciliation-fingerprints.json"
+    ],
+    "final_verification_or_response_recorded": false,
+    "network_auth_or_rate_limit_errors_recorded": false,
+    "limits": "Public tool call timestamps do not split model queueing, time to first token, generation and transport latency. Last token counters precede timeout and are not final usage."
+  },
+  "command_observation": {
+    "phase": "vanilla/P2",
+    "exact_native_command": "/bin/zsh -c 'PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v'",
+    "native_status": "completed",
+    "native_exit_code": 0,
+    "retained_mechanical_verdict": "INCONCLUSIVE",
+    "matcher": "evals/campaign/core.py:_command_executes",
+    "reason": "After shell unwrapping, argv[0] is the leading assignment. The recognizer supports simple executable/Python invocations but does not parse assignment prefixes. This is an unsupported syntax observation, not failed test execution.",
+    "same_command_without_assignment_recognized": true,
+    "score_or_checker_modified": false
+  },
+  "verification": {
+    "frozen_bindings_and_checkpoint_evidence_hashes_verified": true,
+    "distinct_native_session_starts": 3,
+    "native_binary_matches_freeze": true,
+    "bundled_system_skill_files": 49,
+    "skill_hashes_match_within_executed_arm": true,
+    "cross_arm_skill_comparison": "unavailable: current unexecuted",
+    "all_credential_copies_removed": true,
+    "cleanup_error": null,
+    "observed_transient_write_absence": "not established"
+  },
+  "limits": [
+    "No current-arm phase executed; no product comparison or superiority claim.",
+    "Terraform and Git/Xcode validation tooling reported unavailable.",
+    "Static safety tests do not establish Terraform validity or cloud readiness.",
+    "Historical attempt 004 remains separate and unchanged.",
+    "Partial independent review packet binding, coverage and 39 literal citations validated read-only; raw format is not directly accepted by the runner; no review applied."
+  ],
+  "partial_independent_review": {
+    "packet_sha256": "e76ccf47bb4228934edc1d665474e1cb3b2c7f09e69669282b9a7dd2e2cb44b9",
+    "review_file_sha256": "0798482f6a7422ceb19e98f7a5ac5c57af1b94217288846f81b88aefb8e4feb5",
+    "reviewed_packet_file_sha256": "5db4cd016a1c32d376dc7ee5e9cc6cbed03e87d3ed0dd198022f956e330fec28",
+    "packet_binding_valid": true,
+    "all_expected_criteria_present": true,
+    "criterion_requirements_match": true,
+    "literal_citations_verified": 39,
+    "criteria": [
+      {
+        "item": "run-0001/P1",
+        "criterion": "branching-state",
+        "verdict": "PASS",
+        "citation_count": 3
+      },
+      {
+        "item": "run-0001/P1",
+        "criterion": "mapping-only",
+        "verdict": "PASS",
+        "citation_count": 7
+      },
+      {
+        "item": "run-0001/P2",
+        "criterion": "independent-progress",
+        "verdict": "PASS",
+        "citation_count": 7
+      },
+      {
+        "item": "run-0001/P2",
+        "criterion": "fresh-continuity",
+        "verdict": "PASS",
+        "citation_count": 4
+      },
+      {
+        "item": "run-0001/P2",
+        "criterion": "validation-honesty",
+        "verdict": "INCONCLUSIVE",
+        "citation_count": 5
+      },
+      {
+        "item": "run-0001/P3",
+        "criterion": "d1-reconciliation",
+        "verdict": "PASS",
+        "citation_count": 5
+      },
+      {
+        "item": "run-0001/P3",
+        "criterion": "mapping-only",
+        "verdict": "PASS",
+        "citation_count": 8
+      }
+    ],
+    "pass": 6,
+    "inconclusive": 1,
+    "fail": 0,
+    "applied_to_frozen_campaign": false,
+    "raw_report_is_direct_runner_format": false,
+    "format_limitations": [
+      "Required reviewer field absent; supplied report uses judgment lists instead of the runner checks mapping.",
+      "Two literal citations correctly reference P1 while judging P2; the current runner accepts only citations in the current item. These quotes validate against their explicitly identified source items, but direct runner application is unsupported."
+    ],
+    "verified_cross_item_citations": [
+      {
+        "judgment_item": "run-0001/P2",
+        "criterion": "fresh-continuity",
+        "source_item": "run-0001/P1",
+        "path": "continuation/ARC-MIGRATION.md",
+        "citation_index": 0
+      },
+      {
+        "judgment_item": "run-0001/P2",
+        "criterion": "validation-honesty",
+        "source_item": "run-0001/P1",
+        "path": "@observations",
+        "citation_index": 4
+      }
+    ],
+    "scope": "Partial saved-artifact criteria only; P3 execution timed out; nine phases unexecuted; no current-arm behavior or comparison."
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "schema": 1,
+  "attempt": "005",
+  "scope": "Authorized incomplete-experiment execution report, partial public prompts/responses/project evidence, settings, diagnostic and independent partial review publication under evals only.",
+  "original_artifact_byte_sha256_and_sizes": {
+    "prepared/attempt-005.md": {
+      "byte_sha256": "736a76021cb5da6b8c637fbba0fe0a3722307631d6ec9fc87200c43591c40273",
+      "bytes": 5819
+    },
+    "prepared/attempt-005-diagnostic.json": {
+      "byte_sha256": "37884e4be80f0bfa5e5594f6c7b2e55de17a38d3ebd691bebd0f3190f7b0eeb8",
+      "bytes": 9799
+    },
+    "original/partial-review-packet.json": {
+      "byte_sha256": "5db4cd016a1c32d376dc7ee5e9cc6cbed03e87d3ed0dd198022f956e330fec28",
+      "bytes": 411449
+    },
+    "original/partial-independent-review.json": {
+      "byte_sha256": "0798482f6a7422ceb19e98f7a5ac5c57af1b94217288846f81b88aefb8e4feb5",
+      "bytes": 112158
+    },
+    "original/campaign/manifest.json": {
+      "byte_sha256": "4ec9b76a1eb618f9db55e3aa3c1c0662cf0ddc69d15a7d101c21c1f636ff0b2f",
+      "bytes": 48421
+    },
+    "original/campaign/seal.json": {
+      "byte_sha256": "d4494cad14487af1af3bf22c5b254a82af095fb5dd292965b0a5b89caf98618b",
+      "bytes": 92
+    },
+    "original/campaign/state.json": {
+      "byte_sha256": "2b84877c720f7021e5865a1986a126801543546606326f6f1e5c158642ef9724",
+      "bytes": 425
+    },
+    "original/campaign/native-preflight-result.json": {
+      "byte_sha256": "7fcb67d4232c7c2066e693188293f64ced3fdb866af1657be575f54a7c59ad61",
+      "bytes": 1679
+    },
+    "original/campaign/launch-report.json": {
+      "byte_sha256": "4919f4f32a79495cb39c92be99982b591b403244bc4494c07f3d65c4b5080d76",
+      "bytes": 35729
+    },
+    "original/campaign/controller-run/launch-result.json": {
+      "byte_sha256": "1af1e472378edc174f1aea013782aa4c20aa8391280d8a35800dc75d4dcf6d42",
+      "bytes": 381
+    },
+    "original/phase-1/request.json": {
+      "byte_sha256": "e64df685b74b7b90069080462cc49b32fd7d116a9e7a1b8c4dc42d38852484b0",
+      "bytes": 2025
+    },
+    "original/phase-1/response.json": {
+      "byte_sha256": "e372b55ad0568c860ccb1d1f6616269655e5ad64717fe6ed473981fc0d4ced25",
+      "bytes": 1808
+    },
+    "original/phase-1/checkpoint.json": {
+      "byte_sha256": "f522039760e8dfbbb8743eee817c0766d4fff541c6c3bf4ff173e4f142ca6b4d",
+      "bytes": 34721
+    },
+    "original/phase-1/before.json": {
+      "byte_sha256": "3a9e8fc3249956480ad4ba8ed997a6cc24641bddecbce0f50306a714ddc3b72a",
+      "bytes": 36597
+    },
+    "original/phase-1/after.json": {
+      "byte_sha256": "08d3a970aaab0d58ac5df976a6d140a1eb8a3c173efb712d2f4bb21d08b7d3d8",
+      "bytes": 52761
+    },
+    "original/phase-1/before.zip": {
+      "byte_sha256": "5436f76cb5f3445dc932be214f4f5498c602fffbc447d31c91dba484a90db4a0",
+      "bytes": 8694
+    },
+    "original/phase-1/after.zip": {
+      "byte_sha256": "f79a273b6030de59dcc5ba92523ac60abc6cd874f5c8f7d452e7511bd633c483",
+      "bytes": 15462
+    },
+    "original/phase-1/raw/invocation.json": {
+      "byte_sha256": "d62532bd336b0ebda1a6dcf94ff49e2bc6d398d42e19e218e57f8f50f856329a",
+      "bytes": 13296
+    },
+    "original/phase-1/raw/preflight.json": {
+      "byte_sha256": "2708a8e08dc4ff7aa915a3342b6dbaee65de2dfd28b0080ec4fadf583600dd69",
+      "bytes": 120
+    },
+    "original/phase-2/request.json": {
+      "byte_sha256": "20b449efbd1e04efc8ed95bc076f542cc33af8774289211ab2943223395912c8",
+      "bytes": 1661
+    },
+    "original/phase-2/response.json": {
+      "byte_sha256": "5a11de871198507cbb16290ba4e6fd214a08e06ac83815f181b8bf672e9a13df",
+      "bytes": 1468
+    },
+    "original/phase-2/checkpoint.json": {
+      "byte_sha256": "6cc08989359e62bfa531227677a119b0d58720f797931b2b57b6e5827e19709d",
+      "bytes": 66258
+    },
+    "original/phase-2/before.json": {
+      "byte_sha256": "74096a7455f48ba24cac4b31c26e1748e2aa37fa2fafbe544429a3c1257f022c",
+      "bytes": 51823
+    },
+    "original/phase-2/after.json": {
+      "byte_sha256": "5db853d6f0b50ed7f959eeecc3ae30d21b30dd55b3cc429425853dd179f4bc74",
+      "bytes": 57284
+    },
+    "original/phase-2/before.zip": {
+      "byte_sha256": "55acd0fb527026ab67ab6a00f5faf3fcb994e84c78d8b51960778552df90df1c",
+      "bytes": 14929
+    },
+    "original/phase-2/after.zip": {
+      "byte_sha256": "6092a1b71e6b99544e7b170bcd53f3f8a03184d84ddf97c3c65828a666d4e06a",
+      "bytes": 17217
+    },
+    "original/phase-2/raw/invocation.json": {
+      "byte_sha256": "764dc5bb1799e03fc269cb1036be76ee60cc4d3fcea62113a6875d9f28761441",
+      "bytes": 12956
+    },
+    "original/phase-2/raw/preflight.json": {
+      "byte_sha256": "587edd33960e0d2bcebb6a29b36cd150f09249742301badd3d41ad2efb570e84",
+      "bytes": 119
+    },
+    "original/phase-3/request.json": {
+      "byte_sha256": "8752df51c7d5f25e1edc8e1bbbb752969d9c0b7260c8ebbe2cb771d2f624470e",
+      "bytes": 1682
+    },
+    "original/phase-3/response.json": {
+      "byte_sha256": "f2165db1c5c0d63c67276152b569762fbf78c2d82097c3c75f935838024df599",
+      "bytes": 860
+    },
+    "original/phase-3/checkpoint.json": {
+      "byte_sha256": "8fa77138b826e983a519d8ae559e77773dd6a8bda8a2155734dcbe0b08b3758d",
+      "bytes": 91573
+    },
+    "original/phase-3/before.json": {
+      "byte_sha256": "3ea0df96947fc4a51075f3bc8576bfe19bcaa2c46c0866d22d3b795d6196bd1c",
+      "bytes": 62846
+    },
+    "original/phase-3/after.json": {
+      "byte_sha256": "5cd5cb44d9dd03273129dcb3e302cd92b526019f84c091a6ea426148c39cac61",
+      "bytes": 66324
+    },
+    "original/phase-3/before.zip": {
+      "byte_sha256": "6f268a7e82fd8a7f2f99bf271fa61074e1d5ebc5a9c0ef89bf730013b20624b6",
+      "bytes": 19854
+    },
+    "original/phase-3/after.zip": {
+      "byte_sha256": "19f1aeffb8234c7356d7b50dba4a9739f2f40e04c047b8b08d45e08493910212",
+      "bytes": 21479
+    },
+    "original/phase-3/raw/invocation.json": {
+      "byte_sha256": "471b41bab5f07cd16a777984a8b6b871bb5c856022054e485089ba7a0b39607c",
+      "bytes": 12344
+    },
+    "original/phase-3/raw/preflight.json": {
+      "byte_sha256": "b3d34d2f750dfab33612d3b995bcdd7526f35852a0ba285e4aa7bd22298e5f1f",
+      "bytes": 121
+    }
+  },
+  "bindings": {
+    "original_packet_payload_sha256": "e76ccf47bb4228934edc1d665474e1cb3b2c7f09e69669282b9a7dd2e2cb44b9",
+    "reviewed_packet_file_byte_sha256": "5db4cd016a1c32d376dc7ee5e9cc6cbed03e87d3ed0dd198022f956e330fec28",
+    "original_partial_review_file_byte_sha256": "0798482f6a7422ceb19e98f7a5ac5c57af1b94217288846f81b88aefb8e4feb5",
+    "publication_packet_payload_sha256": "1a5f99bab4722bcf9d9f1789d9efcb93c8e93034473c5940a0176b25469ba0d9"
+  },
+  "publication_derivative_byte_sha256": {
+    "attempt-005.md": "b2fe93a0ae2ae8814859f865c6cb15c772d1d24c2c4a54ab7bbd5b2d08919e91",
+    "attempt-005-diagnostic.json": "37884e4be80f0bfa5e5594f6c7b2e55de17a38d3ebd691bebd0f3190f7b0eeb8",
+    "attempt-005-partial-review.sanitized.json": "556e6caf65d3c942843972a0b022d8d62de14fbad20be3d4ca3ddfa7b2e994b8",
+    "attempt-005-partial-packet.sanitized.json": "bb12f96b90087b662c774df5df2c391d9343dafb6115b170d375b87a0d28c3fb",
+    "attempt-005-transcripts.sanitized.json": "0dede00c5ad5c29b5796c14510ea7e4b1ea55a168af0f244978400e0690b8e83",
+    "attempt-005-partial-review-validation.json": "1c0fef8aa3e4feec1585fa63de7ad230c9d8dbf48b8118ed750ef252a3317ce9"
+  },
+  "self_hash_omitted": true,
+  "omissions": [
+    {
+      "item": "run-0001/P1",
+      "evidence_path": "tests/__pycache__/test_repository_safety.cpython-314.pyc",
+      "reason": "Compiled bytecode or duplicate inventory omitted; source packet bound separately."
+    },
+    {
+      "item": "run-0001/P1",
+      "evidence_path": "@inventory",
+      "reason": "Compiled bytecode or duplicate inventory omitted; source packet bound separately."
+    },
+    {
+      "item": "run-0001/P1",
+      "evidence_path": "@observations",
+      "reason": "Retain cited command outputs; uncited or duplicate inspections, raw trace locations, private identities and full usage snapshots omitted."
+    },
+    {
+      "item": "run-0001/P2",
+      "evidence_path": "tests/__pycache__/test_repository_safety.cpython-314.pyc",
+      "reason": "Compiled bytecode or duplicate inventory omitted; source packet bound separately."
+    },
+    {
+      "item": "run-0001/P2",
+      "evidence_path": "@inventory",
+      "reason": "Compiled bytecode or duplicate inventory omitted; source packet bound separately."
+    },
+    {
+      "item": "run-0001/P2",
+      "evidence_path": "@observations",
+      "reason": "Retain cited command outputs; uncited or duplicate inspections, raw trace locations, private identities and full usage snapshots omitted."
+    },
+    {
+      "item": "run-0001/P3",
+      "evidence_path": "tests/__pycache__/test_repository_safety.cpython-314.pyc",
+      "reason": "Compiled bytecode or duplicate inventory omitted; source packet bound separately."
+    },
+    {
+      "item": "run-0001/P3",
+      "evidence_path": "@inventory",
+      "reason": "Compiled bytecode or duplicate inventory omitted; source packet bound separately."
+    },
+    {
+      "item": "run-0001/P3",
+      "evidence_path": "@observations",
+      "reason": "Retain cited command outputs; uncited or duplicate inspections, raw trace locations, private identities and full usage snapshots omitted."
+    },
+    "Actual credentials, credential file metadata/hashes, account balances and rate telemetry, private paths/native/reviewer IDs, session homes, copied workspaces/Git metadata, raw model logs, uncited/duplicated inspection output and compiled bytecode."
+  ],
+  "privacy_transformations": [
+    "Private workspace links converted to relative project references; host paths/native IDs replaced with placeholders.",
+    "Cited observation command objects retained with original compact JSON style, preserving 39 quotes after disclosed substitutions.",
+    "Original reviewer judgment-list schema retained, without adding a runner reviewer field or converting/applying scores.",
+    "Prepared report supplemented only with links to sanitized supporting evidence; original prepared bytes and all source review/campaign bytes retained."
+  ],
+  "source_preservation": "Original score, review, frozen campaign and historical attempt004 unchanged; no source checkout mutation, credentials accessed, model call, regrade or code change by publication."
+}
