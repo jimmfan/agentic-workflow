@@ -1,0 +1,22 @@
+{
+  "verdict": "PASS",
+  "calibration_passed": true,
+  "totals": {
+    "cases": 8,
+    "expected_checks": 48,
+    "reviewed_checks": 48,
+    "matching_checks": 48,
+    "mismatched_checks": 0,
+    "missing_checks": 0,
+    "inconclusive_checks": 0
+  },
+  "confusion_counts": {
+    "expected_FAIL_actual_FAIL": 6,
+    "expected_PASS_actual_PASS": 42
+  },
+  "reviewer_alias": "independent-reviewer-A",
+  "packet_sha256": "38ccaa3df4bb7df7a617bbbdf2b0f7491d3f38021ad4867496b2924cbda0a04c",
+  "corpus_sha256": "5f2dbe462dc114aac682c4094b5501341838549b870fe46ad6cc5aaa3cfab392",
+  "procedure": "Reviewer read only the blinded control packet before subject review; controller compared all 48 returned judgments with the retained answer key.",
+  "limits": "Calibration agreement and exact citation validation do not prove reviewer correctness in all cases or broad subject reliability."
+}

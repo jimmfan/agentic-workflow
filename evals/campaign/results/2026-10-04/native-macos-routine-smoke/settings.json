@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "scenario": "routine-edit",
+  "repetitions": 1,
+  "subject_turns": 1,
+  "product": {
+    "commit": "deb91942ac45373111a6bc615b359b2bbb230a68",
+    "version": "0.41.2",
+    "overlays": []
+  },
+  "harness": {
+    "source_base_commit": "a4b31164c909f155a9a8e169f1b59008ebcbf8ca",
+    "reviewed_fix_commit": "4a2b5be5212eb647e6b1920dbb8692696a09eed6",
+    "tooling_sha256": {
+      "evals/campaign/__init__.py": "d9d8fc08a3eefad4e46bca596f0972d6367df9def6cd391dea4acdb26f5519a4",
+      "evals/campaign/__main__.py": "c9fc0d63260c658102cc3b5d2799447e0db6d8a887e450a21fb3818bf1d6ec7d",
+      "evals/campaign/calibration.py": "0c43638faa419c7f05c3d9114ad662583b90099dbc934d0159123c3e931077ae",
+      "evals/campaign/codex.py": "6b5b7555d0e73c9e1144f276d66684568ea1e46c5e2151e65b523f86572a75bd",
+      "evals/campaign/core.py": "47a5bc62f3fd786d8a6db8ae23da9f5bbb0e1db3dbc2f727b0094c622d5cf803",
+      "evals/campaign/revisions.py": "fb201847e0bc646063accbfd46c65391b974a1650bbc25ff3e518f27533f6fed",
+      "evals/campaign/schema.py": "bdffa85c1d7947bb2c9b7fd8ec730189a781551de5cfbd7852e7d1e76860c44c",
+      "evals/persistence.py": "7ef47fcf0a7f5dec2c29e99033424e5cafa1578bd42a57f4dec882bef6b6d7fb",
+      "evals/token_forensics/__init__.py": "cb11f3dc8c0b4027363ae15db8a03b1d8ad7607a3c618c854644855cf4a2a770",
+      "evals/token_forensics/__main__.py": "0f7d54f3fbb1f79a85eb8110f11793db99da6f3c61ee979de5abe9a1b5f3fdb3",
+      "evals/token_forensics/analysis/__init__.py": "5649959653f624359cf67a8e6c55b038f8e3cdc158483ae47bcb33e86fbfe219",
+      "evals/token_forensics/analysis/context.py": "c9a0a2766798e5530de1a846ac67bb40e01ac54ad37907a4341bdfd56df6e36d",
+      "evals/token_forensics/analysis/subagents.py": "ae212b4833719a7b61267eaf82e1a0b948aa4a57edf1770cfbe9996129c060f7",
+      "evals/token_forensics/analysis/tokens.py": "02efde309d93bd5a832c13fdc1fe1fbc26cef3b5614f857bf29fc661c4930059",
+      "evals/token_forensics/analysis/tools.py": "cd423b5e44226b6b2b2803d1bb1519345375b04a1c1e5cf39391eb134921de11",
+      "evals/token_forensics/cli.py": "88a1e02666a3e5d723f96a2e3904b416fec07688ee457264c831f916847e87f2",
+      "evals/token_forensics/models.py": "8617721adbbf4e5104fff87b4b0d9ff671958d1037be2c395e24f346e063c22a",
+      "evals/token_forensics/parsers/__init__.py": "02a2e68c72d5e58661b2528eb57fa22289d9e0b06aea3abc78a9671df9f16e71",
+      "evals/token_forensics/parsers/codex.py": "9a3a3c8fb26e23060887974d0ad71827304cf4623694f48c03923554bc6dc76d",
+      "evals/token_forensics/report.py": "9cf26fbea7478216b6c2af89c02e8a185c2b5227f0f6afb6852cabaed8a7b0fe",
+      "tests/behavior.py": "ed7a56125444f94816311f816f24d5cf5c25665f266a06431e62b3a9701495fa"
+    }
+  },
+  "host": {
+    "os": "macOS",
+    "os_version": "15.7.3",
+    "architecture": "arm64",
+    "python": "3.14.6",
+    "cli_version": "codex-cli 0.160.0",
+    "cli_binary_sha256": "6b582e8813ce7e8ed4c52814ee5cf230dba647bf2292df747a4003f2657ef201"
+  },
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "medium",
+  "seed": 42,
+  "limits": {
+    "max_turns": 1,
+    "turn_seconds": 300,
+    "campaign_launch_window_seconds": 600,
+    "outer_controller_seconds": 630,
+    "shutdown_seconds": 15,
+    "native_output_bytes": 4000000,
+    "adapter_transport_output_bytes": 10000000,
+    "preflight_output_bytes": 200000,
+    "automatic_retry": false
+  },
+  "authentication": {
+    "forced_login_method": "chatgpt",
+    "cli_auth_credentials_store": "file",
+    "api_keys_in_launcher_environment": false,
+    "temporary_copy_removed": true,
+    "source_path_and_all_auth_files": "omitted"
+  },
+  "isolation": {
+    "approval_policy": "never",
+    "ignore_user_config": true,
+    "ignore_rules": true,
+    "strict_config": true,
+    "command_network_enabled": false,
+    "web_search": "disabled",
+    "apps": false,
+    "plugins": false,
+    "memories": false,
+    "agents_enabled": false,
+    "shell_environment_inherit": "none",
+    "login_shell_allowed": false,
+    "isolated_HOME_and_CODEX_HOME": true,
+    "filesystem": {
+      "default_root": "deny",
+      "minimal_system_paths": "read",
+      "consumer": "write",
+      "scratch": "write",
+      "artifact_directory": "deny",
+      "session_home": "deny",
+      "required_binary_and_interpreter_framework": "read"
+    },
+    "scope": "Command sandbox networking differs from the authenticated model service; exact private path bindings are omitted."
+  }
+}

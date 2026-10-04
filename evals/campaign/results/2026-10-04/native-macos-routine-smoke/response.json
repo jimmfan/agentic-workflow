@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "execution_status": "completed",
+  "session_alias": "subject-session-01",
+  "response": "Corrected `recieve` to `receive` in README.md. Only that file was edited, and the corrected text was verified.\n\n[route: direct]",
+  "observations": {
+    "same_session": false,
+    "compaction_events": 0,
+    "active_context_tokens": null,
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "medium"
+  },
+  "error": null,
+  "raw_trace_policy": "Raw traces remain local and are not included in this compact bundle."
+}

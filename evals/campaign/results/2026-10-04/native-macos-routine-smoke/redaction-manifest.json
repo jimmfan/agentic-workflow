@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "publication_authorized": "User approved this smoke's prompts, responses, file-change evidence, settings and grades for this repository after removal of credentials and private machine details; all files stay under evals/.",
+  "original_nonsecret_artifact_sha256": {
+    "campaign-manifest.json": "c8f3bf88c7ca62deaeedeb66f336c2d55e80883c3bdeb5f10d950de60cc43833",
+    "request.json": "6c3e9c118aa6adcd23f25214b61748772e9a14f0200d54bdbd4130363db086bf",
+    "response.json": "f070c56f9608dc865eeefbcb2e7d639e63832969f3d26983ebf448ff1875ac23",
+    "before-snapshot.json": "277960766e649b6bddcabf669bf5c4882974070234c14fc0cd1462a358a24547",
+    "after-snapshot.json": "b00e558f5e3cdea597d470fe4a415323d7b2053541b349aaebad3bc48fa6b4c5",
+    "before-snapshot.zip": "ff676f33ba15d8b90ca30e1e94f2be1b3682331fa492f5ecbd8703999ef14677",
+    "after-snapshot.zip": "967847d1f2e9a7e59cf2c2617485631ef36f8d3cc2b006f88c9291a8a3f3fa8e",
+    "checkpoint.json": "967ef3b5fe9cd8761875f7aac9e8a360f5743b4e606b58ab49bef44f065e6357",
+    "invocation.json": "d65d5260c4e6fa27b7e17a7c45aab356c0b6823eba670d9b4b995b8ca69fc988",
+    "preflight.json": "7d8d05335bf2f775c3360c2da994fc3de162800aa13f370883decc102364b14d",
+    "outer-result.json": "00c49d75c81afcd498e912397bf34597befc93c24dc687a5fbc8000a20cd297a",
+    "original-subject-packet.json": "c12824c352c3d174837a82c38c3591b6dbf92778ce81dd4ea5cac1dcb82abbbb",
+    "original-calibration-review.json": "e58bba12985b3878a15e10383bf5d874f2f13f06f57d1d203406628f07c403ee",
+    "original-subject-review.json": "16b0e708731bb44796502e2da9980901fbf7bedca3567d5e5ac22b7416b63c89",
+    "original-final-report.json": "789b4e4ced9dfec07820cf62089012847440620de9c79b3a65aef9a43d308546"
+  },
+  "published_artifact_sha256": {
+    "README.md": "ec2359b2989e8178d05a1263525045d534cf1dae0025011b05d2d5e870635e14",
+    "calibration-gate.json": "018fc97e5abb5bd66fde79b234ddee5f1f94e7fcab116dca647deaa7f1279c43",
+    "calibration-packet.json": "5f20201faa2b22463f2fbcff5f9d9d044c7d7032438737fb01dfe1386ae23fd9",
+    "file-changes.json": "36c22a19217faaad5c8b94b78e212192c055c26461c1af7de9a9de373c8f2799",
+    "files/README.after.md": "a1e0cb21ff80259565368cdfdd6b578459369ab874ec5931ccd3a34ea92941e5",
+    "files/README.before.md": "1692043c17c11af278bcb0637fab8a969fc406bbdacb7ea9403921a6c7636b15",
+    "files/README.diff": "1c436ad577bfd59ac12006ecb88bda64fd55b0e3d40f261812279cede134ac7d",
+    "independent-calibration-review.json": "8d36cc6dbcaa8d1eef46e9ba24bfc5f135a4073279bfb0d992da68e2cc6b2fb4",
+    "independent-subject-grade.json": "4ae753727f0e5cceba38b4e87d06ef1a1355d1426c7f74036428e3b321c5cf55",
+    "report.json": "4a592190d63e9ecfeda54153da9797a4606540f34303f12d76bcc48e68604dd6",
+    "request.json": "245156c4cbbf4d79d93b760774b36db5e5690faa05c6cec8b440b370da897c2e",
+    "response.json": "21192ee9ce96b35422d8d216aa5cfddbef1c4733915463c8ce324cf9d0b9bf57",
+    "settings.json": "43101832931dd32ad53c2dc005b9b32c625070f2da6ce3c823fd5d46e80f7f82",
+    "subject-packet.sanitized.json": "b3eeeff4740fe5ab699ca6c993ebe300ad02676d71d6306bd56febb58cb4651b"
+  },
+  "manifest_self_hash": "Excluded to avoid a self-referential digest; Git blob identity binds this file.",
+  "transformations": [
+    "Private absolute paths omitted or replaced with HOST_PATH; OS shell path represented by SYSTEM_SHELL.",
+    "Native subject session IDs replaced with subject-session-01; reviewer identity represented by independent-reviewer-A.",
+    "Settings selected from recorded invocation and manifest, retaining controls without executable private path bindings.",
+    "Only changed-file text published from snapshot archives; complete workspace and Git metadata omitted while retaining hashes and comparison results.",
+    "Subject-packet observation string parsed and sanitized; repetitive warning text summarized with original count.",
+    "Independent semantic verdict, rationale and exact prompt/response/diff citations retained; supplemental command paths sanitized.",
+    "Original subject packet hash retained as grading binding; sanitized packet hash is separately computed.",
+    "Calibration packet is unchanged synthetic public data; review format normalized without changing verdicts/rationales/quotes, reviewer identity anonymized.",
+    "Compact result selected from final report, checkpoint and invocation; no raw model/grader transcript included.",
+    "README.diff is rendered as a zero-context unified diff; original full-context diff retained in the sanitized subject packet."
+  ],
+  "omitted": [
+    "All authentication files, credential contents and credential-file metadata/hashes",
+    "All session-home files",
+    "Raw execution and rollout traces",
+    "Full copied workspaces and Git metadata",
+    "Private host installation paths and environment-specific directories",
+    "Native/reviewer thread/session identifiers",
+    "Account identifiers, rate-limit/credit balances and billing details",
+    "Raw grader conversations and unrelated experiments"
+  ],
+  "claims": "One feasibility PASS on declared criteria; no complete-transcript, transient-action, release-ranking, reliability or compaction claims."
+}

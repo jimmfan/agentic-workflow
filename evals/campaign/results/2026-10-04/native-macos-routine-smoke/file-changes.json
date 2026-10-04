@@ -1,0 +1,28 @@
+{
+  "scope": "Complete retained consumer snapshots compared; only changed-file text is published.",
+  "before_entry_count": 69,
+  "after_entry_count": 69,
+  "net_changed_entries": [
+    "README.md"
+  ],
+  "unauthorized_paths": [],
+  "new_or_changed_symlinks": [],
+  "git_metadata_unchanged": true,
+  "workspace_root_mode_unchanged": true,
+  "git_root_mode_unchanged": true,
+  "changed_file": {
+    "before": {
+      "kind": "file",
+      "identity": "1692043c17c11af278bcb0637fab8a969fc406bbdacb7ea9403921a6c7636b15",
+      "mode": 420,
+      "sections": {}
+    },
+    "after": {
+      "kind": "file",
+      "identity": "a1e0cb21ff80259565368cdfdd6b578459369ab874ec5931ccd3a34ea92941e5",
+      "mode": 420,
+      "sections": {}
+    }
+  },
+  "limit": "Net effects only; no claim that every transient write or external action was observed."
+}

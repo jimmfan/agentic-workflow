@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "run_id": "run-0001",
+  "turn_id": "T1",
+  "scenario": "routine-edit",
+  "prompt": "Correct the spelling of recieve to receive in README.md. This is a complete one-file wording task; change only that file.",
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "medium",
+  "timeout_seconds": 300,
+  "session": "fresh subject-session-01",
+  "allowed_writes": [
+    "README.md"
+  ],
+  "notice": "Compact publication, not an executable adapter request; all host paths and authentication source details omitted."
+}
