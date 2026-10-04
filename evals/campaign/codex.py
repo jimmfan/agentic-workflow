@@ -183,6 +183,7 @@ def _preflight(
     timeout_seconds: float = 30,
 ) -> dict:
     """Use synthetic canaries; credentials are absent throughout this command."""
+    python = Path(sys.executable).resolve(strict=True)
     canaries = [
         artifact / "controller-canary.txt",
         home / "codex-home/credential-canary.txt",
@@ -199,7 +200,7 @@ def _preflight(
         script += f"if test -r {shlex.quote(str(canary))}; then echo denied-path-readable; exit {i}; fi; "
     script += f"printf checked > {shlex.quote(str(probe))} || exit 13; "
     script += "python -c " + shlex.quote(
-        "import subprocess,sys; subprocess.run([sys.executable,'-c','pass'],check=True)"
+        f"import subprocess; subprocess.run([{json.dumps(str(python))},'-c','pass'],check=True)"
     )
     try:
         # Codex sandbox rejects --strict-config; exec validates its configuration

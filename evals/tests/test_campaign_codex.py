@@ -3,6 +3,7 @@
 from pathlib import Path
 import json
 import os
+import shlex
 import tempfile
 import unittest
 from unittest import mock
@@ -319,6 +320,63 @@ class CodexAdapterTests(unittest.TestCase):
         self.assertFalse(list(self.workspace.glob(".campaign-probe-*")))
         self.assertFalse((artifact / "controller-canary.txt").exists())
         self.assertTrue((artifact / "preflight.json").is_file())
+
+    def test_preflight_child_uses_controller_resolved_interpreter(self):
+        home, artifact = self.root / "session", self.root / "evidence"
+        home.mkdir()
+        artifact.mkdir()
+        interpreter = self.root / "runtime with spaces" / "bin" / "python"
+        interpreter.parent.mkdir(parents=True)
+        interpreter.write_text("synthetic interpreter; never executed")
+        alias = self.root / "python alias"
+        alias.symlink_to(interpreter)
+        expected = str(interpreter.resolve())
+        child_alias = self.root / "unresolved child alias"
+
+        def sandbox(command, raw, **kwargs):
+            self.assertEqual(kwargs["limits"], {"seconds": 30, "output_bytes": 200_000})
+            tokens = shlex.split(command[-1])
+            self.assertEqual(tokens[-3:-1], ["python", "-c"])
+            with (
+                mock.patch.object(codex.sys, "executable", str(child_alias)),
+                mock.patch.object(Path, "resolve", return_value=child_alias) as resolve,
+                mock.patch.object(codex.subprocess, "run") as child,
+            ):
+                exec(tokens[-1], {})
+            child.assert_called_once_with([expected, "-c", "pass"], check=True)
+            resolve.assert_not_called()
+            (raw / "codex.jsonl").write_text("")
+            (raw / "stderr.txt").write_text("")
+            return "completed", 0, 0.1
+
+        with mock.patch.object(codex.sys, "executable", str(alias)):
+            config, env = codex._settings(
+                self.request, self.workspace, home, artifact, self.binary
+            )
+            with mock.patch.object(codex, "bounded_process", side_effect=sandbox):
+                result = codex._preflight(
+                    self.binary, config, self.workspace, home, artifact, env
+                )
+        self.assertEqual(result["returncode"], 0)
+
+    def test_preflight_unresolved_controller_interpreter_stops_before_launch(self):
+        home, artifact = self.root / "session", self.root / "evidence"
+        home.mkdir()
+        artifact.mkdir()
+        config, env = codex._settings(
+            self.request, self.workspace, home, artifact, self.binary
+        )
+        with (
+            mock.patch.object(codex.sys, "executable", str(self.root / "missing")),
+            mock.patch.object(codex, "bounded_process") as runner,
+        ):
+            with self.assertRaises(FileNotFoundError):
+                codex._preflight(
+                    self.binary, config, self.workspace, home, artifact, env
+                )
+        runner.assert_not_called()
+        self.assertFalse(list(self.workspace.glob(".campaign-probe-*")))
+        self.assertFalse((artifact / "controller-canary.txt").exists())
 
     def test_preserves_existing_lock_and_artifacts(self):
         self.invoke()

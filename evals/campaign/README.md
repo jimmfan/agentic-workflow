@@ -91,6 +91,8 @@ The harness validates citations and agreement; it cannot establish reviewer inde
 
 ## Native Codex execution
 
+Follow the [native setup checklist](NATIVE-SETUP.md) for canonical paths, macOS isolation, subscription-only launch controls, and outcome interpretation.
+
 Install an authenticated supported Codex CLI on the execution host.
 The adapter checks the required command surface and supported isolation before copying an existing credential into a temporary session home.
 It does not perform login or bypass the sandbox.
