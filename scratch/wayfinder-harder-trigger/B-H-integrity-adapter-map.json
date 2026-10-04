@@ -1,0 +1,77 @@
+{
+  "arm": "P",
+  "created_at": "2026-10-04T00:21:25.992717+00:00",
+  "adapter": "/workspace/scratch/7c461001dda8/integrity-H-P",
+  "original_script_sha256": {
+    "audit.py": "de10af2940077807bcf290010912c585619f91f54c88ada40205b65adb2a51f4",
+    "final-integrity.py": "f72f51e3490b5af80640a09005b4dc0ce6b558567699d5296f726b96b15dc3cc"
+  },
+  "actual_completed_turn_count": 32,
+  "scope": "Controller-only validation adapter. N/A controls were not run. Writer31 is repeated in the legacy N/A slots; reader1 is the actual completed files-only reader. Legacy subject names and ordinals in final-integrity.json must be interpreted through this map. Repeated writer aliases are one endpoint check, not independent observations. The unchanged integrity script's source_head describes its shared source checkout, not an arm revision assignment. Checks establish captured file bytes and symlink targets only, not transient-write absence, tool order, or hard isolation.",
+  "slots": [
+    {
+      "legacy_slot": {
+        "subject": "subject-01",
+        "ordinal": 31
+      },
+      "actual_completed_endpoint": {
+        "subject": "subject-01",
+        "ordinal": 31
+      },
+      "checkpoint": "evidence/turns/subject-01/31/after.json",
+      "consumer": "subjects/subject-01",
+      "alias_only": false,
+      "scope": "actual completed endpoint"
+    },
+    {
+      "legacy_slot": {
+        "subject": "subject-02",
+        "ordinal": 2
+      },
+      "actual_completed_endpoint": {
+        "subject": "subject-01",
+        "ordinal": 31
+      },
+      "checkpoint": "evidence/turns/subject-01/31/after.json",
+      "consumer": "subjects/subject-01",
+      "alias_only": true,
+      "scope": "validation alias only; no additional session ran"
+    },
+    {
+      "legacy_slot": {
+        "subject": "subject-03",
+        "ordinal": 2
+      },
+      "actual_completed_endpoint": {
+        "subject": "subject-01",
+        "ordinal": 31
+      },
+      "checkpoint": "evidence/turns/subject-01/31/after.json",
+      "consumer": "subjects/subject-01",
+      "alias_only": true,
+      "scope": "validation alias only; no additional session ran"
+    },
+    {
+      "legacy_slot": {
+        "subject": "subject-04",
+        "ordinal": 1
+      },
+      "actual_completed_endpoint": {
+        "subject": "subject-04",
+        "ordinal": 1
+      },
+      "checkpoint": "evidence/turns/subject-04/01/after.json",
+      "consumer": "subjects/subject-04",
+      "alias_only": false,
+      "scope": "actual completed endpoint"
+    }
+  ],
+  "reader_copy_note": "The helper neither copies nor rewrites reader files or references; their usability still requires reader evidence inspection.",
+  "reader_boundary_observations": {
+    "writer_final_vs_reader_initial_changed_paths": [
+      "current-context-request.txt"
+    ],
+    "reader_initial_vs_final_changed_paths": [],
+    "scope": "Byte/symlink differences only; copy exclusions or path usability require separate interpretation. No PASS or FAIL assigned here."
+  }
+}

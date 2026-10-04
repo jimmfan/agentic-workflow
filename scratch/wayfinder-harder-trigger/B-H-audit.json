@@ -1,0 +1,549 @@
+{
+  "completed_turns": 32,
+  "immutable_file_count": 34,
+  "immutable_symlink_count": 0,
+  "violations": [],
+  "turns": [
+    {
+      "subject": "subject-01",
+      "turn": 1,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/map.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 2,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/map.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 3,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/evidence/E1-operator-count-report.md",
+        ".project-efforts/museum-audio-package/map.md",
+        ".project-efforts/museum-audio-package/unknowns.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 4,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 5,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/evidence/E1-operator-count-report.md",
+        ".project-efforts/museum-audio-package/map.md",
+        ".project-efforts/museum-audio-package/unknowns.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 6,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 7,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 8,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 9,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/evidence/E1-secondhand-ogg-decoder-report.md",
+        ".project-efforts/museum-audio-package/map.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 10,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 11,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 12,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/map.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 13,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 14,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 15,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 16,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 17,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 18,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 19,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 20,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 21,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 22,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 23,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 24,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 25,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+        ".project-efforts/museum-audio-package/map.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 26,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/map.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 27,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 28,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 29,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+        ".project-efforts/museum-audio-package/map.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 30,
+      "changed_paths": [],
+      "errors": []
+    },
+    {
+      "subject": "subject-01",
+      "turn": 31,
+      "changed_paths": [
+        ".project-efforts/museum-audio-package/map.md",
+        "docs/export-plan.md"
+      ],
+      "errors": []
+    },
+    {
+      "subject": "subject-04",
+      "turn": 1,
+      "changed_paths": [],
+      "errors": []
+    }
+  ],
+  "between_turn_transitions": [
+    {
+      "subject": "subject-01",
+      "from_turn": 1,
+      "to_turn": 2,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 2,
+      "to_turn": 3,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 3,
+      "to_turn": 4,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 4,
+      "to_turn": 5,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 5,
+      "to_turn": 6,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 6,
+      "to_turn": 7,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 7,
+      "to_turn": 8,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 8,
+      "to_turn": 9,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 9,
+      "to_turn": 10,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 10,
+      "to_turn": 11,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 11,
+      "to_turn": 12,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 12,
+      "to_turn": 13,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 13,
+      "to_turn": 14,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 14,
+      "to_turn": 15,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 15,
+      "to_turn": 16,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 16,
+      "to_turn": 17,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 17,
+      "to_turn": 18,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 18,
+      "to_turn": 19,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 19,
+      "to_turn": 20,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 20,
+      "to_turn": 21,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 21,
+      "to_turn": 22,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 22,
+      "to_turn": 23,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 23,
+      "to_turn": 24,
+      "controller_changed_paths": [
+        "current-context-request.txt"
+      ],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 24,
+      "to_turn": 25,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 25,
+      "to_turn": 26,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 26,
+      "to_turn": 27,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 27,
+      "to_turn": 28,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 28,
+      "to_turn": 29,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 29,
+      "to_turn": 30,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    },
+    {
+      "subject": "subject-01",
+      "from_turn": 30,
+      "to_turn": 31,
+      "controller_changed_paths": [],
+      "unexpected_changes": []
+    }
+  ],
+  "context_corpus": [
+    {
+      "turn": 13,
+      "bytes": 38059,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 14,
+      "bytes": 38225,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 15,
+      "bytes": 38160,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 16,
+      "bytes": 38062,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 17,
+      "bytes": 38145,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 18,
+      "bytes": 37923,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 19,
+      "bytes": 38077,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 20,
+      "bytes": 37818,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 21,
+      "bytes": 38281,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 22,
+      "bytes": 37820,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 23,
+      "bytes": 37881,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    },
+    {
+      "turn": 24,
+      "bytes": 37824,
+      "frozen_payload_exactly_staged": true,
+      "complete_consumption_observed": false
+    }
+  ],
+  "context_payload_bytes_staged": 456275,
+  "snapshot_scope": "turn boundaries only; no transient-write or tool-order proof"
+}

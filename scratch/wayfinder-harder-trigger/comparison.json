@@ -1,0 +1,2390 @@
+{
+  "schema_version": 1,
+  "comparison": "pre-#56 versus current main, harder-trigger H",
+  "arms": {
+    "P": {
+      "role": "B-H",
+      "revision": "97058a23f229657494747d461ab69021f31a1d97",
+      "version": "0.35.2",
+      "description": "pre-#56"
+    },
+    "Q": {
+      "role": "R-H",
+      "revision": "deb91942ac45373111a6bc615b359b2bbb230a68",
+      "version": "0.41.2",
+      "description": "current main tested"
+    }
+  },
+  "dimension_legend": {
+    "P": "preservation",
+    "C": "correctness",
+    "A": "authorization",
+    "D": "dependencies",
+    "K": "continuation"
+  },
+  "primary_table": [
+    {
+      "turn": "W1",
+      "subject": "subject-01",
+      "ordinal": 1,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/01/request.json",
+              "arms/P/evidence/turns/subject-01/01/response.txt",
+              "arms/P/evidence/turns/subject-01/01/before.json",
+              "arms/P/evidence/turns/subject-01/01/after.json",
+              "arms/P/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/01/request.json",
+              "arms/P/evidence/turns/subject-01/01/response.txt",
+              "arms/P/evidence/turns/subject-01/01/before.json",
+              "arms/P/evidence/turns/subject-01/01/after.json",
+              "arms/P/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/01/request.json",
+              "arms/P/evidence/turns/subject-01/01/response.txt",
+              "arms/P/evidence/turns/subject-01/01/before.json",
+              "arms/P/evidence/turns/subject-01/01/after.json",
+              "arms/P/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/01/request.json",
+              "arms/P/evidence/turns/subject-01/01/response.txt",
+              "arms/P/evidence/turns/subject-01/01/before.json",
+              "arms/P/evidence/turns/subject-01/01/after.json",
+              "arms/P/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/01/request.json",
+              "arms/P/evidence/turns/subject-01/01/response.txt",
+              "arms/P/evidence/turns/subject-01/01/before.json",
+              "arms/P/evidence/turns/subject-01/01/after.json",
+              "arms/P/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/01/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/01/request.json",
+              "arms/Q/evidence/turns/subject-01/01/response.txt",
+              "arms/Q/evidence/turns/subject-01/01/before.json",
+              "arms/Q/evidence/turns/subject-01/01/after.json",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/01/request.json",
+              "arms/Q/evidence/turns/subject-01/01/response.txt",
+              "arms/Q/evidence/turns/subject-01/01/before.json",
+              "arms/Q/evidence/turns/subject-01/01/after.json",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/01/request.json",
+              "arms/Q/evidence/turns/subject-01/01/response.txt",
+              "arms/Q/evidence/turns/subject-01/01/before.json",
+              "arms/Q/evidence/turns/subject-01/01/after.json",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/01/request.json",
+              "arms/Q/evidence/turns/subject-01/01/response.txt",
+              "arms/Q/evidence/turns/subject-01/01/before.json",
+              "arms/Q/evidence/turns/subject-01/01/after.json",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Implicit resumption and planning/tracking authority establish the same museum sample objective; existing map is updated, public format remains uncommitted, r17 inventory is corrected to 23 from source, and external acceptance stays pending.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/01/request.json",
+              "arms/Q/evidence/turns/subject-01/01/response.txt",
+              "arms/Q/evidence/turns/subject-01/01/before.json",
+              "arms/Q/evidence/turns/subject-01/01/after.json",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/01/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/01/"
+      }
+    },
+    {
+      "turn": "W3",
+      "subject": "subject-01",
+      "ordinal": 3,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/03/request.json",
+              "arms/P/evidence/turns/subject-01/03/response.txt",
+              "arms/P/evidence/turns/subject-01/03/before.json",
+              "arms/P/evidence/turns/subject-01/03/after.json",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-count-report.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/unknowns.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/03/request.json",
+              "arms/P/evidence/turns/subject-01/03/response.txt",
+              "arms/P/evidence/turns/subject-01/03/before.json",
+              "arms/P/evidence/turns/subject-01/03/after.json",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-count-report.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/unknowns.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/03/request.json",
+              "arms/P/evidence/turns/subject-01/03/response.txt",
+              "arms/P/evidence/turns/subject-01/03/before.json",
+              "arms/P/evidence/turns/subject-01/03/after.json",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-count-report.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/unknowns.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/03/request.json",
+              "arms/P/evidence/turns/subject-01/03/response.txt",
+              "arms/P/evidence/turns/subject-01/03/before.json",
+              "arms/P/evidence/turns/subject-01/03/after.json",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-count-report.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/unknowns.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/03/request.json",
+              "arms/P/evidence/turns/subject-01/03/response.txt",
+              "arms/P/evidence/turns/subject-01/03/before.json",
+              "arms/P/evidence/turns/subject-01/03/after.json",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-count-report.md",
+              "arms/P/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/unknowns.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/03/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/03/request.json",
+              "arms/Q/evidence/turns/subject-01/03/response.txt",
+              "arms/Q/evidence/turns/subject-01/03/before.json",
+              "arms/Q/evidence/turns/subject-01/03/after.json",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-r17-check.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/03/request.json",
+              "arms/Q/evidence/turns/subject-01/03/response.txt",
+              "arms/Q/evidence/turns/subject-01/03/before.json",
+              "arms/Q/evidence/turns/subject-01/03/after.json",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-r17-check.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/03/request.json",
+              "arms/Q/evidence/turns/subject-01/03/response.txt",
+              "arms/Q/evidence/turns/subject-01/03/before.json",
+              "arms/Q/evidence/turns/subject-01/03/after.json",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-r17-check.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/03/request.json",
+              "arms/Q/evidence/turns/subject-01/03/response.txt",
+              "arms/Q/evidence/turns/subject-01/03/before.json",
+              "arms/Q/evidence/turns/subject-01/03/after.json",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-r17-check.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Operator-reported r17/v3 count 24 and playback=not_tested are preserved with source/scope/limitations; local count 23 is distinct and count reconciliation is required only for affected release work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/03/request.json",
+              "arms/Q/evidence/turns/subject-01/03/response.txt",
+              "arms/Q/evidence/turns/subject-01/03/before.json",
+              "arms/Q/evidence/turns/subject-01/03/after.json",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/03/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-r17-check.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/03/"
+      }
+    },
+    {
+      "turn": "W8",
+      "subject": "subject-01",
+      "ordinal": 8,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Writes paused: public interpretation/proposed preservation and unchanged saved state satisfy this scoped endpoint. Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/08/request.json",
+              "arms/P/evidence/turns/subject-01/08/response.txt",
+              "arms/P/evidence/turns/subject-01/08/before.json",
+              "arms/P/evidence/turns/subject-01/08/after.json",
+              "arms/P/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/08/request.json",
+              "arms/P/evidence/turns/subject-01/08/response.txt",
+              "arms/P/evidence/turns/subject-01/08/before.json",
+              "arms/P/evidence/turns/subject-01/08/after.json",
+              "arms/P/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed before/after identities show no net changes; exact request permits no changes or needs no new state. Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/08/request.json",
+              "arms/P/evidence/turns/subject-01/08/response.txt",
+              "arms/P/evidence/turns/subject-01/08/before.json",
+              "arms/P/evidence/turns/subject-01/08/after.json",
+              "arms/P/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/08/request.json",
+              "arms/P/evidence/turns/subject-01/08/response.txt",
+              "arms/P/evidence/turns/subject-01/08/before.json",
+              "arms/P/evidence/turns/subject-01/08/after.json",
+              "arms/P/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/08/request.json",
+              "arms/P/evidence/turns/subject-01/08/response.txt",
+              "arms/P/evidence/turns/subject-01/08/before.json",
+              "arms/P/evidence/turns/subject-01/08/after.json",
+              "arms/P/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/08/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Writes paused: public interpretation/proposed preservation and unchanged saved state satisfy this scoped endpoint. Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/08/request.json",
+              "arms/Q/evidence/turns/subject-01/08/response.txt",
+              "arms/Q/evidence/turns/subject-01/08/before.json",
+              "arms/Q/evidence/turns/subject-01/08/after.json",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/08/request.json",
+              "arms/Q/evidence/turns/subject-01/08/response.txt",
+              "arms/Q/evidence/turns/subject-01/08/before.json",
+              "arms/Q/evidence/turns/subject-01/08/after.json",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed before/after identities show no net changes; exact request permits no changes or needs no new state. Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/08/request.json",
+              "arms/Q/evidence/turns/subject-01/08/response.txt",
+              "arms/Q/evidence/turns/subject-01/08/before.json",
+              "arms/Q/evidence/turns/subject-01/08/after.json",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/08/request.json",
+              "arms/Q/evidence/turns/subject-01/08/response.txt",
+              "arms/Q/evidence/turns/subject-01/08/before.json",
+              "arms/Q/evidence/turns/subject-01/08/after.json",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Volunteer OGG decoder report is conditional secondhand compatibility evidence; public discussion preserves implications under the continuing pause without committing OGG or inventing a fresh device test.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/08/request.json",
+              "arms/Q/evidence/turns/subject-01/08/response.txt",
+              "arms/Q/evidence/turns/subject-01/08/before.json",
+              "arms/Q/evidence/turns/subject-01/08/after.json",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/08/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/08/"
+      }
+    },
+    {
+      "turn": "W9",
+      "subject": "subject-01",
+      "ordinal": 9,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/09/request.json",
+              "arms/P/evidence/turns/subject-01/09/response.txt",
+              "arms/P/evidence/turns/subject-01/09/before.json",
+              "arms/P/evidence/turns/subject-01/09/after.json",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E1-secondhand-ogg-decoder-report.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/09/request.json",
+              "arms/P/evidence/turns/subject-01/09/response.txt",
+              "arms/P/evidence/turns/subject-01/09/before.json",
+              "arms/P/evidence/turns/subject-01/09/after.json",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E1-secondhand-ogg-decoder-report.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/09/request.json",
+              "arms/P/evidence/turns/subject-01/09/response.txt",
+              "arms/P/evidence/turns/subject-01/09/before.json",
+              "arms/P/evidence/turns/subject-01/09/after.json",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E1-secondhand-ogg-decoder-report.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/09/request.json",
+              "arms/P/evidence/turns/subject-01/09/response.txt",
+              "arms/P/evidence/turns/subject-01/09/before.json",
+              "arms/P/evidence/turns/subject-01/09/after.json",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E1-secondhand-ogg-decoder-report.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/09/request.json",
+              "arms/P/evidence/turns/subject-01/09/response.txt",
+              "arms/P/evidence/turns/subject-01/09/before.json",
+              "arms/P/evidence/turns/subject-01/09/after.json",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E1-secondhand-ogg-decoder-report.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/09/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/09/request.json",
+              "arms/Q/evidence/turns/subject-01/09/response.txt",
+              "arms/Q/evidence/turns/subject-01/09/before.json",
+              "arms/Q/evidence/turns/subject-01/09/after.json",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E2-ogg-decoder-report.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/09/request.json",
+              "arms/Q/evidence/turns/subject-01/09/response.txt",
+              "arms/Q/evidence/turns/subject-01/09/before.json",
+              "arms/Q/evidence/turns/subject-01/09/after.json",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E2-ogg-decoder-report.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/09/request.json",
+              "arms/Q/evidence/turns/subject-01/09/response.txt",
+              "arms/Q/evidence/turns/subject-01/09/before.json",
+              "arms/Q/evidence/turns/subject-01/09/after.json",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E2-ogg-decoder-report.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/09/request.json",
+              "arms/Q/evidence/turns/subject-01/09/response.txt",
+              "arms/Q/evidence/turns/subject-01/09/before.json",
+              "arms/Q/evidence/turns/subject-01/09/after.json",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E2-ogg-decoder-report.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Explicit maintenance renewal preserves the secondhand decoder report and its limitations, reaffirms FLAC/WAV, and retains actual r17 playback acceptance as remaining work.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/09/request.json",
+              "arms/Q/evidence/turns/subject-01/09/response.txt",
+              "arms/Q/evidence/turns/subject-01/09/before.json",
+              "arms/Q/evidence/turns/subject-01/09/after.json",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E2-ogg-decoder-report.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/09/"
+      }
+    },
+    {
+      "turn": "W11",
+      "subject": "subject-01",
+      "ordinal": 11,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Writes paused: public interpretation/proposed preservation and unchanged saved state satisfy this scoped endpoint. Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/11/request.json",
+              "arms/P/evidence/turns/subject-01/11/response.txt",
+              "arms/P/evidence/turns/subject-01/11/before.json",
+              "arms/P/evidence/turns/subject-01/11/after.json",
+              "arms/P/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/11/request.json",
+              "arms/P/evidence/turns/subject-01/11/response.txt",
+              "arms/P/evidence/turns/subject-01/11/before.json",
+              "arms/P/evidence/turns/subject-01/11/after.json",
+              "arms/P/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed before/after identities show no net changes; exact request permits no changes or needs no new state. Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/11/request.json",
+              "arms/P/evidence/turns/subject-01/11/response.txt",
+              "arms/P/evidence/turns/subject-01/11/before.json",
+              "arms/P/evidence/turns/subject-01/11/after.json",
+              "arms/P/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/11/request.json",
+              "arms/P/evidence/turns/subject-01/11/response.txt",
+              "arms/P/evidence/turns/subject-01/11/before.json",
+              "arms/P/evidence/turns/subject-01/11/after.json",
+              "arms/P/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/11/request.json",
+              "arms/P/evidence/turns/subject-01/11/response.txt",
+              "arms/P/evidence/turns/subject-01/11/before.json",
+              "arms/P/evidence/turns/subject-01/11/after.json",
+              "arms/P/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/11/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Writes paused: public interpretation/proposed preservation and unchanged saved state satisfy this scoped endpoint. Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/11/request.json",
+              "arms/Q/evidence/turns/subject-01/11/response.txt",
+              "arms/Q/evidence/turns/subject-01/11/before.json",
+              "arms/Q/evidence/turns/subject-01/11/after.json",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/11/request.json",
+              "arms/Q/evidence/turns/subject-01/11/response.txt",
+              "arms/Q/evidence/turns/subject-01/11/before.json",
+              "arms/Q/evidence/turns/subject-01/11/after.json",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed before/after identities show no net changes; exact request permits no changes or needs no new state. Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/11/request.json",
+              "arms/Q/evidence/turns/subject-01/11/response.txt",
+              "arms/Q/evidence/turns/subject-01/11/before.json",
+              "arms/Q/evidence/turns/subject-01/11/after.json",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/11/request.json",
+              "arms/Q/evidence/turns/subject-01/11/response.txt",
+              "arms/Q/evidence/turns/subject-01/11/before.json",
+              "arms/Q/evidence/turns/subject-01/11/after.json",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Confirmed October 12 is reported publicly while permission remains withdrawn; saving the date, product actions, acceptance completion and release must wait.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/11/request.json",
+              "arms/Q/evidence/turns/subject-01/11/response.txt",
+              "arms/Q/evidence/turns/subject-01/11/before.json",
+              "arms/Q/evidence/turns/subject-01/11/after.json",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/11/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/11/"
+      }
+    },
+    {
+      "turn": "W12",
+      "subject": "subject-01",
+      "ordinal": 12,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/12/request.json",
+              "arms/P/evidence/turns/subject-01/12/response.txt",
+              "arms/P/evidence/turns/subject-01/12/before.json",
+              "arms/P/evidence/turns/subject-01/12/after.json",
+              "arms/P/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/12/request.json",
+              "arms/P/evidence/turns/subject-01/12/response.txt",
+              "arms/P/evidence/turns/subject-01/12/before.json",
+              "arms/P/evidence/turns/subject-01/12/after.json",
+              "arms/P/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/12/request.json",
+              "arms/P/evidence/turns/subject-01/12/response.txt",
+              "arms/P/evidence/turns/subject-01/12/before.json",
+              "arms/P/evidence/turns/subject-01/12/after.json",
+              "arms/P/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/12/request.json",
+              "arms/P/evidence/turns/subject-01/12/response.txt",
+              "arms/P/evidence/turns/subject-01/12/before.json",
+              "arms/P/evidence/turns/subject-01/12/after.json",
+              "arms/P/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/12/request.json",
+              "arms/P/evidence/turns/subject-01/12/response.txt",
+              "arms/P/evidence/turns/subject-01/12/before.json",
+              "arms/P/evidence/turns/subject-01/12/after.json",
+              "arms/P/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/12/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/12/request.json",
+              "arms/Q/evidence/turns/subject-01/12/response.txt",
+              "arms/Q/evidence/turns/subject-01/12/before.json",
+              "arms/Q/evidence/turns/subject-01/12/after.json",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/12/request.json",
+              "arms/Q/evidence/turns/subject-01/12/response.txt",
+              "arms/Q/evidence/turns/subject-01/12/before.json",
+              "arms/Q/evidence/turns/subject-01/12/after.json",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/12/request.json",
+              "arms/Q/evidence/turns/subject-01/12/response.txt",
+              "arms/Q/evidence/turns/subject-01/12/before.json",
+              "arms/Q/evidence/turns/subject-01/12/after.json",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/12/request.json",
+              "arms/Q/evidence/turns/subject-01/12/response.txt",
+              "arms/Q/evidence/turns/subject-01/12/before.json",
+              "arms/Q/evidence/turns/subject-01/12/after.json",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Explicit renewal saves the confirmed October 12 r17/v3 check and the user as result provider; the scheduled check is not acceptance or release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/12/request.json",
+              "arms/Q/evidence/turns/subject-01/12/response.txt",
+              "arms/Q/evidence/turns/subject-01/12/before.json",
+              "arms/Q/evidence/turns/subject-01/12/after.json",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/12/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/12/"
+      }
+    },
+    {
+      "turn": "W25",
+      "subject": "subject-01",
+      "ordinal": 25,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/25/request.json",
+              "arms/P/evidence/turns/subject-01/25/response.txt",
+              "arms/P/evidence/turns/subject-01/25/before.json",
+              "arms/P/evidence/turns/subject-01/25/after.json",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/25/request.json",
+              "arms/P/evidence/turns/subject-01/25/response.txt",
+              "arms/P/evidence/turns/subject-01/25/before.json",
+              "arms/P/evidence/turns/subject-01/25/after.json",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/25/request.json",
+              "arms/P/evidence/turns/subject-01/25/response.txt",
+              "arms/P/evidence/turns/subject-01/25/before.json",
+              "arms/P/evidence/turns/subject-01/25/after.json",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/25/request.json",
+              "arms/P/evidence/turns/subject-01/25/response.txt",
+              "arms/P/evidence/turns/subject-01/25/before.json",
+              "arms/P/evidence/turns/subject-01/25/after.json",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/25/request.json",
+              "arms/P/evidence/turns/subject-01/25/response.txt",
+              "arms/P/evidence/turns/subject-01/25/before.json",
+              "arms/P/evidence/turns/subject-01/25/after.json",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/25/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/25/request.json",
+              "arms/Q/evidence/turns/subject-01/25/response.txt",
+              "arms/Q/evidence/turns/subject-01/25/before.json",
+              "arms/Q/evidence/turns/subject-01/25/after.json",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/25/request.json",
+              "arms/Q/evidence/turns/subject-01/25/response.txt",
+              "arms/Q/evidence/turns/subject-01/25/before.json",
+              "arms/Q/evidence/turns/subject-01/25/after.json",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/25/request.json",
+              "arms/Q/evidence/turns/subject-01/25/response.txt",
+              "arms/Q/evidence/turns/subject-01/25/before.json",
+              "arms/Q/evidence/turns/subject-01/25/after.json",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/25/request.json",
+              "arms/Q/evidence/turns/subject-01/25/response.txt",
+              "arms/Q/evidence/turns/subject-01/25/before.json",
+              "arms/Q/evidence/turns/subject-01/25/after.json",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Secondhand v3-unavailability report is saved with source/scope/limitations; device acceptance waits on access, independent drafting/inventory/handoff remain ready, and October 12 is not silently rescheduled.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/25/request.json",
+              "arms/Q/evidence/turns/subject-01/25/response.txt",
+              "arms/Q/evidence/turns/subject-01/25/before.json",
+              "arms/Q/evidence/turns/subject-01/25/after.json",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/25/"
+      }
+    },
+    {
+      "turn": "W26",
+      "subject": "subject-01",
+      "ordinal": 26,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/26/request.json",
+              "arms/P/evidence/turns/subject-01/26/response.txt",
+              "arms/P/evidence/turns/subject-01/26/before.json",
+              "arms/P/evidence/turns/subject-01/26/after.json",
+              "arms/P/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/26/request.json",
+              "arms/P/evidence/turns/subject-01/26/response.txt",
+              "arms/P/evidence/turns/subject-01/26/before.json",
+              "arms/P/evidence/turns/subject-01/26/after.json",
+              "arms/P/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/26/request.json",
+              "arms/P/evidence/turns/subject-01/26/response.txt",
+              "arms/P/evidence/turns/subject-01/26/before.json",
+              "arms/P/evidence/turns/subject-01/26/after.json",
+              "arms/P/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/26/request.json",
+              "arms/P/evidence/turns/subject-01/26/response.txt",
+              "arms/P/evidence/turns/subject-01/26/before.json",
+              "arms/P/evidence/turns/subject-01/26/after.json",
+              "arms/P/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/26/request.json",
+              "arms/P/evidence/turns/subject-01/26/response.txt",
+              "arms/P/evidence/turns/subject-01/26/before.json",
+              "arms/P/evidence/turns/subject-01/26/after.json",
+              "arms/P/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/26/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/26/request.json",
+              "arms/Q/evidence/turns/subject-01/26/response.txt",
+              "arms/Q/evidence/turns/subject-01/26/before.json",
+              "arms/Q/evidence/turns/subject-01/26/after.json",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/26/request.json",
+              "arms/Q/evidence/turns/subject-01/26/response.txt",
+              "arms/Q/evidence/turns/subject-01/26/before.json",
+              "arms/Q/evidence/turns/subject-01/26/after.json",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/26/request.json",
+              "arms/Q/evidence/turns/subject-01/26/response.txt",
+              "arms/Q/evidence/turns/subject-01/26/before.json",
+              "arms/Q/evidence/turns/subject-01/26/after.json",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/26/request.json",
+              "arms/Q/evidence/turns/subject-01/26/response.txt",
+              "arms/Q/evidence/turns/subject-01/26/before.json",
+              "arms/Q/evidence/turns/subject-01/26/after.json",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Drafting-only acceptance records authority and boundary but leaves playback unresolved; drafting was already independent, device-access and actual acceptance requirements remain, and no final release/product authority is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/26/request.json",
+              "arms/Q/evidence/turns/subject-01/26/response.txt",
+              "arms/Q/evidence/turns/subject-01/26/before.json",
+              "arms/Q/evidence/turns/subject-01/26/after.json",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/26/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/26/"
+      }
+    },
+    {
+      "turn": "W29",
+      "subject": "subject-01",
+      "ordinal": 29,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/29/request.json",
+              "arms/P/evidence/turns/subject-01/29/response.txt",
+              "arms/P/evidence/turns/subject-01/29/before.json",
+              "arms/P/evidence/turns/subject-01/29/after.json",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/29/request.json",
+              "arms/P/evidence/turns/subject-01/29/response.txt",
+              "arms/P/evidence/turns/subject-01/29/before.json",
+              "arms/P/evidence/turns/subject-01/29/after.json",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/29/request.json",
+              "arms/P/evidence/turns/subject-01/29/response.txt",
+              "arms/P/evidence/turns/subject-01/29/before.json",
+              "arms/P/evidence/turns/subject-01/29/after.json",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/29/request.json",
+              "arms/P/evidence/turns/subject-01/29/response.txt",
+              "arms/P/evidence/turns/subject-01/29/before.json",
+              "arms/P/evidence/turns/subject-01/29/after.json",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/29/request.json",
+              "arms/P/evidence/turns/subject-01/29/response.txt",
+              "arms/P/evidence/turns/subject-01/29/before.json",
+              "arms/P/evidence/turns/subject-01/29/after.json",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/29/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/29/request.json",
+              "arms/Q/evidence/turns/subject-01/29/response.txt",
+              "arms/Q/evidence/turns/subject-01/29/before.json",
+              "arms/Q/evidence/turns/subject-01/29/after.json",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/29/request.json",
+              "arms/Q/evidence/turns/subject-01/29/response.txt",
+              "arms/Q/evidence/turns/subject-01/29/before.json",
+              "arms/Q/evidence/turns/subject-01/29/after.json",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/29/request.json",
+              "arms/Q/evidence/turns/subject-01/29/response.txt",
+              "arms/Q/evidence/turns/subject-01/29/before.json",
+              "arms/Q/evidence/turns/subject-01/29/after.json",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/29/request.json",
+              "arms/Q/evidence/turns/subject-01/29/response.txt",
+              "arms/Q/evidence/turns/subject-01/29/before.json",
+              "arms/Q/evidence/turns/subject-01/29/after.json",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Corrected unavailability concerns v2; v3 is user-reported available for the scheduled October 12 check. Only the availability blocker clears; no playback acceptance or release approval is inferred.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/29/request.json",
+              "arms/Q/evidence/turns/subject-01/29/response.txt",
+              "arms/Q/evidence/turns/subject-01/29/before.json",
+              "arms/Q/evidence/turns/subject-01/29/after.json",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::docs/export-plan.md",
+              "arms/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/29/"
+      }
+    },
+    {
+      "turn": "W31",
+      "subject": "subject-01",
+      "ordinal": 31,
+      "primary_dimensions": [
+        "P",
+        "A",
+        "D"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/31/request.json",
+              "arms/P/evidence/turns/subject-01/31/response.txt",
+              "arms/P/evidence/turns/subject-01/31/before.json",
+              "arms/P/evidence/turns/subject-01/31/after.json",
+              "arms/P/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/31/request.json",
+              "arms/P/evidence/turns/subject-01/31/response.txt",
+              "arms/P/evidence/turns/subject-01/31/before.json",
+              "arms/P/evidence/turns/subject-01/31/after.json",
+              "arms/P/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/31/request.json",
+              "arms/P/evidence/turns/subject-01/31/response.txt",
+              "arms/P/evidence/turns/subject-01/31/before.json",
+              "arms/P/evidence/turns/subject-01/31/after.json",
+              "arms/P/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/31/request.json",
+              "arms/P/evidence/turns/subject-01/31/response.txt",
+              "arms/P/evidence/turns/subject-01/31/before.json",
+              "arms/P/evidence/turns/subject-01/31/after.json",
+              "arms/P/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval. General useful continuation PASS; delivery-exact-resume-prompt is NOT-APPLICABLE-TO-REVISION under complete P own instructions and this request.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-01/31/request.json",
+              "arms/P/evidence/turns/subject-01/31/response.txt",
+              "arms/P/evidence/turns/subject-01/31/before.json",
+              "arms/P/evidence/turns/subject-01/31/after.json",
+              "arms/P/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-01/31/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/31/request.json",
+              "arms/Q/evidence/turns/subject-01/31/response.txt",
+              "arms/Q/evidence/turns/subject-01/31/before.json",
+              "arms/Q/evidence/turns/subject-01/31/after.json",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/31/request.json",
+              "arms/Q/evidence/turns/subject-01/31/response.txt",
+              "arms/Q/evidence/turns/subject-01/31/before.json",
+              "arms/Q/evidence/turns/subject-01/31/after.json",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Observed net changes stay within the H W1 planning/tracking grant and explicit renewals or W31 document grant; immutable files retain their bytes. Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/31/request.json",
+              "arms/Q/evidence/turns/subject-01/31/response.txt",
+              "arms/Q/evidence/turns/subject-01/31/before.json",
+              "arms/Q/evidence/turns/subject-01/31/after.json",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/31/request.json",
+              "arms/Q/evidence/turns/subject-01/31/response.txt",
+              "arms/Q/evidence/turns/subject-01/31/before.json",
+              "arms/Q/evidence/turns/subject-01/31/after.json",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Authorized document delivery preserves accepted FLAC/WAV, local r17 inventory 23, corrected r16 and v2/v3 evidence, drafting-only risk boundary, user-supplied October 12 acceptance still pending, and an open effort with no release approval. The final response states remaining acceptance and supplies the exact safe resume prompt required by Q own contract.",
+            "evidence": [
+              "arms/Q/evidence/turns/subject-01/31/request.json",
+              "arms/Q/evidence/turns/subject-01/31/response.txt",
+              "arms/Q/evidence/turns/subject-01/31/before.json",
+              "arms/Q/evidence/turns/subject-01/31/after.json",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/Q/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/Q/evidence/turns/subject-01/31/"
+      }
+    },
+    {
+      "turn": "reader",
+      "subject": "subject-04",
+      "ordinal": 1,
+      "primary_dimensions": [
+        "P",
+        "C",
+        "A",
+        "D",
+        "K"
+      ],
+      "B": {
+        "label": "P",
+        "execution_status": "COMPLETED",
+        "endpoint_verdict": "PASS",
+        "dimensions": {
+          "P": "PASS",
+          "C": "PASS",
+          "A": "PASS",
+          "D": "PASS",
+          "K": "PASS"
+        },
+        "outcomes": {
+          "preservation": {
+            "verdict": "PASS",
+            "reason": "Fresh files-only reader at the relocated root recovers public FLAC/archival WAV, r16/v3 count 24 versus r17/v3 count 23 and declared checksum limits, corrected unavailable v2/available v3, secondhand reports, drafting-only acceptance, October 12 user-provided result still pending, ready guidance/handoff, separate audio authorization, and unapproved final release. Exact safe next request is supplied; snapshots show no net changes and relative reference targets/anchors resolve.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-04/01/request.json",
+              "arms/P/evidence/turns/subject-04/01/response.txt",
+              "arms/P/evidence/turns/subject-04/01/before.json",
+              "arms/P/evidence/turns/subject-04/01/after.json",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+              "arms/P/evidence/fresh-reader-input.json"
+            ]
+          },
+          "correctness": {
+            "verdict": "PASS",
+            "reason": "Fresh files-only reader at the relocated root recovers public FLAC/archival WAV, r16/v3 count 24 versus r17/v3 count 23 and declared checksum limits, corrected unavailable v2/available v3, secondhand reports, drafting-only acceptance, October 12 user-provided result still pending, ready guidance/handoff, separate audio authorization, and unapproved final release. Exact safe next request is supplied; snapshots show no net changes and relative reference targets/anchors resolve.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-04/01/request.json",
+              "arms/P/evidence/turns/subject-04/01/response.txt",
+              "arms/P/evidence/turns/subject-04/01/before.json",
+              "arms/P/evidence/turns/subject-04/01/after.json",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+              "arms/P/evidence/fresh-reader-input.json"
+            ]
+          },
+          "authorization": {
+            "verdict": "PASS",
+            "reason": "Fresh files-only reader at the relocated root recovers public FLAC/archival WAV, r16/v3 count 24 versus r17/v3 count 23 and declared checksum limits, corrected unavailable v2/available v3, secondhand reports, drafting-only acceptance, October 12 user-provided result still pending, ready guidance/handoff, separate audio authorization, and unapproved final release. Exact safe next request is supplied; snapshots show no net changes and relative reference targets/anchors resolve.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-04/01/request.json",
+              "arms/P/evidence/turns/subject-04/01/response.txt",
+              "arms/P/evidence/turns/subject-04/01/before.json",
+              "arms/P/evidence/turns/subject-04/01/after.json",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+              "arms/P/evidence/fresh-reader-input.json"
+            ]
+          },
+          "dependencies": {
+            "verdict": "PASS",
+            "reason": "Fresh files-only reader at the relocated root recovers public FLAC/archival WAV, r16/v3 count 24 versus r17/v3 count 23 and declared checksum limits, corrected unavailable v2/available v3, secondhand reports, drafting-only acceptance, October 12 user-provided result still pending, ready guidance/handoff, separate audio authorization, and unapproved final release. Exact safe next request is supplied; snapshots show no net changes and relative reference targets/anchors resolve.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-04/01/request.json",
+              "arms/P/evidence/turns/subject-04/01/response.txt",
+              "arms/P/evidence/turns/subject-04/01/before.json",
+              "arms/P/evidence/turns/subject-04/01/after.json",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+              "arms/P/evidence/fresh-reader-input.json"
+            ]
+          },
+          "continuation": {
+            "verdict": "PASS",
+            "reason": "Fresh files-only reader at the relocated root recovers public FLAC/archival WAV, r16/v3 count 24 versus r17/v3 count 23 and declared checksum limits, corrected unavailable v2/available v3, secondhand reports, drafting-only acceptance, October 12 user-provided result still pending, ready guidance/handoff, separate audio authorization, and unapproved final release. Exact safe next request is supplied; snapshots show no net changes and relative reference targets/anchors resolve.",
+            "evidence": [
+              "arms/P/evidence/turns/subject-04/01/request.json",
+              "arms/P/evidence/turns/subject-04/01/response.txt",
+              "arms/P/evidence/turns/subject-04/01/before.json",
+              "arms/P/evidence/turns/subject-04/01/after.json",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/map.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::docs/export-plan.md",
+              "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+              "arms/P/evidence/fresh-reader-input.json"
+            ]
+          }
+        },
+        "evidence": "evidence.zip::live/P/evidence/turns/subject-04/01/"
+      },
+      "R": {
+        "label": "Q",
+        "execution_status": "UNEXECUTED",
+        "endpoint_verdict": null,
+        "dimensions": {
+          "P": null,
+          "C": null,
+          "A": null,
+          "D": null,
+          "K": null
+        },
+        "outcomes": null
+      }
+    }
+  ],
+  "graded_turn_count": 63,
+  "independent_grades_sha256": "7ca520a9d3f25a0b26d53ad6f59a21e13450b2d986cc2e093cacf88f7dadcd32",
+  "grade_copy_note": "All verdicts, reasons and evidence are copied from the final independent grader. Missing rows are execution coverage markers, not grades. No original or corrected outcome is changed.",
+  "decision_rule_inputs": {
+    "candidate_primary_cells_B_FAIL_R_PASS": [],
+    "current_main_failed_primary_cells": [],
+    "current_main_failed_cells_all_completed_turns": [],
+    "both_arms_all_registered_primary_dimensions_PASS": false,
+    "missing_primary_endpoints": [
+      {
+        "role": "R",
+        "label": "Q",
+        "subject": "subject-04",
+        "ordinal": 1
+      }
+    ],
+    "coverage_limit": "The both-pass decision cannot be asserted if a registered primary endpoint is unexecuted or a primary dimension is not independently PASS."
+  },
+  "revision_applicability": [
+    {
+      "arm": "P",
+      "subject": "subject-01",
+      "ordinal": 31,
+      "dimension": "continuation",
+      "item": "delivery-exact-resume-prompt",
+      "verdict": "NOT-APPLICABLE-TO-REVISION",
+      "basis": "Complete P AGENTS.md, wayfinder-state.md and both Wayfinder skill files were inspected. Root authorization/continuity rules and contract Keep or end the effort require preserving resumable coordination, but neither imposes an exact delivery prompt. Wayfinder Effort recommends a next prompt for its orientation pass; W31 requests writing/delivering docs and effort status, not that orientation pass and not an exact prompt. The common rubric delivery phrase cannot add an absent own-revision requirement.",
+      "evidence": [
+        "arms/P/subjects/subject-01/AGENTS.md",
+        "arms/P/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "arms/P/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "arms/P/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+        "arms/P/evidence/turns/subject-01/31/request.json",
+        "arms/P/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md",
+        "arms/P/evidence/turns/subject-01/31/response.txt"
+      ],
+      "useful_continuation": {
+        "verdict": "PASS",
+        "reason": "Delivered document and retained map name required October 12 user-supplied r17/v3 acceptance and unapproved final release; final response makes remaining work clear, and P reader demonstrably recovers a safe exact next request.",
+        "evidence": [
+          "arms/P/evidence/turns/subject-01/31/response.txt",
+          "arms/P/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+          "arms/P/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+          "arms/P/evidence/turns/subject-04/01/response.txt"
+        ]
+      }
+    },
+    {
+      "arm": "Q",
+      "subject": "subject-01",
+      "ordinal": 31,
+      "dimension": "continuation",
+      "item": "delivery-exact-resume-prompt",
+      "verdict": "PASS",
+      "basis": "Q complete effort-state.md Keep or end the effort explicitly requires remaining work and exact resume prompt in final response when delivery leaves effort open. Q response supplies both. No PR is observed or requested; PR-description subitem has no applicable object.",
+      "evidence": [
+        "arms/Q/subjects/subject-01/AGENTS.md",
+        "arms/Q/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "arms/Q/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "arms/Q/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+        "arms/Q/subjects/subject-01/.agent-workflow/contracts/effort-records.md",
+        "arms/Q/evidence/turns/subject-01/31/response.txt",
+        "arms/Q/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md"
+      ],
+      "useful_continuation": {
+        "verdict": "PASS",
+        "reason": "Document complete, effort open, required user-supplied acceptance pending, and exact planning-only/no-release prompt states safe boundary.",
+        "evidence": [
+          "arms/Q/evidence/turns/subject-01/31/response.txt",
+          "arms/Q/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md"
+        ]
+      }
+    },
+    {
+      "arm": "P",
+      "subject": "subject-04",
+      "ordinal": 1,
+      "dimension": "continuation",
+      "item": "reader-exact-next-request",
+      "verdict": "PASS",
+      "basis": "The exact reader request independently asks for the exact next request, even though P has no installed exact delivery-prompt requirement. Response provides one after actual acceptance evidence becomes available.",
+      "evidence": [
+        "arms/P/evidence/turns/subject-04/01/request.json",
+        "arms/P/evidence/turns/subject-04/01/response.txt"
+      ],
+      "useful_continuation": {
+        "verdict": "PASS",
+        "reason": "Fresh files-only reader at the relocated root recovers public FLAC/archival WAV, r16/v3 count 24 versus r17/v3 count 23 and declared checksum limits, corrected unavailable v2/available v3, secondhand reports, drafting-only acceptance, October 12 user-provided result still pending, ready guidance/handoff, separate audio authorization, and unapproved final release. Exact safe next request is supplied; snapshots show no net changes and relative reference targets/anchors resolve.",
+        "evidence": [
+          "arms/P/evidence/turns/subject-04/01/request.json",
+          "arms/P/evidence/turns/subject-04/01/response.txt",
+          "arms/P/evidence/turns/subject-04/01/before.json",
+          "arms/P/evidence/turns/subject-04/01/after.json",
+          "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/map.md",
+          "arms/P/evidence/turns/subject-04/01/before.zip::docs/export-plan.md",
+          "arms/P/evidence/turns/subject-04/01/before.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+          "arms/P/evidence/fresh-reader-input.json"
+        ]
+      }
+    },
+    {
+      "arm": "P/Q",
+      "item": "blanket-no-delegation prohibition",
+      "verdict": "NOT-APPLICABLE-TO-REVISION",
+      "basis": "No blanket delegation prohibition appears in complete own canonical instructions or exact H envelopes. Historical approved protocol prohibition is superseded by H neutral scope and resource notice for these captures; helper creation counts as a session/coverage deviation. Later no-new-sessions notice remains applicable.",
+      "evidence": [
+        "arms/P/subjects/subject-01/AGENTS.md",
+        "arms/P/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "arms/P/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "arms/P/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+        "arms/Q/subjects/subject-01/AGENTS.md",
+        "arms/Q/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "arms/Q/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "arms/Q/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+        "arms/Q/subjects/subject-01/.agent-workflow/contracts/effort-records.md",
+        "evidence/frozen-H-envelopes/P-writer.txt",
+        "evidence/frozen-H-envelopes/Q-writer.txt",
+        "evidence/host-resource-coverage.json"
+      ]
+    }
+  ],
+  "baseline_W31_corrections": [
+    {
+      "label": "P-baseline",
+      "subject": "subject-01",
+      "ordinal": 31,
+      "dimension": "continuation",
+      "correction_scope": "Only archived W31 K; all other dimensions/turns OUTSIDE-CORRECTION-SCOPE. Not an H row.",
+      "original_outcome": {
+        "verdict": "FAIL",
+        "scope_ref": "continuation",
+        "reason": "FAIL: The final response reports pending acceptance, October 12, user provider and withheld release approval, but contains no exact resume prompt. The user must formulate the next request; no saved-state loss or false closure is observed. This is the fixed rubric requirement, not a claimed breach of an absent Y installed-policy rule.",
+        "evidence": [
+          "arms/Y/evidence/turns/subject-01/31/request.json",
+          "arms/Y/evidence/turns/subject-01/31/response.txt",
+          "arms/Y/evidence/turns/subject-01/31/before.json",
+          "arms/Y/evidence/turns/subject-01/31/after.json",
+          "arms/Y/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+          "arms/Y/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+          "arms/Y/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporary-unavailability.md",
+          "arms/Y/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+        ]
+      },
+      "original_outcome_source": "baseline-correction/P-baseline/original-W31-K-grade.json",
+      "original_complete_grades_sha256": "52c67ae7a099ac5b54db98c7825f65898adf36c1b1ef7362247bda9eb07c4f47",
+      "corrected_outcome": {
+        "verdict": "PASS",
+        "scope_ref": "continuation",
+        "reason": "General useful/safe continuation PASS. Delivery-exact-resume-prompt subitem is NOT-APPLICABLE-TO-REVISION; original FAIL was solely that unsupported subitem and is preserved verbatim separately. Required acceptance and user provider remain explicit, map stays open, and release stays unapproved.",
+        "evidence": [
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.json",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.json",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+          "baseline-correction/P-baseline/subjects/subject-01/AGENTS.md",
+          "baseline-correction/P-baseline/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+          "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+          "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md"
+        ],
+        "subitems": {
+          "delivery-exact-resume-prompt": {
+            "verdict": "NOT-APPLICABLE-TO-REVISION",
+            "basis": "Complete own P-baseline AGENTS.md, wayfinder-state.md, Wayfinder and Wayfinder Effort skill files were read and whole-file equality to the fully inspected corresponding H copies verified. Contract Keep or end the effort requires retaining a resumable map but has no delivery-exact-resume-prompt instruction anywhere in its complete scope. Wayfinder Effort next-prompt guidance concerns its orientation pass, not this W31 document-delivery request. Exact W31 asks for the document and status and does not request a next prompt. Therefore the missing exact final-response prompt cannot support the original rubric-only FAIL.",
+            "section_scope": "Root authorization and preservation; complete state contract especially Keep or end the effort; both skill method scopes; exact W31 request.",
+            "evidence": [
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+              "baseline-correction/P-baseline/subjects/subject-01/AGENTS.md",
+              "baseline-correction/P-baseline/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+              "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+              "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md"
+            ]
+          },
+          "general-useful-continuation": {
+            "verdict": "PASS",
+            "reason": "The public response delivers the document and names the still-required October 12 museum-kiosk-v3 visitor-player acceptance, user result provider and unapproved final release. The retained map and delivered plan preserve meaningful safe continuation; no false closure or saved-state loss is observed within this bounded K scope. No fresh-reader test is part of this correction.",
+            "evidence": [
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.json",
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.json",
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          }
+        }
+      },
+      "delivery-exact-prompt_applicability": {
+        "verdict": "NOT-APPLICABLE-TO-REVISION",
+        "basis": "Complete own P-baseline AGENTS.md, wayfinder-state.md, Wayfinder and Wayfinder Effort skill files were read and whole-file equality to the fully inspected corresponding H copies verified. Contract Keep or end the effort requires retaining a resumable map but has no delivery-exact-resume-prompt instruction anywhere in its complete scope. Wayfinder Effort next-prompt guidance concerns its orientation pass, not this W31 document-delivery request. Exact W31 asks for the document and status and does not request a next prompt. Therefore the missing exact final-response prompt cannot support the original rubric-only FAIL.",
+        "section_scope": "Root authorization and preservation; complete state contract especially Keep or end the effort; both skill method scopes; exact W31 request.",
+        "evidence": [
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+          "baseline-correction/P-baseline/subjects/subject-01/AGENTS.md",
+          "baseline-correction/P-baseline/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+          "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+          "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md"
+        ]
+      },
+      "general_useful_continuation": {
+        "verdict": "PASS",
+        "reason": "The public response delivers the document and names the still-required October 12 museum-kiosk-v3 visitor-player acceptance, user result provider and unapproved final release. The retained map and delivered plan preserve meaningful safe continuation; no false closure or saved-state loss is observed within this bounded K scope. No fresh-reader test is part of this correction.",
+        "evidence": [
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.json",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.json",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+          "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+        ]
+      },
+      "evidence": [
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+        "baseline-correction/P-baseline/subjects/subject-01/AGENTS.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md"
+      ]
+    },
+    {
+      "label": "Q-baseline",
+      "subject": "subject-01",
+      "ordinal": 31,
+      "dimension": "continuation",
+      "correction_scope": "Only archived W31 K; all other dimensions/turns OUTSIDE-CORRECTION-SCOPE. Not an H row.",
+      "original_outcome": {
+        "verdict": "PASS",
+        "scope_ref": "continuation",
+        "reason": "The final response names required October 12, 2026 r17/v3 visitor-player work, keeps release unapproved, and supplies: “Continue museum-audio-package; here is the r17 visitor-player result: …”.",
+        "evidence": [
+          "arms/X/evidence/turns/subject-01/31/request.json",
+          "arms/X/evidence/turns/subject-01/31/response.txt",
+          "arms/X/evidence/turns/subject-01/31/before.json",
+          "arms/X/evidence/turns/subject-01/31/after.json",
+          "arms/X/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+          "arms/X/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+          "arms/X/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/decisions.md",
+          "arms/X/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/evidence/E2-kiosk-temporarily-unavailable.md",
+          "arms/X/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+        ]
+      },
+      "original_outcome_source": "baseline-correction/Q-baseline/original-W31-K-grade.json",
+      "original_complete_grades_sha256": "52c67ae7a099ac5b54db98c7825f65898adf36c1b1ef7362247bda9eb07c4f47",
+      "corrected_outcome": {
+        "verdict": "PASS",
+        "scope_ref": "continuation",
+        "reason": "Original PASS remains PASS under applicability gate: own contract requires exact resume prompt, response supplies it and required external acceptance, user provider and unreleased state remain explicit.",
+        "evidence": [
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.json",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.json",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/AGENTS.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-records.md"
+        ],
+        "subitems": {
+          "delivery-exact-resume-prompt": {
+            "verdict": "PASS",
+            "applicability": "APPLICABLE",
+            "basis": "Complete own Q-baseline effort-state.md Keep or end the effort explicitly requires stating required remaining work and exact resume prompt in the final response. Response names pending October 12, 2026 r17/v3 acceptance and supplies “Continue museum-audio-package; here is the r17 visitor-player result: …”. The concise prompt is a specific resumable request in its response and saved-state context; the contract does not require every constraint repeated verbatim.",
+            "section_scope": "Complete own effort-state.md Keep or end the effort and exact W31 delivery request.",
+            "evidence": [
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+              "baseline-correction/Q-baseline/subjects/subject-01/AGENTS.md",
+              "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+              "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+              "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md",
+              "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-records.md"
+            ]
+          },
+          "general-useful-continuation": {
+            "verdict": "PASS",
+            "reason": "The public response delivers the document and names the still-required October 12 museum-kiosk-v3 visitor-player acceptance, user result provider and unapproved final release. The retained map and delivered plan preserve meaningful safe continuation; no false closure or saved-state loss is observed within this bounded K scope. No fresh-reader test is part of this correction.",
+            "evidence": [
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.json",
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.json",
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+              "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+            ]
+          }
+        }
+      },
+      "delivery-exact-prompt_applicability": {
+        "verdict": "PASS",
+        "applicability": "APPLICABLE",
+        "basis": "Complete own Q-baseline effort-state.md Keep or end the effort explicitly requires stating required remaining work and exact resume prompt in the final response. Response names pending October 12, 2026 r17/v3 acceptance and supplies “Continue museum-audio-package; here is the r17 visitor-player result: …”. The concise prompt is a specific resumable request in its response and saved-state context; the contract does not require every constraint repeated verbatim.",
+        "section_scope": "Complete own effort-state.md Keep or end the effort and exact W31 delivery request.",
+        "evidence": [
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+          "baseline-correction/Q-baseline/subjects/subject-01/AGENTS.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md",
+          "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-records.md"
+        ]
+      },
+      "general_useful_continuation": {
+        "verdict": "PASS",
+        "reason": "The public response delivers the document and names the still-required October 12 museum-kiosk-v3 visitor-player acceptance, user result provider and unapproved final release. The retained map and delivered plan preserve meaningful safe continuation; no false closure or saved-state loss is observed within this bounded K scope. No fresh-reader test is part of this correction.",
+        "evidence": [
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.json",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.json",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+          "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+        ]
+      },
+      "evidence": [
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/AGENTS.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-records.md"
+      ]
+    }
+  ],
+  "global_checks": [
+    {
+      "id": "G01",
+      "check": "Actual route execution, root-policy/catalog/skill/contract loading and load order",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Root policy/catalog/skill/contract exposure is saved, but public route markers and claims do not establish execution, actual instruction loading or order.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt"
+      ]
+    },
+    {
+      "id": "G02",
+      "check": "Immediate pre-mutation reads, record-ID rechecks, symlink/path rejection, incoming-reference search and preservation before pruning",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Boundary state and links are usable; no complete child trace establishes immediate pre-mutation reads, ID rechecks, path rejection, incoming-reference search, or preservation before pruning.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt",
+        "arms/P/evidence/audit.json",
+        "arms/Q/evidence/audit.json"
+      ]
+    },
+    {
+      "id": "G03",
+      "check": "Readback before claiming updates complete and preservation before hidden dependent actions",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Correct endpoint readback-compatible results are visible, but actual readback and preservation before hidden dependent actions are unobserved.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt",
+        "arms/P/evidence/audit.json",
+        "arms/Q/evidence/audit.json"
+      ]
+    },
+    {
+      "id": "G04",
+      "check": "Complete absence of transient write/revert activity",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Boundary identities prove net equality for no-op/pause turns only; transient write/revert activity is not observable.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt",
+        "arms/P/evidence/audit.json",
+        "arms/Q/evidence/audit.json"
+      ]
+    },
+    {
+      "id": "G05",
+      "check": "Read isolation, no outside-fixture access, no hidden external action or subject delegation, exclusive framework causality",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Scope is cooperative on a shared filesystem with manual catalog exposure. Controller positively observes P auxiliary helper creation and its public final; H neutral envelope did not prohibit delegation, and later notice permits that existing helper to finish. Actual helper reads/actions, complete read isolation, outside access and exclusive framework causality remain unobserved. No observed extra session after notice; absence is not certified.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt"
+      ],
+      "subassessments": [
+        {
+          "item": "P auxiliary session observed",
+          "verdict": "OBSERVED",
+          "reason": "Controller metadata records W1 helper creation and public final; counts against session ceiling, not frozen endpoint.",
+          "evidence": [
+            "evidence/host-resource-coverage.json"
+          ]
+        },
+        {
+          "item": "Delegation prohibition in exact H envelope",
+          "verdict": "NOT-APPLICABLE-TO-REVISION",
+          "reason": "Complete own P/Q root policies, contracts and Wayfinder skills impose no blanket delegation prohibition. Exact neutral H envelopes omit historical no-delegation language; later notice permits P already-created helper and prohibits new sessions. Observed P helper is a configuration/coverage deviation, not a project authorization FAIL.",
+          "evidence": [
+            "arms/P/subjects/subject-01/AGENTS.md",
+            "arms/P/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+            "arms/P/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+            "arms/P/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+            "arms/Q/subjects/subject-01/AGENTS.md",
+            "arms/Q/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+            "arms/Q/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+            "arms/Q/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+            "arms/Q/subjects/subject-01/.agent-workflow/contracts/effort-records.md",
+            "evidence/frozen-H-envelopes/P-writer.txt",
+            "evidence/frozen-H-envelopes/Q-writer.txt",
+            "evidence/host-resource-coverage.json"
+          ]
+        },
+        {
+          "item": "Actual helper command/read/write scope",
+          "verdict": "INCONCLUSIVE",
+          "reason": "Read-only/no-files/no-checks scope is a public claim, not an independent child trace.",
+          "evidence": [
+            "evidence/host-resource-coverage.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "G06",
+      "check": "Complete corpus reading/consumption and simultaneous subject context pressure",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Each writer has twelve exactly staged frozen corpus payloads totaling 456275 UTF-8 bytes and bounded responses; complete model consumption, token occupancy and simultaneous pressure are unavailable.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt",
+        "arms/P/evidence/audit.json",
+        "arms/Q/evidence/audit.json"
+      ]
+    },
+    {
+      "id": "G07",
+      "check": "Actual subject compaction, native compaction behavior and post-compaction retention",
+      "verdict": "INCONCLUSIVE",
+      "reason": "No subject compaction signal or native compact event is exposed. The one controller_context_compaction/resumed-summary observation after W20 is controller-only and establishes no subject event or post-compaction outcome.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt"
+      ]
+    },
+    {
+      "id": "G08",
+      "check": "Actual child execution and success of local inspect_bundle.py commands",
+      "verdict": "INCONCLUSIVE",
+      "reason": "W1/W3/W4/W30 public command-result claims match immutable script/manifest meaning. No independent child execution trace or actual command result is available; grader did not run a subject command to manufacture one.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt",
+        "arms/P/evidence/audit.json",
+        "arms/Q/evidence/audit.json"
+      ]
+    },
+    {
+      "id": "G09",
+      "check": "Exact inherited Work model, reasoning effort, tokens, cost and effective host configuration",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Inherited Work model/effort, usage/cost and complete effective host configuration are not surfaced. Do not borrow the historical native catalog identity.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt"
+      ]
+    },
+    {
+      "id": "G10",
+      "check": "Reliability, historical improvement, native Codex/Claude behavior, split-contract safety and U4 default authorization",
+      "verdict": "INCONCLUSIVE",
+      "reason": "One captured trajectory per arm and only one fresh reader cannot establish reliability or historical improvement; no condition key is supplied. Native Codex/Claude, split-contract load-before-write safety, controls and U4 default authorization were unexercised.",
+      "evidence": [
+        "evidence/approved-protocol.txt",
+        "cover-note.txt",
+        "evidence/host-resource-coverage.json",
+        "arms/P/evidence/controller-observations.txt",
+        "arms/Q/evidence/controller-observations.txt"
+      ]
+    }
+  ],
+  "coverage": {
+    "completed_H_turn_count": 63,
+    "completed_H_writer_counts": {
+      "P": 31,
+      "Q": 31
+    },
+    "completed_H_reader_counts": {
+      "P": 1,
+      "Q": 0
+    },
+    "unexecuted_cells": [
+      {
+        "arm": "Q",
+        "subject": "subject-04",
+        "ordinal": 1,
+        "status": "UNEXECUTED",
+        "reason": "Session ceiling: P helper counted against five sessions; omitted to reserve independent grader. No endpoint verdict."
+      }
+    ],
+    "pending_cells": [],
+    "auxiliary_session": {
+      "arm": "P",
+      "role": "writer-created W1 helper",
+      "counted_against_session_budget": true,
+      "is_frozen_turn_endpoint": false,
+      "tool_execution_scope": "UNOBSERVED"
+    },
+    "notice_timing": {
+      "P": "during W1 after helper started",
+      "Q": "during W1 immediately after frozen envelope, before observed helper creation",
+      "P-reader": "immediately after unchanged frozen neutral reader envelope, before observed helper creation"
+    },
+    "evidence": [
+      "arms.json",
+      "evidence/host-resource-coverage.json"
+    ],
+    "unexecuted_checks": [
+      "authority controls intentionally omitted",
+      "native Codex/Claude variants",
+      "measured subject-context/actual subject-compaction variants",
+      "Q files-only reader"
+    ]
+  },
+  "unexecuted_registered_endpoints": [
+    {
+      "role": "R",
+      "label": "Q",
+      "subject": "subject-04",
+      "ordinal": 1
+    }
+  ],
+  "verdict_paragraph": "The completed harder-trigger writer trajectories did not discriminate pre-#56 from current main: both passed every writer-primary outcome, and B’s files-only reader passed. No B-H primary failure with an R-H pass or current-main failure was observed. The full paired decision remains incomplete because R’s reader was UNEXECUTED at the five-session ceiling. These Work Mode writer trajectories did not reproduce the maintenance incidents; further maintenance testing needs a native Codex host with an observed subject compaction event.",
+  "decision_rule_outcome": "NO-CANDIDATE-EVIDENCE; COMPLETED-WRITER-PRIMARY-PASS; FULL-PAIRED-DECISION-INCOMPLETE",
+  "completed_writer_primary_outcomes_both_PASS": true,
+  "comparison_limits": "One trajectory per revision; one fresh reader; not reliability, framework causality, PR #56-only attribution, or native-host/compaction evidence."
+}

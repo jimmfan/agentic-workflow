@@ -1,0 +1,235 @@
+[
+  {
+    "label": "P-baseline",
+    "subject": "subject-01",
+    "ordinal": 31,
+    "dimension": "continuation",
+    "correction_scope": "Only archived W31 K; all other dimensions/turns OUTSIDE-CORRECTION-SCOPE. Not an H row.",
+    "original_outcome": {
+      "verdict": "FAIL",
+      "scope_ref": "continuation",
+      "reason": "FAIL: The final response reports pending acceptance, October 12, user provider and withheld release approval, but contains no exact resume prompt. The user must formulate the next request; no saved-state loss or false closure is observed. This is the fixed rubric requirement, not a claimed breach of an absent Y installed-policy rule.",
+      "evidence": [
+        "arms/Y/evidence/turns/subject-01/31/request.json",
+        "arms/Y/evidence/turns/subject-01/31/response.txt",
+        "arms/Y/evidence/turns/subject-01/31/before.json",
+        "arms/Y/evidence/turns/subject-01/31/after.json",
+        "arms/Y/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+        "arms/Y/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+        "arms/Y/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporary-unavailability.md",
+        "arms/Y/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+      ]
+    },
+    "original_outcome_source": "baseline-correction/P-baseline/original-W31-K-grade.json",
+    "original_complete_grades_sha256": "52c67ae7a099ac5b54db98c7825f65898adf36c1b1ef7362247bda9eb07c4f47",
+    "corrected_outcome": {
+      "verdict": "PASS",
+      "scope_ref": "continuation",
+      "reason": "General useful/safe continuation PASS. Delivery-exact-resume-prompt subitem is NOT-APPLICABLE-TO-REVISION; original FAIL was solely that unsupported subitem and is preserved verbatim separately. Required acceptance and user provider remain explicit, map stays open, and release stays unapproved.",
+      "evidence": [
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+        "baseline-correction/P-baseline/subjects/subject-01/AGENTS.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md"
+      ],
+      "subitems": {
+        "delivery-exact-resume-prompt": {
+          "verdict": "NOT-APPLICABLE-TO-REVISION",
+          "basis": "Complete own P-baseline AGENTS.md, wayfinder-state.md, Wayfinder and Wayfinder Effort skill files were read and whole-file equality to the fully inspected corresponding H copies verified. Contract Keep or end the effort requires retaining a resumable map but has no delivery-exact-resume-prompt instruction anywhere in its complete scope. Wayfinder Effort next-prompt guidance concerns its orientation pass, not this W31 document-delivery request. Exact W31 asks for the document and status and does not request a next prompt. Therefore the missing exact final-response prompt cannot support the original rubric-only FAIL.",
+          "section_scope": "Root authorization and preservation; complete state contract especially Keep or end the effort; both skill method scopes; exact W31 request.",
+          "evidence": [
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+            "baseline-correction/P-baseline/subjects/subject-01/AGENTS.md",
+            "baseline-correction/P-baseline/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+            "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+            "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md"
+          ]
+        },
+        "general-useful-continuation": {
+          "verdict": "PASS",
+          "reason": "The public response delivers the document and names the still-required October 12 museum-kiosk-v3 visitor-player acceptance, user result provider and unapproved final release. The retained map and delivered plan preserve meaningful safe continuation; no false closure or saved-state loss is observed within this bounded K scope. No fresh-reader test is part of this correction.",
+          "evidence": [
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.json",
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.json",
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+            "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+          ]
+        }
+      }
+    },
+    "delivery-exact-prompt_applicability": {
+      "verdict": "NOT-APPLICABLE-TO-REVISION",
+      "basis": "Complete own P-baseline AGENTS.md, wayfinder-state.md, Wayfinder and Wayfinder Effort skill files were read and whole-file equality to the fully inspected corresponding H copies verified. Contract Keep or end the effort requires retaining a resumable map but has no delivery-exact-resume-prompt instruction anywhere in its complete scope. Wayfinder Effort next-prompt guidance concerns its orientation pass, not this W31 document-delivery request. Exact W31 asks for the document and status and does not request a next prompt. Therefore the missing exact final-response prompt cannot support the original rubric-only FAIL.",
+      "section_scope": "Root authorization and preservation; complete state contract especially Keep or end the effort; both skill method scopes; exact W31 request.",
+      "evidence": [
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+        "baseline-correction/P-baseline/subjects/subject-01/AGENTS.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md"
+      ]
+    },
+    "general_useful_continuation": {
+      "verdict": "PASS",
+      "reason": "The public response delivers the document and names the still-required October 12 museum-kiosk-v3 visitor-player acceptance, user result provider and unapproved final release. The retained map and delivered plan preserve meaningful safe continuation; no false closure or saved-state loss is observed within this bounded K scope. No fresh-reader test is part of this correction.",
+      "evidence": [
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.json",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+      ]
+    },
+    "evidence": [
+      "baseline-correction/P-baseline/evidence/turns/subject-01/31/request.json",
+      "baseline-correction/P-baseline/evidence/turns/subject-01/31/response.txt",
+      "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.json",
+      "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.json",
+      "baseline-correction/P-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+      "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+      "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+      "baseline-correction/P-baseline/subjects/subject-01/AGENTS.md",
+      "baseline-correction/P-baseline/subjects/subject-01/.agent-workflow/contracts/wayfinder-state.md",
+      "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+      "baseline-correction/P-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+      "baseline-correction/P-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/wayfinder-state.md"
+    ]
+  },
+  {
+    "label": "Q-baseline",
+    "subject": "subject-01",
+    "ordinal": 31,
+    "dimension": "continuation",
+    "correction_scope": "Only archived W31 K; all other dimensions/turns OUTSIDE-CORRECTION-SCOPE. Not an H row.",
+    "original_outcome": {
+      "verdict": "PASS",
+      "scope_ref": "continuation",
+      "reason": "The final response names required October 12, 2026 r17/v3 visitor-player work, keeps release unapproved, and supplies: “Continue museum-audio-package; here is the r17 visitor-player result: …”.",
+      "evidence": [
+        "arms/X/evidence/turns/subject-01/31/request.json",
+        "arms/X/evidence/turns/subject-01/31/response.txt",
+        "arms/X/evidence/turns/subject-01/31/before.json",
+        "arms/X/evidence/turns/subject-01/31/after.json",
+        "arms/X/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+        "arms/X/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+        "arms/X/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/decisions.md",
+        "arms/X/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/evidence/E2-kiosk-temporarily-unavailable.md",
+        "arms/X/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+      ]
+    },
+    "original_outcome_source": "baseline-correction/Q-baseline/original-W31-K-grade.json",
+    "original_complete_grades_sha256": "52c67ae7a099ac5b54db98c7825f65898adf36c1b1ef7362247bda9eb07c4f47",
+    "corrected_outcome": {
+      "verdict": "PASS",
+      "scope_ref": "continuation",
+      "reason": "Original PASS remains PASS under applicability gate: own contract requires exact resume prompt, response supplies it and required external acceptance, user provider and unreleased state remain explicit.",
+      "evidence": [
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/AGENTS.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-records.md"
+      ],
+      "subitems": {
+        "delivery-exact-resume-prompt": {
+          "verdict": "PASS",
+          "applicability": "APPLICABLE",
+          "basis": "Complete own Q-baseline effort-state.md Keep or end the effort explicitly requires stating required remaining work and exact resume prompt in the final response. Response names pending October 12, 2026 r17/v3 acceptance and supplies “Continue museum-audio-package; here is the r17 visitor-player result: …”. The concise prompt is a specific resumable request in its response and saved-state context; the contract does not require every constraint repeated verbatim.",
+          "section_scope": "Complete own effort-state.md Keep or end the effort and exact W31 delivery request.",
+          "evidence": [
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+            "baseline-correction/Q-baseline/subjects/subject-01/AGENTS.md",
+            "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+            "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+            "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md",
+            "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-records.md"
+          ]
+        },
+        "general-useful-continuation": {
+          "verdict": "PASS",
+          "reason": "The public response delivers the document and names the still-required October 12 museum-kiosk-v3 visitor-player acceptance, user result provider and unapproved final release. The retained map and delivered plan preserve meaningful safe continuation; no false closure or saved-state loss is observed within this bounded K scope. No fresh-reader test is part of this correction.",
+          "evidence": [
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.json",
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.json",
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+            "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+          ]
+        }
+      }
+    },
+    "delivery-exact-prompt_applicability": {
+      "verdict": "PASS",
+      "applicability": "APPLICABLE",
+      "basis": "Complete own Q-baseline effort-state.md Keep or end the effort explicitly requires stating required remaining work and exact resume prompt in the final response. Response names pending October 12, 2026 r17/v3 acceptance and supplies “Continue museum-audio-package; here is the r17 visitor-player result: …”. The concise prompt is a specific resumable request in its response and saved-state context; the contract does not require every constraint repeated verbatim.",
+      "section_scope": "Complete own effort-state.md Keep or end the effort and exact W31 delivery request.",
+      "evidence": [
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+        "baseline-correction/Q-baseline/subjects/subject-01/AGENTS.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md",
+        "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-records.md"
+      ]
+    },
+    "general_useful_continuation": {
+      "verdict": "PASS",
+      "reason": "The public response delivers the document and names the still-required October 12 museum-kiosk-v3 visitor-player acceptance, user result provider and unapproved final release. The retained map and delivered plan preserve meaningful safe continuation; no false closure or saved-state loss is observed within this bounded K scope. No fresh-reader test is part of this correction.",
+      "evidence": [
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.json",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+        "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md"
+      ]
+    },
+    "evidence": [
+      "baseline-correction/Q-baseline/evidence/turns/subject-01/31/request.json",
+      "baseline-correction/Q-baseline/evidence/turns/subject-01/31/response.txt",
+      "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.json",
+      "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.json",
+      "baseline-correction/Q-baseline/evidence/turns/subject-01/31/before.zip::.project-efforts/museum-audio-package/map.md",
+      "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+      "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::docs/export-plan.md",
+      "baseline-correction/Q-baseline/subjects/subject-01/AGENTS.md",
+      "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-state.md",
+      "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder/SKILL.md",
+      "baseline-correction/Q-baseline/subjects/subject-01/.agents/skills/wayfinder-effort/SKILL.md",
+      "baseline-correction/Q-baseline/evidence/turns/subject-01/31/after.zip::.agent-workflow/contracts/effort-state.md",
+      "baseline-correction/Q-baseline/subjects/subject-01/.agent-workflow/contracts/effort-records.md"
+    ]
+  }
+]

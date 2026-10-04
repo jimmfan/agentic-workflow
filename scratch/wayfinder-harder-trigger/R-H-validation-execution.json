@@ -1,0 +1,18 @@
+{
+  "arm": "Q",
+  "executions": [
+    {
+      "script": "audit.py",
+      "returncode": 0,
+      "stdout": "{\"completed_turns\": 31, \"violations\": [], \"context_payload_bytes_staged\": 456275}\n",
+      "stderr": ""
+    },
+    {
+      "script": "final-integrity.py",
+      "returncode": 0,
+      "stdout": "{\"captured_at\": \"2026-10-04T00:20:01.638485+00:00\", \"subjects\": [{\"subject\": \"subject-01\", \"last_completed_turn\": 31, \"matches_captured_final_boundary\": true, \"mismatched_paths\": []}, {\"subject\": \"subject-02\", \"last_completed_turn\": 2, \"matches_captured_final_boundary\": true, \"mismatched_paths\": []}, {\"subject\": \"subject-03\", \"last_completed_turn\": 2, \"matches_captured_final_boundary\": true, \"mismatched_paths\": []}, {\"subject\": \"subject-04\", \"last_completed_turn\": 1, \"matches_captured_final_boundary\": true, \"mismatched_paths\": []}], \"source_head\": \"deb91942ac45373111a6bc615b359b2bbb230a68\", \"source_clean\": true, \"source_status\": \"\", \"scope\": \"File bytes and symlink targets at the final boundary; does not establish hard isolation or absence of transient modifications.\"}\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Original audit ran against actual captures; original integrity ran only through the documented validation aliases."
+}

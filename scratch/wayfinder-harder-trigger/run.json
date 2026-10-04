@@ -1,0 +1,217 @@
+{
+  "status": "completed live evaluation and independent grading; publication packet finalized",
+  "authorized_at": "2026-10-03T23:13:24+00:00",
+  "started_at": "2026-10-03T23:14:54.328386+00:00",
+  "deadline": "2026-10-04T01:43:24+00:00",
+  "budget_minutes": 150,
+  "max_evaluation_agent_sessions": 5,
+  "evaluation_sessions": {
+    "P-writer": {
+      "agent": "/root/h_p_writer",
+      "fork_turns": "none",
+      "registered_at": "2026-10-03T23:16:08.417965+00:00",
+      "completed_turns": 31,
+      "last_captured_at": "2026-10-04T00:16:56.212964+00:00",
+      "completed_at": "2026-10-04T00:16:56.212964+00:00",
+      "completion_status": "31 frozen writer turns captured"
+    },
+    "P-writer-helper": {
+      "agent": "/root/h_p_writer/sample_acceptance_audit",
+      "role": "subject-delegated read-only audit helper at W1",
+      "counts_against_session_budget": true,
+      "started_at": "unavailable; observed running before P W1 public response",
+      "completed_at_observation": "2026-10-03T23:19:20.144752+00:00",
+      "public_final_observed": true,
+      "claimed_scope": "read-only audit; no files changed or checks executed",
+      "public_response_sha256": "3c2923a709c3755dc022719b4ed9615c257df51bac60bcfe8bdc036957ee7143"
+    },
+    "Q-writer": {
+      "agent": "/root/h_q_writer",
+      "fork_turns": "none",
+      "registered_at": "2026-10-03T23:18:55.207666+00:00",
+      "completed_turns": 31,
+      "last_captured_at": "2026-10-04T00:19:40.292158+00:00",
+      "completed_at": "2026-10-04T00:19:40.292158+00:00",
+      "completion_status": "31 frozen writer turns captured"
+    },
+    "P-reader": {
+      "agent": "/root/h_p_reader",
+      "fork_turns": "none",
+      "registered_at": "2026-10-04T00:19:56.292980+00:00",
+      "completed_turns": 1,
+      "scope": "Files-only copy of P writer final endpoint; no writer chat or handoff",
+      "last_captured_at": "2026-10-04T00:21:25.952824+00:00",
+      "completed_at": "2026-10-04T00:21:25.952824+00:00",
+      "completion_status": "frozen files-only reader endpoint captured"
+    },
+    "independent-grader": {
+      "agent": "/root/h_independent_grader",
+      "fork_turns": "none",
+      "registered_at": "2026-10-04T00:22:26.598353+00:00",
+      "scope": "63 completed H endpoints, own-revision applicability, two bounded existing baseline W31 K corrections",
+      "task_sha256": "872434e26723ecebd91eab2258a6dfbcd77e65eb196a53216a7593226f176e94",
+      "mapping_withheld": true,
+      "completed_at": "2026-10-04T00:28:44.077260+00:00",
+      "completed_H_turn_grades": 63,
+      "bounded_baseline_corrections": 2,
+      "completion_status": "independent grader returned",
+      "grades_sha256": "7ca520a9d3f25a0b26d53ad6f59a21e13450b2d986cc2e093cacf88f7dadcd32",
+      "grading_sha256": "aaf2450551f5fbdfb35254e739ab6ec5152035254839df2ce6bb7570e06325ea"
+    }
+  },
+  "preparation_agents": [
+    "h_fixture_preparation",
+    "h_grading_preparation"
+  ],
+  "publication_base": "49091b0a31d2d33e23c3e5b9ad852af99edbaba1",
+  "publication_branch": "scratch/wayfinder-harder-trigger",
+  "revisions": {
+    "pre_56": "97058a23f229657494747d461ab69021f31a1d97",
+    "current_main_tested": "deb91942ac45373111a6bc615b359b2bbb230a68",
+    "latest_main_observed": "deb91942ac45373111a6bc615b359b2bbb230a68",
+    "exact_delivery_prompt_introduced": "fae093f987690b069d7671944bd6528792d00560"
+  },
+  "host": "Work Mode delegated agents; same inherited mechanism as baseline",
+  "exact_model": "unavailable/inherited",
+  "reasoning_effort": "unavailable/inherited",
+  "tokens": "unavailable",
+  "cost": "unavailable",
+  "decision_rule": "B-H primary FAIL with R-H PASS on applicable requirement => candidate evidence, one trajectory. Both pass all primary => Work Mode does not reproduce incident conditions; further maintenance tests need native Codex with observed subject compaction. R-H failure => current-main finding with turn/response/saved excerpt.",
+  "primary_turns": [
+    1,
+    3,
+    8,
+    9,
+    11,
+    12,
+    25,
+    26,
+    29,
+    31,
+    "reader"
+  ],
+  "W31_primary_dimensions": [
+    "P",
+    "A",
+    "D"
+  ],
+  "retries": [],
+  "subject_turn_retries": 0,
+  "deviations": [
+    "P writer delegated a read-only acceptance audit at W1 after H removed the no-delegation framing. Its helper counts against the strict five-session budget. Controller sent an explicit host-resource notice allowing that existing helper to finish but preventing further new sessions. No frozen request was changed; the notice is an additional host constraint. One reader will remain unexecuted to reserve the independent grader.",
+    "The P files-only reader received the identical host-resource notice immediately after its unchanged frozen neutral envelope to reserve the fifth session for independent grading. This is additional actual reader input; the frozen reader request remains unchanged.",
+    "Initial controller publication helper used a stale first-party adapter path and failed at import, before any GitHub write. The installed 0.1.61 path was located and authenticated read-only connector preflight passed; no live turn or external mutation was retried."
+  ],
+  "session_sequence": "Alternate P/Q one completed writer turn at a time; P fresh reader after both writers; Q reader unexecuted at the session cap. No concurrent subject request execution.",
+  "blinding": "P/Q only, mapping withheld until independent grader returns; installed layout may permit inference.",
+  "controller_helpers_not_evaluation_sessions": true,
+  "controller_context_events": [
+    {
+      "event": "controller_context_compaction",
+      "observed_at": "2026-10-03T23:55:49.824295+00:00",
+      "note": "Root controller resumed from a context summary after writer W20; no subject compaction event was exposed."
+    }
+  ],
+  "controls": "N/A controls not authorized in H and not run",
+  "procedure_limits": "Only public responses and file boundary snapshots; child tool trace/model identity/consumption/subject compaction unavailable. Cooperative filesystem scope.",
+  "preparation_completed_at": "2026-10-03T23:15:43.985564+00:00",
+  "registered_evaluation_session_count": 5,
+  "host_resource_notice": "Host resource notice: this run has a strict total agent-session budget. Your already-started helper may finish, but no further new agent sessions are available. Continue using this existing session. This notice changes no project action authorization.",
+  "planned_unexecuted": {
+    "Q-reader": "session ceiling: P subject created an auxiliary evaluation-agent session; one fresh reader omitted to preserve independent grading"
+  },
+  "host_resource_notice_delivery": {
+    "P": "during W1 after helper started",
+    "Q": "during W1 immediately after frozen envelope, before observed helper creation",
+    "P-reader": "immediately after unchanged frozen neutral reader envelope, before observed helper creation"
+  },
+  "subject_stop_by": "2026-10-04T01:23:24+00:00",
+  "reserved_final_minutes": 20,
+  "reserve_scope": "Independent grading, artifact packaging and authorized branch publication; stop new subject turns if remaining budget cannot support these.",
+  "timing_scope": "All times are controller registration, prepare, response-capture, and boundary observations. Prepare-to-finish includes waiting for the alternating arm and is not exclusive subject execution time. Auxiliary helper start time and live model usage are unavailable.",
+  "host_configuration_limit": "Same current inherited Work Mode delegation mechanism with no model or effort overrides; exact effective identity cannot independently be matched to the previous run.",
+  "observed_at": "2026-10-04T00:24:46.887845+00:00",
+  "wall_clock_minutes_observed": 71.38146408333334,
+  "coverage_plan": {
+    "writer_turns_per_arm": 31,
+    "P_reader": "planned files-only, fresh no-parent session",
+    "Q_reader": "UNEXECUTED at five-session cap",
+    "auxiliary_helper": "P W1 read-only audit; counted",
+    "independent_grader": "reserved fifth session, no parent history"
+  },
+  "subject_execution_completed_at": "2026-10-04T00:21:26.218015+00:00",
+  "evidence_delivery": {
+    "public_transcripts": "One combined public writer/reader transcript per arm at publication, with Q reader marked UNEXECUTED; individual raw renderings and helper terminal also archived.",
+    "evidence_zip_scope": "Frozen H inputs/envelopes, original protocol/rubric/scripts/fixture, own-revision preparation, all captures, audits/integrity outputs and adapters, grader view/task/raw grades, controller helpers and run metadata.",
+    "procedure": "Public final responses and saved-file snapshots only; no hidden reasoning or complete subject tool traces."
+  },
+  "completed_H_endpoint_count": 63,
+  "unexecuted_registered_endpoints": [
+    {
+      "arm": "Q",
+      "subject": "subject-04",
+      "ordinal": 1,
+      "reason": "five-session evaluation ceiling; auxiliary helper consumed one slot"
+    }
+  ],
+  "remote_prepublication_observation": {
+    "observed_at": "2026-10-04T00:26:46.124422+00:00",
+    "main": "deb91942ac45373111a6bc615b359b2bbb230a68",
+    "authorized_new_branch_exists": false,
+    "source_checkout_clean": true
+  },
+  "grading_completed_at": "2026-10-04T00:28:44.077260+00:00",
+  "wall_clock_minutes_at_grader_return": 75.334621,
+  "publication_report_prepared_at": "2026-10-04T00:32:12.180845+00:00",
+  "decision_rule_outcome": "NO-CANDIDATE-EVIDENCE; COMPLETED-WRITER-PRIMARY-PASS; FULL-PAIRED-DECISION-INCOMPLETE",
+  "verdict_paragraph": "The completed harder-trigger writer trajectories did not discriminate pre-#56 from current main: both passed every writer-primary outcome, and B\u2019s files-only reader passed. No B-H primary failure with an R-H pass or current-main failure was observed. The full paired decision remains incomplete because R\u2019s reader was UNEXECUTED at the five-session ceiling. These Work Mode writer trajectories did not reproduce the maintenance incidents; further maintenance testing needs a native Codex host with an observed subject compaction event.",
+  "completed_writer_primary_outcomes_both_PASS": true,
+  "fully_paired_primary_complete": false,
+  "baseline_W31_correction": {
+    "B_general_K": "PASS",
+    "B_exact_prompt_subitem": "NOT-APPLICABLE-TO-REVISION",
+    "R_K": "PASS",
+    "original_grades_retained_verbatim": true
+  },
+  "PR56_merge_first_parent_verified": "97058a23f229657494747d461ab69021f31a1d97",
+  "original_script_hashes": {
+    "checkpoint.py": "ed1609aadc94b629125fa2c5a37f18a21d39b10699ae0b8f10c728f6ee42b2f2",
+    "audit.py": "de10af2940077807bcf290010912c585619f91f54c88ada40205b65adb2a51f4",
+    "final-integrity.py": "f72f51e3490b5af80640a09005b4dc0ce6b558567699d5296f726b96b15dc3cc"
+  },
+  "unexecuted_work": [
+    "R-H files-only reader at five-session evaluation ceiling",
+    "N/A authority controls outside H scope",
+    "native Codex and Claude Code hosts",
+    "observed writer compaction event and confirmed full corpus consumption",
+    "actual visitor-player/device acceptance"
+  ],
+  "failure_classification": {
+    "observed_endpoint_failures": 0,
+    "observed_host_or_harness_failures": 0,
+    "infrastructure_blocked_arms": [],
+    "turn_retries": 0,
+    "note": "Unobserved procedural checks are INCONCLUSIVE, not observed passes or infrastructure failures.",
+    "scope": "Live evaluation sessions only; one separate controller publication import failure is documented under publication_adapter_repair."
+  },
+  "archive_prepared_at": "2026-10-04T00:35:59.253005+00:00",
+  "wall_clock_minutes_at_archive_preparation": 82.58755008333333,
+  "publication": {
+    "branch": "scratch/wayfinder-harder-trigger",
+    "base": "49091b0a31d2d33e23c3e5b9ad852af99edbaba1",
+    "worktree": "/workspace/scratch/7c461001dda8/wayfinder-harder-trigger-publication",
+    "mode": "single new commit/ref, authorized GitHub connector; remote commit/ref verified after upload",
+    "packet_status": "ready",
+    "receipt_note": "The final commit SHA and remote publication receipt are obtained after this immutable packet is created, and are reported in the delivery response.",
+    "infrastructure_failures": 1
+  },
+  "publication_adapter_repair": {
+    "recorded_at": "2026-10-04T00:35:59.253005+00:00",
+    "initial_error": "ModuleNotFoundError: No module named library_hosted_apps",
+    "stage": "module import before connector initialization or any GitHub write",
+    "cause": "stale controller helper dependency path openai-library/0.1.60; current installed adapter is 0.1.61",
+    "resolution": "corrected dependency path outside experiment/consumer/framework source; authenticated read-only fetch_commit of the authorized base succeeded",
+    "evaluation_rerun": false,
+    "external_mutation_retry": false
+  }
+}

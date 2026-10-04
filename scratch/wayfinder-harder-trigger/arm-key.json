@@ -1,0 +1,31 @@
+{
+  "written_only_after_grader_returned": true,
+  "written_at": "2026-10-04T00:28:44.077260+00:00",
+  "grader_agent": "/root/h_independent_grader",
+  "grader_returned_at_observation": "2026-10-04T00:28:44.077260+00:00",
+  "arms": {
+    "P": {
+      "role": "B-H",
+      "revision": "97058a23f229657494747d461ab69021f31a1d97",
+      "version": "0.35.2",
+      "description": "pre-#56"
+    },
+    "Q": {
+      "role": "R-H",
+      "revision": "deb91942ac45373111a6bc615b359b2bbb230a68",
+      "version": "0.41.2",
+      "description": "current main tested"
+    }
+  },
+  "baseline_correction_labels": {
+    "P-baseline": {
+      "original_baseline_arm": "Y",
+      "role": "B"
+    },
+    "Q-baseline": {
+      "original_baseline_arm": "X",
+      "role": "R"
+    }
+  },
+  "blinding_limit": "Cooperative shared-filesystem scope and distinguishable installed layouts; the key was absent from the grader view."
+}

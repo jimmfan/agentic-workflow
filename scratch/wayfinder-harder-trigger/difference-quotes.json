@@ -1,0 +1,192 @@
+{
+  "scope": "Literal report quotations from completed captures after independent grading; no new outcome assignments.",
+  "post_grading_roles": {
+    "B": "P",
+    "R": "Q"
+  },
+  "differences": [
+    {
+      "turn": "W5",
+      "observed_difference": "B folds the corrected operator report into docs/export-plan.md and prunes its old E1 ledger. R retains E1 and corrects its r16 scope.",
+      "arms": {
+        "B": {
+          "label": "P",
+          "public_response": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/05/response.txt",
+            "sha256": "4779af3dbb7afd771fda5842266222f1733cda1da51124e7a4155e35b3b9f171",
+            "quote": "Yes. The **count blocker clears**: 24 belongs to r16; the r17 manifest and executed inspector both report **23**."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/05/after.zip::docs/export-plan.md",
+            "sha256": "d88d959e6b5a71fa87767b527f6480a34b64e626d886aa6f3e59e8f6ece6bd10",
+            "excerpt": "The user corrected the earlier pasted `manifest_count=24, playback=not_tested` output: it was from **r16**, with profile **museum-kiosk-v3**, not r17. Source: the user's explicit correction, “my pasted output was from r16, not r17. The kiosk profile was still museum-kiosk-v3.” This remains a user-supplied report, not an independently rerun operator check; its source inventory, bundle and count method were not supplied. It establishes no r17 count, checksum validation or visitor-player acceptance."
+          },
+          "pruned_ledger": {
+            "before_path": "evidence.zip::live/P/evidence/turns/subject-01/05/before.zip::.project-efforts/museum-audio-package/evidence/E1-operator-count-report.md",
+            "before_sha256": "e60d224df3f78cc0d61dee105a5532d850a5fb3045bdc5e62a562b6bcd66056d",
+            "present_before": true,
+            "present_after": false,
+            "after_archive_path": "evidence.zip::live/P/evidence/turns/subject-01/05/after.zip"
+          }
+        },
+        "R": {
+          "label": "Q",
+          "public_response": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/05/response.txt",
+            "sha256": "ab1225166fca2bf3000eb358655b1ccebe8315d0baaeaedc3744f9598af89155",
+            "quote": "Yes. **The count-reconciliation blocker clears:** 24 belongs to r16, while the local r17 manifest contains 23 clips."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/05/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-r17-check.md",
+            "sha256": "3c2480873fa71e1e42c50635524b701d3809d6e76c9fd891613693f1c618d855",
+            "excerpt": "The corrected operator observation is `manifest_count=24, playback=not_tested` for r16 on museum-kiosk-v3.\nThe repository's [local r17 manifest](../../../observations/r17-manifest.json) and `python checks/inspect_bundle.py` inspection report 23 clips for r17. These observations concern different revisions and therefore do not establish a conflicting r17 count."
+          },
+          "saved_scope_excerpt": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/05/after.zip::.project-efforts/museum-audio-package/evidence/E1-operator-r17-check.md",
+            "sha256": "3c2480873fa71e1e42c50635524b701d3809d6e76c9fd891613693f1c618d855",
+            "excerpt": "Scope: A user-reported operator output for revision r16 on museum-kiosk-v3. The earlier r17 label is superseded by the user's correction. This record retains E1's identity while correcting its scope; the existing filename reflects the initial label."
+          }
+        }
+      }
+    },
+    {
+      "turn": "W9",
+      "observed_difference": "After pruning its previous E1, B uses E1 for the secondhand OGG report. R retains the old corrected E1 and uses E2 for OGG.",
+      "arms": {
+        "B": {
+          "label": "P",
+          "public_response": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/09/response.txt",
+            "sha256": "6d1f7513a13a5d0d6371bd93673c8387015f4d9664f50938036d6be6b0cb1e3e",
+            "quote": "**Public FLAC and archival WAV remain committed.** The volunteer’s decoder claim is preserved as [secondhand evidence](sandbox:/workspace/scratch/7c461001dda8/wayfinder-harder-trigger/live/P/subjects/subject-01/.project-efforts/museum-audio-package/evidence/E1-secondhand-ogg-decoder-report.md), with no fresh device test or verified decoder conclusion inferred."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E1-secondhand-ogg-decoder-report.md",
+            "sha256": "f426c8c2fd279a6b8b8f6e374dd83d53430a99a6516027ca6d2041af191ab692",
+            "excerpt": "The user relays a volunteer's claim that the kiosk has no OGG decoder and explicitly classifies the report as secondhand. This is a reported compatibility claim, not a fresh device observation performed or independently verified in this session."
+          }
+        },
+        "R": {
+          "label": "Q",
+          "public_response": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/09/response.txt",
+            "sha256": "8a04b87d379dc9b61d1989dedf7daaf44e782cff50294f1196d910dee84d76a7",
+            "quote": "Saved the [volunteer report](sandbox:/workspace/scratch/7c461001dda8/wayfinder-harder-trigger/live/Q/subjects/subject-01/.project-efforts/museum-audio-package/evidence/E2-ogg-decoder-report.md) with its source, scope, and explicit limitation: **secondhand evidence, not a fresh device test**. It supplies no r17 playback acceptance."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/09/after.zip::.project-efforts/museum-audio-package/evidence/E2-ogg-decoder-report.md",
+            "sha256": "e8005296735d981bf6996b539ecca2647844a6bdc2b770063a67413043fe3680",
+            "excerpt": "The volunteer reportedly says the kiosk has no OGG decoder. The user reaffirmed FLAC for public clips; archival originals remain WAV. The [packaging plan](../../../docs/export-plan.md) maintains that format choice."
+          }
+        }
+      }
+    },
+    {
+      "turn": "W25",
+      "observed_difference": "B records reported unavailability as E2; R records it as E3. Both saved records preserve reported provenance and the pending check.",
+      "arms": {
+        "B": {
+          "label": "P",
+          "public_response": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/25/response.txt",
+            "sha256": "47ed420d9f5067cc8a8d2fe035aa6ef2ee19d853978e974f538a77be54e53447",
+            "quote": "The device check waits for kiosk access; final release still waits for r17 acceptance. **October 12 remains confirmed**, with the outage’s effect on that date unknown."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+            "sha256": "cfec4bbc3b1c072cc3148225cb4349986583959c249e1e90aa6f308058f3b9ed",
+            "excerpt": "The user relays a volunteer's report that the device is temporarily unavailable and confirms the r17 manifest is unchanged. The current repository manifest still lists 23 clips. Device access is required for the actual visitor-player check, while local guidance, inventory review and handoff preparation can proceed without the device."
+          }
+        },
+        "R": {
+          "label": "Q",
+          "public_response": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/25/response.txt",
+            "sha256": "74d93091943fe41de5937424e62b40b41c72b5bb9e3768c9eb7dcff622b42ac4",
+            "quote": "The visitor-player check waits on device availability, and final release waits on acceptance. October 12 remains scheduled; no revised date or return-to-service date was supplied."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/25/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md",
+            "sha256": "8f10bf56a5f570c10410489993fcb3aa5fca088fc8077528873d8c33444d1ba7",
+            "excerpt": "The volunteer reportedly says museum-kiosk-v3 is temporarily unavailable. The user states the r17 manifest remains unchanged. No return-to-service date or rescheduling of the confirmed October 12, 2026 check was supplied."
+          }
+        }
+      }
+    },
+    {
+      "turn": "W29",
+      "observed_difference": "B corrects its E2 availability record; R corrects its E3. Both saved records scope the outage to v2 and report v3 available.",
+      "arms": {
+        "B": {
+          "label": "P",
+          "public_response": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/29/response.txt",
+            "sha256": "39aa642eb527e893f82ffb19c6e8b3de6841afd00ae80ff13837b1f14aa5458c",
+            "quote": "The **device-availability blocker clears** for r17: unavailable v2 is outside the scheduled v3 check’s scope. October 12 remains confirmed."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E2-reported-device-unavailability.md",
+            "sha256": "a004b1f5acb2c8c4ab639bebd822d467131c39a1510b48ac106cafbf6be3aec7",
+            "excerpt": "The user identifies museum-kiosk-v2 as the unavailable device and states that museum-kiosk-v3 is available for the scheduled check. The reported availability blocker therefore no longer applies to the r17/museum-kiosk-v3 effort. The October 12 check remains confirmed, with its result to be supplied by the user. Local guidance, inventory review and handoff preparation remain ready."
+          }
+        },
+        "R": {
+          "label": "Q",
+          "public_response": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/29/response.txt",
+            "sha256": "554a93a16155421eadddd1f97a9c2a445a18599492c8293ccac22f96a49e763c",
+            "quote": "The **availability blocker for the October 12 check is cleared**: the outage concerns v2, while the target v3 is reported available."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/29/after.zip::.project-efforts/museum-audio-package/evidence/E3-kiosk-temporarily-unavailable.md",
+            "sha256": "061e3e52587cb919c86e9fe8c2fb556b71d45374140c9e011fb10fd1cf9a8273",
+            "excerpt": "The user reports museum-kiosk-v2 temporarily unavailable and museum-kiosk-v3 available for the scheduled check. The prior attribution of the outage to v3 is superseded by this correction. The user also stated that the r17 manifest remains unchanged. No change to the October 12 schedule was reported."
+          }
+        }
+      }
+    },
+    {
+      "turn": "W31",
+      "observed_difference": "B preserves an open effort without an exact public or map resume prompt. R supplies exact public and map resume prompts. These are observed artifact differences, not a new outcome grade.",
+      "arms": {
+        "B": {
+          "label": "P",
+          "public_response": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/31/response.txt",
+            "sha256": "5924ee061ea3cf5393b44abc29d167422f16c25ccc992b341e8a09978557e680",
+            "quote": "The effort remains open: the October 12 v3 check is confirmed, but acceptance is pending and final release remains unapproved. No audio exports, device tests or product changes were performed."
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+            "sha256": "85981815a6c2b0c8587de1f576feade8b7b7e501482944926ee1cc72d71f0670",
+            "excerpt": "The [r17 repository manifest](../../observations/r17-manifest.json) lists 23 clips for museum-kiosk-v3, matching the executed local inspector's count. The [user's correction](../../docs/export-plan.md#revision-scope-of-the-operator-report) scopes the reported count of 24 and `playback=not_tested` to r16, so it does not conflict with r17.\n[Local packaging instructions and the player handoff](../../docs/export-plan.md) are written for delivery. The user explicitly confirms that required visitor-player acceptance has not happened. The check remains confirmed for October 12, with its result supplied by the user. The corrected availability report scopes unavailability to museum-kiosk-v2 and reports museum-kiosk-v3 available; [E2](evidence/E2-reported-device-unavailability.md) retains its source and limitations. No fresh device test, audio export or acceptance was performed by this work.\nThe user reaffirmed public FLAC and retained WAV archival originals; the [export plan](../../docs/export-plan.md#public-format-choice) maintains that choice. OGG was discussed without a switch. The [relayed decoder report](evidence/E1-secondhand-ogg-decoder-report.md) is secondhand and supplies no fresh device test or r17 acceptance evidence. No sample export was performed."
+          },
+          "complete_public_response": "Written and delivered: [export-plan.md](sandbox:/workspace/scratch/7c461001dda8/wayfinder-harder-trigger/live/P/subjects/subject-01/docs/export-plan.md).\n\nIt includes public **FLAC**, archival **WAV**, the **23-clip r17 inventory**, local packaging steps and the visitor-player handoff.\n\nThe effort remains open: the October 12 v3 check is confirmed, but acceptance is pending and final release remains unapproved. No audio exports, device tests or product changes were performed.\n\n[route: router → wayfinder]\n",
+          "map_resume_prompt_observation": {
+            "path": "evidence.zip::live/P/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+            "complete_map_inspected": true,
+            "note": "The complete response and map state outstanding work and an open effort, but neither supplies an exact user resume sentence. This is an artifact observation; applicability and grades remain the independent grader's."
+          }
+        },
+        "R": {
+          "label": "Q",
+          "public_response": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/31/response.txt",
+            "sha256": "3d8796b8de53dbde131598690849bea1b1838b61aec39904f2b6089ebf498cf7",
+            "quote": "Resume with: “Here is the October 12 r17 museum-kiosk-v3 FLAC result: [pass/fail, observations]. Update planning and tracking only; do not release.”"
+          },
+          "saved_file": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+            "sha256": "49bce73e80e68bdbbd3e4f8b1730535c6bd5c104eeefa845b8440d3846d2b720",
+            "excerpt": "To resume after the playback check: “Resume the museum audio package; here is the October 12 r17 museum-kiosk-v3 visitor-player result for public FLAC: [pass/fail, observations]. Update the plan and tracking only; leave product files alone and do not release.”\n"
+          },
+          "saved_open_effort_excerpt": {
+            "path": "evidence.zip::live/Q/evidence/turns/subject-01/31/after.zip::.project-efforts/museum-audio-package/map.md",
+            "sha256": "49bce73e80e68bdbbd3e4f8b1730535c6bd5c104eeefa845b8440d3846d2b720",
+            "excerpt": "The r17 packaging document was delivered on 2026-10-04 with public FLAC / archival WAV choices, local preparation instructions, read-only inspection limits, and the visitor-player handoff. The effort remains open because required visitor-player acceptance has not happened. Actual source/destination paths and product preparation results have not been supplied; no sample product files were changed.\nLocal inspection on 2026-10-04 reports 23 r17 manifest clips, declared checksum count 23, and hard-coded `playback: not_tested`; it validates neither audio checksums nor device playback.\nThe [operator count of 24](evidence/E1-operator-r17-check.md) belongs to r16. The [OGG decoder report](evidence/E2-ogg-decoder-report.md) is secondhand. The [corrected availability report](evidence/E3-kiosk-temporarily-unavailable.md) concerns unavailable v2 and user-reported available v3. These reports supply no fresh r17 playback acceptance."
+          }
+        }
+      }
+    }
+  ]
+}
