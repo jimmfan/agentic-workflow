@@ -4,7 +4,7 @@ name: to-tickets
 ---
 # To Tickets
 
-Break a plan, spec, or conversation into a set of **tickets** — tracer-bullet vertical slices, each declaring the tickets that **block** it.
+Break a plan, spec, or conversation into a set of **tickets**—tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
 Use a publication destination named by the user or documented by the project.
 Publish only when the current request or accepted project policy authorizes it; otherwise return the complete ticket drafts in chat.
@@ -38,14 +38,14 @@ Break the work into **tracer bullet** tickets.
 
 </vertical-slice-rules>
 
-Give each ticket its **blocking edges** — the other tickets that must complete before it can start.
+Give each ticket its **blocking edges**—the other tickets that must complete before it can start.
 Include an edge only when that ticket supplies a real prerequisite.
 State known external prerequisites separately, such as a required decision, access, or an external result; mark any material unassessed prerequisite honestly.
 No ticket blockers means only that no other ticket gates the work.
 Execution still requires applicable external prerequisites and action authorization; drafting or approving tickets supplies neither by itself.
 
 **Wide refactors are the exception to vertical slicing.**
-A **wide refactor** is one mechanical change — rename a column, retype a shared symbol — whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green.
+A **wide refactor** is one mechanical change—rename a column, retype a shared symbol—whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green.
 Use a bounded atomic change when all affected callers can change and be verified together safely.
 Use **expand–contract** when compatibility obligations or independent transitions require old and new forms to coexist.
 In that case, first expand by adding the new form beside the old, then migrate callers in independently verifiable batches, then contract once no required caller needs the old form.
@@ -66,7 +66,7 @@ Ask the user:
 
 - Does the granularity feel right?
   (too coarse / too fine)
-- Are the blocking edges correct — does each ticket only depend on tickets that genuinely gate it?
+- Are the blocking edges correct—does each ticket only depend on tickets that genuinely gate it?
 - Should any tickets be merged or split further?
 
 Iterate until the user approves the breakdown.
@@ -89,9 +89,9 @@ Do NOT close or modify any parent issue.
 
 # <NN> — <Ticket title>
 
-**What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective — not a layer-by-layer implementation list.
+**What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective—not a layer-by-layer implementation list.
 
-**Blocked by:** the numbers/titles of the tickets that gate this one, or "None — no ticket dependencies".
+**Blocked by:** the numbers/titles of the tickets that gate this one, or `None — no ticket dependencies`.
 
 **Other prerequisites:** known external requirements and material unassessed conditions, or "None identified" when assessed.
 
@@ -108,7 +108,7 @@ A reference to the parent issue on the tracker (if the source was an existing is
 
 ## What to build
 
-The end-to-end behaviour this ticket makes work, from the user's perspective — not layer-by-layer implementation.
+The end-to-end behaviour this ticket makes work, from the user's perspective—not layer-by-layer implementation.
 
 ## Acceptance criteria
 
@@ -117,7 +117,7 @@ The end-to-end behaviour this ticket makes work, from the user's perspective —
 
 ## Blocked by
 
-- A reference to each blocking ticket, or "None — no ticket dependencies".
+- A reference to each blocking ticket, or `None — no ticket dependencies`.
 
 ## Other prerequisites
 

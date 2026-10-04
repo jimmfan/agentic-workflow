@@ -36,6 +36,18 @@ jobs:
           uv run --locked ruff format --check .
           uv run --locked ruff check .
 
+      - name: Run Vale prose checks
+        env:
+          VALE_VERSION: "3.24.0"
+          VALE_SHA256: "867534ddb678abca7f214bc4706ead0922bd5252ffe8035fc227013f66c8b214"
+        run: |
+          archive="vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          curl -fsSL -o "$RUNNER_TEMP/$archive" "https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/${archive}"
+          echo "${VALE_SHA256}  $RUNNER_TEMP/$archive" | sha256sum --check -
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" vale
+          "$RUNNER_TEMP/vale" sync
+          "$RUNNER_TEMP/vale" --minAlertLevel=error .
+
       - name: Run deterministic behavior and release gate
         run: uv run --locked python agent_workflow/verify_package.py --tests
 

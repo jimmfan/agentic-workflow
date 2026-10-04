@@ -14,7 +14,7 @@ The caller uses Direct or Discovery according to whether alternative and tradeof
 
 Its job:
 
-1. Investigate the question against **primary sources** — official docs, source code, specifications, and first-party APIs — rather than secondary summaries.
+1. Investigate the question against **primary sources**—official docs, source code, specifications, and first-party APIs—rather than secondary summaries.
    Follow each material claim back to the source that establishes it for the applicable scope.
    Use a secondary source only when no primary source exists, and label it as secondary.
 2. Split a broad question into independent sub-questions; when delegation is available, investigate independent sub-questions in parallel under the same evidence requirements.

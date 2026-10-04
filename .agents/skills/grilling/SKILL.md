@@ -8,7 +8,7 @@ Reuse committed project choices, choices determined by accepted project policy, 
 Map the remaining choices as a **design tree**: each decision branches into the decisions that depend on it.
 
 Work the tree in **rounds**.
-The **frontier** is the relevant unresolved human-owned decisions whose prerequisites are already settled — the questions you can ask _now_ without guessing at answers you haven't heard yet.
+The **frontier** is the relevant unresolved human-owned decisions whose prerequisites are already settled—the questions you can ask _now_ without guessing at answers you haven't heard yet.
 Ask the whole frontier in one round: number each question and give your recommended answer.
 Then wait for the user's answers before the next round.
 
@@ -20,13 +20,13 @@ Each question should be formatted like so:
 ➡️ <your recommended answer>
 ```
 
-Each round the user answers reshapes the tree — settled decisions push the frontier outward and unblock questions that depended on them.
+Each round the user answers reshapes the tree—settled decisions push the frontier outward and unblock questions that depended on them.
 Recompute the frontier and ask the next round.
 A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
 Look up accessible facts before asking the user for information available from the environment or sources.
 Look up facts directly when that satisfies the evidence need; delegate when available and useful for independent exploration.
-A running exploration is an unsettled prerequisite, so only downstream questions wait for its result — ask the rest of the frontier now.
+A running exploration is an unsettled prerequisite, so only downstream questions wait for its result—ask the rest of the frontier now.
 Put choices requiring human input or project decision authority to the appropriate person and wait for those answers.
 
 Finish when the relevant design tree is resolved to the agreed scope, with no required choice silently assumed.

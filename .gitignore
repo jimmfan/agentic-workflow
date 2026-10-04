@@ -14,3 +14,7 @@ __pycache__/
 # remain outside this generated boundary and are intentionally tracked.
 /evals/artifacts/*
 !/evals/artifacts/README.md
+
+# Vale style packages are synced from `.vale.ini`; only the project vocabulary is tracked.
+/.vale/styles/*
+!/.vale/styles/config/

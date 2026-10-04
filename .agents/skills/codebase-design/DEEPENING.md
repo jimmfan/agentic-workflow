@@ -1,7 +1,7 @@
 # Deepening
 
 How to deepen a cluster of shallow modules safely, given its dependencies.
-Assumes the vocabulary in [SKILL.md](SKILL.md) — **module**, **interface**, **seam**, **adapter**.
+Assumes the vocabulary in [SKILL.md](SKILL.md)—**module**, **interface**, **seam**, **adapter**.
 
 ## Dependency categories
 
@@ -11,7 +11,7 @@ The category determines how the deepened module is tested across its seam.
 ### 1. In-process
 
 Pure computation, in-memory state, no I/O.
-Always deepenable — merge the modules and test through the new interface directly.
+Always deepenable—merge the modules and test through the new interface directly.
 No adapter needed.
 
 ### 2. Local-substitutable
@@ -55,5 +55,5 @@ The deepened module takes the external dependency as an injected port; tests pro
   Remove a test only when its useful coverage is demonstrably retained or its behavior has intentionally left scope.
   The presence of higher-level tests alone does not prove redundancy; keep or replace coverage for failures and edge cases they do not exercise.
 - Tests assert on observable outcomes through the interface, not internal state.
-- Tests should survive internal refactors — they describe behaviour, not implementation.
+- Tests should survive internal refactors—they describe behaviour, not implementation.
   If a test has to change after a behavior-preserving internal refactor, it's testing past the interface.

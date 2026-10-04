@@ -84,12 +84,12 @@ VERSION remains `0.31.0`; no release, tag, merge, or publication decision is mad
 All commands used the documented locked environment, with `UV_CACHE_DIR=/private/tmp/wayfinder-question-uv-cache` because the host sandbox prevented access to the default cache.
 
 - PASS: `uv run --locked ruff format --check .` and `uv run --locked ruff check .`.
-- PASS: `uv run --locked python agent_workflow/verify_package.py --tests` — 188 tests, including disposable distribution and lifecycle checks.
-- PASS: `uv run --locked python -m unittest discover -s evals/tests -p 'test_*.py' -v` — 65 tests.
-- PASS: `uv run --locked python tests/wheel_smoke.py` — two tests, with isolated build/install and local install/status/update/remove coverage.
-- PASS: `uv run --locked python tests/behavior.py validate` — 53 scenarios.
-- PASS: final focused `test_wayfinder_state.py` — nine tests, including the subsequently added unrecognized-heading regression; all eight active fixture ledgers and their fixture-local links were also checked directly.
-- PASS: focused question-review controls — seven tests, including pruning-only and preamble-only negative controls.
+- PASS: `uv run --locked python agent_workflow/verify_package.py --tests`—188 tests, including disposable distribution and lifecycle checks.
+- PASS: `uv run --locked python -m unittest discover -s evals/tests -p 'test_*.py' -v`—65 tests.
+- PASS: `uv run --locked python tests/wheel_smoke.py`—two tests, with isolated build/install and local install/status/update/remove coverage.
+- PASS: `uv run --locked python tests/behavior.py validate`—53 scenarios.
+- PASS: final focused `test_wayfinder_state.py`—nine tests, including the subsequently added unrecognized-heading regression; all eight active fixture ledgers and their fixture-local links were also checked directly.
+- PASS: focused question-review controls—seven tests, including pruning-only and preamble-only negative controls.
 - PASS: `git diff --check`.
 - INCONCLUSIVE / infrastructure-blocked: live interaction, native-tool denial, interrupted-session and fresh-reader behavior, and live pre-write/pruning order.
 

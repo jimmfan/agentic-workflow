@@ -26,6 +26,7 @@ PROSE_ROOTS = (
     REPOSITORY_ROOT / ".agents/skills",
 )
 FROZEN_DOCUMENTS = (REPOSITORY_ROOT / "docs/audit-reconciliation",)
+VALE_CONFIG = REPOSITORY_ROOT / ".vale.ini"
 FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
 SKIPPED_LINE = re.compile(r"^\s*(?:#|\||>)")
 COMMENT_START = re.compile(r"^\s*<!--")
@@ -103,6 +104,14 @@ def prose_documents() -> list[Path]:
     ]
 
 
+def vale_documents() -> set[Path]:
+    """Expand the brace globs of the `.vale.ini` section that enables styles."""
+    lines = VALE_CONFIG.read_text(encoding="utf-8").splitlines()
+    index = next(i for i, line in enumerate(lines) if line.startswith("BasedOnStyles"))
+    patterns = lines[index - 1].strip().removeprefix("[{").removesuffix("}]").split(",")
+    return {path for pattern in patterns for path in REPOSITORY_ROOT.glob(pattern)}
+
+
 class SourceDocumentTests(unittest.TestCase):
     """Guard always-loaded policy size and the mechanical part of the Markdown line-break policy."""
 
@@ -123,6 +132,13 @@ class SourceDocumentTests(unittest.TestCase):
                     f"{label} grew past {ceiling} words; remove or consolidate "
                     "instructions, or raise the ceiling deliberately in the same change",
                 )
+
+    def test_vale_lints_exactly_the_prose_documents(self) -> None:
+        self.assertEqual(
+            sorted(p.relative_to(REPOSITORY_ROOT) for p in vale_documents()),
+            sorted(p.relative_to(REPOSITORY_ROOT) for p in prose_documents()),
+            "keep the .vale.ini document globs in step with PROSE_ROOTS",
+        )
 
     def test_prose_lines_hold_one_sentence(self) -> None:
         violations = [

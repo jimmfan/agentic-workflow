@@ -1,9 +1,9 @@
 ---
-description: Turn the current conversation into a spec — no interview, just synthesis of what you've already discussed.
+description: Turn the current conversation into a spec—no interview, just synthesis of what you've already discussed.
 name: to-spec
 ---
 This skill takes the current conversation context and codebase understanding and produces a spec.
-Do NOT interview the user — just synthesize what you already know.
+Do NOT interview the user—just synthesize what you already know.
 
 Use a publication destination named by the user or documented by the project.
 Publish only when the current request or accepted project policy authorizes it; otherwise return the complete draft in chat.
@@ -70,7 +70,7 @@ Include:
 
 - A description of what makes a good test (test caller-observable behavior of the module under test, not private implementation details)
 - Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
+- Prior art for the tests (that is, similar types of tests in the codebase)
 
 ## Out of Scope
 

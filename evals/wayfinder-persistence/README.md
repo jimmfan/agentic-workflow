@@ -120,7 +120,7 @@ Mechanical link checks cover file targets; anchors, plain-text references, cross
 
 [Controls](controls.json) include sufficient inline, linked and alternate-layout results and each requested negative class.
 Positive controls also allow separately supported reports/verification and commitments/action authorization, and preserve usable detail in an ordinary result before a record disappears.
-Pruning examples include lost-only-source, dangling links, and linked/unrecognized project-owned content.
+Pruning examples include a lost sole source, dangling links, and linked/unrecognized project-owned content.
 Final snapshots cannot establish that verification preceded pruning; claim ordering only from execution evidence, otherwise mark it unverified.
 Control-specific additional input supplies independent evidence or authorization only for that control, never for live cases.
 Their expected labels are independent review answers, never subject input and never an automatic prose oracle.

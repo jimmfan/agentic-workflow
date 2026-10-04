@@ -9,6 +9,8 @@ Exercise install, update, and remove only against disposable consumers, never th
 ```bash
 uv run --locked ruff format --check .
 uv run --locked ruff check .
+vale sync
+vale --minAlertLevel=error .
 uv run --locked python agent_workflow/verify_package.py --tests
 uv run --locked python -m unittest discover -s evals/tests -p 'test_*.py' -v
 uv run --locked python tests/wheel_smoke.py
@@ -17,10 +19,12 @@ git diff --check
 
 If the default uv cache is outside the host's writable area, set `UV_CACHE_DIR` to a writable temporary directory for these commands.
 Do not change global configuration or refresh metadata to hide an unexplained failure.
+Vale is a standalone binary rather than a uv dependency; install the version pinned in [CI](../.github/workflows/verify.yml).
 
 | Check | What it establishes |
 |---|---|
 | Ruff | Python formatting and lint conformance. |
+| Vale | Error-level conformance of authored current documents to the Google developer documentation style guide and the project vocabulary. |
 | Package verifier with `--tests` | Current package shape, `VERSION`, distribution mapping, safe canonical files, skill metadata/support-file closure, attribution, root/template synchronization, local links, and deterministic package tests. |
 | `evals/tests/` | Network-free evaluation-tooling unit tests, separately from the distributed package gate. |
 | Wheel smoke | A build from current source, isolated CLI installation, and all four lifecycle commands against local snapshot resources in a disposable non-Git consumer. |
@@ -35,6 +39,13 @@ For changed operational guidance, check command behavior, prerequisites, network
 The [source-document tests](../tests/test_source_documents.py) reject authored current-document lines that obviously hold more than one sentence and fail when the always-loaded root policy grows past its word ceilings; they cannot detect hard wrapping or judge clause breaks.
 Raise a ceiling only deliberately, after removing or consolidating what the new text replaces.
 Package-test success alone does not establish prose conformance.
+
+[`.vale.ini`](../.vale.ini) applies the Google developer documentation style guide to the same authored current documents as the source-document tests.
+CI fails only on error-level alerts; run `vale .` to also see advisory warnings, and add `--minAlertLevel=suggestion` for suggestions.
+When Vale flags a correctly spelled project or technical term, add it to the [project vocabulary](../.vale/styles/config/vocabularies/AgentWorkflow/accept.txt).
+An accepted entry also exempts that term from Google word-choice rules, so do not add a term only to silence a word-choice warning.
+Keep a rule exception in `.vale.ini` scoped to the file that needs it, with a comment giving the reason.
+Vale checks punctuation, spelling, and word choice; it does not judge meaning.
 
 The verifier's documentation-link check covers `AGENTS.md` and `README.md`, `docs/`, `.agent-workflow/`, ADRs, the test and devcontainer READMEs, and evaluation READMEs at the root and one directory below it; skill-local links are checked separately.
 It recognizes inline links and single-line reference definitions while excluding top-level fenced examples and inline code.
@@ -122,4 +133,5 @@ Live runs remain opt-in; see [behavioral testing](behavioral-testing.md) and the
 Change declared dependencies intentionally, refresh `uv.lock` only when its inputs change, inspect the diff, and run the full gate.
 For GitHub Actions, read official release notes, resolve the selected release with `git ls-remote <official-repository> refs/tags/<version>` (including its peeled ref for an annotated tag), and update all occurrences of the full SHA and release comment together.
 Keep full commit pins; avoid moving major tags and unrelated major upgrades.
+When updating Vale, change `VALE_VERSION` and `VALE_SHA256` in CI together, taking the checksum from the release's published checksum file; `.vale.ini` pins the Google style package release.
 When revisiting the current-stable Python CI job, verify the stable minor against the official Python release list; retain the Python 3.11 minimum gate.

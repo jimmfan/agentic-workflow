@@ -70,18 +70,18 @@ The map also serves people who need a quick status: a reader without the effort'
 
 Use this default H2 order beneath the human-readable effort-name H1:
 
-1. **Objective** — the result the effort is intended to achieve.
-2. **Scope** — what the effort includes and excludes, including relevant project or authority limits.
-3. **Ready work** — concrete authorized scopes that may proceed now.
+1. **Objective**—the result the effort is intended to achieve.
+2. **Scope**—what the effort includes and excludes, including relevant project or authority limits.
+3. **Ready work**—concrete authorized scopes that may proceed now.
    Placement never bypasses authority or dependencies.
    When no work is ready, explain why truthfully rather than inventing work.
-4. **Blockers** — conditions currently preventing particular work, an assessed absence of blockers, or a material limitation in the blocker assessment.
+4. **Blockers**—conditions currently preventing particular work, an assessed absence of blockers, or a material limitation in the blocker assessment.
    Never automatically write `None.` or represent unknown or unassessed conditions as absent.
-5. **Dependencies** — required inputs for particular work.
-6. **Current state** — the smallest truthful durable coordination summary needed for safe resumption.
+5. **Dependencies**—required inputs for particular work.
+6. **Current state**—the smallest truthful durable coordination summary needed for safe resumption.
    Transient Git or session observations, such as a clean working tree, current HEAD, or branch position, remain execution context unless they are genuinely a continuing action authorization constraint, baseline, or dependency.
-7. **Areas and relationships** — major areas, their interactions, and consequential participant responsibilities and operating boundaries, not just component names.
-8. **Key references** — a few readable, navigable sources needed for continuation.
+7. **Areas and relationships**—major areas, their interactions, and consequential participant responsibilities and operating boundaries, not just component names.
+8. **Key references**—a few readable, navigable sources needed for continuation.
 
 For newly authored default maps, keep Objective, Scope, Ready work, and Blockers visible.
 Omit other sections only when genuinely inapplicable, preserving their relative order when present; avoid filler.

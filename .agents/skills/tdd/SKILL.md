@@ -17,7 +17,7 @@ Name the behavior being specified, such as "user can checkout with valid cart"; 
 
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
 
-## Seams — where tests go
+## Seams—where tests go
 
 A **seam** is where you exercise the module's caller-facing interface and observe behavior without reaching inside.
 
@@ -27,17 +27,17 @@ Ask which caller-facing behavior and seams need coverage only when material agre
 A needed new or changed seam requires agreement unless choosing it is already delegated by the user or accepted project policy.
 Focus coverage on critical paths and complex logic rather than every edge case.
 
-When the shape of that interface is itself in question — how deep the module is, where the seam belongs, what the interface should expose — use the `/codebase-design` skill for the vocabulary.
+When the shape of that interface is itself in question—how deep the module is, where the seam belongs, what the interface should expose—use the `/codebase-design` skill for the vocabulary.
 It is the shared source of the module, interface, depth, seam, adapter, leverage and locality terms, and it is a reference to consult, not a session to run.
 
 ## Anti-patterns
 
-- **Implementation-coupled** — mocks internal collaborators, tests private methods, or verifies through a side channel (querying the database instead of using the interface).
+- **Implementation-coupled**—mocks internal collaborators, tests private methods, or verifies through a side channel (querying the database instead of using the interface).
   The tell: the test breaks when you refactor but behavior hasn't changed.
-- **Tautological or copied expectations** — asserting a value equals itself cannot detect a defect.
+- **Tautological or copied expectations**—asserting a value equals itself cannot detect a defect.
   Recomputing the expected value with the implementation's algorithm (`expect(add(a, b)).toBe(a + b)`, or a snapshot derived by hand the same way) can repeat the same mistake in both places.
-  Expected values must come from an independent source of truth — a known-good literal, a worked example, the spec.
-- **Horizontal slicing** — writing all tests before implementation commits to imagined behavior and test structure before learning from execution.
+  Expected values must come from an independent source of truth—a known-good literal, a worked example, the spec.
+- **Horizontal slicing**—writing all tests before implementation commits to imagined behavior and test structure before learning from execution.
   Use the one-slice loop below so each test responds to what the last cycle taught you.
 
 ## Rules of the loop

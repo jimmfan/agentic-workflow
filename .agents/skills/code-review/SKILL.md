@@ -4,8 +4,8 @@ name: code-review
 ---
 Two-axis review of the established change scope:
 
-- **Standards** — does the code conform to this repo's documented coding standards?
-- **Spec** — does the code faithfully implement the originating issue / spec?
+- **Standards**—does the code conform to this repo's documented coding standards?
+- **Spec**—does the code faithfully implement the originating issue / spec?
 
 Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
 
@@ -58,8 +58,8 @@ A sufficiently defined current request needs no separate spec file, tracker look
 Only for missing requirements, look for the originating spec in this order:
 
 1. A path or source reference supplied with the review.
-2. Issue references in the relevant commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.)
-   — if the project has a configured, available issue tracker, fetch them using its documented workflow.
+2. Issue references in the relevant commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.).
+   If the project has a configured, available issue tracker, fetch them using its documented workflow.
 3. A spec file under `docs/` or `specs/` matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is.
    If requirements remain unavailable, report the **Spec** coverage gap; the Standards axis may still proceed.
@@ -68,7 +68,7 @@ Only for missing requirements, look for the originating spec in this order:
 
 Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`.
 
-On top of whatever the repo documents, the Standards axis always carries the **smell baseline** in [SMELL-BASELINE.md](SMELL-BASELINE.md) — a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing.
+On top of whatever the repo documents, the Standards axis always carries the **smell baseline** in [SMELL-BASELINE.md](SMELL-BASELINE.md)—a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing.
 A documented repo standard overrides it, and each smell is a judgement call, never a hard violation.
 The Standards reviewer reads that file itself, so do not load it here unless step 4's fallback requires pasting it.
 
@@ -81,16 +81,16 @@ Use existing host controls to restrict reviewers to read-only access when availa
 Each reviewer must inspect that scope and report actual coverage, not merely echo a supplied diff command or success claim.
 When the host lets you choose a sub-agent's model, the Standards reviewer may use a smaller model because it checks the diff against supplied rules; keep the Spec reviewer on a model at least as capable as yours.
 
-**Standards sub-agent prompt** — include:
+**Standards sub-agent prompt**—include:
 
 - The list of standards-source files you found in step 3, **plus the absolute path of `SMELL-BASELINE.md`** in this skill's directory, with an instruction to read it in full before reviewing and to state in its coverage whether it could.
   The reviewer has no other access to the smell baseline: paste the file's full contents instead when you know it cannot read that path, and rerun the Standards axis with the contents pasted if its report says the read failed.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk.
-  Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline.
+- The brief: "Report—per file/hunk where relevant—(a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk.
+  Distinguish hard violations from judgement calls—documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline.
   Skip anything tooling enforces.
   Under 400 words."
 
-**Spec sub-agent prompt** — include:
+**Spec sub-agent prompt**—include:
 
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong; (d) changed code that is plainly wrong even where no requirement covers it, such as a crash, a wrong result, or a resource leak.
   Quote the spec line for each finding, or the hunk for (d).
@@ -103,7 +103,7 @@ If a reviewer starts but fails or returns without its report, treat that axis as
 ### 5. Aggregate
 
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned.
-Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
+Do **not** merge or rerank findings—the two axes are deliberately separate (see _Why two axes_).
 Check each reviewer's actual coverage against the established inputs, including relevant pending and new files.
 Report omissions and attribution limitations even if a reviewer claims success; zero findings with missing coverage is not a complete review.
 Pass covered scope, findings, and remaining evidence gaps to subsequent acceptance verification so it reuses evidence and adds only missing checks.
@@ -111,7 +111,7 @@ When a finding reveals consequential coordination needs, include the governing r
 The reviewer reports the finding read-only; the coordinator owns route changes and authorized state maintenance.
 
 End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any).
-Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
+Don't pick a single winner across axes—that's the reranking the separation exists to prevent.
 
 ## Why two axes
 
