@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "source_gate": "core._validate_review(original complete packet, normalized review) passed without applying review or modifying campaign; all 16 declared semantic judgments present.",
+  "publication_gate": "core._validate_review(sanitized packet, re-bound sanitized normalized review) passed; all exact quotes and evidence-scope requirements checked.",
+  "count": {
+    "mechanical_or_command_observed": 12,
+    "semantic": 16,
+    "PASS": 28,
+    "FAIL": 0,
+    "INCONCLUSIVE": 0
+  },
+  "normalization": {
+    "judgments_and_rationales_changed": false,
+    "decoded_observation_quotes_encoded_for_original_protocol": 6,
+    "supplementary_cross_turn_citations": [
+      {
+        "judgment_item": "run-0001/T2",
+        "check": "local-vs-delivery",
+        "citation": {
+          "item_id": "run-0001/T1",
+          "source": "@observations",
+          "reference": "/packet/items/0/evidence/@observations (JSON-decoded /command_outputs/2)",
+          "command": "/bin/zsh -c 'python verify.py'",
+          "exit_code": 0,
+          "status": "completed",
+          "raw_source": "raw/codex.jsonl",
+          "raw_line": 18,
+          "quote": "{\"check\": \"catalog-local\", \"passed\": true, \"errors\": []}\n"
+        },
+        "disposition": "Preserved as supplementary cross-turn evidence; core protocol validates citations against the judgment item only. Same-item response and saved handoff citations remain."
+      }
+    ],
+    "reviewer_identity": "private identity omitted; independent-reviewer-B alias",
+    "source_reviewer_calibration": "No control-calibration result for this fresh full-run reviewer supplied; do not claim calibrated reviewer. Separate earlier smoke calibration does not establish this reviewer calibration."
+  },
+  "independence": {
+    "review_basis": "Independent manual semantic judgments using only the supplied blinded review view for this experiment. No semantic verdict is inferred from mechanical PASS. No subject code was executed.",
+    "reviewer_actions": "Read the authorized review view, parse retained evidence, hash review-view bytes and saved text evidence, and write this review output only. No subject scripts, models, live external calls or credentials were used.",
+    "limitations": [
+      "Only the blinded review view was reviewed for this experiment; original source packet, execution audit, ungraded report, source scenario expectations, controller grades and answer keys were not read.",
+      "Four policy-containing inspection outputs were removed by the producer; they were unavailable to this reviewer and no claim about their contents or compliance is made.",
+      "Residual treatment cues remain in routes, file paths and command metadata, so the view is not completely label-blind; no preferred treatment was inferred or graded.",
+      "Snapshots establish net file effects, not absence of transient actions. Retained observation parsing warnings prevent a claim of complete transcript coverage.",
+      "Observed local verifier results establish its tested CSV cases only. Printer reports remain secondhand, the clipping explanation is unverified, and full printed values/alignment/owner acceptance are still pending. Semantic PASS concerns correct handling of that boundary, not completed physical delivery.",
+      "Saved protected texts were hashed as UTF-8 strings from the view and compared with retained pre-edit hashes. No repository files or raw audit sources were accessed.",
+      "This single eight-turn run does not establish comparative effectiveness, broad behavioral reliability, causality, or GitHub publication success."
+    ]
+  },
+  "original_packet_payload_sha256": "b7297561507876d2f2553e26ce9576a63f7ca0d5cb7015b1c38a72d1401d06fa",
+  "review_view_payload_sha256": "57edd891d81c5e047981426a8789800b4463cb4dbebbd1f620dd447f14db311c",
+  "review_view_file_bytes_sha256": "7802194a90470e57b3f560f8e720cc63742a15e7040f9c63723ec2d09265995b",
+  "publication_packet_payload_sha256": "4b8384333a12c92a8a16d3c443284c839b872858cc797a6fa1b4580fc40f6f24"
+}

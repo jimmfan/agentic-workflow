@@ -1,0 +1,21 @@
+{
+  "writer_session_alias": "writer-session-01",
+  "writer_turns": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7"
+  ],
+  "writer_first_turn_fresh": true,
+  "writer_resume_requests_exact_same_native_id": true,
+  "reader_session_alias": "reader-session-01",
+  "reader_turn": "T8",
+  "reader_distinct_native_id_and_fresh_home": true,
+  "reader_consumer_read_only": true,
+  "reader_net_file_and_git_changes": false,
+  "private_native_ids_omitted": true,
+  "reader_basis": "saved project files; fresh native session, separate session home, no writer conversation resume"
+}

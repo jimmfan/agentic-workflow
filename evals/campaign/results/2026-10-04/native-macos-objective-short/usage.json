@@ -1,0 +1,155 @@
+{
+  "turns": [
+    {
+      "id": "T1",
+      "session": "writer-session-01",
+      "native_completion_usage": {
+        "sequence": 1,
+        "line_number": 29,
+        "semantics": "per_turn",
+        "input_tokens": 232824,
+        "cached_input_tokens": 197504,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3296,
+        "reasoning_output_tokens": 148,
+        "model_context_window": null
+      },
+      "interpretation": "Native completion values track cumulative session counters across writer continuations despite parser label per_turn; retain raw counters without summing continuation reports."
+    },
+    {
+      "id": "T2",
+      "session": "writer-session-01",
+      "native_completion_usage": {
+        "sequence": 1,
+        "line_number": 7,
+        "semantics": "per_turn",
+        "input_tokens": 304814,
+        "cached_input_tokens": 266112,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3526,
+        "reasoning_output_tokens": 148,
+        "model_context_window": null
+      },
+      "interpretation": "Native completion values track cumulative session counters across writer continuations despite parser label per_turn; retain raw counters without summing continuation reports."
+    },
+    {
+      "id": "T3",
+      "session": "writer-session-01",
+      "native_completion_usage": {
+        "sequence": 1,
+        "line_number": 11,
+        "semantics": "per_turn",
+        "input_tokens": 425357,
+        "cached_input_tokens": 380288,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 5152,
+        "reasoning_output_tokens": 234,
+        "model_context_window": null
+      },
+      "interpretation": "Native completion values track cumulative session counters across writer continuations despite parser label per_turn; retain raw counters without summing continuation reports."
+    },
+    {
+      "id": "T4",
+      "session": "writer-session-01",
+      "native_completion_usage": {
+        "sequence": 1,
+        "line_number": 11,
+        "semantics": "per_turn",
+        "input_tokens": 564298,
+        "cached_input_tokens": 512384,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 7170,
+        "reasoning_output_tokens": 234,
+        "model_context_window": null
+      },
+      "interpretation": "Native completion values track cumulative session counters across writer continuations despite parser label per_turn; retain raw counters without summing continuation reports."
+    },
+    {
+      "id": "T5",
+      "session": "writer-session-01",
+      "native_completion_usage": {
+        "sequence": 1,
+        "line_number": 11,
+        "semantics": "per_turn",
+        "input_tokens": 722363,
+        "cached_input_tokens": 663808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8738,
+        "reasoning_output_tokens": 258,
+        "model_context_window": null
+      },
+      "interpretation": "Native completion values track cumulative session counters across writer continuations despite parser label per_turn; retain raw counters without summing continuation reports."
+    },
+    {
+      "id": "T6",
+      "session": "writer-session-01",
+      "native_completion_usage": {
+        "sequence": 1,
+        "line_number": 13,
+        "semantics": "per_turn",
+        "input_tokens": 897307,
+        "cached_input_tokens": 833664,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 9524,
+        "reasoning_output_tokens": 275,
+        "model_context_window": null
+      },
+      "interpretation": "Native completion values track cumulative session counters across writer continuations despite parser label per_turn; retain raw counters without summing continuation reports."
+    },
+    {
+      "id": "T7",
+      "session": "writer-session-01",
+      "native_completion_usage": {
+        "sequence": 1,
+        "line_number": 13,
+        "semantics": "per_turn",
+        "input_tokens": 1155153,
+        "cached_input_tokens": 1082496,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 12412,
+        "reasoning_output_tokens": 318,
+        "model_context_window": null
+      },
+      "interpretation": "Native completion values track cumulative session counters across writer continuations despite parser label per_turn; retain raw counters without summing continuation reports."
+    },
+    {
+      "id": "T8",
+      "session": "reader-session-01",
+      "native_completion_usage": {
+        "sequence": 1,
+        "line_number": 18,
+        "semantics": "per_turn",
+        "input_tokens": 133422,
+        "cached_input_tokens": 105856,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 851,
+        "reasoning_output_tokens": 29,
+        "model_context_window": null
+      },
+      "interpretation": "Native completion values track cumulative session counters across writer continuations despite parser label per_turn; retain raw counters without summing continuation reports."
+    }
+  ],
+  "aggregation": "Do not sum all reported completion counters or cumulative rollout snapshots. Final writer-session counter and fresh reader-session counter are separate; no billing, speed, or cost claim is made.",
+  "final_writer_counter": {
+    "sequence": 1,
+    "line_number": 13,
+    "semantics": "per_turn",
+    "input_tokens": 1155153,
+    "cached_input_tokens": 1082496,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 12412,
+    "reasoning_output_tokens": 318,
+    "model_context_window": null
+  },
+  "fresh_reader_counter": {
+    "sequence": 1,
+    "line_number": 18,
+    "semantics": "per_turn",
+    "input_tokens": 133422,
+    "cached_input_tokens": 105856,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 851,
+    "reasoning_output_tokens": 29,
+    "model_context_window": null
+  }
+}
