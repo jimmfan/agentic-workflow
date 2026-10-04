@@ -23,3 +23,7 @@ python3 -m unittest discover -s tests -v
 
 After implementation changes, run `terraform fmt -check terraform` when Terraform is available.
 If Terraform is unavailable, disclose that limitation instead of claiming the formatting check passed.
+
+Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside `terraform/`, `tests/`, installed framework locations, and supplied source documents (including reserved `docs/decisions/` and `docs/benchmarks/` locations).
+You may update existing continuation files.
+Implementation edits are limited to `terraform/iam.tf`, `terraform/runners.tf`, `terraform/observability.tf`, `terraform/variables.tf`, and `terraform/main.tf` in implementation phases only.

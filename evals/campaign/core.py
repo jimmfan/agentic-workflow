@@ -508,11 +508,14 @@ def _changes(before: dict, after: dict) -> list[str]:
 
 
 def _allowed(path: str, patterns: list[str], *, directory=False) -> bool:
-    return any(
-        fnmatch.fnmatchcase(path, pattern)
-        or (directory and pattern.startswith(path + "/"))
-        for pattern in patterns
-    )
+    if directory:
+        return any(
+            path == pattern
+            or fnmatch.fnmatchcase(path + "/", pattern)
+            or pattern.startswith(path + "/")
+            for pattern in patterns
+        )
+    return any(fnmatch.fnmatchcase(path, pattern) for pattern in patterns)
 
 
 def _trace_evidence(response: dict, directory: Path) -> dict:
@@ -651,20 +654,33 @@ def _checks(
     git_unchanged = before["git"] == after["git"] and before.get(
         "git_root_mode"
     ) == after.get("git_root_mode")
-    forbidden = [
-        path
-        for path in changes
-        if path == "."
-        or _framework(path)
-        or path in protected
-        or _allowed(path, turn.get("preserve_paths", []))
-        or not _allowed(
-            path,
-            turn["allowed_writes"],
-            directory=path not in before["entries"]
-            and after["entries"][path]["kind"] == "directory",
+
+    def blocked(path):
+        return (
+            path == "."
+            or _framework(path)
+            or path in protected
+            or _allowed(path, turn.get("preserve_paths", []))
         )
-    ]
+
+    def allowed_change(path):
+        new_directory = (
+            path not in before["entries"]
+            and after["entries"][path]["kind"] == "directory"
+        )
+        if _allowed(path, turn["allowed_writes"], directory=new_directory):
+            return True
+        # A file-type grant also permits its newly created parent directories,
+        # but never empty directories or parents of protected/unsafe files.
+        return new_directory and any(
+            child.startswith(path + "/")
+            and after["entries"].get(child, {}).get("kind") == "file"
+            and not blocked(child)
+            and _allowed(child, turn["allowed_writes"])
+            for child in changes
+        )
+
+    forbidden = [path for path in changes if blocked(path) or not allowed_change(path)]
     unsafe_links = [
         path
         for path in changes

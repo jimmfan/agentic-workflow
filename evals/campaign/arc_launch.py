@@ -43,6 +43,11 @@ def prepare(destination: Path, binary: Path, cutoff: str | None = None) -> dict:
             "python": str(Path(sys.executable).resolve(strict=True)),
             "expected_subject_calls": 12,
             "same_inputs": "One frozen scenario and fixture shared by both conditions",
+            "requested_fast_mode": spec["host"]["settings"]["fast_mode"],
+            "service_tier_override": "fast"
+            if spec["host"]["settings"]["fast_mode"]
+            else None,
+            "service_tier_observation": "Actual response tier remains unverified until execution metadata is available",
         },
     )
     return manifest
@@ -141,6 +146,72 @@ def cleanup_owned_credentials(destination: Path, manifest: dict) -> list[str]:
     return removed
 
 
+def emit_progress(
+    destination: Path,
+    manifest: dict,
+    elapsed: float,
+    previous: dict | None = None,
+    *,
+    heartbeat: bool = False,
+    controller_active: bool = True,
+) -> dict:
+    """Read nonsecret controller state; never project progress into subject inputs."""
+    try:
+        state = core.read_json(destination / "state.json")
+    except (OSError, ValueError):
+        if heartbeat or previous is None:
+            print(
+                f"[{int(elapsed) // 60:02d}:{int(elapsed) % 60:02d}] Controller starting; waiting for saved state",
+                flush=True,
+            )
+        return previous or {}
+    runs = state.get("runs", {})
+    changed = runs != previous
+    if changed:
+        for row in manifest["schedule"]:
+            run = runs.get(row["id"], {})
+            old = (previous or {}).get(row["id"], {})
+            for index in range(old.get("next", 0), run.get("next", 0)):
+                checkpoint = (
+                    destination
+                    / "runs"
+                    / row["id"]
+                    / f"{index + 1:03d}"
+                    / "checkpoint.json"
+                )
+                try:
+                    status = core.read_json(checkpoint)["execution_status"]
+                except (OSError, ValueError, KeyError):
+                    status = "recorded"
+                print(
+                    f"[{int(elapsed) // 60:02d}:{int(elapsed) % 60:02d}] END {row['condition']} P{index + 1}: execution {status}; semantic grading pending",
+                    flush=True,
+                )
+            pending = run.get("pending")
+            old_pending = old.get("pending")
+            if pending and (
+                not old_pending
+                or pending.get("index") != old_pending.get("index")
+                or pending.get("phase") != old_pending.get("phase")
+            ):
+                print(
+                    f"[{int(elapsed) // 60:02d}:{int(elapsed) % 60:02d}] START {row['condition']} P{pending['index'] + 1}: {pending.get('phase', 'preparing')}; fresh session",
+                    flush=True,
+                )
+    if changed or heartbeat:
+        completed = sum(run.get("next", 0) for run in runs.values())
+        active = [
+            f"{row['condition']} P{runs[row['id']]['pending']['index'] + 1}"
+            for row in manifest["schedule"]
+            if runs.get(row["id"], {}).get("pending")
+        ]
+        print(
+            f"[{int(elapsed) // 60:02d}:{int(elapsed) % 60:02d}] Controller {'active' if controller_active else 'stopped'}; completed {completed}/{manifest['expected_turns']}; launched {state.get('launched_turns', 0)}; saved phase: {', '.join(active) or 'between phases'}",
+            flush=True,
+        )
+    return runs
+
+
 def run_supervised(destination: Path, manifest: dict) -> dict:
     """Bound the full controller and clean its own temporary credential copies."""
     output = destination / "controller-run"
@@ -167,6 +238,13 @@ def run_supervised(destination: Path, manifest: dict) -> dict:
     process = None
     interrupted = timed_out = False
     started = time.monotonic()
+    print(
+        f"Starting ARC comparison: {manifest['expected_turns']} fresh phases; {manifest['spec']['limits']['campaign_seconds']}s campaign budget; no retries",
+        flush=True,
+    )
+    print(f"Logs: {output}; phase artifacts: {destination / 'runs'}", flush=True)
+    previous_progress = None
+    last_heartbeat = -30.0
     previous_term = signal.getsignal(signal.SIGTERM)
 
     def terminate(*_):
@@ -189,9 +267,27 @@ def run_supervised(destination: Path, manifest: dict) -> dict:
                 start_new_session=True,
             )
             try:
-                process.wait(timeout=manifest["spec"]["limits"]["campaign_seconds"])
-            except subprocess.TimeoutExpired:
-                timed_out = True
+                while True:
+                    elapsed = time.monotonic() - started
+                    remaining = manifest["spec"]["limits"]["campaign_seconds"] - elapsed
+                    if remaining <= 0:
+                        timed_out = True
+                        break
+                    heartbeat = elapsed - last_heartbeat >= 30
+                    previous_progress = emit_progress(
+                        destination,
+                        manifest,
+                        elapsed,
+                        previous_progress,
+                        heartbeat=heartbeat,
+                    )
+                    if heartbeat:
+                        last_heartbeat = elapsed
+                    try:
+                        process.wait(timeout=min(1, remaining))
+                        break
+                    except subprocess.TimeoutExpired:
+                        continue
             except KeyboardInterrupt:
                 interrupted = True
     finally:
@@ -214,6 +310,27 @@ def run_supervised(destination: Path, manifest: dict) -> dict:
             "process_cleanup_error": cleanup_error,
         }
         core.dump(output / "launch-result.json", audit)
+        emit_progress(
+            destination,
+            manifest,
+            audit["elapsed_seconds"],
+            previous_progress,
+            heartbeat=True,
+            controller_active=False,
+        )
+        outcome = (
+            "interrupted"
+            if interrupted
+            else "timed out"
+            if timed_out
+            else "stopped with cleanup error"
+            if cleanup_error
+            else f"controller exited {audit['controller_exit_code']}"
+        )
+        print(
+            f"ARC {outcome}; elapsed {audit['elapsed_seconds']:.1f}s; retained result: {output / 'launch-result.json'}; no retry",
+            flush=True,
+        )
     if timed_out or interrupted or cleanup_error:
         result = {
             "verdict": "INCONCLUSIVE",
@@ -234,6 +351,15 @@ def run_supervised(destination: Path, manifest: dict) -> dict:
 
 
 def run_once(destination: Path) -> dict:
+    state = core.read_json(destination / "state.json")
+    if (
+        state["launched_turns"]
+        or any(r["pending"] for r in state["runs"].values())
+        or (destination / ".user-launch-claimed").exists()
+    ):
+        raise ValueError(
+            "Campaign already used; evidence preserved; prepare a new explicitly authorized attempt"
+        )
     manifest = core.verify_campaign(destination)
     verify_launch_identity(destination, manifest)
     pre = core.read_json(destination / "native-preflight-result.json")

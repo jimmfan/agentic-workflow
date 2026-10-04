@@ -11,14 +11,14 @@
     {
       "id": "P1",
       "session": "phase-1",
-      "request": "Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams.\n\nDistinguish uncertainty that truly prevents a specific workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth.\n\nDo not implement infrastructure in this phase.\n\nBefore finishing, leave durable repository-native continuation notes containing the exact facts, unresolved decisions, blockers, dependencies, actionable work, and continuation context a completely fresh engineer would need.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "request": "Map this ARC runner migration as a durable multi-session engineering effort.\n\nDetermine what is known, stale, unresolved, blocked, and currently actionable across the parallel workstreams.\n\nDistinguish uncertainty that truly prevents a specific workstream from uncertainty that can remain open while other work proceeds.\n\nUse the repository as the source of project-specific truth.\n\nDo not implement infrastructure in this phase.\n\nBefore finishing, leave durable repository-native continuation notes containing the exact facts, unresolved decisions, blockers, dependencies, actionable work, and continuation context a completely fresh engineer would need.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
       "allowed_writes": [
-        "docs/**",
-        "notes/**",
-        "HANDOFF.md",
-        "handoff.md",
-        ".project-efforts/**",
-        ".agent-wayfinder/**"
+        "*.md",
+        "*.txt",
+        "*.json",
+        "*.yaml",
+        "*.yml",
+        "*.toml"
       ],
       "checks": [
         {
@@ -47,20 +47,21 @@
         "docs/implementation-readiness.md",
         "docs/observability-destination.md",
         "docs/decisions/**",
-        "docs/benchmarks/**"
+        "docs/benchmarks/**",
+        "terraform/**"
       ]
     },
     {
       "id": "P2",
       "session": "phase-2",
-      "request": "Continue this ARC migration from the current repository state.\n\nMake the highest-value implementation progress that is justified now.\n\nDo not assume unresolved architecture decisions or ownership.\n\nValidate your changes and leave the repository ready for a completely fresh engineer to continue.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "request": "Continue this ARC migration from the current repository state.\n\nMake the highest-value implementation progress that is justified now.\n\nDo not assume unresolved architecture decisions or ownership.\n\nValidate your changes and leave the repository ready for a completely fresh engineer to continue.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
       "allowed_writes": [
-        "docs/**",
-        "notes/**",
-        "HANDOFF.md",
-        "handoff.md",
-        ".project-efforts/**",
-        ".agent-wayfinder/**",
+        "*.md",
+        "*.txt",
+        "*.json",
+        "*.yaml",
+        "*.yml",
+        "*.toml",
         "terraform/iam.tf",
         "terraform/runners.tf",
         "terraform/observability.tf",
@@ -111,20 +112,26 @@
         "docs/implementation-readiness.md",
         "docs/observability-destination.md",
         "docs/decisions/**",
-        "docs/benchmarks/**"
+        "docs/benchmarks/**",
+        "terraform/*.md",
+        "terraform/*.txt",
+        "terraform/*.json",
+        "terraform/*.yaml",
+        "terraform/*.yml",
+        "terraform/*.toml"
       ]
     },
     {
       "id": "P3",
       "session": "phase-3",
-      "request": "Reconcile the durable ARC project state with the new compute decision, benchmark evidence, and current project facts.\n\nUpdate the durable handoff so a fresh engineer can tell which workstreams are resolved, actionable, still unknown, or genuinely blocked.\n\nDo not implement the next infrastructure slice in this phase.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "request": "Reconcile the durable ARC project state with the new compute decision, benchmark evidence, and current project facts.\n\nUpdate the durable handoff so a fresh engineer can tell which workstreams are resolved, actionable, still unknown, or genuinely blocked.\n\nDo not implement the next infrastructure slice in this phase.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
       "allowed_writes": [
-        "docs/**",
-        "notes/**",
-        "HANDOFF.md",
-        "handoff.md",
-        ".project-efforts/**",
-        ".agent-wayfinder/**"
+        "*.md",
+        "*.txt",
+        "*.json",
+        "*.yaml",
+        "*.yml",
+        "*.toml"
       ],
       "checks": [
         {
@@ -161,20 +168,21 @@
         "docs/implementation-readiness.md",
         "docs/observability-destination.md",
         "docs/decisions/**",
-        "docs/benchmarks/**"
+        "docs/benchmarks/**",
+        "terraform/**"
       ]
     },
     {
       "id": "P4",
       "session": "phase-4",
-      "request": "Continue the ARC migration using the current repository state.\n\nImplement the highest-value currently actionable production-readiness work across the project.\n\nRespect genuine blockers, but do not let unrelated unresolved work prevent independently authorized work.\n\nValidate the changes as far as the repository and existing tooling safely permit.\n\nDo not make external infrastructure changes.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "request": "Continue the ARC migration using the current repository state.\n\nImplement the highest-value currently actionable production-readiness work across the project.\n\nRespect genuine blockers, but do not let unrelated unresolved work prevent independently authorized work.\n\nValidate the changes as far as the repository and existing tooling safely permit.\n\nDo not make external infrastructure changes.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
       "allowed_writes": [
-        "docs/**",
-        "notes/**",
-        "HANDOFF.md",
-        "handoff.md",
-        ".project-efforts/**",
-        ".agent-wayfinder/**",
+        "*.md",
+        "*.txt",
+        "*.json",
+        "*.yaml",
+        "*.yml",
+        "*.toml",
         "terraform/iam.tf",
         "terraform/runners.tf",
         "terraform/observability.tf",
@@ -219,20 +227,26 @@
         "docs/implementation-readiness.md",
         "docs/observability-destination.md",
         "docs/decisions/**",
-        "docs/benchmarks/**"
+        "docs/benchmarks/**",
+        "terraform/*.md",
+        "terraform/*.txt",
+        "terraform/*.json",
+        "terraform/*.yaml",
+        "terraform/*.yml",
+        "terraform/*.toml"
       ]
     },
     {
       "id": "P5",
       "session": "phase-5",
-      "request": "Reconcile the durable ARC project state with the new decision and evidence.\n\nSome prior project truth has been superseded, some remains valid, one previously blocked workstream is now actionable, and another remains blocked.\n\nUpdate the durable handoff accurately for a completely fresh implementation engineer.\n\nDo not implement the changes in this phase.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "request": "Reconcile the durable ARC project state with the new decision and evidence.\n\nSome prior project truth has been superseded, some remains valid, one previously blocked workstream is now actionable, and another remains blocked.\n\nUpdate the durable handoff accurately for a completely fresh implementation engineer.\n\nDo not implement the changes in this phase.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
       "allowed_writes": [
-        "docs/**",
-        "notes/**",
-        "HANDOFF.md",
-        "handoff.md",
-        ".project-efforts/**",
-        ".agent-wayfinder/**"
+        "*.md",
+        "*.txt",
+        "*.json",
+        "*.yaml",
+        "*.yml",
+        "*.toml"
       ],
       "checks": [
         {
@@ -269,20 +283,21 @@
         "docs/implementation-readiness.md",
         "docs/observability-destination.md",
         "docs/decisions/**",
-        "docs/benchmarks/**"
+        "docs/benchmarks/**",
+        "terraform/**"
       ]
     },
     {
       "id": "P6",
       "session": "phase-6",
-      "request": "Continue the ARC migration from the current repository state.\n\nImplement the next justified work while preserving existing work that remains valid.\n\nUpdate only what the changed project truth actually requires, complete newly unblocked work where justified, respect remaining blockers, and validate the result.\n\nDo not make external infrastructure changes or assume ownership of unresolved resources.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state in any suitable repository-native format.",
+      "request": "Continue the ARC migration from the current repository state.\n\nImplement the next justified work while preserving existing work that remains valid.\n\nUpdate only what the changed project truth actually requires, complete newly unblocked work where justified, respect remaining blockers, and validate the result.\n\nDo not make external infrastructure changes or assume ownership of unresolved resources.\n\nWork only in this synthetic repository. Repository edits and offline checks are authorized. Do not contact external systems, download providers, run terraform init/plan/apply, or change tests, README.md, or supplied source documents. Save continuation state as Markdown (.md), plain text (.txt), JSON (.json), YAML (.yaml/.yml), or TOML (.toml) files at any repository location outside terraform/, tests/, installed framework locations, and supplied source documents (including reserved docs/decisions/ and docs/benchmarks/ locations). You may update existing continuation files. Implementation edits are limited to terraform/iam.tf, terraform/runners.tf, terraform/observability.tf, terraform/variables.tf, and terraform/main.tf in implementation phases only.",
       "allowed_writes": [
-        "docs/**",
-        "notes/**",
-        "HANDOFF.md",
-        "handoff.md",
-        ".project-efforts/**",
-        ".agent-wayfinder/**",
+        "*.md",
+        "*.txt",
+        "*.json",
+        "*.yaml",
+        "*.yml",
+        "*.toml",
         "terraform/iam.tf",
         "terraform/runners.tf",
         "terraform/observability.tf",
@@ -333,8 +348,15 @@
         "docs/implementation-readiness.md",
         "docs/observability-destination.md",
         "docs/decisions/**",
-        "docs/benchmarks/**"
+        "docs/benchmarks/**",
+        "terraform/*.md",
+        "terraform/*.txt",
+        "terraform/*.json",
+        "terraform/*.yaml",
+        "terraform/*.yml",
+        "terraform/*.toml"
       ]
     }
-  ]
+  ],
+  "preparation_revision": 5
 }

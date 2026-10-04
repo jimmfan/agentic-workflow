@@ -43,20 +43,27 @@ A calibrated independent semantic review is still required for a behavioral PASS
 
 Frozen `before_turn` creates/deletes are limited to supplied documents, refuse collisions, and retain separate controller-before snapshots plus hashed transition evidence.
 Each phase has its own session label/home and must start with a new native session ID.
+Both arms receive the same explicit continuation-file permission: `.md`, `.txt`, `.json`, `.yaml`, `.yml`, or `.toml` files under arbitrary names and directories outside infrastructure, tests, installed framework locations and supplied source documents, including reserved decision/benchmark locations.
+New parent directories are permitted only for allowed regular files; symlinks and empty ungranted directories remain rejected.
+Existing continuation files may be updated; mapping phases protect all Terraform files, and implementation phases allow only the five declared `.tf` paths.
+The interrupted revision-3 attempt exposed a mismatch between broad public format permission and a narrow hidden filename allowlist.
+Revision 4 repairs that mismatch prospectively; retained old artifacts and mechanical outcomes are not changed.
 Protected supplied documents and tests cannot be changed for grading credit.
-The explicit vanilla payload, subscription-only authentication overrides and requested Fast setting are frozen before execution.
+The explicit vanilla payload, subscription-only authentication overrides and explicit Fast-disabled setting are frozen before execution.
 The native interpreter retains the canonical-path fix from `4a2b5be`.
 
 Proposed budget: one six-phase trajectory per arm, 12 subject calls maximum, 300 seconds per phase, a 3900-second campaign launch window, and no automatic retry.
-Use `gpt-6.1-sol`, medium reasoning, subscription authentication, requested Fast mode, and no subject subagents for both arms.
+Use `gpt-6.1-sol`, medium reasoning, subscription authentication, standard/default service with Fast disabled, and no subject subagents for both arms.
 These limits cap invocation count and time, not subscription tokens or credits.
 The disabled-subagent setting is a restricted host condition and may prevent workflow-required independent review; record that separately from common outcomes.
 The two arms are serialized in a seeded order; one pair is a feasibility observation, not a reliability estimate or causal attribution to an individual instruction.
 
-Preparation revision 3 uses the explicitly approved full 3900-second campaign budget with requested Fast mode and no additional absolute wall-clock cutoff.
+Preparation revision 5 uses the explicitly approved full 3900-second campaign budget with standard/default service with Fast disabled and no additional absolute wall-clock cutoff.
 It supersedes the earlier 03:30 UTC limit only for a new unstarted preparation; earlier freezes remain retained and unchanged.
 The 12-call limit, 300-second phase deadline and no-retry rule remain active.
 The Terminal launcher supervises the full controller for 3900 seconds, stops only its owned descendant process groups on timeout/interruption, and removes only credential copies whose session ownership matches this campaign.
+The launcher prints a flushed start banner, log locations, phase starts/completions and a heartbeat at most 30 seconds apart; completion counts describe execution, with semantic grading pending.
+It prints the retained audit path on interruption, timeout or exit and refuses every reused campaign before tooling-drift checks.
 Shutdown may take up to 15 seconds after model work is stopped; abrupt untrappable termination still requires manual inspection of retained state.
 An optional `--launch-before` can freeze an absolute launch cutoff for separately constrained preparations.
 
@@ -86,9 +93,12 @@ Provider downloads, init, plan, apply and external changes are prohibited.
 Transient-source deletion removes the current file, not its original Git history; a subject may recover it from the baseline, which must be reported when interpreting continuity.
 Final snapshots cannot establish absence of transient writes; retained native traces may have observation gaps.
 System-skill hashes must be compared after both arms, and an observed mismatch is a confound rather than product evidence.
-Fast mode is explicitly requested; acceptance of configuration does not by itself prove every call received that service tier.
+The latest user request disables Fast for prospective tests.
+Both isolated sessions set `features.fast_mode=false` and omit `service_tier`, using the standard/default request rather than guessing a literal `"default"` value.
+The [official configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference) describes service tiers as optional model-advertised selections.
+Actual response service tier remains unverified until execution metadata is available; historical Fast evidence is unchanged.
 
 Contextual prereview checked the six recovered stages, exact D1/D2 boundaries, complete W4 semantics, neutral requests/rubric, protected inputs, fresh sessions, no retry, and the approved full campaign budget.
-Deterministic controls exercise all six phases with synthetic response envelopes, transition drift, collision rejection, escaped paths, subscription/Fast overrides, keyless child environment and cutoff behavior.
+Deterministic controls exercise all six phases with synthetic response envelopes, transition drift, collision rejection, escaped paths, subscription and Fast-on/Fast-off overrides, keyless child environment and cutoff behavior.
 These controls do not constitute live behavior or independent grading.
 Native preflight and independent reviewer calibration remain required before launch and scoring respectively.

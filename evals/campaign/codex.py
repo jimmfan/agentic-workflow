@@ -136,6 +136,10 @@ def _settings(
         config += ['forced_login_method="chatgpt"', 'cli_auth_credentials_store="file"']
     if request.get("settings", {}).get("fast_mode", False):
         config += ['service_tier="fast"', "features.fast_mode=true"]
+    elif "fast_mode" in request.get("settings", {}):
+        # Standard/default uses no service-tier override. Do not invent a
+        # "default" string that the selected model may not advertise.
+        config += ["features.fast_mode=false"]
     env = {
         "CODEX_HOME": str(home / "codex-home"),
         "HOME": str(home / "user-home"),

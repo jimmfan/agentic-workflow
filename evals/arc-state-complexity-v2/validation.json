@@ -1,8 +1,9 @@
 {
   "protocol_version": 2,
   "evaluation_tests": {
-    "passed": 217,
-    "live_subject_runs": 0
+    "passed": 222,
+    "subject_model_calls_in_validation": 0,
+    "temporary_paths": "Canonical temporary paths required on macOS; alias-path failures are a test-environment issue."
   },
   "fixture_safety_checks": {
     "passed": 5,
@@ -19,11 +20,24 @@
     "expected_judgments": 48,
     "independent_reviewer_calibrated": false
   },
-  "prereview": "Independent pre-run review found missing calibration implementation evidence and an unsupplied phase-2 formatting obligation; both repaired. Parent must obtain reviewer recheck before final launch handoff.",
-  "native_preflight": "Not executed; user normal Terminal required.",
+  "prereview": "Revision-3 calibration implementation and formatting-obligation fixes were cleared before the interrupted attempt. Revision-4 launcher progress and prospective neutral continuation-permission repair require scoped reviewer recheck before replacement handoff.",
+  "native_preflight": "Replacement revision-5 preparation not yet frozen; fresh model-free preflight must be user-operated in normal Terminal.",
   "credential_reads_or_copies_by_controller": 0,
-  "preparation_revision": 3,
-  "budget": "Approved full 3900-second campaign, 300 seconds per phase, at most 12 subject calls, requested Fast mode, no retries, no absolute wall-clock cutoff.",
+  "preparation_revision": 5,
+  "budget": "Approved full 3900-second campaign, 300 seconds per phase, at most 12 subject calls, standard/default request with Fast disabled, no retries, no absolute wall-clock cutoff.",
   "outer_supervisor_controls": "PASS: bounded 3900-second controller, separate descendant groups, keyless outer environment, owned-copy cleanup, no repeated launch",
-  "pre_run_review_fixes": "Both confirmed findings repaired and deterministically tested; independent recheck remains pending."
+  "pre_run_review_fixes": "All four targeted controls pass: file permission scope, progress/heartbeat, visible interruption cleanup, and used-campaign refusal before tooling drift. Semantic rubric, stage transitions and calibration corpus remain unchanged.",
+  "revision_3_interruption": {
+    "verdict": "INCONCLUSIVE",
+    "launched_phases": 2,
+    "completed_phases": 1,
+    "interrupted_phases": 1,
+    "unexecuted_phases": 10,
+    "old_evidence_unchanged": true,
+    "comparison_complete": false,
+    "permission_discrepancy": "Old public prompt allowed arbitrary repository-native continuation formats while mechanical checker rejected alternative artifact names. Old FAIL retained; not attributed to product."
+  },
+  "semantic_rubric_sha256": "8eae98844f477b472c95424bff4e735f1f2e8972a92a9f2e4816140e698f656e",
+  "transitions_sha256": "3ca7c1d55164520e4cc08630d1c936fdf11de2c17b31d29f5b0f93fce6f3bbf4",
+  "service_tier_request": "PASS: fast_mode=false, features.fast_mode=false, no service_tier override; no global settings changes. Actual service tier not observed."
 }

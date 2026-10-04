@@ -36,8 +36,8 @@
     "settings": {
       "allow_subagents": false,
       "subscription_only": true,
-      "fast_mode": true
+      "fast_mode": false
     }
   },
-  "preparation_revision": 3
+  "preparation_revision": 5
 }
