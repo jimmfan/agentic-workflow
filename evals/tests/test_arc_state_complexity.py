@@ -234,7 +234,7 @@ class ArcControls(unittest.TestCase):
             self.assertNotIn("launch_before_utc", manifest["spec"]["limits"])
             self.assertEqual(
                 manifest["spec"]["limits"],
-                {"max_turns": 12, "turn_seconds": 300, "campaign_seconds": 3900},
+                {"max_turns": 12, "turn_seconds": 900, "campaign_seconds": 7200},
             )
             self.assertFalse(manifest["spec"]["host"]["settings"]["fast_mode"])
             prepared = core.read_json(campaign / "preparation.json")
@@ -259,7 +259,7 @@ class ArcControls(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             manifest = {
-                "spec": {"limits": {"campaign_seconds": 3900}},
+                "spec": {"limits": {"campaign_seconds": 7200}},
                 "schedule": [],
                 "scenarios": {},
                 "expected_turns": 12,
@@ -267,7 +267,7 @@ class ArcControls(unittest.TestCase):
             process = Mock(returncode=-9)
             process.poll.return_value = None
             process.wait.side_effect = [
-                subprocess.TimeoutExpired("synthetic controller", 3900),
+                subprocess.TimeoutExpired("synthetic controller", 7200),
                 -9,
             ]
             with (
@@ -280,7 +280,7 @@ class ArcControls(unittest.TestCase):
                 ) as cleanup,
                 patch.dict("os.environ", {"OPENAI_API_KEY": "synthetic canary"}),
                 patch.object(
-                    arc_launch.time, "monotonic", side_effect=[0, 0, 3900, 3900]
+                    arc_launch.time, "monotonic", side_effect=[0, 0, 7200, 7200]
                 ),
                 patch("builtins.print") as output,
             ):
@@ -293,7 +293,7 @@ class ArcControls(unittest.TestCase):
             self.assertTrue((root / "controller-run/launch-result.json").exists())
             messages = [call.args[0] for call in output.call_args_list]
             self.assertIn("12 fresh phases", messages[0])
-            self.assertIn("3900s", messages[0])
+            self.assertIn("7200s", messages[0])
             self.assertIn("Logs:", messages[1])
             self.assertIn("timed out", messages[-1])
             self.assertIn("no retry", messages[-1])
@@ -341,13 +341,45 @@ class ArcControls(unittest.TestCase):
             self.assertIn("START vanilla P2", messages[1])
             self.assertIn("completed 1/12", messages[-1])
 
+    def test_replacement_phase_budget_and_remaining_overall_cap(self):
+        with tempfile.TemporaryDirectory(dir="/private/tmp") as tmp:
+            root = Path(tmp)
+            binary = root / "synthetic-binary"
+            binary.write_bytes(b"synthetic identity; never executed")
+            campaign = root / "project"
+            manifest = arc_launch.prepare(campaign, binary)
+            run_id = manifest["schedule"][0]["id"]
+            request = core.begin_turn(campaign, run_id)
+            self.assertEqual(request["timeout_seconds"], 900)
+            self.assertEqual(request["model"], "gpt-6.1-sol")
+            self.assertEqual(request["reasoning_effort"], "medium")
+            self.assertFalse(request["settings"]["fast_mode"])
+            self.assertIsNone(request["session_id"])
+            core.finish_turn(
+                campaign,
+                run_id,
+                {
+                    "schema": 1,
+                    "execution_status": "completed",
+                    "session_id": "synthetic-session-1",
+                    "response": "Synthetic control only",
+                    "observations": {},
+                    "traces": [],
+                },
+            )
+            started = core.read_json(campaign / "state.json")["started_at"]
+            with patch.object(core.time, "time", return_value=started + 7080):
+                request = core.begin_turn(campaign, run_id)
+            self.assertEqual(request["timeout_seconds"], 120)
+            self.assertIsNone(request["session_id"])
+
     def test_supervisor_interruption_is_visible_and_preserves_no_retry(self):
         from unittest.mock import Mock
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             manifest = {
-                "spec": {"limits": {"campaign_seconds": 3900}},
+                "spec": {"limits": {"campaign_seconds": 7200}},
                 "schedule": [],
                 "scenarios": {},
                 "expected_turns": 12,

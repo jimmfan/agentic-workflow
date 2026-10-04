@@ -52,16 +52,18 @@ Protected supplied documents and tests cannot be changed for grading credit.
 The explicit vanilla payload, subscription-only authentication overrides and explicit Fast-disabled setting are frozen before execution.
 The native interpreter retains the canonical-path fix from `4a2b5be`.
 
-Proposed budget: one six-phase trajectory per arm, 12 subject calls maximum, 300 seconds per phase, a 3900-second campaign launch window, and no automatic retry.
+Approved replacement budget: one six-phase trajectory per arm, 12 subject calls maximum, 900 seconds per phase, a 7200-second overall hard cap, and no automatic retry.
 Use `gpt-6.1-sol`, medium reasoning, subscription authentication, standard/default service with Fast disabled, and no subject subagents for both arms.
 These limits cap invocation count and time, not subscription tokens or credits.
 The disabled-subagent setting is a restricted host condition and may prevent workflow-required independent review; record that separately from common outcomes.
 The two arms are serialized in a seeded order; one pair is a feasibility observation, not a reliability estimate or causal attribution to an individual instruction.
 
-Preparation revision 5 uses the explicitly approved full 3900-second campaign budget with standard/default service with Fast disabled and no additional absolute wall-clock cutoff.
-It supersedes the earlier 03:30 UTC limit only for a new unstarted preparation; earlier freezes remain retained and unchanged.
-The 12-call limit, 300-second phase deadline and no-retry rule remain active.
-The Terminal launcher supervises the full controller for 3900 seconds, stops only its owned descendant process groups on timeout/interruption, and removes only credential copies whose session ownership matches this campaign.
+Preparation revision 6 uses the explicitly approved 900-second phase and 7200-second overall campaign budget with standard/default service with Fast disabled and no additional absolute wall-clock cutoff.
+It supersedes the earlier 03:30 UTC limit only for a new unstarted preparation; earlier freezes, including attempts 004 and 005, remain retained and unchanged.
+Only the prospective limits and preparation metadata change from attempt 005; the revision-5 scenario, public prompts, fixture and rubric are identical.
+The known leading-environment-assignment command-observation limitation remains unchanged and may be assessed from retained native evidence during independent review.
+The 12-call limit, 900-second phase deadline and no-retry rule remain active.
+The Terminal launcher supervises the full controller for 7200 seconds, stops only its owned descendant process groups on timeout/interruption, and removes only credential copies whose session ownership matches this campaign.
 The launcher prints a flushed start banner, log locations, phase starts/completions and a heartbeat at most 30 seconds apart; completion counts describe execution, with semantic grading pending.
 It prints the retained audit path on interruption, timeout or exit and refuses every reused campaign before tooling-drift checks.
 Shutdown may take up to 15 seconds after model work is stopped; abrupt untrappable termination still requires manual inspection of retained state.
