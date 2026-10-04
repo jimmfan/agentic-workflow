@@ -1,0 +1,29 @@
+{
+  "source_manifest_sha256": "6252ef8a0890da8fce0f240c5b4eb9105a076a2584985101e3fab84c19d6f4a6",
+  "vanilla_manifest_sha256": "6d1c4ce304f3556e7c7270e4713b68845f5796f93f1ea0fd020a57e1b3893308",
+  "equal": {
+    "full_scenario_prompts_checks_allowed_writes_session_pattern": true,
+    "fixture_inventory_content_modes_empty_dirs": true,
+    "schedule_except_condition_label": true,
+    "tooling_hashes": true,
+    "host_model_effort_settings": true,
+    "limits": true,
+    "seed_repetitions": true
+  },
+  "differences": [
+    "Empty vanilla payload from outset; no AGENTS.md, installed framework/skills, project policy or state. No source product commit is represented.",
+    "Distinct condition label, campaign paths, wrapper path and manifest creation timestamp.",
+    "Arm is executed later, not randomized concurrent generation; subject execution order, native timing/account load can differ."
+  ],
+  "vanilla_scope": {
+    "project_workflow": false,
+    "native_default_instructions": "retained",
+    "bundled_system_skills": "same allowed isolated CODEX_HOME/skills/.system exposure as workflow arm; no disabling or deleting host skills",
+    "apps_plugins_memories_web_subagents": "disabled identically",
+    "global_user_config": "ignored by native exec; fresh isolated HOME/CODEX_HOME",
+    "ancestor_policy_and_config": "all resolved independent consumer ancestors checked absent",
+    "ancestor_skill_dirs": "all resolved independent consumer ancestors checked absent",
+    "custom_freezing": "No built-in vanilla option exists. External freezer supplies schema-compatible empty condition metadata via preparation hook before freeze; runtime/tooling untouched."
+  },
+  "freezer_sha256": "50a1298c53bfd521f32ebe8e78f33ba618078f0dd41ba9d1a9de4bc297e9c985"
+}

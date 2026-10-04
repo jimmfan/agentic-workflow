@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "source_gate": "core._validate_review(original complete packet, normalized review) passed without applying review or modifying campaign; all 16 declared semantic judgments present.",
+  "publication_gate": "core._validate_review(sanitized packet, re-bound sanitized normalized review) passed; all exact quotes and evidence-scope requirements checked.",
+  "count": {
+    "mechanical_or_command_observed": 12,
+    "semantic": 16,
+    "PASS": 28,
+    "FAIL": 0,
+    "INCONCLUSIVE": 0
+  },
+  "normalization": {
+    "judgments_and_rationales_changed": false,
+    "decoded_observation_quotes_encoded_for_original_protocol": 10,
+    "supplementary_citations": [
+      {
+        "judgment_item": "run-0001/T2",
+        "check": "local-vs-delivery",
+        "citation": {
+          "item_id": "run-0001/T1",
+          "source": "@observations",
+          "reference": "/packet/items/0/evidence/@observations (JSON-decoded /command_outputs/4)",
+          "command": "/bin/zsh -c 'python verify.py'",
+          "exit_code": 0,
+          "status": "completed",
+          "raw_source": "raw/codex.jsonl",
+          "raw_line": 20,
+          "quote": "{\"check\": \"catalog-local\", \"passed\": true, \"errors\": []}\n"
+        },
+        "disposition": "Preserved as supplementary cross-turn evidence; core protocol validates citations against the judgment item only. Same-item response and saved handoff citations remain."
+      },
+      {
+        "judgment_item": "run-0001/T6",
+        "check": "verification-state",
+        "citation": {
+          "item_id": "run-0001/T6",
+          "source": "@diff",
+          "reference": "/packet/items/5/evidence/@diff",
+          "quote": ""
+        },
+        "disposition": "Empty diff is verified omission evidence, retained as supplementary because core citation protocol requires a nonempty quote. Same-item saved handoff citations remain; verdict and rationale unchanged."
+      }
+    ],
+    "reviewer_identity": "private identity omitted; independent-reviewer-A alias, same calibrated reviewer as smoke and workflow arm",
+    "source_reviewer_calibration": "Same reviewer previously passed calibration controls 48/48; read-only provenance bridge at ../native-macos-objective-short/reviewer-provenance.json. Reviewer model/effort unspecified."
+  },
+  "independence": {
+    "review_basis": "Independent criterion-by-criterion semantic review of this packet only. No comparison with other runs or preferred conditions. Mechanical PASS does not imply semantic PASS.",
+    "reviewer_actions": "Parsed only the authorized review view, inspected retained evidence, computed its byte hash and saved-text hashes, and wrote this grade output. No subject code, models, credentials, live calls, or repository edits were executed.",
+    "limitations": [
+      "Only this authorized blinded review view was read for the current experiment. No execution audit, ungraded report, controller grade, answer key, source packet or other-arm comparison was read.",
+      "One policy-containing inspection output was omitted. No claim is made about that unavailable content. Other retained paths/metadata may still reveal treatment cues; full blinding is not established.",
+      "Saved snapshots/diffs establish net effects, not absence of transient actions. Observation extraction warnings prevent a claim of complete transcript coverage.",
+      "Local checker/test passes establish tested CSV behavior only. Printer reports remain reports, clipping is unconfirmed, and owner printed-alignment inspection/final acceptance remain pending.",
+      "T1 had one auxiliary CSV-inspection SyntaxError. The later corrected inspection succeeded and actual verifier/test runs passed; this recovered auxiliary failure does not contradict the declared local-correctness criterion.",
+      "This review does not establish comparative superiority, broad reliability, causality, completed physical delivery, or GitHub publication success."
+    ]
+  },
+  "original_packet_payload_sha256": "080e3bb02978b9e2d583a485e7b6b595d5bd534aa6a4cf8040cae331661a3287",
+  "review_view_payload_sha256": "17561c821097fe299f856e35bd29f0794a858d76a5e1b60f271796df13618ff1",
+  "review_view_file_bytes_sha256": "ecaf8cc0869f61db46b5c286443ff9a2c7bbabfe5ecb6ca0ea0ec83824746f3c",
+  "publication_packet_payload_sha256": "de69fda3ea1928859d798fb4da8f5b984deb13f6411b6d16109e990d47154cac"
+}

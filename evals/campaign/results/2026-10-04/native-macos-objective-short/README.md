@@ -19,7 +19,9 @@ The original report remains unmodified.
 
 [independent-semantic-review.sanitized.json](independent-semantic-review.sanitized.json) preserves the fresh reviewer's 16 PASS judgments, rationales and source citations.
 The reviewer read the disclosed blinded view only; four policy-containing outputs were withheld, and residual route/path cues limit blinding.
-No control-calibration result for this full-run reviewer was supplied; the separate earlier smoke calibration is not evidence of this reviewer's calibration.
+[reviewer-provenance.json](reviewer-provenance.json) now binds this review to the same reviewer who passed the prior smoke control calibration 48/48, resolving the initially missing identity/calibration link.
+The full-run review schema omitted that link; read-only source metadata and app thread history establish it without changing historical review artifacts or judgments.
+The earlier full-run publication alias `independent-reviewer-B` is unified with `independent-reviewer-A`; reviewer model and effort remain unspecified.
 [grade-validation.json](grade-validation.json) discloses normalization and successful `core._validate_review` checks against both the complete original packet and [publication packet](subject-packet.sanitized.json).
 Decoded observation quotes were encoded to match the protocol's serialized JSON evidence strings.
 One T2 supporting citation references T1's actual verifier result, so it is preserved as supplementary cross-turn evidence; T2's same-item response and saved handoff citations remain in [normalized-review.json](normalized-review.json).

@@ -30,8 +30,8 @@
         "disposition": "Preserved as supplementary cross-turn evidence; core protocol validates citations against the judgment item only. Same-item response and saved handoff citations remain."
       }
     ],
-    "reviewer_identity": "private identity omitted; independent-reviewer-B alias",
-    "source_reviewer_calibration": "No control-calibration result for this fresh full-run reviewer supplied; do not claim calibrated reviewer. Separate earlier smoke calibration does not establish this reviewer calibration."
+    "reviewer_identity": "private identity omitted; independent-reviewer-A alias, same reviewer as prior calibrated smoke",
+    "source_reviewer_calibration": "Prior same-reviewer control calibration PASS 48/48 is established by read-only source normalization metadata and app thread history; see reviewer-provenance.json. Reviewer model/effort unspecified."
   },
   "independence": {
     "review_basis": "Independent manual semantic judgments using only the supplied blinded review view for this experiment. No semantic verdict is inferred from mechanical PASS. No subject code was executed.",

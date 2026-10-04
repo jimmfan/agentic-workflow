@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "reviewer_alias": "independent-reviewer-A",
+  "resolved_previous_alias": "Original publication labels independent-reviewer-B (workflow) and independent-reviewer-C (vanilla staging) identify the same reviewer as independent-reviewer-A (smoke); unified after read-only provenance verification, not separate reviewers.",
+  "calibration": {
+    "verdict": "PASS",
+    "matching_checks": 48,
+    "expected_checks": 48,
+    "mismatched_checks": 0,
+    "packet_sha256": "38ccaa3df4bb7df7a617bbbdf2b0f7491d3f38021ad4867496b2924cbda0a04c",
+    "original_review_byte_sha256": "e58bba12985b3878a15e10383bf5d874f2f13f06f57d1d203406628f07c403ee",
+    "normalized_review_byte_sha256": "e77bb2b155a3ec7d0e79d758bf3c6e4bd14ab802577fefd07015c6b870ae96ec",
+    "gate_byte_sha256": "06a257ecb3c0e81a96ce522b90e33e4a37e56fe0b5c62dfaeb6c1cd0f93f8536",
+    "published_review": "../native-macos-routine-smoke/independent-calibration-review.json",
+    "published_gate": "../native-macos-routine-smoke/calibration-gate.json"
+  },
+  "sequence": [
+    {
+      "step": 1,
+      "action": "same fresh reviewer completed calibration controls; subject packet unread until gate confirmation"
+    },
+    {
+      "step": 2,
+      "action": "controller gate confirmed 48/48; same reviewer completed bounded smoke review"
+    },
+    {
+      "step": 3,
+      "action": "same reviewer completed full objective trajectory review",
+      "review_view_file_byte_sha256": "7802194a90470e57b3f560f8e720cc63742a15e7040f9c63723ec2d09265995b",
+      "independent_review_file_byte_sha256": "53d0b20d9a74921ca5599aa2f15b06cdfef06eb3c78ac012392e335282beb45d"
+    },
+    {
+      "step": 4,
+      "action": "same reviewer completed vanilla trajectory review",
+      "review_view_file_byte_sha256": "ecaf8cc0869f61db46b5c286443ff9a2c7bbabfe5ecb6ca0ea0ec83824746f3c",
+      "independent_review_file_byte_sha256": "778756fe3996cbcf3b326f0119c00d5aec02769fa664153b895f28d413ad55da"
+    }
+  ],
+  "verification_basis": "Read-only app thread records establish all calibration, gate confirmation, smoke review and full/vanilla review outputs belong to one reviewer thread; existing calibration normalization metadata identifies that same thread. Private thread/turn IDs omitted from publication.",
+  "previous_caveat": "Full-run review schema omitted reviewer identity and calibration references, so the first publication conservatively left calibration unverified. This provenance bridge resolves that missing binding; historical original reviewer artifacts are unchanged.",
+  "reviewer_model": null,
+  "reviewer_reasoning_effort": null,
+  "limits": [
+    "Calibration agreement on 48 synthetic checks does not establish universal grading correctness or subject reliability.",
+    "Same reviewer across arms provides consistent grading provenance, not independent replication or complete label blinding.",
+    "Judgments, criteria, original reports and frozen execution inputs remain unchanged."
+  ]
+}

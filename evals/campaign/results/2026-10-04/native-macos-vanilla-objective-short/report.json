@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "verdict": "PASS",
-  "scope": "All 28 declared checks in one eight-turn current-main trajectory, including 16 supplied independent semantic judgments, after documented citation normalization and core validation. Same reviewer passed prior calibration controls 48/48; read-only provenance bridge resolves the initially missing identity/calibration link.",
+  "scope": "All 28 declared checks in one eight-turn vanilla trajectory, including 16 supplied independent semantic judgments, after documented citation normalization and core validation. Same reviewer passed prior calibration controls 48/48; read-only provenance bridge resolves missing artifact-level identity/calibration link.",
   "checks": [
     {
       "turn": "T1",
@@ -21,8 +21,22 @@
       "verdict": "PASS",
       "detail": [
         {
-          "invocation_id": "item_8",
-          "sequence": 18,
+          "invocation_id": "item_5",
+          "sequence": 13,
+          "tool_type": "command_execution",
+          "name": "command_execution",
+          "command": "/bin/zsh -c 'python verify.py'",
+          "status": "completed",
+          "exit_code": 0,
+          "stdout_bytes": null,
+          "stderr_bytes": null,
+          "combined_output_bytes": 57,
+          "duration_ms": null,
+          "changed_paths": []
+        },
+        {
+          "invocation_id": "item_9",
+          "sequence": 20,
           "tool_type": "command_execution",
           "name": "command_execution",
           "command": "/bin/zsh -c 'python verify.py'",
@@ -190,8 +204,8 @@
       "verdict": "PASS",
       "detail": [
         {
-          "invocation_id": "item_2",
-          "sequence": 7,
+          "invocation_id": "item_1",
+          "sequence": 5,
           "tool_type": "command_execution",
           "name": "command_execution",
           "command": "/bin/zsh -c 'python verify.py'",
@@ -287,8 +301,8 @@
     }
   ],
   "completed_turns": 8,
-  "condition": "current-main",
-  "product_commit": "deb91942ac45373111a6bc615b359b2bbb230a68",
+  "condition": "vanilla",
+  "product_commit": null,
   "limits": [
     "One condition, one repetition, one short trajectory; no comparison, broad reliability or causal claim.",
     "Print reports are synthetic secondhand inputs; clipping cause and physical output were not independently verified; owner alignment review and final acceptance remain pending.",

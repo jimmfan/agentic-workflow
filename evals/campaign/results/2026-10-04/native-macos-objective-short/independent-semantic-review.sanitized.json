@@ -613,6 +613,7 @@
     "This single eight-turn run does not establish comparative effectiveness, broad behavioral reliability, causality, or GitHub publication success."
   ],
   "reviewer_actions": "Read the authorized review view, parse retained evidence, hash review-view bytes and saved text evidence, and write this review output only. No subject scripts, models, live external calls or credentials were used.",
-  "reviewer_alias": "independent-reviewer-B",
-  "derivative_note": "Original reviewer judgments/rationales/citations retained with private paths/IDs sanitized. Original byte hash and reviewed-view bindings are in redaction-manifest.json; this file is not the original byte stream."
+  "reviewer_alias": "independent-reviewer-A",
+  "derivative_note": "Original reviewer judgments/rationales/citations retained with private paths/IDs sanitized. Original byte hash and reviewed-view bindings are in redaction-manifest.json; this file is not the original byte stream.",
+  "calibration_provenance": "reviewer-provenance.json bridges this reviewer to the same prior 48/48 calibration reviewer; original review artifact unchanged."
 }

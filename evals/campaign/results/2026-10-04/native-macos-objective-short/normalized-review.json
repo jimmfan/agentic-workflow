@@ -1,6 +1,6 @@
 {
   "packet_sha256": "4b8384333a12c92a8a16d3c443284c839b872858cc797a6fa1b4580fc40f6f24",
-  "reviewer": "independent-reviewer-B; fresh semantic reviewer; reviewed disclosed blinded view only; publication normalization preserves judgments",
+  "reviewer": "independent-reviewer-A; fresh semantic reviewer; reviewed disclosed blinded view only; publication normalization preserves judgments",
   "items": [
     {
       "id": "run-0001/T1",

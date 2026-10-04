@@ -87,7 +87,10 @@
     "campaign/runs/run-0001/008/before.zip": "56eb5dabbd6656db0d3bc4a6c560ca5fcbd455bc1d7ac52f7bdcf060dfb843b0",
     "campaign/runs/run-0001/008/after.zip": "5aa77de76e64f0eda223a4ebe7ccb435c3f0a5ea4d61aaef4dbaf0d884c4d70e",
     "campaign/runs/run-0001/008/raw/invocation.json": "c1054f8d815bc4bb124f75ccb6f7abada32d77690cdcef31716db55274d1738c",
-    "campaign/runs/run-0001/008/raw/preflight.json": "66af5229325584ac26311a313f6b6979fe1348e104ec73640a1a2691d13de20c"
+    "campaign/runs/run-0001/008/raw/preflight.json": "66af5229325584ac26311a313f6b6979fe1348e104ec73640a1a2691d13de20c",
+    "calibration/original-review.json": "e58bba12985b3878a15e10383bf5d874f2f13f06f57d1d203406628f07c403ee",
+    "calibration/normalized-review.json": "e77bb2b155a3ec7d0e79d758bf3c6e4bd14ab802577fefd07015c6b870ae96ec",
+    "calibration/gate.json": "06a257ecb3c0e81a96ce522b90e33e4a37e56fe0b5c62dfaeb6c1cd0f93f8536"
   },
   "bindings": {
     "original_packet_payload_sha256": "b7297561507876d2f2553e26ce9576a63f7ca0d5cb7015b1c38a72d1401d06fa",
@@ -97,7 +100,7 @@
     "sanitized_packet_payload_sha256": "4b8384333a12c92a8a16d3c443284c839b872858cc797a6fa1b4580fc40f6f24"
   },
   "publication_derivative_byte_sha256": {
-    "README.md": "781c6ed6cfcaace74eab26acce794f9f9e3c34dd48532ba304ae6949377d6168",
+    "README.md": "b526a16041174ba46de84c0e05eb66fa8e6e7c58d67364e5780c88f2d7549e50",
     "experiment.json": "16e73b20b6855a31c13ff95188783eaab03538e7b1d3e4e9ea70fd57dd2d791a",
     "file-changes.json": "c6c8ef859a4e7733667733e7bb760e5da8ae47c7e6dfb8dc4b5ea8c5c56e8720",
     "files/final/.project-efforts/observing-card-delivery/decisions.md": "4ab8a13aaad969bc98a5f5b6a6c61c8c894480627aff2a091e95a284287523ef",
@@ -116,11 +119,12 @@
     "files/initial/docs/delivery.md": "15a807570b9db11dee5b51bd4551df4fe3977b8ed2056c9a1cbe1f41f2a26352",
     "files/initial/exporter.py": "fbb4b8f4a75787cdd8cbbffefaaa45dc0042503968211491d4f29e9577d12d8e",
     "files/initial/verify.py": "2a99e7b257067012531a090d1bdeda9723d488b4690a1bd45898afd2079ac369",
-    "grade-validation.json": "6c009ab35f894b98d45fd2a4870f74654de5927572f6aa7ef24f38da0db03d02",
-    "independent-semantic-review.sanitized.json": "16b6c0a44c37a92542b4b463d992a5fec811effe91547ec6ec0831f081b4e247",
+    "grade-validation.json": "b83adc798cce25bc6f74d722fbbf239148d8a3a4eec1cd8531eb2a31b48c551b",
+    "independent-semantic-review.sanitized.json": "6e475587d0db00bac563e79f212a2ad7306f0baa5efd57d3a25307939646941b",
     "native-execution.json": "211e20b4e9b113722c1d20701de72ffcf18c8634dfd995dd07acfd41288cb723",
-    "normalized-review.json": "9355844e06cb0830f8984163e2569a9ba0a75060d0876905e841120ea546be14",
-    "report.json": "580bcc256c7dba48d08a1661ce533f6f08f5f423c42ff0dfba2cdbc9cfb520b8",
+    "normalized-review.json": "5b13d8f5ae6cbc146ed5250e0c245685538a72a3e7e380cb4ab034703744abb0",
+    "report.json": "4df884d8aa21aebcff5e23ed476384caa4455962254c0d43ac706a8564156059",
+    "reviewer-provenance.json": "7f8fc6ef6d51ae74a9a85241ce92a76e77758db7d0eeb6b1d0de3f76a5bcf5ae",
     "session-continuity.json": "ca31a209690677f9827c05d2aee663a694dd8004d82b57a740c918f676524ebe",
     "subject-packet.sanitized.json": "2327d6ed127c5e892034fdd11fbf76a29ba9e8631e5de06ca02044048052ee21",
     "transcripts.json": "30b5b54bad1159777e6859abca328bc3bbedace6b6279aac6b07b6f9683976a4",
@@ -133,7 +137,8 @@
     "All prompts/responses and changed project file texts retained; original file byte hashes distinguish source bytes from derivatives.",
     "Selected concrete verifier outputs and reviewer-cited observation excerpts retained; uncited/duplicated inspection output, installed policy and full inventory metadata omitted.",
     "Original review semantic judgments/rationales unchanged; serialized observation citation encoding normalized; one valid historical T1 citation preserved as supplementary evidence for T2.",
-    "Publication packet re-bound to its own payload hash; original complete packet, reviewed-view payload and reviewed-view file bytes retain separate bindings."
+    "Publication packet re-bound to its own payload hash; original complete packet, reviewed-view payload and reviewed-view file bytes retain separate bindings.",
+    "Read-only provenance bridge resolves full-run alias independent-reviewer-B to the same calibrated independent-reviewer-A; private thread IDs omitted; original judgments/criteria unchanged."
   ],
   "omitted": [
     "Credentials and credential file metadata/hashes",
@@ -142,5 +147,9 @@
     "Account quota, credit, rate-balance and subscription detail",
     "Full Git metadata and duplicated installed framework policy/inspection output"
   ],
-  "preservation": "Source evidence and frozen inputs not edited; originals remain local; no code fix, retry or new model execution performed for this publication."
+  "preservation": "Source evidence and frozen inputs not edited; originals remain local; no code fix, retry or new model execution performed for this publication.",
+  "comparison_derivative": {
+    "path": "../objective-short-comparison.md",
+    "byte_sha256": "7c9c5b3bc2e56caeb6bf8ac5f8304da6246e65ab77bffb85dcdca5077b923733"
+  }
 }

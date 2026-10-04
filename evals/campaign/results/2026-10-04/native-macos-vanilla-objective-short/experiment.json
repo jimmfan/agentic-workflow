@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "name": "vanilla-objective-acceptance-short-001",
+  "question": "Does native Codex without installed project workflow achieve the same short objective/handoff acceptance behavior under matching requests and host controls?",
+  "scenario": "evals/campaign/scenarios/objective-acceptance-short.json",
+  "condition": {
+    "id": "vanilla",
+    "ref": "vanilla-no-project-workflow",
+    "overlays": []
+  },
+  "repetitions": 1,
+  "seed": 42,
+  "product_version": null,
+  "tooling_commit": "4a2b5be5212eb647e6b1920dbb8692696a09eed6",
+  "frozen_tooling_hashes": {
+    "evals/campaign/__init__.py": "d9d8fc08a3eefad4e46bca596f0972d6367df9def6cd391dea4acdb26f5519a4",
+    "evals/campaign/__main__.py": "c9fc0d63260c658102cc3b5d2799447e0db6d8a887e450a21fb3818bf1d6ec7d",
+    "evals/campaign/calibration.py": "0c43638faa419c7f05c3d9114ad662583b90099dbc934d0159123c3e931077ae",
+    "evals/campaign/codex.py": "6b5b7555d0e73c9e1144f276d66684568ea1e46c5e2151e65b523f86572a75bd",
+    "evals/campaign/core.py": "47a5bc62f3fd786d8a6db8ae23da9f5bbb0e1db3dbc2f727b0094c622d5cf803",
+    "evals/campaign/revisions.py": "fb201847e0bc646063accbfd46c65391b974a1650bbc25ff3e518f27533f6fed",
+    "evals/campaign/schema.py": "bdffa85c1d7947bb2c9b7fd8ec730189a781551de5cfbd7852e7d1e76860c44c",
+    "evals/persistence.py": "7ef47fcf0a7f5dec2c29e99033424e5cafa1578bd42a57f4dec882bef6b6d7fb",
+    "evals/token_forensics/__init__.py": "cb11f3dc8c0b4027363ae15db8a03b1d8ad7607a3c618c854644855cf4a2a770",
+    "evals/token_forensics/__main__.py": "0f7d54f3fbb1f79a85eb8110f11793db99da6f3c61ee979de5abe9a1b5f3fdb3",
+    "evals/token_forensics/analysis/__init__.py": "5649959653f624359cf67a8e6c55b038f8e3cdc158483ae47bcb33e86fbfe219",
+    "evals/token_forensics/analysis/context.py": "c9a0a2766798e5530de1a846ac67bb40e01ac54ad37907a4341bdfd56df6e36d",
+    "evals/token_forensics/analysis/subagents.py": "ae212b4833719a7b61267eaf82e1a0b948aa4a57edf1770cfbe9996129c060f7",
+    "evals/token_forensics/analysis/tokens.py": "02efde309d93bd5a832c13fdc1fe1fbc26cef3b5614f857bf29fc661c4930059",
+    "evals/token_forensics/analysis/tools.py": "cd423b5e44226b6b2b2803d1bb1519345375b04a1c1e5cf39391eb134921de11",
+    "evals/token_forensics/cli.py": "88a1e02666a3e5d723f96a2e3904b416fec07688ee457264c831f916847e87f2",
+    "evals/token_forensics/models.py": "8617721adbbf4e5104fff87b4b0d9ff671958d1037be2c395e24f346e063c22a",
+    "evals/token_forensics/parsers/__init__.py": "02a2e68c72d5e58661b2528eb57fa22289d9e0b06aea3abc78a9671df9f16e71",
+    "evals/token_forensics/parsers/codex.py": "9a3a3c8fb26e23060887974d0ad71827304cf4623694f48c03923554bc6dc76d",
+    "evals/token_forensics/report.py": "9cf26fbea7478216b6c2af89c02e8a185c2b5227f0f6afb6852cabaed8a7b0fe",
+    "tests/behavior.py": "ed7a56125444f94816311f816f24d5cf5c25665f266a06431e62b3a9701495fa"
+  },
+  "frozen_input_inventory": {
+    ".": {
+      "kind": "directory",
+      "mode": 493
+    },
+    "objective-acceptance-short": {
+      "kind": "directory",
+      "mode": 493
+    },
+    "objective-acceptance-short/fixture": {
+      "kind": "directory",
+      "mode": 493
+    },
+    "objective-acceptance-short/fixture/README.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "02973bd63a19f4ecc088666da96104454704ef32c9922a3365106f9b48a3fa10"
+    },
+    "objective-acceptance-short/fixture/catalog.json": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "b6a5632bf73b17d1195887efd16b5181fe50dde9da9aa5c49061ccade2f8c0b0"
+    },
+    "objective-acceptance-short/fixture/docs": {
+      "kind": "directory",
+      "mode": 493
+    },
+    "objective-acceptance-short/fixture/docs/delivery.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "15a807570b9db11dee5b51bd4551df4fe3977b8ed2056c9a1cbe1f41f2a26352"
+    },
+    "objective-acceptance-short/fixture/exporter.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "fbb4b8f4a75787cdd8cbbffefaaa45dc0042503968211491d4f29e9577d12d8e"
+    },
+    "objective-acceptance-short/fixture/verify.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "2a99e7b257067012531a090d1bdeda9723d488b4690a1bd45898afd2079ac369"
+    },
+    "objective-acceptance-short/scenario.json": {
+      "kind": "file",
+      "mode": 384,
+      "sha256": "4fa350aeaf0ae9574761e7887b3d14d3cff87b69f1e543819fec92b4c8f23432"
+    }
+  },
+  "original_manifest_payload_sha256": "6d1c4ce304f3556e7c7270e4713b68845f5796f93f1ea0fd020a57e1b3893308",
+  "expected_turns": 8,
+  "bounds": {
+    "turn_seconds": 300,
+    "campaign_seconds": 1800,
+    "outer_seconds": 1800,
+    "cleanup_seconds": 15,
+    "last_start_before_utc": "2026-10-04T02:59:45Z",
+    "cutoff_utc": "2026-10-04T03:30:00Z",
+    "automatic_retry": false,
+    "API_fallback": false
+  },
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "medium",
+  "subagents_enabled": false,
+  "service_tier_requested_all_turns": "fast",
+  "features_fast_mode_all_turns": true,
+  "launch": {
+    "controller_exit_code": 2,
+    "timed_out": false,
+    "elapsed_seconds": 180.05174516700208,
+    "temporary_credential_copies_removed": true,
+    "retry_allowed": false,
+    "launched_turns": 8,
+    "run_state": {
+      "next": 8,
+      "pending": null,
+      "sessions": {
+        "writer": "writer-session-01",
+        "reader": "reader-session-01"
+      },
+      "status": "completed"
+    }
+  },
+  "controller_exit_explanation": "Exit 2 at execution completion means semantic checks were ungraded then; eight turns completed without timeout. Independent review and publication validation are later derivatives; original report unchanged.",
+  "host": {
+    "os": "macOS 15.7.3",
+    "architecture": "arm64",
+    "codex_cli": "0.160.0",
+    "uv": "0.12.5",
+    "python": "3.14.6"
+  },
+  "authentication_controls": {
+    "forced_login_method": "chatgpt",
+    "API_fallback": false,
+    "inherited_API_keys": false,
+    "source": "frozen launch/invocation control records; no credential material accessed for publication"
+  },
+  "speed_limit": "Explicit Fast overrides on all eight turns; priority telemetry only T2-T7; T1/T8 unknown. Labels do not establish measured speed or fast/priority equivalence.",
+  "product_commit": null
+}

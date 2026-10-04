@@ -1,0 +1,39 @@
+{
+  "scope": "No installed project workflow, AGENTS/CLAUDE files, project skills, effort/handoff/notes in initial consumer. Empty payload supplied through external preparation hook before freeze; unchanged runtime/scoring. Native default/provider/managed instructions and five bundled system skills remain; not an instruction-free/skill-free model.",
+  "initial_project_files": [
+    "README.md",
+    "catalog.json",
+    "docs/delivery.md",
+    "exporter.py",
+    "verify.py"
+  ],
+  "initial_project_snapshot_equal_to_workflow_arm": true,
+  "builtin_skill_verification": {
+    "writer": {
+      "same_names_and_skill_md_hashes_as_workflow_arm": true,
+      "skills": {
+        "review-agent": "07079efd0dc76f05fade424e5dfb048dce1de2df7626e1a4f56292a4f3f92228",
+        "skill-creator": "6656e54755638e8efcf275a472b9672eaa8a9a1b9e59dc210e275b03b59e1e66",
+        "skill-installer": "d68b77e5bbb34dedab89d134da52855f140fc4b4299b80104f534e3b9e98f8ee",
+        "openai-docs": "aa6829e21df2223167c85d2e49b6337a7345c84c1033f1ec10182c7882b36d45",
+        "imagegen": "681ddb4ad6d06a2acc78a3535b583f8d0c1ea800ecda3d56370d3310fd2cd4ba"
+      }
+    },
+    "reader": {
+      "same_names_and_skill_md_hashes_as_workflow_arm": true,
+      "skills": {
+        "review-agent": "07079efd0dc76f05fade424e5dfb048dce1de2df7626e1a4f56292a4f3f92228",
+        "skill-creator": "6656e54755638e8efcf275a472b9672eaa8a9a1b9e59dc210e275b03b59e1e66",
+        "skill-installer": "d68b77e5bbb34dedab89d134da52855f140fc4b4299b80104f534e3b9e98f8ee",
+        "openai-docs": "aa6829e21df2223167c85d2e49b6337a7345c84c1033f1ec10182c7882b36d45",
+        "imagegen": "681ddb4ad6d06a2acc78a3535b583f8d0c1ea800ecda3d56370d3310fd2cd4ba"
+      }
+    }
+  },
+  "external_freezer_method": "No built-in vanilla option exists. External freezer supplies schema-compatible empty condition metadata via preparation hook before freeze; runtime/tooling untouched.",
+  "external_freezer_sha256": "50a1298c53bfd521f32ebe8e78f33ba618078f0dd41ba9d1a9de4bc297e9c985",
+  "product_commit": null,
+  "product_version": null,
+  "tooling_limitation": "Built-in render_report assumes non-null Git commit and raises TypeError for honest vanilla product commit null. JSON report, packet validation, native execution and mechanical checking succeeded. External summary used; partial exports retained at <campaign>-review-renderer-limitation. Frozen tooling not modified.",
+  "T6_caveat": "Saved handoff lacked a rerun-specific provenance entry. Independent reviewer found retained current state consistent with actual captured rerun under existing criterion; durable per-invocation provenance not established."
+}
