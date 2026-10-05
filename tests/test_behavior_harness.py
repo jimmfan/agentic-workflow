@@ -446,8 +446,8 @@ class BehaviorHarnessTests(unittest.TestCase):
         )
         paths = (
             ("direct",),
-            ("implement", "verification"),
-            ("wayfinder", "discovery", "research"),
+            ("workflow-implementation", "implement", "workflow-verification"),
+            ("wayfinder", "workflow-discovery", "research"),
             ("research-handoff",),
             ("research-unavailable",),
             ("research-blocked",),
@@ -521,7 +521,7 @@ class BehaviorHarnessTests(unittest.TestCase):
             for item in behavior.load_scenarios()
             if item.id == "architectural-choice-uses-discovery"
         )
-        self.assertEqual(scenario.route_must_include, ("discovery",))
+        self.assertEqual(scenario.route_must_include, ("workflow-discovery",))
         self.assertEqual(
             scenario.route_must_not_include,
             ("domain-modeling", "wayfinder"),
@@ -549,8 +549,8 @@ class BehaviorHarnessTests(unittest.TestCase):
             )
             prohibited_evidence = replace(
                 evidence,
-                stdout="[route: discovery → domain-modeling]",
-                route_components=("discovery", "domain-modeling"),
+                stdout="[route: workflow-discovery → domain-modeling]",
+                route_components=("workflow-discovery", "domain-modeling"),
             )
             prohibited_result = next(
                 item
@@ -558,9 +558,51 @@ class BehaviorHarnessTests(unittest.TestCase):
                 if item.name == "route-marker:prohibited-components"
             )
         self.assertFalse(required_result.passed)
-        self.assertIn("discovery", required_result.detail)
+        self.assertIn("workflow-discovery", required_result.detail)
         self.assertFalse(prohibited_result.passed)
         self.assertIn("domain-modeling", prohibited_result.detail)
+
+    def test_declared_wayfinder_component_matches_wayfinder_effort(self) -> None:
+        required = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "wayfinder-new-effort"
+        )
+        excluded = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "architectural-choice-uses-discovery"
+        )
+        self.assertIn("wayfinder", required.route_must_include)
+        self.assertIn("wayfinder", excluded.route_must_not_include)
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(required, Path(temporary))
+            snapshot = behavior.snapshot(workspace)
+            evidence = behavior.RunEvidence(
+                scenario=required,
+                workspace=workspace,
+                before=snapshot,
+                after=snapshot,
+                stdout="[route: wayfinder-effort]",
+                stderr="",
+                returncode=0,
+                report={"status": "success"},
+                verification=(),
+                route_components=("wayfinder-effort",),
+            )
+            self.assertTrue(behavior.route_included(evidence)[0])
+            self.assertFalse(
+                behavior.route_excluded(replace(evidence, scenario=excluded))[0]
+            )
+            self.assertFalse(
+                behavior.route_included(
+                    replace(
+                        evidence,
+                        stdout="[route: workflow-discovery]",
+                        route_components=("workflow-discovery",),
+                    )
+                )[0]
+            )
 
     def test_implicit_routing_prompts_hide_classification(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
@@ -769,7 +811,7 @@ print('Fixed and verified. [route: direct]')
                 workspace,
                 before,
                 before,
-                "[route: discovery → research]",
+                "[route: workflow-discovery → research]",
                 "",
                 0,
                 {
@@ -778,7 +820,7 @@ print('Fixed and verified. [route: direct]')
                     "state_used": ["docs/requirements.md"],
                 },
                 (),
-                ("discovery", "research"),
+                ("workflow-discovery", "research"),
             )
             results = behavior.evaluate(evidence)
             self.assertEqual(behavior.verdict(results), "INCONCLUSIVE")

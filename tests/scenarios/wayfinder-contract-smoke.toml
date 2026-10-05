@@ -32,7 +32,7 @@ forbid_created_globs = [
   ".project-efforts/runtime-rollout/unknowns/**",
   ".project-efforts/runtime-rollout/decisions.md",
 ]
-route_must_not_include = ["discovery", "implement"]
+route_must_not_include = ["workflow-discovery", "workflow-implementation", "implement"]
 state_must_include = [
   ".project-efforts/runtime-rollout/map.md",
 ]

@@ -29,7 +29,7 @@ forbid_created_globs = [
   "planning/**",
   "wayfinder/**",
 ]
-route_must_not_include = ["discovery", "wayfinder"]
+route_must_not_include = ["workflow-discovery", "wayfinder"]
 state_must_include = []
 state_must_not_include = [
   ".project-efforts/database-migration/map.md",
