@@ -61,7 +61,7 @@ A proposed limit on re-entering the same workflow was dropped the same day becau
 
 **Selection descriptions (0.38.0).**
 The `implement`, `workflow-implementation`, `workflow-discovery`, and `wayfinder-effort` descriptions now say when to use each skill and name the nearest alternative, leaving ownership detail to the skill bodies.
-Routing states that the `implement` route label covers the Implementation integration, an `implement` run on its own, or both.
+Since 0.42.0, [route reporting](../../.agent-workflow/routing.md#report-the-executed-route) lists each skill by its full name, so the Implementation integration and `implement` appear separately; the earlier `implement` label that covered both was removed.
 
 **Route-conflict fixes (0.40.0).**
 After a 2026-10-01 review of selection and handoff rules that pointed nowhere or loaded too late, jimmfan approved moving curated-skill precedence into the root policy so it applies at first-pass selection.

@@ -604,6 +604,62 @@ class BehaviorHarnessTests(unittest.TestCase):
                 )[0]
             )
 
+    def test_obsolete_compact_labels_count_only_toward_exclusions(self) -> None:
+        scenario = next(
+            item
+            for item in behavior.load_scenarios()
+            if item.id == "architectural-choice-uses-discovery"
+        )
+        self.assertEqual(scenario.route_must_include, ("workflow-discovery",))
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = behavior.copy_fixture(scenario, Path(temporary))
+            snapshot = behavior.snapshot(workspace)
+            for obsolete, full in (
+                ("discovery", "workflow-discovery"),
+                ("debugging", "workflow-debugging"),
+                ("verification", "workflow-verification"),
+            ):
+                with self.subTest(label=obsolete):
+                    evidence = behavior.RunEvidence(
+                        scenario=replace(
+                            scenario,
+                            route_must_include=(full,),
+                            route_must_not_include=(),
+                        ),
+                        workspace=workspace,
+                        before=snapshot,
+                        after=snapshot,
+                        stdout=f"[route: {obsolete}]",
+                        stderr="",
+                        returncode=0,
+                        report={"status": "success"},
+                        verification=(),
+                        route_components=(obsolete,),
+                    )
+                    # An obsolete spelling never satisfies a full-name requirement.
+                    self.assertFalse(behavior.route_included(evidence)[0])
+                    # Nor may it slip past a full-name prohibition.
+                    prohibiting = replace(
+                        evidence.scenario,
+                        route_must_include=(),
+                        route_must_not_include=(full,),
+                    )
+                    self.assertFalse(
+                        behavior.route_excluded(
+                            replace(evidence, scenario=prohibiting)
+                        )[0]
+                    )
+                    # The full name still satisfies its requirement.
+                    self.assertTrue(
+                        behavior.route_included(
+                            replace(
+                                evidence,
+                                stdout=f"[route: {full}]",
+                                route_components=(full,),
+                            )
+                        )[0]
+                    )
+
     def test_implicit_routing_prompts_hide_classification(self) -> None:
         scenarios = {item.id: item for item in behavior.load_scenarios()}
         for name in (

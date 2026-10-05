@@ -684,12 +684,13 @@ def forbidden_created(evidence: RunEvidence) -> tuple[bool, str]:
     return True, "no prohibited paths were created"
 
 
-# Each reported component also matches its canonical skill name: `wayfinder-effort` is an
-# entry point to Wayfinder's method, and obsolete compact labels from before 0.42.0 must not
-# slip past declarations that use full names. `implement` is itself a skill name, so it maps
-# only to itself.
-ROUTE_COMPONENT_ALIASES = {
-    "wayfinder-effort": "wayfinder",
+# `wayfinder-effort` is an entry point to Wayfinder's method, so it matches a declared
+# `wayfinder` in both requirements and prohibitions.
+ROUTE_COMPONENT_ALIASES = {"wayfinder-effort": "wayfinder"}
+# Compact labels from before 0.42.0 count only toward prohibitions: an obsolete spelling must
+# neither slip past a full-name exclusion nor satisfy a full-name requirement. `implement` is
+# itself a skill name, so it has no entry here.
+OBSOLETE_ROUTE_LABELS = {
     "discovery": "workflow-discovery",
     "debugging": "workflow-debugging",
     "verification": "workflow-verification",
@@ -706,7 +707,11 @@ def route_excluded(evidence: RunEvidence) -> tuple[bool, str]:
     matches = sorted(
         component
         for component in evidence.route_components
-        if declared_route_labels(component) & excluded
+        if (
+            declared_route_labels(component)
+            | {OBSOLETE_ROUTE_LABELS.get(component.lower(), component.lower())}
+        )
+        & excluded
     )
     if matches:
         return False, "reported route contains prohibited components: " + ", ".join(
