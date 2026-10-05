@@ -82,6 +82,8 @@ Follow the [reconciliation sequence for renames](effort-state.md#reconcile-affec
 Update all affected links and same-effort mentions, then read back that each still identifies the same record.
 Report the old-to-new mapping, such as `U2 → U1`, in the final response, and include it in the commit message when committing is authorized.
 
+Change an E# file's slug only on an explicit current user request naming that file; apply the same reconciliation, reference updates, read-back, and reporting as renumbering.
+
 Immediately before assigning an identifier, reread all recognized same-type identifiers and reject malformed or duplicate identifiers in current coordination state.
 Append a U/F/D section only if its ledger still matches the content used to plan the append; for all record creation apply the no-overwrite and current-state checks in [Reconcile affected state](effort-state.md#reconcile-affected-state).
 Before creating an E# file, recheck the same-type identifiers.

@@ -89,7 +89,7 @@ Using a skill for specialist work does not create separate Agent Workflow durabl
 
 ## Report the executed route
 
-Every user-facing final response ends with exactly one truthful marker listing only workflows and composed capabilities that executed, in effective-use order:
+Every user-facing final response ends with exactly one truthful marker listing only workflows and composed capabilities that executed in the current turn, in effective-use order:
 
 ```text
 [route: implement → verification]
@@ -97,6 +97,7 @@ Every user-facing final response ends with exactly one truthful marker listing o
 
 Use compact labels: `workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and `workflow-verification` become `discovery`, `debugging`, `implement`, and `verification`.
 Use `direct` when no named workflow or skill ran.
+A workflow or skill that executed in an earlier turn, remains selected, or whose Wayfinder effort this turn continues is reported only when its method executes again in the current turn, as defined in [Use selected skills](#use-selected-skills).
 
 Use a terminal suffix only when selection did not become equivalent execution:
 
