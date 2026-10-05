@@ -27,7 +27,7 @@ forbid_created_globs = [
   ".project-efforts/deployment-mode/tickets",
   ".project-efforts/deployment-mode/tickets/**",
 ]
-route_must_not_include = ["discovery"]
+route_must_not_include = ["workflow-discovery"]
 state_must_include = [
   ".project-efforts/deployment-mode/map.md",
   ".project-efforts/deployment-mode/evidence/E1-original-deployment-mode.md",

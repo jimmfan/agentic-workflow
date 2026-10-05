@@ -29,5 +29,5 @@ forbid_created_globs = [
   "planning/**",
   "research/**",
 ]
-route_must_include = ["discovery", "research"]
+route_must_include = ["workflow-discovery", "research"]
 route_must_not_include = ["domain-modeling", "wayfinder"]

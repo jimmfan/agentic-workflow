@@ -72,15 +72,9 @@ class RoutingContractTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("[route: <executed path or terminal outcome>]", root_policy)
+        self.assertIn("by its skill name", root_policy)
+        self.assertIn("by its skill name", routing)
         for token in (
-            "workflow-discovery",
-            "workflow-debugging",
-            "workflow-implementation",
-            "workflow-verification",
-            "discovery",
-            "debugging",
-            "implement",
-            "verification",
             "direct",
             "<skill>-handoff",
             "<skill>-unavailable",

@@ -684,12 +684,34 @@ def forbidden_created(evidence: RunEvidence) -> tuple[bool, str]:
     return True, "no prohibited paths were created"
 
 
+# `wayfinder-effort` is an entry point to Wayfinder's method, so it matches a declared
+# `wayfinder` in both requirements and prohibitions.
+ROUTE_COMPONENT_ALIASES = {"wayfinder-effort": "wayfinder"}
+# Compact labels from before 0.42.0 count only toward prohibitions: an obsolete spelling must
+# neither slip past a full-name exclusion nor satisfy a full-name requirement. `implement` is
+# itself a skill name, so it has no entry here.
+OBSOLETE_ROUTE_LABELS = {
+    "discovery": "workflow-discovery",
+    "debugging": "workflow-debugging",
+    "verification": "workflow-verification",
+}
+
+
+def declared_route_labels(component: str) -> set[str]:
+    label = component.lower()
+    return {label, ROUTE_COMPONENT_ALIASES.get(label, label)}
+
+
 def route_excluded(evidence: RunEvidence) -> tuple[bool, str]:
     excluded = set(evidence.scenario.route_must_not_include)
     matches = sorted(
         component
         for component in evidence.route_components
-        if component.lower() in excluded
+        if (
+            declared_route_labels(component)
+            | {OBSOLETE_ROUTE_LABELS.get(component.lower(), component.lower())}
+        )
+        & excluded
     )
     if matches:
         return False, "reported route contains prohibited components: " + ", ".join(
@@ -700,7 +722,11 @@ def route_excluded(evidence: RunEvidence) -> tuple[bool, str]:
 
 def route_included(evidence: RunEvidence) -> tuple[bool, str]:
     required = set(evidence.scenario.route_must_include)
-    actual = {component.lower() for component in evidence.route_components}
+    actual = {
+        label
+        for component in evidence.route_components
+        for label in declared_route_labels(component)
+    }
     missing = sorted(required - actual)
     if missing:
         return False, "reported route omits required components: " + ", ".join(missing)

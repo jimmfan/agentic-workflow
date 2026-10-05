@@ -32,8 +32,8 @@ For focused commands and ownership, see [tests](../tests/README.md).
 
 Review changed instructional prose in context against the [Markdown policy](../AGENTS.md#markdown-prose-line-breaks) and [canonical terminology](../.agent-workflow/terminology.md), including affected sentence meaning and rendered Markdown structure.
 For changed operational guidance, check command behavior, prerequisites, network requirements, and verification coverage against the implementation and the documentation designated to maintain those requirements.
-The [source-document tests](../tests/test_source_documents.py) reject authored current-document lines that obviously hold more than one sentence and fail when the always-loaded root policy grows past its word ceilings; they cannot detect hard wrapping or judge clause breaks.
-Raise a ceiling only deliberately, after removing or consolidating what the new text replaces.
+The [source-document tests](../tests/test_source_documents.py) reject authored current-document lines that obviously hold more than one sentence; they cannot detect hard wrapping or judge clause breaks.
+They also warn, without failing, when the always-loaded root policy grows past its soft word budgets; treat a warning as a prompt to review what that policy should hold.
 Package-test success alone does not establish prose conformance.
 
 The verifier's documentation-link check covers `AGENTS.md` and `README.md`, `docs/`, `.agent-workflow/`, ADRs, the test and devcontainer READMEs, and evaluation READMEs at the root and one directory below it; skill-local links are checked separately.

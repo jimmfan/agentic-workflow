@@ -27,6 +27,7 @@ On 2026-09-30 jimmfan chose how required work after delivery gets resumed (see C
   Fix a small, matched number of baseline (pre-PR #56) and candidate runs before the first run, and grade saved meaning after every turn; one baseline success cannot show that the scenario fails to discriminate an intermittent failure.
   A roughly ten-turn conversation tests continuation across turns, not long accumulated context or compaction like the week-long E1 conversation; [U5](unknowns.md#u5--does-host-context-compaction-count-as-a-continuation-boundary) asks whether compaction needs its own arm.
   Include a delivery that leaves required work, to check the delivery-ending rule below.
+  Also grade each turn's route marker against that turn's trace: on 2026-10-04 jimmfan reported a consuming-project session that labeled many later conversational turns (the agent estimated 13 to 19) with a skill that ran only in turn 1, which 0.42.0 addresses by reporting only the current turn's execution, by full skill name.
   The incident host was Codex with a GPT model; results from another host apply only partially.
 
 ## Current state

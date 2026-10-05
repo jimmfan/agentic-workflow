@@ -61,6 +61,17 @@ class RoutingBoundaryTests(unittest.TestCase):
                 self.failures(
                     replace(
                         evidence,
+                        stdout="[route: workflow-discovery → research]",
+                        route_components=("workflow-discovery", "research"),
+                    )
+                ),
+            )
+            # Obsolete compact labels must not slip past the full-name exclusion.
+            self.assertIn(
+                "route-marker:prohibited-components",
+                self.failures(
+                    replace(
+                        evidence,
                         stdout="[route: discovery → research]",
                         route_components=("discovery", "research"),
                     )
@@ -84,7 +95,7 @@ class RoutingBoundaryTests(unittest.TestCase):
                 workspace=workspace,
                 before=before,
                 after=before,
-                stdout="[route: discovery → research]",
+                stdout="[route: workflow-discovery → research]",
                 stderr="",
                 returncode=0,
                 report={
@@ -92,10 +103,10 @@ class RoutingBoundaryTests(unittest.TestCase):
                     "research_sources": ["https://www.sqlite.org/docs.html"],
                 },
                 verification=(),
-                route_components=("discovery", "research"),
+                route_components=("workflow-discovery", "research"),
             )
             self.assertEqual(self.failures(evidence), [])
-            for route in (("discovery",), ("research",)):
+            for route in (("workflow-discovery",), ("research",)):
                 with self.subTest(route=route):
                     self.assertIn(
                         "route-marker:required-components",
@@ -167,14 +178,18 @@ class RoutingBoundaryTests(unittest.TestCase):
                         workspace=workspace,
                         before=before,
                         after=behavior.snapshot(workspace),
-                        stdout="[route: implement → verification]",
+                        stdout="[route: workflow-implementation → implement → workflow-verification]",
                         stderr="",
                         returncode=0,
                         report={"status": "success"},
                         verification=behavior.load_verification(
                             workspace / behavior.VERIFICATION_LOG
                         ),
-                        route_components=("implement", "verification"),
+                        route_components=(
+                            "workflow-implementation",
+                            "implement",
+                            "workflow-verification",
+                        ),
                     )
                     failures = self.failures(evidence)
                     if commit:
@@ -441,14 +456,18 @@ class RoutingBoundaryTests(unittest.TestCase):
                 workspace=workspace,
                 before=before,
                 after=behavior.snapshot(workspace),
-                stdout="Updated greeting and verified it.\n[route: implement → verification]",
+                stdout="Updated greeting and verified it.\n[route: workflow-implementation → implement → workflow-verification]",
                 stderr="",
                 returncode=0,
                 report={"status": "success"},
                 verification=behavior.load_verification(
                     workspace / behavior.VERIFICATION_LOG
                 ),
-                route_components=("implement", "verification"),
+                route_components=(
+                    "workflow-implementation",
+                    "implement",
+                    "workflow-verification",
+                ),
             )
             self.assertEqual(self.failures(evidence), [])
             self.assertIn(

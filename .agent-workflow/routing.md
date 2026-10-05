@@ -89,14 +89,15 @@ Using a skill for specialist work does not create separate Agent Workflow durabl
 
 ## Report the executed route
 
-Every user-facing final response ends with exactly one truthful marker listing only workflows and composed capabilities that executed, in effective-use order:
+Every user-facing final response ends with exactly one truthful marker listing each workflow or skill whose method executed in the current turn, by its skill name, in the order used:
 
 ```text
-[route: implement → verification]
+[route: workflow-implementation → implement → tdd → code-review → workflow-verification]
 ```
 
-Use compact labels: `workflow-discovery`, `workflow-debugging`, `workflow-implementation`, and `workflow-verification` become `discovery`, `debugging`, `implement`, and `verification`.
-Use `direct` when no named workflow or skill ran.
+Use `direct` when no workflow or skill ran.
+List skills run within another skill's method, such as `tdd` and `code-review` within `implement`.
+A workflow or skill that executed in an earlier turn, remains selected, or whose Wayfinder effort this turn continues is reported only when its method executes again in the current turn, as defined in [Use selected skills](#use-selected-skills).
 
 Use a terminal suffix only when selection did not become equivalent execution:
 
@@ -106,9 +107,6 @@ Use a terminal suffix only when selection did not become equivalent execution:
 - `<skill>-incomplete`: the skill started but did not finish its method, for example because a sub-agent or tool failed; report what completed and what did not.
 
 After a successful Direct fallback, omit the skill that could not run from the marker.
-The `implement` label covers the Implementation integration, an `implement` run on its own, or both.
-The `wayfinder` label likewise covers a `wayfinder-effort` run, which is an entry point to Wayfinder's method.
-TDD and Code Review run within `implement` remain represented by `implement` unless separately selected.
 The ASCII `->` separator is valid when Unicode is unavailable.
 
 The marker reports execution; it does not prove it.

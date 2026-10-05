@@ -51,6 +51,8 @@ A materially different objective or substantive scope requires a new effort; nev
 
 The map H1 is the durable human-readable effort name.
 Its directory slug is a concise, lowercase, filesystem-safe, hyphen-separated storage key derived from the objective and scope at creation, not a branch, ticket, phase, timestamp, random suffix, or chat title.
+Change the slug only on an explicit current user request naming the effort; its objective, scope, and map H1 stay unless that request also changes them.
+Apply [Before renaming or pruning](#before-renaming-or-pruning) and the [reconciliation sequence](#reconcile-affected-state), and report the old and new paths.
 
 An exact effort path must be repository-relative, remain strictly below `.project-efforts/`, cross no symlink in the root, ancestors, effort, or `map.md`, and identify a regular `map.md`.
 Reject an unsafe or invalid exact path; do not invent a replacement.
@@ -209,6 +211,7 @@ Use this sequence for every affected reconciliation:
 #### Before renaming or pruning
 
 Discover incoming references with a narrowly targeted, read-only search of current repository text, including relevant hidden directories.
+Complete this search before moving or removing anything, because moved files can drop out of version-control searches.
 Match affected paths and heading anchors, accounting for relative links that omit the full path; inspect only relevant matches.
 A bare ID outside the effort is not by itself a reference to its record.
 This search applies only to the operation, not ordinary resumption or every message; it authorizes no broad document reads, unrelated-effort discovery or reconciliation, or Git-history search.

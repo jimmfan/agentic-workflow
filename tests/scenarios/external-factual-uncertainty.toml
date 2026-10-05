@@ -27,7 +27,7 @@ forbid_created_globs = [
   "planning/**",
   "wayfinder/**",
 ]
-route_must_not_include = ["discovery", "wayfinder"]
+route_must_not_include = ["workflow-discovery", "wayfinder"]
 
 [[assertions]]
 kind = "path_not_contains"
