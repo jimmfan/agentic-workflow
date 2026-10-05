@@ -66,6 +66,17 @@ class RoutingBoundaryTests(unittest.TestCase):
                     )
                 ),
             )
+            # Obsolete compact labels must not slip past the full-name exclusion.
+            self.assertIn(
+                "route-marker:prohibited-components",
+                self.failures(
+                    replace(
+                        evidence,
+                        stdout="[route: discovery → research]",
+                        route_components=("discovery", "research"),
+                    )
+                ),
+            )
             decision = workspace / "docs/decisions/runtime.md"
             decision.parent.mkdir(parents=True)
             decision.write_text("The project will adopt the researched runtime.\n")

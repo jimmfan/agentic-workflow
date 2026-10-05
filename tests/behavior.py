@@ -684,9 +684,16 @@ def forbidden_created(evidence: RunEvidence) -> tuple[bool, str]:
     return True, "no prohibited paths were created"
 
 
-# `wayfinder-effort` is an entry point to Wayfinder's method, so a declared
-# `wayfinder` component also matches it.
-ROUTE_COMPONENT_ALIASES = {"wayfinder-effort": "wayfinder"}
+# Each reported component also matches its canonical skill name: `wayfinder-effort` is an
+# entry point to Wayfinder's method, and obsolete compact labels from before 0.42.0 must not
+# slip past declarations that use full names. `implement` is itself a skill name, so it maps
+# only to itself.
+ROUTE_COMPONENT_ALIASES = {
+    "wayfinder-effort": "wayfinder",
+    "discovery": "workflow-discovery",
+    "debugging": "workflow-debugging",
+    "verification": "workflow-verification",
+}
 
 
 def declared_route_labels(component: str) -> set[str]:

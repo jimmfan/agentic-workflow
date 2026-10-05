@@ -123,6 +123,7 @@ Optional controls are:
   The deterministic scenario tests reject inactive path lists in the maintained scenario collection; the generic loader continues to accept them.
 - `route_must_include` and `route_must_not_include` constrain reported route components, not actual specialist execution.
   Components are full skill names, such as `workflow-discovery`; a declared `wayfinder` also matches a reported `wayfinder-effort`, which is an entry point to Wayfinder's method.
+  Obsolete compact labels (`discovery`, `debugging`, `verification`) match their full names, so they cannot slip past a full-name exclusion.
 - `state_must_include` and `state_must_not_include` constrain the public `state_used` claim and must name regular files in the starting fixture.
   Matching claims still leave actual reads/reuse INCONCLUSIVE.
 - `report_must_include` requires text in the report summary/blockers; `response_must_match` uses case-insensitive regular expressions that can span lines in final stdout.
