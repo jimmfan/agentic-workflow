@@ -49,6 +49,7 @@ Existing content at those `.agents/skills/` names is ordinary install/update con
 Install and update replace each complete current curated skill directory, including extra files, while preserving unrelated skill directories.
 They create matching `.claude/skills/<name>` links to those directories for native Claude Code.
 Existing Claude Code content at other names is preserved; a conflicting entry at a curated name stops install or update before mutation.
+When Windows refuses symlink creation for lack of privilege, install and update skip the missing links with a warning and still update the other managed surfaces, including `AGENTS.md`.
 Remove deletes those current curated directories.
 It removes only matching Claude Code links and leaves the `.claude/` directories and unrelated content in place.
 Wayfinder and Research are directly distributed maintained versions.

@@ -28,6 +28,7 @@ MARKER_PREFIX = b"<!-- agent-workflow:"
 DISTRIBUTION_SCHEMA = 8
 MINIMUM_PYTHON = (3, 11)
 WINDOWS = os.name == "nt"
+ERROR_PRIVILEGE_NOT_HELD = 1314
 
 
 class LifecycleError(RuntimeError):
@@ -607,12 +608,24 @@ def replace_directory(
         atomic_write(target.joinpath(*child.parts), data, root)
 
 
-def create_claude_skill_links(root: Path, distribution: Distribution) -> None:
-    for name in distribution.skill_names:
+def create_claude_skill_links(root: Path, distribution: Distribution) -> int:
+    """Create missing links and return how many Windows refused to create."""
+    names = distribution.skill_names
+    for index, name in enumerate(names):
         link = claude_skill_link(root, name)
         ensure_parent_directories(link, root)
-        if not path_exists(link):
+        if path_exists(link):
+            continue
+        try:
             link.symlink_to(claude_skill_target(name), target_is_directory=True)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) != ERROR_PRIVILEGE_NOT_HELD:
+                raise
+            return sum(
+                not path_exists(claude_skill_link(root, remaining))
+                for remaining in names[index:]
+            )
+    return 0
 
 
 def remove_claude_skill_links(root: Path, distribution: Distribution) -> None:
@@ -663,10 +676,20 @@ def converge(
         replace_directory(root, FRAMEWORK_ROOT, distribution.framework)
         for name, files in sorted(distribution.skills.items()):
             replace_directory(root, SKILLS_ROOT / name, files)
-        create_claude_skill_links(root, distribution)
+        skipped_links = create_claude_skill_links(root, distribution)
         apply_composites(root, composite_plan)
     except (LifecycleError, OSError) as exc:
         raise PartialMutationError(str(exc)) from exc
+    if skipped_links:
+        print(
+            f"WARNING: skipped {skipped_links} Claude skill "
+            f"{'link' if skipped_links == 1 else 'links'} under "
+            f"{CLAUDE_SKILLS_ROOT}/ because Windows refused symlink creation "
+            "(WinError 1314: a required privilege is not held); other managed "
+            "surfaces were updated, and native Claude Code cannot discover curated "
+            "skills here until a process allowed to create symlinks reruns this command.",
+            file=sys.stderr,
+        )
     print(f"OK: Agent Workflow {command} completed.")
 
 
