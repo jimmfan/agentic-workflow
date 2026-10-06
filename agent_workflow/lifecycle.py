@@ -27,6 +27,7 @@ FORMER_PROJECT_MARKER = b"<!-- agent-workflow:project-instructions -->"
 MARKER_PREFIX = b"<!-- agent-workflow:"
 DISTRIBUTION_SCHEMA = 8
 MINIMUM_PYTHON = (3, 11)
+WINDOWS = os.name == "nt"
 
 
 class LifecycleError(RuntimeError):
@@ -206,7 +207,13 @@ def claude_skill_target(name: str) -> str:
 
 
 def is_managed_claude_link(path: Path, name: str) -> bool:
-    return path.is_symlink() and os.readlink(path) == claude_skill_target(name)
+    if not path.is_symlink():
+        return False
+    target = os.readlink(path)
+    if WINDOWS:
+        # Git for Windows checks out committed symlink targets with backslashes.
+        target = target.replace("\\", "/")
+    return target == claude_skill_target(name)
 
 
 def require_path_kind(root: Path, relative: PurePosixPath, final_kind: str) -> None:

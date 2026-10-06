@@ -5,9 +5,10 @@ from __future__ import annotations
 import io
 import json
 import os
+import shutil
 import tempfile
 import unittest
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -106,6 +107,101 @@ class LifecycleTests(ProjectTestCase):
         self.assertFalse(
             (self.project / ".claude/skills/wayfinder-effort").is_symlink()
         )
+
+    def windows_lifecycle(self, *arguments: str) -> tuple[int, str]:
+        lifecycle = load_module("windows_lifecycle", LIFECYCLE)
+        output = io.StringIO()
+        with (
+            mock.patch.object(lifecycle, "WINDOWS", True),
+            redirect_stdout(output),
+            redirect_stderr(output),
+        ):
+            result = lifecycle.main([*arguments, str(self.project)])
+        return result, output.getvalue()
+
+    def test_windows_checkout_links_with_backslashes_remain_managed(self) -> None:
+        # Git for Windows checks out committed symlinks with backslash targets.
+        self.assert_ok(self.lifecycle("install"))
+        skills = self.project / ".claude/skills"
+        names = sorted(link.name for link in skills.iterdir())
+        for name in names:
+            (skills / name).unlink()
+            (skills / name).symlink_to(rf"..\..\.agents\skills\{name}")
+        policy = self.project / "AGENTS.md"
+        stale = policy.read_bytes().replace(
+            b"# Agent Workflow\n", b"# Agent Workflow\n\nStale managed line.\n", 1
+        )
+        self.assertNotEqual(stale, policy.read_bytes())
+        policy.write_bytes(stale)
+
+        result, output = self.windows_lifecycle("update")
+        self.assertEqual(result, 0, output)
+        self.assertNotIn(b"Stale managed line.", policy.read_bytes())
+        self.assertEqual(
+            os.readlink(skills / "code-review"), r"..\..\.agents\skills\code-review"
+        )
+        result, output = self.windows_lifecycle("status")
+        self.assertEqual(result, 0, output)
+        self.assertIn("Agent Workflow: healthy", output)
+
+        result, output = self.windows_lifecycle("remove")
+        self.assertEqual(result, 0, output)
+        self.assertEqual([path.name for path in skills.iterdir()], [])
+
+    @unittest.skipIf(os.name == "nt", "backslash is a separator on Windows")
+    def test_backslash_link_targets_conflict_outside_windows(self) -> None:
+        self.assert_ok(self.lifecycle("install"))
+        link = self.project / ".claude/skills/code-review"
+        link.unlink()
+        link.symlink_to(r"..\..\.agents\skills\code-review")
+        before = workspace_snapshot(self.project)
+
+        result = self.lifecycle("update")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn(".claude/skills/code-review", result.stderr)
+        self.assertEqual(workspace_snapshot(self.project), before)
+
+    def test_windows_non_link_and_other_target_entries_still_conflict(self) -> None:
+        self.assert_ok(self.lifecycle("install"))
+        link = self.project / ".claude/skills/code-review"
+        managed = self.project / ".agents/skills/code-review"
+        conflicts = {
+            "symlink placeholder file": lambda: link.write_bytes(
+                b"../../.agents/skills/code-review"
+            ),
+            "backslash placeholder file": lambda: link.write_bytes(
+                rb"..\..\.agents\skills\code-review"
+            ),
+            "copied directory": lambda: shutil.copytree(managed, link),
+            "other skill target": lambda: link.symlink_to(
+                r"..\..\.agents\skills\research"
+            ),
+            "trailing separator": lambda: link.symlink_to(
+                "..\\..\\.agents\\skills\\code-review\\"
+            ),
+        }
+        for label, create in conflicts.items():
+            with self.subTest(label):
+                if link.is_symlink() or link.is_file():
+                    link.unlink()
+                elif link.exists():
+                    shutil.rmtree(link)
+                create()
+                before = workspace_snapshot(self.project)
+
+                result, output = self.windows_lifecycle("update")
+                self.assertEqual(result, 2, output)
+                self.assertIn(
+                    "Claude skill path conflicts with managed link: "
+                    ".claude/skills/code-review",
+                    output,
+                )
+                self.assertEqual(workspace_snapshot(self.project), before)
+
+        # The last conflict case remains in place; remove must preserve it.
+        result, output = self.windows_lifecycle("remove")
+        self.assertEqual(result, 0, output)
+        self.assertEqual(os.readlink(link), "..\\..\\.agents\\skills\\code-review\\")
 
     def test_claude_parent_symlink_blocks_install_before_mutation(self) -> None:
         outside = Path(self.temporary.name) / "outside"
