@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-14
-- Amended: 2026-08-31; 2026-09-05; 2026-09-19; 2026-09-27
+- Amended: 2026-08-31; 2026-09-05; 2026-09-19; 2026-09-27; 2026-10-06
 
 ## Context
 
@@ -25,6 +25,7 @@ In consuming repositories, separate framework-owned reconstructable output from 
   Current curated names are reserved framework surfaces, and existing content at those names is ordinary install/update convergence input.
 - Each current curated `.claude/skills/<name>` link is a projection to `../../.agents/skills/<name>` for native Claude Code.
   Install and update create missing links and retain matching ones, while a different entry at a curated name stops mutation without replacing project content.
+  When Windows refuses symlink creation for lack of privilege, install and update skip the remaining missing links, converge the other managed surfaces, and report the skipped links; native Claude Code cannot discover curated skills there until a privileged rerun creates them.
   Remove deletes only matching links and preserves other `.claude/` content and parent directories.
 - `.project-efforts/` is project-owned durable state.
   Lifecycle operations do not directly traverse, interpret, or change it.
@@ -92,6 +93,7 @@ This source repository's existing effort state is moved with its substantive con
 - Maintain historical layout or skill-name rules as permanent runtime policy: rejected because current desired state and current ownership boundaries are sufficient; pre-1.0 history does not justify a migration or retirement subsystem.
 - Require Git cleanliness and use Git as lifecycle recovery: superseded because ordinary repository state is unrelated to the declared ownership boundary and creates user-facing ceremony without preventing loss of project-owned data.
 - Roll back a cross-surface transaction: rejected because truthful partial-failure reporting plus rerunnable convergence is sufficient for the current pre-1.0 use case.
+- Project Claude skills on Windows machines without symlink privilege through copies or junctions: rejected because copies need new ownership rules to distinguish them from project skills, and junctions need absolute targets that break when a repository moves.
 
 ## Reconsideration trigger
 

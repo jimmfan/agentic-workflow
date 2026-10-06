@@ -68,6 +68,7 @@ Install and update replace all of `.agent-workflow/` and each [current curated s
 Keep project customizations outside those reserved surfaces.
 They also link each curated skill into `.claude/skills/` so native Claude Code can discover the same content.
 Existing Claude Code files and unrelated skill names are preserved; a different entry at a curated name blocks install or update before mutation.
+When Windows refuses symlink creation for lack of privilege, install and update skip the missing links with a warning and still update the other managed surfaces, including `AGENTS.md`.
 Unrelated skills, project-owned `.project-efforts/` state, and all content outside the managed region in `AGENTS.md` are preserved.
 Agent Workflow manages `AGENTS.md` as its only root policy and does not manage `CLAUDE.md`.
 Remove deletes the managed directories and regions and unlinks matching Claude Code skill links; it refuses ambiguous ownership or curated-name collisions on an otherwise unrecognized installation.

@@ -18,6 +18,7 @@ from _test_support import (
     MANAGED_END,
     ProjectTestCase,
     commit_all,
+    curated_skill_names,
     initialize_repository,
     load_module,
     run_git,
@@ -202,6 +203,76 @@ class LifecycleTests(ProjectTestCase):
         result, output = self.windows_lifecycle("remove")
         self.assertEqual(result, 0, output)
         self.assertEqual(os.readlink(link), "..\\..\\.agents\\skills\\code-review\\")
+
+    def refused_symlink_lifecycle(
+        self, command: str, winerror: int | None = 1314
+    ) -> tuple[int, str, str]:
+        lifecycle = load_module("refused_symlink_lifecycle", LIFECYCLE)
+        refusal = OSError(1, "A required privilege is not held by the client")
+        refusal.winerror = winerror
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with (
+            mock.patch.object(lifecycle.Path, "symlink_to", side_effect=refusal),
+            redirect_stdout(stdout),
+            redirect_stderr(stderr),
+        ):
+            result = lifecycle.main([command, str(self.project)])
+        return result, stdout.getvalue(), stderr.getvalue()
+
+    def stale_installation_without_links(self) -> Path:
+        self.assert_ok(self.lifecycle("install"))
+        for link in (self.project / ".claude/skills").iterdir():
+            link.unlink()
+        policy = self.project / "AGENTS.md"
+        policy.write_bytes(
+            policy.read_bytes().replace(
+                b"# Agent Workflow\n", b"# Agent Workflow\n\nStale managed line.\n", 1
+            )
+        )
+        return policy
+
+    def test_refused_windows_symlinks_skip_links_and_finish_update(self) -> None:
+        policy = self.stale_installation_without_links()
+        # Retained links before and after the refused one are not counted.
+        kept = ("code-review", "workflow-verification")
+        for name in kept:
+            (self.project / ".claude/skills" / name).symlink_to(
+                f"../../.agents/skills/{name}"
+            )
+
+        result, stdout, stderr = self.refused_symlink_lifecycle("update")
+        self.assertEqual(result, 0, stdout + stderr)
+        self.assertIn("OK: Agent Workflow update completed.", stdout)
+        self.assertNotIn(b"Stale managed line.", policy.read_bytes())
+        skipped = len(curated_skill_names()) - len(kept)
+        self.assertIn(f"skipped {skipped} Claude skill links", stderr)
+        self.assertIn("WinError 1314", stderr)
+        skills = self.project / ".claude/skills"
+        self.assertEqual(sorted(path.name for path in skills.iterdir()), list(kept))
+        for name in kept:
+            self.assertEqual(os.readlink(skills / name), f"../../.agents/skills/{name}")
+
+    def test_refused_windows_symlinks_still_complete_a_fresh_install(self) -> None:
+        result, stdout, stderr = self.refused_symlink_lifecycle("install")
+        self.assertEqual(result, 0, stdout + stderr)
+        self.assertTrue((self.project / "AGENTS.md").is_file())
+        self.assertTrue(
+            (self.project / ".agents/skills/code-review/SKILL.md").is_file()
+        )
+        self.assertEqual(list((self.project / ".claude/skills").iterdir()), [])
+        self.assertIn("Claude skill links", stderr)
+
+    def test_other_link_failures_remain_partial_mutation_errors(self) -> None:
+        policy = self.stale_installation_without_links()
+
+        for winerror in (None, 5):
+            with self.subTest(winerror=winerror):
+                result, stdout, stderr = self.refused_symlink_lifecycle(
+                    "update", winerror
+                )
+                self.assertEqual(result, 2, stdout + stderr)
+                self.assertIn("partial changes may exist", stderr)
+                self.assertIn(b"Stale managed line.", policy.read_bytes())
 
     def test_claude_parent_symlink_blocks_install_before_mutation(self) -> None:
         outside = Path(self.temporary.name) / "outside"
