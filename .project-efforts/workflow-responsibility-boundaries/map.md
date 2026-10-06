@@ -66,7 +66,7 @@ Since 0.42.0, [route reporting](../../.agent-workflow/routing.md#report-the-exec
 **Route-conflict fixes (0.40.0).**
 After a 2026-10-01 review of selection and handoff rules that pointed nowhere or loaded too late, jimmfan approved moving curated-skill precedence into the root policy so it applies at first-pass selection.
 After an independent audit, jimmfan also chose on 2026-10-01 to keep `wayfinder-effort` the easy prompt for creating, resuming, or refreshing an effort without product changes, while carrying out ready work stays with `wayfinder`.
-On hosts that start sub-agents only on request, `implement` now asks before editing so one answer covers its whole scope, and a declined Code Review is reported as blocked.
+Since 0.42.2, invoking Code Review, directly or through `implement`, requests its read-only reviewers, so neither skill asks for separate sub-agent approval.
 Git history for 0.40.0 maintains the full change list.
 
 On 2026-10-01 jimmfan also closed the review's finding that no step owned refactoring: [TDD](../../.agents/skills/tdd/SKILL.md#rules-of-the-loop) may refactor the code a cycle touched once tests pass, and [`implement`](../../.agents/skills/implement/SKILL.md) fixes plain defects that [Code Review](../../.agents/skills/code-review/SKILL.md) now reports and applies justified judgement calls in the code its scope changed, while Code Review stays read-only.

@@ -75,8 +75,7 @@ The Standards reviewer reads that file itself, so do not load it here unless ste
 ### 4. Spawn both sub-agents in parallel
 
 Give both independent reviewers the shared review-input set from step 1, including the specification contents or usable references from step 2.
-When the host starts sub-agents only at the user's request, use an answer the user already gave for this review or implementation scope; otherwise ask once before spawning, and let that answer cover later re-review rounds.
-If the user declines, independent review is blocked: report `code-review-blocked` when run alone, or `implement-incomplete` with the review gap when run inside `implement`.
+Invoking Code Review, directly or through `implement`, requests these read-only reviewers; start them without asking for separate approval.
 Use existing host controls to restrict reviewers to read-only access when available; inherited write capability does not broaden the supplied review boundary.
 Each reviewer must inspect that scope and report actual coverage, not merely echo a supplied diff command or success claim.
 When the host lets you choose a sub-agent's model, the Standards reviewer may use a smaller model because it checks the diff against supplied rules; keep the Spec reviewer on a model at least as capable as yours.
