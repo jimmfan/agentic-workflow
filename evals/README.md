@@ -19,6 +19,7 @@ The [implementation completion controls](implementation-completion/README.md) us
 Deterministic evaluator controls are separate from live behavioral evidence.
 
 The [investigate-before-uncertainty protocol](investigate-before-uncertainty/README.md) predeclares a baseline-versus-candidate comparison of the accuracy rule on a fictional local corpus, with manual blind trace adjudication.
+Its [result](investigate-before-uncertainty/REPORT.md) did not reproduce the targeted failure: both arms investigated in every treatment run and failed only on stating source limits.
 
 Token forensics analyzes an existing Codex trace without running a model:
 

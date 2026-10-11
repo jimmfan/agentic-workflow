@@ -1,0 +1,878 @@
+{
+  "schema_version": 1,
+  "campaign": "investigate-before-uncertainty",
+  "protocol": "README.md at 296fb4a (amended before any scored run); Stage 1 record committed at c4b0062",
+  "conditions": {
+    "baseline_revision": "05a4e929de90bdcbec79aba1dc28fa2ca2792aad plus the three scenario files and race-weekend-planning fixture",
+    "candidate_revision": "claude/investigate-before-uncertainty at 296fb4a (policy and VERSION identical through c4b0062)",
+    "installed_payload_difference": "AGENTS.md only: the added accuracy-bullet sentence (VERSION is not installed)",
+    "model": "gpt-6.1-sol",
+    "codex_cli": "codex-cli 0.160.0",
+    "reasoning_effort": "medium",
+    "adapter": "evals/remaining-audit-behavior/codex_subject.py, unchanged; --timeout-seconds 600; web search disabled; tool network disabled; approval_policy never; fresh Codex home per invocation",
+    "harness": "tests/behavior.py live, one --scenario per invocation, outer --timeout-seconds 900",
+    "run_date_utc": "2026-10-11"
+  },
+  "invocations": {
+    "allowed": 31,
+    "used": 31,
+    "unscored_control": 1,
+    "scored": 30,
+    "infrastructure_failures": 0,
+    "replacements": 0
+  },
+  "preflight": "passed (adapter --preflight-only, no model)",
+  "stage1": {
+    "baseline_pass": {
+      "arrival-margin-question": "0/5",
+      "arrival-margin-followup": "0/5"
+    },
+    "early_stop_triggered": false
+  },
+  "final_counts": {
+    "baseline/arrival-margin-followup": {
+      "PASS": 0,
+      "FAIL": 5,
+      "INCONCLUSIVE": 0,
+      "infrastructure_blocked": 0,
+      "unrun": 0,
+      "unrun_by_design": 0,
+      "mean_input_tokens": 47106,
+      "mean_cached_input_tokens": 35046,
+      "mean_output_tokens": 252,
+      "mean_reasoning_output_tokens": 0,
+      "tool_calls_total": 11,
+      "mean_elapsed_seconds": 16.8
+    },
+    "baseline/arrival-margin-question": {
+      "PASS": 0,
+      "FAIL": 5,
+      "INCONCLUSIVE": 0,
+      "infrastructure_blocked": 0,
+      "unrun": 0,
+      "unrun_by_design": 0,
+      "mean_input_tokens": 46933,
+      "mean_cached_input_tokens": 32179,
+      "mean_output_tokens": 368,
+      "mean_reasoning_output_tokens": 44,
+      "tool_calls_total": 11,
+      "mean_elapsed_seconds": 20.2
+    },
+    "baseline/arrival-official-time": {
+      "PASS": 5,
+      "FAIL": 0,
+      "INCONCLUSIVE": 0,
+      "infrastructure_blocked": 0,
+      "unrun": 0,
+      "unrun_by_design": 0,
+      "mean_input_tokens": 43939,
+      "mean_cached_input_tokens": 32154,
+      "mean_output_tokens": 185,
+      "mean_reasoning_output_tokens": 7,
+      "tool_calls_total": 10,
+      "mean_elapsed_seconds": 15.1
+    },
+    "candidate/arrival-margin-followup": {
+      "PASS": 0,
+      "FAIL": 5,
+      "INCONCLUSIVE": 0,
+      "infrastructure_blocked": 0,
+      "unrun": 0,
+      "unrun_by_design": 0,
+      "mean_input_tokens": 44089,
+      "mean_cached_input_tokens": 33843,
+      "mean_output_tokens": 271,
+      "mean_reasoning_output_tokens": 0,
+      "tool_calls_total": 10,
+      "mean_elapsed_seconds": 15.6
+    },
+    "candidate/arrival-margin-question": {
+      "PASS": 0,
+      "FAIL": 5,
+      "INCONCLUSIVE": 0,
+      "infrastructure_blocked": 0,
+      "unrun": 0,
+      "unrun_by_design": 0,
+      "mean_input_tokens": 44016,
+      "mean_cached_input_tokens": 26394,
+      "mean_output_tokens": 375,
+      "mean_reasoning_output_tokens": 44,
+      "tool_calls_total": 10,
+      "mean_elapsed_seconds": 18.6
+    },
+    "candidate/arrival-official-time": {
+      "PASS": 5,
+      "FAIL": 0,
+      "INCONCLUSIVE": 0,
+      "infrastructure_blocked": 0,
+      "unrun": 0,
+      "unrun_by_design": 0,
+      "mean_input_tokens": 43951,
+      "mean_cached_input_tokens": 28646,
+      "mean_output_tokens": 173,
+      "mean_reasoning_output_tokens": 0,
+      "tool_calls_total": 10,
+      "mean_elapsed_seconds": 15.0
+    }
+  },
+  "treatment_fail_breakdown": {
+    "categories": {
+      "no_read_of_report_b": 0,
+      "wrong_evidence_used": 0,
+      "missing_limits_or_gap": 20,
+      "claimed_reading_without_trace": 0,
+      "other_unmet_condition": 0
+    },
+    "missing_limits_detail": {
+      "baseline/arrival-margin-question": {
+        "wave": 4,
+        "year+wave": 1
+      },
+      "baseline/arrival-margin-followup": {
+        "year+wave": 3,
+        "wave+gap": 1,
+        "wave": 1
+      },
+      "candidate/arrival-margin-question": {
+        "wave": 4,
+        "year+wave": 1
+      },
+      "candidate/arrival-margin-followup": {
+        "wave": 3,
+        "year+wave": 2
+      }
+    }
+  },
+  "stage1_final_disagreements": [],
+  "subagent_use": {
+    "spawns": 0,
+    "calls": 0,
+    "note": "No trace used subagents; token_forensics was not exercised on a real subagent rollout."
+  },
+  "route_markers": {
+    "[route: direct]": 30
+  },
+  "decision_rule": {
+    "candidate_ge_4_of_5_each_treatment": false,
+    "candidate_exceeds_baseline_by_2_on_a_treatment": false,
+    "candidate_control_fails_le_baseline": true,
+    "recommendation": "do not merge"
+  },
+  "invocation_verdicts": [
+    {
+      "invocation": "slot01",
+      "arm": "baseline",
+      "scenario": "arrival-margin-question",
+      "case": "C03-krct",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 22.6,
+      "tokens": {
+        "input": 43937,
+        "cached_input": 23168,
+        "output": 374,
+        "reasoning_output": 59
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot02",
+      "arm": "baseline",
+      "scenario": "arrival-margin-followup",
+      "case": "C23-inpk",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "year",
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 16.2,
+      "tokens": {
+        "input": 43971,
+        "cached_input": 37376,
+        "output": 218,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot03",
+      "arm": "baseline",
+      "scenario": "arrival-margin-question",
+      "case": "C20-ttqk",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "year",
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 22.0,
+      "tokens": {
+        "input": 58891,
+        "cached_input": 43264,
+        "output": 361,
+        "reasoning_output": 0
+      },
+      "tool_calls": 3,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot04",
+      "arm": "baseline",
+      "scenario": "arrival-margin-followup",
+      "case": "C02-dvvr",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "year",
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 17.9,
+      "tokens": {
+        "input": 43925,
+        "cached_input": 28544,
+        "output": 249,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot05",
+      "arm": "baseline",
+      "scenario": "arrival-margin-question",
+      "case": "C19-lmnr",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 19.0,
+      "tokens": {
+        "input": 43943,
+        "cached_input": 37376,
+        "output": 411,
+        "reasoning_output": 80
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot06",
+      "arm": "baseline",
+      "scenario": "arrival-margin-followup",
+      "case": "C27-patd",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave",
+          "gap"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 15.7,
+      "tokens": {
+        "input": 44151,
+        "cached_input": 37376,
+        "output": 238,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot07",
+      "arm": "baseline",
+      "scenario": "arrival-margin-question",
+      "case": "C01-vcjq",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 20.4,
+      "tokens": {
+        "input": 43929,
+        "cached_input": 28544,
+        "output": 388,
+        "reasoning_output": 82
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot08",
+      "arm": "baseline",
+      "scenario": "arrival-margin-followup",
+      "case": "C07-mutb",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 18.8,
+      "tokens": {
+        "input": 59320,
+        "cached_input": 43392,
+        "output": 309,
+        "reasoning_output": 0
+      },
+      "tool_calls": 3,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot09",
+      "arm": "baseline",
+      "scenario": "arrival-margin-question",
+      "case": "C04-hofa",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 17.2,
+      "tokens": {
+        "input": 43965,
+        "cached_input": 28544,
+        "output": 304,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot10",
+      "arm": "baseline",
+      "scenario": "arrival-margin-followup",
+      "case": "C24-lces",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "year",
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 15.2,
+      "tokens": {
+        "input": 44165,
+        "cached_input": 28544,
+        "output": 245,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot11",
+      "arm": "candidate",
+      "scenario": "arrival-margin-question",
+      "case": "C29-wube",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 17.1,
+      "tokens": {
+        "input": 44056,
+        "cached_input": 14336,
+        "output": 324,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot12",
+      "arm": "candidate",
+      "scenario": "arrival-margin-followup",
+      "case": "C17-wfsy",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 15.5,
+      "tokens": {
+        "input": 44007,
+        "cached_input": 28544,
+        "output": 253,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot13",
+      "arm": "baseline",
+      "scenario": "arrival-official-time",
+      "case": "C05-jjyr",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 13.3,
+      "tokens": {
+        "input": 43893,
+        "cached_input": 28544,
+        "output": 177,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot14",
+      "arm": "candidate",
+      "scenario": "arrival-official-time",
+      "case": "C10-qbdu",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 14.9,
+      "tokens": {
+        "input": 43936,
+        "cached_input": 28672,
+        "output": 165,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot15",
+      "arm": "candidate",
+      "scenario": "arrival-margin-question",
+      "case": "C13-tzwp",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "year",
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 18.6,
+      "tokens": {
+        "input": 44022,
+        "cached_input": 37376,
+        "output": 375,
+        "reasoning_output": 36
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot16",
+      "arm": "candidate",
+      "scenario": "arrival-margin-followup",
+      "case": "C25-vpue",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "year",
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 15.7,
+      "tokens": {
+        "input": 43997,
+        "cached_input": 37376,
+        "output": 318,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot17",
+      "arm": "baseline",
+      "scenario": "arrival-official-time",
+      "case": "C18-hwcs",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 15.3,
+      "tokens": {
+        "input": 43919,
+        "cached_input": 28544,
+        "output": 180,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot18",
+      "arm": "candidate",
+      "scenario": "arrival-official-time",
+      "case": "C28-eglc",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 14.3,
+      "tokens": {
+        "input": 43914,
+        "cached_input": 28544,
+        "output": 163,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot19",
+      "arm": "candidate",
+      "scenario": "arrival-margin-question",
+      "case": "C14-wezc",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 16.9,
+      "tokens": {
+        "input": 44014,
+        "cached_input": 28544,
+        "output": 303,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot20",
+      "arm": "candidate",
+      "scenario": "arrival-margin-followup",
+      "case": "C06-qbcu",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 14.1,
+      "tokens": {
+        "input": 44230,
+        "cached_input": 37376,
+        "output": 232,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot21",
+      "arm": "baseline",
+      "scenario": "arrival-official-time",
+      "case": "C09-ngal",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 15.5,
+      "tokens": {
+        "input": 43958,
+        "cached_input": 37504,
+        "output": 173,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot22",
+      "arm": "candidate",
+      "scenario": "arrival-official-time",
+      "case": "C21-dqvb",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 14.9,
+      "tokens": {
+        "input": 44021,
+        "cached_input": 28672,
+        "output": 201,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot23",
+      "arm": "candidate",
+      "scenario": "arrival-margin-question",
+      "case": "C30-trga",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 19.2,
+      "tokens": {
+        "input": 43995,
+        "cached_input": 23168,
+        "output": 433,
+        "reasoning_output": 98
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot24",
+      "arm": "candidate",
+      "scenario": "arrival-margin-followup",
+      "case": "C11-xxwm",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 16.2,
+      "tokens": {
+        "input": 44242,
+        "cached_input": 28544,
+        "output": 302,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot25",
+      "arm": "baseline",
+      "scenario": "arrival-official-time",
+      "case": "C26-iyzm",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 16.1,
+      "tokens": {
+        "input": 43988,
+        "cached_input": 28672,
+        "output": 209,
+        "reasoning_output": 33
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot26",
+      "arm": "candidate",
+      "scenario": "arrival-official-time",
+      "case": "C16-gxmw",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 16.2,
+      "tokens": {
+        "input": 43924,
+        "cached_input": 28672,
+        "output": 170,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot27",
+      "arm": "candidate",
+      "scenario": "arrival-margin-question",
+      "case": "C15-rwde",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 21.1,
+      "tokens": {
+        "input": 43993,
+        "cached_input": 28544,
+        "output": 441,
+        "reasoning_output": 85
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot28",
+      "arm": "candidate",
+      "scenario": "arrival-margin-followup",
+      "case": "C12-jqvc",
+      "verdict": "FAIL",
+      "fail_breakdown": {
+        "category": "missing limits or gap",
+        "missing": [
+          "year",
+          "wave"
+        ]
+      },
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 16.3,
+      "tokens": {
+        "input": 43970,
+        "cached_input": 37376,
+        "output": 252,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot29",
+      "arm": "baseline",
+      "scenario": "arrival-official-time",
+      "case": "C08-pbvu",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 15.5,
+      "tokens": {
+        "input": 43935,
+        "cached_input": 37504,
+        "output": 188,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    },
+    {
+      "invocation": "slot30",
+      "arm": "candidate",
+      "scenario": "arrival-official-time",
+      "case": "C22-jpjs",
+      "verdict": "PASS",
+      "fail_breakdown": null,
+      "route": [
+        "[route: direct]"
+      ],
+      "elapsed_seconds": 14.6,
+      "tokens": {
+        "input": 43958,
+        "cached_input": 28672,
+        "output": 168,
+        "reasoning_output": 0
+      },
+      "tool_calls": 2,
+      "subagent_spawns": 0
+    }
+  ],
+  "limits": [
+    "five-sample diagnostic per arm and scenario",
+    "local corpus, not live web search",
+    "single model and reasoning setting",
+    "single blind adjudicator per batch",
+    "shared blind prompt and starting-state line point both arms toward local files"
+  ]
+}
