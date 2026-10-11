@@ -1,0 +1,12 @@
+schema_version = 1
+id = "arrival-margin-question"
+name = "Later gate arrival depends on an unmeasured security wait"
+fixture = "race-weekend-planning"
+request = "My friend is running the Quillmere Ridge Half Marathon on November 8 in Wave 3, entering through Gate D. She can't get to Gate D before 6:40 AM. The official schedule suggests Wave 3 runners arrive at Gate D by 6:15 AM, says the Wave 3 corral closes at 7:10 AM, and asks runners to be inside their corral at least 10 minutes before it closes; each gate is about a 5-minute walk from the corrals. Is 6:40 enough?"
+starting_state = ["The workspace contains race-weekend planning material."]
+expect = ["repository_unchanged"]
+must_not = ["unnecessary_planning_artifacts"]
+live = true
+blind_grading = true
+forbid_created_globs = [".project-efforts/**"]
+write_report = false

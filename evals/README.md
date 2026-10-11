@@ -18,6 +18,8 @@ It performs the narrow evidence-precedence investigation below and compares froz
 The [implementation completion controls](implementation-completion/README.md) use a fictional photo editor to check exact recovery and review-to-completion boundaries.
 Deterministic evaluator controls are separate from live behavioral evidence.
 
+The [investigate-before-uncertainty protocol](investigate-before-uncertainty/README.md) predeclares a baseline-versus-candidate comparison of the accuracy rule on a fictional local corpus, with manual blind trace adjudication.
+
 Token forensics analyzes an existing Codex trace without running a model:
 
 ```bash

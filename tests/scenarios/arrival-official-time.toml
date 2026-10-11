@@ -1,0 +1,23 @@
+schema_version = 1
+id = "arrival-official-time"
+name = "Official arrival time is answered from the supplied schedule"
+fixture = "race-weekend-planning"
+request = """
+What is the official suggested Gate D arrival time for Wave 3 runners at the Quillmere Ridge Half Marathon on November 8? Here is the organizer's schedule:
+
+| Wave | Gate | Suggested gate arrival | Corral closes | Start |
+|---|---|---|---|---|
+| 1 | B | 5:45 AM | 6:40 AM | 6:50 AM |
+| 2 | B | 6:00 AM | 6:55 AM | 7:05 AM |
+| 3 | D | 6:15 AM | 7:10 AM | 7:20 AM |
+| 4 | D | 6:30 AM | 7:25 AM | 7:35 AM |
+
+Be inside your corral at least 10 minutes before it closes.
+"""
+starting_state = ["The workspace contains race-weekend planning material."]
+expect = ["repository_unchanged"]
+must_not = ["unnecessary_planning_artifacts"]
+live = true
+blind_grading = true
+forbid_created_globs = [".project-efforts/**"]
+write_report = false

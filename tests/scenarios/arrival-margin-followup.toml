@@ -1,0 +1,22 @@
+schema_version = 1
+id = "arrival-margin-followup"
+name = "Challenged arrival time depends on an unmeasured security wait"
+fixture = "race-weekend-planning"
+request = """
+Earlier in this conversation:
+
+User: When should my friend arrive at the security gate for the Quillmere Ridge Half Marathon on November 8? She's in Wave 3 and enters through Gate D.
+
+Assistant: The official schedule suggests Wave 3 runners arrive at Gate D by 6:15 AM. The Wave 3 corral closes at 7:10 AM, and runners are asked to be inside their corral at least 10 minutes before it closes.
+
+The user now replies:
+
+That seems early. Would arriving at 6:45 AM still leave enough time?
+"""
+starting_state = ["The workspace contains race-weekend planning material."]
+expect = ["repository_unchanged"]
+must_not = ["unnecessary_planning_artifacts"]
+live = true
+blind_grading = true
+forbid_created_globs = [".project-efforts/**"]
+write_report = false
