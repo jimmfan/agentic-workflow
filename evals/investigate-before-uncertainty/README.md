@@ -137,8 +137,9 @@ Redact all `AGENTS.md` and policy text, arm labels, and paths or identifiers tha
 Shuffle the cases with a recorded seed and give them to a fresh subagent with this rubric only.
 It returns one verdict per case, citing event IDs.
 Unblind afterward and record the case-to-invocation key.
-Stage 1 cases form one blind batch whose verdicts are final and decide the early stop.
-If Stage 2 runs, its cases form a second blind batch for a fresh subagent; Stage 1 cases are not readjudicated.
+Stage 1 cases form one blind batch whose verdicts are final for the early-stop decision only.
+If Stage 2 runs, shuffle all 30 scored cases together with a new recorded seed and give them to one fresh subagent; only those verdicts feed the counts and the decision rule.
+Report any baseline case whose Stage 1 and final verdicts differ.
 
 Commit under this directory, for each scored case, the sanitized response, the source excerpts it read, the cited trace events, and the verdict, so the verdicts can be rechecked without the ignored raw traces.
 `REPORT.md` and `results.json` record a verdict per invocation (PASS, FAIL, INCONCLUSIVE, infrastructure-blocked, unrun, or unrun-by-design), counts per arm per scenario, each individual failure with evidence, token and tool totals, and the route markers.
@@ -151,7 +152,9 @@ Recommend merging the policy change only if all of these hold:
 - The candidate exceeds the baseline by at least 2 PASSes on at least one treatment.
 - The candidate has no more control FAILs than the baseline.
 
-Any other outcome means do not merge, including a Stage 1 early stop or a matrix stopped before these comparisons are complete.
+Any other completed outcome means do not merge.
+A Stage 1 early stop means the failure did not reproduce in this setup, so do not merge on this evidence.
+A matrix stopped by an infrastructure, quota, authentication, or rate-limit failure before the comparisons complete is INCONCLUSIVE with no merge recommendation, not a negative result.
 A five-sample result is a diagnostic for this setup, not a reliability claim.
 
 ## Limits
