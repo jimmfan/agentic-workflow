@@ -131,6 +131,15 @@ The rubric's wave requirement was predeclared and is reported as specified; a re
 Other limits: five samples per arm and scenario, one model and reasoning setting, one blind adjudicator per batch (the case builder knew the arms), and a local fictional corpus.
 These results support no general reliability claim.
 
+## Context leak found after reporting
+
+While preparing the [search campaign](../investigate-before-uncertainty-search/README.md), its request audit found that the adapter's run-directory paths reach the model.
+All 31 recorded campaign 1 prompt inputs list a skill root such as `…/evals/artifacts/investigate-before-uncertainty/baseline/subjects/subject-…/codex-home/skills/.system`, so every subject could see the campaign name and its own arm label.
+The adapter's prompt-context audit replaced these permission and skill-root paths before checking for the repository root, so it did not flag them.
+Both arms saw the same kind of path, but the campaign name itself names investigation and may have encouraged reading the reports in both arms.
+The verdicts above are unchanged as adjudicated; treat the non-reproduction as further confounded by this leak.
+The search campaign keeps subject paths neutral and audits every path in the captured model request.
+
 ## Reproduction
 
 Follow the [protocol](README.md).

@@ -1,0 +1,319 @@
+{
+  "codex_cli": "codex-cli 0.160.0",
+  "payload_diff": {
+    "files": [
+      "candidate/AGENTS.md"
+    ],
+    "added_lines": [
+      "  When unresolved uncertainty about a material fact could change a conclusion or recommendation, make a proportionate investigation with available tools within the authorized scope before drawing or revising it."
+    ],
+    "removed_lines": []
+  },
+  "catalog": {
+    "shipped_sha256": "85aa95e9ca74c6ea4c91ed2461d196622707625796ae1936ffcbffb82df54d9f",
+    "frozen_sha256": "85aa95e9ca74c6ea4c91ed2461d196622707625796ae1936ffcbffb82df54d9f",
+    "override_changes": [
+      "/models/0/supports_search_tool"
+    ]
+  },
+  "request_diff": {
+    "changed_request_paths": [
+      "/input/0/tools/0/tools/0/description"
+    ],
+    "listed_tools_shipped": [
+      "apply_patch",
+      "create_goal",
+      "exec_command",
+      "get_goal",
+      "list_mcp_resource_templates",
+      "list_mcp_resources",
+      "read_mcp_resource",
+      "update_goal",
+      "view_image",
+      "write_stdin",
+      "clock__curr_time"
+    ],
+    "listed_tools_override": [
+      "apply_patch",
+      "create_goal",
+      "exec_command",
+      "get_goal",
+      "list_mcp_resource_templates",
+      "list_mcp_resources",
+      "read_mcp_resource",
+      "update_goal",
+      "view_image",
+      "write_stdin",
+      "clock__curr_time",
+      "mcp__web__search"
+    ],
+    "exec_description_added_lines": [
+      "",
+      "### `mcp__web__search`",
+      "Search the internet for current information. Returns the most relevant pages, each with its title, URL, and text.",
+      "",
+      "exec tool declaration:",
+      "```ts",
+      "declare const tools: { mcp__web__search(args: {",
+      "  // Search query.",
+      "  query: string;",
+      "}): Promise<CallToolResult>; };",
+      "```"
+    ],
+    "exec_description_removed_lines": [
+      "",
+      "Some deferred nested tools may be omitted from this description. They are still available on the global `tools` object and listed in `ALL_TOOLS`.",
+      "To find one, filter `ALL_TOOLS` by `name` and `description`."
+    ]
+  },
+  "reference_exec_items": {
+    "model_made_exec_items": 64,
+    "items_with_format_failures": 0
+  },
+  "capture_matrix": {
+    "capture-search": [
+      {
+        "slot": "baseline-treatment-a",
+        "execution": "capture-completed",
+        "error": null,
+        "prompt_sha256": "803161dd9928d9950e610e2e0ef984fffc8b6c0e8dbc9fe9d2fa60dd5d6ff460",
+        "catalog_changes": [
+          "/models/0/supports_search_tool"
+        ],
+        "isolation_returncode": 0,
+        "credential_copy_removed": true,
+        "candidate_sentence_present": false,
+        "listed_tools": [
+          "apply_patch",
+          "create_goal",
+          "exec_command",
+          "get_goal",
+          "list_mcp_resource_templates",
+          "list_mcp_resources",
+          "read_mcp_resource",
+          "update_goal",
+          "view_image",
+          "write_stdin",
+          "clock__curr_time",
+          "mcp__web__search"
+        ],
+        "turn1": null,
+        "turn1_search_result_sha256": null
+      },
+      {
+        "slot": "baseline-treatment-b",
+        "execution": "capture-completed",
+        "error": null,
+        "prompt_sha256": "f0f163fe47550e30c73a05df9f0b7ac10d17e30bb57f4082a594741b4c47e94d",
+        "catalog_changes": [
+          "/models/0/supports_search_tool"
+        ],
+        "isolation_returncode": 0,
+        "credential_copy_removed": true,
+        "candidate_sentence_present": false,
+        "listed_tools": [
+          "apply_patch",
+          "create_goal",
+          "exec_command",
+          "get_goal",
+          "list_mcp_resource_templates",
+          "list_mcp_resources",
+          "read_mcp_resource",
+          "update_goal",
+          "view_image",
+          "write_stdin",
+          "clock__curr_time",
+          "mcp__web__search"
+        ],
+        "turn1": {
+          "form": "search",
+          "exec_item_format_failures": [
+            []
+          ]
+        },
+        "turn1_search_result_sha256": "396097985fefec7bc82242652dd78d2e22cea37779832bcc9b530764ba815154"
+      },
+      {
+        "slot": "baseline-control",
+        "execution": "capture-completed",
+        "error": null,
+        "prompt_sha256": "8eb1af7b0bf61d4f240e40c46ca5c4ccba6576da263a7339c5cb605afc5b2937",
+        "catalog_changes": [
+          "/models/0/supports_search_tool"
+        ],
+        "isolation_returncode": 0,
+        "credential_copy_removed": true,
+        "candidate_sentence_present": false,
+        "listed_tools": [
+          "apply_patch",
+          "create_goal",
+          "exec_command",
+          "get_goal",
+          "list_mcp_resource_templates",
+          "list_mcp_resources",
+          "read_mcp_resource",
+          "update_goal",
+          "view_image",
+          "write_stdin",
+          "clock__curr_time",
+          "mcp__web__search"
+        ],
+        "turn1": null,
+        "turn1_search_result_sha256": null
+      },
+      {
+        "slot": "candidate-treatment-a",
+        "execution": "capture-completed",
+        "error": null,
+        "prompt_sha256": "803161dd9928d9950e610e2e0ef984fffc8b6c0e8dbc9fe9d2fa60dd5d6ff460",
+        "catalog_changes": [
+          "/models/0/supports_search_tool"
+        ],
+        "isolation_returncode": 0,
+        "credential_copy_removed": true,
+        "candidate_sentence_present": true,
+        "listed_tools": [
+          "apply_patch",
+          "create_goal",
+          "exec_command",
+          "get_goal",
+          "list_mcp_resource_templates",
+          "list_mcp_resources",
+          "read_mcp_resource",
+          "update_goal",
+          "view_image",
+          "write_stdin",
+          "clock__curr_time",
+          "mcp__web__search"
+        ],
+        "turn1": null,
+        "turn1_search_result_sha256": null
+      },
+      {
+        "slot": "candidate-treatment-b",
+        "execution": "capture-completed",
+        "error": null,
+        "prompt_sha256": "f0f163fe47550e30c73a05df9f0b7ac10d17e30bb57f4082a594741b4c47e94d",
+        "catalog_changes": [
+          "/models/0/supports_search_tool"
+        ],
+        "isolation_returncode": 0,
+        "credential_copy_removed": true,
+        "candidate_sentence_present": true,
+        "listed_tools": [
+          "apply_patch",
+          "create_goal",
+          "exec_command",
+          "get_goal",
+          "list_mcp_resource_templates",
+          "list_mcp_resources",
+          "read_mcp_resource",
+          "update_goal",
+          "view_image",
+          "write_stdin",
+          "clock__curr_time",
+          "mcp__web__search"
+        ],
+        "turn1": {
+          "form": "search",
+          "exec_item_format_failures": [
+            []
+          ]
+        },
+        "turn1_search_result_sha256": "396097985fefec7bc82242652dd78d2e22cea37779832bcc9b530764ba815154"
+      },
+      {
+        "slot": "candidate-control",
+        "execution": "capture-completed",
+        "error": null,
+        "prompt_sha256": "8eb1af7b0bf61d4f240e40c46ca5c4ccba6576da263a7339c5cb605afc5b2937",
+        "catalog_changes": [
+          "/models/0/supports_search_tool"
+        ],
+        "isolation_returncode": 0,
+        "credential_copy_removed": true,
+        "candidate_sentence_present": true,
+        "listed_tools": [
+          "apply_patch",
+          "create_goal",
+          "exec_command",
+          "get_goal",
+          "list_mcp_resource_templates",
+          "list_mcp_resources",
+          "read_mcp_resource",
+          "update_goal",
+          "view_image",
+          "write_stdin",
+          "clock__curr_time",
+          "mcp__web__search"
+        ],
+        "turn1": null,
+        "turn1_search_result_sha256": null
+      }
+    ],
+    "capture-inline": [
+      {
+        "slot": "baseline-treatment-b",
+        "execution": "capture-completed",
+        "error": null,
+        "prompt_sha256": "f0f163fe47550e30c73a05df9f0b7ac10d17e30bb57f4082a594741b4c47e94d",
+        "catalog_changes": [
+          "/models/0/supports_search_tool"
+        ],
+        "isolation_returncode": 0,
+        "credential_copy_removed": true,
+        "candidate_sentence_present": false,
+        "listed_tools": [
+          "apply_patch",
+          "create_goal",
+          "exec_command",
+          "get_goal",
+          "list_mcp_resource_templates",
+          "list_mcp_resources",
+          "read_mcp_resource",
+          "update_goal",
+          "view_image",
+          "write_stdin",
+          "clock__curr_time",
+          "mcp__web__search"
+        ],
+        "turn1": {
+          "form": "inline",
+          "exec_item_format_failures": []
+        },
+        "turn1_search_result_sha256": null
+      },
+      {
+        "slot": "candidate-treatment-b",
+        "execution": "capture-completed",
+        "error": null,
+        "prompt_sha256": "f0f163fe47550e30c73a05df9f0b7ac10d17e30bb57f4082a594741b4c47e94d",
+        "catalog_changes": [
+          "/models/0/supports_search_tool"
+        ],
+        "isolation_returncode": 0,
+        "credential_copy_removed": true,
+        "candidate_sentence_present": true,
+        "listed_tools": [
+          "apply_patch",
+          "create_goal",
+          "exec_command",
+          "get_goal",
+          "list_mcp_resource_templates",
+          "list_mcp_resources",
+          "read_mcp_resource",
+          "update_goal",
+          "view_image",
+          "write_stdin",
+          "clock__curr_time",
+          "mcp__web__search"
+        ],
+        "turn1": {
+          "form": "inline",
+          "exec_item_format_failures": []
+        },
+        "turn1_search_result_sha256": null
+      }
+    ]
+  }
+}

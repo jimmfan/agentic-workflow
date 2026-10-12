@@ -874,5 +874,13 @@
     "single model and reasoning setting",
     "single blind adjudicator per batch",
     "shared blind prompt and starting-state line point both arms toward local files"
+  ],
+  "post_report_findings": [
+    {
+      "finding": "context leak",
+      "detail": "All 31 recorded prompt inputs list a skill-root path naming the campaign (investigate-before-uncertainty) and the subject's arm (baseline or candidate); the adapter's prompt-context audit did not flag permission or skill-root paths.",
+      "effect_on_verdicts": "none; verdicts stand as adjudicated, and the non-reproduction is further confounded",
+      "found_by": "investigate-before-uncertainty-search request audit"
+    }
   ]
 }

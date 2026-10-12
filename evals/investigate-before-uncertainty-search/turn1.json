@@ -1,0 +1,20 @@
+{
+  "user": "When should my friend arrive at the security gate for the Quillmere Ridge Half Marathon on November 8? She's in Wave 3 and enters through Gate D.",
+  "steps": [
+    {
+      "custom_tool_call": {
+        "name": "exec",
+        "input": "text(await tools.mcp__web__search({query:\"Quillmere Ridge Half Marathon schedule\"}));\n"
+      }
+    },
+    {
+      "message": "The official schedule suggests Wave 3 runners arrive at Gate D by 6:15 AM. The Wave 3 corral closes at 7:10 AM, and runners are asked to be inside their corral at least 10 minutes before it closes."
+    }
+  ],
+  "fallback_inline_user": "When should my friend arrive at the security gate for the Quillmere Ridge Half Marathon on November 8? She's in Wave 3 and enters through Gate D. Here is the organizer's schedule:\n\n| Wave | Gate | Suggested gate arrival | Corral closes | Start |\n|---|---|---|---|---|\n| 1 | B | 5:45 AM | 6:40 AM | 6:50 AM |\n| 2 | B | 6:00 AM | 6:55 AM | 7:05 AM |\n| 3 | D | 6:15 AM | 7:10 AM | 7:20 AM |\n| 4 | D | 6:30 AM | 7:25 AM | 7:35 AM |\n\nBe inside your corral at least 10 minutes before it closes.",
+  "fallback_inline_steps": [
+    {
+      "message": "The official schedule suggests Wave 3 runners arrive at Gate D by 6:15 AM. The Wave 3 corral closes at 7:10 AM, and runners are asked to be inside their corral at least 10 minutes before it closes."
+    }
+  ]
+}
