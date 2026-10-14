@@ -49,7 +49,7 @@ Otherwise remove temporary diagnostics and hand the smallest causal fix to `work
 A vanished symptom without causal evidence is a mitigation, not a proven root cause.
 Do not duplicate Code Review already performed by `implement`.
 
-Inside Wayfinder, reconcile state only when effort maintenance is authorized and only for consequential evidence, conclusions, conditions blocking particular work, and next work; the selected map remains the durable coordination summary.
+Inside Wayfinder, reconcile state only when effort maintenance is authorized and only for consequential evidence, conclusions, conditions blocking particular work, next work, and the provenance the state contract requires for a fix later work may adopt; the selected map remains the durable coordination summary.
 
 Within that authorized scope, when user-provided or tool-observed evidence materially supports or changes the diagnosis, selected fix, blockers, dependencies, or verification boundary, reconcile the affected effort state through its contract before further work relies on the finding or before final response or handoff.
 Once those state writes are authorized, do not wait for a separate persistence request.

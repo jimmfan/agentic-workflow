@@ -12,10 +12,12 @@ Excludes consuming projects' own effort content and their policy on sensitive da
 On 2026-09-27 the user authorized creating this effort and the framework edits in [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56); live model runs and external tracker or scheduler changes were not authorized.
 Later on 2026-09-27 the user authorized applying the PR #56 audit recommendations and completing the terminology rename in the same PR.
 On 2026-09-30 jimmfan chose how required work after delivery gets resumed (see Current state) and authorized delivering that rule on a branch with the 0.39.0 findings-loop changes; live model runs remain unauthorized.
+On 2026-10-14 jimmfan chose the provenance rule described in Current state and authorized implementing it on branch `claude/adoptable-work-provenance`; live model runs remain unauthorized.
 
 ## Ready work
 
 - [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56) merged on 2026-09-27 as `d82771e`; the items below remain.
+- Review and merge the provenance rule on branch `claude/adoptable-work-provenance` (0.43.0); an independent review of its instruction changes is recommended before merge.
 - Decide [U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default) when ready; it needs user input, not more evidence.
 - After the 0.40.0 route-conflict fixes merge, restructure the standing efforts to jimmfan's U3 decision (see Current state) on a separate branch: move their lasting decisions into ADRs, slim their maps, separate their lanes, and keep the multi-turn live test owned only by this effort.
 - Live validation is required by the objective but running it is not yet authorized.
@@ -24,6 +26,7 @@ On 2026-09-30 jimmfan chose how required work after delivery gets resumed (see C
   For that variant, also check in the traces that agents read the maintain part before each effort-state write.
   Plan: one synthetic conversation of about ten turns in an unrelated domain, with maintenance authorized in turn 1, then a committed choice inside a question, pasted operator output, an agent-run read-only check that contradicts the map, a correction, and small talk.
   Controls: "discuss first", "no changes", already-saved information, a conversation with no earlier authorization, and one where routing selects the effort during authorized implementation; then a fresh reader session.
+  Add two scenarios from [E3](evidence/E3-prototype-provenance-incident.md): "discuss first" followed by a build request in the next turn, to check that maintenance resumes; and a prototype that keeps being built on without explicit acceptance, to check that its requirements and proposals are saved when it is created and that adoption is recorded as a choice.
   Fix a small, matched number of baseline (pre-PR #56) and candidate runs before the first run, and grade saved meaning after every turn; one baseline success cannot show that the scenario fails to discriminate an intermittent failure.
   A roughly ten-turn conversation tests continuation across turns, not long accumulated context or compaction like the week-long E1 conversation; [U5](unknowns.md#u5--does-host-context-compaction-count-as-a-continuation-boundary) asks whether compaction needs its own arm.
   Include a delivery that leaves required work, to check the delivery-ending rule below.
@@ -54,13 +57,18 @@ Lasting decisions belong in ADRs whose reconsideration triggers name the check t
 Each standing map keeps only its open questions, tuning targets, links to per-model results, and a resume condition for model or host changes, in a lane distinct from the other efforts.
 Nothing in a session detects a model change, so jimmfan starts that resumption.
 
+On 2026-10-14 jimmfan decided that work inside an effort that later work may build on or adopt, such as a prototype, must have its provenance saved when it is created, even before review: the user requirements it responds to, its evidence, the uncommitted choices it embodies as proposals, and its location, with adoption itself recorded as a committed choice.
+His reasoning: the effort can be cleaned up later, but decisions, facts, unknowns, and evidence that were never saved cannot be recovered if the work becomes the final product; committed effort state that is later pruned stays in Git.
+The rule lives in the [state contract](../../.agent-workflow/contracts/effort-state.md#current-knowledge); the Wayfinder, Prototype, and Debugging skills point to it, and ADR-0011 already treats this as a contract detail.
+It responds to [E3](evidence/E3-prototype-provenance-incident.md); its effect on agent behavior is unverified.
+
 Not yet specified: whether other authorization given earlier in a conversation should carry forward the way effort maintenance now does ([U2](unknowns.md#u2--should-other-earlier-authorization-carry-forward-across-turns)).
 
 ## Areas and relationships
 
 - The [root policy template](../../agent_workflow/install/AGENTS.md.template) carries the always-loaded continuity, authorization, and per-turn rules; the [state contract](../../.agent-workflow/contracts/effort-state.md) carries the procedure and ending rules; [terminology](../../.agent-workflow/terminology.md) defines effort maintenance and read-only request.
 - The [language-coherence effort](../language-coherence/map.md) owns general terminology questions; this effort owns only terms that decide when effort state is maintained.
-- The user decides U2, U4, and U5 and authorizes live runs, trackers, or schedulers.
+- The user decides U2, U4, U5, and U6 and authorizes live runs, trackers, or schedulers.
 
 ## Dependencies
 
@@ -77,4 +85,5 @@ Not yet specified: whether other authorization given earlier in a conversation s
 - [Open decisions](unknowns.md)
 - [Guidance conversation evidence](evidence/E1-guidance-conversation-transcript.md)
 - [Historical incident summary](evidence/E2-historical-incident-summary.md)
+- [Prototype provenance incident](evidence/E3-prototype-provenance-incident.md)
 - [Earlier preservation evaluations](../../evals/wayfinder-persistence/preservation-followups.md)

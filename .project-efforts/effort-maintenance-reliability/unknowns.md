@@ -22,3 +22,9 @@ Options:
 3. Add a record that supports resumption after compaction; this requires reconsidering [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md) with evidence.
 
 Resolution: live evidence from a compaction arm in the planned multi-turn test, then user decision.
+
+## U6 — Does "discuss first" stop all effort writes or only implementation?
+
+Why it matters: the root policy ends effort-maintenance authorization when the user asks to discuss first, so a plan proposed in that turn is not saved; in [E3](evidence/E3-prototype-provenance-incident.md) the discussed plan existed only in chat, and the reviewing assistant suggested the request may have meant "don't build yet" rather than "don't write anything down"; jimmfan has not confirmed which.
+Saving discussed proposals during such turns would widen an authorization boundary that [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) governs; it is related to [U4](#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default).
+Resolution: user decision, informed by the "discuss first" scenarios in the planned live test.
