@@ -13,12 +13,13 @@ On 2026-09-27 the user authorized creating this effort and the framework edits i
 Later on 2026-09-27 the user authorized applying the PR #56 audit recommendations and completing the terminology rename in the same PR.
 On 2026-09-30 jimmfan chose how required work after delivery gets resumed (see Current state) and authorized delivering that rule on a branch with the 0.39.0 findings-loop changes; live model runs remain unauthorized.
 On 2026-10-14 jimmfan chose the provenance rule described in Current state and authorized implementing it on branch `claude/adoptable-work-provenance`; live model runs remain unauthorized.
+On 2026-10-14 jimmfan also decided the maintenance-default and "discuss first" questions (see Current state), deferred U2, chose the U5 approach, and authorized implementing that rule on branch `claude/default-effort-maintenance`, stacked on PR #76.
 
 ## Ready work
 
 - [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56) merged on 2026-09-27 as `d82771e`; the items below remain.
 - Review and merge the provenance rule in [PR #76](https://github.com/jimmfan/agentic-workflow/pull/76) (branch `claude/adoptable-work-provenance`, 0.43.0); an independent Codex review of `b9adc87` on 2026-10-14 found one defect and one preference, both applied, and no other changes needed.
-- Decide [U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default) when ready; it needs user input, not more evidence.
+- Review and merge the maintenance-default and "discuss first" rule in [PR #77](https://github.com/jimmfan/agentic-workflow/pull/77) (branch `claude/default-effort-maintenance`, 0.44.0, stacked on PR #76) after PR #76 merges; an independent review is recommended because it widens an authorization boundary.
 - After the 0.40.0 route-conflict fixes merge, restructure the standing efforts to jimmfan's U3 decision (see Current state) on a separate branch: move their lasting decisions into ADRs, slim their maps, separate their lanes, and keep the multi-turn live test owned only by this effort.
 - Live validation is required by the objective but running it is not yet authorized.
   On 2026-09-27 jimmfan chose to treat it as the main test of routing reliability and to include one variant that moves Wayfinder selection ahead of the authority rules in the root policy ([context-efficiency map](../context-efficiency/map.md#ready-work)).
@@ -28,7 +29,7 @@ On 2026-10-14 jimmfan chose the provenance rule described in Current state and a
   Controls: "discuss first", "no changes", already-saved information, a conversation with no earlier authorization, and one where routing selects the effort during authorized implementation; then a fresh reader session.
   Add two scenarios from [E3](evidence/E3-prototype-provenance-incident.md): "discuss first" followed by a build request in the next turn, to check that maintenance resumes; and a prototype that keeps being built on without explicit acceptance, to check that its requirements and proposals are saved when it is created and that adoption is recorded as a choice.
   Fix a small, matched number of baseline (pre-PR #56) and candidate runs before the first run, and grade saved meaning after every turn; one baseline success cannot show that the scenario fails to discriminate an intermittent failure.
-  A roughly ten-turn conversation tests continuation across turns, not long accumulated context or compaction like the week-long E1 conversation; [U5](unknowns.md#u5--does-host-context-compaction-count-as-a-continuation-boundary) asks whether compaction needs its own arm.
+  A roughly ten-turn conversation tests continuation across turns, not long accumulated context or compaction like the week-long E1 conversation; include a compaction arm, as jimmfan chose for [U5](unknowns.md#u5--does-host-context-compaction-count-as-a-continuation-boundary) on 2026-10-14.
   Include a delivery that leaves required work, to check the delivery-ending rule below.
   Also grade each turn's route marker against that turn's trace: on 2026-10-04 jimmfan reported a consuming-project session that labeled many later conversational turns (the agent estimated 13 to 19) with a skill that ran only in turn 1, which 0.42.0 addresses by reporting only the current turn's execution, by full skill name.
   The incident host was Codex with a GPT model; results from another host apply only partially.
@@ -45,7 +46,7 @@ The diagnosis rests on [E1](evidence/E1-guidance-conversation-transcript.md), th
 A 2026-09-27 review of nine historical incidents ([E2](evidence/E2-historical-incident-summary.md)) against the source found most failures addressed only in instruction text, each fix added on or just after its incident and none checked live since.
 Only the native skill exposure failure is verified fixed, for Claude Code on this source checkout: that session loaded Wayfinder from the `.claude/skills/` link.
 Most incidents are missed coordination rather than excess persistence.
-When a conversation authorizes no repository changes, current rules still have the agent propose rather than save ([U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default)).
+On 2026-10-14 jimmfan decided that selecting or resuming an effort authorizes its maintenance unless the user asks for no changes (formerly U4), and that "discuss first" withholds implementation and other repository changes but not effort maintenance, with discussed proposals recorded as proposals (formerly U6); [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) and the root policy carry the rule.
 The resulting routing changes shipped in [PR #60](https://github.com/jimmfan/agentic-workflow/pull/60) (0.37.0) and are described in the [responsibility map](../workflow-responsibility-boundaries/map.md#current-state).
 Since 0.38.0 the [state contract](../../.agent-workflow/contracts/effort-state.md#map-authoring) tells authors to replace superseded map statements in place and leave history to Git, because dated narration had grown three maps to between 1,091 and 1,543 words.
 The Claude Code exposure map also outlived its delivery: it described PR #59's merged change as uncommitted until jimmfan had that effort ended on 2026-10-01.
@@ -68,7 +69,7 @@ Not yet specified: whether other authorization given earlier in a conversation s
 
 - The [root policy template](../../agent_workflow/install/AGENTS.md.template) carries the always-loaded continuity, authorization, and per-turn rules; the [state contract](../../.agent-workflow/contracts/effort-state.md) carries the procedure and ending rules; [terminology](../../.agent-workflow/terminology.md) defines effort maintenance and read-only request.
 - The [language-coherence effort](../language-coherence/map.md) owns general terminology questions; this effort owns only terms that decide when effort state is maintained.
-- The user decides U2, U4, U5, and U6 and authorizes live runs, trackers, or schedulers.
+- The user decides U2 and U5 and authorizes live runs, trackers, or schedulers.
 
 ## Dependencies
 
@@ -77,7 +78,6 @@ Not yet specified: whether other authorization given earlier in a conversation s
 ## Blockers
 
 - Live validation: not authorized.
-- Saving without a separate go-ahead in conversations that authorize no repository changes: U4 unresolved.
 
 ## Key references
 
