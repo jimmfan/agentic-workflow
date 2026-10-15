@@ -61,7 +61,7 @@ Without an exact path, inspect only the smallest plausible candidate set.
 Compare safe maps semantically by objective, scope, and name, and resume only one clear match.
 If selection remains ambiguous, do not guess, merge efforts, create a synonymous duplicate, or change affected state.
 
-Create a new effort only when its identity is established, the current user request or accepted project policy authorizes effort maintenance, consequential coordination needs preservation across continuations, and no recognized effort represents the same objective and substantive scope.
+Create a new effort only when its identity is established, effort maintenance is authorized under the root policy, consequential coordination needs preservation across continuations, and no recognized effort represents the same objective and substantive scope.
 Selection alone requires no effort, map, or supporting record.
 Immediately before creation, reread the parent and any newly plausible map.
 A storage-key collision resumes only the same effort; otherwise use the shortest meaningful disambiguator.

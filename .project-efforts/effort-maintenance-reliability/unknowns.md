@@ -2,12 +2,7 @@
 
 Why it matters: [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) now carries earlier authorization forward only for effort maintenance, and "current user request" remains undefined for other writes, such as a commit authorized in an earlier turn.
 Resolution: user decision; broadening affects authorization boundaries, which the project treats as a pre-1.0 priority.
-
-## U4 — Should selecting Wayfinder authorize effort maintenance by default?
-
-Why it matters: under the root policy, when routing selects an effort in a conversation that authorizes no repository changes, such as diagnosis, discussion, or strategy, the agent reports what needs preserving and waits, so jimmfan must still act (incidents 5 and 6 in [E2](evidence/E2-historical-incident-summary.md)).
-A default that authorizes effort maintenance on selection unless the user asks for no changes or to discuss first would remove that step but widen an authorization boundary that [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) governs; it is related to but narrower than [U2](#u2--should-other-earlier-authorization-carry-forward-across-turns).
-Resolution: user decision.
+On 2026-10-14 jimmfan deferred it because no incident shows a need; revisit if an agent re-asks for an action the user already authorized earlier in the same conversation.
 
 ## U5 — Does host context compaction count as a continuation boundary?
 
@@ -21,10 +16,4 @@ Options:
 2. Keep the current rule and verify that agents apply it after compaction.
 3. Add a record that supports resumption after compaction; this requires reconsidering [ADR-0028](../../architecture-decisions/0028-use-wayfinder-as-sole-durable-coordinator.md) with evidence.
 
-Resolution: live evidence from a compaction arm in the planned multi-turn test, then user decision.
-
-## U6 — Does "discuss first" stop all effort writes or only implementation?
-
-Why it matters: the root policy ends effort-maintenance authorization when the user asks to discuss first, so a plan proposed in that turn is not saved; in [E3](evidence/E3-prototype-provenance-incident.md) the discussed plan existed only in chat, and the reviewing assistant suggested the request may have meant "don't build yet" rather than "don't write anything down"; jimmfan has not confirmed which.
-Saving discussed proposals during such turns would widen an authorization boundary that [ADR-0025](../../architecture-decisions/0025-preserve-authority-at-consequential-boundaries.md) governs; it is related to [U4](#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default).
-Resolution: user decision, informed by the "discuss first" scenarios in the planned live test.
+Resolution: on 2026-10-14 jimmfan chose to add a compaction arm to the planned multi-turn test and to keep option 2 unless that arm shows agents trusting the summary over the map or repository.
