@@ -19,7 +19,7 @@ On 2026-10-14 jimmfan also decided the maintenance-default and "discuss first" q
 
 - [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56) merged on 2026-09-27 as `d82771e`; the items below remain.
 - Review and merge the provenance rule in [PR #76](https://github.com/jimmfan/agentic-workflow/pull/76) (branch `claude/adoptable-work-provenance`, 0.43.0); an independent Codex review of `b9adc87` on 2026-10-14 found one defect and one preference, both applied, and no other changes needed.
-- Review and merge the maintenance-default and "discuss first" rule on branch `claude/default-effort-maintenance` (0.44.0) after PR #76; an independent review is recommended because it widens an authorization boundary.
+- Review and merge the maintenance-default and "discuss first" rule in [PR #77](https://github.com/jimmfan/agentic-workflow/pull/77) (branch `claude/default-effort-maintenance`, 0.44.0, stacked on PR #76) after PR #76 merges; an independent review is recommended because it widens an authorization boundary.
 - After the 0.40.0 route-conflict fixes merge, restructure the standing efforts to jimmfan's U3 decision (see Current state) on a separate branch: move their lasting decisions into ADRs, slim their maps, separate their lanes, and keep the multi-turn live test owned only by this effort.
 - Live validation is required by the objective but running it is not yet authorized.
   On 2026-09-27 jimmfan chose to treat it as the main test of routing reliability and to include one variant that moves Wayfinder selection ahead of the authority rules in the root policy ([context-efficiency map](../context-efficiency/map.md#ready-work)).
