@@ -152,12 +152,9 @@ Treat consequential evidence supplied by a user or observed from an external sys
 Preserve it before dependent work relies on it or before final response or handoff; use a separate E# when its source, method, limitations, or reuse value justify independent preservation.
 Otherwise do not create or retain an E# merely as a transition step.
 
-When work inside a selected effort produces or changes something later work may build on or adopt into a lasting result, such as a prototype, specification, design, code, or research finding, and effort maintenance is authorized, preserve its provenance in the same turn, even while it awaits review or acceptance.
-Provenance is the user requirements it responds to, the evidence it produced, the consequential choices it embodies that no one has committed, and where it lives.
-Keep uncommitted choices as proposals in the map, a U#, or the work itself, never as a D#.
-Adopting that work or its embodied choices into a lasting result is itself a project choice, not a consequence of continuing to build on the work; record it as a D# or in the maintaining artifact before dependent work relies on the adoption.
-Routine implementation judgment within delegated scope needs no provenance.
-Prune the effort's copy only after the maintaining artifact carries the provenance a later reader would need to evaluate the adopted choices.
+When work inside a selected effort produces something later work may build on or adopt into a lasting result, such as a prototype, specification, design, code, or research finding, and effort maintenance is authorized, preserve its provenance even while it awaits review: the user requirements it responds to, the evidence it produced, the uncommitted consequential choices it embodies, kept as proposals, and where it lives.
+Routine implementation judgment within delegated scope needs none.
+Continuing to build on such work does not adopt it; adoption is a project choice.
 
 When effort maintenance is authorized and the user mentions an environment fact, a constraint, or another team's change that could affect the effort's work, such as revised egress rules or a new access requirement, preserve it in the same turn as an F# or E# with its source, even if secondhand, and the date it was recorded; it needs no further consequentiality judgment.
 
