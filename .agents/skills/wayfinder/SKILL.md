@@ -57,7 +57,8 @@ Use detailed routing when composition or selected-skill availability materially 
 
 Research, Prototype, and Debugging operate on uncertainties and questions within established areas and relationships; they do not replace Domain Modeling when the uncertainty concerns the domain model.
 Each specialist retains its method and creates no separate Agent Workflow durable coordination state.
-When a composed specialist produces a consequential result affecting the selected effort, and effort maintenance is authorized, reconcile affected effort state through the state contract before dependent work relies on the result or before final response or handoff.
+When a composed specialist produces a consequential result affecting the selected effort, or something later work may build on or adopt, and effort maintenance is authorized, reconcile affected effort state through the state contract, including its provenance rule, before dependent work relies on the result or before final response or handoff.
+A result awaiting review or acceptance is not exempt.
 
 A resolution method determines the evidence or authority needed, not merely an artifact label:
 
