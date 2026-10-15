@@ -44,7 +44,6 @@ Infer the shape from the request and code when supported, and state any material
    Report the question, observed result, and limitations to the user.
    Prototype work alone does not authorize production adoption, commits, or publication.
    When authorized, preserve the prototype as a primary source on a named throwaway branch and put a usable reference and the answer in the designated issue or artifact.
-   Inside a selected Wayfinder effort, the state contract's provenance rule also applies when the prototype is created, before any answer exists.
-   Adopting the prototype or its design is a project choice for the person with project decision authority, not a consequence of continuing to build on it.
+   Inside a selected Wayfinder effort, the state contract's provenance rule also applies when the prototype is created, before any answer exists, and its adoption rule governs adopting the prototype or its design.
    Before authorized production adoption, implement the accepted decision to production standards and verify the affected behavior and boundaries.
    Keep throwaway demo code and unused variants out of the production result.

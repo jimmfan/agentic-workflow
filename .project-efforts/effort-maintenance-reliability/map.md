@@ -17,7 +17,7 @@ On 2026-10-14 jimmfan chose the provenance rule described in Current state and a
 ## Ready work
 
 - [PR #56](https://github.com/jimmfan/agentic-workflow/pull/56) merged on 2026-09-27 as `d82771e`; the items below remain.
-- Review and merge the provenance rule in [PR #76](https://github.com/jimmfan/agentic-workflow/pull/76) (branch `claude/adoptable-work-provenance`, 0.43.0); an independent review of its instruction changes is recommended before merge.
+- Review and merge the provenance rule in [PR #76](https://github.com/jimmfan/agentic-workflow/pull/76) (branch `claude/adoptable-work-provenance`, 0.43.0); an independent Codex review of `b9adc87` on 2026-10-14 found one defect and one preference, both applied, and no other changes needed.
 - Decide [U4](unknowns.md#u4--should-selecting-wayfinder-authorize-effort-maintenance-by-default) when ready; it needs user input, not more evidence.
 - After the 0.40.0 route-conflict fixes merge, restructure the standing efforts to jimmfan's U3 decision (see Current state) on a separate branch: move their lasting decisions into ADRs, slim their maps, separate their lanes, and keep the multi-turn live test owned only by this effort.
 - Live validation is required by the objective but running it is not yet authorized.

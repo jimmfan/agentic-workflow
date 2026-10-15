@@ -155,7 +155,7 @@ Otherwise do not create or retain an E# merely as a transition step.
 When work inside a selected effort produces or changes something later work may build on or adopt into a lasting result, such as a prototype, specification, design, code, or research finding, and effort maintenance is authorized, preserve its provenance in the same turn, even while it awaits review or acceptance.
 Provenance is the user requirements it responds to, the evidence it produced, the consequential choices it embodies that no one has committed, and where it lives.
 Keep uncommitted choices as proposals in the map, a U#, or the work itself, never as a D#.
-Adopting that work or its embodied choices into a lasting result is itself a project choice; record it as a D# or in the maintaining artifact before dependent work relies on the adoption.
+Adopting that work or its embodied choices into a lasting result is itself a project choice, not a consequence of continuing to build on the work; record it as a D# or in the maintaining artifact before dependent work relies on the adoption.
 Routine implementation judgment within delegated scope needs no provenance.
 Prune the effort's copy only after the maintaining artifact carries the provenance a later reader would need to evaluate the adopted choices.
 
